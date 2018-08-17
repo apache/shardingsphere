@@ -17,22 +17,16 @@
 
 package io.shardingsphere.core.executor;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * SQL execute engine.
@@ -42,21 +36,13 @@ import java.util.concurrent.TimeUnit;
  * @author maxiaoguang
  * @author panjuan
  */
-@Slf4j
 public abstract class ExecutorEngine implements AutoCloseable {
     
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("ExecutorEngineCloser"));
-    
     @Getter
-    private final ListeningExecutorService executorService;
-    
-    private final EventBus shardingEventBus;
+    private final ShardingExecuteEngine shardingExecuteEngine;
     
     public ExecutorEngine(final int executorSize) {
-        executorService = MoreExecutors.listeningDecorator(
-                0 == executorSize ? Executors.newCachedThreadPool(ShardingThreadFactoryBuilder.build()) : Executors.newFixedThreadPool(executorSize, ShardingThreadFactoryBuilder.build()));
-        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
-        shardingEventBus = ShardingEventBusInstance.getInstance();
+        shardingExecuteEngine = new ShardingExecuteEngine(executorSize);
     }
     
     /**
@@ -73,9 +59,9 @@ public abstract class ExecutorEngine implements AutoCloseable {
             return Collections.emptyList();
         }
         OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSqlType(), baseStatementUnits.size() > 1);
-        shardingEventBus.post(event);
+        ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = getExecuteResults(baseStatementUnits, executeCallback);
+            List<T> result = getExecuteResults(new LinkedList<>(baseStatementUnits), executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -85,27 +71,14 @@ public abstract class ExecutorEngine implements AutoCloseable {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
         } finally {
-            shardingEventBus.post(event);
+            ShardingEventBusInstance.getInstance().post(event);
         }
     }
     
-    protected abstract <T> List<T> getExecuteResults(Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
+    protected abstract <T> List<T> getExecuteResults(Collection<BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
     
     @Override
     public final void close() {
-        SHUTDOWN_EXECUTOR.execute(new Runnable() {
-            
-            @Override
-            public void run() {
-                try {
-                    executorService.shutdown();
-                    while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                        executorService.shutdownNow();
-                    }
-                } catch (final InterruptedException ex) {
-                    log.error("ExecutorEngine can not been terminated", ex);
-                }
-            }
-        });
+        shardingExecuteEngine.close();
     }
 }

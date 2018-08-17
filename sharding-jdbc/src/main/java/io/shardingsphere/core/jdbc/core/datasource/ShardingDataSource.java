@@ -75,8 +75,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
-        ShardingMetaData shardingMetaData = new ShardingMetaData(
-                getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
+        ShardingMetaData shardingMetaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), 
+                executorEngine.getShardingExecuteEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, connectionMode, showSQL);
     }
@@ -116,8 +116,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             originalExecutorEngine.close();
         }
         shardingProperties = newShardingProperties;
-        ShardingMetaData shardingMetaData = new ShardingMetaData(
-                getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap));
+        ShardingMetaData shardingMetaData = new ShardingMetaData(getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), 
+                executorEngine.getShardingExecuteEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap));
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newConnectionMode, newShowSQL);
     }

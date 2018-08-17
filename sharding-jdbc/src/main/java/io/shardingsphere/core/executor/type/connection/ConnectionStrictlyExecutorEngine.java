@@ -17,19 +17,15 @@
 
 package io.shardingsphere.core.executor.type.connection;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Connection strictly execute engine.
@@ -43,11 +39,8 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
     }
     
     @Override
-    protected <T> List<T> getExecuteResults(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
-        Map<String, Collection<BaseStatementUnit>> baseStatementUnitGroups = getBaseStatementUnitGroups(baseStatementUnits);
-        Collection<T> firstOutputs = syncExecute(baseStatementUnitGroups.remove(baseStatementUnitGroups.keySet().iterator().next()), executeCallback);
-        Collection<ListenableFuture<Collection<T>>> restResultFutures = asyncExecute(baseStatementUnitGroups, executeCallback);
-        return getResultList(firstOutputs, restResultFutures);
+    protected <T> List<T> getExecuteResults(final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
+        return getShardingExecuteEngine().groupExecute(getBaseStatementUnitGroups(baseStatementUnits), executeCallback);
     }
     
     private Map<String, Collection<BaseStatementUnit>> getBaseStatementUnitGroups(final Collection<? extends BaseStatementUnit> baseStatementUnits) {
@@ -58,41 +51,6 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
                 result.put(dataSourceName, new LinkedList<BaseStatementUnit>());
             }
             result.get(dataSourceName).add(each);
-        }
-        return result;
-    }
-    
-    private <T> Collection<ListenableFuture<Collection<T>>> asyncExecute(final Map<String, Collection<BaseStatementUnit>> baseStatementUnitGroups, final ExecuteCallback<T> executeCallback) {
-        Collection<ListenableFuture<Collection<T>>> result = new ArrayList<>(baseStatementUnitGroups.size());
-        for (Map.Entry<String, Collection<BaseStatementUnit>> entry : baseStatementUnitGroups.entrySet()) {
-            final Collection<BaseStatementUnit> baseStatementUnits = entry.getValue();
-            result.add(getExecutorService().submit(new Callable<Collection<T>>() {
-                @Override
-                public Collection<T> call() throws Exception {
-                    Collection<T> result = new LinkedList<>();
-                    for (BaseStatementUnit each : baseStatementUnits) {
-                        result.add(executeCallback.execute(each));
-                    }
-                    return result;
-                }
-            }));
-        }
-        return result;
-    }
-    
-    private <T> Collection<T> syncExecute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
-        Collection<T> result = new LinkedList<>();
-        for (BaseStatementUnit each : baseStatementUnits) {
-            result.add(executeCallback.execute(each));
-        }
-        return result;
-    }
-    
-    private <T> List<T> getResultList(final Collection<T> firstOutputs, final Collection<ListenableFuture<Collection<T>>> restResultFutures) throws ExecutionException, InterruptedException {
-        List<T> result = new LinkedList<>();
-        result.addAll(firstOutputs);
-        for (ListenableFuture<Collection<T>> each : restResultFutures) {
-            result.addAll(each.get());
         }
         return result;
     }
