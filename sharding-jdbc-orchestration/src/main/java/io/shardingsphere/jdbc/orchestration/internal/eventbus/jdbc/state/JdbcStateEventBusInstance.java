@@ -22,12 +22,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding state event bus instance.
+ * Jdbc state event bus instance.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingStateEventBusInstance {
+public final class JdbcStateEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     
