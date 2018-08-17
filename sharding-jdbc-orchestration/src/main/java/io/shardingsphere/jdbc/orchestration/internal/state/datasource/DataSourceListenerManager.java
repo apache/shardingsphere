@@ -19,8 +19,8 @@ package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -56,9 +56,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
-                    jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    JdbcStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
+                    JdbcDisabledEventBusInstance.getInstance().post(new JdbcDisabledEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
@@ -71,9 +69,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
-                    jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    JdbcStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
+                    JdbcDisabledEventBusInstance.getInstance().post(new JdbcDisabledEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
