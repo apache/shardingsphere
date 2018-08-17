@@ -80,7 +80,6 @@ simpleExpr:
  
 liter:
 	QUESTION
-	|INT
 	|NUMBER
 	|TRUE 
 	|FALSE
@@ -94,11 +93,39 @@ liter:
 
 subquery:
 	;
+
+characterAndCollate:
+	characterSet
+    collateClause
+	;
+	
+characterSet:
+	((CHARACTER | CHAR) SET charsetName)
+	;
 	
 collateClause:
 	COLLATE ID
 	;
+	
+charsetName:
+	ID
+	|BINARY
+	;
 
+characterAndCollateWithEqual:
+	characterSetWithEqual
+    collateClauseWithEqual
+	;
+	
+		
+characterSetWithEqual:
+	((CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName)
+	;
+			
+collateClauseWithEqual:
+	COLLATE EQ_OR_ASSIGN? ID
+	;
+	
 functionCall:
 	ID LEFT_PAREN(|expr ( COMMA  expr)*) RIGHT_PAREN
 	;
