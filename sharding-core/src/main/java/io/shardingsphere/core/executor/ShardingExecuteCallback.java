@@ -15,23 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.config;
-
-import com.google.common.base.Optional;
+package io.shardingsphere.core.executor;
 
 /**
- * Parse config.
+ * Sharding execute callback.
  * 
- * @author gaohongtao
- * @author wangkai
+ * @author zhangliang
+ * 
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-interface ConfigurationParser {
+public interface ShardingExecuteCallback<I, O> {
     
     /**
-     * Parse config item to config value.
+     * Execute callback.
      * 
-     * @param configItem config item
-     * @return config value
+     * @param input input value
+     * @return execute result
+     * @throws Exception throw when execute failure
      */
-    Optional<String> parse(String configItem);
+    O execute(I input) throws Exception;
 }

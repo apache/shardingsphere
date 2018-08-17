@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.type.memory;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
@@ -47,15 +46,14 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
     }
     
     @Override
-    protected <T> List<T> getExecuteResults(final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
+    protected <T> List<T> getExecuteResults(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
         Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
-        T firstOutput = syncExecute(sqlType, iterator.next(), executeCallback);
-        Collection<ListenableFuture<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), executeCallback);
+        T firstOutput = syncExecute(iterator.next(), executeCallback);
+        Collection<ListenableFuture<T>> restFutures = asyncExecute(Lists.newArrayList(iterator), executeCallback);
         return getResultList(firstOutput, restFutures);
     }
     
-    private <T> Collection<ListenableFuture<T>> asyncExecute(
-            final SQLType sqlType, final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) {
+    private <T> Collection<ListenableFuture<T>> asyncExecute(final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) {
         List<ListenableFuture<T>> result = new ArrayList<>(baseStatementUnits.size());
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -64,15 +62,15 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
                 
                 @Override
                 public T call() throws Exception {
-                    return executeInternal(sqlType, each, executeCallback, isExceptionThrown, dataMap);
+                    return executeInternal(each, executeCallback, isExceptionThrown, dataMap);
                 }
             }));
         }
         return result;
     }
     
-    private <T> T syncExecute(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
-        return executeInternal(sqlType, baseStatementUnit, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
+    private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
+        return executeInternal(baseStatementUnit, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
     }
     
     private <T> List<T> getResultList(final T firstOutput, final Collection<ListenableFuture<T>> restResultFutures) throws ExecutionException, InterruptedException {
