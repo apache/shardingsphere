@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JDBCStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.MasterSlaveStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.ShardingStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
@@ -60,7 +60,7 @@ public final class InstanceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() && StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                    JDBCStateEventBusEvent jdbcStateEventBusEvent = new JDBCStateEventBusEvent();
+                    JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
                     jdbcStateEventBusEvent.getCircuitBreakerDataSource().addAll(configService.loadDataSourceMap().keySet());
                     ShardingStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
@@ -75,7 +75,7 @@ public final class InstanceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() && StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                    JDBCStateEventBusEvent jdbcStateEventBusEvent = new JDBCStateEventBusEvent();
+                    JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
                     jdbcStateEventBusEvent.getCircuitBreakerDataSource().addAll(configService.loadDataSourceMap().keySet());
                     MasterSlaveStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
