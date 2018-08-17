@@ -15,28 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Jdbc disabled event bus instance.
+ * JDBC circuit event bus event.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcDisabledEventBusInstance {
+@RequiredArgsConstructor
+@Getter
+public final class JdbcCircuitEventBusEvent {
     
-    private static final EventBus INSTANCE = new EventBus();
-    
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private final Collection<String> circuitBreakerDataSourceNames;
 }

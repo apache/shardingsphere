@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * JDBC circuit event bus event.
+ * JDBC disabled event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class JdbcCircuitEventBusEvent {
+public final class JdbcDisabledEventBusEvent {
     
-    private final Collection<String> circuitBreakerDataSourceNames;
+    private final Collection<String> disabledDataSourceNames;
 }

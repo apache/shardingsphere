@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.config.jdbc;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Jdbc circuit event bus instance.
+ * JDBC config event bus instance.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcCircuitEventBusInstance {
+public final class JdbcConfigurationEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     
