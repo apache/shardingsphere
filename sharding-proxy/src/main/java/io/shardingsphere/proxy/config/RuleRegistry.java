@@ -33,7 +33,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -160,11 +160,11 @@ public final class RuleRegistry {
     /**
      * Renew rule registry.
      *
-     * @param proxyEventBusEvent proxy event bus event.
+     * @param proxyConfigurationEventBusEvent proxy event bus event.
      */
     @Subscribe
-    public void renew(final ProxyEventBusEvent proxyEventBusEvent) {
-        init(new OrchestrationProxyConfiguration(proxyEventBusEvent.getDataSources(), proxyEventBusEvent.getOrchestrationConfig()));
+    public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
+        init(new OrchestrationProxyConfiguration(proxyConfigurationEventBusEvent.getDataSources(), proxyConfigurationEventBusEvent.getOrchestrationConfig()));
     }
     
     /**
