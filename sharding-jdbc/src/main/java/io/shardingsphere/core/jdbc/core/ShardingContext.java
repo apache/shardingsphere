@@ -71,11 +71,11 @@ public final class ShardingContext {
     /**
      * Renew disable dataSource names.
      *
-     * @param JDBCEventBusEvent jdbc event bus event
+     * @param jdbcEventBusEvent jdbc event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final JDBCEventBusEvent JDBCEventBusEvent) {
-        disabledDataSourceNames = JDBCEventBusEvent.getDisabledDataSourceNames();
+    public void renewDisabledDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
+        disabledDataSourceNames = jdbcEventBusEvent.getDisabledDataSourceNames();
         metaData = new ShardingMetaData(
                 getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
@@ -83,11 +83,11 @@ public final class ShardingContext {
     /**
      * Renew circuit breaker dataSource names.
      *
-     * @param JDBCEventBusEvent jdbc event bus event
+     * @param jdbcEventBusEvent jdbc event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final JDBCEventBusEvent JDBCEventBusEvent) {
-        circuitBreakerDataSourceNames = JDBCEventBusEvent.getCircuitBreakerDataSource();
+    public void renewCircuitBreakerDataSourceNames(final JDBCEventBusEvent jdbcEventBusEvent) {
+        circuitBreakerDataSourceNames = jdbcEventBusEvent.getCircuitBreakerDataSource();
         metaData = new ShardingMetaData(
                 getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
