@@ -88,9 +88,9 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      */
     public Map<String, DataSource> getAllDataSources() {
         Map<String, DataSource> result = new HashMap<>(masterSlaveRule.getSlaveDataSourceNames().size() + 1, 1);
-        result.put(masterSlaveRule.getMasterDataSourceName(), dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()));
+        result.put(masterSlaveRule.getMasterDataSourceName(), getDataSourceMap().get(masterSlaveRule.getMasterDataSourceName()));
         for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
-            result.put(each, dataSourceMap.get(each));
+            result.put(each, getDataSourceMap().get(each));
         }
         return result;
     }
@@ -110,7 +110,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     }
     
     private void closeOriginalDataSources() {
-        for (DataSource each : this.dataSourceMap.values()) {
+        for (DataSource each : getDataSourceMap().values()) {
             try {
                 Method closeMethod = each.getClass().getDeclaredMethod("close");
                 closeMethod.invoke(each);
