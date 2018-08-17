@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingEventBusInstance {
+public final class ShardingStateEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     

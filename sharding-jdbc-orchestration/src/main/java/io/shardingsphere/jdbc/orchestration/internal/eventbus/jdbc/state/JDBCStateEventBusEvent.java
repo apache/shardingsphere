@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class JDBCEventBusEvent {
+public final class JDBCStateEventBusEvent {
     
     private final Collection<String> disabledDataSourceNames = new LinkedList<>();
     
