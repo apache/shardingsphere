@@ -15,28 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.config;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.config.proxy;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 /**
- * Proxy configuration event bus instance.
+ * Proxy configuration event bus event.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyConfigurationEventBusInstance {
+@RequiredArgsConstructor
+@Getter
+public final class ProxyConfigurationEventBusEvent {
     
-    private static final EventBus INSTANCE = new EventBus();
+    private final Map<String, DataSourceParameter> dataSources;
     
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private final OrchestrationProxyConfiguration orchestrationConfig;
 }
