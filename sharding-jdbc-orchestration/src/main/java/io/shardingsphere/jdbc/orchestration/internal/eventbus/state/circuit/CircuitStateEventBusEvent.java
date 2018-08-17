@@ -17,26 +17,19 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Jdbc circuit event bus instance.
+ * JDBC circuit event bus event.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcCircuitEventBusInstance {
+@RequiredArgsConstructor
+@Getter
+public final class CircuitStateEventBusEvent {
     
-    private static final EventBus INSTANCE = new EventBus();
-    
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private final Collection<String> circuitBreakerDataSourceNames;
 }
