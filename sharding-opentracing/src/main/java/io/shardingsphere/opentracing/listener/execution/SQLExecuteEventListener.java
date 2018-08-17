@@ -42,8 +42,6 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
 
-    private final ThreadLocal<ActiveSpan> trunkSpan = new ThreadLocal<>();
-    
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
     
     private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
@@ -61,7 +59,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     @Override
     protected void beforeExecute(final SQLExecutionEvent event) {
-        if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && null == trunkSpan.get() && null == branchSpan.get()) {
+        if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
             trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
         }
         if (null == branchSpan.get()) {

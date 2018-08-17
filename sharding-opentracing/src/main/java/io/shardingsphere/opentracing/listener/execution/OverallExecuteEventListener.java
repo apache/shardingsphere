@@ -40,7 +40,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
 
     private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
 
-    private final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
+    private static final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
     
     /**
      * Listen overall sql execution event.
@@ -71,5 +71,14 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     @Override
     protected ActiveSpan getFailureSpan() {
         return span.get();
+    }
+    
+    /**
+     * Tests if sql execute event in this overall event thread.
+     * 
+     * @return sql execute event in this overall event thread or not.
+     */
+    public static boolean isTrunkThread() {
+        return span.get() != null;
     }
 }
