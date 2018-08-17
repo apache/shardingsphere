@@ -25,7 +25,8 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JDBCStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.MasterSlaveStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
@@ -74,6 +75,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         MasterSlaveStateEventBusInstance.getInstance().register(this);
+        JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -105,6 +107,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig new master-slave rule configuration
      */
+    @Subscribe
     public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         closeOriginalDataSources();
@@ -178,7 +181,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      * @param jdbcStateEventBusEvent jdbc event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final JDBCStateEventBusEvent jdbcStateEventBusEvent) {
+    public void renewDisabledDataSourceNames(final JdbcStateEventBusEvent jdbcStateEventBusEvent) {
         disabledDataSourceNames = jdbcStateEventBusEvent.getDisabledDataSourceNames();
     }
     
@@ -188,7 +191,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      * @param jdbcStateEventBusEvent jdbc event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final JDBCStateEventBusEvent jdbcStateEventBusEvent) {
+    public void renewCircuitBreakerDataSourceNames(final JdbcStateEventBusEvent jdbcStateEventBusEvent) {
         circuitBreakerDataSourceNames = jdbcStateEventBusEvent.getCircuitBreakerDataSource();
     }
 }
