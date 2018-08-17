@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JDBCStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.MasterSlaveStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.ShardingStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
@@ -57,7 +57,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JDBCStateEventBusEvent jdbcStateEventBusEvent = new JDBCStateEventBusEvent();
+                    JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
                     jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
                     ShardingStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
@@ -72,7 +72,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JDBCStateEventBusEvent jdbcStateEventBusEvent = new JDBCStateEventBusEvent();
+                    JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
                     jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
                     MasterSlaveStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
