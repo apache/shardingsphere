@@ -81,6 +81,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
         shardingContext = getShardingContext(dataSourceMap, shardingRule, connectionMode);
+        JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
@@ -90,7 +91,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, connectionMode, showSQL);
         JdbcDisabledEventBusInstance.getInstance().register(result);
         JdbcCircuitEventBusInstance.getInstance().register(result);
-        JdbcConfigurationEventBusInstance.getInstance().register(result);
         return result;
     }
     
