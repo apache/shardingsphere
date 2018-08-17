@@ -125,7 +125,7 @@ public final class RuleRegistry {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        backendDataSource = new JDBCBackendDataSource(transactionType, config.getDataSources());
+        backendDataSource = new JDBCBackendDataSource();
         dataSourceConfigurationMap = config.getDataSources();
         proxyAuthority = config.getProxyAuthority();
     }
