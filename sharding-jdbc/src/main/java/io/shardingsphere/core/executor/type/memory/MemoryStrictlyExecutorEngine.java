@@ -22,15 +22,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -55,14 +52,12 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
     
     private <T> Collection<ListenableFuture<T>> asyncExecute(final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) {
         List<ListenableFuture<T>> result = new ArrayList<>(baseStatementUnits.size());
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         for (final BaseStatementUnit each : baseStatementUnits) {
             result.add(getExecutorService().submit(new Callable<T>() {
                 
                 @Override
                 public T call() throws Exception {
-                    return executeInternal(each, executeCallback, isExceptionThrown, dataMap);
+                    return executeInternal(each, executeCallback);
                 }
             }));
         }
@@ -70,7 +65,7 @@ public final class MemoryStrictlyExecutorEngine extends ExecutorEngine {
     }
     
     private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
-        return executeInternal(baseStatementUnit, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
+        return executeInternal(baseStatementUnit, executeCallback);
     }
     
     private <T> List<T> getResultList(final T firstOutput, final Collection<ListenableFuture<T>> restResultFutures) throws ExecutionException, InterruptedException {

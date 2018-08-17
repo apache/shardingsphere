@@ -21,6 +21,8 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
@@ -28,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * PreparedStatement Executor for multiple threads.
@@ -52,6 +55,8 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<ResultSet> executeQuery() throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         return executorEngine.execute(preparedStatementUnits, new ExecuteCallback<ResultSet>() {
             
             @Override
@@ -63,6 +68,16 @@ public final class PreparedStatementExecutor {
             public SQLType getSQLType() {
                 return sqlType;
             }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
+            }
         });
     }
     
@@ -73,6 +88,8 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int executeUpdate() throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<Integer> results = executorEngine.execute(preparedStatementUnits, new ExecuteCallback<Integer>() {
             
             @Override
@@ -83,6 +100,16 @@ public final class PreparedStatementExecutor {
             @Override
             public SQLType getSQLType() {
                 return sqlType;
+            }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
             }
         });
         return accumulate(results);
@@ -103,6 +130,8 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public boolean execute() throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<Boolean> result = executorEngine.execute(preparedStatementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
@@ -113,6 +142,16 @@ public final class PreparedStatementExecutor {
             @Override
             public SQLType getSQLType() {
                 return sqlType;
+            }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
             }
         });
         if (null == result || result.isEmpty() || null == result.get(0)) {

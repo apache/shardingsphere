@@ -21,6 +21,8 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -51,6 +54,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     public void assertSingleStatement() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         executorEngine.execute(Collections.singleton(new StatementUnit(
                 new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
                     
@@ -62,6 +67,16 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                     @Override
                     public SQLType getSQLType() {
                         return SQLType.DML;
+                    }
+                    
+                    @Override
+                    public boolean isExceptionThrown() {
+                        return isExceptionThrown;
+                    }
+                    
+                    @Override
+                    public Map<String, Object> getDataMap() {
+                        return dataMap;
                     }
                 });
         assertThat(getTracer().finishedSpans().size(), is(2));
@@ -76,6 +91,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         Statement stm2 = mock(Statement.class);
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         executorEngine.execute(statementUnitList, new ExecuteCallback<Integer>() {
             
             @Override
@@ -86,6 +103,16 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             @Override
             public SQLType getSQLType() {
                 return SQLType.DML;
+            }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
             }
         });
         assertThat(getTracer().finishedSpans().size(), is(3));
@@ -101,6 +128,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         executorEngine.execute(statementUnitList, new ExecuteCallback<Integer>() {
             
             @Override
@@ -112,6 +141,16 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             public SQLType getSQLType() {
                 return SQLType.DML;
             }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
+            }
         });
         assertThat(getTracer().finishedSpans().size(), is(3));
     }
@@ -120,6 +159,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     public void assertSQLException() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         executorEngine.execute(Collections.singleton(new StatementUnit(new SQLExecutionUnit("ds_0",
                 new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), new ExecuteCallback<Integer>() {
                     
@@ -131,6 +172,16 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                     @Override
                     public SQLType getSQLType() {
                         return SQLType.DQL;
+                    }
+                    
+                    @Override
+                    public boolean isExceptionThrown() {
+                        return isExceptionThrown;
+                    }
+                    
+                    @Override
+                    public Map<String, Object> getDataMap() {
+                        return dataMap;
                     }
                 });
     }
