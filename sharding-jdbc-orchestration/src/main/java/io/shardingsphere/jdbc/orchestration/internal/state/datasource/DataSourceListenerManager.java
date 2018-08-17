@@ -21,9 +21,9 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.MasterSlaveEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.ShardingEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JDBCStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.MasterSlaveStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.ShardingStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -59,9 +59,9 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JDBCEventBusEvent jdbcEventBusEvent = new JDBCEventBusEvent();
-                    jdbcEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    ShardingEventBusInstance.getInstance().post(jdbcEventBusEvent);
+                    JDBCStateEventBusEvent jdbcStateEventBusEvent = new JDBCStateEventBusEvent();
+                    jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
+                    ShardingStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
             }
         });
@@ -74,9 +74,9 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JDBCEventBusEvent jdbcEventBusEvent = new JDBCEventBusEvent();
-                    jdbcEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    MasterSlaveEventBusInstance.getInstance().post(jdbcEventBusEvent);
+                    JDBCStateEventBusEvent jdbcStateEventBusEvent = new JDBCStateEventBusEvent();
+                    jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
+                    MasterSlaveStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
             }
         });
