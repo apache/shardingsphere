@@ -164,7 +164,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
+        for (String each : getDisabledDataSourceNames()) {
             result.remove(each);
         }
         return result;
@@ -172,7 +172,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
+        for (String each : getCircuitBreakerDataSourceNames()) {
             result.put(each, new CircuitBreakerDataSource());
         }
         return result;
