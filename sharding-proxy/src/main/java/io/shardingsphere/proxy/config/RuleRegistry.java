@@ -31,13 +31,17 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.circuit.JdbcCircuitEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled.JdbcDisabledEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -81,6 +85,10 @@ public final class RuleRegistry {
     private ProxyAuthority proxyAuthority;
     
     private ShardingMetaData metaData;
+    
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
     
     /**
      * Get instance of sharding rule registry.
@@ -158,4 +166,25 @@ public final class RuleRegistry {
     public void renew(final ProxyEventBusEvent proxyEventBusEvent) {
         init(new OrchestrationProxyConfiguration(proxyEventBusEvent.getDataSources(), proxyEventBusEvent.getOrchestrationConfig()));
     }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param jdbcDisabledEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renewDisabledDataSourceNames(final JdbcDisabledEventBusEvent jdbcDisabledEventBusEvent) {
+        disabledDataSourceNames = jdbcDisabledEventBusEvent.getDisabledDataSourceNames();
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param jdbcCircuitEventBusEvent jdbc circuit event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final JdbcCircuitEventBusEvent jdbcCircuitEventBusEvent) {
+        circuitBreakerDataSourceNames = jdbcCircuitEventBusEvent.getCircuitBreakerDataSourceNames();
+    }
+    
 }
