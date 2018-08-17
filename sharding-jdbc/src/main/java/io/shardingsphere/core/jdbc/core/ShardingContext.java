@@ -25,9 +25,10 @@ import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.sharding.JDBCEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -56,6 +57,7 @@ public final class ShardingContext {
     
     private final ExecutorEngine executorEngine;
     
+    @NonNull
     private ShardingMetaData metaData;
     
     private final ConnectionMode connectionMode;
