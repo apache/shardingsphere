@@ -19,6 +19,8 @@ package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.SQLType;
 
+import java.util.Map;
+
 /**
  * Statement execute callback interface.
  *
@@ -35,4 +37,18 @@ public interface ExecuteCallback<T> extends ShardingExecuteCallback<BaseStatemen
      * @return SQL type
      */
     SQLType getSQLType();
+    
+    /**
+     * Judge is exception thrown or not.
+     * 
+     * @return is exception thrown or not
+     */
+    boolean isExceptionThrown();
+    
+    /**
+     * Get data map.
+     * 
+     * @return data map
+     */
+    Map<String, Object> getDataMap();
 }

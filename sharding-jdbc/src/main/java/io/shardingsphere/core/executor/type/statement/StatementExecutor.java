@@ -21,6 +21,8 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BaseStatementUnit;
 import io.shardingsphere.core.executor.ExecuteCallback;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -28,6 +30,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Statement Executor for multiple threads.
@@ -53,6 +56,8 @@ public final class StatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<ResultSet> executeQuery() throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         return executorEngine.execute(statementUnits, new ExecuteCallback<ResultSet>() {
             
             @Override
@@ -63,6 +68,16 @@ public final class StatementExecutor {
             @Override
             public SQLType getSQLType() {
                 return sqlType;
+            }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
             }
         });
     }
@@ -135,6 +150,8 @@ public final class StatementExecutor {
     }
     
     private int executeUpdate(final Updater updater) throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<Integer> results = executorEngine.execute(statementUnits, new ExecuteCallback<Integer>() {
             
             @Override
@@ -145,6 +162,16 @@ public final class StatementExecutor {
             @Override
             public SQLType getSQLType() {
                 return sqlType;
+            }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
             }
         });
         return accumulate(results);
@@ -226,6 +253,8 @@ public final class StatementExecutor {
     }
     
     private boolean execute(final Executor executor) throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteCallback<Boolean>() {
             
             @Override
@@ -236,6 +265,16 @@ public final class StatementExecutor {
             @Override
             public SQLType getSQLType() {
                 return sqlType;
+            }
+            
+            @Override
+            public boolean isExceptionThrown() {
+                return isExceptionThrown;
+            }
+            
+            @Override
+            public Map<String, Object> getDataMap() {
+                return dataMap;
             }
         });
         if (null == result || result.isEmpty() || null == result.get(0)) {

@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -97,10 +96,10 @@ public abstract class ExecutorEngine implements AutoCloseable {
     protected abstract <T> List<T> getExecuteResults(Collection<? extends BaseStatementUnit> baseStatementUnits, ExecuteCallback<T> executeCallback) throws Exception;
     
     protected final <T> T executeInternal(
-            final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback, final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
+            final BaseStatementUnit baseStatementUnit, final ExecuteCallback<T> executeCallback) throws Exception {
         T result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
+        ExecutorExceptionHandler.setExceptionThrown(executeCallback.isExceptionThrown());
+        ExecutorDataMap.setDataMap(executeCallback.getDataMap());
         List<SQLExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
             SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(executeCallback.getSQLType(), baseStatementUnit, each);

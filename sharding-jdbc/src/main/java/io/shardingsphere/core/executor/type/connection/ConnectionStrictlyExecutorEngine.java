@@ -75,7 +75,7 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
                 public Collection<T> call() throws Exception {
                     Collection<T> result = new LinkedList<>();
                     for (BaseStatementUnit each : baseStatementUnits) {
-                        result.add(executeInternal(each, executeCallback, isExceptionThrown, dataMap));
+                        result.add(executeInternal(each, executeCallback));
                     }
                     return result;
                 }
@@ -87,7 +87,7 @@ public final class ConnectionStrictlyExecutorEngine extends ExecutorEngine {
     private <T> Collection<T> syncExecute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteCallback<T> executeCallback) throws Exception {
         Collection<T> result = new LinkedList<>();
         for (BaseStatementUnit each : baseStatementUnits) {
-            result.add(executeInternal(each, executeCallback, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap()));
+            result.add(executeInternal(each, executeCallback));
         }
         return result;
     }
