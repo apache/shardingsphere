@@ -18,8 +18,6 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JDBCStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.MasterSlaveStateEventBusInstance;
@@ -53,7 +51,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
+    public void shardingStart() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
@@ -68,7 +66,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void masterSlaveStart() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
@@ -83,7 +81,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start() {
+    public void proxyStart() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
