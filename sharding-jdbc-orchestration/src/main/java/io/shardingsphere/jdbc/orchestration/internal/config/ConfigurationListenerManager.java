@@ -17,8 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.MasterSlaveConfigurationEventBusInstance;
@@ -59,7 +57,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
+    public void shardingStart() {
         shardingStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         shardingStart(ConfigurationNode.SHARDING_RULE_NODE_PATH);
         shardingStart(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
@@ -82,7 +80,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void masterSlaveStart() {
         masterSlaveStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         masterSlaveStart(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
     }
@@ -103,7 +101,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start() {
+    public void proxyStart() {
         proxyStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         proxyStart(ConfigurationNode.PROXY_RULE_NODE_PATH);
     }
