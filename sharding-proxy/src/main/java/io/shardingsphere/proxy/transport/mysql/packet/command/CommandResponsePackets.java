@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,53 +25,26 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Command response packet.
+ * Command response packets.
  *
  * @author zhangyonglun
  */
 @NoArgsConstructor
 @Getter
-public final class CommandResponsePackets {
+public class CommandResponsePackets {
     
-    private final Collection<DatabaseProtocolPacket> databaseProtocolPackets = new LinkedList<>();
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
     
-    public CommandResponsePackets(final DatabaseProtocolPacket databaseProtocolPacket) {
-        databaseProtocolPackets.add(databaseProtocolPacket);
-    }
-    
-    /**
-     * Add packet.
-     *
-     * @param databaseProtocolPacket database protocol packet
-     */
-    public void addPacket(final DatabaseProtocolPacket databaseProtocolPacket) {
-        databaseProtocolPackets.add(databaseProtocolPacket);
-    }
-    
-    /**
-     * Add packets.
-     *
-     * @param databaseProtocolPackets database protocol packets
-     */
-    public void addPackets(final Collection<DatabaseProtocolPacket> databaseProtocolPackets) {
-        databaseProtocolPackets.addAll(databaseProtocolPackets);
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
     }
     
     /**
      * Get head packet.
      *
-     * @return head database protocol packet
+     * @return head packet
      */
-    public DatabaseProtocolPacket getHeadPacket() {
-        return databaseProtocolPackets.iterator().next();
-    }
-    
-    /**
-     * Size of databaseProtocolPackets.
-     *
-     * @return size
-     */
-    public int size() {
-        return databaseProtocolPackets.size();
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
     }
 }

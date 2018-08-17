@@ -50,9 +50,9 @@ public abstract class AbstractDropTableParser implements SQLParser {
     }
     
     @Override
-    public DDLStatement parse() {
+    public final DDLStatement parse() {
         lexerEngine.skipAll(getSkippedKeywordsBetweenDropAndTable());
-        DDLStatement result = new DDLStatement();
+        DropTableStatement result = new DropTableStatement();
         if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
             lexerEngine.skipAll(getSkippedKeywordsBetweenDropTableAndTableName());
             tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
@@ -62,9 +62,7 @@ public abstract class AbstractDropTableParser implements SQLParser {
         return result;
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenDropAndTable() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBetweenDropAndTable();
     
     protected abstract Keyword[] getSkippedKeywordsBetweenDropTableAndTableName();
 }

@@ -35,13 +35,15 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public class ShardingConfigurationRepresenter extends Representer {
+public final class ShardingConfigurationRepresenter extends Representer {
     
-    private static Collection<String> eliminatedPropertyNames;
+    private static Collection<String> eliminatedPropertyNames = new HashSet<>();
     
     static {
-        eliminatedPropertyNames = new HashSet<String>() { { add("configMap"); add(";props"); } }; }
-        
+        eliminatedPropertyNames.add("configMap");
+        eliminatedPropertyNames.add(";props");
+    }
+    
     public ShardingConfigurationRepresenter() {
         super();
         this.nullRepresenter = new NullRepresent();

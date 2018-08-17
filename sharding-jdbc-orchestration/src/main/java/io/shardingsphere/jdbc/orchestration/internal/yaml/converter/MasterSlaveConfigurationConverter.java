@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sharding configuration converter.
@@ -37,7 +38,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MasterSlaveConfigurationConverter {
     
-    private static final Yaml yaml = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
      * Convert masterSlaveRuleConfiguration to yaml string.
@@ -48,18 +49,18 @@ public class MasterSlaveConfigurationConverter {
     public static String masterSlaveRuleConfigToYaml(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
         Yaml yaml = new Yaml(new MasterSlaveConfigurationRepresenter());
         YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration =
-                new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration, new HashMap<String, Object>());
+                new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration, new HashMap<String, Object>(), new Properties());
         return yaml.dumpAsMap(yamlMasterSlaveRuleConfiguration);
     }
     
     /**
      * Convert master slave rule configuration string to master slave rule configuration.
      *
-     * @param masteSlaveRuleConfigYamlString master slave rule configuration string
+     * @param masterSlaveRuleConfigYamlString master slave rule configuration string
      * @return master slave rule configuration
      */
-    public static MasterSlaveRuleConfiguration masterSlaveRuleConfigFromYaml(final String masteSlaveRuleConfigYamlString) {
-        return yaml.loadAs(masteSlaveRuleConfigYamlString, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+    public static MasterSlaveRuleConfiguration masterSlaveRuleConfigFromYaml(final String masterSlaveRuleConfigYamlString) {
+        return YAML.loadAs(masterSlaveRuleConfigYamlString, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
     }
     
     /**
@@ -69,7 +70,7 @@ public class MasterSlaveConfigurationConverter {
      * @return config map string
      */
     public static String configMapToYaml(final Map<String, Object> configMap) {
-        return yaml.dumpAsMap(configMap);
+        return YAML.dumpAsMap(configMap);
     }
     
     /**
@@ -80,6 +81,26 @@ public class MasterSlaveConfigurationConverter {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> configMapFromYaml(final String configMapYamlString) {
-        return (Map<String, Object>) yaml.load(configMapYamlString);
+        return (Map<String, Object>) YAML.load(configMapYamlString);
+    }
+    
+    /**
+     * Convert properties to properties string.
+     *
+     * @param props properties
+     * @return properties string
+     */
+    public static String propertiesToYaml(final Properties props) {
+        return YAML.dumpAsMap(props);
+    }
+    
+    /**
+     * Convert properties yaml string to properties.
+     *
+     * @param propertiesYamlString properties yaml string
+     * @return properties
+     */
+    public static Properties propertiesFromYaml(final String propertiesYamlString) {
+        return YAML.loadAs(propertiesYamlString, Properties.class);
     }
 }

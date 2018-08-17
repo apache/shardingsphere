@@ -21,13 +21,18 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import io.shardingsphere.dbtest.cases.dataset.DataSet;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
+import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetIndex;
 import io.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import io.shardingsphere.dbtest.engine.SingleIntegrateTest;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -45,7 +50,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
     
     private final DDLIntegrateTestCaseAssertion assertion;
@@ -58,17 +65,38 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
     }
-    
+
+    @BeforeClass
+    public static void initDatabases() {
+        createDatabases();
+    }
+
+    @AfterClass
+    public static void destroyDatabasesAndTables() {
+        dropDatabases();
+    }
+
     @Before
-    public void insertData() throws SQLException, ParseException, IOException, JAXBException {
+    public void initTables() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
+            if (DatabaseType.H2.equals(getDatabaseTypeEnvironment().getDatabaseType())) {
+                dropTables();
+            }
+            createTables();
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
         }
     }
-    
-    protected void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        // TODO case for drop (index) and truncate, add assert later
+
+    @After
+    public void destroyTables() {
+        if (getDatabaseTypeEnvironment().isEnabled()) {
+            dropTables();
+        }
+    }
+
+    protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
         if (null == assertion.getExpectedDataFile()) {
+            log.warn("Have empty expectedDataFile `{}`", super.getSql());
             return;
         }
         DataSet expected;
@@ -77,16 +105,37 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
         }
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
-        assertMetadata(actualColumns, expected.findMetadata(tableName));
+        List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
+        if (actualColumns.isEmpty() || actualIndexes.isEmpty()) {
+            assertIfDropTable(actualColumns);
+            assertIfDropIndex(actualIndexes);
+            return;
+        }
+        assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
     }
     
-    private void assertMetadata(final List<DataSetColumn> actual, final DataSetMetadata expected) {
+    private void assertMetadata(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
-            assertMetadata(actual, each);
+            assertColumnMetadata(actualColumns, each);
+        }
+        for (DataSetIndex each : expected.getIndexes()) {
+            assertIndexMetadata(actualIndexes, each);
         }
     }
-    
-    private void assertMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
+
+    private void assertIfDropTable(final List<DataSetColumn> actualColumns) {
+        if (getSql().startsWith("DROP TABLE")) {
+            assertTrue(actualColumns.isEmpty());
+        }
+    }
+
+    private void assertIfDropIndex(final List<DataSetIndex> actualIndexes) {
+        if (getSql().startsWith("DROP INDEX")) {
+            assertTrue(actualIndexes.isEmpty());
+        }
+    }
+
+    private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
                 if (DatabaseType.MySQL == databaseType && "integer".equals(expect.getType())) {
@@ -99,7 +148,15 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             }
         }
     }
-    
+
+    private void assertIndexMetadata(final List<DataSetIndex> actual, final DataSetIndex expect) {
+        for (DataSetIndex each : actual) {
+            if (expect.getName().equals(each.getName())) {
+                assertThat(each.isUnique(), is(expect.isUnique()));
+            }
+        }
+    }
+
     private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
@@ -117,13 +174,26 @@ public abstract class BaseDDLIntegrateTest extends SingleIntegrateTest {
             return result;
         }
     }
-    
-    protected void dropTableIfExisted(final Connection connection) {
+
+    private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getIndexInfo(null, null, tableName, false, false)) {
+            List<DataSetIndex> result = new LinkedList<>();
+            while (resultSet.next()) {
+                DataSetIndex each = new DataSetIndex();
+                each.setName(resultSet.getString("INDEX_NAME"));
+                each.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
+                each.setColumns(resultSet.getString("COLUMN_NAME"));
+                result.add(each);
+            }
+            return result;
+        }
+    }
+
+    protected final void dropTableIfExisted(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
             preparedStatement.executeUpdate();
-            // CHECKSTYLE: OFF
         } catch (final SQLException ignored) {
-            // CHECKSTYLE: ON
         }
     }
 }

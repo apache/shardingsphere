@@ -17,15 +17,36 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-/*
- * Created by aaa
- */
-public class TestSupport {
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.WatchedEvent;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
+public final class TestSupport {
+    
     public static final String AUTH = "digest";
     
     public static final String SERVERS = "localhost:3181";
     
-    public static final int SESSION_TIMEOUT = 200000;//ms
+    public static final int SESSION_TIMEOUT = 200000;
     
     public static final String ROOT = "test";
+    
+    /**
+     * Test exec.
+     *
+     * @return listener ZookeeperEventListener
+     */
+    public static ZookeeperEventListener buildListener() {
+        return new ZookeeperEventListener() {
+            
+            @Override
+            public void process(final WatchedEvent event) {
+                log.debug(event.toString());
+            }
+        };
+    }
 }

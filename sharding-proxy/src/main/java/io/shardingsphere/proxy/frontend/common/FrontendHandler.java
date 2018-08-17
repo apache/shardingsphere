@@ -20,8 +20,7 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.proxy.frontend.mysql.ChannelThreadHolder;
+import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
 
 /**
  * Frontend handler.
@@ -33,14 +32,15 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     private boolean authorized;
     
     @Override
-    public void channelActive(final ChannelHandlerContext context) {
+    public final void channelActive(final ChannelHandlerContext context) {
+        ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         handshake(context);
     }
     
     protected abstract void handshake(ChannelHandlerContext context);
     
     @Override
-    public void channelRead(final ChannelHandlerContext context, final Object message) {
+    public final void channelRead(final ChannelHandlerContext context, final Object message) {
         if (!authorized) {
             auth(context, (ByteBuf) message);
             authorized = true;
@@ -49,15 +49,13 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         }
     }
     
-    @Override
-    public void channelInactive(final ChannelHandlerContext ctx) {
-        ctx.fireChannelInactive();
-        if (RuleRegistry.isXaTransaction()) {
-            ChannelThreadHolder.remove(ctx.channel().id());
-        }
-    }
-    
     protected abstract void auth(ChannelHandlerContext context, ByteBuf message);
     
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
+    
+    @Override
+    public final void channelInactive(final ChannelHandlerContext context) {
+        context.fireChannelInactive();
+        ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
+    }
 }

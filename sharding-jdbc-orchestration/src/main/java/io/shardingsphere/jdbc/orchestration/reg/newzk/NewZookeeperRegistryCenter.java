@@ -18,6 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.exception.RegExceptionHandler;
@@ -26,15 +27,17 @@ import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache.PathTree;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.StringUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,66 +55,67 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     private final IClient client;
     
-    private final Map<String, PathTree> caches = new HashMap<>();
+    private final Map<String, PathTree> caches;
     
     public NewZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
-        ClientFactory creator = buildCreator(zkConfig);
-        client = initClient(creator, zkConfig);
+        client = initClient(buildClientFactory(zkConfig), zkConfig);
+        caches = new HashMap<>();
     }
     
-    private ClientFactory buildCreator(final ZookeeperConfiguration zkConfig) {
-        ClientFactory creator = new ClientFactory();
-        creator.setClientNamespace(zkConfig.getNamespace())
-                .newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
+    private ClientFactory buildClientFactory(final ZookeeperConfiguration zkConfig) {
+        ClientFactory result = new ClientFactory();
+        result.setClientNamespace(zkConfig.getNamespace()).newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
                 .setRetryPolicy(new DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
         if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {
-            creator.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8), ZooDefs.Ids.CREATOR_ALL_ACL);
+            result.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8), ZooDefs.Ids.CREATOR_ALL_ACL);
         }
-        return creator;
+        return result;
     }
     
-    private IClient initClient(final ClientFactory creator, final ZookeeperConfiguration zkConfig) {
-        IClient newClient = null;
+    private IClient initClient(final ClientFactory clientFactory, final ZookeeperConfiguration zkConfig) {
+        IClient result = null;
         try {
-            newClient = creator.start(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
-            newClient.useExecStrategy(StrategyType.SYNC_RETRY);
-            // CHECKSTYLE:OFF
-        } catch (Exception e) {
-            // CHECKSTYLE:ON
-            RegExceptionHandler.handleException(e);
+            // TODO There is a bug when the start time is very short, and I haven't found the reason yet
+            // result = clientFactory.start(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
+            result = clientFactory.start();
+            if (!result.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+                result.close();
+                throw new KeeperException.OperationTimeoutException();
+            }
+            result.useExecStrategy(StrategyType.SYNC_RETRY);
+        } catch (final KeeperException.OperationTimeoutException | IOException | InterruptedException ex) {
+            RegExceptionHandler.handleException(ex);
         }
-        return newClient;
+        return result;
     }
     
     @Override
     public String get(final String key) {
-        PathTree cache = findTreeCache(key);
-        if (null == cache) {
+        Optional<PathTree> cache = findTreeCache(key);
+        if (!cache.isPresent()) {
             return getDirectly(key);
         }
-        byte[] resultInCache = cache.getValue(key);
+        byte[] resultInCache = cache.get().getValue(key);
         if (null != resultInCache) {
-            return null == resultInCache ? null : new String(resultInCache, Charsets.UTF_8);
+            return new String(resultInCache, Charsets.UTF_8);
         }
         return getDirectly(key);
     }
     
-    private PathTree findTreeCache(final String key) {
+    private Optional<PathTree> findTreeCache(final String key) {
         for (Entry<String, PathTree> entry : caches.entrySet()) {
             if (key.startsWith(entry.getKey())) {
-                return entry.getValue();
+                return Optional.of(entry.getValue());
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     @Override
     public String getDirectly(final String key) {
         try {
             return new String(client.getData(key), Charsets.UTF_8);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return null;
         }
@@ -121,9 +125,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     public boolean isExisted(final String key) {
         try {
             return client.checkExists(key);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return false;
         }
@@ -132,7 +134,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public List<String> getChildrenKeys(final String key) {
         try {
-            List<String> result = client.getChildren(key);
+            final List<String> result = client.getChildren(key);
             Collections.sort(result, new Comparator<String>() {
                 
                 @Override
@@ -141,9 +143,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
                 }
             });
             return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
@@ -157,9 +157,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             } else {
                 update(key, value);
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -167,10 +165,8 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     @Override
     public void update(final String key, final String value) {
         try {
-            client.transaction().check(key, -1).setData(key, value.getBytes(Charsets.UTF_8)).commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+            client.transaction().check(key, ZookeeperConstants.VERSION).setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION).commit();
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
@@ -182,40 +178,39 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
                 client.deleteAllChildren(key);
             }
             client.createAllNeedPath(key, value, CreateMode.EPHEMERAL);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
     }
     
     @Override
     public void watch(final String key, final EventListener eventListener) {
-        final String path = key + "/";
+        String path = key + "/";
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }
-        final PathTree cache = caches.get(path);
-        cache.watch(new Listener() {
+        PathTree cache = caches.get(path);
+        cache.watch(new ZookeeperEventListener() {
+            
             @Override
             public void process(final WatchedEvent event) {
-                if (!StringUtil.isNullOrBlank(event.getPath())) {
-                    eventListener.onChange(new DataChangedEvent(getEventType(event), event.getPath(), getWithoutCache(event.getPath())));
-                }
-            }
-            
-            private DataChangedEvent.Type getEventType(final WatchedEvent event) {
-                switch (event.getType()) {
-                    case NodeDataChanged:
-                    case NodeChildrenChanged:
-                        return DataChangedEvent.Type.UPDATED;
-                    case NodeDeleted:
-                        return DataChangedEvent.Type.DELETED;
-                    default:
-                        return DataChangedEvent.Type.IGNORED;
+                if (!Strings.isNullOrEmpty(event.getPath())) {
+                    eventListener.onChange(new DataChangedEvent(extractEventType(event), event.getPath(), getWithoutCache(event.getPath())));
                 }
             }
         });
+    }
+    
+    private DataChangedEvent.Type extractEventType(final WatchedEvent event) {
+        switch (event.getType()) {
+            case NodeDataChanged:
+            case NodeChildrenChanged:
+                return DataChangedEvent.Type.UPDATED;
+            case NodeDeleted:
+                return DataChangedEvent.Type.DELETED;
+            default:
+                return DataChangedEvent.Type.IGNORED;
+        }
     }
     
     private synchronized String getWithoutCache(final String key) {
@@ -224,9 +219,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
             byte[] data = client.getData(key);
             client.useExecStrategy(StrategyType.SYNC_RETRY);
             return null == data ? null : new String(data, Charsets.UTF_8);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
             return null;
         }
@@ -237,9 +230,7 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         try {
             cache.load();
             cache.watch();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final KeeperException | InterruptedException ex) {
             RegExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);

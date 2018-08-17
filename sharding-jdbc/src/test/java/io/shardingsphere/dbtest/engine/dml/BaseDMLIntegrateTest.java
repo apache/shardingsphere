@@ -30,7 +30,9 @@ import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import io.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -58,7 +60,17 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap());
     }
-    
+
+    @BeforeClass
+    public static void initDatabasesAndTables() {
+        createDatabasesAndTables();
+    }
+
+    @AfterClass
+    public static void destroyDatabasesAndTables() {
+        dropDatabases();
+    }
+
     @Before
     public void insertData() throws SQLException, ParseException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
@@ -73,7 +85,7 @@ public abstract class BaseDMLIntegrateTest extends SingleIntegrateTest {
         }
     }
     
-    protected void assertDataSet(final int actualUpdateCount) throws SQLException, IOException, JAXBException {
+    protected final void assertDataSet(final int actualUpdateCount) throws SQLException, IOException, JAXBException {
         DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);

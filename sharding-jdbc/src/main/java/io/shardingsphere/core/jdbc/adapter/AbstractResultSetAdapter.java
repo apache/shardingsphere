@@ -18,6 +18,7 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSetMetaData;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,11 +56,11 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return resultSets.get(0).getMetaData();
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData());
     }
     
     @Override
-    public int findColumn(final String columnLabel) throws SQLException {
+    public final int findColumn(final String columnLabel) throws SQLException {
         return resultSets.get(0).findColumn(columnLabel);
     }
     

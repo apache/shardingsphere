@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class CircuitBreakerDataSourceTest {
     
-    private CircuitBreakerDataSource dataSource = new CircuitBreakerDataSource();
+    private final CircuitBreakerDataSource dataSource = new CircuitBreakerDataSource();
     
     @Test
     public void assertClose() {

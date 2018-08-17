@@ -23,7 +23,9 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.Base
 import lombok.Getter;
 import lombok.Setter;
 
-/*
+/**
+ * Client context.
+ *
  * @author lidongbo
  */
 @Setter
@@ -35,29 +37,26 @@ public final class ClientContext extends BaseContext {
     private BaseClientFactory clientFactory;
     
     public ClientContext(final String servers, final int sessionTimeoutMilliseconds) {
-        super();
         setServers(servers);
         setSessionTimeOut(sessionTimeoutMilliseconds);
     }
     
     /**
-     * call.
-     */
-    public void close() {
-        super.close();
-        this.delayRetryPolicy = null;
-        this.clientFactory = null;
-    }
-    
-    /**
-     * update context.
+     * Update context.
      *
      * @param context context
      */
     public void updateContext(final ClientContext context) {
-        this.delayRetryPolicy = context.getDelayRetryPolicy();
-        this.clientFactory = context.clientFactory;
+        delayRetryPolicy = context.getDelayRetryPolicy();
+        clientFactory = context.clientFactory;
         getWatchers().clear();
         getWatchers().putAll(context.getWatchers());
+    }
+    
+    @Override
+    public void close() {
+        super.close();
+        delayRetryPolicy = null;
+        clientFactory = null;
     }
 }

@@ -26,5 +26,5 @@ import org.junit.runners.Suite;
         DatabaseTest.class,
         DatabaseHintSQLRouterTest.class
 })
-public class AllRoutingTests {
+public final class AllRoutingTests {
 }

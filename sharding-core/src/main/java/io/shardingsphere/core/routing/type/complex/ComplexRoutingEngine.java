@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -47,8 +46,6 @@ import java.util.TreeSet;
 public final class ComplexRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
-    
-    private final List<Object> parameters;
     
     private final Collection<String> logicTables;
     

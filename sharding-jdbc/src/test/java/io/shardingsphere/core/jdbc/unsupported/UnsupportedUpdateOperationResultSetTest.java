@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.unsupported;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
 import org.junit.After;
@@ -42,15 +41,11 @@ import java.util.List;
 
 public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
-    private List<ResultSet> resultSets = new ArrayList<>();
-    
-    public UnsupportedUpdateOperationResultSetTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
+    private final List<ResultSet> resultSets = new ArrayList<>();
     
     @Before
     public void init() throws SQLException {

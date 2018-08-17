@@ -25,5 +25,5 @@ import org.junit.runners.Suite;
         EventBusInstanceTest.class,
         DataSourceUtilTest.class
     })
-public class AllUtilTests {
+public final class AllUtilTests {
 }

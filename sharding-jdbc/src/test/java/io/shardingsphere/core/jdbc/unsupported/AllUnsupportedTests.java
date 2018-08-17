@@ -30,5 +30,5 @@ import org.junit.runners.Suite;
         UnsupportedUpdateOperationResultSetTest.class,
         UnsupportedGeneratedKeysResultSetTest.class
     })
-public class AllUnsupportedTests {
+public final class AllUnsupportedTests {
 }

@@ -18,9 +18,15 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
+import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,7 +40,7 @@ import java.util.Map;
 
 /**
  * Adapter for {@code Connection}.
- * 
+ *
  * @author zhangliang
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
@@ -70,7 +76,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
-    protected void removeCache(final Connection connection) {
+    protected final void removeCache(final Connection connection) {
         cachedConnections.values().remove(connection);
     }
     
@@ -80,45 +86,40 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
+    public final void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        for (Connection each : cachedConnections.values()) {
-            each.setAutoCommit(autoCommit);
+        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
+    }
+    
+    @Override
+    public final void commit() {
+        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
+    }
+    
+    @Override
+    public final void rollback() {
+        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
+    }
+    
+    private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
+        switch (TransactionTypeHolder.get()) {
+            case LOCAL:
+                return new LocalTransactionEvent(operationType, cachedConnections.values(), autoCommit);
+            case XA:
+                return new XATransactionEvent(operationType);
+            case BASE:
+            default:
+                throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
         }
     }
     
     @Override
-    public final void commit() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
-            try {
-                each.commit();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    @Override
-    public final void rollback() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
-            try {
-                each.rollback();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    @Override
-    public void close() throws SQLException {
+    public final void close() throws SQLException {
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
+        TransactionTypeHolder.clear();
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -169,7 +170,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     // ------- Consist with MySQL driver implementation -------
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     

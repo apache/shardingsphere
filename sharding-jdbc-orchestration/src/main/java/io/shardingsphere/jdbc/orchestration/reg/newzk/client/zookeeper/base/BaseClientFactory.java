@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,15 +30,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/*
+/**
+ * Base client factory.
+ *
  * @author lidongbo
  */
 @Setter(value = AccessLevel.PROTECTED)
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class BaseClientFactory {
+    
     private BaseClient client;
     
-    private Listener globalListener;
+    private ZookeeperEventListener globalZookeeperEventListener;
     
     private String namespace;
     
@@ -51,7 +54,7 @@ public abstract class BaseClientFactory {
     private BaseContext context;
     
     /**
-     * start.
+     * Start.
      *
      * @return client
      * @throws IOException IO Exception
@@ -64,18 +67,18 @@ public abstract class BaseClientFactory {
     }
     
     /**
-     * start until Timeout.
+     * Start until Timeout.
      *
-     * @param wait wait
-     * @param units units
-     * @return connected
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
      * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
-     * @throws KeeperException OperationTimeoutException
+     * @throws InterruptedException interrupted exception
+     * @throws KeeperException operation timeout exception
      */
-    public IClient start(final int wait, final TimeUnit units) throws IOException, InterruptedException, KeeperException {
+    public IClient start(final int waitingTime, final TimeUnit timeUnit) throws IOException, InterruptedException, KeeperException {
         prepareClient();
-        if (!client.start(wait, units)) {
+        if (!client.start(waitingTime, timeUnit)) {
             client.close();
             throw new KeeperException.OperationTimeoutException();
         }
@@ -84,12 +87,12 @@ public abstract class BaseClientFactory {
     
     private void prepareClient() {
         client.setRootNode(namespace);
-        if (scheme == null) {
+        if (null == scheme) {
             authorities = ZooDefs.Ids.OPEN_ACL_UNSAFE;
         }
         client.setAuthorities(scheme, auth, authorities);
-        if (globalListener != null) {
-            client.registerWatch(globalListener);
+        if (null != globalZookeeperEventListener) {
+            client.registerWatch(globalZookeeperEventListener);
         }
     }
 }

@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.type;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.event.EventExecutionType;
+import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
@@ -66,8 +66,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -84,16 +84,14 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(preparedStatement1).getConnection();
-        verify(preparedStatement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(8)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -112,8 +110,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
@@ -131,21 +129,18 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(preparedStatement1).getConnection();
-        verify(preparedStatement2).getConnection();
         verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(8)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(2));
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(4)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(4)).verifyException(exp);
     }
     
     private Collection<BatchPreparedStatementUnit> createPreparedStatementUnits(final String sql, final PreparedStatement preparedStatement, final String dataSource, final int addBatchTimes) {
-        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
         BatchPreparedStatementUnit batchPreparedStatementUnit = 
@@ -155,6 +150,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));
             batchPreparedStatementUnit.mapAddBatchCount(i);
         }
+        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
         result.add(batchPreparedStatementUnit);
         return result;
     }

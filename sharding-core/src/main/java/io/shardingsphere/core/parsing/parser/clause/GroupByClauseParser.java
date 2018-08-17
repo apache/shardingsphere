@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
@@ -37,7 +38,7 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author zhangliang
  */
-public class GroupByClauseParser implements SQLClauseParser {
+public abstract class GroupByClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
@@ -89,17 +90,15 @@ public class GroupByClauseParser implements SQLClauseParser {
         } else if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
             orderItem = new OrderItem(sqlIgnoreExpression.getExpression(), orderDirection, OrderDirection.ASC, selectStatement.getAlias(sqlIgnoreExpression.getExpression()));
+        } else if (sqlExpression instanceof SQLNumberExpression) {
+            orderItem = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderDirection, orderDirection);
         } else {
             return;
         }
         selectStatement.getGroupByItems().add(orderItem);
     }
     
-    protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getUnsupportedKeywordBeforeGroupByItem();
     
-    protected Keyword[] getSkippedKeywordAfterGroupBy() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordAfterGroupBy();
 }

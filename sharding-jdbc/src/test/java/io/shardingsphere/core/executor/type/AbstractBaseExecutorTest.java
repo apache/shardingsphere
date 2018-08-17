@@ -24,7 +24,8 @@ import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -50,21 +51,21 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
+        executorEngine = new MemoryStrictlyExecutorEngine(Runtime.getRuntime().availableProcessors());
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
-        EventBusInstance.getInstance().register(overallExecutionEventListener);
-        EventBusInstance.getInstance().register(dqlExecutionEventListener);
-        EventBusInstance.getInstance().register(dmlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().register(overallExecutionEventListener);
+        ShardingEventBusInstance.getInstance().register(dqlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().register(dmlExecutionEventListener);
     }
     
     @After
     public void tearDown() throws ReflectiveOperationException {
         ExecutorTestUtil.clear();
-        EventBusInstance.getInstance().unregister(overallExecutionEventListener);
-        EventBusInstance.getInstance().unregister(dqlExecutionEventListener);
-        EventBusInstance.getInstance().unregister(dmlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().unregister(overallExecutionEventListener);
+        ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);
         executorEngine.close();
     }
 }

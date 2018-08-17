@@ -17,7 +17,11 @@
 
 package io.shardingsphere.core.jdbc;
 
-public class JDBCTestSQL {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JDBCTestSQL {
     
     public static final String INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
     

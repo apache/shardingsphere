@@ -28,34 +28,24 @@ import io.shardingsphere.core.fixture.RangeOrderShardingAlgorithm;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(Parameterized.class)
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
-    
-    private DatabaseType databaseType;
-    
-    public AbstractShardingJDBCDatabaseAndTableTest(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
-    }
-    
+
     @Before
-    public void cleanAndInitTable() throws Exception {
+    public void cleanAndInitTable() {
         importDataSet();
     }
-    
+
     @Before
     public void initShardingDataSources() throws SQLException {
-        if (!getShardingDataSources().isEmpty()) {
+        if (null != shardingDataSource) {
             return;
         }
         
@@ -87,26 +77,16 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
             ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, entry.getValue().keySet());
-            getShardingDataSources().put(entry.getKey(), new ShardingDataSource(entry.getValue(), shardingRule));
+            shardingDataSource = new ShardingDataSource(entry.getValue(), shardingRule);
         }
     }
     
     @Override
-    protected List<String> getInitDataSetFiles() {
+    protected final List<String> getInitDataSetFiles() {
         return Arrays.asList("integrate/dataset/jdbc/jdbc_0.xml", "integrate/dataset/jdbc/jdbc_1.xml");
     }
     
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<DatabaseType> dataParameters() {
-        return getDatabaseTypes();
-    }
-    
-    @Override
-    protected DatabaseType getCurrentDatabaseType() {
-        return databaseType;
-    }
-    
-    protected ShardingDataSource getShardingDataSource() {
-        return getShardingDataSources().get(databaseType);
+    protected final ShardingDataSource getShardingDataSource() {
+        return shardingDataSource;
     }
 }

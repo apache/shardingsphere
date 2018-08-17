@@ -27,6 +27,8 @@ import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +38,10 @@ import java.util.LinkedList;
 /**
  * Integrate test parameters.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author panjuan
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntegrateTestParameters {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
@@ -81,16 +85,13 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+    private static Collection<Object[]> getParametersWithAssertion(
+            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             Object[] data = new Object[6];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase.getPath();
-            if (null == assertion) {
-                System.out.println();
-                System.out.println(1111111111);
-            }
             data[2] = assertion;
             data[3] = each;
             data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
@@ -152,6 +153,8 @@ public final class IntegrateTestParameters {
                 return integrateTestCasesLoader.getDMLIntegrateTestCase(sqlCaseId);
             case DDL:
                 return integrateTestCasesLoader.getDDLIntegrateTestCase(sqlCaseId);
+            case DCL:
+                return integrateTestCasesLoader.getDCLIntegrateTestCase(sqlCaseId);
             default:
                 throw new UnsupportedOperationException(sqlType.name());
         }

@@ -37,7 +37,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -155,7 +155,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase()));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getOriginalLiterals()));
         int beginPosition = tableToken.getBeginPosition() + tableToken.getSkippedSchemaNameLength() + tableToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, sqlTokens, beginPosition);
     }
@@ -220,7 +220,7 @@ public final class SQLRewriteEngine {
         orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
         int i = 0;
         for (OrderItem each : selectStatement.getOrderByItems()) {
-            String columnLabel = SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
+            String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
             if (0 == i) {
                 orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
             } else {
@@ -249,11 +249,11 @@ public final class SQLRewriteEngine {
      * 
      * @param tableUnit route table unit
      * @param sqlBuilder SQL builder
-     * @param dataSourcePropertyManager dataSource property manager
+     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final DataSourcePropertyManager dataSourcePropertyManager) {
-        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, dataSourcePropertyManager);
+    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {

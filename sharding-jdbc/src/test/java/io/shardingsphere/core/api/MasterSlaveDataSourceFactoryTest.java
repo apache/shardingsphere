@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -43,9 +44,11 @@ public final class MasterSlaveDataSourceFactoryTest {
         dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
         dataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
         Map<String, Object> configMap = new ConcurrentHashMap<>();
+        Properties properties = new Properties();
+        properties.setProperty("sql.show", "true");
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds")), configMap), instanceOf(MasterSlaveDataSource.class));
+                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds")), configMap, properties), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
     
@@ -55,10 +58,13 @@ public final class MasterSlaveDataSourceFactoryTest {
         dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
         dataSourceMap.put("slave_ds_0", new TestDataSource("slave_ds_0"));
         dataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
+        Properties properties = new Properties();
+        properties.setProperty("sql.show", "true");
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1")), configMap), instanceOf(MasterSlaveDataSource.class));
+                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1")),
+                configMap, properties), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
 }

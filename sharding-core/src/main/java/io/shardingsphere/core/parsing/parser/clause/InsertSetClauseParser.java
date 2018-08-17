@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.parser.clause;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -51,7 +51,7 @@ import java.util.Iterator;
  * @author zhangliang
  * @author maxiaoguang
  */
-public class InsertSetClauseParser implements SQLClauseParser {
+public abstract class InsertSetClauseParser implements SQLClauseParser {
     
     private final ShardingRule shardingRule;
     
@@ -75,60 +75,50 @@ public class InsertSetClauseParser implements SQLClauseParser {
             return;
         }
         removeUnnecessaryToken(insertStatement);
+        insertStatement.setGenerateKeyColumnIndex(-1);
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
-        int parametersCount = 0;
+        String tableName = insertStatement.getTables().getSingleTableName();
+        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        int count = 0;
         do {
-            SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
+            SQLExpression left = basicExpressionParser.parse(insertStatement);
             Column column = null;
-            if (sqlExpression instanceof SQLPropertyExpression) {
-                column = new Column(SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName()), insertStatement.getTables().getSingleTableName());
+            if (left instanceof SQLPropertyExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLPropertyExpression) left).getName()), insertStatement.getTables().getSingleTableName());
             }
-            if (sqlExpression instanceof SQLIdentifierExpression) {
-                column = new Column(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), insertStatement.getTables().getSingleTableName());
+            if (left instanceof SQLIdentifierExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLIdentifierExpression) left).getName()), insertStatement.getTables().getSingleTableName());
             }
-            if (sqlExpression instanceof SQLIgnoreExpression) {
-                column = new Column(SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression()), insertStatement.getTables().getSingleTableName());
+            if (left instanceof SQLIgnoreExpression) {
+                column = new Column(SQLUtil.getExactlyValue(((SQLIgnoreExpression) left).getExpression()), insertStatement.getTables().getSingleTableName());
+            }
+            Preconditions.checkNotNull(column);
+            if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(column.getName())) {
+                insertStatement.setGenerateKeyColumnIndex(count);
             }
             lexerEngine.accept(Symbol.EQ);
-            if (lexerEngine.equalAny(Literals.INT)) {
-                sqlExpression = new SQLNumberExpression(Integer.parseInt(lexerEngine.getCurrentToken().getLiterals()));
-            } else if (lexerEngine.equalAny(Literals.FLOAT)) {
-                sqlExpression = new SQLNumberExpression(Double.parseDouble(lexerEngine.getCurrentToken().getLiterals()));
-            } else if (lexerEngine.equalAny(Literals.CHARS)) {
-                sqlExpression = new SQLTextExpression(lexerEngine.getCurrentToken().getLiterals());
-            } else if (lexerEngine.equalAny(DefaultKeyword.NULL)) {
-                sqlExpression = new SQLIgnoreExpression(DefaultKeyword.NULL.name());
-            } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
-                sqlExpression = new SQLPlaceholderExpression(insertStatement.getParametersIndex());
-                insertStatement.increaseParametersIndex();
-                parametersCount++;
-            } else {
-                throw new UnsupportedOperationException("");
+            SQLExpression right = basicExpressionParser.parse(insertStatement);
+            if (shardingRule.isShardingColumn(column) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+                insertStatement.getConditions().add(new Condition(column, right), shardingRule);
             }
-            lexerEngine.nextToken();
-            if (lexerEngine.equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
-                insertStatement.getConditions().add(new Condition(column, sqlExpression), shardingRule);
-            } else {
-                lexerEngine.skipUntil(Symbol.COMMA, DefaultKeyword.ON);
-            }
+            count++;
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         int endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, lexerEngine.getInput().substring(beginPosition, endPosition), parametersCount));
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, lexerEngine.getInput().substring(beginPosition, endPosition), insertStatement.getParametersIndex());
+        insertStatement.getInsertValues().getInsertValues().add(insertValue);
         insertStatement.setInsertValuesListLastPosition(endPosition);
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {
-        Iterator<SQLToken> sqlTokenIterable = insertStatement.getSqlTokens().iterator();
-        while (sqlTokenIterable.hasNext()) {
-            SQLToken sqlToken = sqlTokenIterable.next();
+        Iterator<SQLToken> sqlTokens = insertStatement.getSqlTokens().iterator();
+        while (sqlTokens.hasNext()) {
+            SQLToken sqlToken = sqlTokens.next();
             if (sqlToken instanceof InsertColumnToken || sqlToken instanceof ItemsToken) {
-                sqlTokenIterable.remove();
+                sqlTokens.remove();
             }
         }
     }
     
-    protected Keyword[] getCustomizedInsertKeywords() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getCustomizedInsertKeywords();
 }

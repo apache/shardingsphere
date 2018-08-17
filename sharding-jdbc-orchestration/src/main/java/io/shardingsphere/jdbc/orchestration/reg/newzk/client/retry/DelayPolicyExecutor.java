@@ -17,40 +17,30 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
-/*
- * delay policy executor
+/**
+ * Delay policy executor.
  *
  * @author lidongbo
  */
-public class DelayPolicyExecutor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DelayPolicyExecutor.class);
+@RequiredArgsConstructor
+@Slf4j
+public final class DelayPolicyExecutor {
     
     private final DelayRetryPolicy delayRetryPolicy;
     
-    private final Random random;
+    private final Random random = new Random();
     
     private int executeCount;
     
-    private long executeTick;
-    
-    public DelayPolicyExecutor() {
-        this(DelayRetryPolicy.newNoInitDelayPolicy());
-    }
-    
-    public DelayPolicyExecutor(final DelayRetryPolicy delayRetryPolicy) {
-        this.delayRetryPolicy = delayRetryPolicy;
-        this.executeTick = System.currentTimeMillis();
-        this.random = new Random();
-//        next();
-    }
+    private long executeTick = System.currentTimeMillis();
     
     /**
-     * has next.
+     * Has next.
      *
      * @return has next
      */
@@ -59,16 +49,16 @@ public class DelayPolicyExecutor {
     }
     
     /**
-     * next exec tick.
+     * Next execute tick.
      *
-     * @return next exec tick
+     * @return next execute tick
      */
     public long getNextTick() {
         return executeTick;
     }
     
     /**
-     * next.
+     * Next.
      */
     public void next() {
         executeCount++;
@@ -78,6 +68,6 @@ public class DelayPolicyExecutor {
         } else {
             executeTick += delayRetryPolicy.getDelayUpperBound();
         }
-        LOGGER.debug("next executeCount:{}, executeTick:{}", executeCount, executeTick);
+        log.debug("next executeCount:{}, executeTick:{}", executeCount, executeTick);
     }
 }

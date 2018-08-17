@@ -27,5 +27,5 @@ import org.junit.runners.Suite;
         IntegrateSupportedSQLParsingTest.class,
         IntegrateUnsupportedSQLParsingTest.class
     })
-public class AllParsingIntegrateTests {
+public final class AllParsingIntegrateTests {
 }

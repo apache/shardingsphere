@@ -35,7 +35,9 @@ import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBContext;
@@ -73,7 +75,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     private final Collection<String> expectedDataFiles;
     
     public BatchIntegrateTest(final String sqlCaseId, final IntegrateTestCase integrateTestCase, 
-                              final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException, ParseException {
+                              final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         super(shardingRuleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
         sql = SQLCasesLoader.getInstance().getSupportedSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
@@ -87,6 +89,16 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
     @Parameters(name = "{0} -> Rule:{2} -> {3}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
+    }
+    
+    @BeforeClass
+    public static void initDatabasesAndTables() {
+        createDatabasesAndTables();
+    }
+    
+    @AfterClass
+    public static void destroyDatabasesAndTables() {
+        dropDatabases();
     }
     
     @Before
@@ -103,7 +115,7 @@ public abstract class BatchIntegrateTest extends BaseIntegrateTest {
         }
     }
     
-    protected void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
+    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
         Collection<DataSet> expectedList = new LinkedList<>();
         assertThat(actualUpdateCounts.length, is(getExpectedDataFiles().size()));
         int count = 0;

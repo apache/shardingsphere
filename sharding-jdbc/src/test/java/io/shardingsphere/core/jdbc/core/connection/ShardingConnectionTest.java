@@ -17,22 +17,20 @@
 
 package io.shardingsphere.core.jdbc.core.connection;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.metadata.JDBCShardingMetaData;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,9 +38,12 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingConnectionTest {
     
@@ -60,7 +61,7 @@ public final class ShardingConnectionTest {
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
         masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap());
+                dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap(), new Properties());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     
@@ -73,9 +74,8 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ListeningExecutorService executorService = Mockito.mock(ListeningExecutorService.class);
-        ShardingMetaData shardingMetaData = new JDBCShardingMetaData(executorService, dataSourceMap, shardingRule, null);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingMetaData, false);
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, false);
         connection = new ShardingConnection(shardingContext);
     }
     
@@ -88,17 +88,17 @@ public final class ShardingConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionFromCache() throws Exception {
-        assertSame(connection.getConnection(DS_NAME), connection.getConnection(DS_NAME));
+    public void assertGetConnectionFromCache() throws SQLException {
+        assertThat(connection.getConnection(DS_NAME), is(connection.getConnection(DS_NAME)));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertGetConnectionFailure() throws Exception {
+    public void assertGetConnectionFailure() throws SQLException {
         connection.getConnection("not_exist");
     }
     
     @Test
-    public void assertRelease() throws Exception {
+    public void assertRelease() throws SQLException {
         Connection conn = connection.getConnection(DS_NAME);
         connection.release(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME));

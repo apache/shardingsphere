@@ -20,65 +20,58 @@ package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Connection;
-import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-/*
- * base async retry operation
+/**
+ * Base async retry operation.
  *
  * @author lidongbo
  */
-@Getter(value = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
+@Slf4j
 public abstract class BaseOperation implements Delayed {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseOperation.class);
     
+    @Getter
     private final IProvider provider;
     
     @Setter
     private DelayPolicyExecutor delayPolicyExecutor;
     
-    protected BaseOperation(final IProvider provider) {
-        this.provider = provider;
-    }
-    
     @Override
-    public long getDelay(final TimeUnit unit) {
+    public final long getDelay(final TimeUnit timeUnit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-        LOGGER.debug("queue getDelay block:{}", absoluteBlock);
-        return unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
+        log.debug("queue getDelay block: {}", absoluteBlock);
+        return timeUnit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     
-    /**
-     * queue precedence.
-     */
     @Override
-    public int compareTo(final Delayed delayed) {
+    public final int compareTo(final Delayed delayed) {
         return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
     }
 
     protected abstract void execute() throws KeeperException, InterruptedException;
     
     /**
-     * queue precedence.
+     * Queue precedence.
      *
      * @return whether or not continue enqueue
-     * @throws KeeperException Keeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException keeper exception
+     * @throws InterruptedException interrupted exception
      */
     public boolean executeOperation() throws KeeperException, InterruptedException {
         boolean result;
         try {
             execute();
             result = true;
-        } catch (KeeperException e) {
-            if (Connection.needReset(e)) {
+        } catch (final KeeperException ex) {
+            if (Connection.needReset(ex)) {
                 provider.resetConnection();
             }
             result = false;

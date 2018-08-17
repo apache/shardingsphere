@@ -42,15 +42,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
-    private Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
-    
-    public ResultSetAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
+    private final Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
     
     @Before
     public void init() throws SQLException {
@@ -58,7 +54,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
         shardingConnections.add(shardingConnection);
         Statement statement = shardingConnection.createStatement();
         statements.add(statement);
-        resultSets.put(getCurrentDatabaseType(), statement.executeQuery(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
+        resultSets.put(DatabaseType.H2, statement.executeQuery(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
     }
     
     @After

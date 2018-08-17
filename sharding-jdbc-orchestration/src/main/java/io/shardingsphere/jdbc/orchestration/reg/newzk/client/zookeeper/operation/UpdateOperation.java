@@ -21,12 +21,13 @@ import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
-/*
- * async retry
+/**
+ * Async retry operation which update action.
  *
  * @author lidongbo
  */
-public class UpdateOperation extends BaseOperation {
+public final class UpdateOperation extends BaseOperation {
+    
     private final String key;
     
     private final String value;
@@ -44,6 +45,6 @@ public class UpdateOperation extends BaseOperation {
     
     @Override
     public String toString() {
-        return String.format("UpdateOperation key:%s,value:%s", key, value);
+        return String.format("UpdateOperation key: %s, value: %s", key, value);
     }
 }

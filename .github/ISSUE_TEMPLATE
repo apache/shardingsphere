@@ -4,10 +4,14 @@ Please answer these questions before submitting your issue. Thanks!
 
 ### Which version of Sharding-Sphere do you using?
 
+### Which project do you using? Sharding-JDBC or Sharding-Proxy?
+
 ### Expected behavior
 
 ### Actual behavior
 
+### Reason analyze
+
 ### Steps to reproduce the behavior
 
-### Please provide the reproduce example codes (such as a github link).
+### For bug report, please *MUST* provide the reproduce example codes (such as a github link).

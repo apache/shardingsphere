@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Connection ID generator.
+ * Connection id generator.
  *
  * @author zhangliang
  */
@@ -35,9 +35,9 @@ public final class ConnectionIdGenerator {
     private int currentId;
     
     /**
-     * Get next connection ID.
+     * Get next connection id.
      * 
-     * @return next connection ID
+     * @return next connection id
      */
     public synchronized int nextId() {
         if (currentId >= Integer.MAX_VALUE) {

@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import org.junit.Test;
@@ -39,10 +38,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
-    
-    public DataSourceAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
     
     @Test
     public void assertUnwrapSuccess() throws SQLException {

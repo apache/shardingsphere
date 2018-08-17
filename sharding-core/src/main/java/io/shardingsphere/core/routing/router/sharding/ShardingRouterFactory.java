@@ -19,8 +19,8 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.property.DataSourcePropertyManager;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,16 +38,15 @@ public final class ShardingRouterFactory {
      * Create sharding router.
      * 
      * @param shardingRule sharding rule
-     * @param shardingMetaData sharding meta data
+     * @param shardingTableMetaData sharding table meta data
      * @param databaseType database type
      * @param showSQL show SQL or not
-     * @param dataSourcePropertyManager data source property manager
+     * @param shardingDataSourceMetaData sharding data source meta data
      * @return sharding router instance
      */
-    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData,
-                                                 final DatabaseType databaseType, final boolean showSQL,
-                                                 final DataSourcePropertyManager dataSourcePropertyManager) {
+    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, 
+                                                 final DatabaseType databaseType, final boolean showSQL, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL)
-                : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL, dataSourcePropertyManager);
+                : new ParsingSQLRouter(shardingRule, shardingTableMetaData, databaseType, showSQL, shardingDataSourceMetaData);
     }
 }

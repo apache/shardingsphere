@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Database protocol packet codec factory.
+ * Database packet codec factory.
  *
  * @author zhangliang
  */

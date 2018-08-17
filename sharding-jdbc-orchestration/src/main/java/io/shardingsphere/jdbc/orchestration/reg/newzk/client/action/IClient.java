@@ -17,80 +17,87 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/*
- * client api
+/**
+ * Client API.
  *
  * @author lidongbo
  */
 public interface IClient extends IAction, IGroupAction {
     
     /**
-     * start.
+     * Start.
      *
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
     void start() throws IOException, InterruptedException;
     
     /**
-     * start until out.
+     * Start until out.
      *
-     * @param wait wait
-     * @param units units
-     * @return connected
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
-    boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
+    boolean start(int waitingTime, TimeUnit timeUnit) throws IOException, InterruptedException;
     
     /**
-     * close.
+     * Block until connected.
+     *
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
+     * @throws InterruptedException interrupted exception
      */
-    void close();
+    boolean blockUntilConnected(int waitingTime, TimeUnit timeUnit) throws InterruptedException;
     
     /**
-     * register watcher.
+     * Register watcher.
      *
      * @param key key
-     * @param listener listener
+     * @param zookeeperEventListener zookeeper event listener
      */
-    void registerWatch(String key, Listener listener);
+    void registerWatch(String key, ZookeeperEventListener zookeeperEventListener);
     
     /**
-     * unregister watcher.
+     * Unregister watcher.
      *
      * @param key key
      */
     void unregisterWatch(String key);
     
     /**
-     * choice exec strategy.
+     * Choice exec strategy.
      *
      * @param strategyType strategyType
      */
     void useExecStrategy(StrategyType strategyType);
     
     /**
-     * create transaction.
+     * Get execution strategy.
      *
-     * @return ZKTransaction
+     * @return execution strategy
+     */
+    IExecStrategy getExecStrategy();
+    
+    /**
+     * Create zookeeper transaction.
+     *
+     * @return zookeeper transaction
      */
     BaseTransaction transaction();
-    /*
-    void createNamespace();
-    void deleteNamespace();
     
-    Watcher registerWatch(Listener listener);
-    void setRootNode(String namespace);
-    
-    void setAuthorities(String scheme, byte[] auth);
-    ZooKeeper getZooKeeper();
-    */
+    /**
+     * Close.
+     */
+    void close();
 }

@@ -29,5 +29,5 @@ import org.junit.runners.Suite;
         YamlOrchestrationMasterSlaveIntegrateTest.class,
         YamlOrchestrationShardingWithMasterSlaveIntegrateTest.class
     })
-public class AllYamlTests {
+public final class AllYamlTests {
 }

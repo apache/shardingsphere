@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,12 +25,15 @@ import lombok.Setter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*
+/**
+ * Base context.
+ *
  * @author lidongbo
  */
 @Getter
 @Setter(value = AccessLevel.PROTECTED)
 public abstract class BaseContext {
+    
     private String servers;
     
     private int sessionTimeOut;
@@ -39,14 +42,14 @@ public abstract class BaseContext {
     
     private byte[] auth;
     
-    private Listener globalListener;
+    private ZookeeperEventListener globalZookeeperEventListener;
     
-    private final Map<String, Listener> watchers = new ConcurrentHashMap<>();
+    private final Map<String, ZookeeperEventListener> watchers = new ConcurrentHashMap<>();
     
     /**
-     * close.
+     * Close.
      */
     public void close() {
-        this.watchers.clear();
+        watchers.clear();
     }
 }

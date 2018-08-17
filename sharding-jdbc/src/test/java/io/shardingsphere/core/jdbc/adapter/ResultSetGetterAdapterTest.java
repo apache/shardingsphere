@@ -44,17 +44,13 @@ import static org.junit.Assert.fail;
 
 public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Statement> statements = new ArrayList<>();
     
-    private Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
+    private final Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
     
     private final String columnName = "user_id";
-    
-    public ResultSetGetterAdapterTest(final DatabaseType databaseType) {
-        super(databaseType);
-    }
     
     @Before
     public void init() throws SQLException {
@@ -64,7 +60,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
         statements.add(statement);
         ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
         resultSet.next();
-        resultSets.put(getCurrentDatabaseType(), resultSet);
+        resultSets.put(DatabaseType.H2, resultSet);
     }
     
     @After

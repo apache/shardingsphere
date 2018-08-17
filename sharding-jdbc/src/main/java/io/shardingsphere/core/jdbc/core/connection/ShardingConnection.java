@@ -21,6 +21,8 @@ import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
+import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,12 +32,15 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Connection that support sharding.
  * 
  * @author zhangliang
+ * @author caohao
  * @author gaohongtao
  */
 @RequiredArgsConstructor
@@ -43,11 +48,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final ShardingContext shardingContext;
-    
-    @Override
-    protected Map<String, DataSource> getDataSourceMap() {
-        return shardingContext.getDataSourceMap();
-    }
     
     /**
      * Release connection.
@@ -62,9 +62,39 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         }
     }
     
+    /**
+     * Get all connections via logic table for each actual tables.
+     * 
+     * @param logicTableName logic table name
+     * @return map of all connections
+     * @throws SQLException SQL exception
+     */
+    public Map<String, Connection> getConnections(final String logicTableName) throws SQLException {
+        Map<String, Connection> result = new HashMap<>();
+        for (DataNode each : shardingContext.getShardingRule().getTableRuleByLogicTableName(logicTableName).getActualDataNodes()) {
+            String dataSourceName = shardingContext.getShardingRule().getShardingDataSourceNames().getRawMasterDataSourceName(each.getDataSourceName());
+            result.put(dataSourceName, getConnection(dataSourceName));
+        }
+        return result;
+    }
+    
+    @Override
+    protected Map<String, DataSource> getDataSourceMap() {
+        return shardingContext.getDataSourceMap();
+    }
+    
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next()).getMetaData();
+        Collection<MasterSlaveRule> masterSlaveRules = shardingContext.getShardingRule().getMasterSlaveRules();
+        if (masterSlaveRules.isEmpty()) {
+            return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next()).getMetaData();
+        }
+        for (MasterSlaveRule each : masterSlaveRules) {
+            if (getDataSourceMap().containsKey(each.getMasterDataSourceName())) {
+                return getConnection(each.getMasterDataSourceName()).getMetaData();
+            }
+        }
+        throw new UnsupportedOperationException();
     }
     
     @Override

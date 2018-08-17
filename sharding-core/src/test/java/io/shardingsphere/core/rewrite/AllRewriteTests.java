@@ -26,5 +26,5 @@ import org.junit.runners.Suite.SuiteClasses;
         SQLBuilderTest.class, 
         SQLRewriteEngineTest.class
     })
-public class AllRewriteTests {
+public final class AllRewriteTests {
 }

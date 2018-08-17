@@ -17,9 +17,13 @@
 
 package io.shardingsphere.transaction.job;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.quartz.SchedulerException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -29,16 +33,18 @@ import java.io.InputStreamReader;
  * @author caohao
  * @author wangkai
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BASETransactionJobBootStrap {
     
     /**
      * Main entrance.
      *
      * @param args arguments
-     * @throws Exception exception
+     * @throws IOException IO exception
+     * @throws SchedulerException scheduler exception
      */
     // CHECKSTYLE:OFF
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws IOException, SchedulerException {
         // CHECKSTYLE:ON
         try (InputStreamReader inputStreamReader = new InputStreamReader(BASETransactionJobBootStrap.class.getResourceAsStream("/conf/config.yaml"), "UTF-8")) {
             BASETransactionJobConfiguration config = new Yaml(new Constructor(BASETransactionJobConfiguration.class)).loadAs(inputStreamReader, BASETransactionJobConfiguration.class);

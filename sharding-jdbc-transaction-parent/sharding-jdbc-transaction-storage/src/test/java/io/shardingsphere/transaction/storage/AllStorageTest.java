@@ -28,5 +28,5 @@ import org.junit.runners.Suite;
         MemoryTransactionLogStorageTest.class, 
         RdbTransactionLogStorageTest.class
     })
-public class AllStorageTest {
+public final class AllStorageTest {
 }

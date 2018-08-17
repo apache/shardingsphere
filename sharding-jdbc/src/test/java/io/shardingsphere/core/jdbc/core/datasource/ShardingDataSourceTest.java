@@ -22,7 +22,8 @@ import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
@@ -71,7 +72,8 @@ public final class ShardingDataSourceTest {
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
         MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
-                masterSlaveDataSourceMap, new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap());
+                masterSlaveDataSourceMap, new MasterSlaveRuleConfiguration("ds", "masterDataSource",
+                        Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap(), new Properties());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -107,7 +109,7 @@ public final class ShardingDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            createShardingDataSource(dataSourceMap).getDatabaseType();
+            assertThat(createShardingDataSource(dataSourceMap).getDatabaseType(), is(DatabaseType.H2));
         } finally {
             for (Connection each : connections) {
                 verify(each, atLeast(1)).close();

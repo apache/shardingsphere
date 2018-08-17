@@ -17,6 +17,7 @@
 
 package io.shardingsphere.dbtest.engine.ddl;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
@@ -50,38 +51,37 @@ public final class GeneralDDLIntegrateTest extends BaseDDLIntegrateTest {
     
     @Test
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
-        try (Connection connection = getDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
-            }
-            if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().executeUpdate(getSql());
-            } else {
-                connection.prepareStatement(getSql()).executeUpdate();
-            }
-            assertMetadata(connection);
-            dropTableIfExisted(connection);
-        }
+        assertExecuteByType(true);
     }
     
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException {
+        assertExecuteByType(false);
+    }
+
+    private void assertExecuteByType(final boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                connection.prepareStatement(assertion.getInitSql()).executeUpdate();
+                for (String sql : Splitter.on(";").trimResults().splitToList(assertion.getInitSql())) {
+                    connection.prepareStatement(sql).executeUpdate();
+                }
             }
-            if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().execute(getSql());
+            if (isExecuteUpdate) {
+                if (SQLCaseType.Literal == getCaseType()) {
+                    connection.createStatement().executeUpdate(getSql());
+                } else {
+                    connection.prepareStatement(getSql()).executeUpdate();
+                }
             } else {
-                connection.prepareStatement(getSql()).execute();
+                if (SQLCaseType.Literal == getCaseType()) {
+                    connection.createStatement().execute(getSql());
+                } else {
+                    connection.prepareStatement(getSql()).execute();
+                }
             }
             assertMetadata(connection);
             dropTableIfExisted(connection);

@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
  *
  * @author zhangliang
  */
-public class OracleDistinctClauseParser extends DistinctClauseParser {
+public final class OracleDistinctClauseParser extends DistinctClauseParser {
     
     public OracleDistinctClauseParser(final LexerEngine lexerEngine) {
         super(lexerEngine);

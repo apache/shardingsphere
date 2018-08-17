@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -97,7 +98,7 @@ public class HostNameKeyGeneratorTest {
     }
     
     @Test
-    public void assertGenerateId() throws Exception {
+    public void assertGenerateId() throws UnknownHostException, ExecutionException, InterruptedException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
         HostNameKeyGenerator.initWorkerId();

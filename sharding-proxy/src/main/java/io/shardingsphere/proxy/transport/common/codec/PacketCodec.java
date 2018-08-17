@@ -21,21 +21,21 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import io.shardingsphere.proxy.transport.common.packet.DatabaseProtocolPacket;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 /**
- * Database protocol packet codec.
+ * Database packet codec.
  * 
  * @author zhangliang 
  */
 @Slf4j
-public abstract class PacketCodec<T extends DatabaseProtocolPacket> extends ByteToMessageCodec<T> {
+public abstract class PacketCodec<T extends DatabasePacket> extends ByteToMessageCodec<T> {
     
     @Override
-    protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+    protected final void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         int readableBytes = in.readableBytes();
         if (!isValidHeader(readableBytes)) {
             return;
@@ -51,7 +51,7 @@ public abstract class PacketCodec<T extends DatabaseProtocolPacket> extends Byte
     protected abstract void doDecode(ChannelHandlerContext context, ByteBuf in, List<Object> out, int readableBytes);
     
     @Override
-    protected void encode(final ChannelHandlerContext context, final T message, final ByteBuf out) {
+    protected final void encode(final ChannelHandlerContext context, final T message, final ByteBuf out) {
         doEncode(context, message, out);
         if (log.isDebugEnabled()) {
             log.debug("Write to client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(out));

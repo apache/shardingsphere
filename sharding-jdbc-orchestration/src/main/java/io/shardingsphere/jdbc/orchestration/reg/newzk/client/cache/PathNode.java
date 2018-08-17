@@ -17,96 +17,83 @@
 
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*
- * zookeeper node cache
+/**
+ * Zookeeper node cache.
  *
  * @author lidongbo
  */
-public class PathNode {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PathNode.class);
-
+@Getter
+@Setter
+@Slf4j
+public final class PathNode {
+    
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
-
+    
     private final String nodeKey;
-
-    @Getter
-    @Setter
+    
+    private String path;
+    
     private byte[] value;
     
     PathNode(final String key) {
-        this(key, Constants.RELEASE_VALUE);
+        this(key, ZookeeperConstants.RELEASE_VALUE);
     }
     
     PathNode(final String key, final byte[] value) {
         this.nodeKey = key;
         this.value = value;
+        this.path = key;
     }
     
-    /**
-     * get children.
-     *
-     * @return children
-     */
-    public Map<String, PathNode> getChildren() {
-        return children;
+    void attachChild(final PathNode node) {
+        children.put(node.nodeKey, node);
+        node.setPath(PathUtil.getRealPath(path, node.getNodeKey()));
     }
     
-    /**
-     * get key.
-     *
-     * @return node key
-     */
-    public String getKey() {
-        return this.nodeKey;
-    }
-    
-    /**
-     * attach child node.
-     *
-     * @param node node
-     */
-    public void attachChild(final PathNode node) {
-        this.children.put(node.nodeKey, node);
-    }
-    
-    PathNode set(final Iterator<String> iterator, final String value) {
-        String key = iterator.next();
-        LOGGER.debug("PathNode set:{},value:{}", key, value);
-        PathNode node = children.get(key);
-        if (node == null) {
-            LOGGER.debug("set children haven't:{}", key);
-            node = new PathNode(key);
-            children.put(key, node);
+    PathNode set(final PathResolve pathResolve, final String value) {
+        if (pathResolve.isEnd()) {
+            setValue(value.getBytes(ZookeeperConstants.UTF_8));
+            return this;
         }
-        if (iterator.hasNext()) {
-            node.set(iterator, value);
-        } else {
-            node.setValue(value.getBytes(Constants.UTF_8));
+        pathResolve.next();
+        log.debug("PathNode set: {}, value: {}", pathResolve.getCurrent(), value);
+        if (children.containsKey(pathResolve.getCurrent())) {
+            return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }
-        return node;
+        PathNode result = new PathNode(pathResolve.getCurrent(), ZookeeperConstants.NOTHING_DATA);
+        this.attachChild(result);
+        result.set(pathResolve, value);
+        return result;
     }
     
-    PathNode get(final Iterator<String> iterator) {
-        String key = iterator.next();
-        LOGGER.debug("get:{}", key);
-        PathNode node = children.get(key);
-        if (node == null) {
-            LOGGER.debug("get children haven't:{}", key);
-            return null;
+    PathNode get(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                return children.get(pathResolve.getCurrent());
+            }
+            return children.get(pathResolve.getCurrent()).get(pathResolve);
         }
-        if (iterator.hasNext()) {
-            return node.get(iterator);
+        return null;
+    }
+    
+    void delete(final PathResolve pathResolve) {
+        pathResolve.next();
+        if (children.containsKey(pathResolve.getCurrent())) {
+            if (pathResolve.isEnd()) {
+                children.remove(pathResolve.getCurrent());
+            } else {
+                children.get(pathResolve.getCurrent()).delete(pathResolve);
+            }
         }
-        return node;
     }
 }

@@ -111,10 +111,11 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         long result = 0;
         boolean hasResult = false;
         for (Statement each : getRoutedStatements()) {
-            if (each.getUpdateCount() > -1) {
+            int updateCount = each.getUpdateCount();
+            if (updateCount > -1) {
                 hasResult = true;
             }
-            result += each.getUpdateCount();
+            result += updateCount;
         }
         if (result > Integer.MAX_VALUE) {
             result = Integer.MAX_VALUE;
@@ -123,12 +124,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public SQLWarning getWarnings() {
+    public final SQLWarning getWarnings() {
         return null;
     }
     
     @Override
-    public void clearWarnings() {
+    public final void clearWarnings() {
     }
     
     @Override

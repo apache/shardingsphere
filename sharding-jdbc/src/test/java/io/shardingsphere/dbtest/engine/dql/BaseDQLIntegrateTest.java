@@ -63,9 +63,10 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
                                 final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
     }
-    
+
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
+        createDatabasesAndTables();
         for (DatabaseType each : DatabaseType.values()) {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 insertData(each);
@@ -86,6 +87,7 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
                 clearData(each);
             }
         }
+        dropDatabases();
     }
     
     private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
@@ -103,7 +105,7 @@ public abstract class BaseDQLIntegrateTest extends SingleIntegrateTest {
         return result;
     }
     
-    protected void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
+    protected final void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
         DataSet expected;
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);

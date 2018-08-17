@@ -18,37 +18,36 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/*
+/**
+ * Client task.
+ *
  * @author lidongbo
  */
+@RequiredArgsConstructor
+@Slf4j
 public abstract class ClientTask implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientTask.class);
     
     private final IProvider provider;
     
-    public ClientTask(final IProvider provider) {
-        this.provider = provider;
-    }
-    
     /**
-     * run.
+     * Run.
      *
      * @param provider provider
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public abstract void run(IProvider provider) throws KeeperException, InterruptedException;
     
     @Override
-    public void run() {
+    public final void run() {
         try {
             run(provider);
-        } catch (KeeperException | InterruptedException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (final KeeperException | InterruptedException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
 }

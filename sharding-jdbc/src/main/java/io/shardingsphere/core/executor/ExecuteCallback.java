@@ -17,6 +17,21 @@
 
 package io.shardingsphere.core.executor;
 
+import com.google.common.eventbus.EventBus;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.executor.event.sql.SQLExecutionEvent;
+import io.shardingsphere.core.executor.event.sql.SQLExecutionEventFactory;
+import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Statement execute callback interface.
  *
@@ -25,14 +40,44 @@ package io.shardingsphere.core.executor;
  * 
  * @param <T> class type of return value
  */
-public interface ExecuteCallback<T> {
+@RequiredArgsConstructor
+public final class ExecuteCallback<T> implements ShardingExecuteCallback<BaseStatementUnit, T> {
     
-    /**
-     * Execute task.
-     * 
-     * @param baseStatementUnit statement execute unit
-     * @return execute result
-     * @throws Exception execute exception
-     */
-    T execute(BaseStatementUnit baseStatementUnit) throws Exception;
+    @Getter
+    private final SQLType sqlType;
+    
+    private final boolean isExceptionThrown;
+    
+    private final Map<String, Object> dataMap;
+    
+    private final JDBCExecuteCallback<T> jdbcCallback;
+    
+    private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
+    
+    @Override
+    public T execute(final BaseStatementUnit input) throws Exception {
+        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
+        List<SQLExecutionEvent> events = new LinkedList<>();
+        for (List<Object> each : input.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
+            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(sqlType, input, each);
+            events.add(event);
+            shardingEventBus.post(event);
+        }
+        try {
+            T result = jdbcCallback.execute(input);
+            for (SQLExecutionEvent each : events) {
+                each.setExecuteSuccess();
+                shardingEventBus.post(each);
+            }
+            return result;
+        } catch (final SQLException ex) {
+            for (SQLExecutionEvent each : events) {
+                each.setExecuteFailure(ex);
+                shardingEventBus.post(each);
+                ExecutorExceptionHandler.handleException(ex);
+            }
+            return null;
+        }
+    }
 }

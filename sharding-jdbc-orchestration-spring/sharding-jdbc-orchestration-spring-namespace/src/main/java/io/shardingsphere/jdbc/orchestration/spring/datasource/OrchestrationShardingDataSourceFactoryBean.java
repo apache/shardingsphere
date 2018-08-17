@@ -26,6 +26,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -34,7 +35,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-public class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
+public final class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
     
     private OrchestrationShardingDataSource orchestrationShardingDataSource;
     
@@ -77,7 +78,7 @@ public class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<O
     }
     
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws SQLException {
         orchestrationShardingDataSource =
                 (OrchestrationShardingDataSource) OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
     }

@@ -109,7 +109,7 @@ public class Lexer {
         return isIdentifierBegin(getCurrentChar(0));
     }
     
-    private boolean isIdentifierBegin(final char ch) {
+    protected boolean isIdentifierBegin(final char ch) {
         return CharType.isAlphabet(ch) || '`' == ch || '_' == ch || '$' == ch;
     }
     
@@ -126,7 +126,7 @@ public class Lexer {
         return CharType.isSymbol(getCurrentChar(0));
     }
     
-    private boolean isCharsBegin() {
+    protected boolean isCharsBegin() {
         return '\'' == getCurrentChar(0) || '\"' == getCurrentChar(0);
     }
     

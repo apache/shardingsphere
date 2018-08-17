@@ -18,20 +18,19 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.DelayQueue;
 
-/*
- * async retry center
+/**
+ * Async retry center.
  *
  * @author lidongbo
  */
+@Slf4j
 public enum AsyncRetryCenter {
-    INSTANCE;
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncRetryCenter.class);
+    INSTANCE;
     
     private final DelayQueue<BaseOperation> queue = new DelayQueue<>();
     
@@ -42,15 +41,15 @@ public enum AsyncRetryCenter {
     private DelayRetryPolicy delayRetryPolicy;
     
     /**
-     * init.
+     * Initialize.
      *
-     * @param delayRetryPolicy delayRetryPolicy
+     * @param delayRetryPolicy delay retry policy
      */
     public void init(final DelayRetryPolicy delayRetryPolicy) {
-        LOGGER.debug("delayRetryPolicy init");
-        if (delayRetryPolicy == null) {
-            LOGGER.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
-            this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+        log.debug("delayRetryPolicy init");
+        if (null == delayRetryPolicy) {
+            log.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.defaultDelayPolicy");
+            this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
             return;
         }
         this.delayRetryPolicy = delayRetryPolicy;
@@ -65,7 +64,7 @@ public enum AsyncRetryCenter {
         }
         retryThread.setName("retry-thread");
         retryThread.start();
-        this.started = true;
+        started = true;
     }
     
     /**
@@ -74,12 +73,12 @@ public enum AsyncRetryCenter {
      * @param operation operation
      */
     public void add(final BaseOperation operation) {
-        if (delayRetryPolicy == null) {
-            LOGGER.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
-            delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+        if (null == delayRetryPolicy) {
+            log.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.defaultDelayPolicy");
+            delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         }
         operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
-        LOGGER.debug("enqueue operation:{}", operation.toString());
+        log.debug("enqueue operation: {}", operation.toString());
     }
 }

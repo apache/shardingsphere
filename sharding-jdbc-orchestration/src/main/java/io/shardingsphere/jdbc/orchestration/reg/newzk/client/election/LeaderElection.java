@@ -18,116 +18,106 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.Constants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.Listener;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/*
- * competition of node write permission
+/**
+ * Competition of node write permission.
  * It is not recommended to be used as a global variable.
  *
  * @author lidongbo
  */
+@Slf4j
 public abstract class LeaderElection {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LeaderElection.class);
+    
+    private int retryCount = ZookeeperConstants.NODE_ELECTION_RETRY;
     
     private boolean done;
     
-    private int retryCount;
-    
-    public LeaderElection() {
-        retryCount = Constants.NODE_ELECTION_RETRY;
-    }
-
-    private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
-        boolean success = false;
-        try {
-            // todo EPHEMERAL_SEQUENTIAL check index value
-            provider.create(node, Constants.CLIENT_ID, CreateMode.EPHEMERAL);
-            success = true;
-        } catch (KeeperException.NodeExistsException e) {
-            LOGGER.info("contend not success");
-            // TODO or changing_key node value == current client id
-            provider.exists(node, WatcherCreator.deleteWatcher(listener));
-        }
-        return success;
-    }
-    
     /**
-     * listener will be register when the contention of the path is unsuccessful.
+     * Listener will be register when the contention of the path is unsuccessful.
      *
-     * @param nodeBeContend nodeBeContend
+     * @param nodeBeContend node be contend
      * @param provider provider
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
     */
     public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
-        final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
+        String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
+        canBegin = contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
+            
             @Override
             public void process(final WatchedEvent event) {
                 try {
                     retryCount--;
                     if (retryCount < 0) {
-                        LOGGER.info("Election node exceed retry count");
+                        log.info("Election node exceed retry count");
                         return;
                     }
                     executeContention(realNode, provider);
-                    // CHECKSTYLE:OFF
-                } catch (Exception ee){
-                    // CHECKSTYLE:ON
-                    LOGGER.error("Listener Exception executeContention:{}", ee.getMessage(), ee);
+                } catch (final KeeperException | InterruptedException ex) {
+                    log.error("Listener Exception executeContention:{}", ex.getMessage(), ex);
                 }
             }
         });
-    
         if (canBegin) {
             try {
                 action();
                 done = true;
                 callback();
-                // CHECKSTYLE:OFF
-            } catch (Exception e){
-                // CHECKSTYLE:ON
-                LOGGER.error("action Exception executeContention:{}", e.getMessage(), e);
+            } catch (final KeeperException | InterruptedException ex) {
+                log.error("action Exception executeContention:{}", ex.getMessage(), ex);
             }
             provider.delete(contendNode);
         }
     }
     
+    private boolean contend(final String node, final IProvider provider, final ZookeeperEventListener zookeeperEventListener) throws KeeperException, InterruptedException {
+        boolean result = false;
+        try {
+            // TODO EPHEMERAL_SEQUENTIAL check index value
+            provider.create(node, ZookeeperConstants.CLIENT_ID, CreateMode.EPHEMERAL);
+            result = true;
+        } catch (final KeeperException.NodeExistsException ex) {
+            log.info("contend not result");
+            // TODO or changing_key node value == current client id
+            provider.exists(node, WatcherCreator.deleteWatcher(zookeeperEventListener));
+        }
+        return result;
+    }
+    
     /**
-     * wait done.
+     * Wait done.
      */
     public void waitDone() {
         while (!done) {
             try {
                 Thread.sleep(10L);
-            } catch (InterruptedException e) {
-                LOGGER.error("waitDone:{}", e.getMessage(), e);
+            } catch (final InterruptedException ex) {
+                log.error("waitDone:{}", ex.getMessage(), ex);
             }
         }
     }
     
     /**
-     * contend exec.
+     * Contend execute.
      *
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public abstract void action() throws KeeperException, InterruptedException;
     
     /**
-     * callback.
+     * Callback.
      */
     public void callback() {
-        
     }
 }

@@ -8,6 +8,9 @@
     <logger name="io.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console"/>
     </logger>
+    <logger name="io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.RetryCallable" level="error" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
     <root>
         <level value="error" />
         <appender-ref ref="console" />

@@ -23,21 +23,24 @@ import org.apache.zookeeper.ZooKeeper;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/*
- * Created by aaa
- */
-public class TestClient extends UsualClient {
-    TestClient(BaseContext context) {
+public final class TestClient extends UsualClient {
+    
+    TestClient(final BaseContext context) {
         super(context);
     }
     
     @Override
-    public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
+    public synchronized boolean start(final int waitingTime, final TimeUnit timeUnit) throws InterruptedException, IOException {
         setHolder(new TestHolder(getContext()));
-        getHolder().start(wait, units);
+        getHolder().start(waitingTime, timeUnit);
         return getHolder().isConnected();
     }
     
+    /**
+     * Get zookeeper.
+     * 
+     * @return zookeeper
+     */
     public ZooKeeper getZookeeper() {
         return getHolder().getZooKeeper();
     }

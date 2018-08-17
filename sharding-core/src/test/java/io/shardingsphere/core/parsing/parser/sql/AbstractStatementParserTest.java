@@ -22,18 +22,17 @@ import io.shardingsphere.core.api.algorithm.fixture.TestComplexKeysShardingAlgor
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.metadata.ColumnMetaData;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.metadata.TableMetaData;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -61,19 +60,9 @@ public abstract class AbstractStatementParserTest {
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
     
-    protected final ShardingMetaData createShardingMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
-        tableMetaDataMap.put("TABLE_XXX", getTableMetaData(new ArrayList<String>(){{add("field1");add("field2");}}));
-        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        when(shardingMetaData.getTableMetaDataMap()).thenReturn(tableMetaDataMap);
-        return shardingMetaData;
-    }
-    
-    private static TableMetaData getTableMetaData(final List<String> columnNames) {
-        List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
-        for (String columnName : columnNames) {
-            columnMetaDataList.add(new ColumnMetaData(columnName, "int(11)", ""));
-        }
-        return new TableMetaData(columnMetaDataList);
+    protected final ShardingTableMetaData createShardingTableMetaData() {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("TABLE_XXX", new TableMetaData(Arrays.asList(new ColumnMetaData("field1", "varchar", false), new ColumnMetaData("field2", "varchar", false))));
+        return new ShardingTableMetaData(tableMetaDataMap);
     }
 }

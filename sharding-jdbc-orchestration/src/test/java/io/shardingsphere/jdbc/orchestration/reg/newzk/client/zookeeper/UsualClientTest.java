@@ -18,18 +18,28 @@
 package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
 
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientTest;
 import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.AsyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.ContentionStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.SyncRetryStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.TransactionContendStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
+import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
-/**
- * Created by aaa
- */
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public class UsualClientTest extends BaseClientTest {
     
     @Override
@@ -39,62 +49,115 @@ public class UsualClientTest extends BaseClientTest {
     }
     
     @Test
+    public void assertUseExecStrategy() {
+        getTestClient().useExecStrategy(StrategyType.CONTEND);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(ContentionStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.TRANSACTION_CONTEND);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(TransactionContendStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.SYNC_RETRY);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(SyncRetryStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.ASYNC_RETRY);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(AsyncRetryStrategy.class.getName()));
+        getTestClient().useExecStrategy(StrategyType.USUAL);
+        assertThat(getTestClient().getExecStrategy().getClass().getName(), is(UsualStrategy.class.getName()));
+    }
+    
+    @Test
+    public void assertGetData() throws KeeperException, InterruptedException {
+        String key = "a/b/bb";
+        String value = "bbb11";
+        getTestClient().createAllNeedPath(key, value, CreateMode.PERSISTENT);
+        assertThat(getTestClient().getDataString(key), is(value));
+        getTestClient().deleteCurrentBranch(key);
+    }
+    
+    @Test
     public void assertCreateRoot() throws KeeperException, InterruptedException {
-        super.createRoot(testClient);
+        super.createRoot(getTestClient());
     }
     
     @Test
     public void assertCreateChild() throws KeeperException, InterruptedException {
-        super.createChild(testClient);
+        super.createChild(getTestClient());
     }
     
     @Test
     public void assertDeleteBranch() throws KeeperException, InterruptedException {
-        super.deleteBranch(testClient);
+        super.deleteBranch(getTestClient());
     }
     
     @Test
     public void assertExisted() throws KeeperException, InterruptedException {
-        super.isExisted(testClient);
+        super.isExisted(getTestClient());
     }
     
     @Test
     public void assertGet() throws KeeperException, InterruptedException {
-        super.get(testClient);
+        super.get(getTestClient());
     }
     
     @Test
-    public void assertAsynGet() throws KeeperException, InterruptedException {
-        super.asynGet(testClient);
+    public void assertAsyncGet() throws KeeperException, InterruptedException {
+        super.asyncGet(getTestClient());
     }
     
     @Test
     public void assertGetChildrenKeys() throws KeeperException, InterruptedException {
-        super.getChildrenKeys(testClient);
+        super.getChildrenKeys(getTestClient());
     }
     
     @Test
     public void assertPersist() throws KeeperException, InterruptedException {
-        super.persist(testClient);
+        super.persist(getTestClient());
     }
     
     @Test
     public void assertPersistEphemeral() throws KeeperException, InterruptedException {
-        super.persistEphemeral(testClient);
+        super.persistEphemeral(getTestClient());
     }
     
     @Test
     public void assertDelAllChildren() throws KeeperException, InterruptedException {
-        super.delAllChildren(testClient);
+        super.delAllChildren(getTestClient());
     }
     
     @Test
     public void assertWatch() throws KeeperException, InterruptedException {
-        super.watch(testClient);
+        super.watch(getTestClient());
     }
     
     @Test
-    public void assertClose() throws Exception {
-        super.close(testClient);
+    public void assertWatchRegister() throws KeeperException, InterruptedException {
+        super.watchRegister(getTestClient());
+    }
+    
+    @Test
+    public void assertClose() {
+        super.close(getTestClient());
+    }
+    
+    @Test
+    public void assertDeleteOnlyCurrent() throws KeeperException, InterruptedException {
+        String key = "key";
+        String value = "value";
+        getTestClient().createCurrentOnly(key, value, CreateMode.PERSISTENT);
+        assertThat(getTestClient().getDataString(key), is(value));
+        assertTrue(getTestClient().checkExists(key));
+        getTestClient().deleteOnlyCurrent(key);
+        assertFalse(getTestClient().checkExists(key));
+        deleteRoot(getTestClient());
+    }
+    
+    @Test
+    public void assertTransaction() throws KeeperException, InterruptedException {
+        String key = "key";
+        String value = "value";
+        BaseTransaction transaction = getTestClient().transaction();
+        getTestClient().createCurrentOnly(key, value, CreateMode.PERSISTENT);
+        transaction.setData(key, value.getBytes(ZookeeperConstants.UTF_8));
+        transaction.commit();
+        assertThat(getTestClient().getDataString(key), is(value));
+        getTestClient().deleteOnlyCurrent(key);
+        deleteRoot(getTestClient());
     }
 }

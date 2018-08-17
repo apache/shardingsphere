@@ -35,13 +35,15 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public class ProxyConfigurationRepresenter extends Representer {
+public final class ProxyConfigurationRepresenter extends Representer {
     
-    private static Collection<String> eliminatedPropertyNames;
+    private static Collection<String> eliminatedPropertyNames = new HashSet<>();
     
     static {
-        eliminatedPropertyNames = new HashSet<String>() {{ add("dataSources"); add("orchestration"); } }; }
-        
+        eliminatedPropertyNames.add("dataSources");
+        eliminatedPropertyNames.add("orchestration");
+    }
+    
     public ProxyConfigurationRepresenter() {
         super();
         this.nullRepresenter = new NullRepresent();

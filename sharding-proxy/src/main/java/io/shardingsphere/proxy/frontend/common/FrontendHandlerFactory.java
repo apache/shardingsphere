@@ -36,7 +36,7 @@ public final class FrontendHandlerFactory {
      * Create frontend handler instance.
      *
      * @param databaseType database type
-     * @param userGroup user thread pool
+     * @param userGroup user group
      * @return frontend handler instance
      */
     public static FrontendHandler createFrontendHandlerInstance(final DatabaseType databaseType, final EventLoopGroup userGroup) {

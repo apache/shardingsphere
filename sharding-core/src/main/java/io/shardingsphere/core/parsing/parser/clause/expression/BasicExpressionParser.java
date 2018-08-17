@@ -111,6 +111,10 @@ public final class BasicExpressionParser {
             skipRestCompositeExpression(sqlStatement);
             return true;
         }
+        if ((Literals.INT == lexerEngine.getCurrentToken().getType() || Literals.FLOAT == lexerEngine.getCurrentToken().getType()) && lexerEngine.getCurrentToken().getLiterals().startsWith("-")) {
+            lexerEngine.nextToken();
+            return true;
+        }
         return false;
     }
     

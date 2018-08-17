@@ -32,7 +32,7 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class DistinctClauseParser implements SQLClauseParser {
+public abstract class DistinctClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
@@ -47,7 +47,5 @@ public class DistinctClauseParser implements SQLClauseParser {
         lexerEngine.unsupportedIfEqual(distinctKeywords.toArray(new Keyword[distinctKeywords.size()]));
     }
     
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSynonymousKeywordsForDistinct();
 }

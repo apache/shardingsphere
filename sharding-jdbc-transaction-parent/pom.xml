@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0.M2-SNAPSHOT</version>
+        <version>3.0.0.M3-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-transaction-parent</artifactId>
     <packaging>pom</packaging>
@@ -41,10 +41,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>

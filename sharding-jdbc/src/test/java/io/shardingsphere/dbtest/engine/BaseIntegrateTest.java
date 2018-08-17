@@ -22,6 +22,8 @@ import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
@@ -32,8 +34,6 @@ import io.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -41,10 +41,13 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
@@ -63,6 +66,8 @@ public abstract class BaseIntegrateTest {
     
     private final DataSource dataSource;
     
+    private final Map<String, DataSource> instanceDataSourceMap;
+    
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
@@ -73,13 +78,15 @@ public abstract class BaseIntegrateTest {
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(shardingRuleType);
             dataSource = createDataSource(dataSourceMap);
+            instanceDataSourceMap = createInstanceDataSourceMap();
         } else {
             dataSourceMap = null;
             dataSource = null;
+            instanceDataSourceMap = null;
         }
     }
     
-    protected String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }
@@ -110,29 +117,94 @@ public abstract class BaseIntegrateTest {
                 : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
     }
     
-    @BeforeClass
-    public static void createDatabasesAndTables() throws JAXBException, IOException, SQLException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabase(each);
-        }
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.createDatabase(each);
-        }
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.dropTable(each);
-        }
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.createTable(each);
-        }
+    private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
+        return "masterslave".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
     }
     
-    @AfterClass
-    public static void dropDatabases() throws JAXBException, IOException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabase(each);
+    private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (!isExisted(entry.getKey(), result.keySet(), dataSourceMetaDataMap)) {
+                result.put(entry.getKey(), entry.getValue());
+            }
         }
+        return result;
     }
     
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames,
+                              final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        for (String each : existedDataSourceNames) {
+            if (dataSourceMetaDataMap.get(each).isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), DataSourceMetaDataFactory.newInstance(databaseTypeEnvironment.getDatabaseType(), getDataSourceURL(entry.getValue())));
+        }
+        return result;
+    }
+    
+    private static String getDataSourceURL(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.getMetaData().getURL();
+        }
+    }
+
+    protected static void createDatabasesAndTables() {
+        createDatabases();
+        dropTables();
+        createTables();
+    }
+
+    protected static void createDatabases() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropDatabase(each);
+            }
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.createDatabase(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    protected static void createTables() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.createTable(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    protected static void dropDatabases() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropDatabase(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    protected static void dropTables() {
+        try {
+            for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+                SchemaEnvironmentManager.dropTable(each);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {

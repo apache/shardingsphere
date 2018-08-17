@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * New parameters bound flag.
+ * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
  *
  * @author zhangyonglun
@@ -36,7 +37,7 @@ public enum NewParametersBoundFlag {
     private final int value;
     
     /**
-     * Value of.
+     * Value of new parameters bound flag.
      * 
      * @param value value
      * @return new parameters bound flag

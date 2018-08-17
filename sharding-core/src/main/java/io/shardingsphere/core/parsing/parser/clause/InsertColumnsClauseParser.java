@@ -18,7 +18,8 @@
 package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import com.google.common.base.Preconditions;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -43,6 +44,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
@@ -62,53 +64,64 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
      * Parse insert columns.
      *
      * @param insertStatement insert statement
-     * @param shardingMetaData sharding meta data
+     * @param shardingTableMetaData sharding table meta data
      */
-    public void parse(final InsertStatement insertStatement, final ShardingMetaData shardingMetaData) {
-        Collection<Column> result = new LinkedList<>();
+    public void parse(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        insertStatement.getColumns().addAll(lexerEngine.equalAny(Symbol.LEFT_PAREN)
+                ? parseWithColumn(insertStatement, tableName, generateKeyColumn) : parseWithoutColumn(insertStatement, shardingTableMetaData, tableName, generateKeyColumn));
+    }
+    
+    private Collection<Column> parseWithColumn(final InsertStatement insertStatement, final String tableName, final Optional<Column> generateKeyColumn) {
         int count = 0;
-        if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-            do {
-                lexerEngine.nextToken();
-                SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
-                String columnName = null;
-                if (sqlExpression instanceof SQLPropertyExpression) {
-                    columnName = SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName());
-                }
-                if (sqlExpression instanceof SQLIdentifierExpression) {
-                    columnName = SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName());
-                }
-                if (sqlExpression instanceof SQLIgnoreExpression) {
-                    columnName = SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression());
-                }
-                result.add(new Column(columnName, tableName));
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
-                    insertStatement.setGenerateKeyColumnIndex(count);
-                }
-                count++;
-            } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN) && !lexerEngine.equalAny(Assist.END));
-            insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
+        Collection<Column> result = new LinkedList<>();
+        do {
             lexerEngine.nextToken();
-        } else {
-            Collection<String> columnNames = shardingMetaData.getTableMetaDataMap().get(tableName).getAllColumnNames();
-            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
-            insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
-            ItemsToken columnsToken = new ItemsToken(beginPosition);
-            columnsToken.setFirstOfItemsSpecial(true);
-            for (String columnName : columnNames) {
-                result.add(new Column(columnName, tableName));
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
+            SQLExpression sqlExpression = basicExpressionParser.parse(insertStatement);
+            String columnName = null;
+            if (sqlExpression instanceof SQLPropertyExpression) {
+                columnName = SQLUtil.getExactlyValue(((SQLPropertyExpression) sqlExpression).getName());
+            }
+            if (sqlExpression instanceof SQLIdentifierExpression) {
+                columnName = SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName());
+            }
+            if (sqlExpression instanceof SQLIgnoreExpression) {
+                columnName = SQLUtil.getExactlyValue(((SQLIgnoreExpression) sqlExpression).getExpression());
+            }
+            Preconditions.checkNotNull(columnName);
+            result.add(new Column(columnName, tableName));
+            if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(columnName)) {
+                insertStatement.setGenerateKeyColumnIndex(count);
+            }
+            count++;
+        } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN) && !lexerEngine.equalAny(Assist.END));
+        insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
+        lexerEngine.nextToken();
+        return result;
+    }
+    
+    private Collection<Column> parseWithoutColumn(
+            final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData, final String tableName, final Optional<Column> generateKeyColumn) {
+        int count = 0;
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
+        insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
+        ItemsToken columnsToken = new ItemsToken(beginPosition);
+        columnsToken.setFirstOfItemsSpecial(true);
+        Collection<Column> result = new LinkedList<>();
+        if (shardingTableMetaData.containsTable(tableName)) {
+            for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
+                result.add(new Column(each, tableName));
+                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
-                columnsToken.getItems().add(columnName);
+                columnsToken.getItems().add(each);
                 count++;
             }
-            insertStatement.getSqlTokens().add(columnsToken);
-            insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, ")"));
-            insertStatement.setColumnsListLastPosition(beginPosition);
         }
-        insertStatement.getColumns().addAll(result);
+        insertStatement.getSqlTokens().add(columnsToken);
+        insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, ")"));
+        insertStatement.setColumnsListLastPosition(beginPosition);
+        return result;
     }
 }

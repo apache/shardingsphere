@@ -14,6 +14,7 @@
         <property name="url" value="${dbtbl_0_master.url}"/>
         <property name="username" value="${dbtbl_0_master.username}"/>
         <property name="password" value="${dbtbl_0_master.password}"/>
+        <property name="maxTotal" value="500" />
     </bean>
     
     <bean id="dbtbl_0_slave_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
@@ -21,6 +22,7 @@
         <property name="url" value="${dbtbl_0_slave_0.url}"/>
         <property name="username" value="${dbtbl_0_slave_0.username}"/>
         <property name="password" value="${dbtbl_0_slave_0.password}"/>
+        <property name="maxTotal" value="500" />
     </bean>
     
     <bean id="dbtbl_0_slave_1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
@@ -28,6 +30,7 @@
         <property name="url" value="${dbtbl_0_slave_1.url}"/>
         <property name="username" value="${dbtbl_0_slave_1.username}"/>
         <property name="password" value="${dbtbl_0_slave_1.password}"/>
+        <property name="maxTotal" value="500" />
     </bean>
     
     
@@ -36,6 +39,7 @@
         <property name="url" value="${dbtbl_1_master.url}"/>
         <property name="username" value="${dbtbl_1_master.username}"/>
         <property name="password" value="${dbtbl_1_master.password}"/>
+        <property name="maxTotal" value="500" />
     </bean>
     
     <bean id="dbtbl_1_slave_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
@@ -43,6 +47,7 @@
         <property name="url" value="${dbtbl_1_slave_0.url}"/>
         <property name="username" value="${dbtbl_1_slave_0.username}"/>
         <property name="password" value="${dbtbl_1_slave_0.password}"/>
+        <property name="maxTotal" value="500" />
     </bean>
     
     <bean id="dbtbl_1_slave_1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
@@ -50,5 +55,6 @@
         <property name="url" value="${dbtbl_1_slave_1.url}"/>
         <property name="username" value="${dbtbl_1_slave_1.username}"/>
         <property name="password" value="${dbtbl_1_slave_1.password}"/>
+        <property name="maxTotal" value="500" />
     </bean>
 </beans>
