@@ -20,11 +20,12 @@ package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.MasterSlaveEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.ShardingEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
@@ -32,7 +33,6 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
 
-import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -61,14 +61,10 @@ public final class InstanceListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        for (String each : dataSourceMap.keySet()) {
-                            dataSourceMap.put(each, new CircuitBreakerDataSource());
-                        }
-                    }
-                    shardingDataSource.renew(dataSourceMap, new ShardingRule(configService.loadShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
+                if (DataChangedEvent.Type.UPDATED == event.getEventType() && StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
+                    JDBCEventBusEvent jdbcEventBusEvent = new JDBCEventBusEvent();
+                    jdbcEventBusEvent.getCircuitBreakerDataSource().addAll(configService.loadDataSourceMap().keySet());
+                    ShardingEventBusInstance.getInstance().post(jdbcEventBusEvent);
                 }
             }
         });
@@ -80,14 +76,10 @@ public final class InstanceListenerManager implements ListenerManager {
             
             @Override
             public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        for (String each : dataSourceMap.keySet()) {
-                            dataSourceMap.put(each, new CircuitBreakerDataSource());
-                        }
-                    }
-                    masterSlaveDataSource.renew(dataSourceMap, configService.loadMasterSlaveRuleConfiguration());
+                if (DataChangedEvent.Type.UPDATED == event.getEventType() && StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
+                    JDBCEventBusEvent jdbcEventBusEvent = new JDBCEventBusEvent();
+                    jdbcEventBusEvent.getCircuitBreakerDataSource().addAll(configService.loadDataSourceMap().keySet());
+                    MasterSlaveEventBusInstance.getInstance().post(jdbcEventBusEvent);
                 }
             }
         });
