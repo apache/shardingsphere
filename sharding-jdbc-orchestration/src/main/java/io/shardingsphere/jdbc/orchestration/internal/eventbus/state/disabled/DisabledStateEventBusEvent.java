@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class JdbcDisabledEventBusEvent {
+public final class DisabledStateEventBusEvent {
     
     private final Collection<String> disabledDataSourceNames;
 }

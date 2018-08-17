@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcDisabledEventBusInstance {
+public final class DisabledStateEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     
