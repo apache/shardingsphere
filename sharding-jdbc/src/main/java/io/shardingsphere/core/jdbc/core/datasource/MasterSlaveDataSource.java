@@ -100,9 +100,11 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig new master-slave rule configuration
+     * @throws SQLException sql exception
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+    public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
         closeOriginalDataSources();
+        super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
     }

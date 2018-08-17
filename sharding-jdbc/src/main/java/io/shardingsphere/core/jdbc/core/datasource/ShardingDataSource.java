@@ -112,6 +112,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @param newDataSourceMap new data source map
      * @param newShardingRule new sharding rule
      * @param newProps new sharding properties
+     * @throws SQLException sql exception
      */
     public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) throws SQLException {
         super.renew(newDataSourceMap.values());
