@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.sharding;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config;
 
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
