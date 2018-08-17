@@ -24,15 +24,12 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.executor.engine.connection.ConnectionStrictlyExecutorEngine;
 import io.shardingsphere.core.executor.engine.memory.MemoryStrictlyExecutorEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.config.JdbcConfigurationEventBusInstance;
@@ -43,7 +40,6 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -86,29 +82,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
-        ShardingMetaData shardingMetaData = new ShardingMetaData(
-                getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, connectionMode, showSQL);
+        ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, connectionMode, showSQL);
         JdbcDisabledEventBusInstance.getInstance().register(result);
         JdbcCircuitEventBusInstance.getInstance().register(result);
         return result;
-    }
-    
-    private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), getDataSourceURL(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private static String getDataSourceURL(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return connection.getMetaData().getURL();
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
-        }
     }
     
     /**
@@ -132,7 +110,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
             originalExecutorEngine.close();
         }
-        shardingContext = getShardingContext(newDataSourceMap, newShardingRule, newConnectionMode);
+        shardingContext.renew(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, newConnectionMode, (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         closeOriginalDataSources();
     }
     
