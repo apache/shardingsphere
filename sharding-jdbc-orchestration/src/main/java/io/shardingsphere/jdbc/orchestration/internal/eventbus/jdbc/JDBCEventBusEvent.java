@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * JDBC event bus event.
@@ -31,7 +32,7 @@ import java.util.Collection;
 @Getter
 public final class JDBCEventBusEvent {
     
-    private final Collection<String> disabledDataSourceNames;
+    private final Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private final Collection<String> circuitBreakerDataSource;
+    private final Collection<String> circuitBreakerDataSource = new LinkedList<>();
 }
