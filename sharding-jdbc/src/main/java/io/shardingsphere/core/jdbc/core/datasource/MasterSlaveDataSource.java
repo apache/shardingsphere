@@ -26,7 +26,7 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.masterslave.MasterSlaveEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 
@@ -69,7 +69,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        JDBCEventBusInstance.getInstance().register(this);
+        MasterSlaveEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
