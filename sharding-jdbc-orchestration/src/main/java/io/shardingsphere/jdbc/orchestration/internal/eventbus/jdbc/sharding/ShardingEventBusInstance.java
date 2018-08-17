@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.sharding;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * JDBC event bus instance.
+ * Sharding event bus instance.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCEventBusInstance {
+public final class ShardingEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     
