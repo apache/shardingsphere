@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 /**
- * Proxy event bus event.
+ * Proxy configuration event bus event.
  *
  * @author panjuan
  */
