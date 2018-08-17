@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state;
+package io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.disabled;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Master slave state event bus instance.
+ * Jdbc disabled event bus instance.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveStateEventBusInstance {
+public final class JdbcDisabledEventBusInstance {
     
     private static final EventBus INSTANCE = new EventBus();
     
