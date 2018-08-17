@@ -13,28 +13,37 @@ itemList:
 item:
 	;
 
+idList:
+    LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
+    ;
+
 schemaName: ID;
 tableName: ID;
 columnName: ID; 
+tablespaceName:ID;
+
+collationName:
+	ID
+	;	
 
 STRING: 
 	DOUBLE_QUOTA ('\\"'|.)*? DOUBLE_QUOTA
     |SINGLE_QUOTA (SINGLE_QUOTA |.)*? SINGLE_QUOTA
 	;
     
- INT :
-   '0' | [1-9] [0-9]*
-   ;
-
 
 NUMBER:
-     MINUS? INT DOT [0-9]+ EXP?
-     |MINUS? INT | EXP
-     |MINUS? INT
+     MINUS? INT_ DOT [0-9]+ EXP?
+     |MINUS? INT_ | EXP
+     |MINUS? INT_
      ;
-       
+
+INT_ :
+   '0' | [1-9] [0-9]*
+   ;
+          
 EXP :
-    E [+\-]? INT
+    E [+\-]? INT_
     ;
     
 fragment HEX : 
