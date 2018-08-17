@@ -24,7 +24,6 @@ import io.shardingsphere.core.executor.event.sql.SQLExecutionEvent;
 import io.shardingsphere.core.executor.event.sql.SQLExecutionEventFactory;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -41,9 +40,8 @@ import java.util.Map;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public final class SQLExecuteCallback<T> implements ShardingExecuteCallback<BaseStatementUnit, T> {
+public class SQLExecuteCallback<T> implements ShardingExecuteCallback<BaseStatementUnit, T> {
     
-    @Getter
     private final SQLType sqlType;
     
     private final boolean isExceptionThrown;

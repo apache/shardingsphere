@@ -55,7 +55,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     
     @Override
     protected void beforeExecute(final OverallExecutionEvent event) {
-        ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX + event.getSqlType().name()).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
+        ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         SPAN.set(activeSpan);
         if (event.isParallelExecute()) {
             ExecutorDataMap.getDataMap().put(SNAPSHOT_DATA_KEY, activeSpan.capture());

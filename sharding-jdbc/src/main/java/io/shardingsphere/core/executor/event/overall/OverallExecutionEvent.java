@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor.event.overall;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class OverallExecutionEvent extends ShardingEvent {
-    
-    private final SQLType sqlType;
     
     private final boolean parallelExecute;
 }

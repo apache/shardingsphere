@@ -61,7 +61,7 @@ public final class SQLExecutorEngine implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        OverallExecutionEvent event = new OverallExecutionEvent(executeCallback.getSqlType(), baseStatementUnits.size() > 1);
+        OverallExecutionEvent event = new OverallExecutionEvent(baseStatementUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
             List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? shardingExecuteEngine.execute(new LinkedList<>(baseStatementUnits), executeCallback)
