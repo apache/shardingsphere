@@ -17,14 +17,13 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.JDBCEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.masterslave.MasterSlaveEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.sharding.ShardingEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -45,14 +44,11 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     private final RegistryCenter regCenter;
     
-    private final ConfigurationService configService;
-    
     private final DataSourceService dataSourceService;
     
     public DataSourceListenerManager(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
-        configService = new ConfigurationService(name, regCenter);
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
@@ -63,9 +59,9 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    JDBCEventBusEvent JDBCEventBusEvent = new JDBCEventBusEvent();
-                    JDBCEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    JDBCEventBusInstance.getInstance().post(JDBCEventBusEvent);
+                    JDBCEventBusEvent jdbcEventBusEvent = new JDBCEventBusEvent();
+                    jdbcEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
+                    ShardingEventBusInstance.getInstance().post(jdbcEventBusEvent);
                 }
             }
         });
@@ -78,11 +74,9 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = dataSourceService.getAvailableMasterSlaveRuleConfiguration();
-                    if (masterSlaveRuleConfiguration.getSlaveDataSourceNames().isEmpty()) {
-                        throw new ShardingException("No available slave datasource, can't apply the configuration!");
-                    } 
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration);
+                    JDBCEventBusEvent jdbcEventBusEvent = new JDBCEventBusEvent();
+                    jdbcEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
+                    MasterSlaveEventBusInstance.getInstance().post(jdbcEventBusEvent);
                 }
             }
         });
