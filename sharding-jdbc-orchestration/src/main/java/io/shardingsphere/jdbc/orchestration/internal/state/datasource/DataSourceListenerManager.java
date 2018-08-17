@@ -20,8 +20,7 @@ package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.MasterSlaveStateEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.ShardingStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.eventbus.jdbc.state.JdbcStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.eventbus.proxy.ProxyEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
@@ -59,7 +58,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
                     jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    ShardingStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
+                    JdbcStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
             }
         });
@@ -74,7 +73,7 @@ public final class DataSourceListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     JdbcStateEventBusEvent jdbcStateEventBusEvent = new JdbcStateEventBusEvent();
                     jdbcStateEventBusEvent.getDisabledDataSourceNames().addAll(dataSourceService.getDisabledDataSourceNames());
-                    MasterSlaveStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
+                    JdbcStateEventBusInstance.getInstance().post(jdbcStateEventBusEvent);
                 }
             }
         });
