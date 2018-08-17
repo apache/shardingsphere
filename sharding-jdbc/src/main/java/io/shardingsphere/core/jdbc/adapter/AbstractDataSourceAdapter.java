@@ -19,6 +19,7 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.core.listener.JDBCListenerRegister;
 import lombok.Getter;
@@ -74,10 +75,13 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
      * Renew abstract data source adapter.
      *
      * @param dataSources data sources
-     * @throws SQLException sql exception
      */
-    public void renew(final Collection<DataSource> dataSources) throws SQLException {
-        databaseType = getDatabaseType(dataSources);
+    public void renew(final Collection<DataSource> dataSources) {
+        try {
+            databaseType = getDatabaseType(dataSources);
+        } catch (final SQLException ex) {
+            throw new ShardingException(ex);
+        }
     }
     
     @Override
