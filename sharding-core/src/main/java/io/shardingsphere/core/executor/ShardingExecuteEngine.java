@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -107,33 +108,34 @@ public final class ShardingExecuteEngine implements AutoCloseable {
      * @return execute result
      * @throws Exception throw if execute failure
      */
-    public <I, O> List<O> groupExecute(final Map<String, Collection<I>> inputs, final ShardingExecuteCallback<I, O> callback) throws Exception {
+    public <I, O> List<O> groupExecute(final Map<String, Collection<I>> inputs, final ShardingGroupExecuteCallback<I, O> callback) throws Exception {
         if (inputs.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<I> firstInputs = inputs.remove(inputs.keySet().iterator().next());
+        String firstKey = inputs.keySet().iterator().next();
+        Collection<I> firstInputs = inputs.remove(firstKey);
         Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(inputs, callback);
-        return getGroupResults(doGroupExecute(firstInputs, callback), restResultFutures);
+        return getGroupResults(doGroupExecute(firstKey, firstInputs, callback), restResultFutures);
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final Map<String, Collection<I>> inputs, final ShardingExecuteCallback<I, O> callback) {
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final Map<String, Collection<I>> inputs, final ShardingGroupExecuteCallback<I, O> callback) {
         Collection<ListenableFuture<Collection<O>>> result = new ArrayList<>(inputs.size());
-        for (final Collection<I> each : inputs.values()) {
+        for (final Entry<String, Collection<I>> entry : inputs.entrySet()) {
             result.add(executorService.submit(new Callable<Collection<O>>() {
                 
                 @Override
                 public Collection<O> call() throws Exception {
-                    return doGroupExecute(each, callback);
+                    return doGroupExecute(entry.getKey(), entry.getValue(), callback);
                 }
             }));
         }
         return result;
     }
     
-    private <I, O> Collection<O> doGroupExecute(final Collection<I> input, final ShardingExecuteCallback<I, O> callback) throws Exception {
+    private <I, O> Collection<O> doGroupExecute(final String key, final Collection<I> input, final ShardingGroupExecuteCallback<I, O> callback) throws Exception {
         Collection<O> result = new LinkedList<>();
         for (I each : input) {
-            result.add(callback.execute(each));
+            result.add(callback.execute(key, each));
         }
         return result;
     }

@@ -40,7 +40,7 @@ import java.util.Map;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<StatementExecuteUnit, T> {
+public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<StatementExecuteUnit, T>, ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
     
     private final SQLType sqlType;
     
@@ -51,17 +51,26 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
     @Override
-    public final T execute(final StatementExecuteUnit input) throws Exception {
+    public final T execute(final StatementExecuteUnit executeUnit) throws Exception {
+        return executeInternal(executeUnit);
+    }
+    
+    @Override
+    public final T execute(final String dataSourceName, final StatementExecuteUnit executeUnit) throws Exception {
+        return executeInternal(executeUnit);
+    }
+    
+    private T executeInternal(final StatementExecuteUnit executeUnit) throws Exception {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<SQLExecutionEvent> events = new LinkedList<>();
-        for (List<Object> each : input.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
-            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(sqlType, input, each);
+        for (List<Object> each : executeUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
+            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(sqlType, executeUnit, each);
             events.add(event);
             shardingEventBus.post(event);
         }
         try {
-            T result = executeSQL(input);
+            T result = executeSQL(executeUnit);
             for (SQLExecutionEvent each : events) {
                 each.setExecuteSuccess();
                 shardingEventBus.post(each);
@@ -75,7 +84,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             }
             return null;
         }
-    }
+    } 
     
     protected abstract T executeSQL(StatementExecuteUnit executeUnit) throws SQLException;
 }
