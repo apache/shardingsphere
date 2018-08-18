@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.result.StreamQueryResult;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
@@ -223,10 +223,10 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         clearPrevious();
         sqlRoute(sql);
         if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
-            return new StatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+            return new StatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
                     routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
         }
-        return new StatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+        return new StatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
                 routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());
     }
     

@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SQL execute engine.
+ * SQL execute template.
  * 
  * @author gaohongtao
  * @author zhangliang
@@ -41,9 +40,8 @@ import java.util.Map;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class SQLExecutorEngine {
+public final class SQLExecuteTemplate {
     
-    @Getter
     private final ShardingExecuteEngine shardingExecuteEngine;
     
     private final ConnectionMode connectionMode;

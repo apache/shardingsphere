@@ -20,7 +20,7 @@ package io.shardingsphere.core.executor.type.statement;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
-import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class StatementExecutor {
     
-    private final SQLExecutorEngine executorEngine;
+    private final SQLExecuteTemplate executeTemplate;
     
     private final SQLType sqlType;
     
@@ -65,7 +65,7 @@ public final class StatementExecutor {
                 return executeUnit.getStatement().executeQuery(executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         };
-        return executorEngine.execute(statementUnits, executeCallback);
+        return executeTemplate.execute(statementUnits, executeCallback);
     }
     
     /**
@@ -145,7 +145,7 @@ public final class StatementExecutor {
                 return updater.executeUpdate(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         };
-        List<Integer> results = executorEngine.execute(statementUnits, executeCallback);
+        List<Integer> results = executeTemplate.execute(statementUnits, executeCallback);
         return accumulate(results);
     }
     
@@ -234,7 +234,7 @@ public final class StatementExecutor {
                 return executor.execute(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         };
-        List<Boolean> result = executorEngine.execute(statementUnits, executeCallback);
+        List<Boolean> result = executeTemplate.execute(statementUnits, executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }

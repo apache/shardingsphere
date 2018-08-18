@@ -21,7 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
-import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class BatchPreparedStatementExecutor {
     
-    private final SQLExecutorEngine executorEngine;
+    private final SQLExecuteTemplate executeTemplate;
     
     private final DatabaseType dbType;
     
@@ -66,7 +66,7 @@ public final class BatchPreparedStatementExecutor {
                 return executeUnit.getStatement().executeBatch();
             }
         };
-        return accumulate(executorEngine.execute(batchPreparedStatementUnits, callback));
+        return accumulate(executeTemplate.execute(batchPreparedStatementUnits, callback));
     }
     
     private int[] accumulate(final List<int[]> results) {

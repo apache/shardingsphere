@@ -23,7 +23,7 @@ import com.google.common.collect.Iterators;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.result.StreamQueryResult;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
@@ -137,7 +137,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ResultSet result;
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
-            List<ResultSet> resultSets = new PreparedStatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+            List<ResultSet> resultSets = new PreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
                     routeResult.getSqlStatement().getType(), preparedStatementUnits).executeQuery();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
                     connection.getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
@@ -166,7 +166,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         routedStatements.clear();
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
-            return new PreparedStatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()),
+            return new PreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()),
                     routeResult.getSqlStatement().getType(), preparedStatementUnits).executeUpdate();
         } finally {
             refreshTableMetaData();
@@ -179,7 +179,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         routedStatements.clear();
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
-            return new PreparedStatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+            return new PreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
                     routeResult.getSqlStatement().getType(), preparedStatementUnits).execute();
         } finally {
             refreshTableMetaData();
@@ -308,7 +308,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            return new BatchPreparedStatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()),
+            return new BatchPreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()),
                     connection.getShardingContext().getDatabaseType(), routeResult.getSqlStatement().getType(), batchStatementUnits, batchCount).executeBatch();
         } finally {
             clearBatch();

@@ -20,7 +20,7 @@ package io.shardingsphere.core.executor.type.prepared;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
-import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class PreparedStatementExecutor {
     
-    private final SQLExecutorEngine executorEngine;
+    private final SQLExecuteTemplate executeTemplate;
     
     private final SQLType sqlType;
     
@@ -64,7 +64,7 @@ public final class PreparedStatementExecutor {
                 return ((PreparedStatement) executeUnit.getStatement()).executeQuery();
             }
         };
-        return executorEngine.execute(preparedStatementUnits, executeCallback);
+        return executeTemplate.execute(preparedStatementUnits, executeCallback);
     }
     
     /**
@@ -83,7 +83,7 @@ public final class PreparedStatementExecutor {
                 return ((PreparedStatement) executeUnit.getStatement()).executeUpdate();
             }
         };
-        List<Integer> results = executorEngine.execute(preparedStatementUnits, executeCallback);
+        List<Integer> results = executeTemplate.execute(preparedStatementUnits, executeCallback);
         return accumulate(results);
     }
     
@@ -111,7 +111,7 @@ public final class PreparedStatementExecutor {
                 return ((PreparedStatement) executeUnit.getStatement()).execute();
             }
         };
-        List<Boolean> result = executorEngine.execute(preparedStatementUnits, executeCallback);
+        List<Boolean> result = executeTemplate.execute(preparedStatementUnits, executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }

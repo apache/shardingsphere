@@ -150,28 +150,28 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        ShardingExecuteEngine originExecuteEngine = getExecutorEngine(shardingDataSource);
+        ShardingExecuteEngine originExecuteEngine = getExecuteEngine(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
         shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), new Properties());
-        assertThat(originExecuteEngine, is(getExecutorEngine(shardingDataSource)));
+        assertThat(originExecuteEngine, is(getExecuteEngine(shardingDataSource)));
     }
     
     @Test
-    public void assertRenewWithChangeExecutorEnginePoolSize() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertRenewWithChangeExecuteEnginePoolSize() throws SQLException, NoSuchFieldException, IllegalAccessException {
         DataSource originalDataSource = mockDataSource("H2");
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        final ShardingExecuteEngine originExecuteEngine = getExecutorEngine(shardingDataSource);
+        final ShardingExecuteEngine originExecuteEngine = getExecuteEngine(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
         shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), props);
-        assertThat(originExecuteEngine, not(getExecutorEngine(shardingDataSource)));
+        assertThat(originExecuteEngine, not(getExecuteEngine(shardingDataSource)));
     }
     
     // TODO to be discuss
@@ -205,7 +205,7 @@ public final class ShardingDataSourceTest {
         return result;
     }
     
-    private ShardingExecuteEngine getExecutorEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+    private ShardingExecuteEngine getExecuteEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
         Field field = ShardingDataSource.class.getDeclaredField("executeEngine");
         field.setAccessible(true);
         return (ShardingExecuteEngine) field.get(shardingDataSource);
