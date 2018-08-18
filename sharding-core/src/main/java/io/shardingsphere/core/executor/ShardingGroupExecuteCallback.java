@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor;
 
+import java.util.Collection;
+
 /**
  * Sharding group execute callback.
  * 
@@ -31,9 +33,9 @@ public interface ShardingGroupExecuteCallback<I, O> {
      * Execute callback.
      * 
      * @param key input key
-     * @param value input value
+     * @param values input values
      * @return execute result
      * @throws Exception throw when execute failure
      */
-    O execute(String key, I value) throws Exception;
+    Collection<O> execute(String key, Collection<I> values) throws Exception;
 }

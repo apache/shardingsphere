@@ -27,6 +27,7 @@ import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +57,12 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     }
     
     @Override
-    public final T execute(final String dataSourceName, final StatementExecuteUnit executeUnit) throws Exception {
-        return executeInternal(executeUnit);
+    public final Collection<T> execute(final String dataSourceName, final Collection<StatementExecuteUnit> executeUnits) throws Exception {
+        Collection<T> result = new LinkedList<>();
+        for (StatementExecuteUnit each : executeUnits) {
+            result.add(executeInternal(each));
+        }
+        return result;
     }
     
     private T executeInternal(final StatementExecuteUnit executeUnit) throws Exception {

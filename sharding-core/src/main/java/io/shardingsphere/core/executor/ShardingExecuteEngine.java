@@ -115,7 +115,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
         String firstKey = inputs.keySet().iterator().next();
         Collection<I> firstInputs = inputs.remove(firstKey);
         Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(inputs, callback);
-        return getGroupResults(doGroupExecute(firstKey, firstInputs, callback), restResultFutures);
+        return getGroupResults(callback.execute(firstKey, firstInputs), restResultFutures);
     }
     
     private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final Map<String, Collection<I>> inputs, final ShardingGroupExecuteCallback<I, O> callback) {
@@ -125,17 +125,9 @@ public final class ShardingExecuteEngine implements AutoCloseable {
                 
                 @Override
                 public Collection<O> call() throws Exception {
-                    return doGroupExecute(entry.getKey(), entry.getValue(), callback);
+                    return callback.execute(entry.getKey(), entry.getValue());
                 }
             }));
-        }
-        return result;
-    }
-    
-    private <I, O> Collection<O> doGroupExecute(final String key, final Collection<I> input, final ShardingGroupExecuteCallback<I, O> callback) throws Exception {
-        Collection<O> result = new LinkedList<>();
-        for (I each : input) {
-            result.add(callback.execute(key, each));
         }
         return result;
     }
