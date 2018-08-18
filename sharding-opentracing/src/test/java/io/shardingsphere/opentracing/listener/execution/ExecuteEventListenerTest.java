@@ -19,7 +19,7 @@ package io.shardingsphere.opentracing.listener.execution;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
@@ -59,7 +59,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) {
+            protected Integer executeSQL(final StatementExecuteUnit executeUnit) {
                 return 0;
             }
         };
@@ -82,7 +82,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) {
+            protected Integer executeSQL(final StatementExecuteUnit executeUnit) {
                 return 0;
             }
         };
@@ -105,7 +105,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) {
+            protected Integer executeSQL(final StatementExecuteUnit executeUnit) {
                 return 0;
             }
         };
@@ -122,7 +122,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DQL, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
+            protected Integer executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
                 throw new SQLException();
             }
         };

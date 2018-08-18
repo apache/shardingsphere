@@ -18,7 +18,7 @@
 package io.shardingsphere.core.executor.type.statement;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
@@ -61,8 +61,8 @@ public final class StatementExecutor {
         SQLExecuteCallback<ResultSet> executeCallback = new SQLExecuteCallback<ResultSet>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected ResultSet executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+            protected ResultSet executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return executeUnit.getStatement().executeQuery(executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         };
         return executorEngine.execute(statementUnits, executeCallback);
@@ -141,8 +141,8 @@ public final class StatementExecutor {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+            protected Integer executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return updater.executeUpdate(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         };
         List<Integer> results = executorEngine.execute(statementUnits, executeCallback);
@@ -230,8 +230,8 @@ public final class StatementExecutor {
         SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Boolean executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+            protected Boolean executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return executor.execute(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
             }
         };
         List<Boolean> result = executorEngine.execute(statementUnits, executeCallback);

@@ -40,7 +40,7 @@ import java.util.Map;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<BaseStatementUnit, T> {
+public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<StatementExecuteUnit, T> {
     
     private final SQLType sqlType;
     
@@ -51,7 +51,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<B
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
     @Override
-    public final T execute(final BaseStatementUnit input) throws Exception {
+    public final T execute(final StatementExecuteUnit input) throws Exception {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<SQLExecutionEvent> events = new LinkedList<>();
@@ -77,5 +77,5 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<B
         }
     }
     
-    protected abstract T executeSQL(BaseStatementUnit baseStatementUnit) throws SQLException;
+    protected abstract T executeSQL(StatementExecuteUnit executeUnit) throws SQLException;
 }

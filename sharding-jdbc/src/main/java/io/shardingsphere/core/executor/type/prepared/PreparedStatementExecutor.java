@@ -18,7 +18,7 @@
 package io.shardingsphere.core.executor.type.prepared;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
@@ -60,8 +60,8 @@ public final class PreparedStatementExecutor {
         SQLExecuteCallback<ResultSet> executeCallback = new SQLExecuteCallback<ResultSet>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected ResultSet executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return ((PreparedStatement) baseStatementUnit.getStatement()).executeQuery();
+            protected ResultSet executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return ((PreparedStatement) executeUnit.getStatement()).executeQuery();
             }
         };
         return executorEngine.execute(preparedStatementUnits, executeCallback);
@@ -79,8 +79,8 @@ public final class PreparedStatementExecutor {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return ((PreparedStatement) baseStatementUnit.getStatement()).executeUpdate();
+            protected Integer executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return ((PreparedStatement) executeUnit.getStatement()).executeUpdate();
             }
         };
         List<Integer> results = executorEngine.execute(preparedStatementUnits, executeCallback);
@@ -107,8 +107,8 @@ public final class PreparedStatementExecutor {
         SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Boolean executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return ((PreparedStatement) baseStatementUnit.getStatement()).execute();
+            protected Boolean executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return ((PreparedStatement) executeUnit.getStatement()).execute();
             }
         };
         List<Boolean> result = executorEngine.execute(preparedStatementUnits, executeCallback);

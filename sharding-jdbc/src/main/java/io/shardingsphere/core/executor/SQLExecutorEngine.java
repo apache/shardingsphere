@@ -54,18 +54,18 @@ public final class SQLExecutorEngine implements AutoCloseable {
     /**
      * Execute.
      *
-     * @param baseStatementUnits statement execute units
-     * @param executeCallback prepared statement execute callback
+     * @param executeUnits execute units
+     * @param executeCallback execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        OverallExecutionEvent event = new OverallExecutionEvent(baseStatementUnits.size() > 1);
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? shardingExecuteEngine.execute(new LinkedList<>(baseStatementUnits), executeCallback)
-                    : shardingExecuteEngine.groupExecute(getBaseStatementUnitGroups(baseStatementUnits), executeCallback);
+            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? shardingExecuteEngine.execute(new LinkedList<>(executeUnits), executeCallback)
+                    : shardingExecuteEngine.groupExecute(getExecuteUnitGroups(executeUnits), executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -79,12 +79,12 @@ public final class SQLExecutorEngine implements AutoCloseable {
         }
     }
     
-    private Map<String, Collection<BaseStatementUnit>> getBaseStatementUnitGroups(final Collection<? extends BaseStatementUnit> baseStatementUnits) {
-        Map<String, Collection<BaseStatementUnit>> result = new LinkedHashMap<>(baseStatementUnits.size(), 1);
-        for (BaseStatementUnit each : baseStatementUnits) {
+    private Map<String, Collection<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<? extends StatementExecuteUnit> executeUnits) {
+        Map<String, Collection<StatementExecuteUnit>> result = new LinkedHashMap<>(executeUnits.size(), 1);
+        for (StatementExecuteUnit each : executeUnits) {
             String dataSourceName = each.getSqlExecutionUnit().getDataSource();
             if (!result.keySet().contains(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<BaseStatementUnit>());
+                result.put(dataSourceName, new LinkedList<StatementExecuteUnit>());
             }
             result.get(dataSourceName).add(each);
         }

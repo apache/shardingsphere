@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.type.batch;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
@@ -62,8 +62,8 @@ public final class BatchPreparedStatementExecutor {
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected int[] executeSQL(final BaseStatementUnit baseStatementUnit) throws SQLException {
-                return baseStatementUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return executeUnit.getStatement().executeBatch();
             }
         };
         return accumulate(executorEngine.execute(batchPreparedStatementUnits, callback));

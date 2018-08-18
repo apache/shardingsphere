@@ -18,7 +18,7 @@
 package io.shardingsphere.core.executor.event.sql;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,17 +37,17 @@ public final class SQLExecutionEventFactory {
      * Create SQL execution event.
      * 
      * @param sqlType SQL type
-     * @param baseStatementUnit statement unit
+     * @param executeUnit execute unit
      * @param parameters parameters
      * @return SQL execution event
      */
-    public static SQLExecutionEvent createEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
+    public static SQLExecutionEvent createEvent(final SQLType sqlType, final StatementExecuteUnit executeUnit, final List<Object> parameters) {
         if (SQLType.DQL == sqlType) {
-            return new DQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
+            return new DQLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
         }
         if (SQLType.DML == sqlType) {
-            return new DMLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
+            return new DMLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
         }
-        return new SQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
+        return new SQLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), parameters);
     }
 }
