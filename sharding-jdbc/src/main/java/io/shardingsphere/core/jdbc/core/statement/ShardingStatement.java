@@ -20,6 +20,8 @@ package io.shardingsphere.core.jdbc.core.statement;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.executor.SQLExecutorEngine;
 import io.shardingsphere.core.executor.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.result.StreamQueryResult;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
@@ -45,7 +47,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -222,9 +223,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         clearPrevious();
         sqlRoute(sql);
         if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
-            return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
+            return new StatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+                    routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
         }
-        return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());
+        return new StatementExecutor(new SQLExecutorEngine(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+                routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());
     }
     
     private Collection<StatementUnit> getStatementUnitsForConnectionStrictly() throws SQLException {
@@ -285,8 +288,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(), 
-                    connection.getShardingContext().getExecutorEngine().getShardingExecuteEngine().getExecutorService(), 
-                    new JDBCTableMetaDataConnectionManager(connection.getShardingContext().getDataSourceMap()));
+                    connection.getShardingContext().getExecuteEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(connection.getShardingContext().getDataSourceMap()));
             connection.getShardingContext().getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
         }
     }

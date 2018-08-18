@@ -19,9 +19,10 @@ package io.shardingsphere.opentracing.listener.execution;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.SQLExecuteCallback;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
@@ -29,6 +30,7 @@ import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
+import org.junit.After;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -48,7 +50,14 @@ import static org.mockito.Mockito.when;
 
 public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
-    private final SQLExecutorEngine executorEngine = new SQLExecutorEngine(5, ConnectionMode.MEMORY_STRICTLY);
+    private ShardingExecuteEngine shardingExecuteEngine = new ShardingExecuteEngine(5);
+    
+    private final SQLExecutorEngine sqlExecutorEngine = new SQLExecutorEngine(shardingExecuteEngine, ConnectionMode.MEMORY_STRICTLY);
+    
+    @After
+    public void tearDown() {
+        shardingExecuteEngine.close();
+    }
     
     @Test
     public void assertSingleStatement() throws SQLException {
@@ -63,7 +72,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 return 0;
             }
         };
-        executorEngine.execute(Collections.singleton(
+        sqlExecutorEngine.execute(Collections.singleton(
                 new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(2));
     }
@@ -86,7 +95,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 return 0;
             }
         };
-        executorEngine.execute(statementUnitList, executeCallback);
+        sqlExecutorEngine.execute(statementUnitList, executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(3));
     }
 
@@ -109,7 +118,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 return 0;
             }
         };
-        executorEngine.execute(statementUnitList, executeCallback);
+        sqlExecutorEngine.execute(statementUnitList, executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(3));
     }
     
@@ -126,7 +135,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 throw new SQLException();
             }
         };
-        executorEngine.execute(Collections.singleton(
+        sqlExecutorEngine.execute(Collections.singleton(
                 new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
     }
 }

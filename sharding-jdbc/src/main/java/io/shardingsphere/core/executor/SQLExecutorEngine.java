@@ -22,6 +22,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,17 +40,13 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class SQLExecutorEngine implements AutoCloseable {
+@RequiredArgsConstructor
+public final class SQLExecutorEngine {
     
     @Getter
     private final ShardingExecuteEngine shardingExecuteEngine;
     
     private final ConnectionMode connectionMode;
-    
-    public SQLExecutorEngine(final int executorSize, final ConnectionMode connectionMode) {
-        shardingExecuteEngine = new ShardingExecuteEngine(executorSize);
-        this.connectionMode = connectionMode;
-    }
     
     /**
      * Execute.
@@ -89,10 +86,5 @@ public final class SQLExecutorEngine implements AutoCloseable {
             result.get(dataSourceName).add(each);
         }
         return result;
-    }
-    
-    @Override
-    public void close() {
-        shardingExecuteEngine.close();
     }
 }

@@ -19,7 +19,7 @@ package io.shardingsphere.core.jdbc.core;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public final class ShardingContext {
     
     private final DatabaseType databaseType;
     
-    private final SQLExecutorEngine executorEngine;
+    private final ShardingExecuteEngine executeEngine;
     
     private final ShardingMetaData metaData;
     

@@ -20,6 +20,7 @@ package io.shardingsphere.core.executor.type;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.SQLExecutorEngine;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
@@ -36,7 +37,9 @@ import org.mockito.MockitoAnnotations;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private SQLExecutorEngine executorEngine;
+    private ShardingExecuteEngine shardingExecuteEngine;
+    
+    private SQLExecutorEngine sqlExecutorEngine;
     
     @Mock
     private EventCaller eventCaller;
@@ -51,7 +54,8 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new SQLExecutorEngine(Runtime.getRuntime().availableProcessors(), ConnectionMode.MEMORY_STRICTLY);
+        shardingExecuteEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
+        sqlExecutorEngine = new SQLExecutorEngine(shardingExecuteEngine, ConnectionMode.MEMORY_STRICTLY);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
@@ -66,6 +70,6 @@ public abstract class AbstractBaseExecutorTest {
         ShardingEventBusInstance.getInstance().unregister(overallExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);
-        executorEngine.close();
+        shardingExecuteEngine.close();
     }
 }
