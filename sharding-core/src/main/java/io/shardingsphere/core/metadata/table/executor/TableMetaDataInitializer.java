@@ -18,8 +18,8 @@
 package io.shardingsphere.core.metadata.table.executor;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -45,9 +45,9 @@ public final class TableMetaDataInitializer {
     private final TableMetaDataLoader tableMetaDataLoader;
     
     public TableMetaDataInitializer(
-            final ShardingDataSourceMetaData shardingDataSourceMetaData, final ListeningExecutorService executorService, final TableMetaDataConnectionManager connectionManager) {
+            final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine shardingExecuteEngine, final TableMetaDataConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executorService, connectionManager);
+        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, shardingExecuteEngine, connectionManager);
     }
     
     /**

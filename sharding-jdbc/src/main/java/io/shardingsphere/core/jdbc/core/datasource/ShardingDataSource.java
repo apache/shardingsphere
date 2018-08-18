@@ -73,8 +73,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         executeEngine = new ShardingExecuteEngine(executorSize);
-        ShardingMetaData shardingMetaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), 
-                executeEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
+        ShardingMetaData shardingMetaData = new ShardingMetaData(
+                getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, shardingMetaData, connectionMode, showSQL);
     }
@@ -113,8 +113,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             originalExecuteEngine.close();
         }
         shardingProperties = newShardingProperties;
-        ShardingMetaData shardingMetaData = new ShardingMetaData(getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), 
-                executeEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap));
+        ShardingMetaData shardingMetaData = new ShardingMetaData(
+                getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(newDataSourceMap));
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executeEngine, shardingMetaData, newConnectionMode, newShowSQL);
     }

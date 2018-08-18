@@ -59,7 +59,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final BackendConnection backendConnection;
     
-    private final ExecutorService executorService = BackendExecutorContext.getInstance().getExecutorService();
+    private final ExecutorService executorService = BackendExecutorContext.getInstance().getShardingExecuteEngine().getExecutorService();
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
@@ -67,7 +67,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private List<ColumnType> columnTypes;
     
-    protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected final ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
@@ -82,7 +82,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
     }
     
-    protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected final ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {

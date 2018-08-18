@@ -17,10 +17,9 @@
 
 package io.shardingsphere.core.metadata.table.executor;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
@@ -38,9 +37,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Table meta data loader.
@@ -52,7 +48,7 @@ public final class TableMetaDataLoader {
     
     private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
-    private final ListeningExecutorService executorService;
+    private final ShardingExecuteEngine shardingExecuteEngine;
     
     private final TableMetaDataConnectionManager connectionManager;
     
@@ -70,27 +66,17 @@ public final class TableMetaDataLoader {
     }
     
     private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<ListenableFuture<Collection<TableMetaData>>> futures = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : dataNodeGroups.entrySet()) {
-            final String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(entry.getKey());
-            DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(entry.getKey());
-            final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
-            final Collection<String> actualTableNames = entry.getValue();
-            futures.add(executorService.submit(new Callable<Collection<TableMetaData>>() {
+        try {
+            return shardingExecuteEngine.groupExecute(dataNodeGroups, new ShardingGroupExecuteCallback<String, TableMetaData>() {
                 
                 @Override
-                public Collection<TableMetaData> call() throws SQLException {
-                    return load(dataSourceName, catalog, actualTableNames);
+                public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
+                    DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
+                    final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
+                    return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, actualTableNames);
                 }
-            }));
-        }
-        List<TableMetaData> result = new LinkedList<>();
-        try {
-            for (Collection<TableMetaData> each : Futures.allAsList(futures).get()) {
-                result.addAll(each);
-            }
-            return result;
-        } catch (final InterruptedException | ExecutionException ex) {
+            });
+        } catch (final Exception ex) {
             throw new ShardingException(ex);
         }
     }
