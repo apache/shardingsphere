@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type.connection;
+package io.shardingsphere.core.executor.result;
 
 import io.shardingsphere.core.merger.QueryResult;
 
