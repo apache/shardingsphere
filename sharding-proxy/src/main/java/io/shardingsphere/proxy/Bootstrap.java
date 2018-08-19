@@ -22,9 +22,9 @@ import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.config.proxy.ProxyConfigurationEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
@@ -82,9 +82,9 @@ public final class Bootstrap {
             OrchestrationProxyConfiguration result = new Yaml(new Constructor(OrchestrationProxyConfiguration.class)).loadAs(inputStreamReader, OrchestrationProxyConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
             Preconditions.checkState(!result.getDataSources().isEmpty() || null != result.getOrchestration(), "Data sources configuration can not be empty.");
-            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != result.getOrchestration(), 
+            Preconditions.checkState(null != result.getProxyBasicRule().getShardingRule() || null != result.getProxyBasicRule().getMasterSlaveRule() || null != result.getOrchestration(),
                     "Configuration invalid, sharding rule, local and orchestration configuration can not be both null.");
-            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyBasicRule().getProxyAuthority().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
             return result;
         }
     }
@@ -108,13 +108,13 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final OrchestrationProxyConfiguration config, final int port) throws InterruptedException {
-        RULE_REGISTRY.init(config);
+        RULE_REGISTRY.init(config.getDataSources(), config.getProxyBasicRule());
         new ShardingProxy().start(port);
     }
     
     private static void startWithRegistryCenter(final OrchestrationProxyConfiguration localConfig, final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(localConfig.getOrchestration().getOrchestrationConfiguration())) {
-            if (null != localConfig.getShardingRule() || null != localConfig.getMasterSlaveRule()) {
+            if (null != localConfig.getProxyBasicRule().getShardingRule() || null != localConfig.getProxyBasicRule().getMasterSlaveRule()) {
                 orchestrationFacade.init(localConfig);
             }
             initRuleRegistry(orchestrationFacade.getConfigService());
@@ -123,7 +123,7 @@ public final class Bootstrap {
     }
     
     private static void initRuleRegistry(final ConfigurationService configService) {
-        RULE_REGISTRY.init(new OrchestrationProxyConfiguration(configService.loadDataSources(), configService.loadProxyConfiguration()));
+        RULE_REGISTRY.init(configService.loadDataSources(), configService.loadProxyConfiguration().getProxyBasicRule());
         ProxyConfigurationEventBusInstance.getInstance().register(RULE_REGISTRY);
         DisabledStateEventBusInstance.getInstance().register(RULE_REGISTRY);
         CircuitStateEventBusInstance.getInstance().register(RULE_REGISTRY);
