@@ -26,14 +26,14 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.orche.config.ProxyBasicRule;
+import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.state.disabled.DisabledStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.config.proxy.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -102,9 +102,10 @@ public final class RuleRegistry {
     /**
      * Initialize rule registry.
      *
+     * @param dataSources data sources
      * @param config yaml proxy configuration
      */
-    public synchronized void init(final OrchestrationProxyConfiguration config) {
+    public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxyBasicRule config) {
         Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
@@ -120,12 +121,12 @@ public final class RuleRegistry {
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(useNIO, databaseConnectionCount, connectionTimeoutSeconds);
         shardingRule = new ShardingRule(
-                null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
+                null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
         if (null != config.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        dataSourceConfigurationMap = config.getDataSources();
+        dataSourceConfigurationMap = dataSources;
         backendDataSource = new JDBCBackendDataSource();
         proxyAuthority = config.getProxyAuthority();
     }
@@ -164,7 +165,7 @@ public final class RuleRegistry {
      */
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
-        init(new OrchestrationProxyConfiguration(proxyConfigurationEventBusEvent.getDataSources(), proxyConfigurationEventBusEvent.getOrchestrationConfig()));
+        init(proxyConfigurationEventBusEvent.getDataSources(), proxyConfigurationEventBusEvent.getProxyBasicRule());
     }
     
     /**
