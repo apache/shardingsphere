@@ -130,6 +130,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     // TODO To close data sources in dataSourceMap
     @Override
     public void close() {
+        shardingContext.close();
     }
     
     protected static Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {
