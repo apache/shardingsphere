@@ -61,8 +61,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     @Getter
     private ShardingProperties shardingProperties;
     
-    private ExecutorEngine executorEngine;
-    
     private ShardingContext shardingContext;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
@@ -77,12 +75,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
-        shardingContext = getShardingContext(dataSourceMap, shardingRule, connectionMode);
+        ExecutorEngine executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
+        shardingContext = getShardingContext(dataSourceMap, executorEngine, shardingRule, connectionMode);
         JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
-    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
+    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ExecutorEngine executorEngine, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, connectionMode, showSQL);
         DisabledStateEventBusInstance.getInstance().register(result);
@@ -104,12 +102,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ConnectionMode originalConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingProperties = newShardingProperties;
+        ExecutorEngine newExecutorEngine = shardingContext.getExecutorEngine();
         if (originalExecutorSize != newExecutorSize || originalConnectionMode != newConnectionMode) {
-            ExecutorEngine originalExecutorEngine = executorEngine;
-            executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
-            originalExecutorEngine.close();
+            newExecutorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
         }
-        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), executorEngine, newConnectionMode,
+        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecutorEngine, newConnectionMode,
                 (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         closeOriginalDataSources();
     }
@@ -133,7 +130,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     // TODO To close data sources in dataSourceMap
     @Override
     public void close() {
-        executorEngine.close();
     }
     
     protected static Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {
