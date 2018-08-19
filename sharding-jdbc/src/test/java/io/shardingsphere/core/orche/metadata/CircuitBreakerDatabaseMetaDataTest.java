@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.jdbc.metadata;
+package io.shardingsphere.core.orche.metadata;
 
 import org.junit.Test;
 
