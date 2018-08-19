@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.jdbc.resultset;
+package io.shardingsphere.core.orche.resultset;
 
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
