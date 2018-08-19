@@ -187,7 +187,7 @@ public final class ConfigurationService {
     
     private void persistProxyRuleConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
         if (isOverwrite || !hasProxyConfig()) {
-            Preconditions.checkState(null != orchestrationProxyConfiguration.getShardingRule() || null != orchestrationProxyConfiguration.getMasterSlaveRule(), 
+            Preconditions.checkState(null != orchestrationProxyConfiguration.getProxyBasicRule().getShardingRule() || null != orchestrationProxyConfiguration.getProxyBasicRule().getMasterSlaveRule(),
                     "No available proxy rule configuration for Orchestration.");
             regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(orchestrationProxyConfiguration));
         }
@@ -306,8 +306,8 @@ public final class ConfigurationService {
     public OrchestrationProxyConfiguration loadProxyConfiguration() {
         try {
             OrchestrationProxyConfiguration result = ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
-            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()), "Authority configuration is invalid.");
-            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule(), "Sharding rule or Master slave rule can not be both null.");
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyBasicRule().getProxyAuthority().getUsername()), "Authority configuration is invalid.");
+            Preconditions.checkState(null != result.getProxyBasicRule().getShardingRule() || null != result.getProxyBasicRule().getMasterSlaveRule(), "Sharding rule or Master slave rule can not be both null.");
             return result;
         } catch (final Exception ex) {
             throw new ShardingConfigurationException("No available proxy configuration to load.");
