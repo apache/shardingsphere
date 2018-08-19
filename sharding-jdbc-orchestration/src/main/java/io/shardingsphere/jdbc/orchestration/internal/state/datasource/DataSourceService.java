@@ -127,8 +127,8 @@ public final class DataSourceService {
         OrchestrationProxyConfiguration result = configService.loadProxyConfiguration();
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
-            result.getMasterSlaveRule().getSlaveDataSourceNames().remove(each);
-            removeDisabledDataSourceNames(each, result.getShardingRule().getMasterSlaveRules());
+            result.getProxyBasicRule().getMasterSlaveRule().getSlaveDataSourceNames().remove(each);
+            removeDisabledDataSourceNames(each, result.getProxyBasicRule().getShardingRule().getMasterSlaveRules());
         }
         return result;
     }
