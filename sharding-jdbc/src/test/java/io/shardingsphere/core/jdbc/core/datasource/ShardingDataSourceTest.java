@@ -23,8 +23,8 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
@@ -152,14 +152,14 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        ExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
+        ShardingProperties originShardingProperties = getShardingProperties(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
         ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
                 newDataSourceMap.keySet()), new Properties());
         shardingDataSource.renew(shardingEvent);
-        assertThat(originExecutorEngine, is(getExecutorEngine(shardingDataSource)));
+        assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
     }
     
     @Test
@@ -168,7 +168,7 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        final ExecutorEngine originExecutorEngine = getExecutorEngine(shardingDataSource);
+        final ShardingProperties originShardingProperties = getShardingProperties(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
@@ -177,7 +177,7 @@ public final class ShardingDataSourceTest {
         ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
                 newDataSourceMap.keySet()), new Properties());
         shardingDataSource.renew(shardingEvent);
-        assertThat(originExecutorEngine, not(getExecutorEngine(shardingDataSource)));
+        assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
     }
     
     // TODO to be discuss
@@ -213,9 +213,9 @@ public final class ShardingDataSourceTest {
         return result;
     }
     
-    private ExecutorEngine getExecutorEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
-        Field field = ShardingDataSource.class.getDeclaredField("executorEngine");
+    private ShardingProperties getShardingProperties(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+        Field field = ShardingDataSource.class.getDeclaredField("shardingProperties");
         field.setAccessible(true);
-        return (ExecutorEngine) field.get(shardingDataSource);
+        return (ShardingProperties) field.get(shardingDataSource);
     }
 }
