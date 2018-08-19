@@ -123,7 +123,7 @@ public final class Bootstrap {
     }
     
     private static void initRuleRegistry(final ConfigurationService configService) {
-        RULE_REGISTRY.init(configService.loadDataSources(), configService.loadProxyConfiguration().getProxyBasicRule());
+        RULE_REGISTRY.init(configService.loadDataSources(), configService.loadProxyConfiguration());
         ProxyConfigurationEventBusInstance.getInstance().register(RULE_REGISTRY);
         DisabledStateEventBusInstance.getInstance().register(RULE_REGISTRY);
         CircuitStateEventBusInstance.getInstance().register(RULE_REGISTRY);
