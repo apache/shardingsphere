@@ -25,6 +25,7 @@ import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -155,7 +156,9 @@ public final class ShardingDataSourceTest {
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
-        shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), new Properties());
+        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
+                newDataSourceMap.keySet()), new Properties());
+        shardingDataSource.renew(shardingEvent);
         assertThat(originExecutorEngine, is(getExecutorEngine(shardingDataSource)));
     }
     
@@ -171,7 +174,9 @@ public final class ShardingDataSourceTest {
         newDataSourceMap.put("ds", newDataSource);
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
-        shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), props);
+        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
+                newDataSourceMap.keySet()), new Properties());
+        shardingDataSource.renew(shardingEvent);
         assertThat(originExecutorEngine, not(getExecutorEngine(shardingDataSource)));
     }
     
@@ -186,7 +191,9 @@ public final class ShardingDataSourceTest {
         DataSource newDataSource = mockDataSource("MySQL");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
-        shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), new Properties());
+        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
+                newDataSourceMap.keySet()), new Properties());
+        shardingDataSource.renew(shardingEvent);
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
