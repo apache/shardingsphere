@@ -45,7 +45,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public final class ShardingContext {
+public final class ShardingContext implements AutoCloseable {
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -74,7 +74,7 @@ public final class ShardingContext {
                       final ConnectionMode connectionMode, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
-        this.executorEngine = executorEngine;
+        this.executorEngine = null == this.executorEngine || executorEngine != this.executorEngine ? executorEngine : this.executorEngine;
         this.databaseType = databaseType;
         this.connectionMode = connectionMode;
         this.showSQL = showSQL;
@@ -168,4 +168,10 @@ public final class ShardingContext {
         }
         return result;
     }
+    
+    @Override
+    public void close() {
+        executorEngine.close();
+    }
+    
 }
