@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.jdbc.statement;
+package io.shardingsphere.core.orche.statement;
 
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnection;
+import io.shardingsphere.core.orche.connection.CircuitBreakerConnection;
 import lombok.Getter;
 
 import java.sql.Connection;
