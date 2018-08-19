@@ -20,7 +20,6 @@ package io.shardingsphere.proxy.backend.jdbc.datasource;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.proxy.backend.BackendDataSource;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
@@ -28,7 +27,6 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,10 +50,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private Map<String, DataSource> createDataSourceMap() {
         TransactionType transactionType = RuleRegistry.getInstance().getTransactionType();
         Map<String, DataSourceParameter> dataSourceParameters = RuleRegistry.getInstance().getDataSourceConfigurationMap();
-        Collection<String> circuitBreakerDataSourceNames = RuleRegistry.getInstance().getCircuitBreakerDataSourceNames();
-        if (!circuitBreakerDataSourceNames.isEmpty()) {
-            return getCircuitBreakerDataSourceMap(circuitBreakerDataSourceNames);
-        }
+        // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
         return getNormalDataSourceMap(transactionType, dataSourceParameters);
     }
     
@@ -69,14 +64,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
                 // CHECKSTYLE:ON
                 throw new ShardingException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
             }
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap(final Collection<String> circuitBreakerDataSourceNames) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : circuitBreakerDataSourceNames) {
-            result.put(each, new CircuitBreakerDataSource());
         }
         return result;
     }
