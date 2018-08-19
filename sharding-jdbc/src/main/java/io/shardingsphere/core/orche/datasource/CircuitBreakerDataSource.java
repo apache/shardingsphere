@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource;
+package io.shardingsphere.core.orche.datasource;
 
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnection;
+import io.shardingsphere.core.orche.connection.CircuitBreakerConnection;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
