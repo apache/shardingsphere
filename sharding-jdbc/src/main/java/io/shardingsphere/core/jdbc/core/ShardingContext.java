@@ -92,7 +92,6 @@ public final class ShardingContext {
      * @param connectionMode connection mode
      * @param showSQL show sql
      */
-    @Subscribe
     public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
                       final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executorEngine, connectionMode, showSQL);
