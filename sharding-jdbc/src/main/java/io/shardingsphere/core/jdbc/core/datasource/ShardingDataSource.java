@@ -30,11 +30,12 @@ import io.shardingsphere.core.executor.engine.memory.MemoryStrictlyExecutorEngin
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
+import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -92,14 +93,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     /**
      * Renew sharding data source.
      *
-     * @param newDataSourceMap new data source map
-     * @param newShardingRule new sharding rule
-     * @param newProps new sharding properties
+     * @param shardingEvent sharding configuration event bus event.
      */
     @Subscribe
-    public void renew(final Map<String, DataSource> newDataSourceMap, final ShardingRule newShardingRule, final Properties newProps) {
-        super.renew(newDataSourceMap.values());
-        ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
+    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
+        
+        ShardingProperties newShardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode originalConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
@@ -110,7 +109,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
             originalExecutorEngine.close();
         }
-        shardingContext.renew(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, newConnectionMode, (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
+        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), executorEngine, newConnectionMode,
+                (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         closeOriginalDataSources();
     }
     
