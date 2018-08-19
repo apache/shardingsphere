@@ -24,13 +24,14 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -107,11 +108,11 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     /**
      * Renew master-slave data source.
      *
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig new master-slave rule configuration
+     * @param masterSlaveEvent master slave configuration event bus event
      */
     @Subscribe
-    public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+    public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = masterSlaveEvent.getMasterSlaveRuleConfig();
         super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         closeOriginalDataSources();
         init(dataSourceMap, masterSlaveRuleConfig);
