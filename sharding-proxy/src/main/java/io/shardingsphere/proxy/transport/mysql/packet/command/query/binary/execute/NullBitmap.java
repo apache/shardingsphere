@@ -22,6 +22,8 @@ import lombok.Getter;
 /**
  * Null bitmap.
  *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/null-bitmap.html">NULL-Bitmap</a>
+ * 
  * @author zhangyonglun
  */
 public final class NullBitmap {
