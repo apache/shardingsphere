@@ -23,6 +23,7 @@
 
 #### 内核
 
+1. [ISSUE #373](https://github.com/sharding-sphere/sharding-sphere/issues/373) 支持`order by ?`
 1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) 无表名称的DQL采用单播路由
 1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) 缓存SQL解析结果以提升性能
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键

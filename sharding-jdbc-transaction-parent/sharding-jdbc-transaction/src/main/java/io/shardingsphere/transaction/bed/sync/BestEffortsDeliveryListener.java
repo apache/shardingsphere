@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.bed.sync;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.executor.event.DMLExecutionEvent;
+import io.shardingsphere.core.executor.event.sql.DMLExecutionEvent;
 import io.shardingsphere.transaction.api.SoftTransactionManager;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.bed.BEDSoftTransaction;
@@ -57,7 +57,7 @@ public final class BestEffortsDeliveryListener {
         SoftTransactionConfiguration transactionConfig = SoftTransactionManager.getCurrentTransactionConfiguration().get();
         TransactionLogStorage transactionLogStorage = TransactionLogStorageFactory.createTransactionLogStorage(transactionConfig.buildTransactionLogDataSource());
         BEDSoftTransaction bedSoftTransaction = (BEDSoftTransaction) SoftTransactionManager.getCurrentTransaction().get();
-        switch (event.getEventExecutionType()) {
+        switch (event.getEventType()) {
             case BEFORE_EXECUTE:
                 //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
@@ -98,7 +98,7 @@ public final class BestEffortsDeliveryListener {
                 }
                 return;
             default: 
-                throw new UnsupportedOperationException(event.getEventExecutionType().toString());
+                throw new UnsupportedOperationException(event.getEventType().toString());
         }
     }
     

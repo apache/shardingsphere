@@ -21,8 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
@@ -55,7 +55,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private DatabaseType databaseType;
     
-    private ExecutorEngine executorEngine;
+    private ShardingExecuteEngine executeEngine;
     
     private ShardingMetaData metaData;
     
@@ -67,21 +67,21 @@ public final class ShardingContext implements AutoCloseable {
     
     private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
                            final ConnectionMode connectionMode, final boolean showSQL) {
-        init(dataSourceMap, shardingRule, databaseType, executorEngine, connectionMode, showSQL);
+        init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
     
-    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
+    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
                       final ConnectionMode connectionMode, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
-        this.executorEngine = null == this.executorEngine || executorEngine != this.executorEngine ? executorEngine : this.executorEngine;
+        this.executeEngine = executeEngine;
         this.databaseType = databaseType;
         this.connectionMode = connectionMode;
         this.showSQL = showSQL;
         metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
@@ -90,14 +90,14 @@ public final class ShardingContext implements AutoCloseable {
      * @param dataSourceMap data source map
      * @param shardingRule sharding rule
      * @param databaseType data type
-     * @param executorEngine executor engine
+     * @param executeEngine sharding executor engine
      * @param connectionMode connection mode
      * @param showSQL show sql
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
+    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
                       final ConnectionMode connectionMode, final boolean showSQL) {
         close();
-        init(dataSourceMap, shardingRule, databaseType, executorEngine, connectionMode, showSQL);
+        init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
     
     /**
@@ -109,7 +109,7 @@ public final class ShardingContext implements AutoCloseable {
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
         metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
@@ -121,7 +121,7 @@ public final class ShardingContext implements AutoCloseable {
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
         metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -175,7 +175,7 @@ public final class ShardingContext implements AutoCloseable {
     @Override
     public void close() {
         closeOriginalDataSources();
-        executorEngine.close();
+        executeEngine.close();
     }
     
     private void closeOriginalDataSources() {

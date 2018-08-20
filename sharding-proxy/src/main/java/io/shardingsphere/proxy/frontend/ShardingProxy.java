@@ -55,7 +55,7 @@ public final class ShardingProxy {
     private EventLoopGroup userGroup;
     
     public ShardingProxy() {
-        RULE_REGISTRY.initShardingMetaData(backendExecutorContext.getExecutorService());
+        RULE_REGISTRY.initShardingMetaData(backendExecutorContext.getExecuteEngine());
     }
     
     /**
@@ -82,7 +82,7 @@ public final class ShardingProxy {
             userGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            backendExecutorContext.getExecutorService().shutdown();
+            backendExecutorContext.getExecuteEngine().close();
             if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
                 BackendNettyClient.getInstance().stop();
             }

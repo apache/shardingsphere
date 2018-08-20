@@ -21,6 +21,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -107,7 +108,11 @@ public final class BinaryProtocolValue {
                 payload.writeStringLenenc(binaryData.toString());
                 break;
             case MYSQL_TYPE_LONGLONG:
-                payload.writeInt8((Long) binaryData);
+                if (binaryData instanceof BigDecimal) {
+                    payload.writeInt8(((BigDecimal) binaryData).longValue());
+                } else {
+                    payload.writeInt8((Long) binaryData);
+                }
                 break;
             case MYSQL_TYPE_LONG:
             case MYSQL_TYPE_INT24:

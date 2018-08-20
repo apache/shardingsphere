@@ -24,9 +24,7 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.executor.engine.connection.ConnectionStrictlyExecutorEngine;
-import io.shardingsphere.core.executor.engine.memory.MemoryStrictlyExecutorEngine;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -58,7 +56,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Getter
     private ShardingProperties shardingProperties;
-    
+
     private ShardingContext shardingContext;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
@@ -73,12 +71,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        ExecutorEngine executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
-        shardingContext = getShardingContext(dataSourceMap, executorEngine, shardingRule, connectionMode);
+        ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
+        shardingContext = getShardingContext(dataSourceMap, executeEngine, shardingRule, connectionMode);
         JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
-    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ExecutorEngine executorEngine, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
+    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingExecuteEngine executorEngine, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, connectionMode, showSQL);
         DisabledStateEventBusInstance.getInstance().register(result);
@@ -97,8 +95,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingProperties = newShardingProperties;
-        ExecutorEngine newExecutorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
-        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecutorEngine, newConnectionMode,
+        ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
+        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine, newConnectionMode,
                 (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
@@ -107,7 +105,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         return new ShardingConnection(shardingContext);
     }
     
-    // TODO To close data sources in dataSourceMap
     @Override
     public void close() {
         shardingContext.close();

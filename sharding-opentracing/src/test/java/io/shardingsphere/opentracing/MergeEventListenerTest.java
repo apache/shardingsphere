@@ -27,6 +27,7 @@ import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
@@ -40,7 +41,6 @@ import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.EventBusInstance;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -74,7 +74,7 @@ public final class MergeEventListenerTest {
     
     @BeforeClass
     public static void init() {
-        ShardingJDBCTracer.init(TRACER);
+        ShardingTracer.init(TRACER);
     }
     
     @AfterClass
@@ -156,6 +156,6 @@ public final class MergeEventListenerTest {
         tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
         Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
         subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(EventBusInstance.getInstance(), HashMultimap.create());
+        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
 }

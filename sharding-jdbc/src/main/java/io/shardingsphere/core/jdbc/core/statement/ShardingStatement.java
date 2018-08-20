@@ -20,8 +20,10 @@ package io.shardingsphere.core.jdbc.core.statement;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.engine.connection.MemoryQueryResult;
-import io.shardingsphere.core.executor.engine.memory.StreamQueryResult;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.result.MemoryQueryResult;
+import io.shardingsphere.core.executor.result.StreamQueryResult;
 import io.shardingsphere.core.executor.type.statement.StatementExecutor;
 import io.shardingsphere.core.executor.type.statement.StatementUnit;
 import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
@@ -34,8 +36,7 @@ import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.event.EventMergeType;
-import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
+import io.shardingsphere.core.merger.event.MergeEvent;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -44,10 +45,8 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
-import io.shardingsphere.core.routing.event.EventRoutingType;
-import io.shardingsphere.core.routing.event.SqlRoutingEvent;
+import io.shardingsphere.core.routing.event.RoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -224,9 +223,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         clearPrevious();
         sqlRoute(sql);
         if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode()) {
-            return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
+            return new StatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+                    routeResult.getSqlStatement().getType(), getStatementUnitsForMemoryStrictly());
         }
-        return new StatementExecutor(connection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());
+        return new StatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
+                routeResult.getSqlStatement().getType(), getStatementUnitsForConnectionStrictly());
     }
     
     private Collection<StatementUnit> getStatementUnitsForConnectionStrictly() throws SQLException {
@@ -266,29 +267,28 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void sqlRoute(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        SqlRoutingEvent event = new SqlRoutingEvent(sql);
-        EventBusInstance.getInstance().post(event);
+        RoutingEvent event = new RoutingEvent(sql);
+        ShardingEventBusInstance.getInstance().post(event);
         try {
             routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), 
                     shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource()).route(sql);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setException(ex);
-            event.setEventRoutingType(EventRoutingType.ROUTE_FAILURE);
-            EventBusInstance.getInstance().post(event);
+            event.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
-        event.setEventRoutingType(EventRoutingType.ROUTE_SUCCESS);
-        EventBusInstance.getInstance().post(event);
+        event.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(event);
     }
     
     // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData() {
+    private void refreshTableMetaData() throws SQLException {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(), 
-                    connection.getShardingContext().getExecutorEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(connection.getShardingContext().getDataSourceMap()));
+                    connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getShardingContext().getDataSourceMap()));
             connection.getShardingContext().getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
         }
     }
@@ -337,19 +337,18 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult merge(final MergeEngine mergeEngine) throws SQLException {
-        ResultSetMergeEvent event = new ResultSetMergeEvent();
+        MergeEvent event = new MergeEvent();
         try {
-            EventBusInstance.getInstance().post(event);
+            ShardingEventBusInstance.getInstance().post(event);
             MergedResult result = mergeEngine.merge();
-            event.setEventMergeType(EventMergeType.MERGE_SUCCESS);
-            EventBusInstance.getInstance().post(event);
+            event.setExecuteSuccess();
+            ShardingEventBusInstance.getInstance().post(event);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setException(ex);
-            event.setEventMergeType(EventMergeType.MERGE_FAILURE);
-            EventBusInstance.getInstance().post(event);
+            event.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
     }

@@ -19,9 +19,11 @@ package io.shardingsphere.core.executor.type.batch;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BaseStatementUnit;
-import io.shardingsphere.core.executor.ExecuteCallback;
-import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
+import io.shardingsphere.core.executor.SQLExecuteCallback;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -38,7 +40,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class BatchPreparedStatementExecutor {
     
-    private final ExecutorEngine executorEngine;
+    private final SQLExecuteTemplate executeTemplate;
     
     private final DatabaseType dbType;
     
@@ -55,13 +57,16 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int[] executeBatch() throws SQLException {
-        return accumulate(executorEngine.execute(sqlType, batchPreparedStatementUnits, new ExecuteCallback<int[]>() {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                return baseStatementUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+                return executeUnit.getStatement().executeBatch();
             }
-        }));
+        };
+        return accumulate(executeTemplate.execute(batchPreparedStatementUnits, callback));
     }
     
     private int[] accumulate(final List<int[]> results) {

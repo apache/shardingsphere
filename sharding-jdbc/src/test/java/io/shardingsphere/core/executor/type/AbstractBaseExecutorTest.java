@@ -17,15 +17,16 @@
 
 package io.shardingsphere.core.executor.type;
 
-import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.executor.engine.memory.MemoryStrictlyExecutorEngine;
-import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -36,7 +37,9 @@ import org.mockito.MockitoAnnotations;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ExecutorEngine executorEngine;
+    private ShardingExecuteEngine executeEngine;
+    
+    private SQLExecuteTemplate executeTemplate;
     
     @Mock
     private EventCaller eventCaller;
@@ -51,21 +54,22 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new MemoryStrictlyExecutorEngine(Runtime.getRuntime().availableProcessors());
+        executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
+        executeTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
-        EventBusInstance.getInstance().register(overallExecutionEventListener);
-        EventBusInstance.getInstance().register(dqlExecutionEventListener);
-        EventBusInstance.getInstance().register(dmlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().register(overallExecutionEventListener);
+        ShardingEventBusInstance.getInstance().register(dqlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().register(dmlExecutionEventListener);
     }
     
     @After
     public void tearDown() throws ReflectiveOperationException {
         ExecutorTestUtil.clear();
-        EventBusInstance.getInstance().unregister(overallExecutionEventListener);
-        EventBusInstance.getInstance().unregister(dqlExecutionEventListener);
-        EventBusInstance.getInstance().unregister(dmlExecutionEventListener);
-        executorEngine.close();
+        ShardingEventBusInstance.getInstance().unregister(overallExecutionEventListener);
+        ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
+        ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);
+        executeEngine.close();
     }
 }

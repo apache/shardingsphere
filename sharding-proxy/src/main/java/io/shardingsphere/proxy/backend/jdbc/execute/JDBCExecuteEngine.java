@@ -25,12 +25,11 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -42,7 +41,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 /**
  * SQL Execute engine for JDBC.
@@ -59,15 +57,13 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final BackendConnection backendConnection;
     
-    private final ExecutorService executorService = BackendExecutorContext.getInstance().getExecutorService();
-    
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
     private int columnCount;
     
     private List<ColumnType> columnTypes;
     
-    protected ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected final ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
@@ -82,7 +78,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
     }
     
-    protected ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected final ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
         setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {

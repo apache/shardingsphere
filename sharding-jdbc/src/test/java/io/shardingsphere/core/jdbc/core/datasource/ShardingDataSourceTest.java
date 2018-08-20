@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -72,9 +73,8 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(
-                masterSlaveDataSourceMap, new MasterSlaveRuleConfiguration("ds", "masterDataSource",
-                        Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap(), new Properties());
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, 
+                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap(), new Properties());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
@@ -163,7 +163,7 @@ public final class ShardingDataSourceTest {
     }
     
     @Test
-    public void assertRenewWithChangeExecutorEnginePoolSize() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertRenewWithChangeExecuteEnginePoolSize() throws SQLException, NoSuchFieldException, IllegalAccessException {
         DataSource originalDataSource = mockDataSource("H2");
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
@@ -175,7 +175,7 @@ public final class ShardingDataSourceTest {
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
         ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
-                newDataSourceMap.keySet()), new Properties());
+                newDataSourceMap.keySet()), props);
         shardingDataSource.renew(shardingEvent);
         assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
     }

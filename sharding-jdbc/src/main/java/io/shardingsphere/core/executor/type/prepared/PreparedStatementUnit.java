@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.executor.type.prepared;
 
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.sql.PreparedStatement;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PreparedStatementUnit implements BaseStatementUnit {
+public final class PreparedStatementUnit implements StatementExecuteUnit {
     
     private final SQLExecutionUnit sqlExecutionUnit;
     

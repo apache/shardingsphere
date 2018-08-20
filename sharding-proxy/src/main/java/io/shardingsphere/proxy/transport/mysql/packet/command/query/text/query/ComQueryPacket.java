@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.util.EventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
@@ -83,14 +83,15 @@ public final class ComQueryPacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        if (TransactionType.XA != RuleRegistry.getInstance().getTransactionType()) {
-            Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
-            if (operationType.isPresent() && isInTransaction(operationType.get())) {
-                EventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
-                return Optional.of(new CommandResponsePackets(new OKPacket(1)));
-            }
+        Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
+        if (!operationType.isPresent()) {
+            return Optional.of(backendHandler.execute());
         }
-        return Optional.of(backendHandler.execute());
+        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
+            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
+        }
+        // TODO :zhaojun do not send TCL to backend, send when local transaction ready 
+        return Optional.of(new CommandResponsePackets(new OKPacket(1)));
     }
     
     private boolean isInTransaction(final TransactionOperationType operationType) throws SQLException {

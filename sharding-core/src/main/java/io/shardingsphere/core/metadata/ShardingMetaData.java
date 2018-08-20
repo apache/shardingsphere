@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.metadata;
 
-import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
@@ -27,7 +27,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Sharding meta data.
@@ -41,9 +40,9 @@ public final class ShardingMetaData {
     
     private final ShardingTableMetaData table;
     
-    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, 
-                            final DatabaseType databaseType, final ExecutorService executorService, final TableMetaDataConnectionManager connectionManager) {
+    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule,
+                            final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager) {
         dataSource = new ShardingDataSourceMetaData(dataSourceURLs, shardingRule, databaseType);
-        table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, MoreExecutors.listeningDecorator(executorService), connectionManager).load(shardingRule));
+        table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, executeEngine, connectionManager).load(shardingRule));
     }
 }
