@@ -67,11 +67,13 @@ public final class ShardingContext implements AutoCloseable {
     
     private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
+                           final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
     
-    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
+                      final ConnectionMode connectionMode, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.executeEngine = executeEngine;
@@ -89,9 +91,11 @@ public final class ShardingContext implements AutoCloseable {
      * @param shardingRule sharding rule
      * @param databaseType data type
      * @param executeEngine sharding executor engine
+     * @param connectionMode connection mode
      * @param showSQL show sql
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
+                      final ConnectionMode connectionMode, final boolean showSQL) {
         close();
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
