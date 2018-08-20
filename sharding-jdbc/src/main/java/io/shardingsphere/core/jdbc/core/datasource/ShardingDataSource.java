@@ -95,7 +95,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      */
     @Subscribe
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
-        
         ShardingProperties newShardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
