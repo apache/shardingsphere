@@ -4,6 +4,29 @@ import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase,DDLBase,Symb
 	package io.shardingsphere.parser.antlr.mysql;
 }
 
+createIndex:
+	CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName
+    indexType?
+    ON tableName keyParts
+    indexOption?
+    (algorithmOption | lockOption)*
+    ;
+ 
+dropIndex:
+ 	DROP INDEX indexName ON tableName
+     (algorithmOption | lockOption)*
+	;
+
+dropTable:
+	DROP TEMPORARY? TABLE (IF EXISTS)?
+    tableName columnName (tableName columnName)* 
+    (RESTRICT | CASCADE)?
+    ;
+ 
+truncateTable:
+ 	TRUNCATE TABLE? tableName
+ 	;
+ 	
 
 createTableOptions:
 	createTableBasic
@@ -57,7 +80,7 @@ alterSpecification:
   	| ADD COLUMN? (singleColumn | multiColumn)
 	| ADD indexDefinition
 	| ADD constraintDefinition
-	| ALGORITHM EQ_OR_ASSIGN? (DEFAULT|INPLACE|COPY)
+	| algorithmOption
 	| ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
 	| CHANGE COLUMN? columnName columnName columnDefinition (FIRST|AFTER columnName)?
 	| DEFAULT? characterAndCollateWithEqual
@@ -69,7 +92,7 @@ alterSpecification:
 	| DROP PRIMARY KEY
 	| DROP FOREIGN KEY fkSymbol
 	| FORCE
-	| LOCK EQ_OR_ASSIGN? (DEFAULT|NONE|SHARED|EXCLUSIVE)
+	| lockOption
 	| MODIFY COLUMN? columnName columnDefinition (FIRST | AFTER columnName)?
 	| (ORDER BY columnName (COMMA columnName)* )+ 
 	| RENAME (INDEX|KEY) indexName TO indexName
@@ -92,7 +115,14 @@ alterSpecification:
 	| UPGRADE PARTITIONING
 	;
 
+algorithmOption:
+    ALGORITHM EQ_OR_ASSIGN? (DEFAULT|INPLACE|COPY)
+    ;
 
+lockOption:
+    LOCK EQ_OR_ASSIGN? (DEFAULT|NONE|SHARED|EXCLUSIVE)
+	;
+	
 indexDefinition:
 	(((FULLTEXT | SPATIAL) indexAndKey?)|indexAndKey) indexDefOption
 	;

@@ -1,5 +1,5 @@
 grammar MySQLDQL;
-import MySQLKeyword,Keyword,Symbol,DataType, BaseRule, DQLBase, DMLBase;
+import MySQLKeyword,Keyword,Symbol,DataType, BaseRule, DQLBase;
 
 
 selectSpec: 
@@ -47,10 +47,6 @@ caseResult:
 idListWithEmpty:
 	(LEFT_PAREN RIGHT_PAREN)
 	|idList
-	;
-
-assignmentList: 
-	assignment (COMMA assignment)*
 	;
 
 //https://dev.mysql.com/doc/refman/8.0/en/join.html

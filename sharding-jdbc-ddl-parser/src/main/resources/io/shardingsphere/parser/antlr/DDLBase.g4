@@ -3,10 +3,26 @@ grammar DDLBase;
 import Keyword, BaseRule,Symbol;
 
 execute:
-	alterTable
+	dropIndex
+	|createIndex
+	|dropTable
+	|truncateTable
+	|alterTable
 	|createTable
 	;
-	
+
+dropIndex:
+	;
+
+createIndex:
+	;
+		
+dropTable:
+	;
+
+truncateTable:
+	;
+		
 alterTable:
     ALTER TABLE prefixTableName tableName alterSpecifications? partitionOptions?
 	;
@@ -28,4 +44,4 @@ createTable:
 	
 createTableOptions:
 	NONE;
-	
+
