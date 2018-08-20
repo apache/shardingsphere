@@ -52,7 +52,6 @@ public final class ExecutorTestUtil {
      * @param event overall execution event
      */
     public static void listen(final EventCaller eventCaller, final OverallExecutionEvent event) {
-        eventCaller.verifySQLType(event.getSqlType());
         eventCaller.verifyIsParallelExecute(event.isParallelExecute());
         if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {
             eventCaller.verifyException(event.getException());

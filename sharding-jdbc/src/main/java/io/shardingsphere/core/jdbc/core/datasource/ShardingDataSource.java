@@ -24,9 +24,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.executor.ExecutorEngine;
-import io.shardingsphere.core.executor.type.connection.ConnectionStrictlyExecutorEngine;
-import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -58,7 +56,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     @Getter
     private ShardingProperties shardingProperties;
     
-    private ExecutorEngine executorEngine;
+    private ShardingExecuteEngine executeEngine;
     
     private ShardingContext shardingContext;
     
@@ -74,11 +72,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        executorEngine = ConnectionMode.MEMORY_STRICTLY == connectionMode ? new MemoryStrictlyExecutorEngine(executorSize) : new ConnectionStrictlyExecutorEngine(executorSize);
+        executeEngine = new ShardingExecuteEngine(executorSize);
         ShardingMetaData shardingMetaData = new ShardingMetaData(
-                getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(dataSourceMap));
+                getDataSourceURLs(dataSourceMap), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap));
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, shardingMetaData, connectionMode, showSQL);
+        shardingContext = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, shardingMetaData, connectionMode, showSQL);
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -108,18 +106,17 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingProperties newShardingProperties = new ShardingProperties(null == newProps ? new Properties() : newProps);
         int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        ConnectionMode originalConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        if (originalExecutorSize != newExecutorSize || originalConnectionMode != newConnectionMode) {
-            ExecutorEngine originalExecutorEngine = executorEngine;
-            executorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
-            originalExecutorEngine.close();
+        if (originalExecutorSize != newExecutorSize) {
+            ShardingExecuteEngine originalExecuteEngine = executeEngine;
+            executeEngine = new ShardingExecuteEngine(newExecutorSize);
+            originalExecuteEngine.close();
         }
         shardingProperties = newShardingProperties;
         ShardingMetaData shardingMetaData = new ShardingMetaData(
-                getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), executorEngine.getExecutorService(), new JDBCTableMetaDataConnectionManager(newDataSourceMap));
+                getDataSourceURLs(newDataSourceMap), newShardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(newDataSourceMap));
         boolean newShowSQL = newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executorEngine, shardingMetaData, newConnectionMode, newShowSQL);
+        shardingContext = new ShardingContext(newDataSourceMap, newShardingRule, getDatabaseType(), executeEngine, shardingMetaData, newConnectionMode, newShowSQL);
     }
     
     @Override
@@ -129,7 +126,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public void close() {
-        executorEngine.close();
+        executeEngine.close();
     }
     
     protected static Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.executor.type.batch;
 
-import io.shardingsphere.core.executor.BaseStatementUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class BatchPreparedStatementUnit implements BaseStatementUnit {
+public final class BatchPreparedStatementUnit implements StatementExecuteUnit {
     
     private final SQLExecutionUnit sqlExecutionUnit;
     

@@ -18,13 +18,13 @@
 package io.shardingsphere.proxy.config;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Sharding rule registry.
@@ -125,11 +124,11 @@ public final class RuleRegistry {
     /**
      * Initialize rule registry.
      *
-     * @param executorService executor service
+     * @param shardingExecuteEngine sharding execute engine
      */
-    public void initShardingMetaData(final ExecutorService executorService) {
-        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL, 
-                MoreExecutors.listeningDecorator(executorService), new ProxyTableMetaDataConnectionManager(backendDataSource));
+    public void initShardingMetaData(final ShardingExecuteEngine shardingExecuteEngine) {
+        metaData = new ShardingMetaData(
+                getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL, shardingExecuteEngine, new ProxyTableMetaDataConnectionManager(backendDataSource));
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {

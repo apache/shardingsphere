@@ -17,38 +17,25 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.constant.SQLType;
-
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Statement execute callback interface.
- *
- * @author gaohongtao
+ * Sharding group execute callback.
+ * 
  * @author zhangliang
  * 
- * @param <T> class type of return value
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-public interface ExecuteCallback<T> extends ShardingExecuteCallback<BaseStatementUnit, T> {
+public interface ShardingGroupExecuteCallback<I, O> {
     
     /**
-     * Get SQL type.
+     * Execute callback.
      * 
-     * @return SQL type
+     * @param key input key
+     * @param values input values
+     * @return execute result
+     * @throws Exception throw when execute failure
      */
-    SQLType getSQLType();
-    
-    /**
-     * Judge is exception thrown or not.
-     * 
-     * @return is exception thrown or not
-     */
-    boolean isExceptionThrown();
-    
-    /**
-     * Get data map.
-     * 
-     * @return data map
-     */
-    Map<String, Object> getDataMap();
+    Collection<O> execute(String key, Collection<I> values) throws Exception;
 }

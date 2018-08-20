@@ -17,15 +17,16 @@
 
 package io.shardingsphere.core.executor.type;
 
-import io.shardingsphere.core.executor.ExecutorEngine;
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.executor.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.executor.type.memory.MemoryStrictlyExecutorEngine;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -36,7 +37,9 @@ import org.mockito.MockitoAnnotations;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ExecutorEngine executorEngine;
+    private ShardingExecuteEngine shardingExecuteEngine;
+    
+    private SQLExecuteTemplate executeTemplate;
     
     @Mock
     private EventCaller eventCaller;
@@ -51,7 +54,8 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new MemoryStrictlyExecutorEngine(Runtime.getRuntime().availableProcessors());
+        shardingExecuteEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
+        executeTemplate = new SQLExecuteTemplate(shardingExecuteEngine, ConnectionMode.MEMORY_STRICTLY);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
@@ -66,6 +70,6 @@ public abstract class AbstractBaseExecutorTest {
         ShardingEventBusInstance.getInstance().unregister(overallExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);
-        executorEngine.close();
+        shardingExecuteEngine.close();
     }
 }

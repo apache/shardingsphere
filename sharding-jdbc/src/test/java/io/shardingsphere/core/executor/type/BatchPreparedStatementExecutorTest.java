@@ -47,7 +47,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoPreparedStatement() throws SQLException {
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), DatabaseType.MySQL, SQLType.DML, 
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecuteTemplate(), DatabaseType.MySQL, SQLType.DML, 
                 Collections.<BatchPreparedStatementUnit>emptyList(), 2);
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
@@ -57,11 +57,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), DatabaseType.MySQL, SQLType.DML, 
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecuteTemplate(), DatabaseType.MySQL, SQLType.DML, 
                 createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), 2);
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
-        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
@@ -79,12 +78,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), DatabaseType.MySQL, SQLType.DML, 
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecuteTemplate(), DatabaseType.MySQL, SQLType.DML, 
                 createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2), 2);
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(8)).verifySQL(SQL);
@@ -101,11 +99,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), DatabaseType.MySQL, SQLType.DML,
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecuteTemplate(), DatabaseType.MySQL, SQLType.DML,
                 createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), 2);
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
-        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
@@ -124,12 +121,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement2.executeBatch()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), DatabaseType.MySQL, SQLType.DML,
+        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecuteTemplate(), DatabaseType.MySQL, SQLType.DML,
                 createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2), 2);
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(getEventCaller(), times(2)).verifySQLType(SQLType.DML);
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
         verify(getEventCaller(), times(8)).verifySQL(SQL);

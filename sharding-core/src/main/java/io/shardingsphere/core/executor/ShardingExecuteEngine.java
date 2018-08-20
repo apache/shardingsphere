@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +28,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +45,6 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
-    @Getter
     private final ListeningExecutorService executorService;
     
     public ShardingExecuteEngine(final int executorSize) {
@@ -56,7 +56,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     /**
      * Execute all callbacks.
      *
-     * @param inputs sharding execute callbacks
+     * @param inputs input values
      * @param callback sharding execute callback
      * @param <I> type of input value
      * @param <O> type of return value
@@ -70,7 +70,28 @@ public final class ShardingExecuteEngine implements AutoCloseable {
         Iterator<I> inputIterator = inputs.iterator();
         I firstInput = inputIterator.next();
         Collection<ListenableFuture<O>> restFutures = asyncExecute(Lists.newArrayList(inputIterator), callback);
-        return getResults(callback.execute(firstInput), restFutures);
+        return getResults(syncExecute(firstInput, callback), restFutures);
+    }
+    
+    /**
+     * Execute all callbacks.
+     *
+     * @param inputs input values
+     * @param firstCallback first sharding execute callback
+     * @param callback sharding execute callback
+     * @param <I> type of input value
+     * @param <O> type of return value
+     * @return execute result
+     * @throws Exception throw if execute failure
+     */
+    public <I, O> List<O> execute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> firstCallback, final ShardingExecuteCallback<I, O> callback) throws Exception {
+        if (inputs.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Iterator<I> inputIterator = inputs.iterator();
+        I firstInput = inputIterator.next();
+        Collection<ListenableFuture<O>> restFutures = asyncExecute(Lists.newArrayList(inputIterator), callback);
+        return getResults(syncExecute(firstInput, firstCallback), restFutures);
     }
     
     private <I, O> Collection<ListenableFuture<O>> asyncExecute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> callback) {
@@ -87,11 +108,84 @@ public final class ShardingExecuteEngine implements AutoCloseable {
         return result;
     }
     
+    private <I, O> O syncExecute(final I input, final ShardingExecuteCallback<I, O> callback) throws Exception {
+        return callback.execute(input);
+    }
+    
     private <O> List<O> getResults(final O firstResult, final Collection<ListenableFuture<O>> restFutures) throws ExecutionException, InterruptedException {
         List<O> result = new LinkedList<>();
         result.add(firstResult);
         for (ListenableFuture<O> each : restFutures) {
             result.add(each.get());
+        }
+        return result;
+    }
+    
+    /**
+     * execute all callbacks for group.
+     *
+     * @param inputs input value's map
+     * @param callback sharding execute callback
+     * @param <I> type of input value
+     * @param <O> type of return value
+     * @return execute result
+     * @throws Exception throw if execute failure
+     */
+    public <I, O> List<O> groupExecute(final Map<String, Collection<I>> inputs, final ShardingGroupExecuteCallback<I, O> callback) throws Exception {
+        if (inputs.isEmpty()) {
+            return Collections.emptyList();
+        }
+        String firstKey = inputs.keySet().iterator().next();
+        Collection<I> firstInputs = inputs.remove(firstKey);
+        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(inputs, callback);
+        return getGroupResults(syncGroupExecute(firstKey, firstInputs, callback), restResultFutures);
+    }
+    
+    /**
+     * execute all callbacks for group.
+     *
+     * @param inputs input value's map
+     * @param callback sharding execute callback
+     * @param firstCallback first sharding execute callback
+     * @param <I> type of input value
+     * @param <O> type of return value
+     * @return execute result
+     * @throws Exception throw if execute failure
+     */
+    public <I, O> List<O> groupExecute(
+            final Map<String, Collection<I>> inputs, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback) throws Exception {
+        if (inputs.isEmpty()) {
+            return Collections.emptyList();
+        }
+        String firstKey = inputs.keySet().iterator().next();
+        Collection<I> firstInputs = inputs.remove(firstKey);
+        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(inputs, callback);
+        return getGroupResults(syncGroupExecute(firstKey, firstInputs, firstCallback), restResultFutures);
+    }
+    
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final Map<String, Collection<I>> inputs, final ShardingGroupExecuteCallback<I, O> callback) {
+        Collection<ListenableFuture<Collection<O>>> result = new ArrayList<>(inputs.size());
+        for (final Entry<String, Collection<I>> entry : inputs.entrySet()) {
+            result.add(executorService.submit(new Callable<Collection<O>>() {
+                
+                @Override
+                public Collection<O> call() throws Exception {
+                    return callback.execute(entry.getKey(), entry.getValue());
+                }
+            }));
+        }
+        return result;
+    }
+    
+    private <I, O> Collection<O> syncGroupExecute(final String dataSourceName, final Collection<I> inputs, final ShardingGroupExecuteCallback<I, O> callback) throws Exception {
+        return callback.execute(dataSourceName, inputs);
+    }
+    
+    private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws ExecutionException, InterruptedException {
+        List<O> result = new LinkedList<>();
+        result.addAll(firstResults);
+        for (ListenableFuture<Collection<O>> each : restFutures) {
+            result.addAll(each.get());
         }
         return result;
     }

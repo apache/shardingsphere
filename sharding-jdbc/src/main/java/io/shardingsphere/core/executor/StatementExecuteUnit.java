@@ -22,11 +22,11 @@ import io.shardingsphere.core.routing.SQLExecutionUnit;
 import java.sql.Statement;
 
 /**
- * Statement execute unit interface.
+ * Statement execute unit.
  *
  * @author zhangliang
  */
-public interface BaseStatementUnit {
+public interface StatementExecuteUnit {
     
     /**
      * Get SQL execute unit.
