@@ -38,7 +38,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     
     private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
 
-    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/execute/";
 
     private static final ThreadLocal<ActiveSpan> SPAN = new ThreadLocal<>();
     
