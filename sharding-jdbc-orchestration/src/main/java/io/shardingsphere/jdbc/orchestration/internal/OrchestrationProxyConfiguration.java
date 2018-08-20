@@ -19,12 +19,9 @@ package io.shardingsphere.jdbc.orchestration.internal;
 
 import io.shardingsphere.core.orche.config.ProxyBasicRule;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,19 +29,11 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class OrchestrationProxyConfiguration {
     
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
+    private final Map<String, DataSourceParameter> dataSources;
     
-    private ProxyBasicRule proxyBasicRule;
-    
-    private YamlOrchestrationConfiguration orchestration;
-    
-    public OrchestrationProxyConfiguration(final Map<String, DataSourceParameter> dataSources, final ProxyBasicRule proxyBasicRule) {
-        this.dataSources = dataSources;
-        this.proxyBasicRule = proxyBasicRule;
-    }
+    private final ProxyBasicRule proxyBasicRule;
 }
