@@ -17,16 +17,11 @@
 
 package io.shardingsphere.jdbc.orchestration.internal;
 
+import io.shardingsphere.core.orche.config.ProxyBasicRule;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,25 +29,11 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class OrchestrationProxyConfiguration {
     
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
+    private final Map<String, DataSourceParameter> dataSources;
     
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
-    private ProxyAuthority proxyAuthority = new ProxyAuthority();
-    
-    private YamlOrchestrationConfiguration orchestration;
-    
-    public OrchestrationProxyConfiguration(final Map<String, DataSourceParameter> dataSources, final OrchestrationProxyConfiguration config) {
-        this.dataSources = dataSources;
-        shardingRule = config.getShardingRule();
-        masterSlaveRule = config.getMasterSlaveRule();
-        proxyAuthority = config.getProxyAuthority();
-    }
+    private final ProxyBasicRule proxyBasicRule;
 }

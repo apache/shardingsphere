@@ -17,23 +17,13 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
-
-import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Data source listener manager.
@@ -47,61 +37,48 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     private final RegistryCenter regCenter;
     
-    private final ConfigurationService configService;
-    
     private final DataSourceService dataSourceService;
     
     public DataSourceListenerManager(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
-        configService = new ConfigurationService(name, regCenter);
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
+    public void shardingStart() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
-                    shardingDataSource.renew(
-                            dataSourceMap, new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
+                    DisabledStateEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void masterSlaveStart() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = dataSourceService.getAvailableMasterSlaveRuleConfiguration();
-                    if (masterSlaveRuleConfiguration.getSlaveDataSourceNames().isEmpty()) {
-                        throw new ShardingException("No available slave datasource, can't apply the configuration!");
-                    } 
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), masterSlaveRuleConfiguration);
+                    DisabledStateEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
     }
     
     @Override
-    public void start() {
+    public void proxyStart() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    OrchestrationProxyConfiguration availableYamlProxyConfiguration = dataSourceService.getAvailableYamlProxyConfiguration();
-                    if (availableYamlProxyConfiguration.getShardingRule().getTables().isEmpty() && availableYamlProxyConfiguration.getMasterSlaveRule().getSlaveDataSourceNames().isEmpty()) {
-                        throw new ShardingException("No available slave datasource, can't apply the configuration!");
-                    }
-                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), availableYamlProxyConfiguration));
+                    DisabledStateEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });

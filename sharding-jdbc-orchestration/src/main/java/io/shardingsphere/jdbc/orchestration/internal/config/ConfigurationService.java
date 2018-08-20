@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
+import io.shardingsphere.core.orche.config.ProxyBasicRule;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceConverter;
@@ -171,7 +172,7 @@ public final class ConfigurationService {
      */
     public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
         persistDataSourceParameterConfiguration(orchestrationProxyConfiguration.getDataSources(), isOverwrite);
-        persistProxyRuleConfiguration(orchestrationProxyConfiguration, isOverwrite);
+        persistProxyRuleConfiguration(orchestrationProxyConfiguration.getProxyBasicRule(), isOverwrite);
     }
     
     private void persistDataSourceParameterConfiguration(final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
@@ -185,11 +186,11 @@ public final class ConfigurationService {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
     }
     
-    private void persistProxyRuleConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
+    private void persistProxyRuleConfiguration(final ProxyBasicRule proxyBasicRule, final boolean isOverwrite) {
         if (isOverwrite || !hasProxyConfig()) {
-            Preconditions.checkState(null != orchestrationProxyConfiguration.getShardingRule() || null != orchestrationProxyConfiguration.getMasterSlaveRule(), 
+            Preconditions.checkState(null != proxyBasicRule.getShardingRule() || null != proxyBasicRule.getMasterSlaveRule(),
                     "No available proxy rule configuration for Orchestration.");
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(orchestrationProxyConfiguration));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH), ProxyConfigurationConverter.proxyConfigToYaml(proxyBasicRule));
         }
     }
     
@@ -303,9 +304,9 @@ public final class ConfigurationService {
      *
      * @return proxy configuration
      */
-    public OrchestrationProxyConfiguration loadProxyConfiguration() {
+    public ProxyBasicRule loadProxyConfiguration() {
         try {
-            OrchestrationProxyConfiguration result = ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+            ProxyBasicRule result = ProxyConfigurationConverter.proxyConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
             Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()), "Authority configuration is invalid.");
             Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule(), "Sharding rule or Master slave rule can not be both null.");
             return result;

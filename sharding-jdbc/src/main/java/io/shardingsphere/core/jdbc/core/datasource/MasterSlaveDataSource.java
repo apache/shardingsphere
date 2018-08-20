@@ -17,19 +17,30 @@
 
 package io.shardingsphere.core.jdbc.core.datasource;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -38,9 +49,10 @@ import java.util.Properties;
  * Database that support master-slave.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
-public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
+public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -48,15 +60,26 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private ShardingProperties shardingProperties;
     
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
-        this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        init(dataSourceMap, masterSlaveRuleConfig);
+    }
+    
+    private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        this.dataSourceMap = dataSourceMap;
+        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+        DisabledStateEventBusInstance.getInstance().register(this);
+        CircuitStateEventBusInstance.getInstance().register(this);
+        JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -75,9 +98,9 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      */
     public Map<String, DataSource> getAllDataSources() {
         Map<String, DataSource> result = new HashMap<>(masterSlaveRule.getSlaveDataSourceNames().size() + 1, 1);
-        result.put(masterSlaveRule.getMasterDataSourceName(), dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()));
+        result.put(masterSlaveRule.getMasterDataSourceName(), getDataSourceMap().get(masterSlaveRule.getMasterDataSourceName()));
         for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
-            result.put(each, dataSourceMap.get(each));
+            result.put(each, getDataSourceMap().get(each));
         }
         return result;
     }
@@ -85,17 +108,34 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     /**
      * Renew master-slave data source.
      *
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig new master-slave rule configuration
+     * @param masterSlaveEvent master slave configuration event bus event
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+    @Subscribe
+    public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = masterSlaveEvent.getMasterSlaveRuleConfig();
+        super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
+        closeOriginalDataSources();
+        init(dataSourceMap, masterSlaveRuleConfig);
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : getDataSourceMap().values()) {
+            try {
+                Method closeMethod = each.getClass().getDeclaredMethod("close");
+                closeMethod.invoke(each);
+            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            }
+        }
     }
     
     @Override
     public final MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
+    }
+    
+    @Override
+    public void close() {
+        closeOriginalDataSources();
     }
     
     /**
@@ -106,4 +146,57 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     public boolean showSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
     }
+    
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        if (!getCircuitBreakerDataSourceNames().isEmpty()) {
+            return getCircuitBreakerDataSourceMap();
+        }
+        
+        if (!getDisabledDataSourceNames().isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSourceMap;
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : getDisabledDataSourceNames()) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : getCircuitBreakerDataSourceNames()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
+    }
 }
+
