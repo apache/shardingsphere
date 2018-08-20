@@ -66,7 +66,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
             sqlUnitStatements.put(entry.getKey(), createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
         }
         Collection<ExecuteResponseUnit> executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().groupExecute(
-                sqlUnitStatements, new FirstTransactionGroupExecuteCallback(isReturnGeneratedKeys), new TransactionGroupExecuteCallback(isReturnGeneratedKeys));
+                sqlUnitStatements, new FirstSQLGroupExecuteCallback(isReturnGeneratedKeys), new SQLGroupExecuteCallback(isReturnGeneratedKeys));
         return getExecuteQueryResponse(executeResponseUnits);
     }
     
@@ -107,7 +107,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     @RequiredArgsConstructor
-    class FirstTransactionGroupExecuteCallback implements ShardingGroupExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
+    private class FirstSQLGroupExecuteCallback implements ShardingGroupExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
@@ -115,28 +115,23 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<StatementExecuteUnit> statementExecuteUnits) throws SQLException {
             Collection<ExecuteResponseUnit> result = new LinkedList<>();
             boolean hasMetaData = false;
-            Connection connection = getBackendConnection().getConnection(dataSourceName);
             for (StatementExecuteUnit each : statementExecuteUnits) {
-                String actualSQL = each.getSqlExecutionUnit().getSqlUnit().getSql();
-                Statement statement = getJdbcExecutorWrapper().createStatement(connection, actualSQL, isReturnGeneratedKeys);
-                ExecuteResponseUnit response;
                 if (hasMetaData) {
-                    response = executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);
+                    result.add(executeWithoutMetadata(each.getStatement(), each.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys));
                 } else {
-                    response = executeWithMetadata(statement, actualSQL, isReturnGeneratedKeys);
+                    result.add(executeWithMetadata(each.getStatement(), each.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys));
                     hasMetaData = true;
                 }
-                result.add(response);
             }
             return result;
         }
     }
     
     @RequiredArgsConstructor
-    class TransactionGroupExecuteCallback implements ShardingGroupExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
-    
+    private class SQLGroupExecuteCallback implements ShardingGroupExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
+        
         private final boolean isReturnGeneratedKeys;
-    
+        
         @Override
         public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<StatementExecuteUnit> statementExecuteUnits) throws SQLException {
             Collection<ExecuteResponseUnit> result = new LinkedList<>();
