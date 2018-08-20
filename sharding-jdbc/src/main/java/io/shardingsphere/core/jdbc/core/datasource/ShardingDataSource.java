@@ -39,8 +39,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -96,29 +94,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     @Subscribe
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
         ShardingProperties newShardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
-        int originalExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        ConnectionMode originalConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingProperties = newShardingProperties;
-        ExecutorEngine newExecutorEngine = shardingContext.getExecutorEngine();
-        if (originalExecutorSize != newExecutorSize || originalConnectionMode != newConnectionMode) {
-            newExecutorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
-        }
+        ExecutorEngine newExecutorEngine = ConnectionMode.MEMORY_STRICTLY == newConnectionMode ? new MemoryStrictlyExecutorEngine(newExecutorSize) : new ConnectionStrictlyExecutorEngine(newExecutorSize);
         shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecutorEngine, newConnectionMode,
                 (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
-        closeOriginalDataSources();
-    }
-    
-    private void closeOriginalDataSources() {
-        Map<String, DataSource> originalDataSourceMap = shardingContext.getDataSourceMap();
-        for (DataSource each : originalDataSourceMap.values()) {
-            try {
-                Method method = each.getClass().getDeclaredMethod("close");
-                method.invoke(each);
-            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
-            }
-        }
     }
     
     @Override
