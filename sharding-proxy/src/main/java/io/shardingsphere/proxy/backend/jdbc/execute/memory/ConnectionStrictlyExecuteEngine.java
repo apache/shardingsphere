@@ -17,9 +17,12 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.memory;
 
-import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.result.MemoryQueryResult;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -34,7 +37,6 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateRespon
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -65,8 +67,12 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             sqlUnitStatements.put(entry.getKey(), createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
         }
-        Collection<ExecuteResponseUnit> executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().groupExecute(
-                sqlUnitStatements, new FirstSQLGroupExecuteCallback(isReturnGeneratedKeys), new SQLGroupExecuteCallback(isReturnGeneratedKeys));
+        SQLType sqlType = routeResult.getSqlStatement().getType();
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
+        Collection<ExecuteResponseUnit> executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().groupExecute(sqlUnitStatements, 
+                new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
+                new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         return getExecuteQueryResponse(executeResponseUnits);
     }
     
@@ -106,39 +112,40 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         return new MemoryQueryResult(resultSet);
     }
     
-    @RequiredArgsConstructor
-    private class FirstSQLGroupExecuteCallback implements ShardingGroupExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
+    private final class FirstConnectionStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
+    
+        private boolean hasMetaData;
+    
+        private FirstConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+            super(sqlType, isExceptionThrown, dataMap);
+            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+        }
         
         @Override
-        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<StatementExecuteUnit> statementExecuteUnits) throws SQLException {
-            Collection<ExecuteResponseUnit> result = new LinkedList<>();
-            boolean hasMetaData = false;
-            for (StatementExecuteUnit each : statementExecuteUnits) {
-                if (hasMetaData) {
-                    result.add(executeWithoutMetadata(each.getStatement(), each.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys));
-                } else {
-                    result.add(executeWithMetadata(each.getStatement(), each.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys));
-                    hasMetaData = true;
-                }
+        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+            if (hasMetaData) {
+                return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+            } else {
+                hasMetaData = true;
+                return executeWithMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
             }
-            return result;
         }
     }
     
-    @RequiredArgsConstructor
-    private class SQLGroupExecuteCallback implements ShardingGroupExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
+    private final class ConnectionStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
+    
+        private ConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+            super(sqlType, isExceptionThrown, dataMap);
+            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+        }
         
         @Override
-        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<StatementExecuteUnit> statementExecuteUnits) throws SQLException {
-            Collection<ExecuteResponseUnit> result = new LinkedList<>();
-            for (StatementExecuteUnit each : statementExecuteUnits) {
-                result.add(executeWithoutMetadata(each.getStatement(), each.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys));
-            }
-            return result;
+        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
 }
