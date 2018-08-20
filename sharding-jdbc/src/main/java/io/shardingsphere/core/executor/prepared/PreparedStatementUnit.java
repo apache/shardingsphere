@@ -15,25 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type.statement;
+package io.shardingsphere.core.executor.prepared;
 
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 /**
- * Statement execute unit.
+ * PreparedStatement execute unit.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class StatementUnit implements StatementExecuteUnit {
+public final class PreparedStatementUnit implements StatementExecuteUnit {
     
     private final SQLExecutionUnit sqlExecutionUnit;
     
-    private final Statement statement;
+    private final PreparedStatement statement;
 }

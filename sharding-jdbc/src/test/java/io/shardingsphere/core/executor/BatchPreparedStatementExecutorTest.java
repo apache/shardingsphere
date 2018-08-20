@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type;
+package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
-import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementUnit;
+import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
+import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import org.junit.Test;

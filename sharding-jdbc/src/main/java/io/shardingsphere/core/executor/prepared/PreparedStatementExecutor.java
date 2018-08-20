@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type.prepared;
+package io.shardingsphere.core.executor.prepared;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;

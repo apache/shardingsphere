@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type;
+package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type.batch;
+package io.shardingsphere.core.executor.batch;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;

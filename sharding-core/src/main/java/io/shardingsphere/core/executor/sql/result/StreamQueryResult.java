@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.result;
+package io.shardingsphere.core.executor.sql.result;
 
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.RequiredArgsConstructor;

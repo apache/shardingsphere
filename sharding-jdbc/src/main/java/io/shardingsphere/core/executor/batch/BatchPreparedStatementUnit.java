@@ -15,25 +15,42 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.type.prepared;
+package io.shardingsphere.core.executor.batch;
 
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * PreparedStatement execute unit.
- *
+ * PreparedStatement add batch execute unit.
+ * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class PreparedStatementUnit implements StatementExecuteUnit {
+public final class BatchPreparedStatementUnit implements StatementExecuteUnit {
     
     private final SQLExecutionUnit sqlExecutionUnit;
     
     private final PreparedStatement statement;
+    
+    private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new LinkedHashMap<>();
+    
+    @Getter(AccessLevel.NONE)
+    private int actualCallAddBatchTimes;
+    
+    /**
+     * Map times of use JDBC API call addBatch and times of actual call addBatch after route.
+     * 
+     * @param jdbcAddBatchTimes times of use JDBC API call addBatch
+     */
+    public void mapAddBatchCount(final int jdbcAddBatchTimes) {
+        jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);
+    }
 }
