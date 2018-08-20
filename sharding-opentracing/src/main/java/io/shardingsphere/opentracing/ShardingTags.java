@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTags {
     
-    public static final String COMPONENT_NAME = "SHARDING-SPHERE";
+    public static final String COMPONENT_NAME = "Sharding-Sphere";
     
     /**
      * Records the bind variables of SQL.

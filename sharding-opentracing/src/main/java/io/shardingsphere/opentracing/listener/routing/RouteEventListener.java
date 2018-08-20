@@ -33,7 +33,7 @@ import io.shardingsphere.opentracing.ShardingTags;
  */
 public final class RouteEventListener extends OpenTracingListener<RoutingEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/ROUTING/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/routing/";
     
     private final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
     
