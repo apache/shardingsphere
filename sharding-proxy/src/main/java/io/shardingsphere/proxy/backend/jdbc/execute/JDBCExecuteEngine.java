@@ -17,9 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
@@ -54,8 +52,6 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
-    
-    private final ShardingExecuteEngine shardingExecuteEngine = BackendExecutorContext.getInstance().getShardingExecuteEngine();
     
     private final List<QueryResult> queryResults = new LinkedList<>();
     

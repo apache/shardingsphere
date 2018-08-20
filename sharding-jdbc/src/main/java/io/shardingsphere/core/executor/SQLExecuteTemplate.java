@@ -42,7 +42,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class SQLExecuteTemplate {
     
-    private final ShardingExecuteEngine shardingExecuteEngine;
+    private final ShardingExecuteEngine executeEngine;
     
     private final ConnectionMode connectionMode;
     
@@ -59,8 +59,8 @@ public final class SQLExecuteTemplate {
         OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? shardingExecuteEngine.execute(new LinkedList<>(executeUnits), executeCallback)
-                    : shardingExecuteEngine.groupExecute(getExecuteUnitGroups(executeUnits), executeCallback);
+            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? executeEngine.execute(new LinkedList<>(executeUnits), executeCallback)
+                    : executeEngine.groupExecute(getExecuteUnitGroups(executeUnits), executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF

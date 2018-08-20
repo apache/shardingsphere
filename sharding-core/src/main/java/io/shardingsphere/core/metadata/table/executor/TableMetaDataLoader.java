@@ -48,7 +48,7 @@ public final class TableMetaDataLoader {
     
     private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
-    private final ShardingExecuteEngine shardingExecuteEngine;
+    private final ShardingExecuteEngine executeEngine;
     
     private final TableMetaDataConnectionManager connectionManager;
     
@@ -67,8 +67,8 @@ public final class TableMetaDataLoader {
     }
     
     private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return shardingExecuteEngine.groupExecute(dataNodeGroups, new ShardingGroupExecuteCallback<String, TableMetaData>() {
-        
+        return executeEngine.groupExecute(dataNodeGroups, new ShardingGroupExecuteCallback<String, TableMetaData>() {
+            
             @Override
             public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
                 DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);

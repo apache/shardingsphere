@@ -94,7 +94,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(RULE_REGISTRY.getMetaData().getDataSource(), 
-                    BackendExecutorContext.getInstance().getShardingExecuteEngine(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
+                    BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
             RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
         }
         return merge(sqlStatement);

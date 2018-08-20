@@ -124,11 +124,10 @@ public final class RuleRegistry {
     /**
      * Initialize rule registry.
      *
-     * @param shardingExecuteEngine sharding execute engine
+     * @param executeEngine sharding execute engine
      */
-    public void initShardingMetaData(final ShardingExecuteEngine shardingExecuteEngine) {
-        metaData = new ShardingMetaData(
-                getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL, shardingExecuteEngine, new ProxyTableMetaDataConnectionManager(backendDataSource));
+    public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
+        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource));
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {

@@ -50,13 +50,13 @@ import static org.mockito.Mockito.when;
 
 public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
-    private ShardingExecuteEngine shardingExecuteEngine = new ShardingExecuteEngine(5);
+    private ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(5);
     
-    private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(shardingExecuteEngine, ConnectionMode.MEMORY_STRICTLY);
+    private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
     
     @After
     public void tearDown() {
-        shardingExecuteEngine.close();
+        executeEngine.close();
     }
     
     @Test

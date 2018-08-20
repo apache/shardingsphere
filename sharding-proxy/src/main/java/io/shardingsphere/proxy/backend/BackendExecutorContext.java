@@ -31,7 +31,7 @@ public final class BackendExecutorContext {
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     @Getter
-    private final ShardingExecuteEngine shardingExecuteEngine = new ShardingExecuteEngine(RuleRegistry.getInstance().getExecutorSize());
+    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(RuleRegistry.getInstance().getExecutorSize());
     
     /**
      * Get backend executor context instance.

@@ -22,6 +22,7 @@ import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryResponse;
@@ -62,10 +63,10 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
             for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
                 statements.put(each, getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys));
             }
-            executeResponseUnits = getShardingExecuteEngine().execute(
+            executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().execute(
                     routeResult.getExecutionUnits(), new FirstTransactionExecuteCallback(isReturnGeneratedKeys), new XATransactionExecuteCallback(isReturnGeneratedKeys, statements));
         } else {
-            executeResponseUnits = getShardingExecuteEngine().execute(
+            executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().execute(
                     routeResult.getExecutionUnits(), new FirstTransactionExecuteCallback(isReturnGeneratedKeys), new LocalTransactionExecuteCallback(isReturnGeneratedKeys));
         }
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();

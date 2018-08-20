@@ -37,7 +37,7 @@ import org.mockito.MockitoAnnotations;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ShardingExecuteEngine shardingExecuteEngine;
+    private ShardingExecuteEngine executeEngine;
     
     private SQLExecuteTemplate executeTemplate;
     
@@ -54,8 +54,8 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        shardingExecuteEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
-        executeTemplate = new SQLExecuteTemplate(shardingExecuteEngine, ConnectionMode.MEMORY_STRICTLY);
+        executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
+        executeTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
@@ -70,6 +70,6 @@ public abstract class AbstractBaseExecutorTest {
         ShardingEventBusInstance.getInstance().unregister(overallExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);
-        shardingExecuteEngine.close();
+        executeEngine.close();
     }
 }
