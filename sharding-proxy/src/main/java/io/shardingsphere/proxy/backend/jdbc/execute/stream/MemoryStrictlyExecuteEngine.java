@@ -17,9 +17,12 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
-import io.shardingsphere.core.executor.ShardingExecuteCallback;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.result.StreamQueryResult;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -33,13 +36,13 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateRespon
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Memory strictly execute engine.
@@ -62,8 +65,12 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
             Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys);
             statementExecuteUnits.add(new ProxyStatementExecuteUnit(each, statement));
         }
-        Collection<ExecuteResponseUnit> executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().execute(
-                statementExecuteUnits, new FirstSQLExecuteCallback(isReturnGeneratedKeys), new SQLExecuteCallback(isReturnGeneratedKeys));
+        SQLType sqlType = routeResult.getSqlStatement().getType();
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
+        Collection<ExecuteResponseUnit> executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().execute(statementExecuteUnits, 
+                new FirstMemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
+                new MemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse((ExecuteQueryResponseUnit) firstExecuteResponseUnit, executeResponseUnits) : getExecuteUpdateResponse(executeResponseUnits);
@@ -91,25 +98,33 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         return new StreamQueryResult(resultSet);
     }
     
-    @RequiredArgsConstructor
-    private class FirstSQLExecuteCallback implements ShardingExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
+    private final class FirstMemoryStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
+        private FirstMemoryStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+            super(sqlType, isExceptionThrown, dataMap);
+            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+        }
+        
         @Override
-        public ExecuteResponseUnit execute(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-            return executeWithMetadata(statementExecuteUnit.getStatement(), statementExecuteUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+        protected ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+            return executeWithMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
     
-    @RequiredArgsConstructor
-    private class SQLExecuteCallback implements ShardingExecuteCallback<StatementExecuteUnit, ExecuteResponseUnit> {
+    private final class MemoryStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
+        private MemoryStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+            super(sqlType, isExceptionThrown, dataMap);
+            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+        }
+        
         @Override
-        public ExecuteResponseUnit execute(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-            return executeWithoutMetadata(statementExecuteUnit.getStatement(), statementExecuteUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+        protected ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
 }
