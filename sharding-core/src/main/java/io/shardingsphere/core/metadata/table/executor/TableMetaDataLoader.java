@@ -58,27 +58,24 @@ public final class TableMetaDataLoader {
      * @param logicTableName logic table name
      * @param shardingRule sharding rule
      * @return table meta data
+     * @throws SQLException SQL exception
      */
-    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
         List<TableMetaData> actualTableMetaDataList = load(shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups(), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) {
-        try {
-            return shardingExecuteEngine.groupExecute(dataNodeGroups, new ShardingGroupExecuteCallback<String, TableMetaData>() {
-                
-                @Override
-                public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
-                    DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
-                    final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
-                    return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, actualTableNames);
-                }
-            });
-        } catch (final Exception ex) {
-            throw new ShardingException(ex);
-        }
+    private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        return shardingExecuteEngine.groupExecute(dataNodeGroups, new ShardingGroupExecuteCallback<String, TableMetaData>() {
+        
+            @Override
+            public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
+                DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
+                final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
+                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, actualTableNames);
+            }
+        });
     }
     
     private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<String> actualTableNames) throws SQLException {

@@ -53,19 +53,19 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     
     @Override
     public final T execute(final StatementExecuteUnit executeUnit) throws SQLException {
-        return executeInternal(executeUnit);
+        return execute0(executeUnit);
     }
     
     @Override
     public final Collection<T> execute(final String dataSourceName, final Collection<StatementExecuteUnit> executeUnits) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : executeUnits) {
-            result.add(executeInternal(each));
+            result.add(execute0(each));
         }
         return result;
     }
     
-    private T executeInternal(final StatementExecuteUnit executeUnit) throws SQLException {
+    private T execute0(final StatementExecuteUnit executeUnit) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<SQLExecutionEvent> events = new LinkedList<>();

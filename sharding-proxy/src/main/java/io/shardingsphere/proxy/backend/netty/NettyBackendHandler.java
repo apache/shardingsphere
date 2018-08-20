@@ -94,7 +94,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private MergedResult mergedResult;
     
     @Override
-    protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException {
+    protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
         return RULE_REGISTRY.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
@@ -112,7 +112,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         return merge(new SQLJudgeEngine(sql).judge(), packets, queryResults);
     }
     
-    private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
+    private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(sql);
@@ -202,7 +202,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     // TODO :jiaqi use sql packet to refresh meta data
     // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData(final String logicTableName) {
+    private void refreshTableMetaData(final String logicTableName) throws SQLException {
         TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(RULE_REGISTRY.getMetaData().getDataSource(), 
                 BackendExecutorContext.getInstance().getShardingExecuteEngine(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
         RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));

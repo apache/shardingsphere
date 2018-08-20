@@ -67,7 +67,7 @@ public final class TableMetaDataInitializer {
         return result;
     }
     
-    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) {
+    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
             result.put(each.getLogicTable(), tableMetaDataLoader.load(each.getLogicTable(), shardingRule));

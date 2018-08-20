@@ -284,7 +284,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData() {
+    private void refreshTableMetaData() throws SQLException {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(), 
