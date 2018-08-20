@@ -26,7 +26,6 @@ import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -34,6 +33,10 @@ import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.dal.DALMergeEngine;
+import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -42,6 +45,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
@@ -51,6 +55,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -88,7 +93,16 @@ public final class MergeEventListenerTest {
         dataSourceMap.put("ds_0", mockDataSource());
         dataSourceMap.put("ds_1", mockDataSource());
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.MySQL, null, ConnectionMode.MEMORY_STRICTLY, true);
+        shardingContext = Mockito.mock(ShardingContext.class);
+        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
+        ShardingMetaData shardingMetaData = Mockito.mock(ShardingMetaData.class);
+        Map<String, String> dataSourceUrls = new LinkedHashMap<>();
+        dataSourceUrls.put("ds_0", "jdbc:mysql://127.0.0.1:3306/ds");
+        when(shardingMetaData.getDataSource()).thenReturn(new ShardingDataSourceMetaData(dataSourceUrls, shardingRule, DatabaseType.MySQL));
+        when(shardingMetaData.getTable()).thenReturn(new ShardingTableMetaData(new LinkedHashMap<String, TableMetaData>()));
+        when(shardingContext.getMetaData()).thenReturn(shardingMetaData);
+        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.MySQL);
+        when(shardingContext.isShowSQL()).thenReturn(true);
         mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
     }
     
