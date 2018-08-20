@@ -65,7 +65,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected final ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
-        setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
@@ -80,7 +79,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected final ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
-        setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
@@ -88,8 +86,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         backendConnection.add(resultSet);
         return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet));
     }
-    
-    protected abstract void setFetchSize(Statement statement) throws SQLException;
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
         ResultSet resultSet = statement.getGeneratedKeys();

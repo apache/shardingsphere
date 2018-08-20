@@ -57,11 +57,26 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        return execute(executeUnits, null, executeCallback);
+    }
+    
+    /**
+     * Execute.
+     *
+     * @param executeUnits execute units
+     * @param firstExecuteCallback first execute callback
+     * @param executeCallback execute callback
+     * @param <T> class type of return value
+     * @return execute result
+     * @throws SQLException SQL exception
+     */
+    public <T> List<T> execute(
+            final Collection<? extends StatementExecuteUnit> executeUnits, final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
         OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? executeEngine.execute(new LinkedList<>(executeUnits), executeCallback)
-                    : executeEngine.groupExecute(getExecuteUnitGroups(executeUnits), executeCallback);
+            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? executeEngine.execute(new LinkedList<>(executeUnits), firstExecuteCallback, executeCallback)
+                    : executeEngine.groupExecute(getExecuteUnitGroups(executeUnits), firstExecuteCallback, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF

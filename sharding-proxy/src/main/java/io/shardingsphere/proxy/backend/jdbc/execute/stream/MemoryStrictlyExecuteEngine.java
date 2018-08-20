@@ -17,8 +17,10 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.result.StreamQueryResult;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
@@ -54,8 +56,11 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private static final Integer FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
+    private final SQLExecuteTemplate sqlExecuteTemplate;
+    
     public MemoryStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(backendConnection, jdbcExecutorWrapper);
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.MEMORY_STRICTLY);
     }
     
     @Override
@@ -68,7 +73,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Collection<ExecuteResponseUnit> executeResponseUnits = BackendExecutorContext.getInstance().getExecuteEngine().execute(statementExecuteUnits, 
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(statementExecuteUnits, 
                 new FirstMemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new MemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -89,11 +94,6 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     @Override
-    protected void setFetchSize(final Statement statement) throws SQLException {
-        statement.setFetchSize(FETCH_ONE_ROW_A_TIME);
-    }
-    
-    @Override
     protected QueryResult createQueryResult(final ResultSet resultSet) {
         return new StreamQueryResult(resultSet);
     }
@@ -109,6 +109,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         
         @Override
         protected ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+            executeUnit.getStatement().setFetchSize(FETCH_ONE_ROW_A_TIME);
             return executeWithMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
@@ -124,6 +125,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         
         @Override
         protected ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
+            executeUnit.getStatement().setFetchSize(FETCH_ONE_ROW_A_TIME);
             return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
