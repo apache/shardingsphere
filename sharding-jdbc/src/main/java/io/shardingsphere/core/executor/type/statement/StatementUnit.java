@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.executor.type.statement;
 
-import io.shardingsphere.core.executor.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

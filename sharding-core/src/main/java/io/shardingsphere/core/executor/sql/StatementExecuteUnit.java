@@ -15,26 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.core.executor.sql;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.executor.sql.event.overall.OverallExecutionEvent;
-import lombok.AllArgsConstructor;
+import io.shardingsphere.core.routing.SQLExecutionUnit;
 
-@AllArgsConstructor
-public final class TestOverallExecutionEventListener {
-    
-    private final EventCaller eventCaller;
+import java.sql.Statement;
+
+/**
+ * Statement execute unit.
+ *
+ * @author zhangliang
+ */
+public interface StatementExecuteUnit {
     
     /**
-     * Listen event.
-     *
-     * @param event execution event
+     * Get SQL execute unit.
+     * 
+     * @return SQL execute unit
      */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final OverallExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+    SQLExecutionUnit getSqlExecutionUnit();
+    
+    /**
+     * Get statement.
+     * 
+     * @return statement
+     */
+    Statement getStatement();
 }

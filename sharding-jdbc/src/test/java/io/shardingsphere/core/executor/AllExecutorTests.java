@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
 import io.shardingsphere.core.executor.type.BatchPreparedStatementExecutorTest;
 import io.shardingsphere.core.executor.type.PreparedStatementExecutorTest;
 import io.shardingsphere.core.executor.type.StatementExecutorTest;
@@ -26,7 +25,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ExecutorExceptionHandlerTest.class, 
         StatementExecutorTest.class, 
         PreparedStatementExecutorTest.class,
         BatchPreparedStatementExecutorTest.class

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.event.sql;
+package io.shardingsphere.core.executor.sql.event.sql;
 
 import io.shardingsphere.core.routing.SQLUnit;
 

@@ -15,30 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
+package io.shardingsphere.core.executor.sql.event.sql;
 
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.SQLUnit;
 
-import java.sql.Statement;
+import java.util.List;
 
 /**
- * Statement execute unit.
- *
+ * DML execution event.
+ * 
  * @author zhangliang
+ * @author maxiaoguang
  */
-public interface StatementExecuteUnit {
+public final class DMLExecutionEvent extends SQLExecutionEvent {
     
-    /**
-     * Get SQL execute unit.
-     * 
-     * @return SQL execute unit
-     */
-    SQLExecutionUnit getSqlExecutionUnit();
-    
-    /**
-     * Get statement.
-     * 
-     * @return statement
-     */
-    Statement getStatement();
+    public DMLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
+        super(dataSource, sqlUnit, parameters);
+    }
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
-import io.shardingsphere.core.executor.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

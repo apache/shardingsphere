@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
-import io.shardingsphere.core.executor.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
