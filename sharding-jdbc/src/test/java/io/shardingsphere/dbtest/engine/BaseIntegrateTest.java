@@ -208,7 +208,7 @@ public abstract class BaseIntegrateTest {
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
-            ((ShardingDataSource) dataSource).close();
+            ((ShardingDataSource) dataSource).getConnection().getShardingContext().getExecutorEngine().close();
         }
         ParsingResultCache.getInstance().clear();
     }
