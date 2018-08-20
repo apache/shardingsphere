@@ -165,6 +165,7 @@ public final class RuleRegistry {
      */
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
+        backendDataSource.close();
         init(proxyConfigurationEventBusEvent.getDataSources(), proxyConfigurationEventBusEvent.getProxyBasicRule());
     }
     
