@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.event.sql;
+package io.shardingsphere.core.executor.sql.event.sql;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -19,6 +19,7 @@ package io.shardingsphere.core;
 
 import io.shardingsphere.core.api.AllApiTests;
 import io.shardingsphere.core.constant.AllConstantsTests;
+import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.hint.AllHintTests;
 import io.shardingsphere.core.merger.AllMergerTests;
 import io.shardingsphere.core.metadata.AllMetaDataTests;
@@ -41,7 +42,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllParsingTests.class,
         AllOptimizerTests.class, 
         AllRewriteTests.class, 
-        AllRoutingTests.class, 
+        AllRoutingTests.class,
+        AllExecutorTests.class, 
         AllMergerTests.class, 
         AllHintTests.class, 
         AllYamlTests.class

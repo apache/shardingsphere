@@ -15,26 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.proxy.backend.jdbc.execute;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.executor.sql.event.overall.OverallExecutionEvent;
-import lombok.AllArgsConstructor;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
+import io.shardingsphere.core.routing.SQLExecutionUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
-public final class TestOverallExecutionEventListener {
+import java.sql.Statement;
+
+/**
+ * Statement execute unit for Proxy.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ProxyStatementExecuteUnit implements StatementExecuteUnit {
     
-    private final EventCaller eventCaller;
+    private final SQLExecutionUnit sqlExecutionUnit;
     
-    /**
-     * Listen event.
-     *
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final OverallExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+    private final Statement statement;
 }

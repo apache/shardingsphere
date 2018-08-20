@@ -15,20 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.event.overall;
+package io.shardingsphere.core.executor.fixture;
 
-import io.shardingsphere.core.event.ShardingEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.event.ShardingEventType;
 
-/**
- * Overall sql execution event.
- * 
- * @author gaohongtao
- */
-@RequiredArgsConstructor
-@Getter
-public final class OverallExecutionEvent extends ShardingEvent {
+import java.util.List;
+
+public interface EventCaller {
     
-    private final boolean parallelExecute;
+    void verifyDataSource(String dataSource);
+    
+    void verifySQL(String sql);
+    
+    void verifyParameters(List<Object> parameters);
+    
+    void verifyEventExecutionType(ShardingEventType eventType);
+    
+    void verifyException(Exception exp);
+    
+    void verifyIsParallelExecute(boolean isParallelExecute);
 }

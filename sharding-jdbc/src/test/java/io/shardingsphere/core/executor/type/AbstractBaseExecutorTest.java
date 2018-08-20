@@ -19,14 +19,14 @@ package io.shardingsphere.core.executor.type;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;

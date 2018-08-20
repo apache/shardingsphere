@@ -18,11 +18,11 @@
 package io.shardingsphere.core.executor.type.statement;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.core.executor.SQLExecuteCallback;
-import io.shardingsphere.core.executor.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
