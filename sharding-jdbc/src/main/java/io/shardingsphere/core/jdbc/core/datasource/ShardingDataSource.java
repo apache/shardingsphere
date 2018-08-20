@@ -72,13 +72,13 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
-        shardingContext = getShardingContext(dataSourceMap, executeEngine, shardingRule, connectionMode);
+        shardingContext = getShardingContext(dataSourceMap, executeEngine, shardingRule);
         JdbcConfigurationEventBusInstance.getInstance().register(this);
     }
     
-    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingExecuteEngine executorEngine, final ShardingRule shardingRule, final ConnectionMode connectionMode) {
+    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingExecuteEngine executorEngine, final ShardingRule shardingRule) {
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, connectionMode, showSQL);
+        ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executorEngine, showSQL);
         DisabledStateEventBusInstance.getInstance().register(result);
         CircuitStateEventBusInstance.getInstance().register(result);
         return result;
@@ -93,10 +93,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
         ShardingProperties newShardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
         int newExecutorSize = newShardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        ConnectionMode newConnectionMode = ConnectionMode.valueOf(newShardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingProperties = newShardingProperties;
         ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
-        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine, newConnectionMode,
+        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine,
                 (boolean) newShardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
     }
     
