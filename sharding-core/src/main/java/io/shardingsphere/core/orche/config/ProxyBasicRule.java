@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.core.orche.config;
 
 import io.shardingsphere.core.rule.ProxyAuthority;
