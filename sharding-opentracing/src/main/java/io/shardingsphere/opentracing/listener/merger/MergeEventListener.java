@@ -33,7 +33,7 @@ import io.shardingsphere.opentracing.ShardingTags;
  */
 public final class MergeEventListener extends OpenTracingListener<MergeEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/MERGE/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/merge/";
     
     private final ThreadLocal<ActiveSpan> span = new ThreadLocal<>();
     
