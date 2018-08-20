@@ -59,20 +59,16 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     public ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<String, Collection<SQLUnit>> sqlUnitGroups = routeResult.getSQLUnitGroups();
         Collection<ExecuteResponseUnit> executeResponseUnits;
-        try {
-            if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
-                final Map<String, Map<SQLUnit, Statement>> sqlUnitStatements = new HashMap<>(sqlUnitGroups.size(), 1);
-                for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-                    sqlUnitStatements.put(entry.getKey(), createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
-                }
-                executeResponseUnits = getShardingExecuteEngine().groupExecute(
-                        sqlUnitGroups, new FirstTransactionGroupExecuteCallback(isReturnGeneratedKeys), new XATransactionGroupExecuteCallback(isReturnGeneratedKeys, sqlUnitStatements));
-            } else {
-                executeResponseUnits = getShardingExecuteEngine().groupExecute(
-                        sqlUnitGroups, new FirstTransactionGroupExecuteCallback(isReturnGeneratedKeys), new LocalTransactionGroupExecuteCallback(isReturnGeneratedKeys));
+        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
+            Map<String, Map<SQLUnit, Statement>> sqlUnitStatements = new HashMap<>(sqlUnitGroups.size(), 1);
+            for (Entry<String, Collection<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
+                sqlUnitStatements.put(entry.getKey(), createSQLUnitStatement(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
             }
-        } catch (final Exception ex) {
-            throw new SQLException(ex);
+            executeResponseUnits = getShardingExecuteEngine().groupExecute(
+                    sqlUnitGroups, new FirstTransactionGroupExecuteCallback(isReturnGeneratedKeys), new XATransactionGroupExecuteCallback(isReturnGeneratedKeys, sqlUnitStatements));
+        } else {
+            executeResponseUnits = getShardingExecuteEngine().groupExecute(
+                    sqlUnitGroups, new FirstTransactionGroupExecuteCallback(isReturnGeneratedKeys), new LocalTransactionGroupExecuteCallback(isReturnGeneratedKeys));
         }
         return getExecuteQueryResponse(executeResponseUnits);
     }
@@ -119,7 +115,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws Exception {
+        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
             Collection<ExecuteResponseUnit> result = new LinkedList<>();
             boolean hasMetaData = false;
             Connection connection = getBackendConnection().getConnection(dataSourceName);
@@ -147,7 +143,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final Map<String, Map<SQLUnit, Statement>> sqlUnitStatements;
         
         @Override
-        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws Exception {
+        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
             Collection<ExecuteResponseUnit> result = new LinkedList<>();
             for (Entry<SQLUnit, Statement> each : sqlUnitStatements.get(dataSourceName).entrySet()) {
                 result.add(executeWithoutMetadata(each.getValue(), each.getKey().getSql(), isReturnGeneratedKeys));
@@ -162,7 +158,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws Exception {
+        public Collection<ExecuteResponseUnit> execute(final String dataSourceName, final Collection<SQLUnit> sqlUnits) throws SQLException {
             Collection<ExecuteResponseUnit> result = new LinkedList<>();
             for (Entry<SQLUnit, Statement> each : createSQLUnitStatement(dataSourceName, sqlUnits, isReturnGeneratedKeys).entrySet()) {
                 result.add(executeWithoutMetadata(each.getValue(), each.getKey().getSql(), isReturnGeneratedKeys));

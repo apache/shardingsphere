@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor;
 
+import java.sql.SQLException;
+
 /**
  * Sharding execute callback.
  * 
@@ -32,7 +34,7 @@ public interface ShardingExecuteCallback<I, O> {
      * 
      * @param input input value
      * @return execute result
-     * @throws Exception throw when execute failure
+     * @throws SQLException throw when execute failure
      */
-    O execute(I input) throws Exception;
+    O execute(I input) throws SQLException;
 }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -35,7 +36,7 @@ public interface ShardingGroupExecuteCallback<I, O> {
      * @param key input key
      * @param values input values
      * @return execute result
-     * @throws Exception throw when execute failure
+     * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(String key, Collection<I> values) throws Exception;
+    Collection<O> execute(String key, Collection<I> values) throws SQLException;
 }

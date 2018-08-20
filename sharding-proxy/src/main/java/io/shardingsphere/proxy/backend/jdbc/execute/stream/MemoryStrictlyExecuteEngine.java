@@ -57,20 +57,16 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     @Override
     public ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Collection<ExecuteResponseUnit> executeResponseUnits;
-        try {
-            if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
-                Map<SQLExecutionUnit, Statement> statements = new HashMap<>(routeResult.getExecutionUnits().size(), 1);
-                for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-                    statements.put(each, getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys));
-                }
-                executeResponseUnits = getShardingExecuteEngine().execute(
-                        routeResult.getExecutionUnits(), new FirstTransactionExecuteCallback(isReturnGeneratedKeys), new XATransactionExecuteCallback(isReturnGeneratedKeys, statements));
-            } else {
-                executeResponseUnits = getShardingExecuteEngine().execute(
-                        routeResult.getExecutionUnits(), new FirstTransactionExecuteCallback(isReturnGeneratedKeys), new LocalTransactionExecuteCallback(isReturnGeneratedKeys));
+        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType()) {
+            Map<SQLExecutionUnit, Statement> statements = new HashMap<>(routeResult.getExecutionUnits().size(), 1);
+            for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
+                statements.put(each, getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys));
             }
-        } catch (final Exception ex) {
-            throw new SQLException(ex);
+            executeResponseUnits = getShardingExecuteEngine().execute(
+                    routeResult.getExecutionUnits(), new FirstTransactionExecuteCallback(isReturnGeneratedKeys), new XATransactionExecuteCallback(isReturnGeneratedKeys, statements));
+        } else {
+            executeResponseUnits = getShardingExecuteEngine().execute(
+                    routeResult.getExecutionUnits(), new FirstTransactionExecuteCallback(isReturnGeneratedKeys), new LocalTransactionExecuteCallback(isReturnGeneratedKeys));
         }
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
@@ -105,7 +101,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public ExecuteResponseUnit execute(final SQLExecutionUnit sqlExecutionUnit) throws Exception {
+        public ExecuteResponseUnit execute(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
             Statement statement = getJdbcExecutorWrapper().createStatement(
                     getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
             return executeWithMetadata(statement, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
@@ -120,7 +116,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final Map<SQLExecutionUnit, Statement> statements;
         
         @Override
-        public ExecuteResponseUnit execute(final SQLExecutionUnit sqlExecutionUnit) throws Exception {
+        public ExecuteResponseUnit execute(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
             String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
             return executeWithoutMetadata(statements.get(sqlExecutionUnit), actualSQL, isReturnGeneratedKeys);
         }
@@ -132,7 +128,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public ExecuteResponseUnit execute(final SQLExecutionUnit sqlExecutionUnit) throws Exception {
+        public ExecuteResponseUnit execute(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
             String actualSQL = sqlExecutionUnit.getSqlUnit().getSql();
             Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(sqlExecutionUnit.getDataSource()), actualSQL, isReturnGeneratedKeys);
             return executeWithoutMetadata(statement, actualSQL, isReturnGeneratedKeys);

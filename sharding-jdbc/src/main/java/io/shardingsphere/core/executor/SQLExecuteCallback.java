@@ -52,12 +52,12 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
     @Override
-    public final T execute(final StatementExecuteUnit executeUnit) throws Exception {
+    public final T execute(final StatementExecuteUnit executeUnit) throws SQLException {
         return executeInternal(executeUnit);
     }
     
     @Override
-    public final Collection<T> execute(final String dataSourceName, final Collection<StatementExecuteUnit> executeUnits) throws Exception {
+    public final Collection<T> execute(final String dataSourceName, final Collection<StatementExecuteUnit> executeUnits) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : executeUnits) {
             result.add(executeInternal(each));
@@ -65,7 +65,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         return result;
     }
     
-    private T executeInternal(final StatementExecuteUnit executeUnit) throws Exception {
+    private T executeInternal(final StatementExecuteUnit executeUnit) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<SQLExecutionEvent> events = new LinkedList<>();
