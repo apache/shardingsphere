@@ -50,9 +50,9 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
     public static Collection init() {
         return Arrays.asList(new Object[][]{
                 {"/yaml/integrate/sharding/configWithDataSourceWithoutProps.yaml", true},
-//                {"/yaml/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
-//                {"/yaml/integrate/sharding/configWithDataSourceWithProps.yaml", true},
-//                {"/yaml/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/sharding/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/sharding/configWithDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/sharding/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
@@ -72,13 +72,10 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
         }
         try (Connection conn = dataSource.getConnection();
              Statement stm = conn.createStatement()) {
-//            stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
+            stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
             stm.executeQuery("SELECT * FROM t_order");
-//            stm.executeQuery("SELECT * FROM t_order_item");
-//            stm.executeQuery("SELECT * FROM config");
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            stm.executeQuery("SELECT * FROM t_order_item");
+            stm.executeQuery("SELECT * FROM config");
         }
         ((OrchestrationShardingDataSource) dataSource).close();
     }
