@@ -22,6 +22,7 @@ import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Basic proxy rule.
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class ProxyBasicRule {
     
     private YamlShardingRuleConfiguration shardingRule;
