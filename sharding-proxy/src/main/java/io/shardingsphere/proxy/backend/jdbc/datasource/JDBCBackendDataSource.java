@@ -25,6 +25,8 @@ import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -39,7 +41,7 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Getter
-public final class JDBCBackendDataSource implements BackendDataSource {
+public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -101,5 +103,20 @@ public final class JDBCBackendDataSource implements BackendDataSource {
             result.remove(each);
         }
         return result;
+    }
+    
+    @Override
+    public void close() {
+        closeOriginalDataSources();
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                Method method = each.getClass().getDeclaredMethod("close");
+                method.invoke(each);
+            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            }
+        }
     }
 }
