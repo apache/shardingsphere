@@ -70,7 +70,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
         shardingContext = getShardingContext(dataSourceMap, executeEngine, shardingRule);
         JdbcConfigurationEventBusInstance.getInstance().register(this);
