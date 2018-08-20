@@ -24,13 +24,15 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ExecutorEngine;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -94,6 +96,7 @@ public final class ShardingContext implements AutoCloseable {
      */
     public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ExecutorEngine executorEngine,
                       final ConnectionMode connectionMode, final boolean showSQL) {
+        close();
         init(dataSourceMap, shardingRule, databaseType, executorEngine, connectionMode, showSQL);
     }
     
@@ -171,6 +174,17 @@ public final class ShardingContext implements AutoCloseable {
     
     @Override
     public void close() {
+        closeOriginalDataSources();
         executorEngine.close();
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                Method method = each.getClass().getDeclaredMethod("close");
+                method.invoke(each);
+            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            }
+        }
     }
 }
