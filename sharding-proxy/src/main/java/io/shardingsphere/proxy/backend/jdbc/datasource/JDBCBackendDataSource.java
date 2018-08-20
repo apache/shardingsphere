@@ -88,12 +88,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return getDataSourceMap().get(dataSourceName).getConnection();
     }
     
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSource> getDataSourceMap() {
+    private Map<String, DataSource> getDataSourceMap() {
         if (!RuleRegistry.getInstance().getDisabledDataSourceNames().isEmpty()) {
             return getAvailableDataSourceMap();
         }
