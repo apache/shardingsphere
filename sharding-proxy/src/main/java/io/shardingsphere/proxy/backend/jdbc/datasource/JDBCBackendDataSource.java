@@ -85,6 +85,26 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return dataSourceMap.get(dataSourceName).getConnection();
+        return getDataSourceMap().get(dataSourceName).getConnection();
+    }
+    
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        if (!RuleRegistry.getInstance().getDisabledDataSourceNames().isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSourceMap;
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : RuleRegistry.getInstance().getDisabledDataSourceNames()) {
+            result.remove(each);
+        }
+        return result;
     }
 }
