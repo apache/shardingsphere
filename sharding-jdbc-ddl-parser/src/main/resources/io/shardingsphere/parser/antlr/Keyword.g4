@@ -164,6 +164,7 @@ ENUM: E N U M;
 JSON: J S O N;
 
 REPLACE: R E P L A C E;
+
 ID: 
 	(BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA? DOT)?
 	(BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA?)

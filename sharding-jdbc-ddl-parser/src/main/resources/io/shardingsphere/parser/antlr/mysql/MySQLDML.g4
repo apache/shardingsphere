@@ -1,5 +1,5 @@
 grammar MySQLDML;
-import MySQLBase,MySQLKeyword,DMLBase,SQLBase,Keyword,Symbol;
+import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase, DMLBase,Symbol;
 
 
 selectSpec: 
@@ -12,7 +12,6 @@ selectSpec:
 	(SQL_CACHE | SQL_NO_CACHE)?
 	SQL_CALC_FOUND_ROWS?
 	;
-
 
 caseExpress:
 	caseCond
@@ -47,48 +46,6 @@ selectExpr:
 	(bitExpr| caseExpress) AS? alias?
 	;
 	
-	
-//https://dev.mysql.com/doc/refman/8.0/en/join.html
-tableReferences:
-    tableReference(COMMA  tableReference)*
-    ;
-
-tableReference:
-	(tableFactor joinTable)+
-  	| tableFactor joinTable+
-  	| tableFactor
- 	;
- 	
-tableFactor:
-    tableName (PARTITION  itemList)?
-        (AS? alias)? indexHintList? 
-  	| subquery AS? alias
-  	| LEFT_PAREN tableReferences RIGHT_PAREN
-	;
-	
-
-joinTable:
-	(INNER | CROSS)? JOIN tableFactor joinCondition?
-  	| STRAIGHT_JOIN tableFactor
-  	| STRAIGHT_JOIN tableFactor joinCondition
-  	| (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
-  	| NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
-	;
-	
-joinCondition:
-    ON expr
-  	| USING itemList
-	;
-    
-indexHintList:
-    indexHint(COMMA  indexHint)*
-    ;
-
-indexHint:
-	USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* itemList
-  	| IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* itemList
- 	;
-
 //delete 
 deleteClause:
 	DELETE deleteSpec (fromMulti| fromSingle) 
@@ -124,19 +81,15 @@ insertSpec:
 	| DELAYED 
 	| HIGH_PRIORITY IGNORE
 	;
-	
-partitionClause: 
-	PARTITION itemList
-	;
-	
+
 columnClause: 
-	itemListWithEmpty? (valueClause | select)
+	idListWithEmpty? (valueClause | select)
 	;
 	
 valueClause: 
-	(VALUES | VALUE) valueList (COMMA valueList)*
+	(VALUES | VALUE) valueListWithParen (COMMA valueListWithParen)*
 	;
-	
+		
 setClause: 
 	SET assignmentList
 	;
@@ -147,7 +100,7 @@ onDuplicateClause:
 
 itemListWithEmpty:
 	(LEFT_PAREN RIGHT_PAREN)
-	|itemList
+	|idList
 	;
 
 assignmentList: 
@@ -165,15 +118,3 @@ updateClause:
 updateSpec: 
 	LOW_PRIORITY? IGNORE?
 	;
-
-item: ID; 
-
-
-
-
-
-
-
-
-
-     

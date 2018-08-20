@@ -1,5 +1,5 @@
 grammar MySQLDDL;
-import MySQLBase,MySQLKeyword,DDLBase,SQLBase,Keyword,Symbol;
+import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase,DDLBase,Symbol;
 @header{
 	package io.shardingsphere.parser.antlr.mysql;
 }
@@ -31,11 +31,12 @@ createDefinition:
 	;
 	
 createTableSelect:
-	LEFT_PAREN createDefinitions RIGHT_PAREN?
+	(LEFT_PAREN createDefinitions RIGHT_PAREN)?
 	tableOptions?
 	partitionOptions??
 	(IGNORE | REPLACE)?
     AS?
+    unionSelect
 	;
 	
 createTableLike:
@@ -348,3 +349,14 @@ subpartitionDefinition:
     (TABLESPACE EQ_OR_ASSIGN? tablespaceName)?
 	;
      
+
+ value:
+	DEFAULT|expr;
+
+valueList:
+	 value (COMMA value)*
+	;
+	
+valueListWithParen:
+	LEFT_PAREN valueList RIGHT_PAREN
+	;

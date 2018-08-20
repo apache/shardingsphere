@@ -1,6 +1,6 @@
 grammar DMLBase;
 
-import SQLBase, Keyword, Symbol;
+import DQLBase,BaseRule,DataType,Keyword, Symbol;
 
 execute:
 	select
@@ -9,53 +9,8 @@ execute:
 	|delete
 	;
 	
-insert:
-	;
-	
-//define delete rule template 
-select: 
-	withClause
-	|unionSelect
-	;
-
-withClause:
-	WITH RECURSIVE? cteClause (COMMA cteClause)*
-	unionSelect
-	;
-
-cteClause:
-	cteName itemList? AS subquery
-	;
-	
-cteName:
-   ID
-   ;
-   
-   	
-unionSelect:
-	selectExpression (UNION ALL? selectExpression)*
-	;
-
-selectExpression:
-	selectClause 
-	fromClause? 
-	whereClause? 
-	groupByClause? 
-	orderByClause? 
-	limitClause?
-	;
-	
-selectClause:
-	SELECT selectSpec selectExprs
-	;
-	
-selectSpec:
-	;
 fromClause: 
 	FROM tableReferences
-	;
-	
-tableReferences:
 	;
 		
 whereClause: 
@@ -83,31 +38,6 @@ groupByItem:
 limitClause:
 	LIMIT rangeClause
 	;
-	
-rangeClause:
-	NUMBER (COMMA  NUMBER)* 
-	| NUMBER OFFSET NUMBER
-	;
-    
-subquery:
-	LEFT_PAREN unionSelect RIGHT_PAREN
-	;
-	
-selectExprs:
-    (ASTERISK (COMMA selectExpr)*) 
-    |selectExpr (COMMA ASTERISK)? (COMMA selectExpr)*
-    ;
-     
-selectExpr:
-	bitExpr AS? alias?
-	;
-
-bitExpr:
-	;
- 
-alias:
-	ID
-	;
 
 //define delete rule template
 delete: 
@@ -116,12 +46,9 @@ delete:
 	orderByClause? 
 	limitClause?
 	;
-
-deleteClause:
-	;
 	
 partitionClause: 
-	PARTITION itemList
+	PARTITION idList
 	;
 
 update: 
@@ -130,12 +57,6 @@ update:
 	whereClause? 
 	orderByClause? 
 	limitClause?
-	;
-
-updateClause:
-	;
-	
-updateSpec: 
 	;
 
 setClause: 
@@ -149,11 +70,26 @@ assignmentList:
 assignment:
 	columnName EQ_OR_ASSIGN value
 	;
-	
+
 value:
-	DEFAULT
-	|expr
+	DEFAULT|expr;
+
+valueList:
+	 value (COMMA value)*
+	;
+	
+valueListWithParen:
+	LEFT_PAREN valueList RIGHT_PAREN
+	;	
+	
+insert:
 	;
 
-expr:
+deleteClause:
+	;
+	
+updateClause:
+	;
+
+updateSpec: 
 	;

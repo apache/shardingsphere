@@ -1,9 +1,10 @@
 grammar DDLBase;
 
-import SQLBase, Keyword, Symbol;
+import Keyword, BaseRule,Symbol;
 
 execute:
 	alterTable
+	|createTable
 	;
 	
 alterTable:
@@ -27,3 +28,4 @@ createTable:
 	
 createTableOptions:
 	NONE;
+	

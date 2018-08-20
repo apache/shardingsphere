@@ -1,36 +1,11 @@
-grammar SQLBase;
+lexer grammar DataType;
 
 import Keyword,Symbol;
-
-
-expr:
-	;
-
-itemList:
-    LEFT_PAREN item (COMMA  item)* RIGHT_PAREN
-    ;
-    
-item:
-	;
-
-idList:
-    LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
-    ;
-
-schemaName: ID;
-tableName: ID;
-columnName: ID; 
-tablespaceName:ID;
-
-collationName:
-	ID
-	;	
 
 STRING: 
 	DOUBLE_QUOTA ('\\"'|.)*? DOUBLE_QUOTA
     |SINGLE_QUOTA (SINGLE_QUOTA |.)*? SINGLE_QUOTA
 	;
-    
 
 NUMBER:
      MINUS? INT_ DOT [0-9]+ EXP?
@@ -57,8 +32,7 @@ HEX_DIGIT:
 
 BIT_NUM:
 	('0b' ('0'|'1')+)
-	|
-	(B SINGLE_QUOTA ('0'|'1')+ SINGLE_QUOTA) 
+	|(B SINGLE_QUOTA ('0'|'1')+ SINGLE_QUOTA) 
 	;
 	
 WS:  
