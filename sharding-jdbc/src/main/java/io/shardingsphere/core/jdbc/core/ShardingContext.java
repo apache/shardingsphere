@@ -67,15 +67,16 @@ public final class ShardingContext implements AutoCloseable {
     
     private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final boolean showSQL) {
-        init(dataSourceMap, shardingRule, databaseType, executeEngine, showSQL);
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+        init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
     
-    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final boolean showSQL) {
+    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.executeEngine = executeEngine;
         this.databaseType = databaseType;
+        this.connectionMode = connectionMode;
         this.showSQL = showSQL;
         metaData = new ShardingMetaData(
                 getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
@@ -90,9 +91,9 @@ public final class ShardingContext implements AutoCloseable {
      * @param executeEngine sharding executor engine
      * @param showSQL show sql
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final boolean showSQL) {
+    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         close();
-        init(dataSourceMap, shardingRule, databaseType, executeEngine, showSQL);
+        init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
     
     /**
