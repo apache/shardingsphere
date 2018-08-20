@@ -17,7 +17,9 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
@@ -25,12 +27,11 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteRespons
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -42,7 +43,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 /**
  * SQL Execute engine for JDBC.
@@ -55,11 +55,11 @@ import java.util.concurrent.ExecutorService;
 @RequiredArgsConstructor
 public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
+    private final ShardingExecuteEngine shardingExecuteEngine = BackendExecutorContext.getInstance().getShardingExecuteEngine();
+    
     private final List<QueryResult> queryResults = new LinkedList<>();
     
     private final BackendConnection backendConnection;
-    
-    private final ExecutorService executorService = BackendExecutorContext.getInstance().getShardingExecuteEngine().getExecutorService();
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     

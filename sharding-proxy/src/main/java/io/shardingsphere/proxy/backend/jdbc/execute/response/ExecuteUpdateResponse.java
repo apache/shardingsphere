@@ -37,10 +37,6 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
     @Getter
     private final List<OKPacket> packets = new LinkedList<>();
     
-    public ExecuteUpdateResponse(final OKPacket packet) {
-        packets.add(packet);
-    }
-    
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
             packets.add(((ExecuteUpdateResponseUnit) each).getOkPacket());
