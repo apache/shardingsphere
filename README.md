@@ -16,6 +16,8 @@
 
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingsphere.io/document/current/cn/)
 
+Official website: http://shardingsphere.io/
+
 ## Overview
 
 Sharding-Sphere is an open source distributed database middleware solution suite, which consists of Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. These three sub-projects are suitable for various scenarios and provide consistent functions including data sharding, distributed transaction and database orchestration.
