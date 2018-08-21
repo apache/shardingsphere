@@ -33,9 +33,8 @@ public interface SQLExecuteEngine {
      * Execute SQL.
      *
      * @param routeResult route result
-     * @param isReturnGeneratedKeys is return generated keys
      * @return execute response
      * @throws SQLException SQL exception
      */
-    ExecuteResponse execute(SQLRouteResult routeResult, boolean isReturnGeneratedKeys) throws SQLException;
+    ExecuteResponse execute(SQLRouteResult routeResult) throws SQLException;
 }

@@ -26,6 +26,7 @@ import io.shardingsphere.core.executor.sql.result.StreamQueryResult;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
@@ -64,8 +65,9 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     @Override
-    public ExecuteResponse execute(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    public ExecuteResponse execute(final SQLRouteResult routeResult) throws SQLException {
         Collection<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
+        boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys);
             statementExecuteUnits.add(new ProxyStatementExecuteUnit(each, statement));
