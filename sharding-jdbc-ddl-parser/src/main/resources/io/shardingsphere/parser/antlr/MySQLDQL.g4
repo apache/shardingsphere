@@ -185,6 +185,7 @@ characterAndCollate:
 	
 characterSet:
 	((CHARACTER | CHAR) SET charsetName)
+	|CHARSET EQ_OR_ASSIGN? charsetName
 	;
 	
 collateClause:
@@ -203,6 +204,7 @@ characterAndCollateWithEqual:
 		
 characterSetWithEqual:
 	((CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName)
+	|CHARSET EQ_OR_ASSIGN? charsetName
 	;
 			
 collateClauseWithEqual:
