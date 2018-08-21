@@ -13,13 +13,13 @@ createIndex:
     ;
  
 dropIndex:
- 	DROP INDEX indexName ON tableName
-     (algorithmOption | lockOption)*
+ 	dropIndexDef ON tableName
+    (algorithmOption | lockOption)*
 	;
 
 dropTable:
 	DROP TEMPORARY? TABLE (IF EXISTS)?
-    tableName columnName (tableName columnName)* 
+    tableName (COMMA tableName)* 
     (RESTRICT | CASCADE)?
     ;
  
@@ -82,21 +82,21 @@ alterSpecification:
 	| ADD constraintDefinition
 	| algorithmOption
 	| ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
-	| CHANGE COLUMN? columnName columnName columnDefinition (FIRST|AFTER columnName)?
+	| changeColumn
 	| DEFAULT? characterAndCollateWithEqual
 	| CONVERT TO characterAndCollate
 	| (DISABLE|ENABLE) KEYS
 	| (DISCARD|IMPORT_) TABLESPACE
-	| DROP COLUMN? columnName
-	| DROP (INDEX|KEY) indexName
-	| DROP PRIMARY KEY
+	| dropColumn
+	| dropIndexDef
+	| dropPrimaryKey
 	| DROP FOREIGN KEY fkSymbol
 	| FORCE
 	| lockOption
-	| MODIFY COLUMN? columnName columnDefinition (FIRST | AFTER columnName)?
+	| modifyColumn
 	| (ORDER BY columnName (COMMA columnName)* )+ 
-	| RENAME (INDEX|KEY) indexName TO indexName
-	| RENAME (TO|AS)? tableName
+	| renameIndex
+	| renameTable
 	| (WITHOUT|WITH) VALIDATION
 	| ADD PARTITION partitionDefinitions
 	| DROP PARTITION partitionNames
@@ -115,6 +115,38 @@ alterSpecification:
 	| UPGRADE PARTITIONING
 	;
 
+changeColumn:
+	changeColumnOp columnName columnName columnDefinition (FIRST|AFTER columnName)?
+	;
+	
+changeColumnOp:
+	CHANGE COLUMN?
+	;
+	
+dropColumn:
+	DROP COLUMN? columnName
+	;
+	
+dropIndexDef:
+	DROP indexAndKey indexName
+	;
+	
+dropPrimaryKey:
+	DROP PRIMARY KEY
+	;
+	
+renameIndex:
+	RENAME indexAndKey indexName TO indexName
+	;
+
+renameTable:	
+	RENAME (TO|AS)? tableName
+	;
+
+modifyColumn:	
+	MODIFY COLUMN? columnNameAndDefinition (FIRST | AFTER columnName)?
+	;
+	
 algorithmOption:
     ALGORITHM EQ_OR_ASSIGN? (DEFAULT|INPLACE|COPY)
     ;
