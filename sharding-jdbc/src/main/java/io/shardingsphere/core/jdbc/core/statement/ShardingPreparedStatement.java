@@ -137,9 +137,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ResultSet result;
         try {
             sqlRoute();
-            Collection<PreparedStatementUnit> preparedStatementUnits = getPreparedStatementUnits();
-            List<ResultSet> resultSets = new PreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
-                    routeResult.getSqlStatement().getType(), preparedStatementUnits).executeQuery();
+            List<ResultSet> resultSets = getPreparedStatementExecutor().executeQuery();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
                     connection.getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
@@ -167,9 +165,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         routedStatements.clear();
         try {
             sqlRoute();
-            Collection<PreparedStatementUnit> preparedStatementUnits = getPreparedStatementUnits();
-            return new PreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()),
-                    routeResult.getSqlStatement().getType(), preparedStatementUnits).executeUpdate();
+            return getPreparedStatementExecutor().executeUpdate();
         } finally {
             refreshTableMetaData();
             clearBatch();
@@ -181,9 +177,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         routedStatements.clear();
         try {
             sqlRoute();
-            Collection<PreparedStatementUnit> preparedStatementUnits = getPreparedStatementUnits();
-            return new PreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connection.getShardingContext().getConnectionMode()), 
-                    routeResult.getSqlStatement().getType(), preparedStatementUnits).execute();
+            return getPreparedStatementExecutor().execute();
         } finally {
             refreshTableMetaData();
             clearBatch();
@@ -249,11 +243,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingEventBusInstance.getInstance().post(event);
     }
     
-    private Collection<PreparedStatementUnit> getPreparedStatementUnits() throws SQLException {
-        return ConnectionMode.MEMORY_STRICTLY == connection.getShardingContext().getConnectionMode() ? getPreparedStatementUnitsForMemoryStrictly() : getPreparedStatementUnitsForConnectionStrictly();
+    private PreparedStatementExecutor getPreparedStatementExecutor() throws SQLException {
+        ConnectionMode connectionMode = connection.getShardingContext().getConnectionMode();
+        SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine(), connectionMode);
+        Collection<PreparedStatementUnit> executeUnits = ConnectionMode.MEMORY_STRICTLY == connectionMode ? getExecuteUnitsForMemoryStrictly() : getExecuteUnitsForConnectionStrictly();
+        return new PreparedStatementExecutor(sqlExecuteTemplate, routeResult.getSqlStatement().getType(), executeUnits);
     }
     
-    private Collection<PreparedStatementUnit> getPreparedStatementUnitsForMemoryStrictly() throws SQLException {
+    private Collection<PreparedStatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             result.add(getPreparedStatementUnit(connection.getConnection(each.getDataSource()), each));
@@ -261,7 +258,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return result;
     }
     
-    private Collection<PreparedStatementUnit> getPreparedStatementUnitsForConnectionStrictly() throws SQLException {
+    private Collection<PreparedStatementUnit> getExecuteUnitsForConnectionStrictly() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
         for (Entry<String, Collection<SQLUnit>> entry : routeResult.getSQLUnitGroups().entrySet()) {
             String dataSourceName = entry.getKey();
