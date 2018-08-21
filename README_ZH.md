@@ -1,5 +1,7 @@
 # [Sharding-Sphere - 分布式数据库中间层生态圈](http://shardingsphere.io/index_zh.html)
 
+官方网站: http://shardingsphere.io/
+
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 [![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
@@ -13,8 +15,6 @@
 
 [![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingsphere.io/document/current/cn/)
 [![Roadmap](https://img.shields.io/badge/roadmap-English-blue.svg)](ROADMAP.md)
-
-官方网站: http://shardingsphere.io/
 
 ## 概述
 
