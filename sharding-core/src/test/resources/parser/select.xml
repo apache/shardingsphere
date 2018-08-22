@@ -452,4 +452,22 @@
         </order-by-columns>
     </parser-result>
     
+    <parser-result sql-case-id="select_with_rownum" parameters="1">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order"/>
+            <row-count-token begin-position="38" row-count="20"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int"/>
+                </condition>
+            </and-condition>
+        </or-condition>
+        <limit row-count="20" row-count-index="0"/>
+    </parser-result>
+    
 </parser-result-sets>
