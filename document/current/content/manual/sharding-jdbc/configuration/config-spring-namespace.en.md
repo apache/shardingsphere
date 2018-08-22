@@ -364,7 +364,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | ----------------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
 | id                      | Attribute | Spring Bean Id                                                                                             |
 | sharding-column         | Attribute | Name of sharding column                                                                                    |
-| precise-algorithm-ref   | Attribute | Reference of precise algorithm used for `=` and `IN`. This class need to implements RangeShardingAlgorithm |
+| precise-algorithm-ref   | Attribute | Reference of precise algorithm used for `=` and `IN`. This class need to implements PreciseShardingAlgorithm |
 | range-algorithm-ref (?) | Attribute | Reference of range algorithm used for `BETWEEN`. This class need to implements RangeShardingAlgorithm      |
 
 #### \<sharding:complex-strategy />
