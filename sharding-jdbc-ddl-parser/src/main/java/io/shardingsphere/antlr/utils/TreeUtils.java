@@ -46,11 +46,12 @@ public class TreeUtils {
 			return null;
 		}
 
-		while (null != node) {
-			if (isSameType(node.getClass(), clazz)) {
-				return node;
+		for (int i = 0; i < node.getChildCount(); i++) {
+			ParseTree child = node.getChild(i);
+			ParseTree retNode = getFirstChildByClass(child, clazz);
+			if (null != retNode) {
+				return retNode;
 			}
-			node = node.getChild(0);
 		}
 
 		return null;

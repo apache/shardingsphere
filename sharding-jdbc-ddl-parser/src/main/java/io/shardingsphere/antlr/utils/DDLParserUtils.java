@@ -1,3 +1,20 @@
+/*
+ * Copyright 2016-2018 shardingsphere.io.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingsphere.antlr.utils;
 
 import java.util.List;
@@ -235,8 +252,7 @@ public class DDLParserUtils {
 	}
 
 	// TODO parse after | before column
-	public static boolean parseSingleColumn(AlterTableStatement statement, ParseTree ddlRootNode) {
-		boolean add = false;
+	public static void parseSingleColumn(AlterTableStatement statement, ParseTree ddlRootNode) {
 		ParserRuleContext singleColumnNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
 				"singleColumn");
 		if (null != singleColumnNode) {
@@ -245,11 +261,8 @@ public class DDLParserUtils {
 			ColumnDefinition column = parseColumnDefinition(columnNameAndDefinitionNode);
 			if (null != column) {
 				statement.getAddColumns().add(column);
-				add = true;
 			}
 		}
-
-		return add;
 	}
 
 	public static ColumnDefinition parseColumnDefinition(ParseTree columnNameAndDefinitionNode) {
@@ -261,6 +274,7 @@ public class DDLParserUtils {
 		ParserRuleContext columnDefinitionNode = (ParserRuleContext) columnNameAndDefinitionNode.getChild(1);
 		ParserRuleContext dataTypeRule = (ParserRuleContext) columnDefinitionNode.getChild(0);
 		TerminalNode dateType = (TerminalNode) dataTypeRule.getChild(0);
+		
 		Integer length = null;
 		if (dataTypeRule.getChildCount() > 1) {
 			TerminalNode lengthNode = TreeUtils.getFirstTerminalByType(dataTypeRule.getChild(1), MySQLDDLParser.NUMBER);
@@ -271,6 +285,7 @@ public class DDLParserUtils {
 				}
 			}
 		}
+		
 		TerminalNode primaryKeyNode = TreeUtils.getFirstTerminalByType(columnDefinitionNode, MySQLDDLParser.PRIMARY);
 		boolean primaryKey = false;
 		if (null != primaryKeyNode) {
