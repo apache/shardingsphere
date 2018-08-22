@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.api;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.transaction.constants.SoftTransactionType;
 import lombok.Getter;

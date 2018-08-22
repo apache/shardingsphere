@@ -17,8 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.listener;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigMapListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceListenerManager;
@@ -49,37 +47,35 @@ public final class ListenerFactory {
     }
     
     /**
-     * Initialize listeners for sharding data source.
+     * Initialize listeners for sharding.
      * 
-     * @param shardingDataSource sharding data source
      */
-    public void initShardingListeners(final ShardingDataSource shardingDataSource) {
-        configurationListenerManager.start(shardingDataSource);
-        instanceListenerManager.start(shardingDataSource);
-        dataSourceListenerManager.start(shardingDataSource);
-        configMapListenerManager.start(shardingDataSource);
+    public void initShardingListeners() {
+        configurationListenerManager.shardingStart();
+        instanceListenerManager.shardingStart();
+        dataSourceListenerManager.shardingStart();
+        configMapListenerManager.shardingStart();
     }
     
     /**
-     * Initialize listeners for master-slave data source.
+     * Initialize listeners for master-slave.
      *
-     * @param masterSlaveDataSource master-slave data source
      */
-    public void initMasterSlaveListeners(final MasterSlaveDataSource masterSlaveDataSource) {
-        configurationListenerManager.start(masterSlaveDataSource);
-        instanceListenerManager.start(masterSlaveDataSource);
-        dataSourceListenerManager.start(masterSlaveDataSource);
-        configMapListenerManager.start(masterSlaveDataSource);
+    public void initMasterSlaveListeners() {
+        configurationListenerManager.masterSlaveStart();
+        instanceListenerManager.masterSlaveStart();
+        dataSourceListenerManager.masterSlaveStart();
+        configMapListenerManager.masterSlaveStart();
     }
     
     /**
-     * Initialize listeners for proxy yaml configuration.
+     * Initialize listeners for proxy.
      *
      */
     public void initProxyListeners() {
-        configurationListenerManager.start();
-        instanceListenerManager.start();
-        dataSourceListenerManager.start();
-        configMapListenerManager.start();
+        configurationListenerManager.proxyStart();
+        instanceListenerManager.proxyStart();
+        dataSourceListenerManager.proxyStart();
+        configMapListenerManager.proxyStart();
     }
 }

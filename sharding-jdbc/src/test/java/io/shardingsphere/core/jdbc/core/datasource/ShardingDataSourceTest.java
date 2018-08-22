@@ -23,8 +23,9 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -124,15 +125,19 @@ public final class ShardingDataSourceTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(false);
         when(statement.getResultSet()).thenReturn(resultSet);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getDatabaseProductName()).thenReturn(dataBaseProductName);
         when(result.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(statement.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(ArgumentMatchers.<String>any())).thenReturn(resultSet);
-        when(statement.getConnection()).thenReturn(connection);
         when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
                 ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
-        when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        if ("MySQL".equals(dataBaseProductName)) {
+            when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
+        } else if ("H2".equals(dataBaseProductName)) {
+            when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        }
         return result;
     }
     
@@ -150,12 +155,14 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        ShardingExecuteEngine originExecuteEngine = getExecuteEngine(shardingDataSource);
+        ShardingProperties originShardingProperties = getShardingProperties(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
-        shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), new Properties());
-        assertThat(originExecuteEngine, is(getExecuteEngine(shardingDataSource)));
+        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
+                newDataSourceMap.keySet()), new Properties());
+        shardingDataSource.renew(shardingEvent);
+        assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
     }
     
     @Test
@@ -164,14 +171,16 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
         originalDataSourceMap.put("ds", originalDataSource);
         ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        final ShardingExecuteEngine originExecuteEngine = getExecuteEngine(shardingDataSource);
+        final ShardingProperties originShardingProperties = getShardingProperties(shardingDataSource);
         DataSource newDataSource = mockDataSource("H2");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
-        shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), props);
-        assertThat(originExecuteEngine, not(getExecuteEngine(shardingDataSource)));
+        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
+                newDataSourceMap.keySet()), props);
+        shardingDataSource.renew(shardingEvent);
+        assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
     }
     
     // TODO to be discuss
@@ -185,7 +194,9 @@ public final class ShardingDataSourceTest {
         DataSource newDataSource = mockDataSource("MySQL");
         Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
         newDataSourceMap.put("ds", newDataSource);
-        shardingDataSource.renew(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap), newDataSourceMap.keySet()), new Properties());
+        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
+                newDataSourceMap.keySet()), new Properties());
+        shardingDataSource.renew(shardingEvent);
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -205,9 +216,9 @@ public final class ShardingDataSourceTest {
         return result;
     }
     
-    private ShardingExecuteEngine getExecuteEngine(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
-        Field field = ShardingDataSource.class.getDeclaredField("executeEngine");
+    private ShardingProperties getShardingProperties(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
+        Field field = ShardingDataSource.class.getDeclaredField("shardingProperties");
         field.setAccessible(true);
-        return (ShardingExecuteEngine) field.get(shardingDataSource);
+        return (ShardingProperties) field.get(shardingDataSource);
     }
 }

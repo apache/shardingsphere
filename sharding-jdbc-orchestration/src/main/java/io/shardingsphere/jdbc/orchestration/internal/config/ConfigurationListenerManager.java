@@ -17,11 +17,12 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
@@ -55,13 +56,13 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, shardingDataSource);
-        start(ConfigurationNode.SHARDING_RULE_NODE_PATH, shardingDataSource);
-        start(ConfigurationNode.SHARDING_PROPS_NODE_PATH, shardingDataSource);
+    public void shardingStart() {
+        shardingStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        shardingStart(ConfigurationNode.SHARDING_RULE_NODE_PATH);
+        shardingStart(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
     }
     
-    private void start(final String node, final ShardingDataSource shardingDataSource) {
+    private void shardingStart(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -69,46 +70,49 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
-                    shardingDataSource.renew(
-                            dataSourceMap, new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
+                    ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(dataSourceMap,
+                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
+                    JdbcConfigurationEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
         });
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH, masterSlaveDataSource);
-        start(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH, masterSlaveDataSource);
+    public void masterSlaveStart() {
+        masterSlaveStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        masterSlaveStart(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
     }
     
-    private void start(final String node, final MasterSlaveDataSource masterSlaveDataSource) {
+    private void masterSlaveStart(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    masterSlaveDataSource.renew(dataSourceService.getAvailableDataSources(), dataSourceService.getAvailableMasterSlaveRuleConfiguration());
+                    MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration());
+                    JdbcConfigurationEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
         });
     }
     
     @Override
-    public void start() {
-        start(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        start(ConfigurationNode.PROXY_RULE_NODE_PATH);
+    public void proxyStart() {
+        proxyStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        proxyStart(ConfigurationNode.PROXY_RULE_NODE_PATH);
     }
     
-    private void start(final String node) {
+    private void proxyStart(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
+                    ProxyConfigurationEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
                 }
             }
         });

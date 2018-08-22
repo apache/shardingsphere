@@ -17,9 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
@@ -55,8 +53,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
-    private final ShardingExecuteEngine shardingExecuteEngine = BackendExecutorContext.getInstance().getShardingExecuteEngine();
-    
     private final List<QueryResult> queryResults = new LinkedList<>();
     
     private final BackendConnection backendConnection;
@@ -69,7 +65,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected final ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
-        setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
@@ -84,7 +79,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     protected final ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
-        setFetchSize(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
@@ -92,8 +86,6 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         backendConnection.add(resultSet);
         return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet));
     }
-    
-    protected abstract void setFetchSize(Statement statement) throws SQLException;
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
         ResultSet resultSet = statement.getGeneratedKeys();

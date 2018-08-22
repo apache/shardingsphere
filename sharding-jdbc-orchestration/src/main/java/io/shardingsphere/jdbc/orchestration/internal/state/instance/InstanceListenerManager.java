@@ -17,14 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.eventbus.ProxyEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
@@ -32,8 +27,7 @@ import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import java.util.LinkedList;
 
 /**
  * Instance listener manager.
@@ -56,55 +50,51 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void start(final ShardingDataSource shardingDataSource) {
+    public void shardingStart() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        for (String each : dataSourceMap.keySet()) {
-                            dataSourceMap.put(each, new CircuitBreakerDataSource());
-                        }
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
+                    } else {
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
-                    shardingDataSource.renew(dataSourceMap, new ShardingRule(configService.loadShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
                 }
             }
         });
     }
     
     @Override
-    public void start(final MasterSlaveDataSource masterSlaveDataSource) {
+    public void masterSlaveStart() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = configService.loadDataSourceMap();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        for (String each : dataSourceMap.keySet()) {
-                            dataSourceMap.put(each, new CircuitBreakerDataSource());
-                        }
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
+                    } else {
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
-                    masterSlaveDataSource.renew(dataSourceMap, configService.loadMasterSlaveRuleConfiguration());
                 }
             }
         });
     }
     
     @Override
-    public void start() {
+    public void proxyStart() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSourceParameter> dataSourceParameterMap = configService.loadDataSources();
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        dataSourceParameterMap.clear();
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSources().keySet()));
+                    } else {
+                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
-                    ProxyEventBusInstance.getInstance().post(new ProxyEventBusEvent(dataSourceParameterMap, configService.loadProxyConfiguration()));
                 }
             }
         });

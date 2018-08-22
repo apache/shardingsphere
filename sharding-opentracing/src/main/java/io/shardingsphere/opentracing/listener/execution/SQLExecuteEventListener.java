@@ -23,8 +23,8 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.executor.event.sql.SQLExecutionEvent;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.event.sql.SQLExecutionEvent;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
@@ -38,10 +38,8 @@ import io.shardingsphere.opentracing.listener.OpenTracingListener;
  */
 public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecutionEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/execute/";
     
-    private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
-
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
     
     private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
@@ -59,8 +57,8 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     @Override
     protected void beforeExecute(final SQLExecutionEvent event) {
-        if (ExecutorDataMap.getDataMap().containsKey(SNAPSHOT_DATA_KEY) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
-            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(SNAPSHOT_DATA_KEY)).activate());
+        if (ExecutorDataMap.getDataMap().containsKey(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
+            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
         if (null == branchSpan.get()) {
             branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)

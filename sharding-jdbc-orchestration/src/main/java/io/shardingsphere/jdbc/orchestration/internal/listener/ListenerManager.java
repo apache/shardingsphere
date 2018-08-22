@@ -17,9 +17,6 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.listener;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-
 /**
  * Registry center's listener manager.
  *
@@ -29,24 +26,22 @@ import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 public interface ListenerManager {
     
     /**
-     * Start sharding datasource change listener.
+     * Start sharding change listener.
      *
-     * @param shardingDataSource sharding datasource
      */
-    void start(ShardingDataSource shardingDataSource);
+    void shardingStart();
     
     
     /**
-     * Start master-slave datasource change listener.
+     * Start master-slave change listener.
      *
-     * @param masterSlaveDataSource master-slave datasource
      */
-    void start(MasterSlaveDataSource masterSlaveDataSource);
+    void masterSlaveStart();
     
     
     /**
-     * Start proxy configuration change listener.
+     * Start proxy change listener.
      *
      */
-    void start();
+    void proxyStart();
 }

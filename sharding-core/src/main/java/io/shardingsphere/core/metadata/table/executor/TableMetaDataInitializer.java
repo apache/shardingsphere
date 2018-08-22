@@ -44,10 +44,9 @@ public final class TableMetaDataInitializer {
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(
-            final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine shardingExecuteEngine, final TableMetaDataConnectionManager connectionManager) {
+    public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, shardingExecuteEngine, connectionManager);
+        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executeEngine, connectionManager);
     }
     
     /**
@@ -67,7 +66,7 @@ public final class TableMetaDataInitializer {
         return result;
     }
     
-    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) {
+    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
             result.put(each.getLogicTable(), tableMetaDataLoader.load(each.getLogicTable(), shardingRule));

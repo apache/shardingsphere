@@ -21,11 +21,11 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.executor.event.overall.OverallExecutionEvent;
-import io.shardingsphere.core.executor.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.event.overall.OverallExecutionEvent;
+import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
-import io.shardingsphere.opentracing.ShardingTags;
 
 /**
  * SQL execute overall event listener.
@@ -36,10 +36,10 @@ import io.shardingsphere.opentracing.ShardingTags;
  */
 public final class OverallExecuteEventListener extends OpenTracingListener<OverallExecutionEvent> {
     
-    private static final String SNAPSHOT_DATA_KEY = "OPENTRACING_SNAPSHOT_DATA";
-
-    private static final String OPERATION_NAME_PREFIX = "/SHARDING-SPHERE/EXECUTE/";
-
+    public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
+    
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/execute/";
+    
     private static final ThreadLocal<ActiveSpan> SPAN = new ThreadLocal<>();
     
     /**
@@ -58,7 +58,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
         ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         SPAN.set(activeSpan);
         if (event.isParallelExecute()) {
-            ExecutorDataMap.getDataMap().put(SNAPSHOT_DATA_KEY, activeSpan.capture());
+            ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, activeSpan.capture());
         }
     }
     
@@ -81,4 +81,5 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     public static boolean isTrunkThread() {
         return null != SPAN.get();
     }
+
 }

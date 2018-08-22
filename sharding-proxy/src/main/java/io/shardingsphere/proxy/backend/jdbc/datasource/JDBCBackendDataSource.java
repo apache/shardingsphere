@@ -21,9 +21,12 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.BackendDataSource;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -35,17 +38,25 @@ import java.util.Map.Entry;
  *
  * @author zhaojun
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
-public final class JDBCBackendDataSource implements BackendDataSource {
+public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public JDBCBackendDataSource(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
-        dataSourceMap = createDataSourceMap(transactionType, dataSourceParameters);
+    public JDBCBackendDataSource() {
+        dataSourceMap = createDataSourceMap();
     }
     
-    private Map<String, DataSource> createDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+    private Map<String, DataSource> createDataSourceMap() {
+        TransactionType transactionType = RuleRegistry.getInstance().getTransactionType();
+        Map<String, DataSourceParameter> dataSourceParameters = RuleRegistry.getInstance().getDataSourceConfigurationMap();
+        // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
+        return getNormalDataSourceMap(transactionType, dataSourceParameters);
+    }
+    
+    private Map<String, DataSource> getNormalDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
@@ -76,6 +87,36 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return dataSourceMap.get(dataSourceName).getConnection();
+        return getDataSourceMap().get(dataSourceName).getConnection();
+    }
+    
+    private Map<String, DataSource> getDataSourceMap() {
+        if (!RuleRegistry.getInstance().getDisabledDataSourceNames().isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSourceMap;
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : RuleRegistry.getInstance().getDisabledDataSourceNames()) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    @Override
+    public void close() {
+        closeOriginalDataSources();
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                Method method = each.getClass().getDeclaredMethod("close");
+                method.invoke(each);
+            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            }
+        }
     }
 }

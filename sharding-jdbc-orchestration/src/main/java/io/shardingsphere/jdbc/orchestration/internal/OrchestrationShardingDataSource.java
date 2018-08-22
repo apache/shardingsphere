@@ -59,7 +59,7 @@ public final class OrchestrationShardingDataSource extends ShardingDataSource {
      * Initialize for sharding orchestration.
      */
     public void init() {
-        orchestrationFacade.init(dataSourceMap, shardingRuleConfig, configMap, props, this);
+        orchestrationFacade.init(dataSourceMap, shardingRuleConfig, configMap, props);
     }
     
     @Override

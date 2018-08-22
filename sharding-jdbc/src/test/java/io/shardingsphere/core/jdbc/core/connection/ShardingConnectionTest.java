@@ -20,17 +20,15 @@ package io.shardingsphere.core.jdbc.core.connection;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -43,7 +41,7 @@ import java.util.Properties;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ShardingConnectionTest {
     
@@ -52,6 +50,8 @@ public final class ShardingConnectionTest {
     private static final String DS_NAME = "default";
     
     private ShardingConnection connection;
+    
+    private ShardingContext shardingContext;
     
     @BeforeClass
     public static void init() throws SQLException {
@@ -74,8 +74,8 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        ShardingContext shardingContext = new ShardingContext(dataSourceMap, shardingRule, DatabaseType.H2, null, shardingMetaData, ConnectionMode.MEMORY_STRICTLY, false);
+        shardingContext = Mockito.mock(ShardingContext.class);
+        when(shardingContext.getDataSourceMap()).thenReturn(dataSourceMap);
         connection = new ShardingConnection(shardingContext);
     }
     

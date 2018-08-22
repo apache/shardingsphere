@@ -62,11 +62,11 @@ public abstract class BaseIntegrateTest {
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final DataSource dataSource;
     
-    private final Map<String, DataSource> instanceDataSourceMap;
+    private Map<String, DataSource> dataSourceMap;
+    
+    private Map<String, DataSource> instanceDataSourceMap;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -208,8 +208,9 @@ public abstract class BaseIntegrateTest {
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
-            ((ShardingDataSource) dataSource).close();
+            ((ShardingDataSource) dataSource).getConnection().getShardingContext().getExecuteEngine().close();
         }
         ParsingResultCache.getInstance().clear();
     }
 }
+
