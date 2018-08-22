@@ -330,7 +330,7 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="select_pagination_with_row_number_for_literals" parameters="1">
+    <parser-result sql-case-id="select_pagination_with_row_number_for_literals" parameters="20, 1">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -341,11 +341,11 @@
         <or-condition>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int"/>
+                    <value index="1" literal="1" type="int"/>
                 </condition>
             </and-condition>
         </or-condition>
-        <limit row-count="20"/>
+        <limit row-count="20" row-count-index="0"/>
     </parser-result>
     
 </parser-result-sets>
