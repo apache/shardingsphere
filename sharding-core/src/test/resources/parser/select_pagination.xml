@@ -329,4 +329,23 @@
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_number_for_literals" parameters="1">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order"/>
+            <row-count-token begin-position="38" row-count="20"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int"/>
+                </condition>
+            </and-condition>
+        </or-condition>
+        <limit row-count="20"/>
+    </parser-result>
+    
 </parser-result-sets>
