@@ -34,7 +34,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProxyBasicRule {
+public final class ProxyBasicRule {
     
     private YamlShardingRuleConfiguration shardingRule;
     
