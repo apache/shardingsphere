@@ -48,7 +48,7 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) 使用Groovy解析行表达式可能导致内存泄漏
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) 无法解析PostgreSQL的双引号占位符
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) 支持SQL `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
-1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) 当Oracle的SQL中ROWNUM不在语句尾部时，解析错误。
+1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) 当Oracle的SQL中ROWNUM不在语句尾部时，解析错误
 
 #### Sharding-JDBC
 
