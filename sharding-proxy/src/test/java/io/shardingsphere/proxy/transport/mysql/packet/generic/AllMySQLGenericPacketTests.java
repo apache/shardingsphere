@@ -23,7 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        EofPacketTest.class, 
+        EofPacketTest.class,
+        ErrPacketTest.class
 })
 public final class AllMySQLGenericPacketTests {
 }
