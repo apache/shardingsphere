@@ -10,7 +10,7 @@ chapter = true
 [![GitHub forks](https://img.shields.io/github/forks/sharding-sphere/sharding-sphere.svg?style=social&label=Fork)](https://github.com/sharding-sphere/sharding-sphere/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/sharding-sphere/sharding-sphere.svg?style=social&label=Watch)](https://github.com/sharding-sphere/sharding-sphere/watchers)
 
-Sharding-Sphere is an open source distributed database middleware solution suite, which consists of Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. These three sub-projects are suitable for various scenarios and provide consistent functions including data sharding, distributed transaction and database orchestration.
+Sharding-Sphere is an open source distributed database middleware solution suite, which consists of Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar(planning). These three sub-projects are suitable for various scenarios and provide consistent functions including data sharding, distributed transaction and database orchestration.
 
 As a Relational Database Middleware, rather than implementing a new database, Sharding-Sphere is aimed at making the most of original capacities of database (like compute and storage) and making it simpler and more efficient on distribute environment. 
 It can cooperate with NoSQL and NewSQL, which keep staying in the cutting edge of technology and recommendable. Meanwhile, Sharding-Sphere focuses on technologies remaining stable and changeless so as to grasp the intrinsic quality. 
@@ -77,27 +77,24 @@ By using Database Mesh, applications and databases will form a large grid system
 
 ## Features
 
-### Data sharding
+### Data Sharding
 
-* Both databases and tables sharding.
-* Read-write splitting supported.
-* Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR, and JOIN DQL supported.
-* DML, DDL, TCL , DCL and database management command supported.
-* Sharding operator `=`, `BETWEEN` and `IN` supported.
-* Sharding algorithm customization and inline expression supported.
-* Forced route based on hint.
-* Distributed primary key.
+* Both databases and tables sharding
+* Read-write splitting
+* Distributed primary key
 
-### Transaction (Doing)
+### Distributed Transaction (Doing)
 
-* XA transaction supported.
-* BASE transaction supported.
+* XA transaction
+* BASE transaction
 
 ### Database Orchestration
 
-* Configuration center dynamic configuration supported.
-* Circuit breaker supported.
-* Open tracing supported.
+* Configuration center
+* Circuit breaker & disable
+* Open tracing
+* Data replica (Planing)
+* Elastic scaling (Planing)
 
 ## Roadmap
 
