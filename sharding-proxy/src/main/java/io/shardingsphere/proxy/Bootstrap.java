@@ -64,12 +64,12 @@ public final class Bootstrap {
     public static void main(final String[] args) throws InterruptedException, IOException {
         YamlProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(getConfig(args)).getFile()));
         int port = getPort(args);
+        ProxyListenerRegister.register(RULE_REGISTRY);
         if (null == localConfig.getOrchestration()) {
             startWithoutRegistryCenter(localConfig, port);
         } else {
             startWithRegistryCenter(localConfig, port);
         }
-        ProxyListenerRegister.register(RULE_REGISTRY);
     }
     
     private static YamlProxyConfiguration loadLocalConfiguration(final File yamlFile) throws IOException {
