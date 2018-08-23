@@ -15,25 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config;
+package io.shardingsphere.core.event.orche.config;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.orche.config.ProxyBasicRule;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Master slave config event bus event.
+ * Proxy configuration event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveConfigurationEventBusEvent {
+public final class ProxyConfigurationEventBusEvent {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSourceParameter> dataSources;
     
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    private final ProxyBasicRule proxyBasicRule;
 }

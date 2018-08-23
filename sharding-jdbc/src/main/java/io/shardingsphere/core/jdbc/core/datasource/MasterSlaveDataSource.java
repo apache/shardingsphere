@@ -26,7 +26,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.core.orche.eventbus.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.core.event.orche.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.MasterSlaveRule;

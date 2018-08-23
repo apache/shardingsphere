@@ -15,25 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config;
+package io.shardingsphere.core.event.orche.config;
 
-import io.shardingsphere.core.orche.config.ProxyBasicRule;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * Proxy configuration event bus event.
+ * Sharding config event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfigurationEventBusEvent {
+public final class ShardingConfigurationEventBusEvent {
     
-    private final Map<String, DataSourceParameter> dataSources;
+    private final Map<String, DataSource> dataSourceMap;
     
-    private final ProxyBasicRule proxyBasicRule;
+    private final ShardingRule shardingRule;
+    
+    private final Properties props;
 }

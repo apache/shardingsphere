@@ -15,28 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config;
+package io.shardingsphere.core.event.orche.config;
 
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Sharding config event bus event.
+ * Master slave config event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingConfigurationEventBusEvent {
+public final class MasterSlaveConfigurationEventBusEvent {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingRule shardingRule;
-    
-    private final Properties props;
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
 }
