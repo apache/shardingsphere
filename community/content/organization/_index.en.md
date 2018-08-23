@@ -51,11 +51,11 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang
 
+* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) Senior engineer, Bestpay
+
 ## External Committer
 
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
-
-* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) Senior engineer, Orange Finance
 
 ## Mailing List
 

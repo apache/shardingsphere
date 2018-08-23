@@ -51,11 +51,11 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
 
+* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 翼支付
+
 ## External Committer
 
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
-
-* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 甜橙金融
 
 ## 邮件列表
 
