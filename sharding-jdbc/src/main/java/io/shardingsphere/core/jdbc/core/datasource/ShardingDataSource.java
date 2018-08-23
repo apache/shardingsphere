@@ -24,12 +24,11 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
@@ -68,7 +67,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         shardingContext = getShardingContext(dataSourceMap, shardingRule);
-        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
@@ -76,9 +74,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, connectionMode, showSQL);
-        ShardingEventBusInstance.getInstance().register(result);
-        return result;
+        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, connectionMode, showSQL);
     }
     
     /**
