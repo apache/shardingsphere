@@ -99,7 +99,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void proxyStart() {
+    public void watchProxy() {
         proxyStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         proxyStart(ConfigurationNode.PROXY_RULE_NODE_PATH);
     }

@@ -43,5 +43,5 @@ public interface ListenerManager {
      * Start proxy change listener.
      *
      */
-    void proxyStart();
+    void watchProxy();
 }

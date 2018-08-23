@@ -84,7 +84,7 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void proxyStart() {
+    public void watchProxy() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override

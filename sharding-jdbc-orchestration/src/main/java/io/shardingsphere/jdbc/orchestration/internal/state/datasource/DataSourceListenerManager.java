@@ -72,7 +72,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void proxyStart() {
+    public void watchProxy() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override

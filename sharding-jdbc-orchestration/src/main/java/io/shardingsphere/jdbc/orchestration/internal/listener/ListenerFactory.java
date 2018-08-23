@@ -73,9 +73,9 @@ public final class ListenerFactory {
      *
      */
     public void initProxyListeners() {
-        configurationListenerManager.proxyStart();
-        instanceListenerManager.proxyStart();
-        dataSourceListenerManager.proxyStart();
-        configMapListenerManager.proxyStart();
+        configurationListenerManager.watchProxy();
+        instanceListenerManager.watchProxy();
+        dataSourceListenerManager.watchProxy();
+        configMapListenerManager.watchProxy();
     }
 }

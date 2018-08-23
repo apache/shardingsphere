@@ -74,6 +74,6 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void proxyStart() {
+    public void watchProxy() {
     }
 }
