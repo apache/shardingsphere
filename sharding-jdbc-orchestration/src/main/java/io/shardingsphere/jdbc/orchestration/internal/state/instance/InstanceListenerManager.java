@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.orche.eventbus.state.CircuitStateEventBusEvent;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
