@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Sharding runtime context.
@@ -125,7 +126,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.put(entry.getKey(), getDataSourceURL(entry.getValue()));
         }
         return result;
