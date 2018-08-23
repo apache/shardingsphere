@@ -140,11 +140,11 @@ public final class ShardingContext implements AutoCloseable {
      * @return available data source map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        if (!getCircuitBreakerDataSourceNames().isEmpty()) {
+        if (!circuitBreakerDataSourceNames.isEmpty()) {
             return getCircuitBreakerDataSourceMap();
         }
         
-        if (!getDisabledDataSourceNames().isEmpty()) {
+        if (!disabledDataSourceNames.isEmpty()) {
             return getAvailableDataSourceMap();
         }
         return dataSourceMap;
@@ -152,7 +152,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : getDisabledDataSourceNames()) {
+        for (String each : disabledDataSourceNames) {
             result.remove(each);
         }
         return result;
@@ -160,7 +160,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : getCircuitBreakerDataSourceNames()) {
+        for (String each : circuitBreakerDataSourceNames) {
             result.put(each, new CircuitBreakerDataSource());
         }
         return result;
