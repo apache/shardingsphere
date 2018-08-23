@@ -27,7 +27,6 @@ weight = 5
 | junit                               | EPL-1.0         | test      |
 | hamcrest                            | BSD 3-clause    | test      |
 | mockito                             | MIT             | test      |
-| dbunit                              | LGPL-2.1        | test      |
 | h2                                  | MPL-2.0/EPL-1.0 | test      |
 | mysql                               | GPL-2.0         | test      |
 | postgresql                          | BSD             | test      |
