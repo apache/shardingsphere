@@ -87,7 +87,7 @@ public final class RuleRegistry {
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    private boolean isCircuitBreak;
     
     /**
      * Get instance of sharding rule registry.
@@ -184,7 +184,7 @@ public final class RuleRegistry {
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
     /**
