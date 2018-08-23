@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * JDBC disabled event bus event.
+ * Disabled event bus event.
  *
  * @author panjuan
  */
