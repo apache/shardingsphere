@@ -26,7 +26,7 @@ As a Relational Database Middleware, rather than implementing a new database, Sh
 It can cooperate with NoSQL and NewSQL, which keep staying in the cutting edge of technology and recommendable. Meanwhile, Sharding-Sphere focuses on technologies remaining stable and changeless so as to grasp the intrinsic quality. 
 Relational Database is still the cornerstone of core business in enterprises and possesses huge market share. It is difficult to estimate trendy in future and now we focus on how to enhance the capacity of Sharding-Sphere with Relational Database.
 
-![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_en.png)
+![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en.png)
 
 ### Sharding-JDBC
 
@@ -62,7 +62,7 @@ Through a centre-less and zero-cost solution, it provides mesh layer interacting
 Database Mesh emphasizes how to connect distributed data-access-layer with databases. It pays more attention to interaction, which means the messy interaction between applications and databases will be effectively orchestrated. 
 By using Database Mesh, applications and databases will form a large grid system, where they just need to be put into the right position accordingly. They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief_v2.png)
 
 |                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | ---------------------- | --------------- | ---------------- | ------------------ |
@@ -96,3 +96,7 @@ By using Database Mesh, applications and databases will form a large grid system
 * Configuration center dynamic configuration supported.
 * Circuit breaker supported.
 * Open tracing supported.
+
+## Roadmap
+
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v2.png)
