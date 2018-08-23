@@ -22,13 +22,12 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
-import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.event.orche.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
+import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
+import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
@@ -75,7 +74,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
