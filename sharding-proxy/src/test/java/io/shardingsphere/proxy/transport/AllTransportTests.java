@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport;
 import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactoryTest;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlagTest;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnTypeTest;
+import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlagTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         PacketCodecFactoryTest.class,
         CapabilityFlagTest.class,
-        ColumnTypeTest.class
+        ColumnTypeTest.class,
+        NewParametersBoundFlagTest.class
 })
 public final class AllTransportTests {
 }
