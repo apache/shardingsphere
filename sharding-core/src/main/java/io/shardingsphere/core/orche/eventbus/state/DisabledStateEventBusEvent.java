@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.state.disabled;
+package io.shardingsphere.core.orche.eventbus.state;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
