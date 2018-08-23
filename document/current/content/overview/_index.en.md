@@ -26,13 +26,13 @@ Relational Database is still the cornerstone of core business in enterprises and
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_en.png)
+![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en.png)
 
 ## Introduction
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc)
 
 Sharding-JDBC is positioned as a lightweight Java framework that provides Sharding service in the JDBC layer. 
 It directly connects to databases to provide services in the form of jar, with no additional deployment and dependencies, and it can be understood as an enhanced version of the JDBC driver, fully compliant with JDBC and various ORM frameworks.
@@ -64,7 +64,7 @@ Through a centre-less and zero-cost solution, it provides mesh layer interacting
 Database Mesh emphasizes how to connect distributed data-access-layer with databases. It pays more attention to interaction, which means the messy interaction between applications and databases will be effectively orchestrated. 
 By using Database Mesh, applications and databases will form a large grid system, where they just need to be put into the right position accordingly. They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief_v2.png)
 
 |                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | ---------------------- | --------------- | ---------------- | ------------------ |
@@ -88,11 +88,10 @@ By using Database Mesh, applications and databases will form a large grid system
 * Forced route based on hint.
 * Distributed primary key.
 
-### Transaction
+### Transaction (Doing)
 
 * XA transaction supported.
-* Best-Effort-Delivery transaction supported.
-* Saga transaction (Doing) supported.
+* BASE transaction supported.
 
 ### Database Orchestration
 
@@ -102,4 +101,4 @@ By using Database Mesh, applications and databases will form a large grid system
 
 ## Roadmap
 
-![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en.png)
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v2.png)

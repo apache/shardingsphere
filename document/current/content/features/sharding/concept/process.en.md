@@ -6,7 +6,7 @@ weight = 4
 
 Sharding-Sphere's 3 projects have same main process on data sharding. They are SQL Parser => Executor Optimizer => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.
 
-![Sharding Architecture Diagram](http://ovfotjrsi.bkt.clouddn.com/sharding_architecture_en.png)
+![Sharding Architecture Diagram](http://ovfotjrsi.bkt.clouddn.com/sharding_architecture.png)
 
 
 ## SQL Parser
