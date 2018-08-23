@@ -330,7 +330,7 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="select_pagination_with_row_number_for_literals" parameters="20">
+    <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
         <tables>
             <table name="t_order"/>
         </tables>
