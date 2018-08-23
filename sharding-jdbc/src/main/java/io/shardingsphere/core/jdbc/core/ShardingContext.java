@@ -106,8 +106,6 @@ public final class ShardingContext implements AutoCloseable {
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
-        metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
@@ -118,8 +116,6 @@ public final class ShardingContext implements AutoCloseable {
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
-        metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
