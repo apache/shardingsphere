@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -108,7 +109,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         if (null == dataSourceMap) {
             return result;
         }
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             String dataSourceName = entry.getKey();
             DataSource dataSource = entry.getValue();
             if (dataSource instanceof MasterSlaveDataSource) {
