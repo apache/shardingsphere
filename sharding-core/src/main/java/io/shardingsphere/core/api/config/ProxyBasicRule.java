@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.config;
+package io.shardingsphere.core.api.config;
 
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;

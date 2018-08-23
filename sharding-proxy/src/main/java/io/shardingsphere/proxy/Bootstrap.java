@@ -20,7 +20,7 @@ package io.shardingsphere.proxy;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.orche.config.ProxyBasicRule;
+import io.shardingsphere.core.api.config.ProxyBasicRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
