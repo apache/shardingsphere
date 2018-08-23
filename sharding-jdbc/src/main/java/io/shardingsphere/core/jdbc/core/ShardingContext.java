@@ -80,7 +80,7 @@ public final class ShardingContext implements AutoCloseable {
         this.connectionMode = connectionMode;
         this.showSQL = showSQL;
         metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+                getDataSourceURLs(getDataSourceMap()), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
