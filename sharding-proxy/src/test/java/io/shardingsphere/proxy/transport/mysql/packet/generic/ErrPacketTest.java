@@ -39,7 +39,7 @@ public final class ErrPacketTest {
     private MySQLPacketPayload packetPayload;
     
     @Test
-    public void assertNewEofPacketWithServerErrorCode() {
+    public void assertNewErrPacketWithServerErrorCode() {
         ErrPacket actual = new ErrPacket(1, ServerErrorCode.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
@@ -48,7 +48,7 @@ public final class ErrPacketTest {
     }
     
     @Test
-    public void assertNewEofPacketWithException() {
+    public void assertNewErrPacketWithException() {
         ErrPacket actual = new ErrPacket(1, new SQLException("no reason", "X999", -1));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(-1));
@@ -57,7 +57,7 @@ public final class ErrPacketTest {
     }
     
     @Test
-    public void assertNewEofPacketWithMySQLPacketPayload() {
+    public void assertNewErrPacketWithMySQLPacketPayload() {
         when(packetPayload.readInt1()).thenReturn(1, ErrPacket.HEADER);
         when(packetPayload.readInt2()).thenReturn(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode());
         when(packetPayload.readStringFix(1)).thenReturn("#");

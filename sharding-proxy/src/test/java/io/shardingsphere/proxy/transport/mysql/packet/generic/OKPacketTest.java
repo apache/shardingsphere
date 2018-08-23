@@ -31,36 +31,57 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class EofPacketTest {
+public final class OKPacketTest {
     
     @Mock
     private MySQLPacketPayload packetPayload;
     
     @Test
-    public void assertNewEofPacketWithSequenceId() {
-        EofPacket actual = new EofPacket(1);
+    public void assertNewOKPacketWithSequenceId() {
+        OKPacket actual = new OKPacket(1);
         assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getAffectedRows(), is(0L));
+        assertThat(actual.getLastInsertId(), is(0L));
         assertThat(actual.getWarnings(), is(0));
-        assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(actual.getInfo(), is(""));
     }
     
     @Test
-    public void assertNewEofPacketWithMySQLPacketPayload() {
-        when(packetPayload.readInt1()).thenReturn(1, EofPacket.HEADER);
-        when(packetPayload.readInt2()).thenReturn(0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        EofPacket actual = new EofPacket(packetPayload);
+    public void assertNewOKPacketWithAffectedRowsAndLastInsertId() {
+        OKPacket actual = new OKPacket(1, 100, 9999L);
         assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getAffectedRows(), is(100L));
+        assertThat(actual.getLastInsertId(), is(9999L));
         assertThat(actual.getWarnings(), is(0));
-        assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(actual.getInfo(), is(""));
+    }
+    
+    @Test
+    public void assertNewOKPacketWithMySQLPacketPayload() {
+        when(packetPayload.readInt1()).thenReturn(1, OKPacket.HEADER);
+        when(packetPayload.readIntLenenc()).thenReturn(100L, 9999L);
+        when(packetPayload.readInt2()).thenReturn(0, 1);
+        when(packetPayload.readStringEOF()).thenReturn("no info");
+        OKPacket actual = new OKPacket(packetPayload);
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getAffectedRows(), is(100L));
+        assertThat(actual.getLastInsertId(), is(9999L));
+        assertThat(actual.getWarnings(), is(1));
+        assertThat(actual.getInfo(), is("no info"));
         verify(packetPayload, times(2)).readInt1();
+        verify(packetPayload, times(2)).readIntLenenc();
         verify(packetPayload, times(2)).readInt2();
+        verify(packetPayload).readStringEOF();
     }
     
     @Test
     public void assertWrite() {
-        new EofPacket(1).write(packetPayload);
-        verify(packetPayload).writeInt1(EofPacket.HEADER);
-        verify(packetPayload).writeInt2(0);
+        new OKPacket(1, 100L, 9999L).write(packetPayload);
+        verify(packetPayload).writeInt1(OKPacket.HEADER);
+        verify(packetPayload).writeIntLenenc(100L);
+        verify(packetPayload).writeIntLenenc(9999L);
         verify(packetPayload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        verify(packetPayload).writeInt2(0);
+        verify(packetPayload).writeStringEOF("");
     }
 }

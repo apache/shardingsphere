@@ -23,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        OKPacketTest.class, 
         EofPacketTest.class,
         ErrPacketTest.class
 })
