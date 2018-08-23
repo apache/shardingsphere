@@ -15,18 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport;
+package io.shardingsphere.proxy.transport.mysql.constant;
 
-import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactoryTest;
-import io.shardingsphere.proxy.transport.mysql.constant.AllConstantTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllConstantTests.class, 
-        PacketCodecFactoryTest.class
+        CapabilityFlagTest.class,
+        ColumnTypeTest.class,
+        NewParametersBoundFlagTest.class
 })
-public final class AllTransportTests {
+public final class AllConstantTests {
 }
