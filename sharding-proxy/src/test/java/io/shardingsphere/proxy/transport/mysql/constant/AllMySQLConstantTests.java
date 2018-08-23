@@ -28,5 +28,5 @@ import org.junit.runners.Suite.SuiteClasses;
         NewParametersBoundFlagTest.class,
         ServerErrorCodeTest.class
 })
-public final class AllConstantTests {
+public final class AllMySQLConstantTests {
 }
