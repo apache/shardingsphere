@@ -19,6 +19,7 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.core.listener.JDBCListenerRegister;
@@ -50,6 +51,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
         databaseType = getDatabaseType(dataSources);
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
