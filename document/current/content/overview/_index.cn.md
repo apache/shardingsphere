@@ -25,13 +25,13 @@ Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在�
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_cn.png)
+![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_cn.png)
 
 ## 简介
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc)
 
 定位为轻量级Java框架，在Java的JDBC层提供的额外服务。
 它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
@@ -62,7 +62,7 @@ Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在�
 
 Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
-![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
+![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief_v2.png)
 
 |           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | --------- | --------------- | ---------------- | ------------------ |
@@ -86,11 +86,10 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 * 基于Hint的强制路由
 * 分布式主键
 
-### 分布式事务
+### 分布式事务(Doing)
 
-* XA强一致事务
-* 最大努力送达型事务
-* Saga事务 (Doing)
+* XA分布式事务
+* 柔性事务
 
 ### 数据库治理
 
@@ -100,4 +99,4 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 ## 规划线路图
 
-![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_cn.png)
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_cn_v2.png)
