@@ -65,7 +65,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    private boolean isCircuitBreak;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
@@ -115,7 +115,7 @@ public final class ShardingContext implements AutoCloseable {
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -140,7 +140,7 @@ public final class ShardingContext implements AutoCloseable {
      * @return available data source map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        if (!circuitBreakerDataSourceNames.isEmpty()) {
+        if (isCircuitBreak) {
             return getCircuitBreakerDataSourceMap();
         }
         
@@ -160,7 +160,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : circuitBreakerDataSourceNames) {
+        for (String each : dataSourceMap.keySet()) {
             result.put(each, new CircuitBreakerDataSource());
         }
         return result;
