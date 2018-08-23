@@ -260,6 +260,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
     protected abstract boolean isRowNumberCondition(List<SelectItem> items, String columnLabel);
     
     private void parseRowCountCondition(final SelectStatement selectStatement, final boolean includeRowCount) {
+        int endPosition = lexerEngine.getCurrentToken().getEndPosition();
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
             selectStatement.setLimit(new Limit(databaseType));
@@ -267,8 +268,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1, includeRowCount));
-            selectStatement.getSqlTokens().add(new RowCountToken(
-                    lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - lexerEngine.getCurrentToken().getLiterals().length(), rowCount));
+            selectStatement.getSqlTokens().add(new RowCountToken(endPosition - String.valueOf(rowCount).length(), rowCount));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), includeRowCount));
         }

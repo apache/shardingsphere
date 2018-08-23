@@ -40,6 +40,7 @@
 
 #### Core
 
+1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) Failed to parse SQL for Oracle when ROWNUM is not at end
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in `SELECT ITEMS` correspond to the real column names of `GROUP BY` or `ORDER BY`, there is no need to generate derived columns
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN` parse exception
