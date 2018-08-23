@@ -24,14 +24,12 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
-import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
@@ -70,7 +68,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         shardingContext = getShardingContext(dataSourceMap, shardingRule);
-        JdbcConfigurationEventBusInstance.getInstance().register(this);
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
@@ -79,8 +77,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
         ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         ShardingContext result = new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, connectionMode, showSQL);
-        DisabledStateEventBusInstance.getInstance().register(result);
-        CircuitStateEventBusInstance.getInstance().register(result);
+        ShardingEventBusInstance.getInstance().register(result);
         return result;
     }
     

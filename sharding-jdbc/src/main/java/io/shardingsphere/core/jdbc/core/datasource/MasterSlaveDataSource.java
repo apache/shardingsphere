@@ -22,15 +22,13 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
@@ -77,9 +75,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        DisabledStateEventBusInstance.getInstance().register(this);
-        CircuitStateEventBusInstance.getInstance().register(this);
-        JdbcConfigurationEventBusInstance.getInstance().register(this);
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
