@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * JDBC circuit event bus event.
+ * Circuit event bus event.
  *
  * @author panjuan
  */
