@@ -204,7 +204,7 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 
 ## Affiliations
 
-- 京东: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao, Ling Yue
+- 京东: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao
 - 当当: Hao Cao, Kai Wang, Jiaqi Lin, Ling Yue
 - 翼支付: QingYang Chen
 - 个人开发者: Sheng Wu, Hongtao Gao, Xiaoguang Ma
