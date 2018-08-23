@@ -15,21 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.state.disabled;
+package io.shardingsphere.core.event.orche.config;
 
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * JDBC disabled event bus event.
+ * Master slave config event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class DisabledStateEventBusEvent {
+public final class MasterSlaveConfigurationEventBusEvent {
     
-    private final Collection<String> disabledDataSourceNames;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
 }

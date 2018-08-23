@@ -15,28 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config.jdbc;
+package io.shardingsphere.core.api.config;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
+import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * JDBC config event bus instance.
+ * Basic proxy rule.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcConfigurationEventBusInstance {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public final class ProxyBasicRule {
     
-    private static final EventBus INSTANCE = new EventBus();
+    private YamlShardingRuleConfiguration shardingRule;
     
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    
+    private ProxyAuthority proxyAuthority = new ProxyAuthority();
 }

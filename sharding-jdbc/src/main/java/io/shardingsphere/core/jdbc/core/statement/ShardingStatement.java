@@ -59,7 +59,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Statement that support sharding.
@@ -254,7 +254,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private Collection<StatementUnit> getExecuteUnitsForConnectionStrictly() throws SQLException {
         Collection<StatementUnit> result = new LinkedList<>();
-        for (Map.Entry<String, Collection<SQLUnit>> entry : routeResult.getSQLUnitGroups().entrySet()) {
+        for (Entry<String, Collection<SQLUnit>> entry : routeResult.getSQLUnitGroups().entrySet()) {
             String dataSourceName = entry.getKey();
             Connection connection = this.connection.getConnection(dataSourceName);
             for (SQLUnit each : entry.getValue()) {

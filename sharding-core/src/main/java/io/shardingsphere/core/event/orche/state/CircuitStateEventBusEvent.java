@@ -15,28 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config.proxy;
+package io.shardingsphere.core.event.orche.state;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Proxy configuration event bus instance.
+ * Circuit event bus event.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyConfigurationEventBusInstance {
+@RequiredArgsConstructor
+@Getter
+public final class CircuitStateEventBusEvent {
     
-    private static final EventBus INSTANCE = new EventBus();
-    
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private final boolean isCircuitBreak;
 }

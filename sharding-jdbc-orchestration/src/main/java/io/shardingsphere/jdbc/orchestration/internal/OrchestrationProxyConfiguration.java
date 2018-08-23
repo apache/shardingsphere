@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal;
 
-import io.shardingsphere.core.orche.config.ProxyBasicRule;
+import io.shardingsphere.core.api.config.ProxyBasicRule;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

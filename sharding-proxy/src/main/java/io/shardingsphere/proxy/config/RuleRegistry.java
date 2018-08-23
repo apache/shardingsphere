@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.config;
 
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.api.config.ProxyBasicRule;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -26,10 +27,9 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.orche.config.ProxyBasicRule;
-import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
+import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
+import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -87,7 +87,7 @@ public final class RuleRegistry {
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    private boolean isCircuitBreak;
     
     /**
      * Get instance of sharding rule registry.
@@ -184,7 +184,7 @@ public final class RuleRegistry {
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
     /**

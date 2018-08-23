@@ -20,25 +20,25 @@ package io.shardingsphere.core.jdbc.core;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
+import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Sharding runtime context.
@@ -65,15 +65,14 @@ public final class ShardingContext implements AutoCloseable {
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private Collection<String> circuitBreakerDataSourceNames = new LinkedList<>();
+    private boolean isCircuitBreak;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
-                           final ConnectionMode connectionMode, final boolean showSQL) {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
-    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
-                      final ConnectionMode connectionMode, final boolean showSQL) {
+    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.executeEngine = executeEngine;
@@ -81,7 +80,7 @@ public final class ShardingContext implements AutoCloseable {
         this.connectionMode = connectionMode;
         this.showSQL = showSQL;
         metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+                getDataSourceURLs(getDataSourceMap()), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
@@ -94,8 +93,7 @@ public final class ShardingContext implements AutoCloseable {
      * @param connectionMode connection mode
      * @param showSQL show sql
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
-                      final ConnectionMode connectionMode, final boolean showSQL) {
+    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         close();
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
@@ -108,8 +106,6 @@ public final class ShardingContext implements AutoCloseable {
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
-        metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
     }
     
     /**
@@ -119,14 +115,12 @@ public final class ShardingContext implements AutoCloseable {
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        circuitBreakerDataSourceNames = circuitStateEventBusEvent.getCircuitBreakerDataSourceNames();
-        metaData = new ShardingMetaData(
-                getDataSourceURLs(getDataSourceMap()), shardingRule, getDatabaseType(), executeEngine, new JDBCTableMetaDataConnectionManager(getDataSourceMap()));
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.put(entry.getKey(), getDataSourceURL(entry.getValue()));
         }
         return result;
@@ -146,11 +140,11 @@ public final class ShardingContext implements AutoCloseable {
      * @return available data source map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        if (!getCircuitBreakerDataSourceNames().isEmpty()) {
+        if (isCircuitBreak) {
             return getCircuitBreakerDataSourceMap();
         }
         
-        if (!getDisabledDataSourceNames().isEmpty()) {
+        if (!disabledDataSourceNames.isEmpty()) {
             return getAvailableDataSourceMap();
         }
         return dataSourceMap;
@@ -158,7 +152,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : getDisabledDataSourceNames()) {
+        for (String each : disabledDataSourceNames) {
             result.remove(each);
         }
         return result;
@@ -166,7 +160,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : getCircuitBreakerDataSourceNames()) {
+        for (String each : dataSourceMap.keySet()) {
             result.put(each, new CircuitBreakerDataSource());
         }
         return result;
@@ -181,9 +175,8 @@ public final class ShardingContext implements AutoCloseable {
     private void closeOriginalDataSources() {
         for (DataSource each : dataSourceMap.values()) {
             try {
-                Method method = each.getClass().getDeclaredMethod("close");
-                method.invoke(each);
-            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+                each.getClass().getDeclaredMethod("close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
             }
         }
     }
