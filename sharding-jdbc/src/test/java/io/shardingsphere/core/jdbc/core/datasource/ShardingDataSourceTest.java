@@ -25,7 +25,7 @@ import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
