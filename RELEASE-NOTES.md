@@ -40,6 +40,7 @@
 
 #### Core
 
+1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) Failed to parse SQL for Oracle when ROWNUM is not at end
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in `SELECT ITEMS` correspond to the real column names of `GROUP BY` or `ORDER BY`, there is no need to generate derived columns
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN` parse exception
@@ -47,7 +48,6 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Inline expression with groovy may cause memory leak
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) Fail to parsing PostgreSQL due to the quotation
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
-1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) Failed to parse SQL for Oracle when ROWNUM is not at end
 
 #### Sharding-JDBC
 
