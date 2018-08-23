@@ -20,13 +20,14 @@ package io.shardingsphere.core.jdbc.core;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
@@ -70,6 +71,7 @@ public final class ShardingContext implements AutoCloseable {
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
                            final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine,
