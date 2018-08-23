@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config.jdbc;
+package io.shardingsphere.core.orche.eventbus.config;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
