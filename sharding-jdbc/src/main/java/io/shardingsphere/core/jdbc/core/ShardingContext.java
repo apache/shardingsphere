@@ -32,7 +32,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -181,7 +180,7 @@ public final class ShardingContext implements AutoCloseable {
         for (DataSource each : dataSourceMap.values()) {
             try {
                 each.getClass().getDeclaredMethod("close").invoke(each);
-            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            } catch (final ReflectiveOperationException ignored) {
             }
         }
     }
