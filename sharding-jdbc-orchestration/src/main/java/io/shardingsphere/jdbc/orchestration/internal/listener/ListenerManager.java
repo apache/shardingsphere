@@ -36,7 +36,7 @@ public interface ListenerManager {
      * Start master-slave change listener.
      *
      */
-    void masterSlaveStart();
+    void watchMasterSlave();
     
     
     /**

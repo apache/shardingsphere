@@ -59,7 +59,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void masterSlaveStart() {
+    public void watchMasterSlave() {
         String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
         regCenter.watch(cachePath, new EventListener() {
             

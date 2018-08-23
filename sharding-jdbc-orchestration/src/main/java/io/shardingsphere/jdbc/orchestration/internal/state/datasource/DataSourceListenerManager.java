@@ -59,7 +59,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void masterSlaveStart() {
+    public void watchMasterSlave() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override

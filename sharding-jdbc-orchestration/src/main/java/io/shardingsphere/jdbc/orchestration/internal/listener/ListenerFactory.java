@@ -62,10 +62,10 @@ public final class ListenerFactory {
      *
      */
     public void initMasterSlaveListeners() {
-        configurationListenerManager.masterSlaveStart();
-        instanceListenerManager.masterSlaveStart();
-        dataSourceListenerManager.masterSlaveStart();
-        configMapListenerManager.masterSlaveStart();
+        configurationListenerManager.watchMasterSlave();
+        instanceListenerManager.watchMasterSlave();
+        dataSourceListenerManager.watchMasterSlave();
+        configMapListenerManager.watchMasterSlave();
     }
     
     /**

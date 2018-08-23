@@ -78,7 +78,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void masterSlaveStart() {
+    public void watchMasterSlave() {
         masterSlaveStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         masterSlaveStart(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
     }
