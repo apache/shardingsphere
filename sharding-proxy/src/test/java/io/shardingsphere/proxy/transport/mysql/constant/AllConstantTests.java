@@ -25,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         CapabilityFlagTest.class,
         ColumnTypeTest.class,
-        NewParametersBoundFlagTest.class
+        NewParametersBoundFlagTest.class,
+        ServerErrorCodeTest.class
 })
 public final class AllConstantTests {
 }

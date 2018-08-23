@@ -42,7 +42,7 @@ public enum ServerErrorCode {
     
     ER_STD_UNKNOWN_EXCEPTION(3054, "HY000", "Unknown exception: %s"), 
     
-    ER_UNSUPPORTED_COMMAND(9999, "XXXXX", "Unsupported command packet: '%s'");
+    ER_UNSUPPORTED_COMMAND(9999, "X9999", "Unsupported command packet: '%s'");
     
     private final int errorCode;
     
