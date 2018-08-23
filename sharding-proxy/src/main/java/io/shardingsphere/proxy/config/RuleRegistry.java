@@ -28,7 +28,7 @@ import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.orche.config.ProxyBasicRule;
 import io.shardingsphere.core.orche.eventbus.config.ProxyConfigurationEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;

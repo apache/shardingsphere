@@ -25,7 +25,7 @@ import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
+import io.shardingsphere.core.orche.eventbus.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
