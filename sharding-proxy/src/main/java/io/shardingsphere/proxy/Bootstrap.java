@@ -19,13 +19,11 @@ package io.shardingsphere.proxy;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.orche.config.ProxyBasicRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
-import io.shardingsphere.core.orche.eventbus.state.disabled.DisabledStateEventBusInstance;
-import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.config.YamlProxyConfiguration;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -132,8 +130,6 @@ public final class Bootstrap {
     
     private static void initRuleRegistry(final ConfigurationService configService) {
         RULE_REGISTRY.init(configService.loadDataSources(), configService.loadProxyConfiguration());
-        ProxyConfigurationEventBusInstance.getInstance().register(RULE_REGISTRY);
-        DisabledStateEventBusInstance.getInstance().register(RULE_REGISTRY);
-        CircuitStateEventBusInstance.getInstance().register(RULE_REGISTRY);
+        ShardingEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }

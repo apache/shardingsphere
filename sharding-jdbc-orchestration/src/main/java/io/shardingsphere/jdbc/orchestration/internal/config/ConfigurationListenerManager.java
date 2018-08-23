@@ -17,12 +17,11 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.orche.eventbus.config.jdbc.JdbcConfigurationEventBusInstance;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.config.jdbc.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.config.proxy.ProxyConfigurationEventBusInstance;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
@@ -72,7 +71,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                     Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
                     ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(dataSourceMap,
                             new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
-                    JdbcConfigurationEventBusInstance.getInstance().post(shardingEvent);
+                    ShardingEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
         });
@@ -93,7 +92,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
                             dataSourceService.getAvailableMasterSlaveRuleConfiguration());
-                    JdbcConfigurationEventBusInstance.getInstance().post(masterSlaveEvent);
+                    ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
         });
@@ -112,7 +111,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ProxyConfigurationEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
+                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
                 }
             }
         });
