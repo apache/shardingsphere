@@ -15,18 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport;
+package io.shardingsphere.proxy.transport.mysql.constant;
 
-import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactoryTest;
-import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlagTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        PacketCodecFactoryTest.class,
-        CapabilityFlagTest.class
-})
-public final class AllTransportTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class CapabilityFlagTest {
+    
+    @Test
+    public void assertCalculateHandshakeCapabilityFlagsLower() {
+        assertThat(CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
+    }
+    
+    @Test
+    public void assertCalculateHandshakeCapabilityFlagsUpper() {
+        assertThat(CapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0));
+    }
 }
