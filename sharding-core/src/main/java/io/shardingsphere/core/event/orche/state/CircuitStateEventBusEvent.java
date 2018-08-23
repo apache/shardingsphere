@@ -20,8 +20,6 @@ package io.shardingsphere.core.event.orche.state;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
  * Circuit event bus event.
  *
@@ -31,5 +29,5 @@ import java.util.Collection;
 @Getter
 public final class CircuitStateEventBusEvent {
     
-    private final Collection<String> circuitBreakerDataSourceNames;
+    private final boolean isCircuitBreak;
 }
