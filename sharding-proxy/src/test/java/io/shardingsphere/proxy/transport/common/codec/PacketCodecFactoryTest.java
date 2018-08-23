@@ -19,29 +19,20 @@ package io.shardingsphere.proxy.transport.common.codec;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.transport.mysql.codec.MySQLPacketCodec;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
 
-/**
- * Database packet codec factory.
- *
- * @author zhangliang
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PacketCodecFactory {
+import static org.junit.Assert.assertThat;
+
+public final class PacketCodecFactoryTest {
     
-    /**
-     * Create new instance of packet codec instance.
-     * 
-     * @param databaseType database type
-     * @return packet codec instance
-     */
-    public static PacketCodec newInstance(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case MySQL:
-                return new MySQLPacketCodec();
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
-        }
+    @Test
+    public void assertNewInstanceForMySQL() {
+        assertThat(PacketCodecFactory.newInstance(DatabaseType.MySQL), CoreMatchers.<PacketCodec>instanceOf(MySQLPacketCodec.class));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertNewInstanceForUnsupportedType() {
+        PacketCodecFactory.newInstance(DatabaseType.H2);
     }
 }

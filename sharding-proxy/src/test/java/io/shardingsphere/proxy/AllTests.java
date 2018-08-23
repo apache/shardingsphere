@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy;
 
+import io.shardingsphere.proxy.transport.AllTransportTests;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginDataTest;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandlerTest;
 import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGeneratorTest;
@@ -29,6 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        AllTransportTests.class, 
         AuthorityHandlerTest.class,
         AuthPluginDataTest.class,
         ConnectionIdGeneratorTest.class,
