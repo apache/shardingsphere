@@ -55,7 +55,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void shardingStart() {
+    public void watchSharding() {
         shardingStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         shardingStart(ConfigurationNode.SHARDING_RULE_NODE_PATH);
         shardingStart(ConfigurationNode.SHARDING_PROPS_NODE_PATH);

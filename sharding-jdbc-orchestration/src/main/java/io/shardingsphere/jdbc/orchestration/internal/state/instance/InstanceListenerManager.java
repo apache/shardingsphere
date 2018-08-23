@@ -50,7 +50,7 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void shardingStart() {
+    public void watchSharding() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override

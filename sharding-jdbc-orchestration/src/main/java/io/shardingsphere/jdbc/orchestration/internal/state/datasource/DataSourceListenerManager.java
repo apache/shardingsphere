@@ -46,7 +46,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void shardingStart() {
+    public void watchSharding() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override

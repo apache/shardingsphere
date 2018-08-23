@@ -51,10 +51,10 @@ public final class ListenerFactory {
      * 
      */
     public void initShardingListeners() {
-        configurationListenerManager.shardingStart();
-        instanceListenerManager.shardingStart();
-        dataSourceListenerManager.shardingStart();
-        configMapListenerManager.shardingStart();
+        configurationListenerManager.watchSharding();
+        instanceListenerManager.watchSharding();
+        dataSourceListenerManager.watchSharding();
+        configMapListenerManager.watchSharding();
     }
     
     /**

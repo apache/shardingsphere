@@ -44,7 +44,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void shardingStart() {
+    public void watchSharding() {
         String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
         regCenter.watch(cachePath, new EventListener() {
             

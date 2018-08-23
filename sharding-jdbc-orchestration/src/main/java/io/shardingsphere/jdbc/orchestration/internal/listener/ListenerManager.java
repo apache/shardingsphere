@@ -29,7 +29,7 @@ public interface ListenerManager {
      * Start sharding change listener.
      *
      */
-    void shardingStart();
+    void watchSharding();
     
     
     /**
