@@ -181,8 +181,7 @@ public final class ShardingContext implements AutoCloseable {
     private void closeOriginalDataSources() {
         for (DataSource each : dataSourceMap.values()) {
             try {
-                Method method = each.getClass().getDeclaredMethod("close");
-                method.invoke(each);
+                each.getClass().getDeclaredMethod("close").invoke(each);
             } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
             }
         }
