@@ -18,7 +18,7 @@
 
 ## 概述
 
-Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
 Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。
 它与NoSQL和NewSQL是并存而非互斥的关系。NoSQL和NewSQL作为新技术探索的前沿，放眼未来，拥抱变化，是非常值得推荐的。反之，也可以用另一种思路看待问题，放眼未来，关注不变的东西，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
@@ -27,7 +27,7 @@ Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在�
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](http://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc/3.0.0.M2)
 
 定位为轻量级Java框架，在Java的JDBC层提供的额外服务。
 它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
@@ -76,17 +76,16 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 * 分库 + 分表
 * 读写分离
 * 支持聚合，分组，排序，分页，OR，关联查询等复杂查询语句
-* 支持DML，DDL，TCL以及数据库管理语句
+* 支持DML，DDL，TCL，DCL以及数据库管理语句
 * 支持=，BETWEEN，IN的分片操作符
 * 自定义的灵活分片策略，支持多分片键共用，支持行表达式
 * 基于Hint的强制路由
 * 分布式主键
 
-### 分布式事务
+### 分布式事务(Doing)
 
 * XA分布式事务
-* 最大努力送达型事务
-* TCC型事务(TBD)
+* 柔性事务
 
 ### 数据库治理
 
