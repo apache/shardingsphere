@@ -21,6 +21,7 @@ Organizations using Sharding in chronological order.
 * [yiwugou](http://www.yiwugou.com/)
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
+* The JD department of Big data and intelligent supply chain
 * [imrfresh](https://www.imrfresh.com/)
 
 ## FinTech
