@@ -19,11 +19,9 @@ package io.shardingsphere.proxy;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.api.config.ProxyBasicRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.config.YamlProxyConfiguration;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -64,7 +62,6 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        ProxyListenerRegister.register();
         YamlProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(getConfig(args)).getFile()));
         int port = getPort(args);
         if (null == localConfig.getOrchestration()) {
@@ -72,6 +69,7 @@ public final class Bootstrap {
         } else {
             startWithRegistryCenter(localConfig, port);
         }
+        ProxyListenerRegister.register(RULE_REGISTRY);
     }
     
     private static YamlProxyConfiguration loadLocalConfiguration(final File yamlFile) throws IOException {
@@ -118,7 +116,7 @@ public final class Bootstrap {
             if (null != localConfig.getShardingRule() || null != localConfig.getMasterSlaveRule()) {
                 orchestrationFacade.init(getOrchestrationConfiguration(localConfig));
             }
-            initRuleRegistry(orchestrationFacade.getConfigService());
+            RULE_REGISTRY.init(orchestrationFacade.getConfigService().loadDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
             new ShardingProxy().start(port);
         }
     }
@@ -126,10 +124,5 @@ public final class Bootstrap {
     private static OrchestrationProxyConfiguration getOrchestrationConfiguration(final YamlProxyConfiguration localConfig) {
         ProxyBasicRule proxyBasicRule = new ProxyBasicRule(localConfig.getShardingRule(), localConfig.getMasterSlaveRule(), localConfig.getProxyAuthority());
         return new OrchestrationProxyConfiguration(localConfig.getDataSources(), proxyBasicRule);
-    }
-    
-    private static void initRuleRegistry(final ConfigurationService configService) {
-        RULE_REGISTRY.init(configService.loadDataSources(), configService.loadProxyConfiguration());
-        ShardingEventBusInstance.getInstance().register(RULE_REGISTRY);
     }
 }
