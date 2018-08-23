@@ -17,9 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
@@ -57,9 +57,9 @@ public final class InstanceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
                     } else {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
                 }
             }
@@ -74,9 +74,9 @@ public final class InstanceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
                     } else {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
                 }
             }
@@ -91,9 +91,9 @@ public final class InstanceListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSources().keySet()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSources().keySet()));
                     } else {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
                     }
                 }
             }
