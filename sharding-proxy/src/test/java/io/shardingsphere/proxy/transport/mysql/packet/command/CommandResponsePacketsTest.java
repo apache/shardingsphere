@@ -17,15 +17,21 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        CommandPacketTypeTest.class, 
-        CommandPacketFactoryTest.class,
-        CommandResponsePacketsTest.class
-})
-public final class AllMySQLCommandPacketTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class CommandResponsePacketsTest {
+    
+    @Test
+    public void assertGetHeadPacket() {
+        DatabasePacket packet1 = new OKPacket(1);
+        DatabasePacket packet2 = new OKPacket(2);
+        CommandResponsePackets actual = new CommandResponsePackets(packet1);
+        actual.getPackets().add(packet2);
+        assertThat(actual.getHeadPacket(), is(packet1));
+    }
 }
