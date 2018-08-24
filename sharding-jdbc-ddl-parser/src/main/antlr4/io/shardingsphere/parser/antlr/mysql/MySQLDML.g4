@@ -1,7 +1,6 @@
 grammar MySQLDML;
 import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase, DMLBase,Symbol;
 
-
 selectSpec: 
 	(ALL | DISTINCT | DISTINCTROW)? 
 	HIGH_PRIORITY? 

@@ -1,8 +1,5 @@
 grammar MySQLDDL;
 import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase,DDLBase,Symbol;
-@header{
-	package io.shardingsphere.parser.antlr.mysql;
-}
 
 createIndex:
 	CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName

@@ -22,10 +22,10 @@
 			<version>4.7.1</version>
 		</dependency>
 		<dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-core</artifactId>
-            <version>3.0.0.M3-SNAPSHOT</version>
-        </dependency>
+			<groupId>io.shardingsphere</groupId>
+			<artifactId>sharding-core</artifactId>
+			<version>3.0.0.M3-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -33,7 +33,7 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<resources>
 			<resource>
@@ -49,6 +49,24 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>4.7.1</version> <!-- use older version to process XPathLexer.g4, avoiding cyclic build dependency -->
+				<executions>
+					<execution>
+						<id>antlr</id>
+						<configuration>
+							<libDirectory>src/main/antlr4/imports/</libDirectory>
+							<listener>false</listener>
+							<visitor>false</visitor>
+						</configuration>
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
