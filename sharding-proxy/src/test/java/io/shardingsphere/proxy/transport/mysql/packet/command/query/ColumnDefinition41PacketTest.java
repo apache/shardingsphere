@@ -52,27 +52,21 @@ public final class ColumnDefinition41PacketTest {
         when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(10);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         new ColumnDefinition41Packet(1, resultSetMetaData, 1).write(payload);
-        verify(payload).writeStringLenenc("def");
-        verify(payload).writeStringLenenc(ShardingConstant.LOGIC_SCHEMA_NAME);
-        verify(payload, times(2)).writeStringLenenc("tbl");
-        verify(payload, times(2)).writeStringLenenc("id");
-        verify(payload).writeIntLenenc(0x0c);
-        verify(payload).writeInt2(ServerInfo.CHARSET);
-        verify(payload).writeInt4(10);
-        verify(payload).writeInt1(ColumnType.MYSQL_TYPE_LONG.getValue());
-        verify(payload).writeInt2(0);
-        verify(payload).writeInt1(0);
-        verify(payload).writeReserved(2);
+        verifyWrite();
     }
     
     @Test
     public void assertWriteWithPayload() {
         when(payload.readInt1()).thenReturn(1, ColumnType.MYSQL_TYPE_LONG.getValue(), 0);
-        when(payload.readStringLenenc()).thenReturn("def", ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id");
-        when(payload.readIntLenenc()).thenReturn((long) 0x0c);
         when(payload.readInt2()).thenReturn(ServerInfo.CHARSET, 0);
         when(payload.readInt4()).thenReturn(10);
+        when(payload.readIntLenenc()).thenReturn((long) 0x0c);
+        when(payload.readStringLenenc()).thenReturn("def", ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id");
         new ColumnDefinition41Packet(payload).write(payload);
+        verifyWrite();
+    }
+    
+    private void verifyWrite() {
         verify(payload).writeStringLenenc("def");
         verify(payload).writeStringLenenc(ShardingConstant.LOGIC_SCHEMA_NAME);
         verify(payload, times(2)).writeStringLenenc("tbl");
