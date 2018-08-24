@@ -15,20 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport;
+package io.shardingsphere.proxy.transport.mysql.constant;
 
-import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactoryTest;
-import io.shardingsphere.proxy.transport.mysql.constant.AllMySQLConstantTests;
-import io.shardingsphere.proxy.transport.mysql.packet.AllMySQLPacketTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        PacketCodecFactoryTest.class,
-        AllMySQLConstantTests.class,
-        AllMySQLPacketTests.class
-})
-public final class AllTransportTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class NewParametersBoundFlagTest {
+    
+    @Test
+    public void assertValueOf() {
+        assertThat(NewParametersBoundFlag.valueOf(NewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue()), is(NewParametersBoundFlag.PARAMETER_TYPE_EXIST));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertValueOfWithIllegalArgument() {
+        NewParametersBoundFlag.valueOf(-1);
+    }
 }
