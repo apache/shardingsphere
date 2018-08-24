@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class HandshakeResponse41PacketTest {
+public final class HandshakeResponse41PacketTest {
     
     private HandshakeResponse41Packet handshakeResponse41Packet;
     
