@@ -70,12 +70,14 @@ public final class ShardingContext implements AutoCloseable {
     @Getter(AccessLevel.NONE)
     private boolean isCircuitBreak;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, 
+                           final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
         ShardingEventBusInstance.getInstance().register(this);
     }
     
-    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    private void init(final Map<String, DataSource> dataSourceMap, 
+                      final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.executeEngine = executeEngine;
@@ -96,7 +98,8 @@ public final class ShardingContext implements AutoCloseable {
      * @param connectionMode connection mode
      * @param showSQL show sql
      */
-    public void renew(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    public void renew(final Map<String, DataSource> dataSourceMap, 
+                      final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         close();
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
     }
@@ -117,8 +120,7 @@ public final class ShardingContext implements AutoCloseable {
      * @param circuitStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final
-                                                       CircuitStateEventBusEvent circuitStateEventBusEvent) {
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
@@ -147,7 +149,6 @@ public final class ShardingContext implements AutoCloseable {
         if (isCircuitBreak) {
             return getCircuitBreakerDataSourceMap();
         }
-        
         if (!disabledDataSourceNames.isEmpty()) {
             return getAvailableDataSourceMap();
         }
