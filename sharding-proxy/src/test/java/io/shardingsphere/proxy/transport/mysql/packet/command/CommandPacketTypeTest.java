@@ -17,14 +17,20 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        CommandPacketTypeTest.class, 
-        CommandPacketFactoryTest.class 
-})
-public final class AllMySQLCommandPacketTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class CommandPacketTypeTest {
+    
+    @Test
+    public void assertGetValue() {
+        assertThat(CommandPacketType.valueOf(CommandPacketType.COM_SLEEP.getValue()), is(CommandPacketType.COM_SLEEP));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetValueWithIllegalArgument() {
+        CommandPacketType.valueOf(-1);
+    }
 }
