@@ -25,11 +25,12 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
@@ -96,6 +97,14 @@ public final class RuleRegistry {
      */
     public static RuleRegistry getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Register rule registry.
+     *
+     */
+    public void register() {
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     /**

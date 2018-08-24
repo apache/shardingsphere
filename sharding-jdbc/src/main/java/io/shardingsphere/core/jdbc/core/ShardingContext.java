@@ -29,6 +29,7 @@ import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -63,8 +64,10 @@ public final class ShardingContext implements AutoCloseable {
     
     private boolean showSQL;
     
+    @Getter(AccessLevel.NONE)
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
+    @Getter(AccessLevel.NONE)
     private boolean isCircuitBreak;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
@@ -114,7 +117,8 @@ public final class ShardingContext implements AutoCloseable {
      * @param circuitStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+    public void renewCircuitBreakerDataSourceNames(final
+                                                       CircuitStateEventBusEvent circuitStateEventBusEvent) {
         isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     

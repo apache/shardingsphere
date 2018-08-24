@@ -64,7 +64,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws InterruptedException, IOException {
         YamlProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(getConfig(args)).getFile()));
         int port = getPort(args);
-        ProxyListenerRegister.register(RULE_REGISTRY);
+        ProxyListenerRegister.register();
         if (null == localConfig.getOrchestration()) {
             startWithoutRegistryCenter(localConfig, port);
         } else {

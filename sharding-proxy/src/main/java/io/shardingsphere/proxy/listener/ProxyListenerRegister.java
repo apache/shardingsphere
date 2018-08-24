@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.listener;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
 import io.shardingsphere.transaction.listener.xa.XATransactionListener;
@@ -36,11 +35,10 @@ public final class ProxyListenerRegister {
     /**
      * Register all listeners.
      *
-     * @param ruleRegistry rule registry.
      */
-    public static void register(final RuleRegistry ruleRegistry) {
+    public static void register() {
         new LocalTransactionListener().register();
         new XATransactionListener().register();
-        ShardingEventBusInstance.getInstance().register(ruleRegistry);
+        RuleRegistry.getInstance().register();
     }
 }
