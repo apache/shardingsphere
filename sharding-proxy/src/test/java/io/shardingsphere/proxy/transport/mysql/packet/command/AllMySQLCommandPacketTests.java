@@ -21,6 +21,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedC
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41PacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePacketsTest;
 import org.junit.runner.RunWith;
@@ -33,7 +34,8 @@ import org.junit.runners.Suite.SuiteClasses;
         CommandPacketFactoryTest.class, 
         CommandResponsePacketsTest.class, 
         QueryResponsePacketsTest.class,
-        FieldCountPacketTest.class, 
+        FieldCountPacketTest.class,
+        ColumnDefinition41PacketTest.class, 
         
         ComInitDbPacketTest.class, 
         ComPingPacketTest.class, 
