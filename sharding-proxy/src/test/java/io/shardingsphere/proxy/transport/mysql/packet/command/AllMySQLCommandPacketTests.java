@@ -15,20 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet;
+package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.AllMySQLCommandPacketTests;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.AllMySQLGenericPacketTests;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AllMySQLHandshakeTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllMySQLGenericPacketTests.class, 
-        AllMySQLHandshakeTests.class, 
-        AllMySQLCommandPacketTests.class
+        CommandPacketFactoryTest.class 
 })
-public final class AllMySQLPacketTests {
+public final class AllMySQLCommandPacketTests {
 }
