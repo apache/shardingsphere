@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedCommandPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.admin.ping.ComPingPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacketTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,9 +27,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         CommandPacketTypeTest.class, 
-        CommandPacketFactoryTest.class,
-        CommandResponsePacketsTest.class,
+        CommandPacketFactoryTest.class, 
+        CommandResponsePacketsTest.class, 
         
+        ComPingPacketTest.class, 
         ComQuitPacketTest.class, 
         UnsupportedCommandPacketTest.class
 })
