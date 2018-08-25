@@ -29,19 +29,19 @@ public interface ListenerManager {
      * Start sharding change listener.
      *
      */
-    void shardingStart();
+    void watchSharding();
     
     
     /**
      * Start master-slave change listener.
      *
      */
-    void masterSlaveStart();
+    void watchMasterSlave();
     
     
     /**
      * Start proxy change listener.
      *
      */
-    void proxyStart();
+    void watchProxy();
 }

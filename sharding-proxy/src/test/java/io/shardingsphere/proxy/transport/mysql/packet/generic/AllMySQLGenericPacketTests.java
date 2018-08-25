@@ -15,21 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.state.disabled;
+package io.shardingsphere.proxy.transport.mysql.packet.generic;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.util.Collection;
-
-/**
- * JDBC disabled event bus event.
- *
- * @author panjuan
- */
-@RequiredArgsConstructor
-@Getter
-public final class DisabledStateEventBusEvent {
-    
-    private final Collection<String> disabledDataSourceNames;
+@RunWith(Suite.class)
+@SuiteClasses({
+        OKPacketTest.class, 
+        EofPacketTest.class,
+        ErrPacketTest.class
+})
+public final class AllMySQLGenericPacketTests {
 }

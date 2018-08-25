@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -72,7 +73,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertClose() throws SQLException {
-        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             each.getValue().close();
             assertClose((AbstractResultSetAdapter) each.getValue(), each.getKey());
         }
@@ -97,7 +98,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetFetchDirection() throws SQLException {
-        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             assertThat(each.getValue().getFetchDirection(), is(ResultSet.FETCH_FORWARD));
             try {
                 each.getValue().setFetchDirection(ResultSet.FETCH_REVERSE);
@@ -120,7 +121,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetFetchSize() throws SQLException {
-        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
                 assertThat(each.getValue().getFetchSize(), is(0));
             }
@@ -177,7 +178,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertFindColumn() throws SQLException {
-        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             assertThat(each.getValue().findColumn("user_id"), is(1));
         }
     }

@@ -15,28 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config.proxy;
+package io.shardingsphere.proxy.transport.mysql.constant;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Proxy configuration event bus instance.
- *
- * @author panjuan
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyConfigurationEventBusInstance {
-    
-    private static final EventBus INSTANCE = new EventBus();
-    
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        CapabilityFlagTest.class,
+        ColumnTypeTest.class,
+        NewParametersBoundFlagTest.class,
+        ServerErrorCodeTest.class
+})
+public final class AllMySQLConstantTests {
 }
