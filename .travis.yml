@@ -1,3 +1,4 @@
+sudo: required
 cache: 
   directories: 
     - "$HOME/.m2"
@@ -9,9 +10,6 @@ jdk:
 before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
 after_success:
-  - mvn clean cobertura:cobertura
-  - bash <(curl -s https://codecov.io/bash)
+  - mvn clean cobertura:cobertura coveralls:report
+#  - bash <(curl -s https://codecov.io/bash)
 install: travis_wait 30 mvn install
-
-service_name: travis-pro
-repo_token: f0ml251qOnUJHjw47yOiVO0XLtcOfgBg1
