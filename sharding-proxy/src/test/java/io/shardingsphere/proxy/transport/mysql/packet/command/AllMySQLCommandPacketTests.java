@@ -26,6 +26,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPa
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePacketsTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacketTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -39,7 +40,8 @@ import org.junit.runners.Suite.SuiteClasses;
         FieldCountPacketTest.class,
         ColumnDefinition41PacketTest.class,
         TextResultSetRowPacketTest.class,
-        ComFieldListPacketTest.class, 
+        ComFieldListPacketTest.class,
+        ComQueryPacketTest.class, 
         
         ComInitDbPacketTest.class, 
         ComPingPacketTest.class, 

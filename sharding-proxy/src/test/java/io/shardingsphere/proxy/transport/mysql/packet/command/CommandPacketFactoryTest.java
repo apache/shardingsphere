@@ -55,10 +55,9 @@ public final class CommandPacketFactoryTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        RuleRegistry registry = RuleRegistry.getInstance();
         Field field = RuleRegistry.class.getDeclaredField("backendNIOConfig");
         field.setAccessible(true);
-        field.set(registry, new BackendNIOConfiguration(true, 1, 0));
+        field.set(RuleRegistry.getInstance(), new BackendNIOConfiguration(true, 1, 0));
     }
     
     @Test
