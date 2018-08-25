@@ -15,28 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.state.circuit;
+package io.shardingsphere.core.event.orche.state;
 
-import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Jdbc circuit event bus instance.
+ * Disabled event bus event.
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CircuitStateEventBusInstance {
+@RequiredArgsConstructor
+@Getter
+public final class DisabledStateEventBusEvent {
     
-    private static final EventBus INSTANCE = new EventBus();
-    
-    /**
-     * Get event bus instance.
-     *
-     * @return event bus instance
-     */
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
+    private final Collection<String> disabledDataSourceNames;
 }

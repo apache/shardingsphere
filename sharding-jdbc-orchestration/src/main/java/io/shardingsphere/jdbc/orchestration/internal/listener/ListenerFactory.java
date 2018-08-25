@@ -51,10 +51,10 @@ public final class ListenerFactory {
      * 
      */
     public void initShardingListeners() {
-        configurationListenerManager.shardingStart();
-        instanceListenerManager.shardingStart();
-        dataSourceListenerManager.shardingStart();
-        configMapListenerManager.shardingStart();
+        configurationListenerManager.watchSharding();
+        instanceListenerManager.watchSharding();
+        dataSourceListenerManager.watchSharding();
+        configMapListenerManager.watchSharding();
     }
     
     /**
@@ -62,10 +62,10 @@ public final class ListenerFactory {
      *
      */
     public void initMasterSlaveListeners() {
-        configurationListenerManager.masterSlaveStart();
-        instanceListenerManager.masterSlaveStart();
-        dataSourceListenerManager.masterSlaveStart();
-        configMapListenerManager.masterSlaveStart();
+        configurationListenerManager.watchMasterSlave();
+        instanceListenerManager.watchMasterSlave();
+        dataSourceListenerManager.watchMasterSlave();
+        configMapListenerManager.watchMasterSlave();
     }
     
     /**
@@ -73,9 +73,9 @@ public final class ListenerFactory {
      *
      */
     public void initProxyListeners() {
-        configurationListenerManager.proxyStart();
-        instanceListenerManager.proxyStart();
-        dataSourceListenerManager.proxyStart();
-        configMapListenerManager.proxyStart();
+        configurationListenerManager.watchProxy();
+        instanceListenerManager.watchProxy();
+        dataSourceListenerManager.watchProxy();
+        configMapListenerManager.watchProxy();
     }
 }

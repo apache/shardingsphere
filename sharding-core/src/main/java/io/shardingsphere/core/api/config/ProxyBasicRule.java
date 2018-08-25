@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.config;
+package io.shardingsphere.core.api.config;
 
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
@@ -34,7 +34,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProxyBasicRule {
+public final class ProxyBasicRule {
     
     private YamlShardingRuleConfiguration shardingRule;
     

@@ -17,17 +17,15 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusEvent;
-import io.shardingsphere.core.orche.eventbus.state.circuit.CircuitStateEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
-
-import java.util.LinkedList;
 
 /**
  * Instance listener manager.
@@ -41,25 +39,22 @@ public final class InstanceListenerManager implements ListenerManager {
     
     private final RegistryCenter regCenter;
     
-    private final ConfigurationService configService;
-    
     public InstanceListenerManager(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
-        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
-    public void shardingStart() {
+    public void watchSharding() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(true));
                     } else {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(false));
                     }
                 }
             }
@@ -67,16 +62,16 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void masterSlaveStart() {
+    public void watchMasterSlave() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSourceMap().keySet()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(true));
                     } else {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(false));
                     }
                 }
             }
@@ -84,16 +79,16 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void proxyStart() {
+    public void watchProxy() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(configService.loadDataSources().keySet()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(true));
                     } else {
-                        CircuitStateEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(new LinkedList<String>()));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(false));
                     }
                 }
             }

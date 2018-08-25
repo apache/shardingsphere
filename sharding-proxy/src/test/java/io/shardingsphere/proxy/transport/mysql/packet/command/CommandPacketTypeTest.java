@@ -15,21 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.state.circuit;
+package io.shardingsphere.proxy.transport.mysql.packet.command;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.Collection;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * JDBC circuit event bus event.
- *
- * @author panjuan
- */
-@RequiredArgsConstructor
-@Getter
-public final class CircuitStateEventBusEvent {
+public final class CommandPacketTypeTest {
     
-    private final Collection<String> circuitBreakerDataSourceNames;
+    @Test
+    public void assertGetValue() {
+        assertThat(CommandPacketType.valueOf(CommandPacketType.COM_SLEEP.getValue()), is(CommandPacketType.COM_SLEEP));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetValueWithIllegalArgument() {
+        CommandPacketType.valueOf(-1);
+    }
 }

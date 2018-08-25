@@ -15,28 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.eventbus.config.jdbc;
+package io.shardingsphere.proxy.transport.mysql.constant;
 
-import io.shardingsphere.core.rule.ShardingRule;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.util.Map;
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Sharding config event bus event.
- *
- * @author panjuan
- */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingConfigurationEventBusEvent {
+public final class NewParametersBoundFlagTest {
     
-    private final Map<String, DataSource> dataSourceMap;
+    @Test
+    public void assertValueOf() {
+        assertThat(NewParametersBoundFlag.valueOf(NewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue()), is(NewParametersBoundFlag.PARAMETER_TYPE_EXIST));
+    }
     
-    private final ShardingRule shardingRule;
-    
-    private final Properties props;
+    @Test(expected = IllegalArgumentException.class)
+    public void assertValueOfWithIllegalArgument() {
+        NewParametersBoundFlag.valueOf(-1);
+    }
 }
