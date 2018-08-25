@@ -46,6 +46,6 @@ public final class ComPingPacket implements CommandPacket {
     
     @Override
     public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(CommandPacketType.COM_QUIT.getValue());
+        payload.writeInt1(CommandPacketType.COM_PING.getValue());
     }
 }

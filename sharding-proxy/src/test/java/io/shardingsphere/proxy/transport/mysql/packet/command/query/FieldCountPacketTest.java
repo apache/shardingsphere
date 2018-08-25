@@ -15,20 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query;
 
-import io.shardingsphere.proxy.transport.mysql.packet.command.AllMySQLCommandPacketTests;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.AllMySQLGenericPacketTests;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AllMySQLHandshakeTests;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllMySQLGenericPacketTests.class, 
-        AllMySQLHandshakeTests.class, 
-        AllMySQLCommandPacketTests.class
-})
-public final class AllMySQLPacketTests {
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public final class FieldCountPacketTest {
+    
+    @Mock
+    private MySQLPacketPayload payload;
+    
+    @Test
+    public void assertWrite() {
+        when(payload.readInt1()).thenReturn(1, 3);
+        new FieldCountPacket(payload).write(payload);
+        verify(payload).writeIntLenenc(3);
+    }
 }

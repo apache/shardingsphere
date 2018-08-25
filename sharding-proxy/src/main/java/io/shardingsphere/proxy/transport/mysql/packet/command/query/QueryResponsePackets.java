@@ -31,11 +31,11 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@Getter
 public final class QueryResponsePackets extends CommandResponsePackets {
     
     private final FieldCountPacket fieldCountPacket;
     
+    @Getter
     private final Collection<ColumnDefinition41Packet> columnDefinition41Packets;
     
     public QueryResponsePackets(final FieldCountPacket fieldCountPacket, final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
