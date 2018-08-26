@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -30,7 +31,7 @@ public final class BinaryStatementRegistryTest {
     
     private final String sql = "SELECT * FROM tbl WHERE id=?";
     
-    @Test
+    @Before
     public void setUp() throws ReflectiveOperationException {
         Field statementIdAssignerField = BinaryStatementRegistry.class.getDeclaredField("statementIdAssigner");
         statementIdAssignerField.setAccessible(true);
@@ -41,6 +42,7 @@ public final class BinaryStatementRegistryTest {
         Field sequenceField = BinaryStatementRegistry.class.getDeclaredField("sequence");
         sequenceField.setAccessible(true);
         ((AtomicInteger) sequenceField.get(BinaryStatementRegistry.getInstance())).set(0);
+        System.out.println(111);
     }
     
     @Test
