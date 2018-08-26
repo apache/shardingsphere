@@ -44,6 +44,10 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     private final MasterSlaveDataSource dataSource;
     
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private boolean isCircuitBreak;
+    
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
