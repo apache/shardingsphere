@@ -17,13 +17,16 @@
 
 package io.shardingsphere.transaction.manager;
 
+import io.shardingsphere.transaction.manager.base.SagaTransactionManagerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingTransactionManagerRegistryTest.class, 
+        ShardingTransactionManagerRegistryTest.class,
+        
+        SagaTransactionManagerTest.class
 })
 public final class AllManagerTests {
 }
