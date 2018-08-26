@@ -41,7 +41,7 @@ import java.util.Properties;
  * @author caohao
  */
 @Slf4j
-public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable{
+public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final ShardingDataSource dataSource;
     
@@ -50,13 +50,14 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     
     public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
                                            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(dataSourceMap.values());
         this.dataSource = new ShardingDataSource(getRawDataSourceMap(dataSourceMap), new ShardingRule(getShardingRuleConfiguration(dataSourceMap, shardingRuleConfig), getRawDataSourceMap(dataSourceMap).keySet()), configMap, props);
         this.orchestrationFacade = orchestrationFacade;
         this.orchestrationFacade.init(dataSourceMap, shardingRuleConfig, configMap, props);
     }
     
     @Override
-    public final ShardingConnection getConnection() {
+    public ShardingConnection getConnection() {
         return dataSource.getConnection();
     }
     
