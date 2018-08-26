@@ -25,6 +25,7 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -53,8 +54,10 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     private ShardingProperties shardingProperties;
     
+    @Getter(AccessLevel.NONE)
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
+    @Getter(AccessLevel.NONE)
     private boolean isCircuitBreak;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
