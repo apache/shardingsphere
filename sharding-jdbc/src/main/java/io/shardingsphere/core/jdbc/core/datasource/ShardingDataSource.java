@@ -114,6 +114,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     public void renew(final Map<String, DataSource> dataSourceMap,
                       final ShardingRule shardingRule, final ShardingProperties shardingProperties) {
         super.renew(dataSourceMap.values());
+        this.shardingProperties = shardingProperties;
         int newExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         boolean newShowSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
