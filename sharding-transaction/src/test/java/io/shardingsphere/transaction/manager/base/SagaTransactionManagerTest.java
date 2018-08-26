@@ -36,7 +36,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertCommit() {
-        new SagaTransactionManager().begin(new ShardingTransactionEvent() {
+        new SagaTransactionManager().commit(new ShardingTransactionEvent() {
             
             @Override
             public TransactionOperationType getOperationType() {
@@ -47,7 +47,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertRollback() {
-        new SagaTransactionManager().begin(new ShardingTransactionEvent() {
+        new SagaTransactionManager().rollback(new ShardingTransactionEvent() {
             
             @Override
             public TransactionOperationType getOperationType() {
