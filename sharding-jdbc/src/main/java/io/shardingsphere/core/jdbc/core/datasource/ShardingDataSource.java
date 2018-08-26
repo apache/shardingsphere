@@ -103,6 +103,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public void close() {
+        closeOriginalDataSources();
         shardingContext.close();
     }
     
@@ -138,5 +139,14 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingRuleConfig.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
         return shardingRuleConfig;
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                each.getClass().getDeclaredMethod("close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
     }
 }
