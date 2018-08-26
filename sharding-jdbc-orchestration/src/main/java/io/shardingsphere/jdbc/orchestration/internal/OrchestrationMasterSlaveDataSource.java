@@ -27,6 +27,7 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -48,6 +49,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     private final OrchestrationFacade orchestrationFacade;
     
+    @Getter
     private MasterSlaveDataSource dataSource;
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
