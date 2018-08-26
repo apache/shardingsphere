@@ -26,14 +26,11 @@ import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -47,14 +44,9 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationMasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    @Getter
     private MasterSlaveDataSource dataSource;
     
     private final OrchestrationFacade orchestrationFacade;
-    
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
-    private boolean isCircuitBreak;
     
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
@@ -92,42 +84,10 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      */
     @Subscribe
     public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) throws SQLException {
-        this.dataSource.close();
-        this.dataSource = new MasterSlaveDataSource(masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = masterSlaveEvent.getMasterSlaveRuleConfig();
         super.renew(getAllDataSources(masterSlaveEvent.getDataSourceMap(), masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
-    }
-    
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSource> getDataSourceMap() {
-        if (isCircuitBreak) {
-            return getCircuitBreakerDataSourceMap();
-        }
-        
-        if (!disabledDataSourceNames.isEmpty()) {
-            return getAvailableDataSourceMap();
-        }
-        return dataSource.getDataSourceMap();
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSource.getDataSourceMap());
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSource.getDataSourceMap().keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
-        }
-        return result;
+        dataSource.close();
+        dataSource = new MasterSlaveDataSource(masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
     }
     
     /**
@@ -137,7 +97,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
+        dataSource.renewDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledDataSourceNames());
     }
     
     /**
@@ -147,7 +107,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
+        dataSource.renewCircuitBreakerDataSourceNames(circuitStateEventBusEvent.isCircuitBreak());
     }
     
     /**
