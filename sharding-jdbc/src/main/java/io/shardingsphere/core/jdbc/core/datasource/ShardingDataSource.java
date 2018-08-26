@@ -25,11 +25,15 @@ import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +53,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     private ShardingContext shardingContext;
     
     private ShardingProperties shardingProperties;
+    
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private boolean isCircuitBreak;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -88,6 +96,55 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingContext.renew(dataSourceMap, shardingRule, getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
         
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledDataSourceNames disabled data source names
+     */
+    public void renewDisabledDataSourceNames(final Collection<String> disabledDataSourceNames) {
+        this.disabledDataSourceNames = disabledDataSourceNames;
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param isCircuitBreak is circuit break or not
+     */
+    public void renewCircuitBreakerDataSourceNames(final boolean isCircuitBreak) {
+        this.isCircuitBreak = isCircuitBreak;
+    }
+    
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        if (isCircuitBreak) {
+            return getCircuitBreakerDataSourceMap();
+        }
+        if (!disabledDataSourceNames.isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSourceMap;
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : dataSourceMap.keySet()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
     }
     
     @Override
