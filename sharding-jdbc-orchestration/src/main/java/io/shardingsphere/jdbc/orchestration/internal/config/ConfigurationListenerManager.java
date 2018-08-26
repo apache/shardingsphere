@@ -56,12 +56,12 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        shardingStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        shardingStart(ConfigurationNode.SHARDING_RULE_NODE_PATH);
-        shardingStart(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
+        watchSharding(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchSharding(ConfigurationNode.SHARDING_RULE_NODE_PATH);
+        watchSharding(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
     }
     
-    private void shardingStart(final String node) {
+    private void watchSharding(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -79,12 +79,12 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        masterSlaveStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        masterSlaveStart(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
-        masterSlaveStart(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH);
+        watchMasterSlave(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
+        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH);
     }
     
-    private void masterSlaveStart(final String node) {
+    private void watchMasterSlave(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -101,11 +101,11 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        proxyStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        proxyStart(ConfigurationNode.PROXY_RULE_NODE_PATH);
+        watchProxy(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchProxy(ConfigurationNode.PROXY_RULE_NODE_PATH);
     }
     
-    private void proxyStart(final String node) {
+    private void watchProxy(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
