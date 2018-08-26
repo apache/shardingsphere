@@ -81,6 +81,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     public void watchMasterSlave() {
         masterSlaveStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         masterSlaveStart(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
+        masterSlaveStart(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH);
     }
     
     private void masterSlaveStart(final String node) {
@@ -91,7 +92,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration());
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadMasterSlaveProperties());
                     ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
