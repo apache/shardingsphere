@@ -65,11 +65,10 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
     
     private final int decimals;
     
-    // TODO yonglun: decimals forever zero
     public ColumnDefinition41Packet(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex), 
                 resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), 
-                ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), 0);
+                ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex));
     }
     
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
