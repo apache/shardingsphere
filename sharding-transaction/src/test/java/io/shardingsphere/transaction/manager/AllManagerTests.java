@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.manager;
 
 import io.shardingsphere.transaction.manager.base.SagaTransactionManagerTest;
 import io.shardingsphere.transaction.manager.local.LocalTransactionManagerTest;
+import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoaderTest;
 import io.shardingsphere.transaction.manager.xa.atomikos.AtomikosTransactionManagerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,8 +27,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingTransactionManagerRegistryTest.class,
+        ShardingTransactionManagerRegistryTest.class, 
         LocalTransactionManagerTest.class, 
+        XATransactionManagerSPILoaderTest.class, 
         AtomikosTransactionManagerTest.class, 
         SagaTransactionManagerTest.class
 })
