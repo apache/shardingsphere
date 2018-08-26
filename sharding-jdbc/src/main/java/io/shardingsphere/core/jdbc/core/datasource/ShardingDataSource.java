@@ -50,9 +50,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhaojun
  * @author panjuan
  */
+@Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    @Getter
     private ShardingProperties shardingProperties;
 
     private ShardingContext shardingContext;
