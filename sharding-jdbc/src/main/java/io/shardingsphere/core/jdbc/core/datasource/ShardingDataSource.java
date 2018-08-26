@@ -18,6 +18,8 @@
 package io.shardingsphere.core.jdbc.core.datasource;
 
 import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -62,7 +64,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         // TODO this.shardingContext = getShardingContext(dataSourceMap, shardingRule);
-        this.shardingContext = getShardingContext(getRawDataSourceMap(dataSourceMap), getShardingRuleConfiguration(dataSourceMap, shardingRule));
+        this.shardingContext = getShardingContext(getRawDataSourceMap(dataSourceMap), getRevisedShardingRule(dataSourceMap, shardingRule));
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
@@ -90,18 +92,20 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         return result;
     }
     
-    private ShardingRule getShardingRuleConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+    private ShardingRule getRevisedShardingRule(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
         if (null == dataSourceMap || !shardingRule.getMasterSlaveRules().isEmpty()) {
             return shardingRule;
         }
+        ShardingRuleConfiguration shardingRuleConfiguration = shardingRule.getShardingRuleConfig();
         for (DataSource each : dataSourceMap.values()) {
             if (!(each instanceof MasterSlaveDataSource)) {
                 continue;
             }
             MasterSlaveRule masterSlaveRule = ((MasterSlaveDataSource) each).getMasterSlaveRule();
-            shardingRule.getMasterSlaveRules().add(masterSlaveRule);
+            shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration(
+                    masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
         }
-        return shardingRule;
+        return new ShardingRule(shardingRuleConfiguration, dataSourceMap.keySet());
     }
     
     /**
