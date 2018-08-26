@@ -71,7 +71,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(getStatementExecuteUnits(routeResult, isReturnGeneratedKeys), 
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(getStatementExecuteUnits(this, routeResult, isReturnGeneratedKeys),
                 new FirstMemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new MemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -79,10 +79,12 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
     }
     
-    private Collection<StatementExecuteUnit> getStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    private static synchronized Collection<StatementExecuteUnit> getStatementExecuteUnits(final MemoryStrictlyExecuteEngine memoryStrictlyExecuteEngine, final SQLRouteResult routeResult,
+                                                                                          final boolean isReturnGeneratedKeys) throws SQLException {
         Collection<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys);
+            Statement statement = memoryStrictlyExecuteEngine.getJdbcExecutorWrapper().createStatement(memoryStrictlyExecuteEngine.getBackendConnection().getConnection(each.getDataSource()),
+                each.getSqlUnit().getSql(), isReturnGeneratedKeys);
             result.add(new ProxyStatementExecuteUnit(each, statement));
         }
         return result;
