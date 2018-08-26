@@ -23,13 +23,17 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,6 +45,8 @@ import java.util.Map.Entry;
  */
 @Getter
 public final class ShardingContext implements AutoCloseable {
+    
+    private Map<String, DataSource> dataSourceMap;
     
     private ShardingRule shardingRule;
     
@@ -54,6 +60,12 @@ public final class ShardingContext implements AutoCloseable {
     
     private boolean showSQL;
     
+    @Getter(AccessLevel.NONE)
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    @Getter(AccessLevel.NONE)
+    private boolean isCircuitBreak;
+    
     public ShardingContext(final Map<String, DataSource> dataSourceMap, 
                            final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
         init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
@@ -61,6 +73,7 @@ public final class ShardingContext implements AutoCloseable {
     
     private void init(final Map<String, DataSource> dataSourceMap, 
                       final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+        this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
         this.executeEngine = executeEngine;
         this.databaseType = databaseType;
@@ -101,8 +114,67 @@ public final class ShardingContext implements AutoCloseable {
         }
     }
     
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledDataSourceNames disabled data source names
+     */
+    public void renewDisabledDataSourceNames(final Collection<String> disabledDataSourceNames) {
+        this.disabledDataSourceNames = disabledDataSourceNames;
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param isCircuitBreak is circuit break or not
+     */
+    public void renewCircuitBreakerDataSourceNames(final boolean isCircuitBreak) {
+        this.isCircuitBreak = isCircuitBreak;
+    }
+    
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        if (isCircuitBreak) {
+            return getCircuitBreakerDataSourceMap();
+        }
+        if (!disabledDataSourceNames.isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSourceMap;
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : dataSourceMap.keySet()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
+    }
+    
     @Override
     public void close() {
+        closeOriginalDataSources();
         executeEngine.close();
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                each.getClass().getDeclaredMethod("close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
     }
 }
