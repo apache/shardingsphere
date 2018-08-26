@@ -27,6 +27,7 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -42,6 +43,7 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
+    @Getter
     private final ShardingDataSource dataSource;
     
     private final OrchestrationFacade orchestrationFacade;
