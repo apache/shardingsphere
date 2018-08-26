@@ -65,40 +65,6 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         orchestrationFacade.close();
     }
     
-//    private Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {
-//        Map<String, DataSource> result = new LinkedHashMap<>();
-//        if (null == dataSourceMap) {
-//            return result;
-//        }
-//        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-//            String dataSourceName = entry.getKey();
-//            DataSource dataSource = entry.getValue();
-//            if (dataSource instanceof MasterSlaveDataSource) {
-//                result.putAll(((MasterSlaveDataSource) dataSource).getAllDataSources());
-//            } else {
-//                result.put(dataSourceName, dataSource);
-//            }
-//        }
-//        return result;
-//    }
-//
-//    private ShardingRuleConfiguration getShardingRuleConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
-//        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-//        if (null == dataSourceMap || !shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
-//            return shardingRuleConfig;
-//        }
-//        for (DataSource each : dataSourceMap.values()) {
-//            if (!(each instanceof MasterSlaveDataSource)) {
-//                continue;
-//            }
-//            MasterSlaveRule masterSlaveRule = ((MasterSlaveDataSource) each).getMasterSlaveRule();
-//            masterSlaveRuleConfigs.add(new MasterSlaveRuleConfiguration(
-//                    masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
-//        }
-//        shardingRuleConfig.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
-//        return shardingRuleConfig;
-//    }
-    
     /**
      * Renew disable dataSource names.
      *
