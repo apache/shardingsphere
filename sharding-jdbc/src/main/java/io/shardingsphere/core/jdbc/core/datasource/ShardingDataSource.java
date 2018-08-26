@@ -53,9 +53,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private ShardingProperties shardingProperties;
-
+    private Map<String, DataSource> dataSourceMap;
+    
     private ShardingContext shardingContext;
+    
+    private ShardingProperties shardingProperties;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
