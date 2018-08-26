@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public enum NewParametersBoundFlag {
     
     PARAMETER_TYPE_EXIST(1),
+    
     PARAMETER_TYPE_NOT_EXIST(0);
     
     private final int value;

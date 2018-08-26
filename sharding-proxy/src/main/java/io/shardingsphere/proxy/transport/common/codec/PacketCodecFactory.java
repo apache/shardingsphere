@@ -31,12 +31,12 @@ import lombok.NoArgsConstructor;
 public final class PacketCodecFactory {
     
     /**
-     * Create packet codec instance.
+     * Create new instance of packet codec instance.
      * 
      * @param databaseType database type
      * @return packet codec instance
      */
-    public static PacketCodec createPacketCodecInstance(final DatabaseType databaseType) {
+    public static PacketCodec newInstance(final DatabaseType databaseType) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLPacketCodec();

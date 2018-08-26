@@ -41,15 +41,15 @@ import lombok.NoArgsConstructor;
 public final class CommandPacketFactory {
     
     /**
-     * Get command Packet.
+     * Create new instance of command packet.
      *
      * @param sequenceId sequence id
      * @param connectionId MySQL connection id
      * @param payload MySQL packet payload
      * @param backendConnection backend connection
-     * @return Command packet
+     * @return command packet
      */
-    public static CommandPacket getCommandPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public static CommandPacket newInstance(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {

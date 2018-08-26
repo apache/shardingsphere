@@ -2,6 +2,11 @@
     <dql-test-case sql-case-id="select_constant_without_table">
         <assertion expected-data-file="select_constant_without_table.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_with_alias">
+        <assertion parameters="10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
+        <assertion parameters="12:int, 1000:int" expected-data-file="empty_order.xml" />
+    </dql-test-case>
     
     <dql-test-case sql-case-id="select_not_equal_with_single_table">
         <assertion parameters="100001:int" expected-data-file="select_not_equal_with_single_table.xml" />
@@ -319,6 +324,10 @@
     
     <dql-test-case sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 4:int, 3:int" expected-data-file="select_pagination_with_row_number_and_limit.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_pagination_with_row_number_not_at_end">
+        <assertion parameters="20:int" expected-data-file="select_pagination_with_row_number_not_at_end.xml" />
     </dql-test-case>
     
     <dql-test-case sql-case-id="select_inner_join_related_with_alias">

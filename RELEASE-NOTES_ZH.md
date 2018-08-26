@@ -41,6 +41,7 @@
 
 #### 内核
 
+1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) 当Oracle的SQL中ROWNUM不在语句尾部时解析错误
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) 支持PostgreSQL的数据类型jsonb
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) 当SELECT ITEMS中的别名与GROUP BY或ORDER BY的真实列名对应时无需补列
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN`解析异常

@@ -35,7 +35,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class HandshakePacketTest {
+public final class HandshakePacketTest {
     
     private HandshakePacket handshakePacket;
     

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
-import io.shardingsphere.core.orche.config.ProxyBasicRule;
+import io.shardingsphere.core.api.config.ProxyBasicRule;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.ProxyConfigurationRepresenter;
 import lombok.AccessLevel;
