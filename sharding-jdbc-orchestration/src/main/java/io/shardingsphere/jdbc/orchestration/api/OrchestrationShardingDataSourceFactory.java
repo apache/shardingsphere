@@ -58,7 +58,6 @@ public final class OrchestrationShardingDataSourceFactory {
             return createDataSource(orchestrationConfig);
         }
         OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, new OrchestrationFacade(orchestrationConfig));
-        result.init();
         return result;
     }
     
@@ -76,7 +75,6 @@ public final class OrchestrationShardingDataSourceFactory {
         Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
         OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(
                 configService.loadDataSourceMap(), shardingRuleConfig, configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
-        result.init();
         return result;
     }
 }
