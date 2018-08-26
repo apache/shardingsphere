@@ -47,10 +47,10 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationMasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private final OrchestrationFacade orchestrationFacade;
-    
     @Getter
     private MasterSlaveDataSource dataSource;
+    
+    private final OrchestrationFacade orchestrationFacade;
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
@@ -61,6 +61,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         this.dataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
         this.orchestrationFacade = orchestrationFacade;
+        this.orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -72,14 +73,6 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
         return result;
     }
     
-    /**
-     * Initialize for master-slave orchestration.
-     */
-    public void init() {
-        dataSource.close();
-        orchestrationFacade.init(dataSource.getDataSourceMap(), new MasterSlaveRuleConfiguration(dataSource.getMasterSlaveRule()), ConfigMapContext.getInstance().getMasterSlaveConfig(), dataSource.getShardingProperties().getProps());
-    }
-    
     @Override
     public MasterSlaveConnection getConnection() {
         return dataSource.getConnection();
@@ -87,6 +80,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     @Override
     public void close() {
+        dataSource.close();
         orchestrationFacade.close();
     }
     
