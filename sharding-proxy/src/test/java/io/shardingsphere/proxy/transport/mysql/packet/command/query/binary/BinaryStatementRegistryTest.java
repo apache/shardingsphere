@@ -42,7 +42,6 @@ public final class BinaryStatementRegistryTest {
         Field sequenceField = BinaryStatementRegistry.class.getDeclaredField("sequence");
         sequenceField.setAccessible(true);
         ((AtomicInteger) sequenceField.get(BinaryStatementRegistry.getInstance())).set(0);
-        System.out.println(111);
     }
     
     @Test
