@@ -17,8 +17,11 @@
 
 package io.shardingsphere.jdbc.orchestration.internal;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
+import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -47,6 +50,9 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     
     private final OrchestrationFacade orchestrationFacade;
     
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    private boolean isCircuitBreak;
     
     public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
                                            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
@@ -99,5 +105,25 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         }
         shardingRuleConfig.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
         return shardingRuleConfig;
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param circuitStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
