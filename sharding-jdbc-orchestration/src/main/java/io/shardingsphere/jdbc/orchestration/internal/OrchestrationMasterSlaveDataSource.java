@@ -26,6 +26,7 @@ import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEv
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -44,6 +45,7 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationMasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
+    @Getter
     private MasterSlaveDataSource dataSource;
     
     private final OrchestrationFacade orchestrationFacade;
