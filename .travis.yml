@@ -12,6 +12,7 @@ jdk:
 before_script:
   - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - mvn clean cobertura:cobertura coveralls:report
+#  - bash <(curl -s https://codecov.io/bash)
 
 install: travis_wait 30 mvn install
