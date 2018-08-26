@@ -189,9 +189,9 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", true);
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext");
         assertTrue((boolean) FieldValueUtil.getFieldValue(shardingContext, "showSQL"));
-        ShardingProperties shardingProperties = (ShardingProperties) FieldValueUtil.getFieldValue(dataSource, "shardingProperties", true);
+        ShardingProperties shardingProperties = (ShardingProperties) FieldValueUtil.getFieldValue(dataSource, "shardingProperties");
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -226,14 +226,14 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
         OrchestrationShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, OrchestrationShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", true);
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext");
         return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         OrchestrationShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, OrchestrationShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", true);
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext");
         return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
     }
 }
