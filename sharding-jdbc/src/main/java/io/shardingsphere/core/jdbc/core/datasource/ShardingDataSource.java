@@ -25,16 +25,12 @@ import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,17 +45,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private Map<String, DataSource> dataSourceMap;
-    
     private ShardingContext shardingContext;
     
     private ShardingProperties shardingProperties;
-    
-    @Getter(AccessLevel.NONE)
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
-    @Getter(AccessLevel.NONE)
-    private boolean isCircuitBreak;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -70,7 +58,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getShardingConfig().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(dataSourceMap, shardingRule);
     }
@@ -106,7 +93,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @param disabledDataSourceNames disabled data source names
      */
     public void renewDisabledDataSourceNames(final Collection<String> disabledDataSourceNames) {
-        this.disabledDataSourceNames = disabledDataSourceNames;
+        shardingContext.renewDisabledDataSourceNames(disabledDataSourceNames);
     }
     
     /**
@@ -115,38 +102,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * @param isCircuitBreak is circuit break or not
      */
     public void renewCircuitBreakerDataSourceNames(final boolean isCircuitBreak) {
-        this.isCircuitBreak = isCircuitBreak;
-    }
-    
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSource> getDataSourceMap() {
-        if (isCircuitBreak) {
-            return getCircuitBreakerDataSourceMap();
-        }
-        if (!disabledDataSourceNames.isEmpty()) {
-            return getAvailableDataSourceMap();
-        }
-        return dataSourceMap;
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
-        }
-        return result;
+        shardingContext.renewCircuitBreakerDataSourceNames(isCircuitBreak);
     }
     
     @Override
@@ -156,16 +112,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public void close() {
-        closeOriginalDataSources();
         shardingContext.close();
-    }
-    
-    private void closeOriginalDataSources() {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                each.getClass().getDeclaredMethod("close").invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
     }
 }
