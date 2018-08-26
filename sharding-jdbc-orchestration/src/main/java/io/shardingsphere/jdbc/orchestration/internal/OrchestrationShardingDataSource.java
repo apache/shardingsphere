@@ -18,21 +18,15 @@
 package io.shardingsphere.jdbc.orchestration.internal;
 
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.extern.slf4j.Slf4j;
 
@@ -145,11 +139,11 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         if (!disabledDataSourceNames.isEmpty()) {
             return getAvailableDataSourceMap();
         }
-        return dataSource.getShardingContext().getDataSourceMap();
+        return dataSource.getDataSourceMap();
     }
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSource.getDataSourceMap());
         for (String each : disabledDataSourceNames) {
             result.remove(each);
         }
@@ -158,7 +152,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     
     private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
+        for (String each : dataSource.getDataSourceMap().keySet()) {
             result.put(each, new CircuitBreakerDataSource());
         }
         return result;
@@ -172,11 +166,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     @Subscribe
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
         super.renew(shardingEvent.getDataSourceMap().values());
-        shardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
-        int newExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        boolean newShowSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
-        ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
+        ShardingProperties shardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
+        dataSource.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), shardingProperties);
     }
 }
