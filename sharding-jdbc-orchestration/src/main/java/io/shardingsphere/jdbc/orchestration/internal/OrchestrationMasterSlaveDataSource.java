@@ -109,13 +109,4 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         dataSource.renewCircuitBreakerDataSourceNames(circuitStateEventBusEvent.isCircuitBreak());
     }
-    
-    /**
-     * Show SQL or not.
-     *
-     * @return show SQL or not
-     */
-    public boolean showSQL() {
-        return dataSource.showSQL();
-    }
 }
