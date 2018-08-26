@@ -17,12 +17,10 @@
 
 package io.shardingsphere.core.jdbc.core.datasource;
 
-import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -77,17 +75,19 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     /**
      * Renew sharding data source.
      *
-     * @param shardingEvent sharding configuration event bus event.
+     * @param dataSourceMap data source map
+     * @param shardingRule sharding rule
+     * @param shardingProperties sharding properties
      */
-    @Subscribe
-    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
-        super.renew(shardingEvent.getDataSourceMap().values());
-        shardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
+    public void renew(final Map<String, DataSource> dataSourceMap,
+                      final ShardingRule shardingRule, final ShardingProperties shardingProperties) {
+        super.renew(dataSourceMap.values());
         int newExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         boolean newShowSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
+        shardingContext.renew(dataSourceMap, shardingRule, getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
+        
     }
     
     @Override
