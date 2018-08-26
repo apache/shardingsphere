@@ -52,7 +52,7 @@ public final class LocalTransactionManagerTest {
     
     @Test(expected = SQLException.class)
     public void assertBeginWithException() throws SQLException {
-        doThrow(new SQLException()).when(connection1).setAutoCommit(false);
+        doThrow(SQLException.class).when(connection1).setAutoCommit(false);
         try {
             new LocalTransactionManager().begin(new LocalTransactionEvent(TransactionOperationType.BEGIN, Arrays.asList(connection1, connection2), false));
         } finally {
@@ -70,7 +70,7 @@ public final class LocalTransactionManagerTest {
     
     @Test(expected = SQLException.class)
     public void assertCommitWithException() throws SQLException {
-        doThrow(new SQLException()).when(connection1).commit();
+        doThrow(SQLException.class).when(connection1).commit();
         try {
             new LocalTransactionManager().commit(new LocalTransactionEvent(TransactionOperationType.COMMIT, Arrays.asList(connection1, connection2), false));
         } finally {
@@ -88,7 +88,7 @@ public final class LocalTransactionManagerTest {
     
     @Test(expected = SQLException.class)
     public void assertRollbackWithException() throws SQLException {
-        doThrow(new SQLException()).when(connection1).rollback();
+        doThrow(SQLException.class).when(connection1).rollback();
         try {
             new LocalTransactionManager().rollback(new LocalTransactionEvent(TransactionOperationType.ROLLBACK, Arrays.asList(connection1, connection2), false));
         } finally {
