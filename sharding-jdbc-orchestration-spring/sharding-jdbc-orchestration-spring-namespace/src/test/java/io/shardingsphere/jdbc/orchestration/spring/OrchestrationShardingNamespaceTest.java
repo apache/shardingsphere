@@ -201,7 +201,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void assertShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("simpleShardingDataSource") instanceof ShardingDataSource);
+        assertTrue(this.applicationContext.getBean("simpleShardingDataSource") instanceof OrchestrationShardingDataSource);
     }
     
     @Test
