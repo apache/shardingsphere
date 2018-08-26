@@ -17,16 +17,22 @@
 
 package io.shardingsphere.jdbc.orchestration.internal;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.event.orche.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
+import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -42,7 +48,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     private final OrchestrationFacade orchestrationFacade;
     
-    private final MasterSlaveDataSource dataSource;
+    private MasterSlaveDataSource dataSource;
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
@@ -80,5 +86,71 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     @Override
     public void close() {
         orchestrationFacade.close();
+    }
+    
+    /**
+     * Renew master-slave data source.
+     *
+     * @param masterSlaveEvent master slave configuration event bus event
+     * @throws SQLException sql exception
+     */
+    @Subscribe
+    public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) throws SQLException {
+        this.dataSource.close();
+        this.dataSource = new MasterSlaveDataSource(masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = masterSlaveEvent.getMasterSlaveRuleConfig();
+        super.renew(getAllDataSources(masterSlaveEvent.getDataSourceMap(), masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
+    }
+    
+    /**
+     * Get available data source map.
+     *
+     * @return available data source map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        if (isCircuitBreak) {
+            return getCircuitBreakerDataSourceMap();
+        }
+        
+        if (!disabledDataSourceNames.isEmpty()) {
+            return getAvailableDataSourceMap();
+        }
+        return dataSource.getDataSourceMap();
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSource.getDataSourceMap());
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : dataSource.getDataSourceMap().keySet()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
