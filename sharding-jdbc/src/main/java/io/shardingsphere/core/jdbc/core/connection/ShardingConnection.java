@@ -18,7 +18,7 @@
 package io.shardingsphere.core.jdbc.core.connection;
 
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -45,7 +45,7 @@ import java.util.Map;
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Getter
-    private final ShardingDataSource shardingDataSource;
+    private final ShardingContext shardingContext;
     
     /**
      * Release connection.
@@ -62,14 +62,14 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     protected Map<String, DataSource> getDataSourceMap() {
-        return shardingDataSource.getDataSourceMap();
+        return shardingContext.getDataSourceMap();
     }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        Collection<MasterSlaveRule> masterSlaveRules = shardingDataSource.getShardingContext().getShardingRule().getMasterSlaveRules();
+        Collection<MasterSlaveRule> masterSlaveRules = shardingContext.getShardingRule().getMasterSlaveRules();
         if (masterSlaveRules.isEmpty()) {
-            return getConnection(shardingDataSource.getDataSourceMap().keySet().iterator().next()).getMetaData();
+            return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next()).getMetaData();
         }
         for (MasterSlaveRule each : masterSlaveRules) {
             if (getDataSourceMap().containsKey(each.getMasterDataSourceName())) {
