@@ -27,6 +27,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -54,8 +55,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     private ShardingProperties shardingProperties;
     
+    @Getter(AccessLevel.NONE)
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
+    @Getter(AccessLevel.NONE)
     private boolean isCircuitBreak;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
