@@ -26,15 +26,11 @@ import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -49,10 +45,6 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     private final ShardingDataSource dataSource;
     
     private final OrchestrationFacade orchestrationFacade;
-    
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
-    private boolean isCircuitBreak;
     
     public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
                                            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
@@ -114,7 +106,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
+        dataSource.renewDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledDataSourceNames());
     }
     
     /**
@@ -124,38 +116,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
-    }
-    
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSource> getDataSourceMap() {
-        if (isCircuitBreak) {
-            return getCircuitBreakerDataSourceMap();
-        }
-        if (!disabledDataSourceNames.isEmpty()) {
-            return getAvailableDataSourceMap();
-        }
-        return dataSource.getDataSourceMap();
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSource.getDataSourceMap());
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSource.getDataSourceMap().keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
-        }
-        return result;
+        dataSource.renewCircuitBreakerDataSourceNames(circuitStateEventBusEvent.isCircuitBreak());
     }
     
     /**
