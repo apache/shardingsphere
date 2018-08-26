@@ -15,17 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.listener;
 
-import io.shardingsphere.transaction.listener.AllListenerTests;
+import io.shardingsphere.transaction.listener.local.LocalTransactionListenerTest;
+import io.shardingsphere.transaction.listener.xa.XATransactionListenerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        TransactionTypeHolderTest.class,
-        AllListenerTests.class
+        LocalTransactionListenerTest.class, 
+        XATransactionListenerTest.class
 })
-public final class AllTests {
+public final class AllListenerTests {
 }
