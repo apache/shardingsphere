@@ -89,7 +89,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
-        assertThat(masterSlaveDataSource, instanceOf(MasterSlaveDataSource.class));
+        assertThat(masterSlaveDataSource, instanceOf(OrchestrationMasterSlaveDataSource.class));
     }
     
     @Test
@@ -99,7 +99,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     }
     
     private ShardingProperties getShardingProperties(final String masterSlaveDataSourceName) {
-        MasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, MasterSlaveDataSource.class);
+        OrchestrationMasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, OrchestrationMasterSlaveDataSource.class);
         return (ShardingProperties) FieldValueUtil.getFieldValue(masterSlaveDataSource, "shardingProperties", true);
     }
 }
