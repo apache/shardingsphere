@@ -58,7 +58,6 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
             return createDataSource(orchestrationConfig);
         }
         OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props, new OrchestrationFacade(orchestrationConfig));
-        result.init();
         return result;
     }
     
@@ -76,7 +75,6 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
         OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(
                 configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties(), orchestrationFacade);
-        result.init();
         return result;
     }
 }
