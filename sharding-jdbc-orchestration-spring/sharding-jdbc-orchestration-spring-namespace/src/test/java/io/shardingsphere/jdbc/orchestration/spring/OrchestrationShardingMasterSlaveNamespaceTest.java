@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.spring;
 
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.util.EmbedTestingServer;
@@ -59,13 +60,15 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
         OrchestrationShardingDataSource shardingDataSource = applicationContext.getBean("defaultShardingDataSource", OrchestrationShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", true);
         return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
     }
     
     private ShardingRule getShardingRule() {
         OrchestrationShardingDataSource shardingDataSource = applicationContext.getBean("defaultShardingDataSource", OrchestrationShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", true);
         return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
     }
 }
