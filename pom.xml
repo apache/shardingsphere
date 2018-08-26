@@ -76,7 +76,6 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
-        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
         <commons-codec.version>1.10</commons-codec.version>
         <atomikos.version>4.0.4</atomikos.version>
@@ -526,11 +525,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>${coveralls-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
