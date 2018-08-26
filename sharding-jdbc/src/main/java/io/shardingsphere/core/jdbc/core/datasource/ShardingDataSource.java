@@ -95,7 +95,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingContext.renew(dataSourceMap, shardingRule, getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
-        
     }
     
     /**
