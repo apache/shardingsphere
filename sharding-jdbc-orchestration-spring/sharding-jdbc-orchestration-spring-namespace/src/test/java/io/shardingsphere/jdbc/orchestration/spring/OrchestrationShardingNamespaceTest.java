@@ -226,8 +226,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
         OrchestrationShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, OrchestrationShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext");
-        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
+        return dataSource.getDataSourceMap();
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
