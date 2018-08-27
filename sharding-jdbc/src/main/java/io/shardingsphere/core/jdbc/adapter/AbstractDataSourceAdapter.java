@@ -54,6 +54,11 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         ShardingEventBusInstance.getInstance().register(this);
     }
     
+    public AbstractDataSourceAdapter(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+        ShardingEventBusInstance.getInstance().register(this);
+    }
+    
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
         DatabaseType result = null;
         for (DataSource each : dataSources) {
