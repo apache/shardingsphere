@@ -94,7 +94,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      * @param disabledStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties(), dataSource.getDatabaseType());
     }
@@ -113,7 +113,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      * @param circuitStateEventBusEvent jdbc circuit event bus event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+    public void renew(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
