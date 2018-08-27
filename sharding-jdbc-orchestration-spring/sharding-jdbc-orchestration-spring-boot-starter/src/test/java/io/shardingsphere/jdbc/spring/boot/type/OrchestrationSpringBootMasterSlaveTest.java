@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.spring.boot.type;
 
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.spring.boot.util.EmbedTestingServer;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.BeforeClass;
@@ -54,8 +55,9 @@ public class OrchestrationSpringBootMasterSlaveTest {
     
     @Test
     public void assertWithMasterSlaveDataSource() {
-        assertTrue(dataSource instanceof MasterSlaveDataSource);
-        for (DataSource each : ((MasterSlaveDataSource) dataSource).getAllDataSources().values()) {
+        assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
+        MasterSlaveDataSource masterSlaveDataSource = ((OrchestrationMasterSlaveDataSource) dataSource).getDataSource();
+        for (DataSource each : masterSlaveDataSource.getAllDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }
