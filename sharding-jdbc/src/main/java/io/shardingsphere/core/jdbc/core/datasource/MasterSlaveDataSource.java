@@ -54,12 +54,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     private ShardingProperties shardingProperties;
     
-    @Getter(AccessLevel.NONE)
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
-    @Getter(AccessLevel.NONE)
-    private boolean isCircuitBreak;
-    
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
@@ -67,12 +61,19 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        init(dataSourceMap, masterSlaveRuleConfig);
-    }
-    
-    private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+    }
+    
+    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
+                                 final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
+        super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
+        if (!configMap.isEmpty()) {
+            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+        }
+        this.dataSourceMap = dataSourceMap;
+        this.masterSlaveRule = masterSlaveRule;
+        this.shardingProperties = props;
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
