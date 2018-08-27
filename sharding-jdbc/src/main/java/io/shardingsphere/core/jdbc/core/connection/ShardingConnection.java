@@ -62,14 +62,14 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     protected Map<String, DataSource> getDataSourceMap() {
-        return shardingDataSource.getShardingContext().getDataSourceMap();
+        return shardingDataSource.getDataSourceMap();
     }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         Collection<MasterSlaveRule> masterSlaveRules = shardingDataSource.getShardingContext().getShardingRule().getMasterSlaveRules();
         if (masterSlaveRules.isEmpty()) {
-            return getConnection(shardingDataSource.getShardingContext().getDataSourceMap().keySet().iterator().next()).getMetaData();
+            return getConnection(shardingDataSource.getDataSourceMap().keySet().iterator().next()).getMetaData();
         }
         for (MasterSlaveRule each : masterSlaveRules) {
             if (getDataSourceMap().containsKey(each.getMasterDataSourceName())) {
