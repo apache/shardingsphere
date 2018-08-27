@@ -18,12 +18,11 @@
 package io.shardingsphere.jdbc.orchestration.internal;
 
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
@@ -36,7 +35,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Orchestration sharding datasource.
@@ -53,13 +51,12 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     
     private Map<String, DataSource> dataSourceMap;
     
-    public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                           final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(dataSourceMap.values());
-        this.dataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(shardingDataSource.getDataSourceMap().values());
+        this.dataSource = shardingDataSource;
         this.orchestrationFacade = orchestrationFacade;
-        this.orchestrationFacade.init(dataSourceMap, shardingRuleConfig, configMap, props);
-        this.dataSourceMap = dataSourceMap;
+        this.orchestrationFacade.init(dataSourceMap, shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
+        this.dataSourceMap = shardingDataSource.getDataSourceMap();
         ShardingEventBusInstance.getInstance().register(this);
     }
     
