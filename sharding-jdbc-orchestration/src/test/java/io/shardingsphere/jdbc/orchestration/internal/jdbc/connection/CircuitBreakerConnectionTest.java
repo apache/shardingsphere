@@ -18,8 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.internal.jdbc.connection;
 
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.metadata.CircuitBreakerDatabaseMetaData;
-import io.shardingsphere.core.orche.statement.CircuitBreakerPreparedStatement;
-import io.shardingsphere.core.orche.statement.CircuitBreakerStatement;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.statement.CircuitBreakerPreparedStatement;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.statement.CircuitBreakerStatement;
 import org.junit.Test;
 
 import java.sql.Connection;
