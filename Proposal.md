@@ -90,7 +90,7 @@ The core developers, including experienced open source developers and team leade
 
 * 史海峰, Haifeng Shi, @PegasusS Ex-Director, ele.me
 
-* 张小虎, Haifeng Shi, @pottieva Ex-Director, bestpay
+* 张小虎, Haifeng Shi, @pottieva Ex-Director, CHINA TELECOM Bestpay
 
 #### Committer members
 
@@ -108,7 +108,7 @@ The core developers, including experienced open source developers and team leade
 
 * 马晓光, Xiaoguang Ma, Senior engineer, huimai365
 
-* 陈清阳, QingYang Chen, @beckhampu Senior engineer, Orange Finance
+* 陈清阳, QingYang Chen, @beckhampu Senior engineer, CHINA TELECOM Bestpay
 
 ## Known Risks
 

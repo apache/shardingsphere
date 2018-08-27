@@ -2,7 +2,8 @@
 
 ## Abstract
 
-Sharding-Sphere是一套透明化的分布式数据库中间件生态圈，专注于数据分片、分布式事务和数据库治理。它通过实现JDBC接口的驱动程序（Sharding-JDBC）和通过实现数据库传输协议的代理层（Sharding-Proxy）为应用程序提供最大兼容性。
+Sharding-Sphere是一套透明化的分布式数据库中间件生态圈，专注于数据分片、分布式事务和数据库治理。
+它通过实现JDBC接口的驱动程序（Sharding-JDBC）和通过实现数据库传输协议的代理层（Sharding-Proxy）为应用程序提供最大兼容性。
 
 ## Proposal
 
@@ -24,27 +25,34 @@ Sharding-Sphere在中国的社区较为成熟和活跃，拥有大量用户，�
 2016年，Sharding-Sphere在GitHub上开源。Sharding-Sphere一开始仅仅是当当内部用于数据分片的JDBC驱动程序增强版（原名Sharding-JDBC），目前提供数据分片、分布式事务和数据库治理的功能。
 除JDBC模式之外，也提供了实现MySQL数据库协议的Proxy模式。我们的蓝图中还包括PostgreSQL协议的Proxy、Sidecar模式、多数据副本以及弹性扩缩等功能。
 
-由于对项目范围的扩展，我们在实现JDBC接口的同时，也另外提供了Proxy模式，并且即将提供Sidecar模式。因此通过公投，我们将其重命名为Sharding-Sphere，意为分片生态圈，而Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar将作为它的子项目存在。
+由于对项目范围的扩展，我们在实现JDBC接口的同时，也另外提供了Proxy模式，并且即将提供Sidecar模式。
+因此通过公投，我们将其重命名为Sharding-Sphere，意为分片生态圈，而Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar将作为它的子项目存在。
 
 Sharding-Sphere的前身——Sharding-JDBC在开源当年即入选“2016年度最受欢迎中国开源软件”前20名。
 
 ## Rationale
 
-关系型数据库在当前的应用系统中仍然起着非常重要的作用。产品和周围生态系统的成熟度，数据查询的友好性，开发人员和DBA对其掌握的程度，这些都不是新形态的数据库能够轻易取代的。但是传统的关系型数据库并不能很好地支持云原生，而且对分布式系统也很不友好。
+关系型数据库在当前的应用系统中仍然起着非常重要的作用。
+产品和周围生态系统的成熟度，数据查询的友好性，开发人员和DBA对其掌握的程度，这些都不是新形态的数据库能够轻易取代的。但是传统的关系型数据库并不能很好地支持云原生，而且对分布式系统也很不友好。
 
-Sharding-Sphere的最终方案是让用户像使用单数据库一样使用分布式数据库，并具备管理和协调散落在系统中的各个数据库的能力。Sharding-Sphere有3个子项目，分别是Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar（规划中）。
+Sharding-Sphere的最终方案是让用户像使用单数据库一样使用分布式数据库，并具备管理和协调散落在系统中的各个数据库的能力。
+Sharding-Sphere有3个子项目，分别是Sharding-JDBC，Sharding-Proxy和Sharding-Sidecar（规划中）。
 
 Sharding-JDBC使用JDBC连接数据库，由Java应用直接连接数据库，无额外消耗，性能最高。
 
-Sharding-Proxy部署为无状态服务器，目前支持MySQL协议。在文章“ [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf)” 中，有3种类型的NewSQL，Sharding-Proxy是其中的透明化分片中间件。
+Sharding-Proxy部署为无状态服务器，目前支持MySQL协议。
+在文章“ [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf)” 中，有3种类型的NewSQL，Sharding-Proxy是其中的透明化分片中间件。
 
-Sharding-Sidecar可以理解为Service Mesh中的数据面板。在应用程序和数据库之间的交互提供一个啮合层。Database Mesh的概念与Service Mesh类似，其关注点在于如何将数据访问应用与数据库连接在一起。Database Mesh将应用与数据库会组成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
+Sharding-Sidecar可以理解为Service Mesh中的数据面板。在应用程序和数据库之间的交互提供一个啮合层。Database Mesh的概念与Service Mesh类似，其关注点在于如何将数据访问应用与数据库连接在一起。
+Database Mesh将应用与数据库会组成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
 ## Current Status
 
 ### Meritocracy
 
-该项目于2015年在当当网孵化，2016年在GitHub开源。2017年，京东认可其价值，并决定支持此项目。我们成立了PMC团队和Committer团队。该项目由来自许多公司的贡献者和用户。现有PMC成员指导并审查新的贡献者，在合适的时机，PMC会进行投票决定新的贡献者是否可以成为PMC和Committer团队中的一员。点击[这里](http://shardingsphere.io/community/en/organization/)查看详细信息。我们欢迎并高度重视新的贡献。
+该项目于2015年在当当网孵化，2016年在GitHub开源。2017年，京东认可其价值，并决定支持此项目。我们成立了PMC团队和Committer团队。
+该项目由来自许多公司的贡献者和用户。现有PMC成员指导并审查新的贡献者，在合适的时机，PMC会进行投票决定新的贡献者是否可以成为PMC和Committer团队中的一员。
+点击[这里](http://shardingsphere.io/community/en/organization/)查看详细信息。我们欢迎并高度重视新的贡献。
 
 ### Community
 
@@ -61,7 +69,7 @@ Sharding-Sidecar可以理解为Service Mesh中的数据面板。在应用程序�
 - 吴晟, Sheng Wu, APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
 - 高洪涛, Hongtao Gao, Database and APM expert, Apache SkyWalking(incubator) PMC member
 - 史海峰, Haifeng Shi, @PegasusS Ex-Director, ele.me
-- 张小虎, Haifeng Shi, @pottieva Ex-Director, bestpay
+- 张小虎, Haifeng Shi, @pottieva Ex-Director, CHINA TELECOM Bestpay
 
 #### Committer members
 
@@ -72,7 +80,7 @@ Sharding-Sidecar可以理解为Service Mesh中的数据面板。在应用程序�
 - 赵俊, Jun Zhao, @cherrylzhao Senior engineer, Jingdong
 - 岳令, Ling Yue, @ling.yue QA Engineer, Dangdang
 - 马晓光, Xiaoguang Ma, Senior engineer, huimai365
-- 陈清阳, QingYang Chen, @beckhampu Senior engineer, bestpay
+- 陈清阳, QingYang Chen, @beckhampu Senior engineer, CHINA TELECOM Bestpay
 
 ## Known Risks
 
@@ -82,7 +90,8 @@ Sharding-Sidecar可以理解为Service Mesh中的数据面板。在应用程序�
 
 ### Inexperience with Open Source
 
-Sharding-Sphere目前的核心开发人员所在公司开发或贡献过许多开源项目，包括Apache SkyWalking（孵化中），Apache Dubbo（孵化器），CNCF OpenTracing，Elastic-Job等。因此，缺乏开源软件经验和开源流程经验的风险较低。
+Sharding-Sphere目前的核心开发人员所在公司开发或贡献过许多开源项目，包括Apache SkyWalking（孵化中），Apache Dubbo（孵化器），CNCF OpenTracing，Elastic-Job等。
+因此，缺乏开源软件经验和开源流程经验的风险较低。
 
 ### Homogenous Developers
 
@@ -163,11 +172,9 @@ Sharding-Proxy目前使用MySQL JDBC驱动连接MySQL，之后我们会通过SPI
 
 ### Git Repositories
 
-<https://github.com/sharding-sphere/sharding-sphere.git>
-
-<https://github.com/sharding-sphere/sharding-sphere-example.git>
-
-<https://github.com/sharding-sphere/sharding-sphere-doc.git>
+- <https://github.com/sharding-sphere/sharding-sphere.git>
+- <https://github.com/sharding-sphere/sharding-sphere-example.git>
+- <https://github.com/sharding-sphere/sharding-sphere-doc.git>
 
 ### Issue Tracking
 
