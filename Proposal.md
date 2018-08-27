@@ -207,9 +207,9 @@ MySQL JDBC driver is adopted by Sharding-Proxy to connect MySQL now; we will use
 
 ### Git Repositories
 
-<https://github.com/sharding-sphere/sharding-sphere.git>
-<https://github.com/sharding-sphere/sharding-sphere-example.git>
-<https://github.com/sharding-sphere/sharding-sphere-doc.git>
+-  <https://github.com/sharding-sphere/sharding-sphere.git>
+-  <https://github.com/sharding-sphere/sharding-sphere-example.git>
+-  <https://github.com/sharding-sphere/sharding-sphere-doc.git>
 
 ### Issue Tracking
 
