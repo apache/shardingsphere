@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.connection;
+package io.shardingsphere.jdbc.orchestration.internal.jdbc.connection;
 
-import io.shardingsphere.core.orche.metadata.CircuitBreakerDatabaseMetaData;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.metadata.CircuitBreakerDatabaseMetaData;
 import io.shardingsphere.core.orche.statement.CircuitBreakerPreparedStatement;
 import io.shardingsphere.core.orche.statement.CircuitBreakerStatement;
 import org.junit.Test;
