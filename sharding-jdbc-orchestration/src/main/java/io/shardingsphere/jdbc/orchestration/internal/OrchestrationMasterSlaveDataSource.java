@@ -20,6 +20,7 @@ package io.shardingsphere.jdbc.orchestration.internal;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
@@ -61,6 +62,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
         this.orchestrationFacade = orchestrationFacade;
         this.orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props);
         this.dataSourceMap = dataSourceMap;
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
