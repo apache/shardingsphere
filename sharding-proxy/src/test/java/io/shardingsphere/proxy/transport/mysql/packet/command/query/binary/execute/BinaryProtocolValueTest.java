@@ -108,6 +108,11 @@ public final class BinaryProtocolValueTest {
         assertThat(new BinaryProtocolValue(ColumnType.MYSQL_TYPE_TIME, payload).read(), is((Object) new Timestamp(0L)));
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void assertReadUnsupported() {
+        new BinaryProtocolValue(ColumnType.MYSQL_TYPE_NULL, payload).read();
+    }
+    
     @Test
     public void assertWriteStringLenenc() {
         new BinaryProtocolValue(ColumnType.MYSQL_TYPE_STRING, payload).write("value");
@@ -176,5 +181,10 @@ public final class BinaryProtocolValueTest {
     public void assertWriteTime() {
         new BinaryProtocolValue(ColumnType.MYSQL_TYPE_TIME, payload).write(new Timestamp(0L));
         verify(payload).writeTime(new Timestamp(0L));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertWriteUnsupported() {
+        new BinaryProtocolValue(ColumnType.MYSQL_TYPE_NULL, payload).write(payload);
     }
 }
