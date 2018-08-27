@@ -134,7 +134,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
             currentSequenceId = headPacketsCount;
             while (queryCommandPacket.next()) {
-                while (!context.channel().isWritable()) {
+                while (!context.channel().isWritable() && context.channel().isActive()) {
                     synchronized (MySQLFrontendHandler.this) {
                         try {
                             MySQLFrontendHandler.this.wait();
