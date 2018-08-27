@@ -52,15 +52,15 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     private final OrchestrationFacade orchestrationFacade;
     
-    private Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap;
     
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         this.dataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
-        this.dataSourceMap = dataSourceMap;
         this.orchestrationFacade = orchestrationFacade;
         this.orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+        this.dataSourceMap = dataSourceMap;
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
