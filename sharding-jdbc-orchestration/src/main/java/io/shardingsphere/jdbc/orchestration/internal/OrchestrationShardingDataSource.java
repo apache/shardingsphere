@@ -20,18 +20,20 @@ package io.shardingsphere.jdbc.orchestration.internal;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -44,9 +46,11 @@ import java.util.Properties;
 public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     @Getter
-    private final ShardingDataSource dataSource;
+    private ShardingDataSource dataSource;
     
     private final OrchestrationFacade orchestrationFacade;
+    
+    private Map<String, DataSource> dataSourceMap;
     
     public OrchestrationShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
                                            final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
@@ -54,6 +58,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         this.dataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
         this.orchestrationFacade = orchestrationFacade;
         this.orchestrationFacade.init(dataSourceMap, shardingRuleConfig, configMap, props);
+        this.dataSourceMap = dataSourceMap;
     }
     
     @Override
@@ -74,7 +79,16 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        dataSource.renewDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledDataSourceNames());
+        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
+        dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties(), dataSource.getDatabaseType());
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
     }
     
     /**
