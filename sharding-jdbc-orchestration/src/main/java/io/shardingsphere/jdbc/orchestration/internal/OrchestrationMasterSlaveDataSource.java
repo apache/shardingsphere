@@ -28,7 +28,6 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +53,8 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     private final OrchestrationFacade orchestrationFacade;
     
     private final Map<String, DataSource> dataSourceMap;
+    
+    private boolean isCircuitBreak;
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(getAllDataSources(masterSlaveDataSource.getDataSourceMap(), masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName(), masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames()));
@@ -125,22 +126,13 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     }
     
     /**
+     /**
      * Renew circuit breaker dataSource names.
      *
      * @param circuitStateEventBusEvent jdbc circuit event bus event
-     * @throws SQLException sql exception
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) throws SQLException {
-        Map<String, DataSource> newDataSourceMap = getCircuitBreakerDataSourceMap();
-        dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
-        }
-        return result;
+    public void renew(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
