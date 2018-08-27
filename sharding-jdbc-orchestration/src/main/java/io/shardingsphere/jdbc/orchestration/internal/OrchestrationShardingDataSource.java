@@ -26,7 +26,6 @@ import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfig
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -44,7 +43,6 @@ import java.util.Map;
 @Slf4j
 public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    @Getter
     private ShardingDataSource dataSource;
     
     private final OrchestrationFacade orchestrationFacade;
