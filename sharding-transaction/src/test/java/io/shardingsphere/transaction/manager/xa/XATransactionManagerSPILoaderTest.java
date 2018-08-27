@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
-import io.shardingsphere.transaction.manager.xa.atomikos.AtomikosTransactionManager;
+import io.shardingsphere.transaction.manager.xa.fixture.FixtureXATransactionManager;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 public final class XATransactionManagerSPILoaderTest {
     
     @Test
-    public void assertGerInstanceWithoutSPI() {
-        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
+    public void assertGerInstanceWithSPI() {
+        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(FixtureXATransactionManager.class));
     }
 }
