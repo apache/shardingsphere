@@ -19,7 +19,6 @@ package io.shardingsphere.jdbc.orchestration.internal;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
@@ -27,6 +26,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,18 +98,27 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        dataSource.renewCircuitBreakerDataSourceNames(circuitStateEventBusEvent.isCircuitBreak());
+        Map<String, DataSource> newDataSourceMap = getCircuitBreakerDataSourceMap();
+        dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties(), dataSource.getDatabaseType());
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : dataSourceMap.keySet()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
     }
     
     /**
      * Renew sharding data source.
      *
      * @param shardingEvent sharding configuration event bus event.
+     * @throws SQLException sql exception
      */
     @Subscribe
-    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
+    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
         super.renew(shardingEvent.getDataSourceMap().values());
-        ShardingProperties shardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
-        dataSource.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), shardingProperties);
+        dataSource = new ShardingDataSource(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
 }
