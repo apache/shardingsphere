@@ -51,9 +51,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private ShardingContext shardingContext;
+    private final ShardingContext shardingContext;
     
-    private ShardingProperties shardingProperties;
+    private final ShardingProperties shardingProperties;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
