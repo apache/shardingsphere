@@ -117,24 +117,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         return new ShardingRule(shardingRuleConfiguration, dataSourceMap.keySet());
     }
     
-    /**
-     * Renew sharding data source.
-     *
-     * @param dataSourceMap data source map
-     * @param shardingRule sharding rule
-     * @param shardingProperties sharding properties
-     */
-    public void renew(final Map<String, DataSource> dataSourceMap,
-                      final ShardingRule shardingRule, final ShardingProperties shardingProperties) {
-        super.renew(dataSourceMap.values());
-        this.shardingProperties = shardingProperties;
-        int newExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        boolean newShowSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
-        ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        shardingContext.renew(dataSourceMap, shardingRule, getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
-    }
-    
     @Override
     public final ShardingConnection getConnection() {
         return new ShardingConnection(this);
