@@ -75,6 +75,18 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     }
     
     /**
+     * Renew sharding data source.
+     *
+     * @param shardingEvent sharding configuration event bus event.
+     * @throws SQLException sql exception
+     */
+    @Subscribe
+    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
+        super.renew(shardingEvent.getDataSourceMap().values());
+        dataSource = new ShardingDataSource(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
+    }
+    
+    /**
      * Renew disable dataSource names.
      *
      * @param disabledStateEventBusEvent jdbc disabled event bus event
@@ -110,17 +122,5 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
             result.put(each, new CircuitBreakerDataSource());
         }
         return result;
-    }
-    
-    /**
-     * Renew sharding data source.
-     *
-     * @param shardingEvent sharding configuration event bus event.
-     * @throws SQLException sql exception
-     */
-    @Subscribe
-    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
-        super.renew(shardingEvent.getDataSourceMap().values());
-        dataSource = new ShardingDataSource(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
 }
