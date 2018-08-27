@@ -105,13 +105,13 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
-        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent);
+        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
     }
     
-    private Map<String, DataSource> getAvailableDataSourceMap(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+    private Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledStateEventBusEvent.getDisabledDataSourceNames()) {
+        for (String each : disabledDataSourceNames) {
             result.remove(each);
         }
         return result;
