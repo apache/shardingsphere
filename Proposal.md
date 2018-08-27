@@ -248,7 +248,7 @@ Slack <https://sharding.slack.com>
 
 - Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao
 - Dangdang: Hao Cao, Kai Wang, Jiaqi Lin, Ling Yue
-- Bestpay: QingYang Chen
+- CHINA TELECOM Bestpay: QingYang Chen
 - Individuals: Sheng Wu, Hongtao Gao, Xiaoguang Ma
 
 ## Sponsors
