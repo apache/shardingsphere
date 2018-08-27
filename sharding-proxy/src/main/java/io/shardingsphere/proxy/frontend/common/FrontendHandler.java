@@ -24,8 +24,6 @@ import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
 import lombok.Setter;
 
-import java.sql.SQLException;
-
 /**
  * Frontend handler.
  * 
@@ -63,10 +61,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        try {
-            backendConnection.close();
-        } catch (final SQLException ignore) {
-        }
+        backendConnection.cancel();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }

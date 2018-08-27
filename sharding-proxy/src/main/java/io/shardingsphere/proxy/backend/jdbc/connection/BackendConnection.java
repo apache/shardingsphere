@@ -75,6 +75,18 @@ public final class BackendConnection implements AutoCloseable {
         cachedResultSets.add(resultSet);
     }
     
+    /**
+     * Cancel statement.
+     */
+    public void cancel() {
+        for (Statement each : cachedStatements) {
+            try {
+                each.cancel();
+            } catch (final SQLException ignore) {
+            }
+        }
+    }
+    
     @Override
     public void close() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
@@ -90,7 +102,6 @@ public final class BackendConnection implements AutoCloseable {
         for (ResultSet each : cachedResultSets) {
             try {
                 each.close();
-                cachedResultSets.remove(each);
             } catch (final SQLException ex) {
                 result.add(ex);
             }
@@ -103,7 +114,6 @@ public final class BackendConnection implements AutoCloseable {
         for (Statement each : cachedStatements) {
             try {
                 each.close();
-                cachedStatements.remove(each);
             } catch (final SQLException ex) {
                 result.add(ex);
             }
@@ -115,7 +125,6 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections) {
             try {
-                cachedConnections.remove(each);
                 each.close();
             } catch (SQLException ex) {
                 result.add(ex);
