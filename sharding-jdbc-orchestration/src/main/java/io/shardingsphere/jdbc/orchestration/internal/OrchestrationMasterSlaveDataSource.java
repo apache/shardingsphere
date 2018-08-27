@@ -26,7 +26,7 @@ import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import lombok.AccessLevel;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,12 +53,6 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     private final OrchestrationFacade orchestrationFacade;
     
     private Map<String, DataSource> dataSourceMap;
-    
-    @Getter(AccessLevel.NONE)
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
-    @Getter(AccessLevel.NONE)
-    private boolean isCircuitBreak;
     
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
@@ -107,17 +101,17 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      * Renew disable dataSource names.
      *
      * @param disabledStateEventBusEvent jdbc disabled event bus event
-     * @throws SQLException sql exception.
+     * @throws SQLException sql exception
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
-        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap();
+        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent);
         dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
     }
     
-    private Map<String, DataSource> getAvailableDataSourceMap() {
+    private Map<String, DataSource> getAvailableDataSourceMap(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
+        for (String each : disabledStateEventBusEvent.getDisabledDataSourceNames()) {
             result.remove(each);
         }
         return result;
@@ -127,9 +121,19 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      * Renew circuit breaker dataSource names.
      *
      * @param circuitStateEventBusEvent jdbc circuit event bus event
+     * @throws SQLException sql exception
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) throws SQLException {
+        Map<String, DataSource> newDataSourceMap = getCircuitBreakerDataSourceMap();
+        dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
+    }
+    
+    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : dataSourceMap.keySet()) {
+            result.put(each, new CircuitBreakerDataSource());
+        }
+        return result;
     }
 }
