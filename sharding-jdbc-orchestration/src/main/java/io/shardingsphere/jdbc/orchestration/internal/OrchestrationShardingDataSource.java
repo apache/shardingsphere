@@ -24,9 +24,7 @@ import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +48,8 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     private final OrchestrationFacade orchestrationFacade;
     
     private Map<String, DataSource> dataSourceMap;
+    
+    private boolean isCircuitBreak;
     
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(shardingDataSource.getDataSourceMap().values());
@@ -98,25 +98,6 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (String each : disabledDataSourceNames) {
             result.remove(each);
-        }
-        return result;
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc disabled event bus event
-     */
-    @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        Map<String, DataSource> newDataSourceMap = getCircuitBreakerDataSourceMap();
-        dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties(), dataSource.getDatabaseType());
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
         }
         return result;
     }
