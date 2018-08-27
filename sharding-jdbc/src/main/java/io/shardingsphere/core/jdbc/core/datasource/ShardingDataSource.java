@@ -148,7 +148,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(shardingContext);
+        return new ShardingConnection(this);
     }
     
     @Override
