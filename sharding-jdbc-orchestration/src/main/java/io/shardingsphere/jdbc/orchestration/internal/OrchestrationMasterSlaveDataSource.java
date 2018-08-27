@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -106,10 +107,20 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      * Renew disable dataSource names.
      *
      * @param disabledStateEventBusEvent jdbc disabled event bus event
+     * @throws SQLException sql exception.
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        dataSource.renewDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledDataSourceNames());
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
+        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap();
+        dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
+    }
+    
+    private Map<String, DataSource> getAvailableDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
     }
     
     /**
