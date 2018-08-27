@@ -21,6 +21,11 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
 import org.junit.Test;
 
+import javax.transaction.Status;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class SagaTransactionManagerTest {
     
     @Test
@@ -54,5 +59,10 @@ public final class SagaTransactionManagerTest {
                 return TransactionOperationType.ROLLBACK;
             }
         });
+    }
+    
+    @Test
+    public void assertGetStatus() {
+        assertThat(new SagaTransactionManager().getStatus(), is(Status.STATUS_NO_TRANSACTION));
     }
 }
