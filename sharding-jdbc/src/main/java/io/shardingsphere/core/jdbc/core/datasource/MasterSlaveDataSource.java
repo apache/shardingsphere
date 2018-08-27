@@ -45,11 +45,11 @@ import java.util.Properties;
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap;
     
-    private MasterSlaveRule masterSlaveRule;
+    private final MasterSlaveRule masterSlaveRule;
     
-    private ShardingProperties shardingProperties;
+    private final ShardingProperties shardingProperties;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
