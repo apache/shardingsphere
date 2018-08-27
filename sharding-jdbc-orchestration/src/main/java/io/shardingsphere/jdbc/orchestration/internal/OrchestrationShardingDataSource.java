@@ -23,6 +23,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
@@ -104,5 +105,15 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
             result.remove(each);
         }
         return result;
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
