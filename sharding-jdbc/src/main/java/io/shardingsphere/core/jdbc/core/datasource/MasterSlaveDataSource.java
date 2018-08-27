@@ -23,9 +23,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -34,7 +32,6 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -60,9 +57,9 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
@@ -107,56 +104,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
             } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
             }
         }
-    }
-    
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSource> getDataSourceMap() {
-        if (isCircuitBreak) {
-            return getCircuitBreakerDataSourceMap();
-        }
-        
-        if (!disabledDataSourceNames.isEmpty()) {
-            return getAvailableDataSourceMap();
-        }
-        return dataSourceMap;
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
-        }
-        return result;
-    }
-    
-    /**
-     * Renew disable dataSource names.
-     *
-     * @param disabledDataSourceNames disabled data source names
-     */
-    public void renewDisabledDataSourceNames(final Collection<String> disabledDataSourceNames) {
-        this.disabledDataSourceNames = disabledDataSourceNames;
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param isCircuitBreak is circuit break or not
-     */
-    public void renewCircuitBreakerDataSourceNames(final boolean isCircuitBreak) {
-        this.isCircuitBreak = isCircuitBreak;
     }
     
     @Override
