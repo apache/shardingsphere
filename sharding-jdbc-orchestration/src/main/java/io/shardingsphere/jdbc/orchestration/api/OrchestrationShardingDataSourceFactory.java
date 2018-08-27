@@ -57,8 +57,7 @@ public final class OrchestrationShardingDataSourceFactory {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, new OrchestrationFacade(orchestrationConfig));
-        return result;
+        return new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, new OrchestrationFacade(orchestrationConfig));
     }
     
     /**
@@ -73,8 +72,7 @@ public final class OrchestrationShardingDataSourceFactory {
         ConfigurationService configService = orchestrationFacade.getConfigService();
         ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
         Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
-        OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(
+        return new OrchestrationShardingDataSource(
                 configService.loadDataSourceMap(), shardingRuleConfig, configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
-        return result;
     }
 }
