@@ -49,6 +49,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
+    private Map<String, DataSource> dataSourceMap;
+    
     private ShardingContext shardingContext;
     
     private ShardingProperties shardingProperties;
@@ -64,6 +66,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(getRawDataSourceMap(dataSourceMap), getRevisedShardingRule(dataSourceMap, shardingRule));
+    }
+    
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) {
+    
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
@@ -150,6 +156,16 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public void close() {
+        closeOriginalDataSources();
         shardingContext.close();
+    }
+    
+    private void closeOriginalDataSources() {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                each.getClass().getDeclaredMethod("close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
     }
 }
