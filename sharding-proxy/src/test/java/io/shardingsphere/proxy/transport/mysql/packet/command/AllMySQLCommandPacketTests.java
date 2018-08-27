@@ -24,6 +24,10 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuit
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41PacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePacketsTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistryTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacketTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -33,9 +37,13 @@ import org.junit.runners.Suite.SuiteClasses;
         CommandPacketTypeTest.class, 
         CommandPacketFactoryTest.class, 
         CommandResponsePacketsTest.class, 
-        QueryResponsePacketsTest.class,
+        QueryResponsePacketsTest.class, 
+        BinaryStatementRegistryTest.class, 
         FieldCountPacketTest.class,
-        ColumnDefinition41PacketTest.class, 
+        ColumnDefinition41PacketTest.class,
+        TextResultSetRowPacketTest.class,
+        ComFieldListPacketTest.class,
+        ComQueryPacketTest.class, 
         
         ComInitDbPacketTest.class, 
         ComPingPacketTest.class, 

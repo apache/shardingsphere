@@ -44,6 +44,7 @@ import java.util.List;
  * Table references clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 public class TableReferencesClauseParser implements SQLClauseParser {
     
@@ -92,11 +93,12 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (Strings.isNullOrEmpty(tableName)) {
             return;
         }
-        Optional<String> alias = aliasExpressionParser.parseTableAlias();
         if (isSingleTableOnly || shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
-            sqlStatement.getTables().add(new Table(tableName, alias));
+            sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
+        } else {
+            aliasExpressionParser.parseTableAlias();
         }
         parseForceIndex(tableName, sqlStatement);
         parseJoinTable(sqlStatement);

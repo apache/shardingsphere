@@ -48,6 +48,7 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Inline expression with groovy may cause memory leak
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) Fail to parsing PostgreSQL due to the quotation
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1186](https://github.com/sharding-sphere/sharding-sphere/issues/1186) Dead lock may occur on MEMORY_STRICTLY mode when get connection on concurrency environment
 
 #### Sharding-JDBC
 

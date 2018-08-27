@@ -41,11 +41,14 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteRespons
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,9 +84,22 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private Collection<StatementExecuteUnit> getStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Collection<StatementExecuteUnit> result = new LinkedList<>();
+        List<Connection> connections = getConnections(routeResult);
+        int count = 0;
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            Statement statement = getJdbcExecutorWrapper().createStatement(getBackendConnection().getConnection(each.getDataSource()), each.getSqlUnit().getSql(), isReturnGeneratedKeys);
+            Statement statement = getJdbcExecutorWrapper().createStatement(connections.get(count), each.getSqlUnit().getSql(), isReturnGeneratedKeys);
             result.add(new ProxyStatementExecuteUnit(each, statement));
+            count++;
+        }
+        return result;
+    }
+    
+    private List<Connection> getConnections(final SQLRouteResult routeResult) throws SQLException {
+        List<Connection> result = new ArrayList<>(routeResult.getExecutionUnits().size());
+        synchronized (MemoryStrictlyExecuteEngine.class) {
+            for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
+                result.add(getBackendConnection().getConnection(each.getDataSource()));
+            }
         }
         return result;
     }
