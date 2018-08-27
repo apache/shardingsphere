@@ -119,6 +119,6 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      */
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        dataSource.renewCircuitBreakerDataSourceNames(circuitStateEventBusEvent.isCircuitBreak());
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
