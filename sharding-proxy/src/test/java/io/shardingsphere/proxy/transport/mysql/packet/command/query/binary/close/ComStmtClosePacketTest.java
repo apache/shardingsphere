@@ -25,7 +25,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +48,9 @@ public final class ComStmtClosePacketTest {
     @Test
     public void assertWrite() {
         when(payload.readInt4()).thenReturn(1);
-        new ComStmtClosePacket(1, payload).write(payload);
+        ComStmtClosePacket actual = new ComStmtClosePacket(1, payload);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).readInt4();
     }
 }

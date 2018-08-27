@@ -95,7 +95,9 @@ public final class ComQueryPacketTest {
     
     @Test
     public void assertWrite() {
-        new ComQueryPacket(1, "SELECT id FROM tbl").write(payload);
+        ComQueryPacket actual = new ComQueryPacket(1, "SELECT id FROM tbl");
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_QUERY.getValue());
         verify(payload).writeStringEOF("SELECT id FROM tbl");
     }

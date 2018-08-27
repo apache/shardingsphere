@@ -51,6 +51,8 @@ public final class UnsupportedCommandPacketTest {
     
     @Test
     public void assertWrite() {
-        new UnsupportedCommandPacket(1, CommandPacketType.COM_SLEEP).write(payload);
+        UnsupportedCommandPacket actual = new UnsupportedCommandPacket(1, CommandPacketType.COM_SLEEP);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
     }
 }
