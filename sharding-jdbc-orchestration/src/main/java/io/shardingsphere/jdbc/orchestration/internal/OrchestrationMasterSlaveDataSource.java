@@ -20,12 +20,13 @@ package io.shardingsphere.jdbc.orchestration.internal;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,10 +51,19 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     private final OrchestrationFacade orchestrationFacade;
     
+    private Map<String, DataSource> dataSourceMap;
+    
+    @Getter(AccessLevel.NONE)
+    private Collection<String> disabledDataSourceNames = new LinkedList<>();
+    
+    @Getter(AccessLevel.NONE)
+    private boolean isCircuitBreak;
+    
     public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         this.dataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+        this.dataSourceMap = dataSourceMap;
         this.orchestrationFacade = orchestrationFacade;
         this.orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props);
     }
