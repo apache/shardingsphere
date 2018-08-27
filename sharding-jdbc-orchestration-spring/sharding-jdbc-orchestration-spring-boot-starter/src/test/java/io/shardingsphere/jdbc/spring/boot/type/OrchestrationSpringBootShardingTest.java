@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.spring.boot.util.EmbedTestingServer;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.BeforeClass;
@@ -58,10 +59,11 @@ public class OrchestrationSpringBootShardingTest {
     
     @Test
     public void assertWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(dataSource instanceof ShardingDataSource);
+        assertTrue(dataSource instanceof OrchestrationShardingDataSource);
+        ShardingDataSource shardingDataSource = ((OrchestrationShardingDataSource) dataSource).getDataSource();
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
-        ShardingContext shardingContext = (ShardingContext) field.get(dataSource);
+        ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
         for (DataSource each : shardingContext.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
@@ -72,7 +74,7 @@ public class OrchestrationSpringBootShardingTest {
         
         Field propertiesField = ShardingDataSource.class.getDeclaredField("shardingProperties");
         propertiesField.setAccessible(true);
-        ShardingProperties shardingProperties = (ShardingProperties) propertiesField.get(dataSource);
+        ShardingProperties shardingProperties = (ShardingProperties) propertiesField.get(shardingDataSource);
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
     }
