@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.internal;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
@@ -59,6 +60,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         this.orchestrationFacade = orchestrationFacade;
         this.orchestrationFacade.init(dataSourceMap, shardingRuleConfig, configMap, props);
         this.dataSourceMap = dataSourceMap;
+        ShardingEventBusInstance.getInstance().register(this);
     }
     
     @Override
