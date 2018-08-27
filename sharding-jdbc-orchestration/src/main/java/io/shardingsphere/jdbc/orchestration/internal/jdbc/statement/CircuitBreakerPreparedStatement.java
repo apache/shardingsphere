@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.statement;
+package io.shardingsphere.jdbc.orchestration.internal.jdbc.statement;
 
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import io.shardingsphere.core.orche.connection.CircuitBreakerConnection;
-import io.shardingsphere.core.orche.resultset.CircuitBreakerResultSet;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnection;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.resultset.CircuitBreakerResultSet;
 import lombok.Getter;
 
 import java.io.InputStream;
