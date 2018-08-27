@@ -17,12 +17,9 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,15 +30,7 @@ public final class BinaryStatementRegistryTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        Field statementIdAssignerField = BinaryStatementRegistry.class.getDeclaredField("statementIdAssigner");
-        statementIdAssignerField.setAccessible(true);
-        ((Map) statementIdAssignerField.get(BinaryStatementRegistry.getInstance())).clear();
-        Field binaryStatementsField = BinaryStatementRegistry.class.getDeclaredField("binaryStatements");
-        binaryStatementsField.setAccessible(true);
-        ((Map) binaryStatementsField.get(BinaryStatementRegistry.getInstance())).clear();
-        Field sequenceField = BinaryStatementRegistry.class.getDeclaredField("sequence");
-        sequenceField.setAccessible(true);
-        ((AtomicInteger) sequenceField.get(BinaryStatementRegistry.getInstance())).set(0);
+        BinaryStatementRegistryUtil.reset();
     }
     
     @Test

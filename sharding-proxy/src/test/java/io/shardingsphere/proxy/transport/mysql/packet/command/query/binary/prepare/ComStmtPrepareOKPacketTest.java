@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +36,9 @@ public final class ComStmtPrepareOKPacketTest {
     
     @Test
     public void assertWrite() {
-        new ComStmtPrepareOKPacket(1, 1, 1, 1, 0).write(payload);
+        ComStmtPrepareOKPacket actual = new ComStmtPrepareOKPacket(1, 1, 1, 1, 0);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeInt1(0x00);
         verify(payload, times(2)).writeInt2(0);
         verify(payload).writeInt2(1);

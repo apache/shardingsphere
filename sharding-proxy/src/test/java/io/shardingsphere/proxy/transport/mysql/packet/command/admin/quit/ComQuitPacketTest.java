@@ -52,7 +52,9 @@ public final class ComQuitPacketTest {
     
     @Test
     public void assertWrite() {
-        new ComQuitPacket(1).write(payload);
+        ComQuitPacket actual = new ComQuitPacket(1);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_QUIT.getValue());
     }
 }
