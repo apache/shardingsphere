@@ -64,7 +64,7 @@ public class OrchestrationSpringBootShardingTest {
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
-        for (DataSource each : shardingContext.getDataSourceMap().values()) {
+        for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         assertTrue(shardingContext.isShowSQL());
