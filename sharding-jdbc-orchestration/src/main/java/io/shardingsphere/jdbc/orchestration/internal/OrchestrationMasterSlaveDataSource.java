@@ -22,16 +22,17 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
-import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -81,7 +82,10 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     }
     
     @Override
-    public MasterSlaveConnection getConnection() {
+    public Connection getConnection() {
+        if (isCircuitBreak) {
+            return new CircuitBreakerDataSource().getConnection();
+        }
         return dataSource.getConnection();
     }
     
@@ -112,7 +116,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
      * @throws SQLException sql exception
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
+    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
         Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
     }
