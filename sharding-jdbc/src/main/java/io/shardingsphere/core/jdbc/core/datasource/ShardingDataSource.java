@@ -63,7 +63,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             ConfigMapContext.getInstance().getShardingConfig().putAll(configMap);
         }
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        // TODO this.shardingContext = getShardingContext(dataSourceMap, shardingRule);
         this.shardingContext = getShardingContext(getRawDataSourceMap(dataSourceMap), getRevisedShardingRule(dataSourceMap, shardingRule));
     }
     
