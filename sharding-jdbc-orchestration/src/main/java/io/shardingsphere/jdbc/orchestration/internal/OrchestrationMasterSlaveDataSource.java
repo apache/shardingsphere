@@ -24,6 +24,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
@@ -37,7 +38,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Orchestration master-slave datasource.
@@ -55,14 +55,19 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public OrchestrationMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                              final Map<String, Object> configMap, final Properties props, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
-        this.dataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+    public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(getAllDataSources(masterSlaveDataSource.getDataSourceMap(), masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName(), masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames()));
+        this.dataSource = masterSlaveDataSource;
         this.orchestrationFacade = orchestrationFacade;
-        this.orchestrationFacade.init(dataSourceMap, masterSlaveRuleConfig, configMap, props);
-        this.dataSourceMap = dataSourceMap;
+        initOrchestrationFacade(masterSlaveDataSource);
+        this.dataSourceMap = masterSlaveDataSource.getDataSourceMap();
         ShardingEventBusInstance.getInstance().register(this);
+    }
+    
+    private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
+        MasterSlaveRule masterSlaveRule = masterSlaveDataSource.getMasterSlaveRule();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
+        this.orchestrationFacade.init(masterSlaveDataSource.getDataSourceMap(), masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
