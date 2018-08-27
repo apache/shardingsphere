@@ -21,6 +21,7 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -33,7 +34,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -67,6 +67,13 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         this.dataSourceMap = getRawDataSourceMap(dataSourceMap);
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(getRawDataSourceMap(dataSourceMap), getRevisedShardingRule(dataSourceMap, shardingRule));
+    }
+    
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties, final DatabaseType databaseType) {
+        super(databaseType);
+        this.dataSourceMap = getRawDataSourceMap(dataSourceMap);
+        this.shardingContext = shardingContext;
+        this.shardingProperties = shardingProperties;
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
@@ -126,24 +133,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingContext.renew(dataSourceMap, shardingRule, getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
-    }
-    
-    /**
-     * Renew disable dataSource names.
-     *
-     * @param disabledDataSourceNames disabled data source names
-     */
-    public void renewDisabledDataSourceNames(final Collection<String> disabledDataSourceNames) {
-        shardingContext.renewDisabledDataSourceNames(disabledDataSourceNames);
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param isCircuitBreak is circuit break or not
-     */
-    public void renewCircuitBreakerDataSourceNames(final boolean isCircuitBreak) {
-        shardingContext.renewCircuitBreakerDataSourceNames(isCircuitBreak);
     }
     
     @Override
