@@ -22,35 +22,57 @@ Dangdang submits this proposal to donate Sharding-Sphere's source codes and all 
 
 ## Background
 
-Relational database hardly supports such huge amounts of data any more which has increased rapidly in recent years, but for reason of technique maturity, developers and DBAs still want to use it to persist core data. 
+Relational database hardly supports such huge amounts of data any more which has increased rapidly in recent years, 
+but for reason of technique maturity, developers and DBAs still want to use it to persist core data. 
 
-Sharding-Sphere was open sourced on Github in 2016. At the very beginning, Sharding-Sphere is just a JDBC driver for data sharding (name as Sharding-JDBC) at Dangdang internal framework; now it offers data sharding, distributed transaction and database orchestration. Besides JDBC, proxy to implement MySQL database protocol is also supported at present. Furthermore, our roadmap includes Proxy for PostgreSQL protocol, Sidecar model, data repica and elastic data scalability function as well.
+Sharding-Sphere was open sourced on Github in 2016. 
+At the very beginning, Sharding-Sphere is just a JDBC driver for data sharding (name as Sharding-JDBC) at Dangdang internal framework; now it offers data sharding, 
+distributed transaction and database orchestration. Besides JDBC, proxy to implement MySQL database protocol is also supported at present. 
+Furthermore, our roadmap includes Proxy for PostgreSQL protocol, Sidecar model, data repica and elastic data scalability function as well.
 
-Due to the extension of project, we provide proxy model and sidecar model in addition to JDBC model. Therefore, we rename it to Sharding-Sphere by a [public vote](https://github.com/sharding-sphere/sharding-sphere/issues/788), which refers to a sharding ecosphere with Sharding-JDBC, Sharding-Proxy and Sharding Sidecar as its three sub-projects.
+Due to the extension of project, we provide proxy model and sidecar model in addition to JDBC model. 
+Therefore, we rename it to Sharding-Sphere by a [public vote](https://github.com/sharding-sphere/sharding-sphere/issues/788), 
+which refers to a sharding ecosphere with Sharding-JDBC, Sharding-Proxy and Sharding Sidecar as its three sub-projects.
 
 Sharding-JDBC has won the [TOP 20 most popular open source projects in China 2016](http://www.oschina.net/project/top_cn_2016).
 
 ## Rationale
 
-Relational database still plays a very important role on current application system. The maturity of products and surrounding ecosystem, the friendliness of its data query and developers' and DBAs' mastery of it, cannot be completely replaced with other types of database in the near future. However, current relational database cannot support cloud native very well and it is not friendly to distributed system.
+Relational database still plays a very important role on current application system. 
+The maturity of products and surrounding ecosystem, 
+the friendliness of its data query and developers' and DBAs' mastery of it, cannot be completely replaced with other types of database in the near future. 
+However, current relational database cannot support cloud native very well and it is not friendly to distributed system.
 
 It is the ultimate goal of Sharding-Sphere, which manages the databases scattering around the system, to make user use distributed databases as simply as using a single one.  
 
 Without extra cost, Sharding-JDBC directly connects database with Java application to get the best performance.
 
-Sharding-Proxy is deployed as a stateless server and supports MySQL protocol at present. In the paper [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf), three types of NewSQL are introduced, among which Sharding-Proxy is a `Transparent Sharding Middleware`.
+Sharding-Proxy is deployed as a stateless server and supports MySQL protocol at present. 
+In the paper [What’s Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf), 
+three types of NewSQL are introduced, among which Sharding-Proxy is a `Transparent Sharding Middleware`.
 
-Sharding-Sidecar just like `data panel` in Service Mesh. The interaction networks among applications and databases, which is as complex and orderly as a cobweb, is concentrated upon mesh layer. Database Mesh is centered on how to connect the data access applications and databases together. It focuses more on interaction, namely organizing the messy interaction among applications and databases effectively. By using Database Mesh, applications and databases will form a large grid architecture, in which they just need to be put into the right position, for they are all be orchestrated by mesh layer.
+Sharding-Sidecar can be understood as a data panel in Service Mesh.
+The interaction between the application and the database provides a mesh layer.
+The concept of Database Mesh is similar to Service Mesh, and it focuses on how to connect data access applications to the database.
+Database Mesh will set up a huge grid system between applications and databases. 
+Applications and databases need be placed in the grid system. They are all objects managed by the meshing layer.
+
 
 ## Current Status
 
 ### Meritocracy
 
-Sharding-Sphere was incubated at Dangdang in 2015 and open sourced on GitHub in 2016. In 2017, JingDong recognized its value and determined to sponsor this project. Sharding-Sphere has contributors and users from many companies; we have set up the PMC Team and Committer Team. New contributors are guided and reviewed by existed PMC members. When they are ready, PMC will start a vote to promote him/her to become a member of PMC or Committer Team. See the details See the details [here](http://shardingsphere.io/community/en/organization/). Contributions are always welcomed and highly valued. 
+Sharding-Sphere was incubated at Dangdang in 2015 and open sourced on GitHub in 2016. In 2017, JingDong recognized its value and determined to sponsor this project. 
+Sharding-Sphere has contributors and users from many companies; we have set up the PMC Team and Committer Team. New contributors are guided and reviewed by existed PMC members. 
+When they are ready, PMC will start a vote to promote him/her to become a member of PMC or Committer Team. 
+See the details See the details [here](http://shardingsphere.io/community/en/organization/). Contributions are always welcomed and highly valued. 
 
 ### Community
 
-Now we have set development teams for Sharding-Sphere respectively in JingDong, Dangdang and Bestpay. Companies like Sohu and Shurenyun have shown great interest in Sharding-Sphere. We hope to grow the base of contributors by inviting all those who offer contributions through The Apache Way. Right now, we make use of github as code hosting as well as gitter for community communication.
+Now we have set development teams for Sharding-Sphere respectively in JingDong, Dangdang and Bestpay. 
+Companies like Sohu and Shurenyun have shown great interest in Sharding-Sphere. 
+We hope to grow the base of contributors by inviting all those who offer contributions through The Apache Way. 
+Right now, we make use of github as code hosting as well as gitter for community communication.
 
 ### Core Developers
 
@@ -92,27 +114,36 @@ The core developers, including experienced open source developers and team leade
 
 ### Orphaned products
 
-Three development teams from JingDong, Dangdang and bestpay will spare no pains to work on Sharding-Sphere in the future with contributors from the growing community. Also, Sharding-Sphere is widely adopted in China by many [companies and organizations](http://shardingsphere.io/community/en/company/). Thus, it is very unlikely that Sharding-Sphere becomes orphaned.
+Three development teams from JingDong, Dangdang and CHINA TELECOM Bestpay will spare no pains to work on Sharding-Sphere in the future with contributors from the growing community. 
+Also, Sharding-Sphere is widely adopted in China by many [companies and organizations](http://shardingsphere.io/community/en/company/). 
+Thus, it is very unlikely that Sharding-Sphere becomes orphaned.
 
 ### Inexperience with Open Source
 
-The current core developers all work for companies that have developed or contributed to many open source projects, such as [Apache SkyWalking (Incubating)](https://github.com/apache/incubator-skywalking), [Apache Dubbo (Incubator)](https://incubator.apache.org/projects/dubbo.html), CNCF OpenTracing, [Elastic-Job](https://github.com/elasticjob) and so on. Therefore, we believe we have enough experience to deal with open source.
+The current core developers all work for companies that have developed or contributed to many open source projects, 
+such as [Apache SkyWalking (Incubating)](https://github.com/apache/incubator-skywalking), [Apache Dubbo (Incubator)](https://incubator.apache.org/projects/dubbo.html), CNCF OpenTracing, [Elastic-Job](https://github.com/elasticjob) and so on. 
+Therefore, we believe we have enough experience to deal with open source.
 
 ### Homogenous Developers
 
-The current core developers work across a variety of organizations including Jingdong and Dangdang; some individual developers are accepted as core developers of Sharding-Sphere as well. Considering that CHINA TELECOM, Sohu and Shurenyun have shown great interest in Sharding-Sphere, we plan to encourage them to contribute and invite them as contributors to work together.
+The current core developers work across a variety of organizations including Jingdong, Dangdang and CHINA TELECOM Bestpay; some individual developers are accepted as core developers of Sharding-Sphere as well. 
+Considering that Sohu and dataman have shown great interest in Sharding-Sphere, we plan to encourage them to contribute and invite them as contributors to work together.
 
 ### Reliance on Salaried Developers
 
-At present, three of the core developers are paid by their employer to contribute to Sharding-Sphere project. It is estimated that the development of Sharding-Sphere will be continued with mainly salaried developers, and we will make efforts to attract more volunteers and grow the community.
+At present, three of the core developers are paid by their employer to contribute to Sharding-Sphere project. 
+It is estimated that the development of Sharding-Sphere will be continued with mainly salaried developers, and we will make efforts to attract more volunteers and grow the community.
 
 ### Relationships with Other Apache Products
 
-An automatic prober of Sharding-Sphere is introduced into SkyWalking to send APM data, and SkyWalking also use Sharding-Sphere to persit tracing data. Saga provided by ServiceComb is adopted by Sharding-Sphere as one of the distributed transaction processing engines. Sharding-Sphere integrates Apache Zookeeper as one of the service registration/discovery mechanisms.
+An automatic prober of Sharding-Sphere is introduced into SkyWalking to send APM data, and SkyWalking also use Sharding-Sphere to persit tracing data. 
+Saga provided by ServiceComb is adopted by Sharding-Sphere as one of the distributed transaction processing engines. 
+Sharding-Sphere integrates Apache Zookeeper as one of the service registration/discovery mechanisms.
 
 ### A Excessive Fascination with the Apache Brand
 
-We acknowledge the value and reputation that the Apache brand would bring to Sharding-Sphere. However, our primary interest is in the excellent community provided by Apache Software Foundation, in which all the projects could gain stability for long-term development.
+We acknowledge the value and reputation that the Apache brand would bring to Sharding-Sphere. 
+However, our primary interest is in the excellent community provided by Apache Software Foundation, in which all the projects could gain stability for long-term development.
 
 ## Documentation
 
@@ -131,13 +162,16 @@ The project consists of three distinct codebases: core, example and document. Th
 
 ## Source and Intellectual Property Submission Plan
 
-The codes are currently under Apache License Version 2.0 and have been verified to have no intellectual property or license issues before being released to open source by Dangdang in 2016. Dangdang will provide SGA and all committers will sign ICLA after Sharding-Sphere is accepted into the Incubator.
+The codes are currently under Apache License Version 2.0 and have been verified to have no intellectual property or license issues before being released to open source by Dangdang in 2016. 
+Dangdang will provide SGA and all committers will sign ICLA after Sharding-Sphere is accepted into the Incubator.
 
 ## External Dependencies
 
-As all dependencies are managed using Apache Maven, none of the external libraries need to be packaged in a source distribution. All dependencies have Apache compatible licenses except MySQL (GPL-2.0).
+As all dependencies are managed using Apache Maven, none of the external libraries need to be packaged in a source distribution. 
+All dependencies have Apache compatible licenses except MySQL (GPL-2.0).
 
-We will remove MySQL dependencies in future. MySQL JDBC driver is adopted by Sharding-Proxy to connect MySQL now; we will use SPI to load JDBC dirver, so MySQL JDBC driver is no longer provided on Sharding-Sphere.
+We will remove MySQL dependencies in future. 
+MySQL JDBC driver is adopted by Sharding-Proxy to connect MySQL now; we will use SPI to load JDBC dirver, so MySQL JDBC driver is no longer provided on Sharding-Sphere.
 
 | *Dependency*                         | *License*       |
 | ------------------------------------ | --------------- |
