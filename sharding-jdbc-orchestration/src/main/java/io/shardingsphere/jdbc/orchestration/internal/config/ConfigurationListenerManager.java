@@ -18,9 +18,9 @@
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.orche.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
@@ -56,12 +56,12 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        shardingStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        shardingStart(ConfigurationNode.SHARDING_RULE_NODE_PATH);
-        shardingStart(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
+        watchSharding(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchSharding(ConfigurationNode.SHARDING_RULE_NODE_PATH);
+        watchSharding(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
     }
     
-    private void shardingStart(final String node) {
+    private void watchSharding(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -79,11 +79,12 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        masterSlaveStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        masterSlaveStart(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
+        watchMasterSlave(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
+        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH);
     }
     
-    private void masterSlaveStart(final String node) {
+    private void watchMasterSlave(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             
@@ -91,7 +92,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration());
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadMasterSlaveProperties());
                     ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
@@ -100,11 +101,11 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        proxyStart(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        proxyStart(ConfigurationNode.PROXY_RULE_NODE_PATH);
+        watchProxy(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchProxy(ConfigurationNode.PROXY_RULE_NODE_PATH);
     }
     
-    private void proxyStart(final String node) {
+    private void watchProxy(final String node) {
         String cachePath = configNode.getFullPath(node);
         regCenter.watch(cachePath, new EventListener() {
             

@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche;
+package io.shardingsphere.jdbc.orchestration.internal.jdbc;
 
-import io.shardingsphere.core.orche.connection.CircuitBreakerConnectionTest;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSourceTest;
-import io.shardingsphere.core.orche.metadata.CircuitBreakerDatabaseMetaDataTest;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnectionTest;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSourceTest;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.metadata.CircuitBreakerDatabaseMetaDataTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.orche.datasource;
+package io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource;
 
-import io.shardingsphere.core.orche.connection.CircuitBreakerConnection;
+import io.shardingsphere.jdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnection;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNull;

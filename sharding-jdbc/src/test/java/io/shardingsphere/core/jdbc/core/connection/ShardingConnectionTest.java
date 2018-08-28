@@ -23,6 +23,7 @@ import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.fixture.TestDataSource;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
@@ -75,8 +76,9 @@ public final class ShardingConnectionTest {
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         shardingContext = Mockito.mock(ShardingContext.class);
-        when(shardingContext.getDataSourceMap()).thenReturn(dataSourceMap);
-        connection = new ShardingConnection(shardingContext);
+        ShardingDataSource shardingDataSource = Mockito.mock(ShardingDataSource.class);
+        when(shardingDataSource.getDataSourceMap()).thenReturn(dataSourceMap);
+        connection = new ShardingConnection(shardingDataSource);
     }
     
     @After

@@ -55,7 +55,7 @@ public class SpringBootShardingTest {
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(dataSource);
-        for (DataSource each : shardingContext.getDataSourceMap().values()) {
+        for (DataSource each : ((ShardingDataSource)dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
         assertTrue(shardingContext.isShowSQL());
