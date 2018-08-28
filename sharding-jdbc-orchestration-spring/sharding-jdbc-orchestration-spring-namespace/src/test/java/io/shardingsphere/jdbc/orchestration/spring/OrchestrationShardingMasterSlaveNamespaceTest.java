@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.spring;
 
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.jdbc.orchestration.spring.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -58,14 +59,15 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
-        ShardingDataSource shardingDataSource = applicationContext.getBean("defaultShardingDataSource", ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
+        OrchestrationShardingDataSource shardingDataSource = applicationContext.getBean("defaultShardingDataSource", OrchestrationShardingDataSource.class);
+        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
+        return dataSource.getDataSourceMap();
     }
     
     private ShardingRule getShardingRule() {
-        ShardingDataSource shardingDataSource = applicationContext.getBean("defaultShardingDataSource", ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
+        OrchestrationShardingDataSource shardingDataSource = applicationContext.getBean("defaultShardingDataSource", OrchestrationShardingDataSource.class);
+        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext");
         return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
     }
 }

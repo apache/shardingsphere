@@ -19,6 +19,8 @@ package io.shardingsphere.jdbc.orchestration.api;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
@@ -57,9 +59,8 @@ public final class OrchestrationShardingDataSourceFactory {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(dataSourceMap, shardingRuleConfig, configMap, props, new OrchestrationFacade(orchestrationConfig));
-        result.init();
-        return result;
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+        return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationFacade(orchestrationConfig));
     }
     
     /**
@@ -74,9 +75,7 @@ public final class OrchestrationShardingDataSourceFactory {
         ConfigurationService configService = orchestrationFacade.getConfigService();
         ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
         Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
-        OrchestrationShardingDataSource result = new OrchestrationShardingDataSource(
-                configService.loadDataSourceMap(), shardingRuleConfig, configService.loadShardingConfigMap(), configService.loadShardingProperties(), orchestrationFacade);
-        result.init();
-        return result;
+        ShardingDataSource shardingDataSource = new ShardingDataSource(configService.loadDataSourceMap(), new ShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
+        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationFacade);
     }
 }

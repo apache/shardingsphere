@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.orche.config;
+package io.shardingsphere.jdbc.orchestration.internal.event.config;
 
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;

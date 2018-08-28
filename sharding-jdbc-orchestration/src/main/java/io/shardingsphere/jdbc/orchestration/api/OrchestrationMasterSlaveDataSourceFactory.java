@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.api;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
@@ -57,9 +58,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
             return createDataSource(orchestrationConfig);
         }
-        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props, new OrchestrationFacade(orchestrationConfig));
-        result.init();
-        return result;
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationFacade(orchestrationConfig));
     }
     
     /**
@@ -74,9 +74,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         ConfigurationService configService = orchestrationFacade.getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
         Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
-        OrchestrationMasterSlaveDataSource result = new OrchestrationMasterSlaveDataSource(
-                configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties(), orchestrationFacade);
-        result.init();
-        return result;
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource( configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
+        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationFacade);
     }
 }

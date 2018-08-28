@@ -90,8 +90,7 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
+        return shardingDataSource.getDataSourceMap();
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {

@@ -15,19 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.orche.state;
+package io.shardingsphere.jdbc.orchestration.internal.event.config;
 
+import io.shardingsphere.core.api.config.ProxyBasicRule;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
- * Circuit event bus event.
+ * Proxy configuration event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class CircuitStateEventBusEvent {
+public final class ProxyConfigurationEventBusEvent {
     
-    private final boolean isCircuitBreak;
+    private final Map<String, DataSourceParameter> dataSources;
+    
+    private final ProxyBasicRule proxyBasicRule;
 }

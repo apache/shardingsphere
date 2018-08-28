@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.orche.config;
+package io.shardingsphere.jdbc.orchestration.internal.event.config;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Master slave config event bus event.
@@ -36,4 +37,6 @@ public final class MasterSlaveConfigurationEventBusEvent {
     private final Map<String, DataSource> dataSourceMap;
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    
+    private final Properties props;
 }

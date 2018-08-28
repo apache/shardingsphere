@@ -15,25 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.orche.config;
+package io.shardingsphere.jdbc.orchestration.internal.event.state;
 
-import io.shardingsphere.core.api.config.ProxyBasicRule;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Proxy configuration event bus event.
+ * Disabled event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfigurationEventBusEvent {
+public final class DisabledStateEventBusEvent {
     
-    private final Map<String, DataSourceParameter> dataSources;
-    
-    private final ProxyBasicRule proxyBasicRule;
+    private final Collection<String> disabledDataSourceNames;
 }

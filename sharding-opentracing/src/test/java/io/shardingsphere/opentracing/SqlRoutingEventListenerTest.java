@@ -30,6 +30,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.metadata.ShardingMetaData;
@@ -66,6 +67,8 @@ public final class SqlRoutingEventListenerTest {
     
     private ShardingContext shardingContext;
     
+    private ShardingDataSource shardingDataSource;
+    
     @BeforeClass
     public static void init() {
         ShardingTracer.init(TRACER);
@@ -97,6 +100,8 @@ public final class SqlRoutingEventListenerTest {
         when(shardingContext.getMetaData()).thenReturn(shardingMetaData);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.MySQL);
         when(shardingContext.isShowSQL()).thenReturn(true);
+        shardingDataSource = Mockito.mock(ShardingDataSource.class);
+        when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -111,7 +116,7 @@ public final class SqlRoutingEventListenerTest {
     
     @Test
     public void assertPreparedStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingContext), "select * from t_order");
+        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "select * from t_order");
         Method sqlRouteMethod = ShardingPreparedStatement.class.getDeclaredMethod("sqlRoute");
         sqlRouteMethod.setAccessible(true);
         sqlRouteMethod.invoke(statement);
@@ -121,7 +126,7 @@ public final class SqlRoutingEventListenerTest {
     
     @Test
     public void assertStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingContext));
+        ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
         Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
         sqlRouteMethod.setAccessible(true);
         sqlRouteMethod.invoke(statement, "select * from t_order");
@@ -131,7 +136,7 @@ public final class SqlRoutingEventListenerTest {
     @Test
     public void assertException() {
         try {
-            ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingContext));
+            ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
             Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
             sqlRouteMethod.setAccessible(true);
             sqlRouteMethod.invoke(statement, "111");
