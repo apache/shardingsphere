@@ -81,6 +81,7 @@
         <commons-codec.version>1.10</commons-codec.version>
         <atomikos.version>4.0.4</atomikos.version>
         <javax.transaction.version>1.1</javax.transaction.version>
+        <servicecomb.saga.version>0.3.0-SNAPSHOT</servicecomb.saga.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -336,6 +337,16 @@
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
                 <version>${javax.transaction.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicecomb.saga</groupId>
+                <artifactId>saga-core</artifactId>
+                <version>${servicecomb.saga.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicecomb.saga</groupId>
+                <artifactId>saga-format</artifactId>
+                <version>${servicecomb.saga.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
