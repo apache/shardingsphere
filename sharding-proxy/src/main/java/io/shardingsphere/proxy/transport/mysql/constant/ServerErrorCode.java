@@ -40,7 +40,9 @@ public enum ServerErrorCode {
                     + "This is an internal system table used to store GTIDs for committed transactions. "
                     + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."),
     
-    ER_STD_UNKNOWN_EXCEPTION(3054, "HY000", "Unknown exception: %s"), 
+    ER_STD_UNKNOWN_EXCEPTION(3054, "HY000", "Unknown exception: %s"),
+    
+    ER_CIRCUIT_BREAK_MODE(9998, "X9998", "Circuit break mode is ON"),
     
     ER_UNSUPPORTED_COMMAND(9999, "X9999", "Unsupported command packet: '%s'");
     
