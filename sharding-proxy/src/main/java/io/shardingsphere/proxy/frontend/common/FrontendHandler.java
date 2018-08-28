@@ -20,7 +20,9 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import lombok.Setter;
 
 /**
  * Frontend handler.
@@ -30,6 +32,9 @@ import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGro
 public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     private boolean authorized;
+    
+    @Setter
+    private BackendConnection backendConnection;
     
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
@@ -56,6 +61,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
+        backendConnection.cancel();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }
