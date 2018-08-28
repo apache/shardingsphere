@@ -14,6 +14,7 @@
     <modules>
         <module>sharding-orchestration-core</module>
         <module>sharding-orchestration-jdbc</module>
+        <module>sharding-orchestration-reg</module>
     </modules>
 
     <properties>
