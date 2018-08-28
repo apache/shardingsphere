@@ -15,44 +15,42 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.admin;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UnsupportedCommandPacketTest {
+public final class ComStmtClosePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
     public void assertExecute() {
-        Optional<CommandResponsePackets> actual = new UnsupportedCommandPacket(1, CommandPacketType.COM_SLEEP).execute();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(ServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorCode()));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getSqlState(), is(ServerErrorCode.ER_UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(ServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorMessage(), CommandPacketType.COM_SLEEP.name())));
+        when(payload.readInt4()).thenReturn(1);
+        Optional<CommandResponsePackets> actual = new ComStmtClosePacket(1, payload).execute();
+        assertFalse(actual.isPresent());
+        verify(payload).readInt4();
     }
     
     @Test
     public void assertWrite() {
-        UnsupportedCommandPacket actual = new UnsupportedCommandPacket(1, CommandPacketType.COM_SLEEP);
+        when(payload.readInt4()).thenReturn(1);
+        ComStmtClosePacket actual = new ComStmtClosePacket(1, payload);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
+        verify(payload).readInt4();
     }
 }

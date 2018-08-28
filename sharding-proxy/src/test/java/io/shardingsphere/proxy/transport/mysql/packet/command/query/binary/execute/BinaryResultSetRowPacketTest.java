@@ -15,31 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.query;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute;
 
+import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class FieldCountPacketTest {
+public final class BinaryResultSetRowPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
+    @Ignore
     public void assertWrite() {
-        when(payload.readInt1()).thenReturn(1, 3);
-        FieldCountPacket actual = new FieldCountPacket(payload);
+        BinaryResultSetRowPacket actual = new BinaryResultSetRowPacket(1, 2, Arrays.<Object>asList("value", null), Arrays.asList(ColumnType.MYSQL_TYPE_STRING, ColumnType.MYSQL_TYPE_STRING));
         assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getData(), is(Arrays.<Object>asList("value", null)));
         actual.write(payload);
-        verify(payload).writeIntLenenc(3);
+        verify(payload, times(2)).writeInt1(0x00);
+        verify(payload).writeStringLenenc("value");
     }
 }

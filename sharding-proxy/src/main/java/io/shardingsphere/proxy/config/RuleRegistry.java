@@ -101,7 +101,6 @@ public final class RuleRegistry {
     
     /**
      * Register rule registry.
-     *
      */
     public void register() {
         ShardingEventBusInstance.getInstance().register(this);

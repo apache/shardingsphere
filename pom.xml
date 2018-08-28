@@ -555,6 +555,9 @@
                         <excludes>
                             <exclude>io/shardingsphere/**/*Test.class</exclude>
                             <exclude>io/shardingsphere/**/Test*.class</exclude>
+                            <exclude>authpb/*.class</exclude>
+                            <exclude>mvccpb/*.class</exclude>
+                            <exclude>etcdserverpb/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

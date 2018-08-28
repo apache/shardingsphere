@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -29,6 +30,13 @@ import static org.junit.Assert.assertTrue;
 public final class ConnectionIdGeneratorTest {
     
     private final ConnectionIdGenerator generator = ConnectionIdGenerator.getInstance();
+    
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
+        field.setAccessible(true);
+        field.set(ConnectionIdGenerator.getInstance(), 0);
+    }
     
     @Test
     public void assertNextId() {

@@ -52,7 +52,9 @@ public final class ComPingPacketTest {
     
     @Test
     public void assertWrite() {
-        new ComPingPacket(1).write(payload);
+        ComPingPacket actual = new ComPingPacket(1);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_PING.getValue());
     }
 }

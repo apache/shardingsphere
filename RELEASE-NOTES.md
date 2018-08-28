@@ -11,7 +11,7 @@
 1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT
 1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR
 1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) Support DCL
-1. [ISSUE #1111](https://github.com/sharding-sphere/sharding-sphere/issues/1111) SupportMySQL DAL
+1. [ISSUE #1111](https://github.com/sharding-sphere/sharding-sphere/issues/1111) Support MySQL DAL
 
 #### Sharding-Proxy
 

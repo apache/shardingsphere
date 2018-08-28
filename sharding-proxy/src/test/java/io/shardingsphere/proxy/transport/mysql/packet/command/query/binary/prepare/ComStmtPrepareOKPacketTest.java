@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.mysql.packet.command.query;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare;
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
@@ -25,21 +25,24 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class FieldCountPacketTest {
+public final class ComStmtPrepareOKPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
     public void assertWrite() {
-        when(payload.readInt1()).thenReturn(1, 3);
-        FieldCountPacket actual = new FieldCountPacket(payload);
+        ComStmtPrepareOKPacket actual = new ComStmtPrepareOKPacket(1, 1, 1, 1, 0);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
-        verify(payload).writeIntLenenc(3);
+        verify(payload).writeInt1(0x00);
+        verify(payload, times(2)).writeInt2(0);
+        verify(payload).writeInt2(1);
+        verify(payload).writeInt4(1);
+        verify(payload).writeReserved(1);
     }
 }
