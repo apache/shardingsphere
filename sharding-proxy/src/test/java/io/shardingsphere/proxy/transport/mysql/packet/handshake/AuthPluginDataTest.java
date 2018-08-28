@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import com.google.common.primitives.Bytes;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,35 +25,21 @@ import static org.junit.Assert.assertThat;
 
 public final class AuthPluginDataTest {
     
-    private AuthPluginData authPluginData;
-    
-    private final byte[] part1 = {106, 105, 55, 122, 117, 98, 115, 109};
-    
-    private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
-    
-    @Before
-    public void setUp() {
-        authPluginData = new AuthPluginData(part1, part2);
-    }
-    
     @Test
     public void assertGetAuthPluginData() {
-        assertThat(authPluginData.getAuthPluginData(), is(Bytes.concat(part1, part2)));
-    }
-    
-    @Test
-    public void assertGetAuthPluginDataPart1() {
-        assertThat(authPluginData.getAuthPluginDataPart1(), is(part1));
-    }
-    
-    @Test
-    public void assertGetAuthPluginDataPart2() {
-        assertThat(authPluginData.getAuthPluginDataPart2(), is(part2));
+        byte[] actualPart1 = {106, 105, 55, 122, 117, 98, 115, 109};
+        byte[] actualPart2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
+        AuthPluginData actual = new AuthPluginData(actualPart1, actualPart2);
+        assertThat(actual.getAuthPluginDataPart1(), is(actualPart1));
+        assertThat(actual.getAuthPluginDataPart2(), is(actualPart2));
+        assertThat(actual.getAuthPluginData(), is(Bytes.concat(actualPart1, actualPart2)));
     }
     
     @Test
     public void assertGetAuthPluginDataWithoutArguments() {
-        AuthPluginData authPluginData = new AuthPluginData();
-        assertThat(authPluginData.getAuthPluginData().length, is(20));
+        AuthPluginData actual = new AuthPluginData();
+        assertThat(actual.getAuthPluginDataPart1().length, is(8));
+        assertThat(actual.getAuthPluginDataPart2().length, is(12));
+        assertThat(actual.getAuthPluginData().length, is(20));
     }
 }
