@@ -35,6 +35,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefini
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +62,11 @@ public final class ComStmtPreparePacketTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         setRuleRegistryMetaData();
+    }
+    
+    @Before
+    @After
+    public void reset() throws ReflectiveOperationException {
         BinaryStatementRegistryUtil.reset();
     }
     

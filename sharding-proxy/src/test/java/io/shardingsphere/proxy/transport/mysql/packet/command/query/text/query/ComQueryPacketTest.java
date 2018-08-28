@@ -54,6 +54,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,9 +66,6 @@ public final class ComQueryPacketTest {
     
     @Mock
     private BackendConnection backendConnection;
-    
-    @Mock
-    private BackendHandler backendHandler;
     
     private Listener listener;
     
@@ -105,6 +103,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException, ReflectiveOperationException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
+        BackendHandler backendHandler = mock(BackendHandler.class);
         when(backendHandler.next()).thenReturn(true, false);
         when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
         FieldCountPacket expectedFieldCountPacket = new FieldCountPacket(1, 1);
@@ -112,7 +111,7 @@ public final class ComQueryPacketTest {
         when(backendHandler.next()).thenReturn(true, false);
         when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection);
-        setBackendHandler(packet);
+        setBackendHandler(packet, backendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertFalse(listener.isCalled());
         assertTrue(actual.isPresent());
@@ -124,7 +123,7 @@ public final class ComQueryPacketTest {
         assertFalse(packet.next());
     }
     
-    private void setBackendHandler(final ComQueryPacket packet) throws ReflectiveOperationException {
+    private void setBackendHandler(final ComQueryPacket packet, final BackendHandler backendHandler) throws ReflectiveOperationException {
         Field field = ComQueryPacket.class.getDeclaredField("backendHandler");
         field.setAccessible(true);
         field.set(packet, backendHandler);

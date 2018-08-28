@@ -28,6 +28,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.Binar
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryProtocolValueTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryResultSetRowPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.NullBitmapTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPrepareOKPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacketTest;
@@ -53,7 +54,7 @@ import org.junit.runners.Suite.SuiteClasses;
         ComQueryPacketTest.class, 
         ComStmtPrepareOKPacketTest.class, 
         BinaryResultSetRowPacketTest.class, 
-        
+        ComStmtExecutePacketTest.class, 
         ComStmtClosePacketTest.class, 
         ComInitDbPacketTest.class, 
         ComPingPacketTest.class, 
