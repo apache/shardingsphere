@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend;
 
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import lombok.Getter;
 
 /**
@@ -31,7 +31,7 @@ public final class BackendExecutorContext {
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     @Getter
-    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(RuleRegistry.getInstance().getExecutorSize());
+    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(ProxyContext.getInstance().getExecutorSize());
     
     /**
      * Get backend executor context instance.

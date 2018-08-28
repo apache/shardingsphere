@@ -24,6 +24,7 @@ import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.AbstractBackendHandler;
@@ -61,7 +62,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    private final RuleRegistry ruleRegistry;
     
     private final String sql;
     
@@ -80,26 +81,29 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getExecutionUnits().isEmpty()) {
+            if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
+                //todo execute use databases
+            }
             return new CommandResponsePackets(new OKPacket(1));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType())) {
-            return new CommandResponsePackets(new ErrPacket(1, 
+            return new CommandResponsePackets(new ErrPacket(1,
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult);
-        if (!RULE_REGISTRY.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+        if (!ruleRegistry.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(RULE_REGISTRY.getMetaData().getDataSource(), 
-                    BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(RULE_REGISTRY.getBackendDataSource()));
-            RULE_REGISTRY.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, RULE_REGISTRY.getShardingRule()));
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(),
+                    BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(ruleRegistry.getBackendDataSource()));
+            ruleRegistry.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleRegistry.getShardingRule()));
         }
         return merge(sqlStatement);
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
-        return TransactionType.XA == RULE_REGISTRY.getTransactionType() && SQLType.DDL == sqlType
+        return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
     
@@ -108,7 +112,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-                RULE_REGISTRY.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, RULE_REGISTRY.getMetaData().getTable()).merge();
+                ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
         return result;

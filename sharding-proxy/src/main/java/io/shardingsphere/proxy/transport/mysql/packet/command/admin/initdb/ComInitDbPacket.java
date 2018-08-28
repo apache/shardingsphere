@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -58,7 +58,7 @@ public final class ComInitDbPacket implements CommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
-        return Optional.of(ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)
+        return Optional.of(ProxyContext.getInstance().getSchemalNames().contains(schemaName)
                 ? new CommandResponsePackets(new OKPacket(getSequenceId() + 1)) : new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName)));
     }
 }

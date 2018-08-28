@@ -31,6 +31,8 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     private boolean authorized;
     
+    private String schemal;
+    
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());

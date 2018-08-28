@@ -14,37 +14,30 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Yaml proxy configuration.
- *
- * @author panjuan
+ * proxy server configuration for yaml.
+ * 
+ * @author chenqingyang
  */
 @NoArgsConstructor
 @Getter
 @Setter
-public class YamlProxyConfiguration {
-    
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
-    
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+public final class YamlProxyServerConfiguration {
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
     private YamlOrchestrationConfiguration orchestration;
+    
+    private Properties props = new Properties();
 }
