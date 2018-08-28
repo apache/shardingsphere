@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -134,7 +135,8 @@ public final class BinaryProtocolValueTest {
     @Test
     public void assertWriteInt8() {
         new BinaryProtocolValue(ColumnType.MYSQL_TYPE_LONGLONG, payload).write(1L);
-        verify(payload).writeInt8(1L);
+        new BinaryProtocolValue(ColumnType.MYSQL_TYPE_LONGLONG, payload).write(new BigDecimal(1L));
+        verify(payload, times(2)).writeInt8(1L);
     }
     
     @Test
