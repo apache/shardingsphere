@@ -8,9 +8,13 @@
         <version>3.0.0.M3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sharding-jdbc-orchestration</artifactId>
+    <artifactId>sharding-orchestration</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    
+    <modules>
+        <module>sharding-orchestration-core</module>
+    </modules>
+
     <properties>
         <sharding-sphere.version>3.0.0.M3-SNAPSHOT</sharding-sphere.version>
     </properties>
