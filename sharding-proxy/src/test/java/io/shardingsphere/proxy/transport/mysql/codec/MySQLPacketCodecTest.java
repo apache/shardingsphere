@@ -38,18 +38,18 @@ import static org.mockito.Mockito.when;
 public class MySQLPacketCodecTest {
     
     private MySQLPacketCodec mySQLPacketCodec;
-
+    
     private ChannelHandlerContext channelHandlerContext;
-
+    
     private ByteBuf byteBuf;
-
+    
     @Before
     public void init() {
         mySQLPacketCodec = new MySQLPacketCodec();
         channelHandlerContext = mock(ChannelHandlerContext.class);
         byteBuf = mock(ByteBuf.class);
     }
-
+    
     @Test
     public void assertMySQLPacketDoDecode() {
         final List<Object> out = Lists.newArrayList();
@@ -59,7 +59,7 @@ public class MySQLPacketCodecTest {
         mySQLPacketCodec.doDecode(channelHandlerContext, byteBuf, out, 54);
         assertThat(out.size(), is(1));
     }
-
+    
     @Test
     public void assertMySQLPacketDoEncode() {
         final MySQLPacket message = new ComQuitPacket(10);
