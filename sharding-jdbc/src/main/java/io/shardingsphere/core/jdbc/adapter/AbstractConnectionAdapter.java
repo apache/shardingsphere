@@ -20,8 +20,10 @@ package io.shardingsphere.core.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.TCLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
+import io.shardingsphere.core.jdbc.core.transaction.TransactionLoader;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.transaction.TransactionContextHolder;
 import io.shardingsphere.core.transaction.event.TransactionEvent;
 import io.shardingsphere.core.transaction.event.TransactionEventFactory;
 import io.shardingsphere.core.transaction.event.WeakXaTransactionEvent;
@@ -62,6 +64,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+        if (TransactionContextHolder.get().getTransactionManager() == null){
+            TransactionLoader.load();
+        }
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -86,6 +91,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void setAutoCommit(final boolean autoCommit) {
+        if (TransactionContextHolder.get().getTransactionManager() == null){
+            TransactionLoader.load();
+        }
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         EventBusInstance.getInstance().post(buildTransactionEvent(TCLType.BEGIN));
