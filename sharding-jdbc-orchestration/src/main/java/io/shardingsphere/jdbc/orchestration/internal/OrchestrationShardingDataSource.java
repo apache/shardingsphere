@@ -55,7 +55,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         super(shardingDataSource.getDataSourceMap().values());
         this.dataSource = shardingDataSource;
         this.orchestrationFacade = orchestrationFacade;
-        this.orchestrationFacade.init(dataSourceMap, shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
+        this.orchestrationFacade.init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
         this.dataSourceMap = shardingDataSource.getDataSourceMap();
         ShardingEventBusInstance.getInstance().register(this);
     }
