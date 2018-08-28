@@ -13,6 +13,7 @@
     <name>${project.artifactId}</name>
     <modules>
         <module>sharding-orchestration-core</module>
+        <module>sharding-orchestration-jdbc</module>
     </modules>
 
     <properties>
