@@ -22,7 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
-import lombok.Setter;
+import lombok.Getter;
 
 /**
  * Frontend handler.
@@ -33,8 +33,8 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     private boolean authorized;
     
-    @Setter
-    private volatile BackendConnection backendConnection;
+    @Getter
+    private final BackendConnection backendConnection = new BackendConnection();
     
     @Override
     public final void channelActive(final ChannelHandlerContext context) {

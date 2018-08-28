@@ -104,8 +104,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         @Override
         public void run() {
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-                 BackendConnection backendConnection = new BackendConnection()) {
-                setBackendConnection(backendConnection);
+                 BackendConnection backendConnection = getBackendConnection()) {
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection);
                 Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
                 if (!responsePackets.isPresent()) {
