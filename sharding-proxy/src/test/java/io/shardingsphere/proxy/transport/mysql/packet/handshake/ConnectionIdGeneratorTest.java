@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,34 +26,29 @@ import java.lang.reflect.Field;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ConnectionIdGeneratorTest {
     
-    private final ConnectionIdGenerator generator = ConnectionIdGenerator.getInstance();
-    
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    @After
+    public void resetConnectionId() throws ReflectiveOperationException {
+        setCurrentConnectionId(0);
+    }
+    
+    private void setCurrentConnectionId(final int connectionId) throws ReflectiveOperationException {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), 0);
+        field.set(ConnectionIdGenerator.getInstance(), connectionId);
     }
     
     @Test
     public void assertNextId() {
-        assertEquals(generator.nextId(), 1);
+        assertEquals(ConnectionIdGenerator.getInstance().nextId(), 1);
     }
     
     @Test
-    public void assertMaxNextId() throws NoSuchFieldException, IllegalAccessException {
-        Field currentId = generator.getClass().getDeclaredField("currentId");
-        currentId.setAccessible(true);
-        currentId.setInt(generator, 2147483647);
-        assertThat(generator.nextId(), is(1));
-    }
-    
-    @Test
-    public void assertGetInstance() {
-        assertTrue(null != ConnectionIdGenerator.getInstance());
+    public void assertMaxNextId() throws ReflectiveOperationException {
+        setCurrentConnectionId(Integer.MAX_VALUE);
+        assertThat(ConnectionIdGenerator.getInstance().nextId(), is(1));
     }
 }
