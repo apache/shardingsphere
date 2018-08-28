@@ -32,6 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,9 +55,11 @@ public class OrchestrationSpringBootMasterSlaveTest {
     }
     
     @Test
-    public void assertWithMasterSlaveDataSource() {
+    public void assertWithMasterSlaveDataSource() throws ReflectiveOperationException {
         assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
-        MasterSlaveDataSource masterSlaveDataSource = ((OrchestrationMasterSlaveDataSource) dataSource).getDataSource();
+        Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
+        field.setAccessible(true);
+        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
         for (DataSource each : masterSlaveDataSource.getAllDataSources().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
