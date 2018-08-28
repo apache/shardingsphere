@@ -60,7 +60,9 @@ public class OrchestrationSpringBootShardingTest {
     @Test
     public void assertWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof OrchestrationShardingDataSource);
-        ShardingDataSource shardingDataSource = ((OrchestrationShardingDataSource) dataSource).getDataSource();
+        Field dataSourceField = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");
+        ShardingDataSource shardingDataSource = (ShardingDataSource) dataSourceField.get(dataSource);
+        dataSourceField.setAccessible(true);
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
