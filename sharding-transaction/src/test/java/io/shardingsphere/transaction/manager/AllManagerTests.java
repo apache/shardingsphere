@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager;
 
+import io.shardingsphere.transaction.manager.base.AllServicecombTest;
 import io.shardingsphere.transaction.manager.base.SagaTransactionManagerTest;
 import io.shardingsphere.transaction.manager.local.LocalTransactionManagerTest;
 import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoaderTest;
@@ -31,7 +32,8 @@ import org.junit.runners.Suite.SuiteClasses;
         LocalTransactionManagerTest.class, 
         XATransactionManagerSPILoaderTest.class, 
         AtomikosTransactionManagerTest.class, 
-        SagaTransactionManagerTest.class
+        SagaTransactionManagerTest.class,
+        AllServicecombTest.class
 })
 public final class AllManagerTests {
 }
