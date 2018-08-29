@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
+package io.shardingsphere.orchestration.reg.newzk.client.retry;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;

@@ -15,15 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ContentionCallback;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.ITransactionProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.election.LeaderElection;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.ZooKeeperTransaction;
+
+import io.shardingsphere.orchestration.reg.newzk.client.action.ContentionCallback;
+import io.shardingsphere.orchestration.reg.newzk.client.action.ITransactionProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.election.LeaderElection;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.ZooKeeperTransaction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

@@ -15,19 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
+package io.shardingsphere.orchestration.reg.api;
 
 /**
- * Exec strategy type.
+ * Registry center configuration.
  *
- * @author lidongbo
+ * @author zhangliang
  */
-public enum StrategyType {
-    
-    USUAL,
-    CONTEND,
-    TRANSACTION_CONTEND,
-    SYNC_RETRY,
-    ASYNC_RETRY,
-    ALL_ASYNC_RETRY
+public interface RegistryCenterConfiguration {
 }

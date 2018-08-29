@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.api;
+package io.shardingsphere.orchestration.reg.api;
 
-import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 import java.util.List;
 
