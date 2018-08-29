@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.util;
+package io.shardingsphere.jdbc.orchestration.api.yaml.util;
 
-import io.shardingsphere.jdbc.orchestration.reg.exception.RegExceptionHandler;
+import io.shardingsphere.orchestration.reg.exception.RegExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.curator.test.TestingServer;

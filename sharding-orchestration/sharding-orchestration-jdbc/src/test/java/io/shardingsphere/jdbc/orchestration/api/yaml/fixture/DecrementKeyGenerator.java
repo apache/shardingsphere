@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.yaml.fixture;
+package io.shardingsphere.jdbc.orchestration.api.yaml.fixture;
 
 import io.shardingsphere.core.keygen.KeyGenerator;
 

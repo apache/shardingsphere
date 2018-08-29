@@ -18,16 +18,15 @@
 package io.shardingsphere.orchestration.reg.etcd.internal.watcher;
 
 
+
 import etcdserverpb.Rpc;
 import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import io.shardingsphere.orchestration.reg.exception.RegException;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 import lombok.RequiredArgsConstructor;
 import mvccpb.Kv.Event;
-import mvccpb.Kv.Event.EventType;
 
 /**
  * Watch stream observer.
@@ -49,11 +48,11 @@ public final class EtcdWatchStreamObserver implements StreamObserver<WatchRespon
         }
     }
     
-    private Type getEventType(final Event event) {
+    private DataChangedEvent.Type getEventType(final Event event) {
         switch (event.getType()) {
-            case EventType.PUT:
+            case PUT:
                 return DataChangedEvent.Type.UPDATED;
-            case EventType.DELETE:
+            case DELETE:
                 return DataChangedEvent.Type.DELETED;
             default:
                 return DataChangedEvent.Type.IGNORED;
