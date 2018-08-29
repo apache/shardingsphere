@@ -15,17 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.TestCallable;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.TestResultCallable;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
+import io.shardingsphere.orchestration.reg.newzk.client.retry.TestCallable;
+import io.shardingsphere.orchestration.reg.newzk.client.retry.TestResultCallable;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

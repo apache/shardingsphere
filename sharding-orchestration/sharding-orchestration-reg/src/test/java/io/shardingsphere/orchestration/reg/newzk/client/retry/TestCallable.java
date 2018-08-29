@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry;
+package io.shardingsphere.orchestration.reg.newzk.client.retry;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
 import org.apache.zookeeper.KeeperException;
 
 public abstract class TestCallable extends RetryCallable {

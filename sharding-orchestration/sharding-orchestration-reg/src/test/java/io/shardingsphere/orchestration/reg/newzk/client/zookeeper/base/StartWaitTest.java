@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
-
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
-import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ClientContext;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.orchestration.reg.newzk.client.util.EmbedTestingServer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

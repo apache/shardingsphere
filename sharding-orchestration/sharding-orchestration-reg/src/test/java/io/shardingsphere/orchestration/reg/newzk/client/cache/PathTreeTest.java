@@ -15,16 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
+package io.shardingsphere.orchestration.reg.newzk.client.cache;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
-import java.io.IOException;
+
+import io.shardingsphere.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.orchestration.reg.newzk.client.util.EmbedTestingServer;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.ClientFactory;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -33,6 +33,8 @@ import org.apache.zookeeper.ZooDefs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
