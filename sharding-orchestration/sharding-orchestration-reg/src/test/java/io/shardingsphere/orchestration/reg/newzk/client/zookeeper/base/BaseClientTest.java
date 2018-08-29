@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.ClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.orchestration.reg.newzk.client.util.EmbedTestingServer;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.ClientFactory;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;

@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IClient;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IClient;
 import org.apache.zookeeper.KeeperException;
 
 public class BaseTest {
