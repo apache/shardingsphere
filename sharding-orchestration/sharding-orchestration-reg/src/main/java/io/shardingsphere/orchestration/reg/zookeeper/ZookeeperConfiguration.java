@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.zookeeper;
+package io.shardingsphere.orchestration.reg.zookeeper;
 
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 

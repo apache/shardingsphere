@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.operation;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
+
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
 /**

@@ -15,20 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.yaml;
+package io.shardingsphere.jdbc.orchestration.internal.yaml;
 
-import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfiguration;
+import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Orchestration sharding configuration for yaml.
+ * Orchestration master-slave configuration for yaml.
  *
  * @author caohao
  */
 @Getter
 @Setter
-public final class YamlOrchestrationShardingRuleConfiguration extends YamlShardingConfiguration {
+public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveConfiguration {
     
     private YamlOrchestrationConfiguration orchestration;
 }

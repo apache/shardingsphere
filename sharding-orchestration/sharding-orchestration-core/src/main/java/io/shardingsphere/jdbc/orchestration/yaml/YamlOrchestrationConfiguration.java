@@ -18,10 +18,10 @@
 package io.shardingsphere.jdbc.orchestration.yaml;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
+import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
