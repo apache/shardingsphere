@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.cache;
+package io.shardingsphere.orchestration.reg.newzk.client.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

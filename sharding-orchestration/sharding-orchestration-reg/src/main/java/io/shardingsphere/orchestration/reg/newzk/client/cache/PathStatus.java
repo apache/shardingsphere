@@ -15,22 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.exception;
+package io.shardingsphere.orchestration.reg.newzk.client.cache;
 
 /**
- * Registry center exception.
- * 
- * @author zhangliang
+ * Path status.
+ *
+ * @author lidongbo
  */
-public final class RegException extends RuntimeException {
+public enum PathStatus {
     
-    private static final long serialVersionUID = -6417179023552012152L;
-    
-    public RegException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
-    
-    public RegException(final Exception cause) {
-        super(cause);
-    }
+    CHANGING, RELEASE
 }

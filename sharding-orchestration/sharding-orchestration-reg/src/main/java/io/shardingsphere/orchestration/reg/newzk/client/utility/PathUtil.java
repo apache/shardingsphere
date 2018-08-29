@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility;
+package io.shardingsphere.orchestration.reg.newzk.client.utility;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

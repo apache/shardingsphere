@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.exception;
+package io.shardingsphere.orchestration.reg.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
