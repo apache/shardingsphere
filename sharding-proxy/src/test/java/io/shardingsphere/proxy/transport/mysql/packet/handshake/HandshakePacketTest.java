@@ -44,7 +44,8 @@ public final class HandshakePacketTest {
     @Test
     public void assertNewWithPayload() {
         when(payload.readInt1()).thenReturn(1, ServerInfo.PROTOCOL_VERSION, ServerInfo.CHARSET, 0);
-        when(payload.readStringNul()).thenReturn(ServerInfo.SERVER_VERSION, new String(part1), new String(part2));
+        when(payload.readStringNul()).thenReturn(ServerInfo.SERVER_VERSION);
+        when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), CapabilityFlag.calculateHandshakeCapabilityFlagsUpper());

@@ -40,11 +40,12 @@ public final class HandshakeResponse41PacketTest {
     public void assertNewWithPayloadWithDatabase() {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
         when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
-        when(payload.readStringNul()).thenReturn("root", "1", "sharding_db");
+        when(payload.readStringNul()).thenReturn("root", "sharding_db");
+        when(payload.readStringNulByBytes()).thenReturn(new byte[] {1});
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getAuthResponse(), is("1".getBytes()));
+        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         verify(payload).skipReserved(23);
     }
     
@@ -53,11 +54,11 @@ public final class HandshakeResponse41PacketTest {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
         when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
-        when(payload.readStringLenenc()).thenReturn("1");
+        when(payload.readStringLenencByBytes()).thenReturn(new byte[] {1});
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getAuthResponse(), is("1".getBytes()));
+        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         verify(payload).skipReserved(23);
     }
     
@@ -66,11 +67,11 @@ public final class HandshakeResponse41PacketTest {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET, 1);
         when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
-        when(payload.readStringFix(1)).thenReturn("1");
+        when(payload.readStringFixByBytes(1)).thenReturn(new byte[] {1});
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getAuthResponse(), is("1".getBytes()));
+        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
         verify(payload).skipReserved(23);
     }
     
