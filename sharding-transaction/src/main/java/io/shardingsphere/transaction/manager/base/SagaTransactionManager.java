@@ -17,33 +17,52 @@
 
 package io.shardingsphere.transaction.manager.base;
 
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
+import io.shardingsphere.transaction.manager.base.servicecomb.SagaExecutionComponentFactory;
+import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 
 import javax.transaction.Status;
+import java.util.UUID;
 
 /**
  * Saga transaction manager.
  *
  * @author zhaojun
  */
-public final class SagaTransactionManager implements ShardingTransactionManager {
+public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionEvent> {
     
-    @Override
-    public void begin(final ShardingTransactionEvent transactionEvent) {
+    private static final ThreadLocal<String> TRANSACTION_IDS = new ThreadLocal<String>();
+    
+    private final SagaExecutionComponent coordinator;
+    
+    public SagaTransactionManager() {
+        this.coordinator = SagaExecutionComponentFactory.createSagaExecutionComponent();
     }
     
     @Override
-    public void commit(final ShardingTransactionEvent transactionEvent) {
+    public void begin(final SagaTransactionEvent transactionEvent) {
+        TRANSACTION_IDS.set(UUID.randomUUID().toString());
     }
     
     @Override
-    public void rollback(final ShardingTransactionEvent transactionEvent) {
+    public void commit(final SagaTransactionEvent transactionEvent) {
+        coordinator.run(transactionEvent.getSagaJson());
+        TRANSACTION_IDS.remove();
+    }
+    
+    @Override
+    public void rollback(final SagaTransactionEvent transactionEvent) {
+        TRANSACTION_IDS.remove();
     }
     
     @Override
     public int getStatus() {
         // TODO :zhaojun need confirm, return Status.STATUS_NO_TRANSACTION or zero? 
         return Status.STATUS_NO_TRANSACTION;
+    }
+    
+    @Override
+    public String getTransactionId() {
+        return TRANSACTION_IDS.get();
     }
 }

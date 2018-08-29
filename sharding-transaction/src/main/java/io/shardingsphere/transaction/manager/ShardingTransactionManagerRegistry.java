@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.manager;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
 import io.shardingsphere.transaction.manager.local.LocalTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 
@@ -48,6 +49,7 @@ public final class ShardingTransactionManagerRegistry {
             case XA:
                 return XATransactionManagerSPILoader.getInstance().getTransactionManager();
             case BASE:
+                return new SagaTransactionManager();
             default: 
                 return null;
         }
