@@ -24,13 +24,13 @@ import io.shardingsphere.core.api.config.ProxyBasicRule;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceParameterConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.MasterSlaveConfigurationConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.ProxyConfigurationConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.ShardingConfigurationConverter;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;

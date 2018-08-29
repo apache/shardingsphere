@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
+package io.shardingsphere.orchestration.reg.newzk.client.action;
 
 /**
  * Callback on contention has not reached.

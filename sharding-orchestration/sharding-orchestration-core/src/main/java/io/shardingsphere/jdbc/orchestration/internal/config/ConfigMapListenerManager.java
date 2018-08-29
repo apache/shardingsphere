@@ -19,9 +19,9 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
  * Config map listener manager.

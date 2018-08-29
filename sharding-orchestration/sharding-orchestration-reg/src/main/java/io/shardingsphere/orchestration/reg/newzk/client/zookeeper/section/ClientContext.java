@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
+import io.shardingsphere.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseClientFactory;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseContext;
 import lombok.Getter;
 import lombok.Setter;
 

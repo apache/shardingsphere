@@ -18,15 +18,15 @@
 package io.shardingsphere.jdbc.orchestration.internal.config;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 import javax.sql.DataSource;
 import java.util.Map;
