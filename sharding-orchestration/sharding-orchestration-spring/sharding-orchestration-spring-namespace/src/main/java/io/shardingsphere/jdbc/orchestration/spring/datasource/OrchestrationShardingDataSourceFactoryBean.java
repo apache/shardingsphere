@@ -17,10 +17,10 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,18 +31,17 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Orchestration master-slave data source factory bean.
- * 
+ * Orchestration sharding data source factory bean.
+ *
  * @author zhangliang
- * @author panjuan
  */
-public final class OrchestrationMasterSlaveDataSourceFactoryBean implements FactoryBean<OrchestrationMasterSlaveDataSource>, InitializingBean, DisposableBean {
+public final class OrchestrationShardingDataSourceFactoryBean implements FactoryBean<OrchestrationShardingDataSource>, InitializingBean, DisposableBean {
     
-    private OrchestrationMasterSlaveDataSource orchestrationMasterSlaveDataSource;
+    private OrchestrationShardingDataSource orchestrationShardingDataSource;
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    private final ShardingRuleConfiguration shardingRuleConfig;
     
     private final Map<String, Object> configMap;
     
@@ -50,27 +49,27 @@ public final class OrchestrationMasterSlaveDataSourceFactoryBean implements Fact
     
     private final OrchestrationConfiguration orchestrationConfig;
     
-    public OrchestrationMasterSlaveDataSourceFactoryBean(final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationShardingDataSourceFactoryBean(final OrchestrationConfiguration orchestrationConfig) {
         this(null, null, null, null, orchestrationConfig);
     }
     
-    public OrchestrationMasterSlaveDataSourceFactoryBean(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                                         final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationShardingDataSourceFactoryBean(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
+                                                      final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) {
         this.orchestrationConfig = orchestrationConfig;
         this.dataSourceMap = dataSourceMap;
-        this.masterSlaveRuleConfig = masterSlaveRuleConfig;
+        this.shardingRuleConfig = shardingRuleConfig;
         this.configMap = configMap;
         this.props = props;
     }
     
     @Override
-    public OrchestrationMasterSlaveDataSource getObject() {
-        return orchestrationMasterSlaveDataSource;
+    public OrchestrationShardingDataSource getObject() {
+        return orchestrationShardingDataSource;
     }
     
     @Override
     public Class<?> getObjectType() {
-        return OrchestrationMasterSlaveDataSource.class;
+        return OrchestrationShardingDataSource.class;
     }
     
     @Override
@@ -80,12 +79,12 @@ public final class OrchestrationMasterSlaveDataSourceFactoryBean implements Fact
     
     @Override
     public void afterPropertiesSet() throws SQLException {
-        orchestrationMasterSlaveDataSource = 
-                (OrchestrationMasterSlaveDataSource) OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props, orchestrationConfig);
+        orchestrationShardingDataSource =
+                (OrchestrationShardingDataSource) OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
     }
     
     @Override
     public void destroy() {
-        orchestrationMasterSlaveDataSource.close();
+        orchestrationShardingDataSource.close();
     }
 }
