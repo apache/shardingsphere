@@ -28,7 +28,6 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -331,7 +330,9 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertWriteDateWithoutMillisecond() {
-        new MySQLPacketPayload(byteBuf).writeDate(new Timestamp(0L));
+        Timestamp timestamp = mock(Timestamp.class);
+        when(timestamp.getNanos()).thenReturn(0);
+        new MySQLPacketPayload(byteBuf).writeDate(timestamp);
         verify(byteBuf).writeByte(7);
     }
     
@@ -372,12 +373,6 @@ public final class MySQLPacketPayloadTest {
     public void assertReadTimeWithIllegalArgument() {
         when(byteBuf.readByte()).thenReturn((byte) 100);
         new MySQLPacketPayload(byteBuf).readTime();
-    }
-    
-    @Test
-    public void assertWriteTimeWithoutMillisecond() {
-        new MySQLPacketPayload(byteBuf).writeTime(new Timestamp(0L));
-        verify(byteBuf, atLeastOnce()).writeByte(8);
     }
     
     @Test
