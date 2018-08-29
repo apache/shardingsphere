@@ -34,7 +34,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     private boolean authorized;
     
     @Setter
-    private BackendConnection backendConnection;
+    private volatile BackendConnection backendConnection;
     
     @Override
     public final void channelActive(final ChannelHandlerContext context) {

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.runtime;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
@@ -33,6 +34,7 @@ public final class ChannelRegistry {
     
     private static final ChannelRegistry INSTANCE = new ChannelRegistry();
     
+    // TODO :wangkai do not use cache, should use map, and add unregister feature
     private final Cache<String, Integer> connectionIds = CacheBuilder.newBuilder().build();
     
     /**
@@ -61,6 +63,8 @@ public final class ChannelRegistry {
      * @return connectionId database connection ID
      */
     public int getConnectionId(final String channelId) {
-        return connectionIds.getIfPresent(channelId);
+        Integer result = connectionIds.getIfPresent(channelId);
+        Preconditions.checkNotNull(result, String.format("Can not get connection id via channel id: %s", channelId));
+        return result;
     }
 }

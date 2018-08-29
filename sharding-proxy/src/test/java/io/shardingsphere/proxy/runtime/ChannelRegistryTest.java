@@ -15,14 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.proxy;
+package io.shardingsphere.proxy.runtime;
 
-import io.shardingsphere.proxy.transport.AllTransportTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses(AllTransportTests.class)
-public final class AllTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ChannelRegistryTest {
+    
+    @Test
+    public void assertGetConnectionIdIfPresent() {
+        ChannelRegistry.getInstance().putConnectionId("0x0a", 1000);
+        assertThat(ChannelRegistry.getInstance().getConnectionId("0x0a"), is(1000));
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void assertGetConnectionIdIfAbsent() {
+        ChannelRegistry.getInstance().getConnectionId("0x0b");
+    }
 }
