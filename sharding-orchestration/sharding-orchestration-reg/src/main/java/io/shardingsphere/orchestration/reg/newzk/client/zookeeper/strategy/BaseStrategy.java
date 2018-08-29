@@ -15,11 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.strategy;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IExecStrategy;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+
+import io.shardingsphere.orchestration.reg.newzk.client.action.IExecStrategy;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.zookeeper.KeeperException;

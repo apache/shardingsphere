@@ -17,9 +17,9 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.jdbc;
 
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.connection.CircuitBreakerConnectionTest;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSourceTest;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.metadata.CircuitBreakerDatabaseMetaDataTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.connection.CircuitBreakerConnectionTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSourceTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.metadata.CircuitBreakerDatabaseMetaDataTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
