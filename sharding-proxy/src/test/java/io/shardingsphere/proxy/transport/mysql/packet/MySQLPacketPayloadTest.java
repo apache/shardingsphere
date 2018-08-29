@@ -176,6 +176,12 @@ public final class MySQLPacketPayloadTest {
     }
     
     @Test
+    public void assertReadStringLenencByBytes() {
+        when(byteBuf.readByte()).thenReturn((byte) 0);
+        assertThat(new MySQLPacketPayload(byteBuf).readStringLenencByBytes(), is(new byte[] {}));
+    }
+    
+    @Test
     public void assertWriteStringLenencWithEmpty() {
         new MySQLPacketPayload(byteBuf).writeStringLenenc("");
         verify(byteBuf).writeByte(0);
@@ -191,6 +197,11 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertReadStringFix() {
         assertThat(new MySQLPacketPayload(byteBuf).readStringFix(0), is(""));
+    }
+    
+    @Test
+    public void assertReadStringFixByBytes() {
+        assertThat(new MySQLPacketPayload(byteBuf).readStringFixByBytes(0), is(new byte[] {}));
     }
     
     @Test
@@ -219,6 +230,13 @@ public final class MySQLPacketPayloadTest {
     public void assertReadStringNul() {
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
         assertThat(new MySQLPacketPayload(byteBuf).readStringNul(), is(""));
+        verify(byteBuf).skipBytes(1);
+    }
+    
+    @Test
+    public void assertReadStringNulByBytes() {
+        when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
+        assertThat(new MySQLPacketPayload(byteBuf).readStringNulByBytes(), is(new byte[] {}));
         verify(byteBuf).skipBytes(1);
     }
     
