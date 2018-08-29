@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,37 +36,15 @@ public final class HandshakeResponse41PacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    private HandshakeResponse41Packet handshakeResponse41Packet;
-    
-//    @Before
-//    public void setUp() {
-//        ByteBuf byteBuf = mock(ByteBuf.class);
-//        payload = new MySQLPacketPayload(byteBuf);
-//        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
-//        when(byteBuf.writeBytes(byteBuf)).thenReturn(byteBuf);
-//        byte b = 0;
-//        when(byteBuf.readByte()).thenReturn(b);
-//        when(byteBuf.readIntLE()).thenReturn(0);
-//        when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
-//        when(byteBuf.skipBytes(1)).thenReturn(byteBuf);
-//        when(byteBuf.readBytes(anyByte())).thenReturn(byteBuf);
-//        handshakeResponse41Packet = new HandshakeResponse41Packet(payload);
-//    }
-    
     @Test
     public void assertNewWithPayloadWithDatabase() {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
         when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
-        when(payload.readStringNul()).thenReturn("root", "sharding_db");
-        when(payload.readStringNulByBytes()).thenReturn(new byte[] {1});
+        when(payload.readStringNul()).thenReturn("root", "1", "sharding_db");
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
-        verify(payload, times(2)).readInt1();
-        verify(payload, times(2)).readInt4();
-        verify(payload, times(2)).readStringNul();
-        verify(payload).readStringNulByBytes();
+        assertThat(actual.getAuthResponse(), is("1".getBytes()));
         verify(payload).skipReserved(23);
     }
     
@@ -76,15 +53,11 @@ public final class HandshakeResponse41PacketTest {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
         when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
-        when(payload.readStringLenencByBytes()).thenReturn(new byte[] {1});
+        when(payload.readStringLenenc()).thenReturn("1");
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
-        verify(payload, times(2)).readInt1();
-        verify(payload, times(2)).readInt4();
-        verify(payload).readStringNul();
-        verify(payload).readStringLenencByBytes();
+        assertThat(actual.getAuthResponse(), is("1".getBytes()));
         verify(payload).skipReserved(23);
     }
     
@@ -93,11 +66,11 @@ public final class HandshakeResponse41PacketTest {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET, 1);
         when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
-        when(payload.readStringFixByBytes(1)).thenReturn(new byte[] {1});
+        when(payload.readStringFix(1)).thenReturn("1");
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        assertThat(actual.getAuthResponse(), is("1".getBytes()));
         verify(payload).skipReserved(23);
     }
     

@@ -64,13 +64,13 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
     
     private byte[] readAuthResponse(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
-            return payload.readStringLenencByBytes();
+            return payload.readStringLenenc().getBytes();
         }
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
             int length = payload.readInt1();
-            return payload.readStringFixByBytes(length);
+            return payload.readStringFix(length).getBytes();
         }
-        return payload.readStringNulByBytes();
+        return payload.readStringNul().getBytes();
     }
     
     private String readDatabase(final MySQLPacketPayload payload) {
