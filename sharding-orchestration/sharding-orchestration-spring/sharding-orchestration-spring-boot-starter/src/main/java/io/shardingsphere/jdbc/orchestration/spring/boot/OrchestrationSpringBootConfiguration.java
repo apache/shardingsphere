@@ -20,8 +20,8 @@ package io.shardingsphere.jdbc.orchestration.spring.boot;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.DataSourceUtil;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
@@ -39,6 +39,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 
 /**
  * Orchestration spring boot sharding and master-slave configuration.

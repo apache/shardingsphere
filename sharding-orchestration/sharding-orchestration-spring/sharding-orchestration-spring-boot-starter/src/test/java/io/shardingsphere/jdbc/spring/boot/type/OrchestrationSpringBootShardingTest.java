@@ -18,8 +18,11 @@
 package io.shardingsphere.jdbc.spring.boot.type;
 
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.spring.boot.util.EmbedTestingServer;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.BeforeClass;
@@ -41,10 +44,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = OrchestrationSpringBootMasterSlaveTest.class)
+@SpringBootTest(classes = OrchestrationSpringBootShardingTest.class)
 @SpringBootApplication
-@ActiveProfiles("masterslave")
-public class OrchestrationSpringBootMasterSlaveTest {
+@ActiveProfiles("sharding")
+public class OrchestrationSpringBootShardingTest {
     
     @Resource
     private DataSource dataSource;
@@ -55,19 +58,26 @@ public class OrchestrationSpringBootMasterSlaveTest {
     }
     
     @Test
-    public void assertWithMasterSlaveDataSource() throws ReflectiveOperationException {
-        assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
-        Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
+    public void assertWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
+        assertTrue(dataSource instanceof OrchestrationShardingDataSource);
+        Field dataSourceField = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");
+        dataSourceField.setAccessible(true);
+        ShardingDataSource shardingDataSource = (ShardingDataSource) dataSourceField.get(dataSource);
+        Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
-        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
-        for (DataSource each : masterSlaveDataSource.getAllDataSources().values()) {
+        ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
+        for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
-            assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }
+        assertTrue(shardingContext.isShowSQL());
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        configMap.put("key2", "value1");
-        configMap.put("username", "root");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
+        
+        Field propertiesField = ShardingDataSource.class.getDeclaredField("shardingProperties");
+        propertiesField.setAccessible(true);
+        ShardingProperties shardingProperties = (ShardingProperties) propertiesField.get(shardingDataSource);
+        assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
     }
 }
