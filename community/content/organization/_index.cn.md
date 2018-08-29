@@ -43,10 +43,6 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) 高级DBA, 京东
 
-* 王凯, Kai Wang, [@oracle219](https://github.com/oracle219) 架构师, 当当
-
-* 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) 工程师, 当当
-
 * 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) 高级工程师, 京东
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当

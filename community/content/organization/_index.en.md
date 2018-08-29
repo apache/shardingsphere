@@ -43,10 +43,6 @@ In various situations the Sharding shall hold a vote. These votes can happen on 
 
 * 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) Senior DBA, Jingdong
 
-* 王凯, Kai Wang, [@oracle219](https://github.com/oracle219) Architect, Dangdang
-
-* 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) Engineer, Dangdang
-
 * 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) Senior engineer, Jingdong
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang

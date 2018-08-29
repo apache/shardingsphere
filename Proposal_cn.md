@@ -75,8 +75,6 @@ Database Mesh将应用与数据库会组成一个巨大的网格体系，应用�
 
 - 张永伦, Yonglun Zhang, @tuohai666 Senior engineer, Jingdong
 - 潘娟, Juan Pan, @tristaZero Senior DBA, Jingdong
-- 王凯, Kai Wang, @oracle219 Architect, Dangdang
-- 林嘉琦, Jiaqi Lin, @chidaodezhongsheng Engineer, Dangdang
 - 赵俊, Jun Zhao, @cherrylzhao Senior engineer, Jingdong
 - 岳令, Ling Yue, @ling.yue QA Engineer, Dangdang
 - 马晓光, Xiaoguang Ma, Senior engineer, huimai365
@@ -202,8 +200,6 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 - 高洪涛, Hongtao Gao, [hanahmily@apache.org](mailto:hanahmily@apache.org)
 - 张永伦, Yonglun Zhang
 - 潘娟, Juan Pan
-- 王凯, Kai Wang
-- 林嘉琦, Jiaqi Lin
 - 赵俊, Jun Zhao
 - 岳令, Ling Yue
 - 马晓光, Xiaoguang Ma
@@ -212,7 +208,7 @@ Slack [https://sharding.slack.com](https://sharding.slack.com/)
 ## Affiliations
 
 - 京东: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao
-- 当当: Hao Cao, Kai Wang, Jiaqi Lin, Ling Yue
+- 当当: Hao Cao, Ling Yue
 - 翼支付: QingYang Chen
 - 个人开发者: Sheng Wu, Hongtao Gao, Xiaoguang Ma
 
