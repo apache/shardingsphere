@@ -52,21 +52,24 @@ public final class ShardingContext implements AutoCloseable {
     
     private ConnectionMode connectionMode;
     
+    private int maxConnectionsSizePerQuery;
+    
     private boolean showSQL;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, 
-                           final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
-        init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, showSQL);
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, 
+                           final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final int maxConnectionsSizePerQuery, final boolean showSQL) {
+        init(dataSourceMap, shardingRule, databaseType, executeEngine, connectionMode, maxConnectionsSizePerQuery, showSQL);
     }
     
-    private void init(final Map<String, DataSource> dataSourceMap, 
-                      final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final boolean showSQL) {
+    private void init(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, 
+                      final ShardingExecuteEngine executeEngine, final ConnectionMode connectionMode, final int maxConnectionsSizePerQuery, final boolean showSQL) {
         this.shardingRule = shardingRule;
         this.executeEngine = executeEngine;
         this.databaseType = databaseType;
         this.connectionMode = connectionMode;
+        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         this.showSQL = showSQL;
-        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap));
+        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), maxConnectionsSizePerQuery);
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) {

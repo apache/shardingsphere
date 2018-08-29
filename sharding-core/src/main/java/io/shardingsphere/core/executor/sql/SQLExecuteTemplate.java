@@ -47,6 +47,8 @@ public final class SQLExecuteTemplate {
     
     private final ConnectionMode connectionMode;
     
+    private final int maxConnectionsSizePerQuery;
+    
     /**
      * Execute.
      *
@@ -76,7 +78,7 @@ public final class SQLExecuteTemplate {
         ShardingEventBusInstance.getInstance().post(event);
         try {
             List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? executeEngine.execute(new LinkedList<>(executeUnits), firstExecuteCallback, executeCallback)
-                    : executeEngine.groupExecute(getExecuteUnitGroups(executeUnits), firstExecuteCallback, executeCallback);
+                    : executeEngine.groupExecute(getExecuteUnitGroups(executeUnits), maxConnectionsSizePerQuery, firstExecuteCallback, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF

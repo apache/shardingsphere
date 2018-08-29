@@ -54,7 +54,7 @@ public abstract class AbstractBaseExecutorTest {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
-        executeTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
+        executeTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY, 1);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);

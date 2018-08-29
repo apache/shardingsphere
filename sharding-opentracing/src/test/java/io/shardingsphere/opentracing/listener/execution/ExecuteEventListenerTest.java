@@ -52,7 +52,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
     private ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(5);
     
-    private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
+    private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY, 1);
     
     @After
     public void tearDown() {
