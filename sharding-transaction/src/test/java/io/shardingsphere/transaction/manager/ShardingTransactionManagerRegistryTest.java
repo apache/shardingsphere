@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.manager;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.manager.local.LocalTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import org.junit.Test;
@@ -35,5 +36,10 @@ public final class ShardingTransactionManagerRegistryTest {
     @Test
     public void assertGetShardingTransactionManagerForXA() {
         assertThat(ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA), instanceOf(XATransactionManager.class));
+    }
+    
+    @Test
+    public void assertGetShardingTransactionManagerForBASE() {
+        assertThat(ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE), instanceOf(BASETransactionManager.class));
     }
 }
