@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-orchestration-spring</artifactId>
+        <artifactId>sharding-jdbc-orchestration-spring</artifactId>
         <version>3.0.0.M3-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-orchestration-spring-boot-starter</artifactId>

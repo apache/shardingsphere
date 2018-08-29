@@ -13,9 +13,9 @@
     <name>${project.artifactId}</name>
     <modules>
         <module>sharding-orchestration-core</module>
-        <module>sharding-orchestration-jdbc</module>
+        <module>sharding-jdbc-orchestration</module>
         <module>sharding-orchestration-reg</module>
-        <module>sharding-orchestration-spring</module>
+        <module>sharding-jdbc-orchestration-spring</module>
     </modules>
 
     <properties>
