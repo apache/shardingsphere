@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.yaml.sharding;
+package io.shardingsphere.jdbc.orchestration.api.yaml.sharding;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.shardingsphere.jdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.yaml.AbstractYamlDataSourceTest;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +66,7 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
             dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
                 @Override
                 public DataSource apply(final String key) {
-                    return createDataSource(key);
+                    return AbstractYamlDataSourceTest.createDataSource(key);
                 }
             }), yamlFile);
         }
