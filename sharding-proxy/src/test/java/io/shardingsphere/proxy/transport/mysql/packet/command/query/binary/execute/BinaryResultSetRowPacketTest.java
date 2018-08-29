@@ -39,13 +39,13 @@ public final class BinaryResultSetRowPacketTest {
     private MySQLPacketPayload payload;
     
     @Test
-    @Ignore
     public void assertWrite() {
         BinaryResultSetRowPacket actual = new BinaryResultSetRowPacket(1, 2, Arrays.<Object>asList("value", null), Arrays.asList(ColumnType.MYSQL_TYPE_STRING, ColumnType.MYSQL_TYPE_STRING));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getData(), is(Arrays.<Object>asList("value", null)));
         actual.write(payload);
-        verify(payload, times(2)).writeInt1(0x00);
+        verify(payload).writeInt1(0x00);
+        verify(payload).writeInt1(0x08);
         verify(payload).writeStringLenenc("value");
     }
 }
