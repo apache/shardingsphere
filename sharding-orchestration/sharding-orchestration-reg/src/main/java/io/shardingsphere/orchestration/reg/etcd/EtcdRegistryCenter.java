@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.etcd;
+package io.shardingsphere.orchestration.reg.etcd;
 
 import com.google.common.base.Optional;
 import com.google.protobuf.ByteString;
@@ -23,22 +23,22 @@ import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseFutureStub;
+import etcdserverpb.Rpc.WatchCreateRequest;
 import etcdserverpb.Rpc.LeaseGrantRequest;
 import etcdserverpb.Rpc.PutRequest;
 import etcdserverpb.Rpc.RangeRequest;
 import etcdserverpb.Rpc.RangeResponse;
-import etcdserverpb.Rpc.WatchCreateRequest;
-import etcdserverpb.Rpc.WatchRequest;
 import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
+import etcdserverpb.Rpc.WatchRequest;
 import io.grpc.Channel;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.internal.keepalive.KeepAlive;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
-import io.shardingsphere.jdbc.orchestration.reg.exception.RegException;
-import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
+import io.shardingsphere.orchestration.reg.etcd.internal.keepalive.KeepAlive;
+import io.shardingsphere.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
+import io.shardingsphere.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
+import io.shardingsphere.orchestration.reg.exception.RegException;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import mvccpb.Kv.KeyValue;
 
 import java.util.ArrayList;

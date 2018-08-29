@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.etcd.internal.retry;
+package io.shardingsphere.orchestration.reg.etcd.internal.retry;
 
 import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.Retryer;
@@ -23,8 +23,8 @@ import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Optional;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.jdbc.orchestration.reg.exception.RegExceptionHandler;
+import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingsphere.orchestration.reg.exception.RegExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.Callable;

@@ -15,11 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
+package io.shardingsphere.orchestration.reg.newzk.client.action;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

@@ -15,28 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
-
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+package io.shardingsphere.orchestration.reg.listener;
 
 /**
- * Client 's execution strategy.
+ * Coordinator registry event change listener.
  *
- * @author lidongbo
+ * @author junxiong
  */
-public interface IExecStrategy extends IAction, IGroupAction {
+public interface EventListener {
     
     /**
-     * Get provider.
-     *
-     * @return provider
+     * Fire when event changed.
+     * 
+     * @param event data changed event
      */
-    IProvider getProvider();
-    
-    /**
-     * Create zookeeper transaction.
-     *
-     * @return zookeeper transaction
-     */
-    BaseTransaction transaction();
+    void onChange(DataChangedEvent event);
 }
