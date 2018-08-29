@@ -17,12 +17,20 @@
 
 package io.shardingsphere.proxy;
 
+import io.shardingsphere.proxy.config.AllConfigTests;
+import io.shardingsphere.proxy.listener.AllListenerTests;
+import io.shardingsphere.proxy.runtime.AllRuntimeTests;
 import io.shardingsphere.proxy.transport.AllTransportTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(AllTransportTests.class)
+@SuiteClasses({
+        AllRuntimeTests.class, 
+        AllListenerTests.class,
+        AllConfigTests.class, 
+        AllTransportTests.class
+})
 public final class AllTests {
 }
