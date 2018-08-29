@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.UsualClient;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.UsualClient;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.io.IOException;

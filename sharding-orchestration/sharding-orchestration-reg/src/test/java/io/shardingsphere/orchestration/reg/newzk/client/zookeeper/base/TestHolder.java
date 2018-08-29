@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
