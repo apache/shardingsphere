@@ -18,8 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
+import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
