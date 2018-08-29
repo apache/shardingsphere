@@ -22,7 +22,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -73,7 +73,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         return OrchestrationType.SHARDING == type
                 ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap,
                 shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
-                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), 
+                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(),
                 masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration());
     }
     

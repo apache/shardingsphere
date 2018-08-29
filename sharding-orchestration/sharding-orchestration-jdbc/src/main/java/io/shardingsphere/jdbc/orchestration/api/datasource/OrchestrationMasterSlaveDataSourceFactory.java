@@ -15,16 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.api;
+package io.shardingsphere.jdbc.orchestration.api.datasource;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,48 +33,48 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Orchestration sharding data source factory.
+ * Orchestration master-slave data source factory.
  *
  * @author zhangliang
  * @author caohao
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrchestrationShardingDataSourceFactory {
+public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**
-     * Create sharding data source.
-     *
+     * Create master-slave data source.
+     * 
      * @param dataSourceMap data source map
-     * @param shardingRuleConfig sharding rule configuration
-     * @param orchestrationConfig orchestration configuration
+     * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
-     * @param props properties for data source
-     * @return sharding data source
+     * @param props properties
+     * @param orchestrationConfig orchestration configuration
+     * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                               final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
+        if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
-        return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationFacade(orchestrationConfig));
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationFacade(orchestrationConfig));
     }
     
     /**
-     * Create sharding data source.
+     * Create master-slave data source.
      *
      * @param orchestrationConfig orchestration configuration
-     * @return sharding data source
+     * @return master-slave data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationConfig);
         ConfigurationService configService = orchestrationFacade.getConfigService();
-        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
-        Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
-        ShardingDataSource shardingDataSource = new ShardingDataSource(configService.loadDataSourceMap(), new ShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
-        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationFacade);
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+        Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource( configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
+        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationFacade);
     }
 }

@@ -15,14 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.api.config;
+package io.shardingsphere.jdbc.orchestration.config;
+
+import io.shardingsphere.core.api.config.ProxyBasicRule;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 /**
- * Orchestration type.
+ * Orchestration proxy configuration.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public enum OrchestrationType {
+@RequiredArgsConstructor
+@Getter
+public final class OrchestrationProxyConfiguration {
     
-    SHARDING, MASTER_SLAVE
+    private final Map<String, DataSourceParameter> dataSources;
+    
+    private final ProxyBasicRule proxyBasicRule;
 }

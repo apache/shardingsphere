@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal;
+package io.shardingsphere.jdbc.orchestration.internal.datasource;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
@@ -24,10 +24,11 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.jdbc.datasource.CircuitBreakerDataSource;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

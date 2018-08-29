@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.api.config;
+package io.shardingsphere.jdbc.orchestration.config;
 
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
