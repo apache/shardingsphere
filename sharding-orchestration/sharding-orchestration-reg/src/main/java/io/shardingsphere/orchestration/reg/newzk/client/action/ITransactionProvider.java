@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.action;
+package io.shardingsphere.orchestration.reg.newzk.client.action;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.CreateMode;
 
 /**

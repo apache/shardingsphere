@@ -21,7 +21,7 @@ import io.shardingsphere.jdbc.orchestration.internal.config.ConfigMapListenerMan
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.instance.InstanceListenerManager;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
  * Registry center's listener factory.

@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.election;
+package io.shardingsphere.orchestration.reg.newzk.client.election;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.PathUtil;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.utility.ZookeeperConstants;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
+import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.WatcherCreator;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

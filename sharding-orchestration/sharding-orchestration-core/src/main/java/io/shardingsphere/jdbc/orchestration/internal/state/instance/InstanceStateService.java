@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.instance;
 
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
  * Instance state service.
