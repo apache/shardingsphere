@@ -46,7 +46,6 @@ public final class PacketCodecTest {
     public void assertDecodeWithValidHeader() {
         when(byteBuf.readableBytes()).thenReturn(1);
         new PacketCodecFixture().decode(context, byteBuf, new LinkedList<>());
-        verify(context).read();
     }
     
     @Test

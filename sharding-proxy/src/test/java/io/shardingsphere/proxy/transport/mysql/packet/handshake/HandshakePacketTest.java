@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,10 +53,6 @@ public final class HandshakePacketTest {
         assertThat(actual.getConnectionId(), is(1000));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart2(), is(part2));
-        verify(payload, times(4)).readInt1();
-        verify(payload, times(3)).readStringNul();
-        verify(payload).readInt4();
-        verify(payload, times(3)).readInt2();
         verify(payload).skipReserved(10);
     }
     

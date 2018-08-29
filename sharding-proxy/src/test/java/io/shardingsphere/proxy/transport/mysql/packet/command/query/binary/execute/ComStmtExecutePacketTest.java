@@ -105,9 +105,6 @@ public final class ComStmtExecutePacketTest {
         assertThat(actualResultValue.getSequenceId(), is(2));
         assertThat(((BinaryResultSetRowPacket) actualResultValue).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());
-        verify(backendHandler).execute();
-        verify(backendHandler, times(2)).next();
-        verify(backendHandler).getResultValue();
     }
     
     private void setBackendHandler(final ComStmtExecutePacket packet, final BackendHandler backendHandler) throws ReflectiveOperationException {

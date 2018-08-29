@@ -66,9 +66,6 @@ public final class MySQLPacketCodecTest {
         List<Object> out = new LinkedList<>();
         new MySQLPacketCodec().doDecode(context, byteBuf, out, 54);
         assertThat(out.size(), is(1));
-        verify(byteBuf).markReaderIndex();
-        verify(byteBuf).readMediumLE();
-        verify(byteBuf).readRetainedSlice(51);
     }
     
     @Test
@@ -78,9 +75,6 @@ public final class MySQLPacketCodecTest {
         List<Object> out = new LinkedList<>();
         new MySQLPacketCodec().doDecode(context, byteBuf, out, 40);
         assertTrue(out.isEmpty());
-        verify(byteBuf).markReaderIndex();
-        verify(byteBuf).readMediumLE();
-        verify(byteBuf).resetReaderIndex();
     }
     
     @Test

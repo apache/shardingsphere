@@ -98,10 +98,6 @@ public final class HandshakeResponse41PacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
-        verify(payload, times(3)).readInt1();
-        verify(payload, times(2)).readInt4();
-        verify(payload).readStringNul();
-        verify(payload).readStringFixByBytes(1);
         verify(payload).skipReserved(23);
     }
     

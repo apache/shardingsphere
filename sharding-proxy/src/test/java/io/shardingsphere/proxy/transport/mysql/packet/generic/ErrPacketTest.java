@@ -28,7 +28,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,11 +67,6 @@ public final class ErrPacketTest {
         assertThat(actual.getErrorCode(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
         assertThat(actual.getSqlState(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
         assertThat(actual.getErrorMessage(), is(String.format(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
-        verify(payload, times(2)).readInt1();
-        verify(payload).readInt2();
-        verify(payload).readStringFix(1);
-        verify(payload).readStringFix(5);
-        verify(payload).readStringEOF();
     }
     
     @Test

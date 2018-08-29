@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,8 +51,6 @@ public final class EofPacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        verify(payload, times(2)).readInt1();
-        verify(payload, times(2)).readInt2();
     }
     
     @Test
