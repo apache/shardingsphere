@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.yaml;
+package io.shardingsphere.jdbc.orchestration.api.yaml;
 
-import io.shardingsphere.jdbc.orchestration.util.EmbedTestingServer;
+import io.shardingsphere.jdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;

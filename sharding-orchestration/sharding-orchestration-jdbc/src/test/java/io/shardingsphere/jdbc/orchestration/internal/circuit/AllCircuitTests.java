@@ -15,15 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal;
+package io.shardingsphere.jdbc.orchestration.internal.circuit;
 
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationNodeTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.connection.CircuitBreakerConnectionTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSourceTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.metadata.CircuitBreakerDatabaseMetaDataTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ConfigurationNodeTest.class
-})
-public final class AllInternalTests {
+        CircuitBreakerConnectionTest.class,
+        CircuitBreakerDataSourceTest.class,
+        CircuitBreakerDatabaseMetaDataTest.class
+    })
+public final class AllCircuitTests {
 }

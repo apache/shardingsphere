@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.yaml;
+package io.shardingsphere.jdbc.orchestration.api.yaml;
 
-import io.shardingsphere.jdbc.orchestration.yaml.masterslave.YamlOrchestrationMasterSlaveIntegrateTest;
-import io.shardingsphere.jdbc.orchestration.yaml.sharding.YamlOrchestrationShardingIntegrateTest;
-import io.shardingsphere.jdbc.orchestration.yaml.sharding.YamlOrchestrationShardingWithMasterSlaveIntegrateTest;
+import io.shardingsphere.jdbc.orchestration.api.yaml.masterslave.YamlOrchestrationMasterSlaveIntegrateTest;
+import io.shardingsphere.jdbc.orchestration.api.yaml.sharding.YamlOrchestrationShardingIntegrateTest;
+import io.shardingsphere.jdbc.orchestration.api.yaml.sharding.YamlOrchestrationShardingWithMasterSlaveIntegrateTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

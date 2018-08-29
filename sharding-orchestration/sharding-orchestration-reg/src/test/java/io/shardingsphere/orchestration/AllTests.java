@@ -15,15 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal;
+package io.shardingsphere.orchestration;
 
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationNodeTest;
+import io.shardingsphere.orchestration.reg.AllRegTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationNodeTest.class
-})
-public final class AllInternalTests {
+@SuiteClasses({
+        AllRegTests.class
+    })
+public final class AllTests {
 }

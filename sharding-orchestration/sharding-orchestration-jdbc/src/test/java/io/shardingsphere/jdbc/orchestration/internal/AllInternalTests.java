@@ -17,13 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.internal;
 
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationNodeTest;
+import io.shardingsphere.jdbc.orchestration.internal.circuit.AllCircuitTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationNodeTest.class
-})
+@SuiteClasses({
+        AllCircuitTests.class
+    })
 public final class AllInternalTests {
 }

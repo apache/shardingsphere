@@ -15,15 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal;
+package io.shardingsphere.jdbc.orchestration.api;
 
-import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationNodeTest;
+import io.shardingsphere.jdbc.orchestration.api.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ConfigurationNodeTest.class
-})
-public final class AllInternalTests {
+        AllYamlTests.class
+    })
+public final class AllApiTests {
 }
