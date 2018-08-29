@@ -35,6 +35,7 @@
 1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support `$->{..}` for inline expression 
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support inject key generator objects by spring namespace
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
+1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Reconstruct orchestration module to make it independent
 
 ### Bug Fixes
 

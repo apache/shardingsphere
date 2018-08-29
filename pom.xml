@@ -11,8 +11,7 @@
         <module>sharding-jdbc</module>
         <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
-        <module>sharding-jdbc-orchestration</module>
-        <module>sharding-jdbc-orchestration-spring</module>
+        <module>sharding-orchestration</module>
         <module>sharding-opentracing</module>
         <module>sharding-proxy</module>
         <module>sharding-sql-test</module>
