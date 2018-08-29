@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.etcd.internal.channel;
+package io.shardingsphere.orchestration.reg.etcd.internal.channel;
 
 import io.grpc.Channel;
 import io.grpc.netty.NettyChannelBuilder;

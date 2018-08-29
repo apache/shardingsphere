@@ -21,9 +21,9 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
  * Data source listener manager.

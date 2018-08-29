@@ -15,33 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.operation;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.operation;
 
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.action.IProvider;
-import io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
+
+import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
+import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 
 /**
- * Async retry operation which delete current action.
+ * Async retry operation which delete all children action.
  *
  * @author lidongbo
  */
-public final class DeleteCurrentOperation extends BaseOperation {
+public final class DeleteAllChildrenOperation extends BaseOperation {
     
     private final String key;
     
-    public DeleteCurrentOperation(final IProvider provider, final String key) {
+    public DeleteAllChildrenOperation(final IProvider provider, final String key) {
         super(provider);
         this.key = key;
     }
     
     @Override
     protected void execute() throws KeeperException, InterruptedException {
-        getProvider().delete(getProvider().getRealPath(key));
+        new UsualStrategy(getProvider()).deleteAllChildren(key);
     }
     
     @Override
     public String toString() {
-        return String.format("DeleteCurrentOperation key: %s", key);
+        return String.format("DeleteAllChildrenOperation key: %s", key);
     }
 }

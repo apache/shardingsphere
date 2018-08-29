@@ -15,31 +15,42 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.listener;
+package io.shardingsphere.orchestration.reg.newzk.client.retry;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data changed event.
+ * Delay policy.
  *
- * @author junxiong
+ * @author lidongbo
  */
 @RequiredArgsConstructor
 @Getter
-public class DataChangedEvent {
+public class DelayRetryPolicy {
     
-    private final Type eventType;
+    private static final long BASE_DELAY = 10;
     
-    private final String key;
+    private static final int BASE_COUNT = 3;
     
-    private final String value;
+    private static final int RETRY_COUNT_BOUND = 29;
+    
+    private final int retryCount;
+    
+    private final long baseDelay;
+    
+    private final long delayUpperBound;
+    
+    public DelayRetryPolicy(final long baseDelay) {
+        this(RETRY_COUNT_BOUND, baseDelay, Integer.MAX_VALUE);
+    }
     
     /**
-     * Data changed event type.
+     * Default delay policy.
+     *
+     * @return delay policy
      */
-    public enum Type {
-        
-        UPDATED, DELETED, IGNORED
+    public static DelayRetryPolicy defaultDelayPolicy() {
+        return new DelayRetryPolicy(BASE_COUNT, BASE_DELAY, Integer.MAX_VALUE);
     }
 }

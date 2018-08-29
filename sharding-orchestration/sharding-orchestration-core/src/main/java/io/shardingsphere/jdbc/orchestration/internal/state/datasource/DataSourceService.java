@@ -25,7 +25,7 @@ import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import javax.sql.DataSource;
 import java.util.Collection;
