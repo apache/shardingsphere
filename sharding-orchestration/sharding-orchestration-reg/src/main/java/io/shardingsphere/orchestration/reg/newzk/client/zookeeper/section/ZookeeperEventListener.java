@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.newzk.client.zookeeper.section;
+package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section;
 
 import lombok.Getter;
 import lombok.Setter;

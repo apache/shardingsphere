@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.reg.zookeeper;
+package io.shardingsphere.orchestration.reg.zookeeper;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.jdbc.orchestration.reg.exception.RegExceptionHandler;
-import io.shardingsphere.jdbc.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.jdbc.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.exception.RegExceptionHandler;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
