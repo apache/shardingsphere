@@ -37,7 +37,7 @@ import java.util.Map;
 @Setter
 public class YamlProxyShardingRuleConfiguration {
     
-    private String schemalName;
+    private String schemaName;
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     

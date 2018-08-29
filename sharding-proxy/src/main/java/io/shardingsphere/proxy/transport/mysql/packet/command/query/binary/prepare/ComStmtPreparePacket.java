@@ -24,7 +24,9 @@ import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -45,18 +47,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ComStmtPreparePacket implements CommandPacket {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
-    
     private static final BinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = BinaryStatementRegistry.getInstance();
+    
+    private final RuleRegistry ruleRegistry;
     
     @Getter
     private final int sequenceId;
     
     private final String sql;
     
-    public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload) {
+    public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
+        ruleRegistry = ProxyContext.getInstance().getRuleRegistry(frontendHandler.getSchema());
     }
     
     @Override
@@ -68,7 +71,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable()).parse(true);
+        SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable()).parse(true);
         CommandResponsePackets result = new CommandResponsePackets(new ComStmtPrepareOKPacket(
                 ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, sqlStatement.getParametersIndex()), getNumColumns(sqlStatement), sqlStatement.getParametersIndex(), 0));
         for (int i = 0; i < sqlStatement.getParametersIndex(); i++) {

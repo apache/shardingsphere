@@ -17,8 +17,11 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Strings;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import lombok.AccessLevel;
@@ -33,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * proxy context.
- * 
+ *
  * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -42,7 +45,7 @@ public final class ProxyContext {
     
     private static final ProxyContext INSTANCE = new ProxyContext();
     
-    private Collection<String> schemalNames = new LinkedList<>();
+    private Collection<String> schemaNames = new LinkedList<>();
     
     private Map<String, RuleRegistry> ruleRegistryMap = new ConcurrentHashMap<>();
     
@@ -56,6 +59,10 @@ public final class ProxyContext {
     
     private int executorSize;
     
+    private ConnectionMode connectionMode;
+    
+    private TransactionType transactionType;
+    
     /**
      * Get instance of proxy context.
      *
@@ -67,13 +74,16 @@ public final class ProxyContext {
     
     /**
      * Initialize proxy context.
-     * 
-     * @param serverConfiguration yanl server configuration
+     *
+     * @param serverConfiguration        yanl server configuration
      * @param shardingRuleConfigurations yaml shrding rule configuration
      */
     public synchronized void init(final YamlProxyServerConfiguration serverConfiguration, final Collection<YamlProxyShardingRuleConfiguration> shardingRuleConfigurations) {
         Properties properties = serverConfiguration.getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+        connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
+        // TODO just config proxy.transaction.enable here, in future(3.1.0)
+        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -82,8 +92,8 @@ public final class ProxyContext {
         // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         proxyAuthority = serverConfiguration.getProxyAuthority();
         for (YamlProxyShardingRuleConfiguration config : shardingRuleConfigurations) {
-            schemalNames.add(config.getSchemalName());
-            ruleRegistryMap.put(config.getSchemalName(), new RuleRegistry(config));
+            schemaNames.add(config.getSchemaName());
+            ruleRegistryMap.put(config.getSchemaName(), new RuleRegistry(config));
         }
     }
     
@@ -96,6 +106,29 @@ public final class ProxyContext {
         for (RuleRegistry ruleRegistry : ruleRegistryMap.values()) {
             ruleRegistry.initShardingMetaData(executeEngine);
         }
+    }
+    
+    /**
+     * check schema exists.
+     *
+     * @param schema schema
+     * @return schema exists or not
+     */
+    public boolean schemaExists(final String schema) {
+        return schemaNames.contains(schema);
+    }
+    
+    /**
+     * get rule registry of schema.
+     * 
+     * @param schema schema
+     * @return rule registry of schema
+     */
+    public RuleRegistry getRuleRegistry(final String schema) {
+        if (Strings.isNullOrEmpty(schema)) {
+            return null;
+        }
+        return ruleRegistryMap.get(schema);
     }
     
 }

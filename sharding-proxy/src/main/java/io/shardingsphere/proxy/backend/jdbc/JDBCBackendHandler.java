@@ -34,6 +34,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
@@ -103,7 +104,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
-        return TransactionType.XA == ruleRegistry.getTransactionType() && SQLType.DDL == sqlType
+        return TransactionType.XA == ProxyContext.getInstance().getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
     

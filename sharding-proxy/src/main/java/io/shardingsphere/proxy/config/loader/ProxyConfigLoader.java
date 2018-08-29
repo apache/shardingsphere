@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import java.util.regex.Pattern;
 
 /**
  * proxy config loader.
- * 
+ *
  * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -67,7 +68,7 @@ public final class ProxyConfigLoader {
     
     /**
      * load all proxy config.
-     * 
+     *
      * @throws IOException IO exception
      */
     public void loadConfiguration() throws IOException {
@@ -86,10 +87,10 @@ public final class ProxyConfigLoader {
         ) {
             YamlProxyShardingRuleConfiguration result = new Yaml(new Constructor(YamlProxyShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlProxyShardingRuleConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
-            Preconditions.checkNotNull(result.getSchemalName(), String.format("schemalName configuration in file `%s` can not be null.", yamlFile.getName()));
-            Preconditions.checkState(!result.getDataSources().isEmpty(), String.format("Data sources configuration in file `%s` can not be empty."), yamlFile.getName());
+            Preconditions.checkNotNull(result.getSchemaName(), String.format("schemalName configuration in file `%s` can not be null.", yamlFile.getName()));
+            Preconditions.checkState(!result.getDataSources().isEmpty(), String.format("Data sources configuration in file `%s` can not be empty.", yamlFile.getName()));
             Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != serverConfiguration.getOrchestration(),
-                    String.format("Configuration invalid in file `%s`, sharding rule, local and orchestration configuration can not be both null."), yamlFile.getName());
+                    String.format("Configuration invalid in file `%s`, sharding rule, local and orchestration configuration can not be both null.", yamlFile.getName()));
             return result;
         }
     }

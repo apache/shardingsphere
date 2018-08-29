@@ -19,11 +19,9 @@ package io.shardingsphere.proxy.config;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
 import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
@@ -34,6 +32,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -61,15 +60,11 @@ public final class RuleRegistry {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private boolean showSQL;
-    
-    private ConnectionMode connectionMode;
-    
     private BackendNIOConfiguration backendNIOConfig;
     
-    private TransactionType transactionType;
-    
     private ShardingMetaData metaData;
+    
+    private String schemaName;
     
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
@@ -78,9 +73,6 @@ public final class RuleRegistry {
     public RuleRegistry(final YamlProxyShardingRuleConfiguration config) {
         Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        // TODO just config proxy.transaction.enable here, in future(3.1.0)
-        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
@@ -91,7 +83,8 @@ public final class RuleRegistry {
         }
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         dataSourceConfigurationMap = config.getDataSources();
-        backendDataSource = new JDBCBackendDataSource();
+        backendDataSource = new JDBCBackendDataSource(this);
+        schemaName = config.getSchemaName();
     }
     
     /**

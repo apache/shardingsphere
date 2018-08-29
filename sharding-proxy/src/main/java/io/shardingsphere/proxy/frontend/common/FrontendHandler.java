@@ -21,6 +21,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Frontend handler.
@@ -31,7 +33,9 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     private boolean authorized;
     
-    private String schemal;
+    @Getter
+    @Setter
+    private String schema;
     
     @Override
     public final void channelActive(final ChannelHandlerContext context) {

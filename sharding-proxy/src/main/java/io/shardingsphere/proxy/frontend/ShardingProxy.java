@@ -31,7 +31,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
-import io.shardingsphere.proxy.backend.netty.client.BackendNettyClient;
+import io.shardingsphere.proxy.backend.netty.client.BackendNettyClientManager;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 
@@ -67,7 +67,7 @@ public final class ShardingProxy {
     public void start(final int port) throws InterruptedException {
         try {
             if (PROXY_CONTEXT.isUseNIO()) {
-                BackendNettyClient.getInstance().start();
+                BackendNettyClientManager.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
@@ -84,7 +84,7 @@ public final class ShardingProxy {
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
             if (PROXY_CONTEXT.isUseNIO()) {
-                BackendNettyClient.getInstance().stop();
+                BackendNettyClientManager.getInstance().stop();
             }
         }
     }
