@@ -44,8 +44,8 @@ public final class BinaryResultSetRowPacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getData(), is(Arrays.<Object>asList("value", null)));
         actual.write(payload);
-        verify(payload, times(1)).writeInt1(0x00);
-        verify(payload, times(1)).writeInt1(0x08);
+        verify(payload).writeInt1(0x00);
+        verify(payload).writeInt1(0x08);
         verify(payload).writeStringLenenc("value");
     }
 }
