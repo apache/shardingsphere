@@ -135,9 +135,14 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         if (!Strings.isNullOrEmpty(strategyRef)) {
             factory.addPropertyReference("loadBalanceAlgorithm", strategyRef);
         } else {
-            factory.addPropertyValue("loadBalanceAlgorithm", MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm());
+            factory.addPropertyValue("loadBalanceAlgorithm", parseStrategyType(masterSlaveElement).getAlgorithm());
         }
         return factory.getBeanDefinition();
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithmType parseStrategyType(final Element element) {
+        String result = element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_TYPE_ATTRIBUTE);
+        return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType() : MasterSlaveLoadBalanceAlgorithmType.valueOf(result);
     }
     
     private Collection<String> parseSlaveDataSourcesRef(final Element element) {
