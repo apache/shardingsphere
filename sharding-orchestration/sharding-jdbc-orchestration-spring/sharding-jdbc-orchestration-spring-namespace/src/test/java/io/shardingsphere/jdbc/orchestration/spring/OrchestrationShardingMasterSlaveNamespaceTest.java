@@ -47,27 +47,26 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     
     @Test
     public void assertMasterSlaveShardingDataSourceByUserStrategy() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByDefaultStrategy");
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategy");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_1"));
         assertNotNull(dataSourceMap.get("dbtbl_1_master"));
         assertNotNull(dataSourceMap.get("dbtbl_1_slave_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
-        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByDefaultStrategy");
-        assertThat(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName(), is("masterSlaveShardingDataSourceByUserStrategy"));
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategy");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }
     
     @Test
     public void assertMasterSlaveShardingDataSourceByDefaultStrategy() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategy");
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByDefaultStrategy");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1_master"));
         assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
-        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategy");
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByDefaultStrategy");
         assertThat(shardingRule.getMasterSlaveRules().iterator().next().getLoadBalanceAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
