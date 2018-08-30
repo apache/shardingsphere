@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
@@ -65,7 +64,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     public MemoryStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(backendConnection, jdbcExecutorWrapper);
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.MEMORY_STRICTLY, 1);
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     @Override

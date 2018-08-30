@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
@@ -54,7 +53,7 @@ public abstract class AbstractBaseExecutorTest {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
-        executeTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY, 1);
+        executeTemplate = new SQLExecuteTemplate(executeEngine);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);

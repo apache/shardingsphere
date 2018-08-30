@@ -25,6 +25,8 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.result.StreamQueryResult;
+import io.shardingsphere.core.executor.statement.ConnectionStrictlyStatementExecutor;
+import io.shardingsphere.core.executor.statement.MemoryStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementUnit;
 import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
@@ -58,8 +60,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -240,11 +244,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private StatementExecutor getStatementExecutor() throws SQLException {
-        ConnectionMode connectionMode = connection.getShardingDataSource().getShardingContext().getConnectionMode();
-        int maxConnectionsSizePerQuery = connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
-        SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine(), connectionMode, maxConnectionsSizePerQuery);
-        Collection<StatementUnit> executeUnits = ConnectionMode.MEMORY_STRICTLY == connectionMode ? getExecuteUnitsForMemoryStrictly() : getExecuteUnitsForConnectionStrictly();
-        return new StatementExecutor(sqlExecuteTemplate, routeResult.getSqlStatement().getType(), executeUnits);
+        SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
+        if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
+            return new MemoryStrictlyStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForMemoryStrictly());
+        }
+        return new ConnectionStrictlyStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForConnectionStrictly());
     }
     
     private Collection<StatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
@@ -255,15 +259,21 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private Collection<StatementUnit> getExecuteUnitsForConnectionStrictly() throws SQLException {
-        Collection<StatementUnit> result = new LinkedList<>();
-        for (Entry<String, Collection<SQLUnit>> entry : routeResult.getSQLUnitGroups().entrySet()) {
+    private Map<String, List<List<StatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = routeResult.getSQLUnitGroups();
+        Map<String, List<List<StatementUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
+        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             String dataSourceName = entry.getKey();
             for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery())) {
                 Connection connection = this.connection.getConnection(dataSourceName);
+                List<StatementUnit> statementUnits = new LinkedList<>();
                 for (SQLUnit each : sqlUnitList) {
-                    result.add(getStatementUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
+                    statementUnits.add(getStatementUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
                 }
+                if (!result.containsKey(dataSourceName)) {
+                    result.put(dataSourceName, new LinkedList<List<StatementUnit>>());
+                }
+                result.get(dataSourceName).add(statementUnits);
             }
         }
         return result;

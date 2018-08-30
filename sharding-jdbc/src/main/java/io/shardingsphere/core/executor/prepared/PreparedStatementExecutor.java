@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.prepared;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
@@ -28,25 +27,20 @@ import lombok.RequiredArgsConstructor;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * PreparedStatement Executor for multiple threads.
+ * Prepared statement executor.
  * 
  * @author zhangliang
  * @author caohao
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class PreparedStatementExecutor {
-    
-    private final SQLExecuteTemplate executeTemplate;
+public abstract class PreparedStatementExecutor {
     
     private final SQLType sqlType;
-    
-    private final Collection<PreparedStatementUnit> preparedStatementUnits;
     
     /**
      * Execute query.
@@ -64,7 +58,7 @@ public final class PreparedStatementExecutor {
                 return ((PreparedStatement) executeUnit.getStatement()).executeQuery();
             }
         };
-        return executeTemplate.execute(preparedStatementUnits, executeCallback);
+        return executeCallback(executeCallback);
     }
     
     /**
@@ -83,7 +77,7 @@ public final class PreparedStatementExecutor {
                 return ((PreparedStatement) executeUnit.getStatement()).executeUpdate();
             }
         };
-        List<Integer> results = executeTemplate.execute(preparedStatementUnits, executeCallback);
+        List<Integer> results = executeCallback(executeCallback);
         return accumulate(results);
     }
     
@@ -111,10 +105,12 @@ public final class PreparedStatementExecutor {
                 return ((PreparedStatement) executeUnit.getStatement()).execute();
             }
         };
-        List<Boolean> result = executeTemplate.execute(preparedStatementUnits, executeCallback);
+        List<Boolean> result = executeCallback(executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
         return result.get(0);
     }
+    
+    protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
 }

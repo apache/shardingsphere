@@ -20,7 +20,6 @@ package io.shardingsphere.core.executor.batch;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
@@ -30,23 +29,20 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * PreparedStatement Executor for  multiple threads to process add batch.
+ * Prepared statement executor to process add batch.
  * 
  * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class BatchPreparedStatementExecutor {
-    
-    private final SQLExecuteTemplate executeTemplate;
+public abstract class BatchPreparedStatementExecutor {
     
     private final DatabaseType dbType;
     
     private final SQLType sqlType;
-    
-    private final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits;
     
     private final int batchCount;
     
@@ -66,14 +62,14 @@ public final class BatchPreparedStatementExecutor {
                 return executeUnit.getStatement().executeBatch();
             }
         };
-        return accumulate(executeTemplate.execute(batchPreparedStatementUnits, callback));
+        return accumulate(executeCallback(callback));
     }
     
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
-            for (Map.Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
+        for (BatchPreparedStatementUnit each : getBatchPreparedStatementUnitGroups()) {
+            for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
                 if (DatabaseType.Oracle == dbType) {
                     result[entry.getKey()] = value;
@@ -85,4 +81,8 @@ public final class BatchPreparedStatementExecutor {
         }
         return result;
     }
+    
+    protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
+    
+    protected abstract Collection<BatchPreparedStatementUnit> getBatchPreparedStatementUnitGroups();
 }
