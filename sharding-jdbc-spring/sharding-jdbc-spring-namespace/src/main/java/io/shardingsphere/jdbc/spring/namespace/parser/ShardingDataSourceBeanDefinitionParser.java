@@ -115,6 +115,9 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     
     private List<BeanDefinition> parseMasterSlaveRulesConfig(final Element element) {
         Element masterSlaveRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULES_TAG);
+        if (null == masterSlaveRulesElement) {
+            return new LinkedList<>();
+        }
         List<Element> masterSlaveRuleElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
         List<BeanDefinition> result = new ManagedList<>(masterSlaveRuleElements.size());
         for (Element each : masterSlaveRuleElements) {
