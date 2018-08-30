@@ -108,6 +108,23 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
+    public void assertMasterSlaveShardingDataSource() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSource");
+        assertNotNull(dataSourceMap.get("dbtbl_0_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSource");
+        assertThat(shardingRule.getTableRules().size(), is(1));
+        assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertTrue(Arrays.equals(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns().toArray(new String[]{}),
+                new String[]{this.applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
+        assertTrue(Arrays.equals(shardingRule.getDefaultTableShardingStrategy().getShardingColumns().toArray(new String[]{}),
+                new String[]{this.applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
+        assertThat(shardingRule.getDefaultKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
+    }
+    
+    @Test
     public void assertShardingRuleWithAttributesDataSource() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("shardingRuleWithAttributesDataSource");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
