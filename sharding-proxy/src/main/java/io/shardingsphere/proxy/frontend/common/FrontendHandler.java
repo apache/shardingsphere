@@ -61,7 +61,10 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        backendConnection.cancel();
+        // TODO :yonglun investigate why null here 
+        if (null != backendConnection) {
+            backendConnection.cancel();
+        }
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }

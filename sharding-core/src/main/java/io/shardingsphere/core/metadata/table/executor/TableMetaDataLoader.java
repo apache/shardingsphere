@@ -52,6 +52,8 @@ public final class TableMetaDataLoader {
     
     private final TableMetaDataConnectionManager connectionManager;
     
+    private final int maxConnectionsSizePerQuery;
+    
     /**
      * Load table meta data.
      *
@@ -67,7 +69,7 @@ public final class TableMetaDataLoader {
     }
     
     private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return executeEngine.groupExecute(dataNodeGroups, new ShardingGroupExecuteCallback<String, TableMetaData>() {
+        return executeEngine.groupExecute(dataNodeGroups, maxConnectionsSizePerQuery, new ShardingGroupExecuteCallback<String, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {

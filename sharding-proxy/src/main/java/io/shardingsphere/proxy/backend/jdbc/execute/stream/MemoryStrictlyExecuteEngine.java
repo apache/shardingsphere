@@ -65,7 +65,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     public MemoryStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(backendConnection, jdbcExecutorWrapper);
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.MEMORY_STRICTLY);
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.MEMORY_STRICTLY, 1);
     }
     
     @Override

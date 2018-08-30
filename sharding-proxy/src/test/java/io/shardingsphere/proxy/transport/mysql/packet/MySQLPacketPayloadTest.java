@@ -28,7 +28,6 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -177,6 +176,12 @@ public final class MySQLPacketPayloadTest {
     }
     
     @Test
+    public void assertReadStringLenencByBytes() {
+        when(byteBuf.readByte()).thenReturn((byte) 0);
+        assertThat(new MySQLPacketPayload(byteBuf).readStringLenencByBytes(), is(new byte[] {}));
+    }
+    
+    @Test
     public void assertWriteStringLenencWithEmpty() {
         new MySQLPacketPayload(byteBuf).writeStringLenenc("");
         verify(byteBuf).writeByte(0);
@@ -192,6 +197,11 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertReadStringFix() {
         assertThat(new MySQLPacketPayload(byteBuf).readStringFix(0), is(""));
+    }
+    
+    @Test
+    public void assertReadStringFixByBytes() {
+        assertThat(new MySQLPacketPayload(byteBuf).readStringFixByBytes(0), is(new byte[] {}));
     }
     
     @Test
@@ -220,6 +230,13 @@ public final class MySQLPacketPayloadTest {
     public void assertReadStringNul() {
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
         assertThat(new MySQLPacketPayload(byteBuf).readStringNul(), is(""));
+        verify(byteBuf).skipBytes(1);
+    }
+    
+    @Test
+    public void assertReadStringNulByBytes() {
+        when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
+        assertThat(new MySQLPacketPayload(byteBuf).readStringNulByBytes(), is(new byte[] {}));
         verify(byteBuf).skipBytes(1);
     }
     
@@ -331,7 +348,9 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertWriteDateWithoutMillisecond() {
-        new MySQLPacketPayload(byteBuf).writeDate(new Timestamp(0L));
+        Timestamp timestamp = mock(Timestamp.class);
+        when(timestamp.getNanos()).thenReturn(0);
+        new MySQLPacketPayload(byteBuf).writeDate(timestamp);
         verify(byteBuf).writeByte(7);
     }
     
@@ -372,12 +391,6 @@ public final class MySQLPacketPayloadTest {
     public void assertReadTimeWithIllegalArgument() {
         when(byteBuf.readByte()).thenReturn((byte) 100);
         new MySQLPacketPayload(byteBuf).readTime();
-    }
-    
-    @Test
-    public void assertWriteTimeWithoutMillisecond() {
-        new MySQLPacketPayload(byteBuf).writeTime(new Timestamp(0L));
-        verify(byteBuf, atLeastOnce()).writeByte(8);
     }
     
     @Test

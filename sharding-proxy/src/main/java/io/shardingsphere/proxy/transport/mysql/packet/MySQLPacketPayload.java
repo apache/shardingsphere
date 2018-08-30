@@ -178,11 +178,11 @@ public final class MySQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Read length encoded integer from byte buffers.
+     * Read lenenc integer from byte buffers.
      * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
-     * @return length encoded integer
+     * @return lenenc integer
      */
     public long readIntLenenc() {
         int firstByte = readInt1();
@@ -202,11 +202,11 @@ public final class MySQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Write length encoded integer to byte buffers.
+     * Write lenenc integer to byte buffers.
      * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
-     * @param value length encoded integer
+     * @param value lenenc integer
      */
     public void writeIntLenenc(final long value) {
         if (value < 0xfb) {
@@ -228,11 +228,11 @@ public final class MySQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Read fixed length string from byte buffers.
+     * Read lenenc string from byte buffers.
      * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
-     * @return fixed length string
+     * @return lenenc string
      */
     public String readStringLenenc() {
         int length = (int) readIntLenenc();
@@ -242,7 +242,21 @@ public final class MySQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Write fixed length string to byte buffers.
+     * Read lenenc string from byte buffers for bytes.
+     *
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
+     *
+     * @return lenenc bytes
+     */
+    public byte[] readStringLenencByBytes() {
+        int length = (int) readIntLenenc();
+        byte[] result = new byte[length];
+        byteBuf.readBytes(result);
+        return result;
+    }
+    
+    /**
+     * Write lenenc string to byte buffers.
      * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
@@ -270,6 +284,21 @@ public final class MySQLPacketPayload implements AutoCloseable {
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
         return new String(result);
+    }
+    
+    /**
+     * Read fixed length string from byte buffers and return bytes.
+     *
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
+     *
+     * @param length length of fixed string
+     *
+     * @return fixed length bytes
+     */
+    public byte[] readStringFixByBytes(final int length) {
+        byte[] result = new byte[length];
+        byteBuf.readBytes(result);
+        return result;
     }
     
     /**
@@ -329,6 +358,20 @@ public final class MySQLPacketPayload implements AutoCloseable {
         byteBuf.readBytes(result);
         byteBuf.skipBytes(1);
         return new String(result);
+    }
+    
+    /**
+     * Read null terminated string from byte buffers and return bytes.
+     *
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
+     *
+     * @return null terminated bytes
+     */
+    public byte[] readStringNulByBytes() {
+        byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
+        byteBuf.readBytes(result);
+        byteBuf.skipBytes(1);
+        return result;
     }
     
     /**

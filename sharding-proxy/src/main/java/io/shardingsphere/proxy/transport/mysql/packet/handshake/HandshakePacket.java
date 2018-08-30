@@ -66,14 +66,14 @@ public final class HandshakePacket implements MySQLPacket {
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         payload.readStringNul();
         connectionId = payload.readInt4();
-        final byte[] authPluginDataPart1 = payload.readStringNul().getBytes();
+        final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
         payload.readInt2();
         payload.readInt1();
         Preconditions.checkArgument(statusFlag.getValue() == payload.readInt2());
         payload.readInt2();
         payload.readInt1();
         payload.skipReserved(10);
-        byte[] authPluginDataPart2 = payload.readStringNul().getBytes();
+        byte[] authPluginDataPart2 = payload.readStringNulByBytes();
         authPluginData = new AuthPluginData(authPluginDataPart1, authPluginDataPart2);
     }
     

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.memory;
 
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
@@ -40,13 +41,16 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateRespon
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -62,7 +66,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     public ConnectionStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(backendConnection, jdbcExecutorWrapper);
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.CONNECTION_STRICTLY);
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.CONNECTION_STRICTLY, 1);
     }
     
     @Override
@@ -89,9 +93,11 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     private Collection<StatementExecuteUnit> getStatementExecuteUnits(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
         Collection<StatementExecuteUnit> result = new LinkedList<>();
-        Connection connection = getBackendConnection().getConnection(dataSourceName);
-        for (SQLUnit each : sqlUnits) {
-            result.add(new ProxyStatementExecuteUnit(new SQLExecutionUnit(dataSourceName, each), getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys)));
+        for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(sqlUnits), RuleRegistry.getInstance().getMaxConnectionsSizePerQuery())) {
+            Connection connection = getBackendConnection().getConnection(dataSourceName);
+            for (SQLUnit each : sqlUnitList) {
+                result.add(new ProxyStatementExecuteUnit(new SQLExecutionUnit(dataSourceName, each), getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys)));
+            }
         }
         return result;
     }

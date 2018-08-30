@@ -44,9 +44,10 @@ public final class TableMetaDataInitializer {
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager) {
+    public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, 
+                                    final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery) {
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executeEngine, connectionManager);
+        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executeEngine, connectionManager, maxConnectionsSizePerQuery);
     }
     
     /**
