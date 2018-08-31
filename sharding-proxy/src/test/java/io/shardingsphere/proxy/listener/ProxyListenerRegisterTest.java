@@ -18,8 +18,6 @@
 package io.shardingsphere.proxy.listener;
 
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
-import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,32 +34,18 @@ public final class ProxyListenerRegisterTest {
     private final ProxyListenerRegister proxyListenerRegister = new ProxyListenerRegister();
     
     @Mock
-    private LocalTransactionListener localTransactionListener;
-    
-    @Mock
-    private XATransactionListener xaTransactionListener;
-    
-    @Mock
     private RuleRegistry ruleRegistry;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setField("localTransactionListener", localTransactionListener);
-        setField("xaTransactionListener", xaTransactionListener);
-        setField("ruleRegistry", ruleRegistry);
-    }
-    
-    private void setField(final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = ProxyListenerRegister.class.getDeclaredField(fieldName);
+        Field field = ProxyListenerRegister.class.getDeclaredField("ruleRegistry");
         field.setAccessible(true);
-        field.set(proxyListenerRegister, fieldValue);
+        field.set(proxyListenerRegister, ruleRegistry);
     }
     
     @Test
     public void assertRegister() {
         proxyListenerRegister.register();
-        verify(localTransactionListener).register();
-        verify(xaTransactionListener).register();
         verify(ruleRegistry).register();
     }
 }

@@ -6,6 +6,7 @@
         <version>3.0.0.M3-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -21,3 +22,5 @@
         </dependency>
     </dependencies>
 </project>
+
+

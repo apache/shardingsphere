@@ -15,14 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.merger.event;
+package io.shardingsphere.core.event.executor.overall;
 
 import io.shardingsphere.core.event.ShardingEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Merge event.
+ * Overall sql execution event.
  * 
- * @author chenqingyang
+ * @author gaohongtao
  */
-public final class MergeEvent extends ShardingEvent {
+@RequiredArgsConstructor
+@Getter
+public final class OverallExecutionEvent extends ShardingEvent {
+    
+    private final boolean parallelExecute;
 }

@@ -15,26 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.transaction;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.executor.sql.DQLExecutionEvent;
-import lombok.AllArgsConstructor;
+import io.shardingsphere.core.event.ShardingEventListenerRegistry;
+import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
+import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 
-@AllArgsConstructor
-public final class TestDQLExecutionEventListener {
+/**
+ * Transaction listener registry.
+ *
+ * @author zhangliang
+ */
+public final class TransactionListenerRegistry implements ShardingEventListenerRegistry {
     
-    private final EventCaller eventCaller;
-    
-    /**
-     * Listen event.
-     *
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final DQLExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
+    @Override
+    public void register() {
+        new LocalTransactionListener().register();
+        new XATransactionListener().register();
     }
 }

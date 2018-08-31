@@ -15,26 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.core.transaction;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.executor.sql.DQLExecutionEvent;
-import lombok.AllArgsConstructor;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-@AllArgsConstructor
-public final class TestDQLExecutionEventListener {
-    
-    private final EventCaller eventCaller;
-    
-    /**
-     * Listen event.
-     *
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final DQLExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+@RunWith(Suite.class)
+@Suite.SuiteClasses(TransactionTypeHolderTest.class)
+public final class AllTransactionTests {
 }

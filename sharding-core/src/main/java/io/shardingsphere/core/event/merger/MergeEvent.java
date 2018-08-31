@@ -15,21 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.event.xa;
+package io.shardingsphere.core.event.merger;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.event.ShardingEvent;
 
 /**
- * XA transaction event.
- *
- * @author zhaojun
+ * Merge event.
+ * 
+ * @author chenqingyang
  */
-@RequiredArgsConstructor
-@Getter
-public final class XATransactionEvent implements ShardingTransactionEvent {
-    
-    private final TransactionOperationType operationType;
+public final class MergeEvent extends ShardingEvent {
 }

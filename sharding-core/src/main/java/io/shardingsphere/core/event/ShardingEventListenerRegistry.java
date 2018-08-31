@@ -15,21 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.event.sql;
-
-import io.shardingsphere.core.routing.SQLUnit;
-
-import java.util.List;
+package io.shardingsphere.core.event;
 
 /**
- * DML execution event.
- * 
+ * Sharding event listener registry.
+ *
  * @author zhangliang
- * @author maxiaoguang
  */
-public final class DMLExecutionEvent extends SQLExecutionEvent {
+public interface ShardingEventListenerRegistry {
     
-    public DMLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
-        super(dataSource, sqlUnit, parameters);
-    }
+    /**
+     * Register all listeners.
+     */
+    void register();
 }

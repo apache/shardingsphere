@@ -15,26 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.listener;
+package io.shardingsphere.core.event.routing;
 
-import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
-import io.shardingsphere.transaction.listener.xa.XATransactionListener;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.event.ShardingEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Listener register for JDBC.
+ * Routing event.
  *
- * @author zhangliang
+ * @author chenqingyang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCListenerRegister {
+@RequiredArgsConstructor
+@Getter
+public final class RoutingEvent extends ShardingEvent {
     
-    /**
-     * Register all listeners.
-     */
-    public static void register() {
-        new LocalTransactionListener().register();
-        new XATransactionListener().register();
-    }
+    private final String sql;
 }

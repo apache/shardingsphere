@@ -19,14 +19,14 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
-import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.sql;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.executor.sql.event.overall.OverallExecutionEvent;
+import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 

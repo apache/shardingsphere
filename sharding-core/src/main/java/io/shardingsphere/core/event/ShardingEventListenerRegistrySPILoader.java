@@ -15,20 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.event.overall;
+package io.shardingsphere.core.event;
 
-import io.shardingsphere.core.event.ShardingEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.ServiceLoader;
 
 /**
- * Overall sql execution event.
- * 
- * @author gaohongtao
+ * Sharding event listener registry SPI loader.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class OverallExecutionEvent extends ShardingEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingEventListenerRegistrySPILoader {
     
-    private final boolean parallelExecute;
+    /**
+     * Register event listeners.
+     */
+    public static void registerListeners() {
+        for (ShardingEventListenerRegistry listenerRegistry : ServiceLoader.load(ShardingEventListenerRegistry.class)) {
+            listenerRegistry.register();
+        }
+    }
 }

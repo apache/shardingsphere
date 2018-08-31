@@ -15,22 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.event;
+package io.shardingsphere.core.event.executor.sql;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.routing.SQLUnit;
+
+import java.util.List;
 
 /**
- * Sharding transaction event.
- *
- * @author zhaojun
- * @author zhangliang
+ * DQL execution event.
+ * 
+ * @author gaohongtao
+ * @author maxiaoguang
  */
-public interface ShardingTransactionEvent {
+public final class DQLExecutionEvent extends SQLExecutionEvent {
     
-    /**
-     * Get transaction operation type.
-     * 
-     * @return transaction operation type
-     */
-    TransactionOperationType getOperationType();
+    public DQLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
+        super(dataSource, sqlUnit, parameters);
+    }
 }

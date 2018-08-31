@@ -7,7 +7,6 @@
         <artifactId>sharding-sphere</artifactId>
         <version>3.0.0.M3-SNAPSHOT</version>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-orchestration</artifactId>
     <packaging>pom</packaging>
@@ -15,9 +14,9 @@
 
     <modules>
         <module>sharding-orchestration-core</module>
-        <module>sharding-jdbc-orchestration-spring</module>
-        <module>sharding-jdbc-orchestration</module>
         <module>sharding-orchestration-reg</module>
+        <module>sharding-jdbc-orchestration</module>
+        <module>sharding-jdbc-orchestration-spring</module>
     </modules>
 
     <properties>
@@ -115,3 +114,5 @@
         </dependency>
     </dependencies>
 </project>
+
+
