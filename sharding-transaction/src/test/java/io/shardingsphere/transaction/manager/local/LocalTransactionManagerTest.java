@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.manager.local;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
+import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.listener.local;
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
+import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import org.junit.After;
 import org.junit.Before;

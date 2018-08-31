@@ -15,28 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.event.local;
+package io.shardingsphere.core.event.transaction.xa;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Connection;
-import java.util.Collection;
-
 /**
- * Local transaction event.
+ * XA transaction event.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
-public final class LocalTransactionEvent implements ShardingTransactionEvent {
+public final class XATransactionEvent implements ShardingTransactionEvent {
     
     private final TransactionOperationType operationType;
-            
-    private final Collection<Connection> cachedConnections;
-    
-    private final boolean autoCommit;
 }

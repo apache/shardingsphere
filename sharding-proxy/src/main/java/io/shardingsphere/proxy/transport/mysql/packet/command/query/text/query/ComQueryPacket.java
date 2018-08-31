@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
@@ -36,7 +37,6 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommand
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
