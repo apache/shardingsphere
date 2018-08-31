@@ -273,7 +273,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         Map<String, List<List<PreparedStatementUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             String dataSourceName = entry.getKey();
-            for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery())) {
+            int desiredPartitionSize = entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
+            for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), 0 == desiredPartitionSize ? 1 : desiredPartitionSize)) {
                 Connection connection = this.connection.getConnection(dataSourceName);
                 List<PreparedStatementUnit> preparedStatementUnits = new LinkedList<>();
                 for (SQLUnit each : sqlUnitList) {
@@ -335,7 +336,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private Map<String, List<List<BatchPreparedStatementUnit>>> partitionBatchPreparedStatementUnitGroups() {
         Map<String, List<List<BatchPreparedStatementUnit>>> result = new HashMap<>(batchStatementUnits.size(), 1);
         for (Entry<String, List<BatchPreparedStatementUnit>> entry : getBatchPreparedStatementUnitGroups().entrySet()) {
-            result.put(entry.getKey(), Lists.partition(entry.getValue(), connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery()));
+            int desiredPartitionSize = entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
+            result.put(entry.getKey(), Lists.partition(entry.getValue(), 0 == desiredPartitionSize ? 1 : desiredPartitionSize));
         }
         return result;
     }
