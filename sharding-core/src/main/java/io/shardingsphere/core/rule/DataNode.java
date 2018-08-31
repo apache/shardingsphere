@@ -75,6 +75,6 @@ public final class DataNode {
     
     @Override
     public int hashCode() {
-        return Objects.hashCode((dataSourceName + tableName).toUpperCase());
+        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase());
     }
 }
