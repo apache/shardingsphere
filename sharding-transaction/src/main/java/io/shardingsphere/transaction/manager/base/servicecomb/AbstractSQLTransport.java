@@ -38,16 +38,16 @@ public abstract class AbstractSQLTransport implements SQLTransport {
      * servicecomb saga would call this function for each SQL in transaction.
      *
      * @param datasource data source name for each SQL
-     * @param sql SQL in transaction
-     * @param params parameters for SQL
+     * @param sql        SQL in transaction
+     * @param params     parameters for SQL
      * @return saga execute response
      */
     @Override
     public SagaResponse with(final String datasource, final String sql, final List<String> params) {
         Connection connection = getConnection(datasource);
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int parameterIndex = 1; parameterIndex <= params.size(); parameterIndex++) {
-                statement.setObject(parameterIndex, params.get(parameterIndex));
+            for (int parameterIndex = 0; parameterIndex < params.size(); parameterIndex++) {
+                statement.setObject(parameterIndex + 1, params.get(parameterIndex));
             }
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -56,5 +56,5 @@ public abstract class AbstractSQLTransport implements SQLTransport {
         return new JsonSuccessfulSagaResponse("{}");
     }
     
-    protected abstract Connection getConnection(String datasource);
+    protected abstract Connection getConnection(String datasource) throws TransportFailedException;
 }

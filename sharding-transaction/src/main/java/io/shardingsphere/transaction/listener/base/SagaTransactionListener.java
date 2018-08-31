@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.listener.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -42,7 +43,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class SagaTransactionListener extends ShardingTransactionListenerAdapter<SagaTransactionEvent> {
     
-    private final BASETransactionManager<SagaTransactionEvent> transactionManager = (SagaTransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE);
+    private final BASETransactionManager<SagaTransactionEvent> transactionManager =
+            (SagaTransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE);
     
     private final Map<String, SagaDefinitionBuilder> sagaDefinitionBuilderMap = new ConcurrentHashMap<>();
     
@@ -91,7 +93,7 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
                         sqlExecutionEvent.getId(),
                         sqlExecutionEvent.getDataSource(),
                         sqlExecutionEvent.getSqlUnit().getSql(),
-                        sqlExecutionEvent.getParameters(),
+                        Lists.newArrayList(sqlExecutionEvent.getParameters()),
                         "", null);
                 break;
             case EXECUTE_FAILURE:
