@@ -23,7 +23,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.routing.event.RoutingEvent;
+import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
 import io.shardingsphere.opentracing.ShardingTags;
