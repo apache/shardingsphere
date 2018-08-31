@@ -42,7 +42,7 @@ import java.util.Map;
  * @author zhangliang
  */
 @Getter
-@ToString
+@ToString(exclude = "dataNodeIndexMap")
 public final class TableRule {
     
     private final String logicTable;
