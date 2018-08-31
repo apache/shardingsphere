@@ -83,7 +83,6 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
      */
     @Subscribe
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
-        super.renew(shardingEvent.getDataSourceMap().values());
         dataSource = new ShardingDataSource(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
     
