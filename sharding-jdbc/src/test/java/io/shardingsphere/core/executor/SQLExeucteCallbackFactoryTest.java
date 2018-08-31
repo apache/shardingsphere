@@ -67,6 +67,8 @@ public class SQLExeucteCallbackFactoryTest {
         TransactionTypeHolder.set(TransactionType.BASE);
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(SQLType.DML, false, null);
         assertThat(sqlExecuteCallback instanceof SagaSQLExeucteCallback, is(true));
+        sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(SQLType.DML, false, null);
+        assertThat(sqlExecuteCallback instanceof SagaSQLExeucteCallback, is(true));
     }
     
     @Test
