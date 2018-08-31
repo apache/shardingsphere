@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -57,12 +58,21 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap.values());
+        checkDataSourceType(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getShardingConfig().putAll(configMap);
         }
         this.dataSourceMap = dataSourceMap;
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(dataSourceMap, shardingRule);
+    }
+    
+    private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
+        for (DataSource each : dataSourceMap.values()) {
+            if (each instanceof MasterSlaveDataSource) {
+                throw new ShardingException("Initialized dataSources can not be master-slave DataSources.");
+            }
+        }
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties, final DatabaseType databaseType) {
