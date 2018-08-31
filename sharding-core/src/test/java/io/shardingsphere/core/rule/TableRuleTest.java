@@ -148,6 +148,12 @@ public final class TableRuleTest {
         assertThat(actualString, is(expectString));
     }
     
+    @Test
+    public void assertDataNodeIndexMapSize() {
+        TableRule actual = new TableRule(createTableRuleConfig(), createShardingDataSourceNames());
+        assertThat(actual.getDataNodeIndexMap().size(), is(actual.getActualDataNodes().size()));
+    }
+    
     private TableRuleConfiguration createTableRuleConfig() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("LOGIC_TABLE");
