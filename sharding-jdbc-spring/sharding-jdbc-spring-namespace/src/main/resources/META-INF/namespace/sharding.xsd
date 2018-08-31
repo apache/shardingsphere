@@ -18,9 +18,9 @@
     <xsd:element name="sharding-rule">
         <xsd:complexType>
             <xsd:sequence>
+                <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
-                <xsd:element ref="master-slave-rules" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source-name" type="xsd:string" />
