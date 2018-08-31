@@ -131,12 +131,21 @@ public final class TableRuleTest {
     @Test
     public void assertToString() {
         TableRule actual = new TableRule(createTableRuleConfig(), createShardingDataSourceNames());
-        String actualString = "TableRule(logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), "
-                + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
-                + "DataNode(dataSourceName=ds1, tableName=table_2)], dataNodeIndexMap={DataNode(dataSourceName=ds1, tableName=table_0)=3, DataNode(dataSourceName=ds1, tableName=table_1)=4, "
-                + "DataNode(dataSourceName=ds1, tableName=table_2)=5, DataNode(dataSourceName=ds0, tableName=table_0)=0, DataNode(dataSourceName=ds0, tableName=table_1)=1, "
-                + "DataNode(dataSourceName=ds0, tableName=table_2)=2}, databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, keyGenerator=null, logicIndex=null)";
-        assertThat(actual.toString(), is(actualString));
+        String expectString = "logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), "
+            + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
+            + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, keyGenerator=null, logicIndex=null";
+        String actualString = "logicTable=" + actual.getLogicTable() + ", actualDataNodes=" + actual.getActualDataNodes().toString() + ", ";
+        actualString += "databaseShardingStrategy=";
+        actualString += null == actual.getDatabaseShardingStrategy() ? "null, " : actual.getDatabaseShardingStrategy().toString() + ", ";
+        actualString += "tableShardingStrategy=";
+        actualString += null == actual.getTableShardingStrategy() ? "null, " : actual.getTableShardingStrategy().toString() + ", ";
+        actualString += "generateKeyColumn=";
+        actualString += null == actual.getGenerateKeyColumn() ? "null, " : actual.getGenerateKeyColumn() + ", ";
+        actualString += "keyGenerator=";
+        actualString += null == actual.getKeyGenerator() ? "null, " : actual.getKeyGenerator().toString() + ", ";
+        actualString += "logicIndex=";
+        actualString += null == actual.getLogicIndex() ? "null" : actual.getLogicIndex();
+        assertThat(actualString, is(expectString));
     }
     
     private TableRuleConfiguration createTableRuleConfig() {
