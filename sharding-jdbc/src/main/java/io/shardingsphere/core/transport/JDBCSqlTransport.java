@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.transport;
 
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.transaction.manager.base.servicecomb.AbstractSQLTransport;
 import lombok.Setter;
 import org.apache.servicecomb.saga.core.TransportFailedException;
@@ -33,7 +33,7 @@ import java.sql.SQLException;
 public final class JDBCSqlTransport extends AbstractSQLTransport {
     
     @Setter
-    private ShardingConnection shardingConnection;
+    private AbstractConnectionAdapter shardingConnection;
     
     @Override
     protected Connection getConnection(final String datasource) throws TransportFailedException {
@@ -50,7 +50,7 @@ public final class JDBCSqlTransport extends AbstractSQLTransport {
      * @param shardingConnection new sharding connection.
      * @throws SQLException sql exception
      */
-    public void renew(final ShardingConnection shardingConnection) throws SQLException {
+    public void renew(final AbstractConnectionAdapter shardingConnection) throws SQLException {
         this.shardingConnection.close();
         this.shardingConnection = shardingConnection;
     }
