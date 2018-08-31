@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.listener;
 
+import io.shardingsphere.transaction.listener.base.SagaTransactionListener;
 import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
 import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 import lombok.AccessLevel;
@@ -36,5 +37,6 @@ public final class JDBCListenerRegister {
     public static void register() {
         new LocalTransactionListener().register();
         new XATransactionListener().register();
+        new SagaTransactionListener().register();
     }
 }
