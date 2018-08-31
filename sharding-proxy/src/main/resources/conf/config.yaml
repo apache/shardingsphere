@@ -1,672 +1,79 @@
-dataSources: 
-  test101:
-    url: jdbc:mysql://127.0.0.1:3306/testa01?serverTimezone=UTC&useSSL=false
-    username: root
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test100:
-    url: jdbc:mysql://127.0.0.1:3306/testa00?serverTimezone=UTC&useSSL=false
-    username: root
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test102:
-    url: jdbc:mysql://127.0.0.1:3306/testa02?serverTimezone=UTC&useSSL=false
-    username: root
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test103:
-    url: jdbc:mysql://127.0.0.1:3306/testa03?serverTimezone=UTC&useSSL=false
-    username: root
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test105:
-    url: jdbc:mysql://127.0.0.1:3306/testa05?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test104:
-    url: jdbc:mysql://127.0.0.1:3306/testa04?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test107:
-    url: jdbc:mysql://127.0.0.1:3306/testa07?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test106:
-    url: jdbc:mysql://127.0.0.1:3306/testa06?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test110:
-    url: jdbc:mysql://127.0.0.1:3306/testa10?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test108:
-    url: jdbc:mysql://127.0.0.1:3306/testa08?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test109:
-    url: jdbc:mysql://127.0.0.1:3306/testa09?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test111:
-    url: jdbc:mysql://127.0.0.1:3306/testa11?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test113:
-    url: jdbc:mysql://127.0.0.1:3306/testa13?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test112:
-    url: jdbc:mysql://127.0.0.1:3306/testa12?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test115:
-    url: jdbc:mysql://127.0.0.1:3306/testa15?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test114:
-    url: jdbc:mysql://127.0.0.1:3306/testa14?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test117:
-    url: jdbc:mysql://127.0.0.1:3306/testa17?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test116:
-    url: jdbc:mysql://127.0.0.1:3306/testa16?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test119:
-    url: jdbc:mysql://127.0.0.1:3306/testa19?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test118:
-    url: jdbc:mysql://127.0.0.1:3306/testa18?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test201:
-    url: jdbc:mysql://127.0.0.1:3306/testb01?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test200:
-    url: jdbc:mysql://127.0.0.1:3306/testb00?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test203:
-    url: jdbc:mysql://127.0.0.1:3306/testb03?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test202:
-    url: jdbc:mysql://127.0.0.1:3306/testb02?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test205:
-    url: jdbc:mysql://127.0.0.1:3306/testb05?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test204:
-    url: jdbc:mysql://127.0.0.1:3306/testb04?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test207:
-    url: jdbc:mysql://127.0.0.1:3306/testb07?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test206:
-    url: jdbc:mysql://127.0.0.1:3306/testb06?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test215:
-    url: jdbc:mysql://127.0.0.1:3306/testb15?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test214:
-    url: jdbc:mysql://127.0.0.1:3306/testb14?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test213:
-    url: jdbc:mysql://127.0.0.1:3306/testb13?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test212:
-    url: jdbc:mysql://127.0.0.1:3306/testb12?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test210:
-    url: jdbc:mysql://127.0.0.1:3306/testb10?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test209:
-    url: jdbc:mysql://127.0.0.1:3306/testb09?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test211:
-    url: jdbc:mysql://127.0.0.1:3306/testb11?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test208:
-    url: jdbc:mysql://127.0.0.1:3306/testb08?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test217:
-    url: jdbc:mysql://127.0.0.1:3306/testb17?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test216:
-    url: jdbc:mysql://127.0.0.1:3306/testb16?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test219:
-    url: jdbc:mysql://127.0.0.1:3306/testb19?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test218:
-    url: jdbc:mysql://127.0.0.1:3306/testb18?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test301:
-    url: jdbc:mysql://127.0.0.1:3306/testc01?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test300:
-    url: jdbc:mysql://127.0.0.1:3306/testc00?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test303:
-    url: jdbc:mysql://127.0.0.1:3306/testc03?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test302:
-    url: jdbc:mysql://127.0.0.1:3306/testc02?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test304:
-    url: jdbc:mysql://127.0.0.1:3306/testc04?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test307:
-    url: jdbc:mysql://127.0.0.1:3306/testc07?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test306:
-    url: jdbc:mysql://127.0.0.1:3306/testc06?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test305:
-    url: jdbc:mysql://127.0.0.1:3306/testc05?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test310:
-    url: jdbc:mysql://127.0.0.1:3306/testc10?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test311:
-    url: jdbc:mysql://127.0.0.1:3306/testc11?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test309:
-    url: jdbc:mysql://127.0.0.1:3306/testc09?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test308:
-    url: jdbc:mysql://127.0.0.1:3306/testc08?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test312:
-    url: jdbc:mysql://127.0.0.1:3306/testc12?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test313:
-    url: jdbc:mysql://127.0.0.1:3306/testc13?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test315:
-    url: jdbc:mysql://127.0.0.1:3306/testc15?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test314:
-    url: jdbc:mysql://127.0.0.1:3306/testc14?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test317:
-    url: jdbc:mysql://127.0.0.1:3306/testc17?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test319:
-    url: jdbc:mysql://127.0.0.1:3306/testc19?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
-    
-  test318:
-    url: jdbc:mysql://127.0.0.1:3306/testc18?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
+##################      ##################
+# Here you can configure the rules for the proxy.
+#
+# We provide two kinds of configurations for example. This one is the configuration of Sharding rule,
+# If you want to use Sharding, please refer to the this one, and if you only want to use master-slave,
+# please refer to config_master_slave.yaml.
+#
+##################      ##################
 
-  test316:
-    url: jdbc:mysql://127.0.0.1:3306/testc16?serverTimezone=UTC&useSSL=false
-    username: root 
-    password: root
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 2
+# The example of Sharding rule.
 
-shardingRule:
-  tables:
-    test_base:
-      
-      actualDataNodes: test${100..119}.test_base_00${0..9},test${100..119}.test_base_0${10..99},test${100..119}.test_base_${100..199},test${200..219}.test_base_00${0..9},test${200..219}.test_base_0${10..99},test${200..219}.test_base_${100..199},test${300..319}.test_base_00${0..9},test${300..319}.test_base_0${10..99},test${300..319}.test_base_${100..199}
-      
-      tableStrategy:
-        standard:
-          shardingColumn: test_no
-          preciseAlgorithmClassName: algorithm.customAlgorithm 
-      
-      databaseStrategy:
-        standard:
-          shardingColumn: test_no
-          preciseAlgorithmClassName: algorithm.customAlgorithm1
-      
-      keyGeneratorColumnName: test_no
-
-    test_request:
-
-      actualDataNodes: test${100..119}.test_request_00${0..9},test${100..119}.test_request_0${10..99},test${100..119}.test_request_${100..199},test${200..219}.test_request_00${0..9},test${200..219}.test_request_0${10..99},test${200..219}.test_request_${100..199},test${300..319}.test_request_00${0..9},test${300..319}.test_request_0${10..99},test${300..319}.test_request_${100..199}
-      
-      tableStrategy:
-        standard:
-          shardingColumn: test_no
-          preciseAlgorithmClassName: algorithm.customAlgorithm 
-      
-      databaseStrategy:
-        standard:
-          shardingColumn: test_no
-          preciseAlgorithmClassName: algorithm.customAlgorithm1
-      
-      keyGeneratorColumnName: test_no
-
-    test_result:
-
-      actualDataNodes: test${100..119}.test_result_00${0..9},test${100..119}.test_result_0${10..99},test${100..119}.test_result_${100..199},test${200..219}.test_result_00${0..9},test${200..219}.test_result_0${10..99},test${200..219}.test_result_${100..199},test${300..319}.test_result_00${0..9},test${300..319}.test_result_0${10..99},test${300..319}.test_result_${100..199}
-      
-      tableStrategy:
-        standard:
-          shardingColumn: test_no
-          preciseAlgorithmClassName: algorithm.customAlgorithm 
-      
-      databaseStrategy:
-        standard:
-          shardingColumn: test_no
-          preciseAlgorithmClassName: algorithm.customAlgorithm1
-      
-      keyGeneratorColumnName: test_no
-
-  bindingTables:
-    - test_base,test_request,test_result
-
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-
-  props:
-    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
-    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-
-    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
-    #                      Meanwhile, the cost of the memory will be increased.
-    connection.mode: CONNECTION_STRICTLY
-    acceptor.size: 2  # The default value is available processors count * 2.
-    executor.size: 2  # Infinite by default.
-    proxy.transaction.enabled: false
-    sql.show: false
-
-
-proxyAuthority:
-  username: root
-  password: root
+#dataSources:
+#  ds_0:
+#    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    autoCommit: true
+#    connectionTimeout: 30000
+#    idleTimeout: 60000
+#    maxLifetime: 1800000
+#    maximumPoolSize: 65
+#  ds_1:
+#    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+#    username: root
+#    password:
+#    autoCommit: true
+#    connectionTimeout: 30000
+#    idleTimeout: 60000
+#    maxLifetime: 1800000
+#    maximumPoolSize: 65
+#
+#shardingRule:
+#  tables:
+#    t_order:
+#      actualDataNodes: ds_${0..1}.t_order_${0..1}
+#      tableStrategy:
+#        inline:
+#          shardingColumn: order_id
+#          algorithmExpression: t_order_${order_id % 2}
+#      keyGeneratorColumnName: order_id
+#    t_order_item:
+#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+#      tableStrategy:
+#        inline:
+#          shardingColumn: order_id
+#          algorithmExpression: t_order_item_${order_id % 2}
+#  bindingTables:
+#    - t_order,t_order_item
+#  defaultDatabaseStrategy:
+#    inline:
+#      shardingColumn: user_id
+#      algorithmExpression: ds_${user_id % 2}
+#  defaultTableStrategy:
+#    none:
+#  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+#
+#  props:
+#    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
+#    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+#
+#    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
+#    #                      Meanwhile, the cost of the memory will be increased.
+#    connection.mode: CONNECTION_STRICTLY
+#    acceptor.size: 16  # The default value is available processors count * 2.
+#    executor.size: 16  # Infinite by default.
+#    proxy.transaction.enabled: false
+#    sql.show: false
+#
+#orchestration:
+#  name: orchestration_ds
+#  type: SHARDING
+#  overwrite: true
+#  zookeeper:
+#    namespace: orchestration
+#    serverLists: localhost:2181
+#
+#proxyAuthority:
+#  username: root
+#  password: root
