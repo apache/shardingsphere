@@ -48,7 +48,7 @@ public final class TableRule {
     
     private final List<DataNode> actualDataNodes;
     
-    private final Map<DataNode, Integer> dataNodeIndexMap = new HashMap<>();
+    private final Map<DataNode, Integer> dataNodeIndexMap;
     
     private final ShardingStrategy databaseShardingStrategy;
     
@@ -66,6 +66,7 @@ public final class TableRule {
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         actualDataNodes = isEmptyDataNodes(dataNodes)
                 ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
+        dataNodeIndexMap = new HashMap<>(1024);
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
