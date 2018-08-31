@@ -24,8 +24,11 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
+import io.shardingsphere.core.executor.batch.ConnectionStrictlyBatchPreparedStatementExecutor;
+import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
+import io.shardingsphere.core.executor.prepared.ConnectionStrictlyPreparedStatementExecutor;
+import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementUnit;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
@@ -63,8 +66,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -248,11 +253,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private PreparedStatementExecutor getPreparedStatementExecutor() throws SQLException {
-        ConnectionMode connectionMode = connection.getShardingDataSource().getShardingContext().getConnectionMode();
-        int maxConnectionsSizePerQuery = connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
-        SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine(), connectionMode, maxConnectionsSizePerQuery);
-        Collection<PreparedStatementUnit> executeUnits = ConnectionMode.MEMORY_STRICTLY == connectionMode ? getExecuteUnitsForMemoryStrictly() : getExecuteUnitsForConnectionStrictly();
-        return new PreparedStatementExecutor(sqlExecuteTemplate, routeResult.getSqlStatement().getType(), executeUnits);
+        SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
+        if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
+            return new MemoryStrictlyPreparedStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForMemoryStrictly());
+        }
+        return new ConnectionStrictlyPreparedStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForConnectionStrictly());
     }
     
     private Collection<PreparedStatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
@@ -263,15 +268,21 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return result;
     }
     
-    private Collection<PreparedStatementUnit> getExecuteUnitsForConnectionStrictly() throws SQLException {
-        Collection<PreparedStatementUnit> result = new LinkedList<>();
-        for (Entry<String, Collection<SQLUnit>> entry : routeResult.getSQLUnitGroups().entrySet()) {
+    private Map<String, List<List<PreparedStatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = routeResult.getSQLUnitGroups();
+        Map<String, List<List<PreparedStatementUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
+        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             String dataSourceName = entry.getKey();
             for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery())) {
                 Connection connection = this.connection.getConnection(dataSourceName);
+                List<PreparedStatementUnit> preparedStatementUnits = new LinkedList<>();
                 for (SQLUnit each : sqlUnitList) {
-                    result.add(getPreparedStatementUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
+                    preparedStatementUnits.add(getPreparedStatementUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
                 }
+                if (!result.containsKey(dataSourceName)) {
+                    result.put(dataSourceName, new LinkedList<List<PreparedStatementUnit>>());
+                }
+                result.get(dataSourceName).add(preparedStatementUnits);
             }
         }
         return result;
@@ -309,13 +320,36 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            ConnectionMode connectionMode = connection.getShardingDataSource().getShardingContext().getConnectionMode();
-            int maxConnectionsSizePerQuery = connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
-            return new BatchPreparedStatementExecutor(new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine(), connectionMode, maxConnectionsSizePerQuery), 
-                    connection.getShardingDataSource().getShardingContext().getDatabaseType(), routeResult.getSqlStatement().getType(), batchStatementUnits, batchCount).executeBatch();
+            SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
+            if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
+                return new MemoryStrictlyBatchPreparedStatementExecutor(connection.getShardingDataSource().getShardingContext().getDatabaseType(), 
+                        routeResult.getSqlStatement().getType(), batchCount, sqlExecuteTemplate, batchStatementUnits).executeBatch();
+            }
+            return new ConnectionStrictlyBatchPreparedStatementExecutor(connection.getShardingDataSource().getShardingContext().getDatabaseType(), 
+                    routeResult.getSqlStatement().getType(), batchCount, sqlExecuteTemplate, partitionBatchPreparedStatementUnitGroups()).executeBatch();
         } finally {
             clearBatch();
         }
+    }
+    
+    private Map<String, List<List<BatchPreparedStatementUnit>>> partitionBatchPreparedStatementUnitGroups() {
+        Map<String, List<List<BatchPreparedStatementUnit>>> result = new HashMap<>(batchStatementUnits.size(), 1);
+        for (Entry<String, List<BatchPreparedStatementUnit>> entry : getBatchPreparedStatementUnitGroups().entrySet()) {
+            result.put(entry.getKey(), Lists.partition(entry.getValue(), connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery()));
+        }
+        return result;
+    }
+    
+    private Map<String, List<BatchPreparedStatementUnit>> getBatchPreparedStatementUnitGroups() {
+        Map<String, List<BatchPreparedStatementUnit>> result = new HashMap<>(batchStatementUnits.size(), 1);
+        for (BatchPreparedStatementUnit each : batchStatementUnits) {
+            String dataSourceName = each.getSqlExecutionUnit().getDataSource();
+            if (!result.containsKey(dataSourceName)) {
+                result.put(dataSourceName, new LinkedList<BatchPreparedStatementUnit>());
+            }
+            result.get(dataSourceName).add(each);
+        } 
+        return result;
     }
     
     @Override

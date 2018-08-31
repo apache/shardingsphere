@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor.sql;
 
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.sql.event.overall.OverallExecutionEvent;
@@ -27,10 +26,11 @@ import lombok.RequiredArgsConstructor;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * SQL execute template.
@@ -44,10 +44,6 @@ import java.util.Map;
 public final class SQLExecuteTemplate {
     
     private final ShardingExecuteEngine executeEngine;
-    
-    private final ConnectionMode connectionMode;
-    
-    private final int maxConnectionsSizePerQuery;
     
     /**
      * Execute.
@@ -72,13 +68,12 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(
-            final Collection<? extends StatementExecuteUnit> executeUnits, final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits, 
+                               final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
         OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = ConnectionMode.MEMORY_STRICTLY == connectionMode ? executeEngine.execute(new LinkedList<>(executeUnits), firstExecuteCallback, executeCallback)
-                    : executeEngine.groupExecute(getExecuteUnitGroups(executeUnits), maxConnectionsSizePerQuery, firstExecuteCallback, executeCallback);
+            List<T> result = executeEngine.execute(new LinkedList<>(executeUnits), firstExecuteCallback, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -92,14 +87,57 @@ public final class SQLExecuteTemplate {
         }
     }
     
-    private Map<String, Collection<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<? extends StatementExecuteUnit> executeUnits) {
-        Map<String, Collection<StatementExecuteUnit>> result = new LinkedHashMap<>(executeUnits.size(), 1);
-        for (StatementExecuteUnit each : executeUnits) {
-            String dataSourceName = each.getSqlExecutionUnit().getDataSource();
-            if (!result.keySet().contains(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<StatementExecuteUnit>());
+    /**
+     * Execute.
+     *
+     * @param executeUnits execute units
+     * @param executeCallback execute callback
+     * @param <T> class type of return value
+     * @return execute result
+     * @throws SQLException SQL exception
+     */
+    public <T> List<T> execute(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        return execute(executeUnits, null, executeCallback);
+    }
+    
+    /**
+     * Execute.
+     *
+     * @param executeUnits execute units
+     * @param firstExecuteCallback first execute callback
+     * @param executeCallback execute callback
+     * @param <T> class type of return value
+     * @return execute result
+     * @throws SQLException SQL exception
+     */
+    public <T> List<T> execute(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits, 
+                               final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
+        ShardingEventBusInstance.getInstance().post(event);
+        try {
+            List<T> result = executeEngine.groupExecute(transform(executeUnits), firstExecuteCallback, executeCallback);
+            event.setExecuteSuccess();
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setExecuteFailure(ex);
+            ExecutorExceptionHandler.handleException(ex);
+            return Collections.emptyList();
+        } finally {
+            ShardingEventBusInstance.getInstance().post(event);
+        }
+    }
+    
+    private Map<String, List<List<StatementExecuteUnit>>> transform(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits) {
+        Map<String, List<List<StatementExecuteUnit>>> result = new HashMap<>(executeUnits.size());
+        for (Entry<String, List<List<? extends StatementExecuteUnit>>> entry : executeUnits.entrySet()) {
+            if (!result.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), new LinkedList<List<StatementExecuteUnit>>());
             }
-            result.get(dataSourceName).add(each);
+            for (List<? extends StatementExecuteUnit> each : entry.getValue()) {
+                result.get(entry.getKey()).add(new LinkedList<>(each));
+            }
         }
         return result;
     }

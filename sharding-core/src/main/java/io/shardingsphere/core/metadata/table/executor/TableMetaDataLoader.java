@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata.table.executor;
 
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
@@ -33,10 +34,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Table meta data loader.
@@ -68,13 +71,13 @@ public final class TableMetaDataLoader {
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return executeEngine.groupExecute(dataNodeGroups, maxConnectionsSizePerQuery, new ShardingGroupExecuteCallback<String, TableMetaData>() {
+    private List<TableMetaData> load(final Map<String, List<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        return executeEngine.groupExecute(partitionDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<String, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
                 DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
-                final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
+                String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
                 return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, actualTableNames);
             }
         });
@@ -86,6 +89,14 @@ public final class TableMetaDataLoader {
             for (String each : actualTableNames) {
                 result.add(new TableMetaData(isTableExist(connection, catalog, each) ? getColumnMetaDataList(connection, catalog, each) : Collections.<ColumnMetaData>emptyList()));
             }
+        }
+        return result;
+    }
+    
+    private Map<String, List<List<String>>> partitionDataNodeGroups(final Map<String, List<String>> dataNodeGroups) {
+        Map<String, List<List<String>>> result = new HashMap<>(dataNodeGroups.size(), 1);
+        for (Entry<String, List<String>> entry : dataNodeGroups.entrySet()) {
+            result.put(entry.getKey(), Lists.partition(entry.getValue(), maxConnectionsSizePerQuery));
         }
         return result;
     }

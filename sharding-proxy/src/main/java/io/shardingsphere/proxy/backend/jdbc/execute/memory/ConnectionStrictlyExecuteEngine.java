@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend.jdbc.execute.memory;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
@@ -49,6 +48,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     public ConnectionStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(backendConnection, jdbcExecutorWrapper);
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), ConnectionMode.CONNECTION_STRICTLY, 1);
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     @Override
@@ -75,7 +75,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(getStatementExecuteUnits(routeResult, isReturnGeneratedKeys), 
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(partitionStatementExecuteUnits(routeResult, isReturnGeneratedKeys), 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -83,16 +83,26 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
     }
     
-    private Collection<StatementExecuteUnit> getStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
-        Collection<StatementExecuteUnit> result = new LinkedList<>();
-        for (Entry<String, Collection<SQLUnit>> entry : routeResult.getSQLUnitGroups().entrySet()) {
-            result.addAll(getStatementExecuteUnits(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
+    private Map<String, List<List<? extends StatementExecuteUnit>>> partitionStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+        Map<String, List<StatementExecuteUnit>> statementExecuteUnits = getStatementExecuteUnits(routeResult, isReturnGeneratedKeys);
+        Map<String, List<List<? extends StatementExecuteUnit>>> result = new HashMap<>(statementExecuteUnits.size(), 1);
+        for (Entry<String, List<StatementExecuteUnit>> entry : statementExecuteUnits.entrySet()) {
+            result.put(entry.getKey(), Lists.<List<? extends StatementExecuteUnit>>newArrayList(Lists.partition(entry.getValue(), RuleRegistry.getInstance().getMaxConnectionsSizePerQuery())));
         }
         return result;
     }
     
-    private Collection<StatementExecuteUnit> getStatementExecuteUnits(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
-        Collection<StatementExecuteUnit> result = new LinkedList<>();
+    private Map<String, List<StatementExecuteUnit>> getStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = routeResult.getSQLUnitGroups();
+        Map<String, List<StatementExecuteUnit>> result = new HashMap<>(sqlUnitGroups.size(), 1);
+        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
+            result.put(entry.getKey(), getStatementExecuteUnits(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
+        }
+        return result;
+    }
+    
+    private List<StatementExecuteUnit> getStatementExecuteUnits(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
+        List<StatementExecuteUnit> result = new LinkedList<>();
         for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(sqlUnits), RuleRegistry.getInstance().getMaxConnectionsSizePerQuery())) {
             Connection connection = getBackendConnection().getConnection(dataSourceName);
             for (SQLUnit each : sqlUnitList) {
