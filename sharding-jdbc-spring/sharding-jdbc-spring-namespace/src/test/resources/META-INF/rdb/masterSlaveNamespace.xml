@@ -27,12 +27,4 @@
             <entry key="key1" value="value1" />
         </master-slave:config-map>
     </master-slave:data-source>
-    
-    <sharding:data-source id="defaultShardingDataSource">
-        <sharding:sharding-rule data-source-names="randomMasterSlaveDataSource,refMasterSlaveDataSource" default-data-source-name="randomMasterSlaveDataSource">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
 </beans>
