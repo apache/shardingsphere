@@ -15,26 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.listener;
+package io.shardingsphere.transaction;
 
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.core.event.ShardingEventListenerRegistry;
+import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
+import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 
 /**
- * Listener register for Proxy.
+ * Transaction listener registry.
  *
  * @author zhangliang
- * @author panjuan
  */
-public final class ProxyListenerRegister {
+public final class TransactionListenerRegistry implements ShardingEventListenerRegistry {
     
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
-    
-    /**
-     * Register all listeners.
-     */
+    @Override
     public void register() {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-        ruleRegistry.register();
+        new LocalTransactionListener().register();
+        new XATransactionListener().register();
     }
 }

@@ -17,12 +17,12 @@
 
 package io.shardingsphere.core.jdbc.core.datasource;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -67,19 +67,17 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         this.shardingContext = getShardingContext(dataSourceMap, shardingRule);
     }
     
-    private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
-        for (DataSource each : dataSourceMap.values()) {
-            if (each instanceof MasterSlaveDataSource) {
-                throw new ShardingException("Initialized dataSources can not be master-slave DataSources.");
-            }
-        }
-    }
-    
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties, final DatabaseType databaseType) {
         super(databaseType);
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
         this.shardingProperties = shardingProperties;
+    }
+    
+    private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
+        for (DataSource each : dataSourceMap.values()) {
+            Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
+        }
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {

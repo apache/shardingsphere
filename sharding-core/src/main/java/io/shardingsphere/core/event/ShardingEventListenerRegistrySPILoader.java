@@ -15,26 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.listener;
+package io.shardingsphere.core.event;
 
-import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
-import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ServiceLoader;
+
 /**
- * Listener register for JDBC.
+ * Sharding event listener registry SPI loader.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCListenerRegister {
+public final class ShardingEventListenerRegistrySPILoader {
     
     /**
-     * Register all listeners.
+     * Register event listeners.
      */
-    public static void register() {
-        new LocalTransactionListener().register();
-        new XATransactionListener().register();
+    public static void registerListeners() {
+        for (ShardingEventListenerRegistry listenerRegistry : ServiceLoader.load(ShardingEventListenerRegistry.class)) {
+            listenerRegistry.register();
+        }
     }
 }
