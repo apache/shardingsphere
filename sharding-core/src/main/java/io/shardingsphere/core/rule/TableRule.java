@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -46,6 +47,8 @@ public final class TableRule {
     private final String logicTable;
     
     private final List<DataNode> actualDataNodes;
+    
+    private final Map<DataNode, Integer> dataNodeIndexMap = new HashMap<>();
     
     private final ShardingStrategy databaseShardingStrategy;
     
@@ -76,20 +79,27 @@ public final class TableRule {
     
     private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
+        int index = 0;
         for (String each : dataSourceNames) {
-            result.add(new DataNode(each, logicTable));
+            DataNode dataNode = new DataNode(each, logicTable);
+            result.add(dataNode);
+            dataNodeIndexMap.put(dataNode, index);
+            index++;
         }
         return result;
     }
     
     private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
+        int index = 0;
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
                 throw new ShardingException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
             result.add(dataNode);
+            dataNodeIndexMap.put(dataNode, index);
+            index++;
         }
         return result;
     }
@@ -99,8 +109,8 @@ public final class TableRule {
      * 
      * @return data node groups, key is data source name, value is tables belong to this data source 
      */
-    public Map<String, List<String>> getDataNodeGroups() {
-        Map<String, List<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
+    public Map<String, Collection<String>> getDataNodeGroups() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
         for (DataNode each : actualDataNodes) {
             String dataSourceName = each.getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
@@ -141,14 +151,9 @@ public final class TableRule {
     }
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        int result = 0;
-        for (DataNode each : actualDataNodes) {
-            if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getTableName().equalsIgnoreCase(actualTableName)) {
-                return result;
-            }
-            result++;
-        }
-        return -1;
+        DataNode dataNode = new DataNode(dataSourceName, actualTableName);
+        Integer result = dataNodeIndexMap.get(dataNode);
+        return null == result ? -1 : result;
     }
     
     boolean isExisted(final String actualTableName) {
