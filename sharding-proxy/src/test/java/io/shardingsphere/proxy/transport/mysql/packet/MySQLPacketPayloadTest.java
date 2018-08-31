@@ -349,6 +349,7 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertWriteDateWithoutMillisecond() {
         Timestamp timestamp = mock(Timestamp.class);
+        when(timestamp.getTime()).thenReturn(0L);
         when(timestamp.getNanos()).thenReturn(0);
         new MySQLPacketPayload(byteBuf).writeDate(timestamp);
         verify(byteBuf).writeByte(7);
@@ -357,6 +358,7 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertWriteDateWithMillisecond() {
         Timestamp timestamp = mock(Timestamp.class);
+        when(timestamp.getTime()).thenReturn(0L);
         when(timestamp.getNanos()).thenReturn(500);
         new MySQLPacketPayload(byteBuf).writeDate(timestamp);
         verify(byteBuf).writeByte(11);
