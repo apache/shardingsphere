@@ -8,13 +8,13 @@ STRING:
 	;
 
 NUMBER:
-     MINUS? INT_ DOT [0-9]+ EXP?
+     MINUS? INT_ DOT INT_+ EXP?
      |MINUS? INT_ | EXP
      |MINUS? INT_
      ;
 
 INT_ :
-   '0' | [1-9] [0-9]*
+   [0-9]+
    ;
           
 EXP :
