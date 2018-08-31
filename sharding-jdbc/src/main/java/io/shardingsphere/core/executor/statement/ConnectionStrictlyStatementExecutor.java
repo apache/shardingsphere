@@ -20,11 +20,8 @@ package io.shardingsphere.core.executor.statement;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,22 +42,9 @@ public final class ConnectionStrictlyStatementExecutor extends StatementExecutor
         this.statementUnitGroups = statementUnitGroups;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.execute(transformStatementUnitGroups(), executeCallback);
-    }
-    
-    private Map<String, List<List<? extends StatementExecuteUnit>>> transformStatementUnitGroups() {
-        Map<String, List<List<? extends StatementExecuteUnit>>> result = new HashMap<>(statementUnitGroups.size(), 1);
-        for (Map.Entry<String, List<List<StatementUnit>>> entry : statementUnitGroups.entrySet()) {
-            List<List<StatementUnit>> statementUnitGroups = entry.getValue();
-            for (List<StatementUnit> each : statementUnitGroups) {
-                if (!result.containsKey(entry.getKey())) {
-                    result.put(entry.getKey(), new LinkedList<List<? extends StatementExecuteUnit>>());
-                }
-                result.get(entry.getKey()).add(new LinkedList<>(each));
-            }
-        }
-        return result;
+        return executeTemplate.execute((Map) statementUnitGroups, executeCallback);
     }
 }

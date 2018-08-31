@@ -21,11 +21,9 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,23 +47,10 @@ public final class ConnectionStrictlyBatchPreparedStatementExecutor extends Batc
         this.batchPreparedStatementUnitGroups = batchPreparedStatementUnitGroups;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.execute(transformBatchPreparedStatementUnitGroups(), executeCallback);
-    }
-    
-    private Map<String, List<List<? extends StatementExecuteUnit>>> transformBatchPreparedStatementUnitGroups() {
-        Map<String, List<List<? extends StatementExecuteUnit>>> result = new HashMap<>(batchPreparedStatementUnitGroups.size(), 1);
-        for (Map.Entry<String, List<List<BatchPreparedStatementUnit>>> entry : batchPreparedStatementUnitGroups.entrySet()) {
-            List<List<BatchPreparedStatementUnit>> batchPreparedStatementUnitGroups = entry.getValue();
-            for (List<BatchPreparedStatementUnit> each : batchPreparedStatementUnitGroups) {
-                if (!result.containsKey(entry.getKey())) {
-                    result.put(entry.getKey(), new LinkedList<List<? extends StatementExecuteUnit>>());
-                }
-                result.get(entry.getKey()).add(new LinkedList<>(each));
-            }
-        }
-        return result;
+        return executeTemplate.execute((Map) batchPreparedStatementUnitGroups, executeCallback);
     }
     
     @Override
