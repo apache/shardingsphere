@@ -25,6 +25,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
 import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 
@@ -109,6 +110,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             case XA:
                 return new XATransactionEvent(operationType);
             case BASE:
+                return new SagaTransactionEvent(operationType);
             default:
                 throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
         }
