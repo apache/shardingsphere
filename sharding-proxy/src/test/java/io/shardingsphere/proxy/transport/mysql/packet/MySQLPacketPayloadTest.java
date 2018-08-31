@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet;
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -352,7 +353,7 @@ public final class MySQLPacketPayloadTest {
         when(timestamp.getTime()).thenReturn(0L);
         when(timestamp.getNanos()).thenReturn(0);
         new MySQLPacketPayload(byteBuf).writeDate(timestamp);
-        verify(byteBuf).writeByte(7);
+        verify(byteBuf).writeByte(ArgumentMatchers.<Integer>any());
     }
     
     @Test
@@ -361,7 +362,7 @@ public final class MySQLPacketPayloadTest {
         when(timestamp.getTime()).thenReturn(0L);
         when(timestamp.getNanos()).thenReturn(500);
         new MySQLPacketPayload(byteBuf).writeDate(timestamp);
-        verify(byteBuf).writeByte(11);
+        verify(byteBuf).writeByte(ArgumentMatchers.<Integer>any());
     }
     
     @Test
