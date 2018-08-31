@@ -31,6 +31,8 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.transport.JDBCSqlTransport;
+import io.shardingsphere.transaction.manager.base.servicecomb.SQLTransportSPILoader;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -68,6 +70,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         shardingContext = getShardingContext(dataSourceMap, shardingRule);
+        ((JDBCSqlTransport) SQLTransportSPILoader.getInstance().getSqlTransport()).setShardingConnection(getConnection());
     }
     
     private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
@@ -82,9 +85,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
      * Renew sharding data source.
      *
      * @param shardingEvent sharding configuration event bus event.
+     * @throws SQLException sql exception
      */
     @Subscribe
-    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
+    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
         super.renew(shardingEvent.getDataSourceMap().values());
         shardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
         int newExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -92,6 +96,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
         ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
+        ((JDBCSqlTransport) SQLTransportSPILoader.getInstance().getSqlTransport()).renew(getConnection());
     }
     
     @Override
