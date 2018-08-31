@@ -15,9 +15,9 @@
 
     <modules>
         <module>sharding-orchestration-core</module>
-        <module>sharding-jdbc-orchestration-spring</module>
-        <module>sharding-jdbc-orchestration</module>
         <module>sharding-orchestration-reg</module>
+        <module>sharding-jdbc-orchestration</module>
+        <module>sharding-jdbc-orchestration-spring</module>
     </modules>
 
     <properties>
@@ -115,3 +115,4 @@
         </dependency>
     </dependencies>
 </project>
+
