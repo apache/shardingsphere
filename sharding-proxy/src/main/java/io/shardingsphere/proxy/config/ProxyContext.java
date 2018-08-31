@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +46,7 @@ public final class ProxyContext {
     
     private static final ProxyContext INSTANCE = new ProxyContext();
     
-    private Collection<String> schemaNames = new LinkedList<>();
+    private List<String> schemaNames = new LinkedList<>();
     
     private Map<String, RuleRegistry> ruleRegistryMap = new ConcurrentHashMap<>();
     
@@ -120,7 +121,7 @@ public final class ProxyContext {
     
     /**
      * get rule registry of schema.
-     * 
+     *
      * @param schema schema
      * @return rule registry of schema
      */
@@ -129,6 +130,15 @@ public final class ProxyContext {
             return null;
         }
         return ruleRegistryMap.get(schema);
+    }
+    
+    /**
+     * get a default schema.
+     * 
+     * @return schema
+     */
+    public String getDefaultSchema() {
+        return schemaNames.get(0);
     }
     
 }

@@ -42,7 +42,7 @@ import java.util.TreeSet;
 
 /**
  * Databases and tables sharding rule configuration.
- * 
+ *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
@@ -93,7 +93,7 @@ public final class ShardingRule {
     
     /**
      * Try to find table rule though logic table name.
-     * 
+     *
      * @param logicTableName logic table name
      * @return table rule
      */
@@ -147,11 +147,11 @@ public final class ShardingRule {
     
     /**
      * Get database sharding strategy.
-     * 
+     *
      * <p>
      * Use default database sharding strategy if not found.
      * </p>
-     * 
+     *
      * @param tableRule table rule
      * @return database sharding strategy
      */
@@ -161,11 +161,11 @@ public final class ShardingRule {
     
     /**
      * Get table sharding strategy.
-     * 
+     *
      * <p>
      * Use default table sharding strategy if not found.
      * </p>
-     * 
+     *
      * @param tableRule table rule
      * @return table sharding strategy
      */
@@ -258,7 +258,7 @@ public final class ShardingRule {
     
     /**
      * get generated key's column.
-     * 
+     *
      * @param logicTableName logic table name
      * @return generated key's column
      */
@@ -305,7 +305,7 @@ public final class ShardingRule {
     
     /**
      * Find data node by logic table.
-     * 
+     *
      * @param logicTableName logic table name
      * @return data node
      */
@@ -347,9 +347,9 @@ public final class ShardingRule {
     
     /**
      * Find actual default data source name.
-     * 
+     *
      * <p>If use master-slave rule, return master data source name.</p>
-     * 
+     *
      * @return actual default data source name
      */
     public Optional<String> findActualDefaultDataSourceName() {

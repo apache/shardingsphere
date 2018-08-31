@@ -23,6 +23,7 @@ import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
 import io.shardingsphere.proxy.backend.netty.NettyBackendHandler;
 import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -46,14 +47,14 @@ public final class BackendHandlerFactory {
      * @param sql               SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType      database type
-     * @param schema            schema
+     * @param frontendHandler   frontend handler
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newTextProtocolInstance(
-            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
+            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
         return PROXY_CONTEXT.isUseNIO()
-                ? new NettyBackendHandler(PROXY_CONTEXT.getRuleRegistry(schema), connectionId, sequenceId, sql, databaseType) 
-                : new JDBCBackendHandler(PROXY_CONTEXT.getRuleRegistry(schema), sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
+                ? new NettyBackendHandler(PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
     /**
@@ -65,13 +66,14 @@ public final class BackendHandlerFactory {
      * @param parameters        SQL parameters
      * @param backendConnection backend connection
      * @param databaseType      database type
-     * @param schema            schema
+     * @param frontendHandler   frontend handler
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newBinaryProtocolInstance(
-            final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection, 
-            final DatabaseType databaseType, final String schema) {
-        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(PROXY_CONTEXT.getRuleRegistry(schema), connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(PROXY_CONTEXT.getRuleRegistry(schema), sql, JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
+            final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection,
+            final DatabaseType databaseType, final FrontendHandler frontendHandler) {
+        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), sql,
+                JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
 }

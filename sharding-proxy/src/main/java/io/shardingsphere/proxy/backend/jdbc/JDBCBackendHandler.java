@@ -17,11 +17,14 @@
 
 package io.shardingsphere.proxy.backend.jdbc;
 
+import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
+import io.shardingsphere.core.merger.dal.show.ProxyShowDatabasesMergedResult;
+import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
@@ -37,6 +40,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateRespon
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -63,6 +67,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
     
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    
+    private final FrontendHandler frontendHandler;
+    
     private final RuleRegistry ruleRegistry;
     
     private final String sql;
@@ -83,7 +91,11 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getExecutionUnits().isEmpty()) {
             if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
-                //todo execute use databases
+                String schema = ((UseStatement) routeResult.getSqlStatement()).getSchema();
+                if (Strings.isNullOrEmpty(schema) || !PROXY_CONTEXT.schemaExists(schema)) {
+                    return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
+                }
+                frontendHandler.setSchema(schema);
             }
             return new CommandResponsePackets(new OKPacket(1));
         }
@@ -114,6 +126,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         mergedResult = MergeEngineFactory.newInstance(
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
+        if (mergedResult instanceof ShowDatabasesMergedResult) {
+            mergedResult = new ProxyShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+        }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
         return result;
