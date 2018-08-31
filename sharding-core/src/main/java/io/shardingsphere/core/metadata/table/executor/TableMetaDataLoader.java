@@ -96,7 +96,8 @@ public final class TableMetaDataLoader {
     private Map<String, List<List<String>>> partitionDataNodeGroups(final Map<String, List<String>> dataNodeGroups) {
         Map<String, List<List<String>>> result = new HashMap<>(dataNodeGroups.size(), 1);
         for (Entry<String, List<String>> entry : dataNodeGroups.entrySet()) {
-            result.put(entry.getKey(), Lists.partition(entry.getValue(), maxConnectionsSizePerQuery));
+            int desiredPartitionSize = entry.getValue().size() / maxConnectionsSizePerQuery;
+            result.put(entry.getKey(), Lists.partition(entry.getValue(), 0 == desiredPartitionSize ? 1 : desiredPartitionSize));
         }
         return result;
     }

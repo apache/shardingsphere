@@ -69,13 +69,14 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ExecuteResponse execute(final SQLRouteResult routeResult) throws SQLException {
         boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(partitionStatementExecuteUnits(routeResult, isReturnGeneratedKeys), 
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) partitionStatementExecuteUnits(routeResult, isReturnGeneratedKeys), 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -83,31 +84,26 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
     }
     
-    private Map<String, List<List<? extends StatementExecuteUnit>>> partitionStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
-        Map<String, List<StatementExecuteUnit>> statementExecuteUnits = getStatementExecuteUnits(routeResult, isReturnGeneratedKeys);
-        Map<String, List<List<? extends StatementExecuteUnit>>> result = new HashMap<>(statementExecuteUnits.size(), 1);
-        for (Entry<String, List<StatementExecuteUnit>> entry : statementExecuteUnits.entrySet()) {
-            result.put(entry.getKey(), Lists.<List<? extends StatementExecuteUnit>>newArrayList(Lists.partition(entry.getValue(), RuleRegistry.getInstance().getMaxConnectionsSizePerQuery())));
-        }
-        return result;
-    }
-    
-    private Map<String, List<StatementExecuteUnit>> getStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
+    private Map<String, List<List<StatementExecuteUnit>>> partitionStatementExecuteUnits(final SQLRouteResult routeResult, final boolean isReturnGeneratedKeys) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = routeResult.getSQLUnitGroups();
-        Map<String, List<StatementExecuteUnit>> result = new HashMap<>(sqlUnitGroups.size(), 1);
+        Map<String, List<List<StatementExecuteUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            result.put(entry.getKey(), getStatementExecuteUnits(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
+            result.put(entry.getKey(), getStatementExecuteUnitGroup(entry.getKey(), entry.getValue(), isReturnGeneratedKeys));
         }
         return result;
     }
     
-    private List<StatementExecuteUnit> getStatementExecuteUnits(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
-        List<StatementExecuteUnit> result = new LinkedList<>();
-        for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(sqlUnits), RuleRegistry.getInstance().getMaxConnectionsSizePerQuery())) {
+    private List<List<StatementExecuteUnit>> getStatementExecuteUnitGroup(final String dataSourceName, final Collection<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys) throws SQLException {
+        List<List<StatementExecuteUnit>> result = new LinkedList<>();
+        int desiredPartitionSize = sqlUnits.size() / RuleRegistry.getInstance().getMaxConnectionsSizePerQuery();
+        for (List<SQLUnit> sqlUnitGroup : Lists.partition(new ArrayList<>(sqlUnits), 0 == desiredPartitionSize ? 1 : desiredPartitionSize)) {
             Connection connection = getBackendConnection().getConnection(dataSourceName);
-            for (SQLUnit each : sqlUnitList) {
-                result.add(new ProxyStatementExecuteUnit(new SQLExecutionUnit(dataSourceName, each), getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys)));
+            List<StatementExecuteUnit> statementExecuteUnitGroup = new LinkedList<>();
+            for (SQLUnit each : sqlUnitGroup) {
+                statementExecuteUnitGroup.add(
+                        new ProxyStatementExecuteUnit(new SQLExecutionUnit(dataSourceName, each), getJdbcExecutorWrapper().createStatement(connection, each.getSql(), isReturnGeneratedKeys)));
             }
+            result.add(statementExecuteUnitGroup);
         }
         return result;
     }

@@ -264,7 +264,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         Map<String, List<List<StatementUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             String dataSourceName = entry.getKey();
-            for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery())) {
+            int desiredPartitionSize = entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
+            for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), 0 == desiredPartitionSize ? 1 : desiredPartitionSize)) {
                 Connection connection = this.connection.getConnection(dataSourceName);
                 List<StatementUnit> statementUnits = new LinkedList<>();
                 for (SQLUnit each : sqlUnitList) {

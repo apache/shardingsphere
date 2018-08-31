@@ -26,11 +26,8 @@ import lombok.RequiredArgsConstructor;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * SQL execute template.
@@ -68,12 +65,13 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits, 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits,
                                final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
         OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = executeEngine.execute(new LinkedList<>(executeUnits), firstExecuteCallback, executeCallback);
+            List<T> result = executeEngine.execute((Collection) executeUnits, firstExecuteCallback, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -110,12 +108,13 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits, 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> execute(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits,
                                final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
         OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = executeEngine.groupExecute(transform(executeUnits), firstExecuteCallback, executeCallback);
+            List<T> result = executeEngine.groupExecute((Map) executeUnits, firstExecuteCallback, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
@@ -127,18 +126,5 @@ public final class SQLExecuteTemplate {
         } finally {
             ShardingEventBusInstance.getInstance().post(event);
         }
-    }
-    
-    private Map<String, List<List<StatementExecuteUnit>>> transform(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits) {
-        Map<String, List<List<StatementExecuteUnit>>> result = new HashMap<>(executeUnits.size());
-        for (Entry<String, List<List<? extends StatementExecuteUnit>>> entry : executeUnits.entrySet()) {
-            if (!result.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), new LinkedList<List<StatementExecuteUnit>>());
-            }
-            for (List<? extends StatementExecuteUnit> each : entry.getValue()) {
-                result.get(entry.getKey()).add(new LinkedList<>(each));
-            }
-        }
-        return result;
     }
 }
