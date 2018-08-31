@@ -23,6 +23,8 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -51,6 +53,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     private final ShardingContext shardingContext;
     
     private final ShardingProperties shardingProperties;
+    
+    private final ThreadLocal<OverallExecutionEvent> overallExecutionEventThreadLocal = new ThreadLocal<>();
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -91,6 +95,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public final ShardingConnection getConnection() {
+        overallExecutionEventThreadLocal.set(new OverallExecutionEvent(true));
+        ShardingEventBusInstance.getInstance().post(overallExecutionEventThreadLocal);
         return new ShardingConnection(this);
     }
     
@@ -98,6 +104,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     public void close() {
         closeOriginalDataSources();
         shardingContext.close();
+        overallExecutionEventThreadLocal.get().setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(overallExecutionEventThreadLocal.get());
     }
     
     private void closeOriginalDataSources() {
