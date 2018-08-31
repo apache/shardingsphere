@@ -24,10 +24,12 @@ import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingsphere.core.util.InlineExpressionParser;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -36,16 +38,19 @@ import java.util.Map;
 
 /**
  * Table rule configuration.
- * 
+ *
  * @author zhangliang
  */
 @Getter
-@ToString
+@ToString(exclude = "dataNodeIndexMap")
 public final class TableRule {
     
     private final String logicTable;
     
     private final List<DataNode> actualDataNodes;
+    
+    @Getter(AccessLevel.NONE)
+    private final Map<DataNode, Integer> dataNodeIndexMap;
     
     private final ShardingStrategy databaseShardingStrategy;
     
@@ -61,8 +66,9 @@ public final class TableRule {
         Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes)
-                ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
+            ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
@@ -76,28 +82,35 @@ public final class TableRule {
     
     private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
+        int index = 0;
         for (String each : dataSourceNames) {
-            result.add(new DataNode(each, logicTable));
+            DataNode dataNode = new DataNode(each, logicTable);
+            result.add(dataNode);
+            dataNodeIndexMap.put(dataNode, index);
+            index++;
         }
         return result;
     }
     
     private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
+        int index = 0;
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
                 throw new ShardingException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
             result.add(dataNode);
+            dataNodeIndexMap.put(dataNode, index);
+            index++;
         }
         return result;
     }
     
     /**
      * Get data node groups.
-     * 
-     * @return data node groups, key is data source name, value is tables belong to this data source 
+     *
+     * @return data node groups, key is data source name, value is tables belong to this data source
      */
     public Map<String, List<String>> getDataNodeGroups() {
         Map<String, List<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
@@ -141,14 +154,8 @@ public final class TableRule {
     }
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        int result = 0;
-        for (DataNode each : actualDataNodes) {
-            if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getTableName().equalsIgnoreCase(actualTableName)) {
-                return result;
-            }
-            result++;
-        }
-        return -1;
+        DataNode dataNode = new DataNode(dataSourceName, actualTableName);
+        return dataNodeIndexMap.containsKey(dataNode) ? dataNodeIndexMap.get(dataNode) : -1;
     }
     
     boolean isExisted(final String actualTableName) {

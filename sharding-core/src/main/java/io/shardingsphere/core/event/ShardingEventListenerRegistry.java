@@ -15,26 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.listener;
-
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
-import io.shardingsphere.proxy.config.RuleRegistry;
+package io.shardingsphere.core.event;
 
 /**
- * Listener register for Proxy.
+ * Sharding event listener registry.
  *
  * @author zhangliang
- * @author panjuan
  */
-public final class ProxyListenerRegister {
-    
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
+public interface ShardingEventListenerRegistry {
     
     /**
      * Register all listeners.
      */
-    public void register() {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-        ruleRegistry.register();
-    }
+    void register();
 }
