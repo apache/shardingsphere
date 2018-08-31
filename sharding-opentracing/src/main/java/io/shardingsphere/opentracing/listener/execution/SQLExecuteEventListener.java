@@ -38,7 +38,7 @@ import io.shardingsphere.opentracing.listener.OpenTracingListener;
  */
 public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecutionEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/execute/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/executeSQL/";
     
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
     
