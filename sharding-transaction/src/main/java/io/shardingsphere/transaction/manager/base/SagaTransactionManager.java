@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.manager.base;
 
 import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
-import io.shardingsphere.transaction.manager.base.servicecomb.SagaExecutionComponentFactory;
+import io.shardingsphere.transaction.manager.base.servicecomb.SagaExecutionComponentHolder;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 
 import javax.transaction.Status;
@@ -28,6 +28,7 @@ import java.util.UUID;
  * Saga transaction manager.
  *
  * @author zhaojun
+ * @author yangyi
  */
 public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionEvent> {
     
@@ -36,7 +37,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     private final SagaExecutionComponent coordinator;
     
     public SagaTransactionManager() {
-        this.coordinator = SagaExecutionComponentFactory.createSagaExecutionComponent();
+        this.coordinator = SagaExecutionComponentHolder.getInstance().getSagaExecutionComponent();
     }
     
     @Override

@@ -17,6 +17,9 @@
 
 package io.shardingsphere.transaction.manager.base.servicecomb;
 
+import com.google.common.util.concurrent.MoreExecutors;
+import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
+import lombok.Getter;
 import org.apache.servicecomb.saga.core.EventEnvelope;
 import org.apache.servicecomb.saga.core.PersistentStore;
 import org.apache.servicecomb.saga.core.SagaDefinition;
@@ -31,32 +34,50 @@ import org.apache.servicecomb.saga.transports.TransportFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SagaExecutionComponent factory.
  *
  * @author yangyi
  */
-public final class SagaExecutionComponentFactory {
+public final class SagaExecutionComponentHolder {
     
-    private static final TransportFactory<SQLTransport> TRANSPORT_FACTORY = new TransportFactory<SQLTransport>() {
+    private static final SagaExecutionComponentHolder INSTANCE = new SagaExecutionComponentHolder();
+    
+    private final TransportFactory<SQLTransport> TRANSPORT_FACTORY = new TransportFactory<SQLTransport>() {
         @Override
         public SQLTransport getTransport() {
             return SQLTransportSPILoader.getInstance().getSqlTransport();
         }
     };
     
-    /**
-     * create new saga execution component.
-     *
-     * @return saga execution component
-     */
-    public static SagaExecutionComponent createSagaExecutionComponent() {
+    private final ExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5, ShardingThreadFactoryBuilder.build("Saga-%d")));
+    
+    @Getter
+    private final SagaExecutionComponent sagaExecutionComponent;
+    
+    private SagaExecutionComponentHolder() {
+        this.sagaExecutionComponent = createSagaExecutionComponent();
+        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
+    }
+    
+    private SagaExecutionComponent createSagaExecutionComponent() {
         EmbeddedPersistentStore persistentStore = new EmbeddedPersistentStore();
         FromJsonFormat<SagaDefinition> fromJsonFormat = new JacksonFromJsonFormat(TRANSPORT_FACTORY);
-        GraphBasedSagaFactory sagaFactory = new GraphBasedSagaFactory(3000, persistentStore, new ChildrenExtractor(), Executors.newFixedThreadPool(5));
+        GraphBasedSagaFactory sagaFactory = new GraphBasedSagaFactory(3000, persistentStore, new ChildrenExtractor(), executorService);
         return new SagaExecutionComponent(persistentStore, fromJsonFormat, null, sagaFactory);
+    }
+    
+    /**
+     * Get saga execution component holder.
+     *
+     * @return saga execution component holder.
+     */
+    public static SagaExecutionComponentHolder getInstance() {
+        return INSTANCE;
     }
     
     private static final class EmbeddedPersistentStore extends EmbeddedEventStore implements PersistentStore {
