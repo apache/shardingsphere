@@ -22,7 +22,7 @@ createTableHeader:
 	;
 	
 createDefinitions:
-   LEFT_PAREN createDefinition (COMMA createDefinition)* RIGHT_PAREN
+   LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
    ;
    
 createDefinition:
@@ -36,9 +36,13 @@ inheritClause:
 	;
 
 partitionClause:
-	PARTITION BY (RANGE | LIST) LEFT_PAREN (columnName | exprWithParen) collateClause? (opclass (COMMA opclass)*)? RIGHT_PAREN 
+	PARTITION BY (RANGE | LIST) LEFT_PAREN partitionClauseParam (COMMA partitionClauseParam)* RIGHT_PAREN 
 	;
 	
+partitionClauseParam:
+	(columnName | expr) collateClause? opclass? 
+	;
+
 tableWithClause:
 	withStorageParameters
 	|(WITH OIDS) 
@@ -56,7 +60,7 @@ tableSpaceClause:
 createTypeTable:	
 	createTableHeader 
 	typeNameClause
-	createDefinition1s
+	createDefinition1s?
 	partitionClause?
 	tableWithClause?
 	commitClause?
@@ -72,14 +76,15 @@ createDefinition1s:
 	;
 
 createDefinition1:
-	columnName (WITH OPTIONS )? columnConstraint*
+	(columnName (WITH OPTIONS )? columnConstraint*)
     | tableConstraint 
     ;	
 
 createTableForPartition:
 	createTableHeader
     partitionOfParent
-    createDefinition1s
+    createDefinition1s?
+    forValuesParition
     partitionClause?
 	tableWithClause?
 	commitClause?
@@ -90,13 +95,13 @@ partitionOfParent:
 	PARTITION OF tableName
 	;
 	
-valuesClause:
+forValuesParition:
 	FOR VALUES partitionBoundSpec
 	;
 
 partitionBoundSpec:
 	(IN inValueOption)
-	|FROM fromValueOption TO fromValueOption
+	|(FROM fromValueOption TO fromValueOption)
 	;
 
 inValueOption:
@@ -122,9 +127,13 @@ fromValueOption:
 	;
 	
 createTableOptions:
-	NONE;
-
+	;
+	
 dataType:
+	basicDataType (LEFT_BRACKET RIGHT_BRACKET)*
+	;
+
+basicDataType:
 	BIGINT
 	|INT8
 	|BIGSERIAL	
@@ -164,7 +173,7 @@ dataType:
 	|SERIAL4
 	|FLOAT numericPrecision?
 	|TEXT
-	|(TIME | TIMESTAMP) numericPrecision?((WITHOUT TIME ZONE)? | (WITHOUT TIME ZONE))
+	|(TIME | TIMESTAMP) numericPrecision?((WITHOUT TIME ZONE)? | (WITH TIME ZONE))
 	|TSQUERY
 	|TSVECTOR
 	|TXID_SNAPSHOT
@@ -172,20 +181,34 @@ dataType:
 	|XML
 	;
 
-/** loose match 
- *  ID = Y M W D H M S
-* */	
 intervalType:	
-	INTERVAL ID? numericPrecision?
-	;	
+	INTERVAL intervalFields? numericPrecision?
+	;
 		
+intervalFields:
+	intervalField (TO intervalField)?
+	;
+	
+intervalField:
+	YEAR
+	|MONTH
+	|DAY
+	|HOUR
+	|MINUTE
+	|SECOND
+	;		
 numericPrecision:
 	LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
 	;
-
 		
-defaultExpr: expr;
+defaultExpr: 
+	CURRENT_TIMESTAMP
+	|expr;
 
+exprsWithParen:
+	LEFT_PAREN exprs RIGHT_PAREN
+	;
+	
 exprWithParen:
 	LEFT_PAREN expr RIGHT_PAREN
 	;
@@ -197,8 +220,7 @@ collateClause:
 columnConstraint:
 	constraintClause?
 	columnConstraintOption
-	(DEFERRABLE | NOT DEFERRABLE)?
-	(INITIALLY DEFERRED | INITIALLY IMMEDIATE)?
+	constraintOptionalParam
 	;
 	
 columnConstraintOption:
@@ -225,12 +247,16 @@ action:
 	;
 	
 sequenceOptions:
-	(INCREMENT BY? NUMBER)?
-	(MINVALUE NUMBER | NO MINVALUE)?
-	(MAXVALUE NUMBER | NO MAXVALUE)?
+	sequenceOption
 	(START WITH? NUMBER)?
 	(CACHE NUMBER)? 
 	(NO? CYCLE)?
+	;
+	
+sequenceOption:
+	(INCREMENT BY? NUMBER)?
+	(MINVALUE NUMBER | NO MINVALUE)?
+	(MAXVALUE NUMBER | NO MAXVALUE)?
 	;
 	
 likeOption:
@@ -241,8 +267,7 @@ likeOption:
 tableConstraint:
 	constraintClause?
 	tableConstraintOption
-	(DEFERRABLE | NOT DEFERRABLE )? 
-	(INITIALLY DEFERRED | INITIALLY IMMEDIATE )?
+	constraintOptionalParam
 	;
 
 tableConstraintOption:
@@ -279,6 +304,9 @@ operator:
 	|GTE
 	|LT
 	|LTE
+	|AND_SYM
+	|OR_SYM
+	|NOT_SYM
 	;
 		
 typeName:ID;
@@ -288,7 +316,7 @@ constraintClause:
 	;
 
 withStorageParameters:
-	WITH LEFT_PAREN storageParameters LEFT_PAREN 
+	WITH LEFT_PAREN storageParameters RIGHT_PAREN 
 	;
 	
 storageParameters:
@@ -306,3 +334,232 @@ storageParameter:
 opclass:
 	ID
 	; 	
+
+alterTable:	
+	(alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint))
+    |(alterTableNameExists(renameTable | setSchema |attachTableSpace |detachTableSpace))
+    |alterTableSetTableSpace
+    ;
+	
+alterTableOp:
+	ALTER TABLE
+	;
+
+alterTableActions:
+	alterTableAction (COMMA alterTableAction)*
+	;
+
+renameColumn:
+	 RENAME COLUMN? columnName TO columnName
+    ;
+    
+renameConstraint:
+	RENAME CONSTRAINT constraintName TO constraintName
+    ; 
+   
+renameTable:
+	RENAME TO tableName
+    ; 
+    
+setSchema:
+	SET SCHEMA schemaName
+    ; 
+    
+alterTableSetTableSpace:
+	alterTableOp ALL IN TABLESPACE tablespaceName (OWNED BY roleName (COMMA roleName)* )?
+    SET TABLESPACE tablespaceName NOWAIT?
+    ; 
+
+attachTableSpace:
+    ATTACH PARTITION partitionName forValuesParition
+    ; 
+
+detachTableSpace:
+    DETACH PARTITION partitionName
+    ; 
+    
+alterTableNameWithAsterisk:
+	alterTableOp (IF EXISTS)? ONLY? tableName ASTERISK?
+	;
+
+alterTableNameExists:
+	alterTableOp (IF EXISTS)? tableName 
+	;
+
+roleName:
+	ID
+	;
+	
+partitionName:
+	ID
+	;
+	
+triggerName:
+	ID
+	;
+	
+rewriteRuleName:
+	ID
+	;
+	
+ownerName:
+	ID
+	;
+
+alterTableAction:
+    (ADD COLUMN? (IF NOT EXISTS )? columnName dataType collateClause? (columnConstraint columnConstraint*)?)
+    |(DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?)
+    |(alterColumnOp columnName (SET DATA)? TYPE dataType collateClause? (USING expr)?)
+    |(alterColumnOp columnName SET DEFAULT expr)
+    |(alterColumnOp columnName DROP DEFAULT)
+    |(alterColumnOp columnName (SET | DROP) NOT NULL)
+    |(alterColumnOp columnName ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LEFT_PAREN sequenceOptions RIGHT_PAREN)?)
+    |(alterColumnOp columnName  alterColumnSetOption alterColumnSetOption*)
+    |(alterColumnOp columnName DROP IDENTITY (IF EXISTS)?)
+    |(alterColumnOp columnName SET STATISTICS NUMBER)
+    |(alterColumnOp columnName SET LEFT_PAREN attributeOptions RIGHT_PAREN)
+    |(alterColumnOp columnName RESET LEFT_PAREN attributeOptions RIGHT_PAREN)
+    |(alterColumnOp columnName SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN))
+    |(ADD tableConstraint (NOT VALID)?)
+   	|(ADD tableConstraintUsingIndex)
+    |(ALTER CONSTRAINT constraintName constraintOptionalParam)
+    |(VALIDATE CONSTRAINT constraintName)
+    |(DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?)
+    |((DISABLE |ENABLE) TRIGGER (triggerName | ALL | USER )?)
+    |(ENABLE (REPLICA | ALWAYS) TRIGGER triggerName)
+    |((DISABLE | ENABLE) RULE rewriteRuleName)
+    |(ENABLE (REPLICA | ALWAYS) RULE rewriteRuleName)
+    |((DISABLE | ENABLE | (NO? FORCE)) ROW LEVEL SECURITY)
+    |(CLUSTER ON indexName)
+    |(SET WITHOUT CLUSTER)
+    |(SET (WITH | WITHOUT) OIDS)
+    |(SET TABLESPACE tablespaceName)
+    |(SET (LOGGED | UNLOGGED))
+    |(SET LEFT_PAREN storageParameterWithValue (COMMA storageParameterWithValue)* RIGHT_PAREN)
+    |(RESET LEFT_PAREN storageParameter (COMMA storageParameter)* RIGHT_PAREN)
+    |(INHERIT tableName)
+    |(NO INHERIT tableName)
+    |(OF typeName)
+    |(NOT OF)
+    |(OWNER TO (ownerName | CURRENT_USER | SESSION_USER))
+    |(REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING))
+	;
+
+alterColumnOp:
+	ALTER COLUMN?
+	;
+	
+alterColumnSetOption:
+	(SET GENERATED (ALWAYS | BY DEFAULT))
+	|SET sequenceOption 
+	|(RESTART (WITH? NUMBER)?)
+	;
+
+attributeOptions:
+	attributeOption (COMMA attributeOption)*
+	;
+	
+//options:n_distinct and n_distinct_inherited, loosen match
+attributeOption:
+	ID EQ_OR_ASSIGN simpleExpr
+	;
+	
+tableConstraintUsingIndex:
+    (CONSTRAINT constraintName)?
+    (UNIQUE | PRIMARY KEY) USING INDEX indexName
+    constraintOptionalParam
+    ;
+ 
+ constraintOptionalParam:
+ 	(NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
+ 	;
+    
+privateExprOfDb:
+ 	aggregateExpression
+ 	|windowFunction
+ 	|arrayConstructorWithCast
+ 	|(TIMESTAMP (WITH TIME ZONE)? STRING)
+ 	;
+ 
+ pgExpr:
+ 	|castExpr
+ 	|collateExpr
+ 	|expr
+ 	;
+ 	
+ aggregateExpression:
+ 	ID (
+ 		(LEFT_PAREN (ALL | DISTINCT)? exprs  orderByClause? RIGHT_PAREN)
+ 		|asteriskWithParen
+ 		| (LEFT_PAREN exprs RIGHT_PAREN  WITHIN GROUP LEFT_PAREN orderByClause RIGHT_PAREN)
+ 		)  
+ 	filterClause ?
+ 	;
+ 	
+ filterClause:
+ 	FILTER LEFT_PAREN WHERE booleanPrimary RIGHT_PAREN
+ 	;
+ 	
+ asteriskWithParen:
+ 	LEFT_PAREN ASTERISK RIGHT_PAREN
+ 	;
+ 
+ windowFunction:
+ 	ID (exprsWithParen | asteriskWithParen) 
+ 	filterClause? windowFunctionWithClause
+ 	; 
+ 
+ windowFunctionWithClause:
+ 	OVER (ID | LEFT_PAREN windowDefinition RIGHT_PAREN )
+ 	;	
+ 
+ windowDefinition:
+ 	ID? (PARTITION BY exprs)?
+	(orderByExpr (COMMA orderByExpr)*)?
+	frameClause?
+ 	;
+ 	
+ orderByExpr:
+ 	ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
+ 	;
+ 	
+ frameClause:
+ 	((RANGE | ROWS) frameStart)
+	 |(RANGE | ROWS ) BETWEEN frameStart AND frameEnd
+	;
+	
+frameStart:
+	(UNBOUNDED PRECEDING)
+	|(NUMBER PRECEDING)
+	|(CURRENT ROW)
+	|(NUMBER FOLLOWING)
+	|(UNBOUNDED FOLLOWING)
+	;
+
+frameEnd:
+	frameStart
+	;
+
+castExpr:
+	(CAST LEFT_PAREN expr AS dataType RIGHT_PAREN)
+	|(expr COLON COLON dataType)
+	;
+
+castExprWithColon:
+	COLON COLON dataType(LEFT_BRACKET RIGHT_BRACKET)*
+	;
+		
+collateExpr:
+	expr COLLATE expr
+	;
+
+
+arrayConstructorWithCast:
+	arrayConstructor castExprWithColon?
+	 |(ARRAY LEFT_BRACKET RIGHT_BRACKET castExprWithColon)	
+	;
+	
+arrayConstructor:
+	| ARRAY LEFT_BRACKET exprs RIGHT_BRACKET
+	| ARRAY LEFT_BRACKET arrayConstructor (COMMA arrayConstructor)* RIGHT_BRACKET
+	;

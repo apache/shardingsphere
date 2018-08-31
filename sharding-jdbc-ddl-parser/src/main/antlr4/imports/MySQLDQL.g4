@@ -162,9 +162,14 @@ simpleExpr:
 	// | (identifier expr)
 	//| match_expr
 	//| case_expr
-	// | interval_expr 
+	// | interval_expr
+	|privateExprOfDb
 	;
- 
+	
+ privateExprOfDb:
+ 	'Default does not match anything'
+ 	;
+ 	
 liter:
 	QUESTION
 	|NUMBER
@@ -214,3 +219,7 @@ collateClauseWithEqual:
 selectExpr:
 	bitExpr AS? alias?
 	;
+
+exprs:
+ 	expr (COMMA expr)*
+ 	;
