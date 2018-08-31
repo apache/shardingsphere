@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.fixture;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.executor.sql.event.overall.OverallExecutionEvent;
+import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

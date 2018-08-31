@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.event.sql;
+package io.shardingsphere.core.event.executor.sql;
 
 import io.shardingsphere.core.routing.SQLUnit;
 
 import java.util.List;
 
 /**
- * DML execution event.
+ * DQL execution event.
  * 
- * @author zhangliang
+ * @author gaohongtao
  * @author maxiaoguang
  */
-public final class DMLExecutionEvent extends SQLExecutionEvent {
+public final class DQLExecutionEvent extends SQLExecutionEvent {
     
-    public DMLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
+    public DQLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
         super(dataSource, sqlUnit, parameters);
     }
 }
