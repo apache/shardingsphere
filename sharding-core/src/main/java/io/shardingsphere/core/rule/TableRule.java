@@ -24,6 +24,7 @@ import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingsphere.core.util.InlineExpressionParser;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -37,7 +38,7 @@ import java.util.Map;
 
 /**
  * Table rule configuration.
- * 
+ *
  * @author zhangliang
  */
 @Getter
@@ -48,6 +49,7 @@ public final class TableRule {
     
     private final List<DataNode> actualDataNodes;
     
+    @Getter(AccessLevel.NONE)
     private final Map<DataNode, Integer> dataNodeIndexMap;
     
     private final ShardingStrategy databaseShardingStrategy;
@@ -64,9 +66,9 @@ public final class TableRule {
         Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
-        dataNodeIndexMap = new HashMap<>(1024);
+        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes)
-                ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
+            ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
@@ -107,8 +109,8 @@ public final class TableRule {
     
     /**
      * Get data node groups.
-     * 
-     * @return data node groups, key is data source name, value is tables belong to this data source 
+     *
+     * @return data node groups, key is data source name, value is tables belong to this data source
      */
     public Map<String, List<String>> getDataNodeGroups() {
         Map<String, List<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
@@ -153,8 +155,7 @@ public final class TableRule {
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
         DataNode dataNode = new DataNode(dataSourceName, actualTableName);
-        Integer result = dataNodeIndexMap.get(dataNode);
-        return null == result ? -1 : result;
+        return dataNodeIndexMap.containsKey(dataNode) ? dataNodeIndexMap.get(dataNode) : -1;
     }
     
     boolean isExisted(final String actualTableName) {
