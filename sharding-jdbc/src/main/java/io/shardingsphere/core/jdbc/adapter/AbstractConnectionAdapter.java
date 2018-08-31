@@ -26,7 +26,7 @@ import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.transaction.TransactionTypeHolder;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
