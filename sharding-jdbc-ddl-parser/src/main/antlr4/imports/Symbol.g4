@@ -11,7 +11,7 @@ SIGNED_LEFT_SHIFT: '<<';
 SIGNED_RIGHT_SHIFT: '>>';
 BIT_EXCLUSIVE_OR: '^';
 MOD_SYM: '%';
-
+COLON:':';
 
 PLUS: '+' ;
 MINUS: '-' ;
@@ -33,6 +33,8 @@ LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
 LEFT_BRACE: '{';
 RIGHT_BRACE: '}';
+LEFT_BRACKET:'[';
+RIGHT_BRACKET:']';
 COMMA: ',';
 DOUBLE_QUOTA: '"';
 SINGLE_QUOTA: '\'';
