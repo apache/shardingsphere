@@ -23,11 +23,10 @@ import io.shardingsphere.example.transaction.fixture.DataRepository;
 import io.shardingsphere.example.transaction.fixture.DatasourceType;
 import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
 
+public class LocalTransactionMain {
 
-public class XaTransactionMain {
-    
     public static void main(final String[] args) throws Exception {
-        TransactionTypeHolder.set(TransactionType.XA);
-        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.XA)).demo();
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.LOCAL)).demo();
     }
 }
