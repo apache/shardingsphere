@@ -15,15 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.listener.local;
+package io.shardingsphere.core.transaction;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
-import io.shardingsphere.transaction.listener.ShardingTransactionListenerAdapter;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 
 import java.sql.SQLException;
 
@@ -32,14 +29,30 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  */
-public final class LocalTransactionListener extends ShardingTransactionListenerAdapter<LocalTransactionEvent> {
+public final class LocalTransactionListener implements ShardingTransactionListener<LocalTransactionEvent> {
     
-    private final ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.LOCAL);
+    private final ShardingTransactionManager shardingTransactionManager = new LocalTransactionManager();
+    
+    @Override
+    public void register() {
+        ShardingEventBusInstance.getInstance().register(this);
+    }
     
     @Subscribe
     @AllowConcurrentEvents
     @Override
     public void listen(final LocalTransactionEvent transactionEvent) throws SQLException {
-        doTransaction(shardingTransactionManager, transactionEvent);
+        switch (transactionEvent.getOperationType()) {
+            case BEGIN:
+                shardingTransactionManager.begin(transactionEvent);
+                break;
+            case COMMIT:
+                shardingTransactionManager.commit(transactionEvent);
+                break;
+            case ROLLBACK:
+                shardingTransactionManager.rollback(transactionEvent);
+                break;
+            default:
+        }
     }
 }

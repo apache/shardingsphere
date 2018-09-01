@@ -15,20 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.core.transaction;
 
 import io.shardingsphere.core.event.ShardingEventListenerRegistry;
-import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 
 /**
  * Transaction listener registry.
  *
  * @author zhangliang
  */
-public final class TransactionListenerRegistry implements ShardingEventListenerRegistry {
+public final class LocalTransactionListenerRegistry implements ShardingEventListenerRegistry {
     
     @Override
     public void register() {
-        new XATransactionListener().register();
+        new LocalTransactionListener().register();
     }
 }

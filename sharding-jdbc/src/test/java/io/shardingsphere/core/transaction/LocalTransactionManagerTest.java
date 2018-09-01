@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.local;
+package io.shardingsphere.core.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
@@ -24,13 +24,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
@@ -95,10 +92,5 @@ public final class LocalTransactionManagerTest {
             verify(connection1).rollback();
             verify(connection2).rollback();
         }
-    }
-    
-    @Test
-    public void assertGetStatus() {
-        assertThat(new LocalTransactionManager().getStatus(), is(Status.STATUS_NO_TRANSACTION));
     }
 }

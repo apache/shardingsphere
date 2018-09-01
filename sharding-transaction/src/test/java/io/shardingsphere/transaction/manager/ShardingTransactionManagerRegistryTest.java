@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.manager;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.manager.local.LocalTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import org.junit.Test;
 
@@ -26,11 +25,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingTransactionManagerRegistryTest {
-    
-    @Test
-    public void assertGetShardingTransactionManagerForLocal() {
-        assertThat(ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.LOCAL), instanceOf(LocalTransactionManager.class));
-    }
     
     @Test
     public void assertGetShardingTransactionManagerForXA() {

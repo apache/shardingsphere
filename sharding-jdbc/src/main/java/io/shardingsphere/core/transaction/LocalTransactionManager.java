@@ -15,12 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.local;
+package io.shardingsphere.core.transaction;
 
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
-import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -81,11 +79,5 @@ public final class LocalTransactionManager implements ShardingTransactionManager
             sqlException.setNextException(each);
         }
         throw sqlException;
-    }
-    
-    @Override
-    public int getStatus() {
-        // TODO :zhaojun need confirm, return Status.STATUS_NO_TRANSACTION or zero? 
-        return Status.STATUS_NO_TRANSACTION;
     }
 }
