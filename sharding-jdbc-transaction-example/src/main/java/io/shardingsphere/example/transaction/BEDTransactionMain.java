@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class TransactionMain {
+public class BEDTransactionMain {
     
     private static boolean useNestedJob = true;
     
@@ -51,8 +51,9 @@ public class TransactionMain {
     }
     
     private static void createTable(final DataSource dataSource) throws SQLException {
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT "
+            + "NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
     }
     
     private static void dropTable(final DataSource dataSource) throws SQLException {
