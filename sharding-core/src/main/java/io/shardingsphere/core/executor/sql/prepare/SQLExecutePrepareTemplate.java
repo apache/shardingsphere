@@ -25,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +47,27 @@ public final class SQLExecutePrepareTemplate {
     /**
      * Get statement execute units.
      * 
-     * @param sqlUnitGroups SQL unit groups
+     * @param sqlExecutionUnits units execution SQL units
      * @param callback SQL execute prepare callback
      * @return key is data source name, value is statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Map<String, List<List<StatementExecuteUnit>>> getStatementExecuteUnits(final Map<String, List<SQLUnit>> sqlUnitGroups, final SQLExecutePrepareCallback callback) throws SQLException {
+    public Map<String, List<List<StatementExecuteUnit>>> getStatementExecuteUnits(final Collection<SQLExecutionUnit> sqlExecutionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(sqlExecutionUnits);
         Map<String, List<List<StatementExecuteUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.put(entry.getKey(), partitionSQLUnits(entry.getKey(), entry.getValue(), callback));
+        }
+        return result;
+    }
+    
+    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(sqlExecutionUnits.size(), 1);
+        for (SQLExecutionUnit each : sqlExecutionUnits) {
+            if (!result.containsKey(each.getDataSource())) {
+                result.put(each.getDataSource(), new LinkedList<SQLUnit>());
+            }
+            result.get(each.getDataSource()).add(each.getSqlUnit());
         }
         return result;
     }

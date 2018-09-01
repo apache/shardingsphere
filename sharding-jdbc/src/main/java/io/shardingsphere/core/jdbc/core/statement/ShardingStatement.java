@@ -261,7 +261,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     @SuppressWarnings("unchecked")
     private Map<String, List<List<StatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
         SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getSQLUnitGroups(), new SQLExecutePrepareCallback() {
+        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {

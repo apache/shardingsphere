@@ -77,7 +77,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Map<String, List<List<StatementExecuteUnit>>> statementExecuteUnits = 
-                sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getSQLUnitGroups(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
+                sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) statementExecuteUnits, 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
