@@ -59,10 +59,10 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
         }
         if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
         }
         return result;
     }

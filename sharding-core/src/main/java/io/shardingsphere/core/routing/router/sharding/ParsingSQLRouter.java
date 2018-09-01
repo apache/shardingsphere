@@ -104,10 +104,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
         }
         if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
         }
         return result;
     }

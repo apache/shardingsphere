@@ -116,12 +116,12 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(sql);
-        if (routeResult.getExecutionUnits().isEmpty()) {
+        if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
-        synchronizedFuture = new SynchronizedFuture(routeResult.getExecutionUnits().size());
+        synchronizedFuture = new SynchronizedFuture(routeResult.getRouteUnits().size());
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
-        for (RouteUnit each : routeResult.getExecutionUnits()) {
+        for (RouteUnit each : routeResult.getRouteUnits()) {
             executeSQL(each.getDataSourceName(), each.getSqlUnit().getSql());
         }
         List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);

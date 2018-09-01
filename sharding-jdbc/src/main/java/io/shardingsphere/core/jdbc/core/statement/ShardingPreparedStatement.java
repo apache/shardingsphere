@@ -230,7 +230,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private List<BatchPreparedStatementUnit> routeBatch() throws SQLException {
         List<BatchPreparedStatementUnit> result = new ArrayList<>();
         sqlRoute();
-        for (RouteUnit each : routeResult.getExecutionUnits()) {
+        for (RouteUnit each : routeResult.getRouteUnits()) {
             BatchPreparedStatementUnit batchStatementUnit = getPreparedBatchStatement(each);
             replaySetParameter(batchStatementUnit.getStatement(), each.getSqlUnit().getParameterSets().get(0));
             result.add(batchStatementUnit);
@@ -264,7 +264,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Collection<PreparedStatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
-        for (RouteUnit each : routeResult.getExecutionUnits()) {
+        for (RouteUnit each : routeResult.getRouteUnits()) {
             result.add(getPreparedStatementUnit(connection.getConnection(each.getDataSourceName()), each));
         }
         return result;
@@ -273,7 +273,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @SuppressWarnings("unchecked")
     private Collection<ShardingExecuteGroup<PreparedStatementUnit>> getExecuteUnitsForConnectionStrictly() throws SQLException {
         SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        return (Collection) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
+        return (Collection) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getRouteUnits(), new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {

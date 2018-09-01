@@ -51,7 +51,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         for (String each : new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(sql)) {
-            result.getExecutionUnits().add(new RouteUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
+            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
         }
         return result;
     }

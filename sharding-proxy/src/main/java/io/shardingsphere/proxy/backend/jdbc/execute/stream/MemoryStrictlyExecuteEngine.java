@@ -85,7 +85,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         Collection<StatementExecuteUnit> result = new LinkedList<>();
         List<Connection> connections = getConnections(routeResult);
         int count = 0;
-        for (RouteUnit each : routeResult.getExecutionUnits()) {
+        for (RouteUnit each : routeResult.getRouteUnits()) {
             Statement statement = getJdbcExecutorWrapper().createStatement(connections.get(count), each.getSqlUnit().getSql(), isReturnGeneratedKeys);
             result.add(new ProxyStatementExecuteUnit(each, statement));
             count++;
@@ -94,9 +94,9 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
     }
     
     private List<Connection> getConnections(final SQLRouteResult routeResult) throws SQLException {
-        List<Connection> result = new ArrayList<>(routeResult.getExecutionUnits().size());
+        List<Connection> result = new ArrayList<>(routeResult.getRouteUnits().size());
         synchronized (MemoryStrictlyExecuteEngine.class) {
-            for (RouteUnit each : routeResult.getExecutionUnits()) {
+            for (RouteUnit each : routeResult.getRouteUnits()) {
                 result.add(getBackendConnection().getConnection(each.getDataSourceName()));
             }
         }
