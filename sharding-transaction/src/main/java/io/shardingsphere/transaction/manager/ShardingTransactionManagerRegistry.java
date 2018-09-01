@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.manager;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.manager.local.LocalTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 
 import java.util.HashMap;
@@ -43,8 +42,6 @@ public final class ShardingTransactionManagerRegistry {
     
     private ShardingTransactionManager loadShardingTransactionManager(final TransactionType transactionType) {
         switch (transactionType) {
-            case LOCAL:
-                return new LocalTransactionManager();
             case XA:
                 return XATransactionManagerSPILoader.getInstance().getTransactionManager();
             case BASE:
