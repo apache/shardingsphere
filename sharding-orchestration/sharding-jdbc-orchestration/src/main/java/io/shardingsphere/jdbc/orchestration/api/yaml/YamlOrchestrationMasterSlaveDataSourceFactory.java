@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.api.yaml;
 
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
@@ -99,9 +100,12 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
                                                final YamlMasterSlaveRuleConfiguration yamlConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        return null == yamlConfig ? OrchestrationMasterSlaveDataSourceFactory.createDataSource(orchestrationConfig)
-                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                        dataSourceMap, yamlConfig.getMasterSlaveRuleConfiguration(), yamlConfig.getConfigMap(), yamlConfig.getProps(), orchestrationConfig);
+        if (null == yamlConfig) {
+            return OrchestrationMasterSlaveDataSourceFactory.createDataSource(orchestrationConfig);
+        } else {
+            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, yamlConfig.getMasterSlaveRuleConfiguration(), yamlConfig.getConfigMap(), yamlConfig.getProps());
+            return OrchestrationMasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSource, orchestrationConfig);
+        }
     }
     
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {
