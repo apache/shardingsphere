@@ -23,8 +23,8 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Statement executor for connection strictly mode.
@@ -35,9 +35,9 @@ public final class ConnectionStrictlyStatementExecutor extends StatementExecutor
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Map<String, List<ShardingExecuteGroup<StatementUnit>>> statementUnitGroups;
+    private final Collection<ShardingExecuteGroup<StatementUnit>> statementUnitGroups;
     
-    public ConnectionStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Map<String, List<ShardingExecuteGroup<StatementUnit>>> statementUnitGroups) {
+    public ConnectionStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<StatementUnit>> statementUnitGroups) {
         super(sqlType);
         this.executeTemplate = executeTemplate;
         this.statementUnitGroups = statementUnitGroups;
@@ -46,6 +46,6 @@ public final class ConnectionStrictlyStatementExecutor extends StatementExecutor
     @SuppressWarnings("unchecked")
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.execute((Map) statementUnitGroups, executeCallback);
+        return executeTemplate.executeGroup((Collection) statementUnitGroups, executeCallback);
     }
 }

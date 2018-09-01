@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Statement that support sharding.
@@ -260,9 +259,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, List<ShardingExecuteGroup<StatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
+    private Collection<ShardingExecuteGroup<StatementUnit>> getExecuteUnitsForConnectionStrictly() throws SQLException {
         SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
+        return (Collection) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {

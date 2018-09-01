@@ -36,7 +36,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,16 +96,16 @@ public final class TableMetaDataLoader {
         return result;
     }
     
-    private Map<String, List<ShardingExecuteGroup<DataNode>>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
-        Map<String, List<ShardingExecuteGroup<DataNode>>> result = new HashMap<>(dataNodeGroups.size(), 1);
+    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+        Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
-            result.put(entry.getKey(), getDataNodeGroups(entry.getValue()));
+            result.addAll(getDataNodeGroups(entry.getValue()));
         }
         return result;
     }
     
-    private List<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final List<DataNode> dataNodes) {
-        List<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
+    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final List<DataNode> dataNodes) {
+        Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
         for (List<DataNode> each : Lists.partition(dataNodes, Math.max(dataNodes.size() / maxConnectionsSizePerQuery, 1))) {
             result.add(new ShardingExecuteGroup<>(each));
         }

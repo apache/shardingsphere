@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,12 +52,12 @@ public final class SQLExecutePrepareTemplate {
      * @return key is data source name, value is statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Map<String, List<ShardingExecuteGroup<StatementExecuteUnit>>> getStatementExecuteUnitGroups(
+    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getStatementExecuteUnitGroups(
             final Collection<SQLExecutionUnit> sqlExecutionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(sqlExecutionUnits);
-        Map<String, List<ShardingExecuteGroup<StatementExecuteUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            result.put(entry.getKey(), partitionSQLUnits(entry.getKey(), entry.getValue(), callback));
+            result.addAll(partitionSQLUnits(entry.getKey(), entry.getValue(), callback));
         }
         return result;
     }

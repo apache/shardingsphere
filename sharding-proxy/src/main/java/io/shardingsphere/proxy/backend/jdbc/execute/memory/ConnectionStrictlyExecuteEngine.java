@@ -49,7 +49,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -77,9 +76,9 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Map<String, List<ShardingExecuteGroup<StatementExecuteUnit>>> executeUnitGroups = 
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeUnitGroups = 
                 sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getExecutionUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) executeUnitGroups, 
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) executeUnitGroups, 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
