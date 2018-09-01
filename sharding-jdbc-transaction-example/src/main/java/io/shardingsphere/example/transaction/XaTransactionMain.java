@@ -23,8 +23,8 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.example.transaction.algorithm.ModuloShardingAlgorithm;
-import io.shardingsphere.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
