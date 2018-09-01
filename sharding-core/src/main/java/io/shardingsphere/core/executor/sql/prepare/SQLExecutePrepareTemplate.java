@@ -46,36 +46,33 @@ public final class SQLExecutePrepareTemplate {
      * Get statement execute units.
      * 
      * @param sqlUnitGroups SQL unit groups
-     * @param isReturnGeneratedKeys is return generated keys
      * @param callback SQL execute prepare callback
      * @return key is data source name, value is statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Map<String, List<List<StatementExecuteUnit>>> getStatementExecuteUnits(
-            final Map<String, List<SQLUnit>> sqlUnitGroups, final boolean isReturnGeneratedKeys, final SQLExecutePrepareCallback callback) throws SQLException {
+    public Map<String, List<List<StatementExecuteUnit>>> getStatementExecuteUnits(final Map<String, List<SQLUnit>> sqlUnitGroups, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<List<StatementExecuteUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            result.put(entry.getKey(), partitionSQLUnits(entry.getKey(), entry.getValue(), isReturnGeneratedKeys, callback));
+            result.put(entry.getKey(), partitionSQLUnits(entry.getKey(), entry.getValue(), callback));
         }
         return result;
     }
     
-    private List<List<StatementExecuteUnit>> partitionSQLUnits(
-            final String dataSourceName, final List<SQLUnit> sqlUnits, final boolean isReturnGeneratedKeys, final SQLExecutePrepareCallback callback) throws SQLException {
+    private List<List<StatementExecuteUnit>> partitionSQLUnits(final String dataSourceName, final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         List<List<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
         for (List<SQLUnit> each : Lists.partition(sqlUnits, desiredPartitionSize)) {
             // TODO get connection sync to prevent dead lock
-            result.add(getStatementExecuteUnitGroup(callback.getConnection(dataSourceName), dataSourceName, isReturnGeneratedKeys, each, callback));
+            result.add(getStatementExecuteUnitGroup(callback.getConnection(dataSourceName), dataSourceName, each, callback));
         }
         return result;
     }
     
-    private List<StatementExecuteUnit> getStatementExecuteUnitGroup(final Connection connection, final String dataSourceName, final boolean isReturnGeneratedKeys, 
-                                                                    final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
+    private List<StatementExecuteUnit> getStatementExecuteUnitGroup(
+            final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createStatementExecuteUnit(connection, isReturnGeneratedKeys, new SQLExecutionUnit(dataSourceName, each)));
+            result.add(callback.createStatementExecuteUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
         }
         return result;
     }

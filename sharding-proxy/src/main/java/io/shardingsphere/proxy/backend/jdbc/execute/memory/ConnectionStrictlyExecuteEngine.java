@@ -42,6 +42,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteRespons
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -76,7 +77,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Map<String, List<List<StatementExecuteUnit>>> statementExecuteUnits = 
-                sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getSQLUnitGroups(), isReturnGeneratedKeys, new ConnectionStrictlySQLExecutePrepareCallback());
+                sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getSQLUnitGroups(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) statementExecuteUnits, 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
@@ -98,7 +99,10 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         return new MemoryQueryResult(resultSet);
     }
     
+    @RequiredArgsConstructor
     private final class ConnectionStrictlySQLExecutePrepareCallback implements SQLExecutePrepareCallback {
+        
+        private final boolean isReturnGeneratedKeys;
         
         @Override
         public Connection getConnection(final String dataSourceName) throws SQLException {
@@ -106,7 +110,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         }
         
         @Override
-        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
             return new ProxyStatementExecuteUnit(sqlExecutionUnit, getJdbcExecutorWrapper().createStatement(connection, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys));
         }
     }

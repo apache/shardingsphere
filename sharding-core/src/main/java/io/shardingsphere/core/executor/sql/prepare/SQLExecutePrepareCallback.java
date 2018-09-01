@@ -43,10 +43,9 @@ public interface SQLExecutePrepareCallback {
      * Create statement execute unit.
      * 
      * @param connection connection
-     * @param isReturnGeneratedKeys is return generated keys
      * @param sqlExecutionUnit SQL execution unit
      * @return statement execute unit
      * @throws SQLException SQL exception
      */
-    StatementExecuteUnit createStatementExecuteUnit(Connection connection, boolean isReturnGeneratedKeys, SQLExecutionUnit sqlExecutionUnit) throws SQLException;
+    StatementExecuteUnit createStatementExecuteUnit(Connection connection, SQLExecutionUnit sqlExecutionUnit) throws SQLException;
 }
