@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.threadlocal;
+package io.shardingsphere.core.executor.sql.execute.threadlocal;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

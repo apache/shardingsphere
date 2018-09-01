@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.threadlocal;
+package io.shardingsphere.core.executor.sql.execute.threadlocal;
 
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;

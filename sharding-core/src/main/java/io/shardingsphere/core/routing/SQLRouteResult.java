@@ -22,11 +22,7 @@ import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,21 +44,5 @@ public final class SQLRouteResult {
     
     public SQLRouteResult(final SQLStatement sqlStatement) {
         this(sqlStatement, null);
-    }
-    
-    /**
-     * Get SQL units grouped by data source name.
-     * 
-     * @return SQL units grouped by data source name.
-     */
-    public Map<String, List<SQLUnit>> getSQLUnitGroups() {
-        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
-        for (SQLExecutionUnit each : executionUnits) {
-            if (!result.containsKey(each.getDataSource())) {
-                result.put(each.getDataSource(), new LinkedList<SQLUnit>());
-            }
-            result.get(each.getDataSource()).add(each.getSqlUnit());
-        }
-        return result;
     }
 }
