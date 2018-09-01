@@ -74,19 +74,19 @@ public class DatabaseTest {
         String originSql = "select * from tesT";
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, null).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
-        Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<RouteUnit, String>() {
         
             @Override
-            public String apply(final SQLExecutionUnit input) {
-                return input.getDataSource();
+            public String apply(final RouteUnit input) {
+                return input.getDataSourceName();
             }
         }));
         assertThat(actualDataSources.size(), is(1));
         assertThat(actualDataSources, hasItems("ds_0"));
-        Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<RouteUnit, String>() {
         
             @Override
-            public String apply(final SQLExecutionUnit input) {
+            public String apply(final RouteUnit input) {
                 return input.getSqlUnit().getSql();
             }
         });
@@ -96,19 +96,19 @@ public class DatabaseTest {
     private void assertTarget(final String originSql, final String targetDataSource) {
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, null).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
-        Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<RouteUnit, String>() {
             
             @Override
-            public String apply(final SQLExecutionUnit input) {
-                return input.getDataSource();
+            public String apply(final RouteUnit input) {
+                return input.getDataSourceName();
             }
         }));
         assertThat(actualDataSources.size(), is(1));
         assertThat(actualDataSources, hasItems(targetDataSource));
-        Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<RouteUnit, String>() {
             
             @Override
-            public String apply(final SQLExecutionUnit input) {
+            public String apply(final RouteUnit input) {
                 return input.getSqlUnit().getSql();
             }
         });

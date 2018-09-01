@@ -72,7 +72,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<SQLExecutionEvent> events = new LinkedList<>();
-        for (List<Object> each : executeUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets()) {
+        for (List<Object> each : executeUnit.getRouteUnit().getSqlUnit().getParameterSets()) {
             SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(sqlType, executeUnit, each);
             events.add(event);
             shardingEventBus.post(event);

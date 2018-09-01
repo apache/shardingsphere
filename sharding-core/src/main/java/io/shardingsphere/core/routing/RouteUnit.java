@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * SQL execution unit.
+ * Route unit.
  * 
  * @author gaohongtao
  * @author maxiaoguang
@@ -32,9 +32,9 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class SQLExecutionUnit {
+public final class RouteUnit {
     
-    private final String dataSource;
+    private final String dataSourceName;
     
     private final SQLUnit sqlUnit;
 }

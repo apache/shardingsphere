@@ -43,11 +43,11 @@ public final class SQLExecutionEventFactory {
      */
     public static SQLExecutionEvent createEvent(final SQLType sqlType, final StatementExecuteUnit executeUnit, final List<Object> parameters) {
         if (SQLType.DQL == sqlType) {
-            return new DQLExecutionEvent(executeUnit.getSqlExecutionUnit(), parameters);
+            return new DQLExecutionEvent(executeUnit.getRouteUnit(), parameters);
         }
         if (SQLType.DML == sqlType) {
-            return new DMLExecutionEvent(executeUnit.getSqlExecutionUnit(), parameters);
+            return new DMLExecutionEvent(executeUnit.getRouteUnit(), parameters);
         }
-        return new SQLExecutionEvent(executeUnit.getSqlExecutionUnit(), parameters);
+        return new SQLExecutionEvent(executeUnit.getRouteUnit(), parameters);
     }
 }

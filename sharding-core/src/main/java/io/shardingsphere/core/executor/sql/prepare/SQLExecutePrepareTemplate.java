@@ -20,7 +20,7 @@ package io.shardingsphere.core.executor.sql.prepare;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import lombok.RequiredArgsConstructor;
 
@@ -47,14 +47,13 @@ public final class SQLExecutePrepareTemplate {
     /**
      * Get statement execute unit groups.
      * 
-     * @param sqlExecutionUnits units execution SQL units
+     * @param routeUnits route units
      * @param callback SQL execute prepare callback
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getStatementExecuteUnitGroups(
-            final Collection<SQLExecutionUnit> sqlExecutionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(sqlExecutionUnits);
+    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getStatementExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.addAll(partitionSQLUnits(entry.getKey(), entry.getValue(), callback));
@@ -62,13 +61,13 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<SQLExecutionUnit> sqlExecutionUnits) {
-        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(sqlExecutionUnits.size(), 1);
-        for (SQLExecutionUnit each : sqlExecutionUnits) {
-            if (!result.containsKey(each.getDataSource())) {
-                result.put(each.getDataSource(), new LinkedList<SQLUnit>());
+    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<RouteUnit> routeUnits) {
+        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
+        for (RouteUnit each : routeUnits) {
+            if (!result.containsKey(each.getDataSourceName())) {
+                result.put(each.getDataSourceName(), new LinkedList<SQLUnit>());
             }
-            result.get(each.getDataSource()).add(each.getSqlUnit());
+            result.get(each.getDataSourceName()).add(each.getSqlUnit());
         }
         return result;
     }
@@ -88,7 +87,7 @@ public final class SQLExecutePrepareTemplate {
             final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createStatementExecuteUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
+            result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each)));
         }
         return new ShardingExecuteGroup<>(result);
     }

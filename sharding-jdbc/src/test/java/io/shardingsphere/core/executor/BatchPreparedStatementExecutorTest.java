@@ -24,7 +24,7 @@ import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.rewrite.SQLBuilder;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -141,10 +141,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
         BatchPreparedStatementUnit batchPreparedStatementUnit = 
-                new BatchPreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement);
-        batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().clear();
+                new BatchPreparedStatementUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement);
+        batchPreparedStatementUnit.getRouteUnit().getSqlUnit().getParameterSets().clear();
         for (int i = 0; i < addBatchTimes; i++) {
-            batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));
+            batchPreparedStatementUnit.getRouteUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));
             batchPreparedStatementUnit.mapAddBatchCount(i);
         }
         Collection<BatchPreparedStatementUnit> result = new LinkedList<>();

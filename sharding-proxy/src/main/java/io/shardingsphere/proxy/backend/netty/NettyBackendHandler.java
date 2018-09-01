@@ -27,7 +27,7 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
@@ -121,8 +121,8 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         }
         synchronizedFuture = new SynchronizedFuture(routeResult.getExecutionUnits().size());
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            executeSQL(each.getDataSource(), each.getSqlUnit().getSql());
+        for (RouteUnit each : routeResult.getExecutionUnits()) {
+            executeSQL(each.getDataSourceName(), each.getSqlUnit().getSql());
         }
         List<QueryResult> queryResults = synchronizedFuture.get(RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         FutureRegistry.getInstance().delete(connectionId);

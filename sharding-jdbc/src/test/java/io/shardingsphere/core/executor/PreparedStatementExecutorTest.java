@@ -23,7 +23,7 @@ import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementE
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -350,7 +350,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         Collection<PreparedStatementUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        result.add(new PreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement));
+        result.add(new PreparedStatementUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement));
         return result;
     }
     

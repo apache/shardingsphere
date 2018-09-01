@@ -29,7 +29,7 @@ import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
@@ -110,8 +110,8 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         }
         
         @Override
-        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-            return new ProxyStatementExecuteUnit(sqlExecutionUnit, getJdbcExecutorWrapper().createStatement(connection, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys));
+        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+            return new ProxyStatementExecuteUnit(routeUnit, getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys));
         }
     }
     
@@ -129,10 +129,10 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         @Override
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
             if (hasMetaData) {
-                return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+                return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
             } else {
                 hasMetaData = true;
-                return executeWithMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+                return executeWithMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
             }
         }
     }
@@ -148,7 +148,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         
         @Override
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
 }

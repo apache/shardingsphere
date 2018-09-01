@@ -56,7 +56,7 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
@@ -230,7 +230,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private List<BatchPreparedStatementUnit> routeBatch() throws SQLException {
         List<BatchPreparedStatementUnit> result = new ArrayList<>();
         sqlRoute();
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
+        for (RouteUnit each : routeResult.getExecutionUnits()) {
             BatchPreparedStatementUnit batchStatementUnit = getPreparedBatchStatement(each);
             replaySetParameter(batchStatementUnit.getStatement(), each.getSqlUnit().getParameterSets().get(0));
             result.add(batchStatementUnit);
@@ -264,8 +264,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Collection<PreparedStatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            result.add(getPreparedStatementUnit(connection.getConnection(each.getDataSource()), each));
+        for (RouteUnit each : routeResult.getExecutionUnits()) {
+            result.add(getPreparedStatementUnit(connection.getConnection(each.getDataSourceName()), each));
         }
         return result;
     }
@@ -281,33 +281,33 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             }
             
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-                return getPreparedStatementUnit(connection, sqlExecutionUnit);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+                return getPreparedStatementUnit(connection, routeUnit);
             }
         });
     }
     
-    private PreparedStatementUnit getPreparedStatementUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        PreparedStatement preparedStatement = createPreparedStatement(connection, sqlExecutionUnit.getSqlUnit().getSql());
+    private PreparedStatementUnit getPreparedStatementUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+        PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
         routedStatements.add(preparedStatement);
-        replaySetParameter(preparedStatement, sqlExecutionUnit.getSqlUnit().getParameterSets().get(0));
-        return new PreparedStatementUnit(sqlExecutionUnit, preparedStatement);
+        replaySetParameter(preparedStatement, routeUnit.getSqlUnit().getParameterSets().get(0));
+        return new PreparedStatementUnit(routeUnit, preparedStatement);
     }
     
-    private BatchPreparedStatementUnit getPreparedBatchStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+    private BatchPreparedStatementUnit getPreparedBatchStatement(final RouteUnit routeUnit) throws SQLException {
         Optional<BatchPreparedStatementUnit> preparedBatchStatement = Iterators.tryFind(batchStatementUnits.iterator(), new Predicate<BatchPreparedStatementUnit>() {
             
             @Override
             public boolean apply(final BatchPreparedStatementUnit input) {
-                return Objects.equals(input.getSqlExecutionUnit(), sqlExecutionUnit);
+                return Objects.equals(input.getRouteUnit(), routeUnit);
             }
         });
         if (preparedBatchStatement.isPresent()) {
-            preparedBatchStatement.get().getSqlExecutionUnit().getSqlUnit().getParameterSets().add(sqlExecutionUnit.getSqlUnit().getParameterSets().get(0));
+            preparedBatchStatement.get().getRouteUnit().getSqlUnit().getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
             return preparedBatchStatement.get();
         }
         BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(
-                sqlExecutionUnit, createPreparedStatement(connection.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql()));
+                routeUnit, createPreparedStatement(connection.getConnection(routeUnit.getDataSourceName()), routeUnit.getSqlUnit().getSql()));
         batchStatementUnits.add(result);
         return result;
     }
@@ -343,7 +343,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private Map<String, List<BatchPreparedStatementUnit>> getBatchPreparedStatementUnitGroups() {
         Map<String, List<BatchPreparedStatementUnit>> result = new HashMap<>(batchStatementUnits.size(), 1);
         for (BatchPreparedStatementUnit each : batchStatementUnits) {
-            String dataSourceName = each.getSqlExecutionUnit().getDataSource();
+            String dataSourceName = each.getRouteUnit().getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
                 result.put(dataSourceName, new LinkedList<BatchPreparedStatementUnit>());
             }

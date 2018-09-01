@@ -37,7 +37,7 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
@@ -104,7 +104,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
+            result.getExecutionUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
