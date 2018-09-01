@@ -19,7 +19,6 @@ package io.shardingsphere.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.zookeeper.KeeperException;
  *
  * @author lidongbo
  */
-@Slf4j
 public abstract class RetryResultCallable<T> extends RetryCallable {
     
     @Setter
@@ -48,7 +46,6 @@ public abstract class RetryResultCallable<T> extends RetryCallable {
         if (null == result) {
             exec();
         }
-        log.debug("result: {}", result);
         return result;
     }
 }

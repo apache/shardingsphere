@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base;
 
 import com.google.common.base.Strings;
-import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -106,7 +105,6 @@ public class Holder {
             } else if (Watcher.Event.KeeperState.Expired == event.getState()) {
                 connected = false;
                 try {
-                    log.warn("startWatcher Event.KeeperState.Expired");
                     reset();
                 } catch (final IOException | InterruptedException ex) {
                     log.error("event state Expired: {}", ex.getMessage(), ex);
@@ -127,7 +125,6 @@ public class Holder {
         if (!context.getWatchers().isEmpty()) {
             for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
                 if (null == zookeeperEventListener.getPath() || event.getPath().startsWith(zookeeperEventListener.getPath())) {
-                    log.debug("listener process: {}, listener: {}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
                     zookeeperEventListener.process(event);
                 }
             }
@@ -167,7 +164,6 @@ public class Holder {
             });
             zooKeeper.close();
             connected = false;
-            log.debug("zk closed");
             context.close();
         } catch (final InterruptedException ex) {
             log.warn("Holder close:{}", ex.getMessage());

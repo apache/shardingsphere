@@ -23,7 +23,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.Connec
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
 import java.util.concurrent.Delayed;
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  * @author lidongbo
  */
 @RequiredArgsConstructor
-@Slf4j
 public abstract class BaseOperation implements Delayed {
     
     @Getter
@@ -47,7 +45,6 @@ public abstract class BaseOperation implements Delayed {
     @Override
     public final long getDelay(final TimeUnit timeUnit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-        log.debug("queue getDelay block: {}", absoluteBlock);
         return timeUnit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
     }
     

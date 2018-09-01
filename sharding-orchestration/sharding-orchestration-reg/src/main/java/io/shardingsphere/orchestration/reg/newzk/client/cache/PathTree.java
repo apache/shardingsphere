@@ -88,7 +88,6 @@ public final class PathTree implements AutoCloseable {
         }
         try {
             if (status == PathStatus.RELEASE) {
-                log.debug("loading status: {}", status);
                 status = PathStatus.CHANGING;
                 PathNode newRoot = new PathNode(rootNode.get().getNodeKey());
                 List<String> children = provider.getChildren(PathUtil.checkPath(rootNode.get().getNodeKey()));
@@ -96,9 +95,7 @@ public final class PathTree implements AutoCloseable {
                 attachIntoNode(children, newRoot);
                 rootNode.set(newRoot);
                 status = PathStatus.RELEASE;
-                log.debug("loading release: {}", status);
             } else {
-                log.info("loading but cache status not release");
                 try {
                     Thread.sleep(10L);
                 } catch (final InterruptedException ex) {
@@ -115,7 +112,6 @@ public final class PathTree implements AutoCloseable {
         if (closed) {
             return;
         }
-        log.debug("attachIntoNode children: {}", children);
         if (children.isEmpty()) {
             log.info("attachIntoNode there are no children");
             return;
@@ -146,13 +142,11 @@ public final class PathTree implements AutoCloseable {
             if (threadPeriod < 1) {
                 threadPeriod = ZookeeperConstants.THREAD_PERIOD;
             }
-            log.debug("refreshPeriodic: {}", period);
             cacheService = Executors.newSingleThreadScheduledExecutor();
             cacheService.scheduleAtFixedRate(new Runnable() {
                 
                 @Override
                 public void run() {
-                    log.debug("cacheService run: {}", getStatus());
                     if (PathStatus.RELEASE == getStatus()) {
                         try {
                             load();
@@ -167,7 +161,6 @@ public final class PathTree implements AutoCloseable {
                 
                 @Override
                 public void run() {
-                    log.debug("cacheService stop");
                     stopRefresh();
                 }
             }));
@@ -182,7 +175,6 @@ public final class PathTree implements AutoCloseable {
     public void stopRefresh() {
         cacheService.shutdown();
         executorStart = false;
-        log.debug("stop refresh");
     }
     
     /**
@@ -194,7 +186,6 @@ public final class PathTree implements AutoCloseable {
             @Override
             public void process(final WatchedEvent event) {
                 String path = event.getPath();
-                log.debug("PathTree Watch event: {}", event.toString());
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
@@ -221,7 +212,6 @@ public final class PathTree implements AutoCloseable {
             return;
         }
         String key = zookeeperEventListener.getKey();
-        log.debug("PathTree Watch: {}", key);
         client.registerWatch(rootNode.get().getNodeKey(), zookeeperEventListener);
         watcherKeys.add(key);
     }
@@ -266,11 +256,9 @@ public final class PathTree implements AutoCloseable {
         PathNode node = get(path);
         List<String> result = new ArrayList<>();
         if (node == null) {
-            log.info("getChildren null");
             return result;
         }
         if (node.getChildren().isEmpty()) {
-            log.info("getChildren no child");
             return result;
         }
         for (final PathNode pathNode : node.getChildren().values()) {
@@ -280,7 +268,6 @@ public final class PathTree implements AutoCloseable {
     }
     
     private PathNode get(final String path) {
-        log.debug("PathTree get: {}", path);
         if (Strings.isNullOrEmpty(path) || path.equals(ZookeeperConstants.PATH_SEPARATOR)) {
             return rootNode.get();
         }
@@ -288,7 +275,6 @@ public final class PathTree implements AutoCloseable {
         PathResolve pathResolve = new PathResolve(realPath);
         pathResolve.next();
         if (pathResolve.isEnd()) {
-            log.info("path node get() hit root!");
             return rootNode.get();
         }
         return rootNode.get().get(pathResolve);
@@ -307,7 +293,6 @@ public final class PathTree implements AutoCloseable {
             return;
         }
         try {
-            log.debug("cache put:{},value:{},status:{}", path, value, status);
             if (status == PathStatus.RELEASE) {
                 setStatus(PathStatus.CHANGING);
                 String realPath = provider.getRealPath(path);
@@ -317,7 +302,6 @@ public final class PathTree implements AutoCloseable {
                 setStatus(PathStatus.RELEASE);
             } else {
                 try {
-                    log.debug("put but cache status not release");
                     Thread.sleep(10L);
                 } catch (final InterruptedException ex) {
                     log.error("put sleep error:{}", ex.getMessage(), ex);
@@ -335,7 +319,6 @@ public final class PathTree implements AutoCloseable {
      * @param path path
      */
     public void delete(final String path) {
-        log.debug("PathTree begin delete:{}", path);
         ReentrantLock lock = this.lock;
         lock.lock();
         if (closed) {
@@ -350,7 +333,6 @@ public final class PathTree implements AutoCloseable {
             PathResolve pathResolve = new PathResolve(realPath);
             pathResolve.next();
             rootNode.get().delete(pathResolve);
-            log.debug("PathTree end delete:{}", path);
         } finally {
             lock.unlock();
         }
