@@ -25,6 +25,7 @@ import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -71,33 +72,33 @@ public final class TableMetaDataLoader {
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, List<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return executeEngine.groupExecute(partitionDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<String, TableMetaData>() {
+    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        return executeEngine.groupExecute(partitionDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
             @Override
-            public Collection<TableMetaData> execute(final String dataSourceName, final Collection<String> actualTableNames) throws SQLException {
+            public Collection<TableMetaData> execute(final String dataSourceName, final Collection<DataNode> dataNodes) throws SQLException {
                 DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
-                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, actualTableNames);
+                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes);
             }
         });
     }
     
-    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<String> actualTableNames) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<DataNode> dataNodes) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            for (String each : actualTableNames) {
-                result.add(new TableMetaData(isTableExist(connection, catalog, each) ? getColumnMetaDataList(connection, catalog, each) : Collections.<ColumnMetaData>emptyList()));
+            for (DataNode each : dataNodes) {
+                result.add(new TableMetaData(isTableExist(connection, catalog, each.getTableName()) ? getColumnMetaDataList(connection, catalog, each.getTableName()) : Collections.<ColumnMetaData>emptyList()));
             }
         }
         return result;
     }
     
-    private Map<String, List<List<String>>> partitionDataNodeGroups(final Map<String, List<String>> dataNodeGroups) {
-        Map<String, List<List<String>>> result = new HashMap<>(dataNodeGroups.size(), 1);
-        for (Entry<String, List<String>> entry : dataNodeGroups.entrySet()) {
-            int desiredPartitionSize = entry.getValue().size() / maxConnectionsSizePerQuery;
-            result.put(entry.getKey(), Lists.partition(entry.getValue(), 0 == desiredPartitionSize ? 1 : desiredPartitionSize));
+    private Map<String, List<List<DataNode>>> partitionDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+        Map<String, List<List<DataNode>>> result = new HashMap<>(dataNodeGroups.size(), 1);
+        for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
+            int desiredPartitionSize = Math.max(entry.getValue().size() / maxConnectionsSizePerQuery, 1);
+            result.put(entry.getKey(), Lists.partition(entry.getValue(), desiredPartitionSize));
         }
         return result;
     }

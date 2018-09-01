@@ -112,14 +112,14 @@ public final class TableRule {
      *
      * @return data node groups, key is data source name, value is tables belong to this data source
      */
-    public Map<String, List<String>> getDataNodeGroups() {
-        Map<String, List<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
+    public Map<String, List<DataNode>> getDataNodeGroups() {
+        Map<String, List<DataNode>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
         for (DataNode each : actualDataNodes) {
             String dataSourceName = each.getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<String>());
+                result.put(dataSourceName, new LinkedList<DataNode>());
             }
-            result.get(dataSourceName).add(each.getTableName());
+            result.get(dataSourceName).add(each);
         }
         return result;
     }
