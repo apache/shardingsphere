@@ -24,6 +24,8 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.merger.MergeEvent;
+import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.executor.batch.ConnectionStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
@@ -32,6 +34,9 @@ import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementE
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementUnit;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.executor.sql.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.result.StreamQueryResult;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -44,7 +49,6 @@ import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -53,8 +57,6 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -268,25 +270,21 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private Map<String, List<List<PreparedStatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
-        Map<String, List<SQLUnit>> sqlUnitGroups = routeResult.getSQLUnitGroups();
-        Map<String, List<List<PreparedStatementUnit>>> result = new HashMap<>(sqlUnitGroups.size(), 1);
-        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            String dataSourceName = entry.getKey();
-            int desiredPartitionSize = entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
-            for (List<SQLUnit> sqlUnitList : Lists.partition(new ArrayList<>(entry.getValue()), 0 == desiredPartitionSize ? 1 : desiredPartitionSize)) {
-                Connection connection = this.connection.getConnection(dataSourceName);
-                List<PreparedStatementUnit> preparedStatementUnits = new LinkedList<>();
-                for (SQLUnit each : sqlUnitList) {
-                    preparedStatementUnits.add(getPreparedStatementUnit(connection, new SQLExecutionUnit(dataSourceName, each)));
-                }
-                if (!result.containsKey(dataSourceName)) {
-                    result.put(dataSourceName, new LinkedList<List<PreparedStatementUnit>>());
-                }
-                result.get(dataSourceName).add(preparedStatementUnits);
+        SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getSQLUnitGroups(), returnGeneratedKeys, new SQLExecutePrepareCallback() {
+            
+            @Override
+            public Connection getConnection(final String dataSourceName) throws SQLException {
+                return ShardingPreparedStatement.this.connection.getConnection(dataSourceName);
             }
-        }
-        return result;
+            
+            @Override
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final boolean isReturnGeneratedKeys, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+                return getPreparedStatementUnit(connection, sqlExecutionUnit);
+            }
+        });
     }
     
     private PreparedStatementUnit getPreparedStatementUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
@@ -336,8 +334,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private Map<String, List<List<BatchPreparedStatementUnit>>> partitionBatchPreparedStatementUnitGroups() {
         Map<String, List<List<BatchPreparedStatementUnit>>> result = new HashMap<>(batchStatementUnits.size(), 1);
         for (Entry<String, List<BatchPreparedStatementUnit>> entry : getBatchPreparedStatementUnitGroups().entrySet()) {
-            int desiredPartitionSize = entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery();
-            result.put(entry.getKey(), Lists.partition(entry.getValue(), 0 == desiredPartitionSize ? 1 : desiredPartitionSize));
+            int desiredPartitionSize = Math.max(entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery(), 1);
+            result.put(entry.getKey(), Lists.partition(entry.getValue(), desiredPartitionSize));
         }
         return result;
     }
