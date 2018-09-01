@@ -60,7 +60,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     }
     
     @Override
-    public final Collection<T> execute(final String dataSourceName, final Collection<StatementExecuteUnit> executeUnits) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> executeUnits) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : executeUnits) {
             result.add(execute0(each));

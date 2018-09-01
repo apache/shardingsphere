@@ -76,7 +76,8 @@ public final class TableMetaDataLoader {
         return executeEngine.groupExecute(partitionDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
             @Override
-            public Collection<TableMetaData> execute(final String dataSourceName, final Collection<DataNode> dataNodes) throws SQLException {
+            public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes) throws SQLException {
+                String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
                 return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes);
