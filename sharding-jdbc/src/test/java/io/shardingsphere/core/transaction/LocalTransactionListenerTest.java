@@ -15,13 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.listener.local;
+package io.shardingsphere.core.transaction;
 
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
