@@ -71,11 +71,9 @@ public class Holder {
     }
     
     protected void initZookeeper() throws IOException {
-        log.debug("Holder servers: {}, sessionTimeOut: {}", context.getServers(), context.getSessionTimeOut());
         zooKeeper = new ZooKeeper(context.getServers(), context.getSessionTimeOut(), startWatcher());
         if (!Strings.isNullOrEmpty(context.getScheme())) {
             zooKeeper.addAuthInfo(context.getScheme(), context.getAuth());
-            log.debug("Holder scheme: {}, auth: {}", context.getScheme(), context.getAuth());
         }
     }
     
@@ -101,12 +99,10 @@ public class Holder {
     }
     
     protected void processConnection(final WatchedEvent event) {
-        log.debug("BaseClient process event: {}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
                 connectLatch.countDown();
                 connected = true;
-                log.debug("BaseClient startWatcher SyncConnected");
             } else if (Watcher.Event.KeeperState.Expired == event.getState()) {
                 connected = false;
                 try {
@@ -124,7 +120,6 @@ public class Holder {
     private void processGlobalListener(final WatchedEvent event) {
         if (null != context.getGlobalZookeeperEventListener()) {
             context.getGlobalZookeeperEventListener().process(event);
-            log.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
         }
     }
     
