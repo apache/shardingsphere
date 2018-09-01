@@ -28,5 +28,6 @@ public final class LocalTransactionListenerRegistry implements ShardingEventList
     
     @Override
     public void register() {
+        new LocalTransactionListener().register();
     }
 }
