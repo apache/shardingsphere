@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.IExecStrategy;
 import io.shardingsphere.orchestration.reg.newzk.client.action.ITransactionProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
@@ -33,7 +32,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy.Trans
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -48,7 +46,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author lidongbo
  */
-@Slf4j
 public class UsualClient extends BaseClient {
     
     private final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
@@ -68,7 +65,6 @@ public class UsualClient extends BaseClient {
     
     @Override
     public synchronized void useExecStrategy(final StrategyType strategyType) {
-        log.debug("useExecStrategy:{}", strategyType);
         if (strategies.containsKey(strategyType)) {
             execStrategy = strategies.get(strategyType);
             return;
@@ -175,7 +171,6 @@ public class UsualClient extends BaseClient {
         execStrategy.deleteAllChildren(key);
         if (getRootNode().equals(key)) {
             setRootExist(false);
-            log.debug("deleteAllChildren delete root: {}", getRootNode());
         }
     }
     
@@ -184,7 +179,6 @@ public class UsualClient extends BaseClient {
         execStrategy.deleteCurrentBranch(key);
         if (!execStrategy.checkExists(getRootNode())) {
             setRootExist(false);
-            log.debug("deleteCurrentBranch delete root: {}", getRootNode());
         }
     }
     
