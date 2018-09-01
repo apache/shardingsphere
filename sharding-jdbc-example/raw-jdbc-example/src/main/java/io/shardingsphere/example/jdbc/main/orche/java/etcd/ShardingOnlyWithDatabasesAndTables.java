@@ -24,12 +24,12 @@ import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfig
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.jdbc.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

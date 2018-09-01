@@ -20,7 +20,7 @@ package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper.ShardingOnlyWithTables;
 import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
 import javax.sql.DataSource;
 import java.io.File;

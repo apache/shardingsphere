@@ -20,12 +20,12 @@ package io.shardingsphere.example.jdbc.main.orche.java.zookeeper;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.config.OrchestrationType;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationMasterSlaveDataSource;
-import io.shardingsphere.jdbc.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.jdbc.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
