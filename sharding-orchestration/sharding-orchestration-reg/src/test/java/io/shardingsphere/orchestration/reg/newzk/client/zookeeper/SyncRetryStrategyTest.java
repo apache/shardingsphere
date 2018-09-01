@@ -26,7 +26,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.StrategyType;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy.UsualStrategy;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 public final class SyncRetryStrategyTest extends UsualClientTest {
     
     private IProvider provider;
@@ -52,7 +50,7 @@ public final class SyncRetryStrategyTest extends UsualClientTest {
     @Override
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         final IClient client = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
-                .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(TestSupport.buildListener()).start();
+                .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
         client.useExecStrategy(StrategyType.SYNC_RETRY);
         provider = client.getExecStrategy().getProvider();
         return client;
@@ -223,7 +221,6 @@ public final class SyncRetryStrategyTest extends UsualClientTest {
         getTestClient().createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
         key = "a/c/cc";
         getTestClient().createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
-        log.debug("nearest children count:{}", getZooKeeper(getTestClient()).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren());
         assertNotNull(getZooKeeper(getTestClient()).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
     
         TestCallable callable = new TestCallable(provider, DelayRetryPolicy.defaultDelayPolicy()) {
