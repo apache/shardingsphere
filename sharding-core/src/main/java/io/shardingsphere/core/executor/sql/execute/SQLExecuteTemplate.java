@@ -47,13 +47,13 @@ public final class SQLExecuteTemplate {
      * Execute.
      *
      * @param executeUnits execute units
-     * @param executeCallback execute callback
+     * @param callback execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return execute(executeUnits, null, executeCallback);
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits, final SQLExecuteCallback<T> callback) throws SQLException {
+        return execute(executeUnits, null, callback);
     }
     
     /**
@@ -61,18 +61,18 @@ public final class SQLExecuteTemplate {
      *
      * @param executeUnits execute units
      * @param firstExecuteCallback first execute callback
-     * @param executeCallback execute callback
+     * @param callback execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> executeUnits,
-                               final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+                               final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = executeEngine.execute((Collection) executeUnits, firstExecuteCallback, executeCallback);
+            List<T> result = executeEngine.execute((Collection) executeUnits, firstExecuteCallback, callback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF

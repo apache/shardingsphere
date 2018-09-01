@@ -25,8 +25,8 @@ import java.util.Collection;
  * 
  * @author zhangliang
  * 
- * @param <I> type of input value
- * @param <O> type of output value
+ * @param <I> type of inputs value
+ * @param <O> type of outputs value
  */
 public interface ShardingGroupExecuteCallback<I, O> {
     

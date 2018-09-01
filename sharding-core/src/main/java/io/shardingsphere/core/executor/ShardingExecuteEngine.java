@@ -54,7 +54,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     /**
-     * Execute all callbacks.
+     * Execute.
      *
      * @param inputs input values
      * @param callback sharding execute callback
@@ -68,7 +68,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     /**
-     * Execute all callbacks.
+     * Execute.
      *
      * @param inputs input values
      * @param firstCallback first sharding execute callback
@@ -120,7 +120,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     /**
-     * execute all callbacks for group.
+     * Execute for group.
      *
      * @param inputGroups input groups
      * @param callback sharding execute callback
@@ -134,7 +134,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     /**
-     * execute all callbacks for group.
+     * Execute for group.
      *
      * @param inputGroups input groups
      * @param callback sharding execute callback
