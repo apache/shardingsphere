@@ -61,7 +61,7 @@ public final class BestEffortsDeliveryListener {
             case BEFORE_EXECUTE:
                 //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
-                        event.getDataSource(), event.getSqlUnit().getSql(), event.getParameters(), System.currentTimeMillis(), 0));
+                        event.getSqlExecutionUnit().getDataSource(), event.getSqlExecutionUnit().getSqlUnit().getSql(), event.getParameters(), System.currentTimeMillis(), 0));
                 return;
             case EXECUTE_SUCCESS: 
                 transactionLogStorage.remove(event.getId());
@@ -76,13 +76,13 @@ public final class BestEffortsDeliveryListener {
                     Connection conn = null;
                     PreparedStatement preparedStatement = null;
                     try {
-                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
+                        conn = bedSoftTransaction.getConnection().getConnection(event.getSqlExecutionUnit().getDataSource());
                         if (!isValidConnection(conn)) {
                             bedSoftTransaction.getConnection().release(conn);
-                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
+                            conn = bedSoftTransaction.getConnection().getConnection(event.getSqlExecutionUnit().getDataSource());
                             isNewConnection = true;
                         }
-                        preparedStatement = conn.prepareStatement(event.getSqlUnit().getSql());
+                        preparedStatement = conn.prepareStatement(event.getSqlExecutionUnit().getSqlUnit().getSql());
                         //TODO for batch event need split to 2-level records
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
                             preparedStatement.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));

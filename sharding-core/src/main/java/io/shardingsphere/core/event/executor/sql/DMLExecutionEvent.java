@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.event.executor.sql;
 
-import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.routing.SQLExecutionUnit;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  */
 public final class DMLExecutionEvent extends SQLExecutionEvent {
     
-    public DMLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
-        super(dataSource, sqlUnit, parameters);
+    public DMLExecutionEvent(final SQLExecutionUnit sqlExecutionUnit, final List<Object> parameters) {
+        super(sqlExecutionUnit, parameters);
     }
 }

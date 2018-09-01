@@ -36,8 +36,8 @@ public final class ExecutorTestUtil {
      * @param event SQL execution event
      */
     public static void listen(final EventCaller eventCaller, final SQLExecutionEvent event) {
-        eventCaller.verifyDataSource(event.getDataSource());
-        eventCaller.verifySQL(event.getSqlUnit().getSql());
+        eventCaller.verifyDataSource(event.getSqlExecutionUnit().getDataSource());
+        eventCaller.verifySQL(event.getSqlExecutionUnit().getSqlUnit().getSql());
         eventCaller.verifyParameters(event.getParameters());
         eventCaller.verifyEventExecutionType(event.getEventType());
         if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {

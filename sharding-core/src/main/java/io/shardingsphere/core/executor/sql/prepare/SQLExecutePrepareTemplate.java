@@ -49,7 +49,7 @@ public final class SQLExecutePrepareTemplate {
      * 
      * @param sqlExecutionUnits units execution SQL units
      * @param callback SQL execute prepare callback
-     * @return key is data source name, value is statement execute unit groups
+     * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getStatementExecuteUnitGroups(
