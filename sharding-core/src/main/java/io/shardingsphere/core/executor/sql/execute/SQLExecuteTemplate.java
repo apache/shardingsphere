@@ -18,8 +18,9 @@
 package io.shardingsphere.core.executor.sql.execute;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -95,14 +96,14 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
+    public <T> List<T> execute(final Map<String, List<ShardingExecuteGroup<? extends StatementExecuteUnit>>> executeUnits, final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return execute(executeUnits, null, executeCallback);
     }
     
     /**
      * Execute.
      *
-     * @param executeUnits execute units
+     * @param executeUnitGroups execute unit groups
      * @param firstExecuteCallback first execute callback
      * @param executeCallback execute callback
      * @param <T> class type of return value
@@ -110,12 +111,12 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> execute(final Map<String, List<List<? extends StatementExecuteUnit>>> executeUnits,
+    public <T> List<T> execute(final Map<String, List<ShardingExecuteGroup<? extends StatementExecuteUnit>>> executeUnitGroups,
                                final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        OverallExecutionEvent event = new OverallExecutionEvent(executeUnits.size() > 1);
+        OverallExecutionEvent event = new OverallExecutionEvent(executeUnitGroups.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = executeEngine.groupExecute((Map) executeUnits, firstExecuteCallback, executeCallback);
+            List<T> result = executeEngine.groupExecute((Map) executeUnitGroups, firstExecuteCallback, executeCallback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF

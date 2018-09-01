@@ -18,14 +18,15 @@
 package io.shardingsphere.proxy.backend.jdbc.execute.memory;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
@@ -76,9 +77,9 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Map<String, List<List<StatementExecuteUnit>>> statementExecuteUnits = 
-                sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) statementExecuteUnits, 
+        Map<String, List<ShardingExecuteGroup<StatementExecuteUnit>>> executeUnitGroups = 
+                sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getExecutionUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) executeUnitGroups, 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();

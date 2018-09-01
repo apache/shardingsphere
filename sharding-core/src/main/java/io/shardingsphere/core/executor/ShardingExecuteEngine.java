@@ -131,7 +131,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> groupExecute(final Map<String, List<List<I>>> inputs, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
+    public <I, O> List<O> groupExecute(final Map<String, List<ShardingExecuteGroup<I>>> inputs, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
         return groupExecute(inputs, null, callback);
     }
     
@@ -147,42 +147,42 @@ public final class ShardingExecuteEngine implements AutoCloseable {
      * @throws SQLException throw if execute failure
      */
     public <I, O> List<O> groupExecute(
-            final Map<String, List<List<I>>> inputs, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
+            final Map<String, List<ShardingExecuteGroup<I>>> inputs, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
         if (inputs.isEmpty()) {
             return Collections.emptyList();
         }
         String firstKey = inputs.keySet().iterator().next();
-        Iterator<List<I>> firstInputGroup = inputs.get(firstKey).iterator();
-        Collection<I> firstInputs = firstInputGroup.next();
+        Iterator<ShardingExecuteGroup<I>> firstInputGroup = inputs.get(firstKey).iterator();
+        ShardingExecuteGroup<I> firstInputs = firstInputGroup.next();
         inputs.put(firstKey, Lists.newArrayList(firstInputGroup));
         Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(inputs, callback);
         return getGroupResults(syncGroupExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final Map<String, List<List<I>>> inputs, final ShardingGroupExecuteCallback<I, O> callback) {
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final Map<String, List<ShardingExecuteGroup<I>>> inputs, final ShardingGroupExecuteCallback<I, O> callback) {
         Collection<ListenableFuture<Collection<O>>> result = new LinkedList<>();
-        for (Entry<String, List<List<I>>> entry : inputs.entrySet()) {
+        for (Entry<String, List<ShardingExecuteGroup<I>>> entry : inputs.entrySet()) {
             result.addAll(asyncGroupExecute(entry.getValue(), callback));
         }
         return result;
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final List<List<I>> inputs, final ShardingGroupExecuteCallback<I, O> callback) {
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final List<ShardingExecuteGroup<I>> shardingExecuteGroups, final ShardingGroupExecuteCallback<I, O> callback) {
         Collection<ListenableFuture<Collection<O>>> result = new LinkedList<>();
-        for (final List<I> each : inputs) {
+        for (final ShardingExecuteGroup<I> each : shardingExecuteGroups) {
             result.add(executorService.submit(new Callable<Collection<O>>() {
                 
                 @Override
                 public Collection<O> call() throws SQLException {
-                    return callback.execute(each);
+                    return callback.execute(each.getInputs());
                 }
             }));
         }
         return result;
     }
     
-    private <I, O> Collection<O> syncGroupExecute(final Collection<I> inputs, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
-        return callback.execute(inputs);
+    private <I, O> Collection<O> syncGroupExecute(final ShardingExecuteGroup<I> executeGroup, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
+        return callback.execute(executeGroup.getInputs());
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {

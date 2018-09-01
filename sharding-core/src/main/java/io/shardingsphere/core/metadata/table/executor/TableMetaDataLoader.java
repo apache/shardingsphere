@@ -20,6 +20,7 @@ package io.shardingsphere.core.metadata.table.executor;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
@@ -73,7 +74,7 @@ public final class TableMetaDataLoader {
     }
     
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
-        return executeEngine.groupExecute(partitionDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
+        return executeEngine.groupExecute(getDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes) throws SQLException {
@@ -89,17 +90,25 @@ public final class TableMetaDataLoader {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             for (DataNode each : dataNodes) {
-                result.add(new TableMetaData(isTableExist(connection, catalog, each.getTableName()) ? getColumnMetaDataList(connection, catalog, each.getTableName()) : Collections.<ColumnMetaData>emptyList()));
+                result.add(new TableMetaData(
+                        isTableExist(connection, catalog, each.getTableName()) ? getColumnMetaDataList(connection, catalog, each.getTableName()) : Collections.<ColumnMetaData>emptyList()));
             }
         }
         return result;
     }
     
-    private Map<String, List<List<DataNode>>> partitionDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
-        Map<String, List<List<DataNode>>> result = new HashMap<>(dataNodeGroups.size(), 1);
+    private Map<String, List<ShardingExecuteGroup<DataNode>>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+        Map<String, List<ShardingExecuteGroup<DataNode>>> result = new HashMap<>(dataNodeGroups.size(), 1);
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
-            int desiredPartitionSize = Math.max(entry.getValue().size() / maxConnectionsSizePerQuery, 1);
-            result.put(entry.getKey(), Lists.partition(entry.getValue(), desiredPartitionSize));
+            result.put(entry.getKey(), getDataNodeGroups(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private List<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final List<DataNode> dataNodes) {
+        List<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
+        for (List<DataNode> each : Lists.partition(dataNodes, Math.max(dataNodes.size() / maxConnectionsSizePerQuery, 1))) {
+            result.add(new ShardingExecuteGroup<>(each));
         }
         return result;
     }

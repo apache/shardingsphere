@@ -23,12 +23,13 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.executor.statement.ConnectionStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.MemoryStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementExecutor;
@@ -259,9 +260,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, List<List<StatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
+    private Map<String, List<ShardingExecuteGroup<StatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
         SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
+        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
