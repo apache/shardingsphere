@@ -49,12 +49,12 @@ public class WrapperAdapter implements Wrapper {
     }
     
     /**
-     * 记录方法调用.
+     * record method invocation.
      * 
-     * @param targetClass 目标类
-     * @param methodName 方法名称
-     * @param argumentTypes 参数类型
-     * @param arguments 参数
+     * @param targetClass target class
+     * @param methodName method name
+     * @param argumentTypes argument types
+     * @param arguments arguments
      */
     public final void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
         try {
@@ -65,9 +65,9 @@ public class WrapperAdapter implements Wrapper {
     }
     
     /**
-     * 回放记录的方法调用.
+     * Replay methods invocation.
      * 
-     * @param target 目标对象
+     * @param target target object
      */
     public final void replayMethodsInvocation(final Object target) {
         for (JdbcMethodInvocation each : jdbcMethodInvocations) {
