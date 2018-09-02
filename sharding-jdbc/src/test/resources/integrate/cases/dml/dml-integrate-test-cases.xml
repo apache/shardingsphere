@@ -104,4 +104,8 @@
     <dml-test-case sql-case-id="delete_with_special_character_without_sharding_value">
         <assertion expected-data-file="delete_with_special_character_without_sharding_value.xml" />
     </dml-test-case>
+
+    <dml-test-case sql-case-id="delete_with_special_comments_without_sharding_value">
+        <assertion expected-data-file="delete_with_special_comments_without_sharding_value.xml" />
+    </dml-test-case>
 </integrate-test-cases>
