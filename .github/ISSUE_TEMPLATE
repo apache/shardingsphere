@@ -1,0 +1,17 @@
+For English only, other languages we will close it directly.
+
+Please answer these questions before submitting your issue. Thanks!
+
+### Which version of Sharding-Sphere do you using?
+
+### Which project do you using? Sharding-JDBC or Sharding-Proxy?
+
+### Expected behavior
+
+### Actual behavior
+
+### Reason analyze
+
+### Steps to reproduce the behavior, such as: SQL to execute, sharding rule configuration, when exception occur etc
+
+### For bug report, please *MUST* provide the reproduce example codes (such as a github link).
