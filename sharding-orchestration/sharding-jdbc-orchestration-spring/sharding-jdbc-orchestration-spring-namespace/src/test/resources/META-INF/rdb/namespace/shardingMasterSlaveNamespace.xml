@@ -7,7 +7,7 @@
                         http://shardingsphere.io/schema/shardingsphere/sharding
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
 
-    <import resource="datasource/masterSlaveDataSource.xml" />
+    <import resource="../datasource/masterSlaveDataSource.xml" />
 
     <bean id="keyGenerator" class="io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
 

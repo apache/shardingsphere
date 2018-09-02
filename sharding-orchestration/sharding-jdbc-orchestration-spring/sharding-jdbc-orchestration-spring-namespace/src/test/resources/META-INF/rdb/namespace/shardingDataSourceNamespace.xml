@@ -6,8 +6,8 @@
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.io/schema/shardingsphere/sharding 
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
-    <import resource="datasource/dataSource.xml" />
-    <import resource="datasource/masterSlaveDataSource.xml" />
+    <import resource="../datasource/dataSource.xml" />
+    <import resource="../datasource/masterSlaveDataSource.xml" />
 
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.jdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
