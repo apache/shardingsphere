@@ -18,10 +18,10 @@
 package io.shardingsphere.core.executor.statement;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -56,7 +56,7 @@ public abstract class StatementExecutor {
             
             @Override
             protected ResultSet executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return executeUnit.getStatement().executeQuery(executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+                return executeUnit.getStatement().executeQuery(executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
         return executeCallback(executeCallback);
@@ -136,7 +136,7 @@ public abstract class StatementExecutor {
             
             @Override
             protected Integer executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return updater.executeUpdate(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+                return updater.executeUpdate(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
         List<Integer> results = executeCallback(executeCallback);
@@ -225,7 +225,7 @@ public abstract class StatementExecutor {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return executor.execute(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+                return executor.execute(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
         List<Boolean> result = executeCallback(executeCallback);

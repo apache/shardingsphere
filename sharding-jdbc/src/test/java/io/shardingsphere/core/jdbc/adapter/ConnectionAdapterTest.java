@@ -34,9 +34,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
-
+    
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
-
+    
     @Test
     public void assertSetAutoCommit() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
@@ -44,11 +44,9 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
             assertAutoCommit(actual, false);
-            actual.setAutoCommit(true);
-            assertAutoCommit(actual, true);
         }
     }
-
+    
     private void assertAutoCommit(final ShardingConnection actual, final boolean autoCommit) throws SQLException {
         assertThat(actual.getAutoCommit(), is(autoCommit));
         Map<String, Connection> cachedConnections = getCachedConnections(actual);
@@ -57,7 +55,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.getAutoCommit(), is(autoCommit));
         }
     }
-
+    
     @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertCommit() throws SQLException {
@@ -67,7 +65,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             actual.commit();
         }
     }
-
+    
     @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertRollback() throws SQLException {
@@ -77,7 +75,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             actual.rollback();
         }
     }
-
+    
     @Test
     public void assertClose() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
@@ -87,7 +85,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertClose(actual, true);
         }
     }
-
+    
     private void assertClose(final ShardingConnection actual, final boolean closed) throws SQLException {
         assertThat(actual.isClosed(), is(closed));
         Map<String, Connection> cachedConnections = getCachedConnections(actual);
@@ -96,7 +94,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.isClosed(), is(closed));
         }
     }
-
+    
     @Test
     public void assertSetReadOnly() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
@@ -108,7 +106,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertReadOnly(actual, true);
         }
     }
-
+    
     private void assertReadOnly(final ShardingConnection actual, final boolean readOnly) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
         Map<String, Connection> cachedConnections = getCachedConnections(actual);
@@ -125,7 +123,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_COMMITTED));
         }
     }
-
+    
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
@@ -137,7 +135,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertTransactionIsolation(actual, Connection.TRANSACTION_READ_COMMITTED);
         }
     }
-
+    
     private void assertTransactionIsolation(final ShardingConnection actual, final int transactionIsolation) throws SQLException {
         assertThat(actual.getTransactionIsolation(), is(transactionIsolation));
         Map<String, Connection> cachedConnections = getCachedConnections(actual);
@@ -146,28 +144,28 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(each.getTransactionIsolation(), is(transactionIsolation));
         }
     }
-
+    
     @Test
     public void assertGetWarnings() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             assertNull(actual.getWarnings());
         }
     }
-
+    
     @Test
     public void assertClearWarnings() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.clearWarnings();
         }
     }
-
+    
     @Test
     public void assertGetHoldability() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
         }
     }
-
+    
     @Test
     public void assertSetHoldability() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {

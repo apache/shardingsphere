@@ -19,12 +19,12 @@ package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.statement.MemoryStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -448,7 +448,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Collection<StatementUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        result.add(new StatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), statement));
+        result.add(new StatementUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), statement));
         return result;
     }
     

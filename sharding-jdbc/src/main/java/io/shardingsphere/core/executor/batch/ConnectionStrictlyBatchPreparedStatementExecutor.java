@@ -19,15 +19,13 @@ package io.shardingsphere.core.executor.batch;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Prepared statement executor to process add batch for connection strictly mode.
@@ -38,10 +36,10 @@ public final class ConnectionStrictlyBatchPreparedStatementExecutor extends Batc
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Map<String, List<List<BatchPreparedStatementUnit>>> batchPreparedStatementUnitGroups;
+    private final List<List<BatchPreparedStatementUnit>> batchPreparedStatementUnitGroups;
     
-    public ConnectionStrictlyBatchPreparedStatementExecutor(final DatabaseType dbType, final SQLType sqlType, final int batchCount,
-                                                            final SQLExecuteTemplate executeTemplate, final Map<String, List<List<BatchPreparedStatementUnit>>> batchPreparedStatementUnitGroups) {
+    public ConnectionStrictlyBatchPreparedStatementExecutor(final DatabaseType dbType, final SQLType sqlType, final int batchCount, 
+                                                            final SQLExecuteTemplate executeTemplate, final List<List<BatchPreparedStatementUnit>> batchPreparedStatementUnitGroups) {
         super(dbType, sqlType, batchCount);
         this.executeTemplate = executeTemplate;
         this.batchPreparedStatementUnitGroups = batchPreparedStatementUnitGroups;
@@ -50,16 +48,14 @@ public final class ConnectionStrictlyBatchPreparedStatementExecutor extends Batc
     @SuppressWarnings("unchecked")
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.execute((Map) batchPreparedStatementUnitGroups, executeCallback);
+        return executeTemplate.executeGroup((Collection) batchPreparedStatementUnitGroups, executeCallback);
     }
     
     @Override
     protected Collection<BatchPreparedStatementUnit> getBatchPreparedStatementUnitGroups() {
         Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
-        for (Entry<String, List<List<BatchPreparedStatementUnit>>> entry : batchPreparedStatementUnitGroups.entrySet()) {
-            for (List<BatchPreparedStatementUnit> each : entry.getValue()) {
-                result.addAll(each);
-            }
+        for (List<BatchPreparedStatementUnit> each : batchPreparedStatementUnitGroups) {
+            result.addAll(each);
         }
         return result;
     }

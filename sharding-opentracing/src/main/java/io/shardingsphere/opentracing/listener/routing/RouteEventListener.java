@@ -21,7 +21,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.routing.event.RoutingEvent;
+import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
 import io.shardingsphere.opentracing.ShardingTags;

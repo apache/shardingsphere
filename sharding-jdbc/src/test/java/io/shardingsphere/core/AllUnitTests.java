@@ -20,6 +20,7 @@ package io.shardingsphere.core;
 import io.shardingsphere.core.api.AllApiTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.jdbc.AllJDBCTests;
+import io.shardingsphere.core.transaction.AllTransactionTests;
 import io.shardingsphere.core.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,9 +28,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllApiTests.class,
+        AllApiTests.class, 
         AllExecutorTests.class, 
-        AllJDBCTests.class,
+        AllJDBCTests.class, 
+        AllTransactionTests.class, 
         AllUtilTests.class
     })
 public final class AllUnitTests {
