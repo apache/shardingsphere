@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Adapter for {@code Wrapper}.
+ * Adapter for {@code java.sql.Wrapper}.
  * 
  * @author zhangliang
  */
-public class WrapperAdapter implements Wrapper {
+public abstract class WrapperAdapter implements Wrapper {
     
     private final Collection<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
     
@@ -73,16 +73,5 @@ public class WrapperAdapter implements Wrapper {
         for (JdbcMethodInvocation each : jdbcMethodInvocations) {
             each.invoke(target);
         }
-    }
-    
-    protected final void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
-        if (exceptions.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException();
-        for (SQLException each : exceptions) {
-            ex.setNextException(each);
-        }
-        throw ex;
     }
 }
