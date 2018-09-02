@@ -15,37 +15,43 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.prepare;
+package io.shardingsphere.core.transaction;
 
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * SQL execute prepare callback.
+ * Sharding transaction manager.
  *
+ * @author zhaojun
  * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-public interface SQLExecutePrepareCallback {
+public interface ShardingTransactionManager<T extends ShardingTransactionEvent> {
     
     /**
-     * Get connection.
-     * 
-     * @param dataSourceName data source name
-     * @return connection
+     * Begin transaction.
+     *
+     * @param transactionEvent transaction event
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String dataSourceName) throws SQLException;
+    void begin(T transactionEvent) throws SQLException;
     
     /**
-     * Create statement execute unit.
-     * 
-     * @param connection connection
-     * @param routeUnit route unit
-     * @return statement execute unit
+     * Commit transaction.
+     *
+     * @param transactionEvent transaction event
      * @throws SQLException SQL exception
      */
-    StatementExecuteUnit createStatementExecuteUnit(Connection connection, RouteUnit routeUnit) throws SQLException;
+    void commit(T transactionEvent) throws SQLException;
+    
+    /**
+     * Rollback transaction.
+     *
+     * @param transactionEvent transaction event
+     * @throws SQLException SQL exception
+     */
+    void rollback(T transactionEvent) throws SQLException;
 }

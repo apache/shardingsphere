@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
 import io.shardingsphere.core.executor.batch.ConnectionStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
@@ -33,12 +34,12 @@ import io.shardingsphere.core.executor.prepared.ConnectionStrictlyPreparedStatem
 import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementUnit;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -55,7 +56,7 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
@@ -72,7 +73,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -230,7 +230,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private List<BatchPreparedStatementUnit> routeBatch() throws SQLException {
         List<BatchPreparedStatementUnit> result = new ArrayList<>();
         sqlRoute();
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
+        for (RouteUnit each : routeResult.getRouteUnits()) {
             BatchPreparedStatementUnit batchStatementUnit = getPreparedBatchStatement(each);
             replaySetParameter(batchStatementUnit.getStatement(), each.getSqlUnit().getParameterSets().get(0));
             result.add(batchStatementUnit);
@@ -264,16 +264,16 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Collection<PreparedStatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            result.add(getPreparedStatementUnit(connection.getConnection(each.getDataSource()), each));
+        for (RouteUnit each : routeResult.getRouteUnits()) {
+            result.add(getPreparedStatementUnit(connection.getConnection(each.getDataSourceName()), each));
         }
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, List<List<PreparedStatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
+    private Collection<ShardingExecuteGroup<PreparedStatementUnit>> getExecuteUnitsForConnectionStrictly() throws SQLException {
         SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
+        return (Collection) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getRouteUnits(), new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
@@ -281,33 +281,33 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             }
             
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-                return getPreparedStatementUnit(connection, sqlExecutionUnit);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+                return getPreparedStatementUnit(connection, routeUnit);
             }
         });
     }
     
-    private PreparedStatementUnit getPreparedStatementUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        PreparedStatement preparedStatement = createPreparedStatement(connection, sqlExecutionUnit.getSqlUnit().getSql());
+    private PreparedStatementUnit getPreparedStatementUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+        PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
         routedStatements.add(preparedStatement);
-        replaySetParameter(preparedStatement, sqlExecutionUnit.getSqlUnit().getParameterSets().get(0));
-        return new PreparedStatementUnit(sqlExecutionUnit, preparedStatement);
+        replaySetParameter(preparedStatement, routeUnit.getSqlUnit().getParameterSets().get(0));
+        return new PreparedStatementUnit(routeUnit, preparedStatement);
     }
     
-    private BatchPreparedStatementUnit getPreparedBatchStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+    private BatchPreparedStatementUnit getPreparedBatchStatement(final RouteUnit routeUnit) throws SQLException {
         Optional<BatchPreparedStatementUnit> preparedBatchStatement = Iterators.tryFind(batchStatementUnits.iterator(), new Predicate<BatchPreparedStatementUnit>() {
             
             @Override
             public boolean apply(final BatchPreparedStatementUnit input) {
-                return Objects.equals(input.getSqlExecutionUnit(), sqlExecutionUnit);
+                return Objects.equals(input.getRouteUnit(), routeUnit);
             }
         });
         if (preparedBatchStatement.isPresent()) {
-            preparedBatchStatement.get().getSqlExecutionUnit().getSqlUnit().getParameterSets().add(sqlExecutionUnit.getSqlUnit().getParameterSets().get(0));
+            preparedBatchStatement.get().getRouteUnit().getSqlUnit().getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
             return preparedBatchStatement.get();
         }
         BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(
-                sqlExecutionUnit, createPreparedStatement(connection.getConnection(sqlExecutionUnit.getDataSource()), sqlExecutionUnit.getSqlUnit().getSql()));
+                routeUnit, createPreparedStatement(connection.getConnection(routeUnit.getDataSourceName()), routeUnit.getSqlUnit().getSql()));
         batchStatementUnits.add(result);
         return result;
     }
@@ -331,11 +331,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
     }
     
-    private Map<String, List<List<BatchPreparedStatementUnit>>> partitionBatchPreparedStatementUnitGroups() {
-        Map<String, List<List<BatchPreparedStatementUnit>>> result = new HashMap<>(batchStatementUnits.size(), 1);
-        for (Entry<String, List<BatchPreparedStatementUnit>> entry : getBatchPreparedStatementUnitGroups().entrySet()) {
-            int desiredPartitionSize = Math.max(entry.getValue().size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery(), 1);
-            result.put(entry.getKey(), Lists.partition(entry.getValue(), desiredPartitionSize));
+    private List<List<BatchPreparedStatementUnit>> partitionBatchPreparedStatementUnitGroups() {
+        List<List<BatchPreparedStatementUnit>> result = new LinkedList<>();
+        for (List<BatchPreparedStatementUnit> each : getBatchPreparedStatementUnitGroups().values()) {
+            int desiredPartitionSize = Math.max(each.size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery(), 1);
+            result.addAll(Lists.partition(each, desiredPartitionSize));
         }
         return result;
     }
@@ -343,7 +343,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private Map<String, List<BatchPreparedStatementUnit>> getBatchPreparedStatementUnitGroups() {
         Map<String, List<BatchPreparedStatementUnit>> result = new HashMap<>(batchStatementUnits.size(), 1);
         for (BatchPreparedStatementUnit each : batchStatementUnits) {
-            String dataSourceName = each.getSqlExecutionUnit().getDataSource();
+            String dataSourceName = each.getRouteUnit().getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
                 result.put(dataSourceName, new LinkedList<BatchPreparedStatementUnit>());
             }

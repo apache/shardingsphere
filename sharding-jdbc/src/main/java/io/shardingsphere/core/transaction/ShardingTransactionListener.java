@@ -15,25 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.statement;
+package io.shardingsphere.core.transaction;
 
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.routing.RouteUnit;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 
-import java.sql.Statement;
+import java.sql.SQLException;
 
 /**
- * Statement execute unit.
+ * Sharding transaction listener.
  *
  * @author zhangliang
+ * 
+ * @param <T> transaction event type
  */
-@RequiredArgsConstructor
-@Getter
-public final class StatementUnit implements StatementExecuteUnit {
+// TODO maybe move this listener to sharding-core is better.
+public interface ShardingTransactionListener<T extends ShardingTransactionEvent> {
     
-    private final RouteUnit routeUnit;
+    /**
+     * Register sharding transaction listener into event bus.
+     */
+    void register();
     
-    private final Statement statement;
+    /**
+     * Listen event.
+     *
+     * @param transactionEvent transaction event
+     * @throws SQLException SQL exception
+     */
+    void listen(T transactionEvent) throws SQLException;
 }

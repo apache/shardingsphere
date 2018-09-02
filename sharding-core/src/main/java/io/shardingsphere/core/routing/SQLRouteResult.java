@@ -22,8 +22,8 @@ import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * SQL route result.
@@ -40,7 +40,7 @@ public final class SQLRouteResult {
     
     private final GeneratedKey generatedKey;
     
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     public SQLRouteResult(final SQLStatement sqlStatement) {
         this(sqlStatement, null);

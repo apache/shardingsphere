@@ -15,26 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing;
+package io.shardingsphere.core.transaction;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import io.shardingsphere.core.event.ShardingEventListenerRegistry;
 
 /**
- * SQL execution unit.
- * 
- * @author gaohongtao
- * @author maxiaoguang
+ * Transaction listener registry.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class SQLExecutionUnit {
+public final class LocalTransactionListenerRegistry implements ShardingEventListenerRegistry {
     
-    private final String dataSource;
-    
-    private final SQLUnit sqlUnit;
+    @Override
+    public void register() {
+        new LocalTransactionListener().register();
+    }
 }

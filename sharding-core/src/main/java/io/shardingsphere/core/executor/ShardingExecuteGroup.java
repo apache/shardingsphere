@@ -15,20 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.event.ShardingEventListenerRegistry;
-import io.shardingsphere.transaction.listener.xa.XATransactionListener;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
- * Transaction listener registry.
+ * Sharding execute group.
  *
  * @author zhangliang
+ * @param <T> type of inputs value
  */
-public final class TransactionListenerRegistry implements ShardingEventListenerRegistry {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingExecuteGroup<T> {
     
-    @Override
-    public void register() {
-        new XATransactionListener().register();
-    }
+    private final List<T> inputs;
 }

@@ -23,12 +23,13 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.executor.statement.ConnectionStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.MemoryStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementExecutor;
@@ -48,7 +49,7 @@ import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
@@ -63,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Statement that support sharding.
@@ -252,16 +252,16 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private Collection<StatementUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {
         Collection<StatementUnit> result = new LinkedList<>();
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            result.add(getStatementUnit(connection.getConnection(each.getDataSource()), each));
+        for (RouteUnit each : routeResult.getRouteUnits()) {
+            result.add(getStatementUnit(connection.getConnection(each.getDataSourceName()), each));
         }
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, List<List<StatementUnit>>> getExecuteUnitsForConnectionStrictly() throws SQLException {
+    private Collection<ShardingExecuteGroup<StatementUnit>> getExecuteUnitsForConnectionStrictly() throws SQLException {
         SQLExecutePrepareTemplate sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        return (Map) sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new SQLExecutePrepareCallback() {
+        return (Collection) sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getRouteUnits(), new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
@@ -269,17 +269,17 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-                return getStatementUnit(connection, sqlExecutionUnit);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+                return getStatementUnit(connection, routeUnit);
             }
         });
     }
     
-    private StatementUnit getStatementUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+    private StatementUnit getStatementUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
         Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         routedStatements.add(statement);
         replayMethodsInvocation(statement);
-        return new StatementUnit(sqlExecutionUnit, statement);
+        return new StatementUnit(routeUnit, statement);
     }
     
     private void clearPrevious() throws SQLException {

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.event.executor.sql;
 
-import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  */
 public final class DQLExecutionEvent extends SQLExecutionEvent {
     
-    public DQLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters) {
-        super(dataSource, sqlUnit, parameters);
+    public DQLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters) {
+        super(routeUnit, parameters);
     }
 }

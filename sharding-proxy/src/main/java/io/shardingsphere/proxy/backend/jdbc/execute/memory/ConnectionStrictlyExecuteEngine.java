@@ -18,17 +18,18 @@
 package io.shardingsphere.proxy.backend.jdbc.execute.memory;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
@@ -48,7 +49,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,9 +76,9 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Map<String, List<List<StatementExecuteUnit>>> statementExecuteUnits = 
-                sqlExecutePrepareTemplate.getStatementExecuteUnits(routeResult.getExecutionUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute((Map) statementExecuteUnits, 
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeUnitGroups = 
+                sqlExecutePrepareTemplate.getStatementExecuteUnitGroups(routeResult.getRouteUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) executeUnitGroups, 
                 new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
                 new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -110,8 +110,8 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         }
         
         @Override
-        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-            return new ProxyStatementExecuteUnit(sqlExecutionUnit, getJdbcExecutorWrapper().createStatement(connection, sqlExecutionUnit.getSqlUnit().getSql(), isReturnGeneratedKeys));
+        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
+            return new ProxyStatementExecuteUnit(routeUnit, getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys));
         }
     }
     
@@ -129,10 +129,10 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         @Override
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
             if (hasMetaData) {
-                return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+                return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
             } else {
                 hasMetaData = true;
-                return executeWithMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+                return executeWithMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
             }
         }
     }
@@ -148,7 +148,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         
         @Override
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
         }
     }
 }

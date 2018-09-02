@@ -79,7 +79,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
-        if (routeResult.getExecutionUnits().isEmpty()) {
+        if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
