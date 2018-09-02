@@ -36,10 +36,10 @@ public final class ConnectionStrictlyBatchPreparedStatementExecutor extends Batc
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final List<List<BatchPreparedStatementUnit>> batchPreparedStatementUnitGroups;
+    private final List<List<BatchPreparedStatementExecuteUnit>> batchPreparedStatementUnitGroups;
     
     public ConnectionStrictlyBatchPreparedStatementExecutor(final DatabaseType dbType, final SQLType sqlType, final int batchCount, 
-                                                            final SQLExecuteTemplate executeTemplate, final List<List<BatchPreparedStatementUnit>> batchPreparedStatementUnitGroups) {
+                                                            final SQLExecuteTemplate executeTemplate, final List<List<BatchPreparedStatementExecuteUnit>> batchPreparedStatementUnitGroups) {
         super(dbType, sqlType, batchCount);
         this.executeTemplate = executeTemplate;
         this.batchPreparedStatementUnitGroups = batchPreparedStatementUnitGroups;
@@ -52,9 +52,9 @@ public final class ConnectionStrictlyBatchPreparedStatementExecutor extends Batc
     }
     
     @Override
-    protected Collection<BatchPreparedStatementUnit> getBatchPreparedStatementUnitGroups() {
-        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
-        for (List<BatchPreparedStatementUnit> each : batchPreparedStatementUnitGroups) {
+    protected Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups() {
+        Collection<BatchPreparedStatementExecuteUnit> result = new LinkedList<>();
+        for (List<BatchPreparedStatementExecuteUnit> each : batchPreparedStatementUnitGroups) {
             result.addAll(each);
         }
         return result;

@@ -35,18 +35,18 @@ public final class ConnectionStrictlyPreparedStatementExecutor extends PreparedS
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Collection<ShardingExecuteGroup<PreparedStatementUnit>> preparedStatementUnitGroups;
+    private final Collection<ShardingExecuteGroup<PreparedStatementExecuteUnit>> executeGroups;
     
     public ConnectionStrictlyPreparedStatementExecutor(
-            final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<PreparedStatementUnit>> preparedStatementUnitGroups) {
+            final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<PreparedStatementExecuteUnit>> executeGroups) {
         super(sqlType);
         this.executeTemplate = executeTemplate;
-        this.preparedStatementUnitGroups = preparedStatementUnitGroups;
+        this.executeGroups = executeGroups;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.executeGroup((Collection) preparedStatementUnitGroups, executeCallback);
+        return executeTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
 }

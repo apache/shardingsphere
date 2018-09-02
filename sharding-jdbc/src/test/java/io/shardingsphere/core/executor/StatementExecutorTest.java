@@ -22,7 +22,7 @@ import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.statement.MemoryStrictlyStatementExecutor;
 import io.shardingsphere.core.executor.statement.StatementExecutor;
-import io.shardingsphere.core.executor.statement.StatementUnit;
+import io.shardingsphere.core.executor.statement.StatementExecuteUnit;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     
     @Test
     public void assertNoStatement() throws SQLException {
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), Collections.<StatementUnit>emptyList());
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), Collections.<StatementExecuteUnit>emptyList());
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
@@ -67,7 +67,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementUnits(DQL_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement, "ds_0"));
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -88,7 +88,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(resultSet1));
         assertThat(actualResultSets, hasItem(resultSet2));
@@ -109,7 +109,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.executeQuery(DQL_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementUnits(DQL_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement, "ds_0"));
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -129,7 +129,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeQuery(DQL_SQL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
@@ -148,7 +148,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL)).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(), is(10));
         verify(statement).executeUpdate(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -167,7 +167,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeUpdate(DML_SQL)).thenReturn(20);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
         assertThat(actual.executeUpdate(), is(30));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
@@ -186,7 +186,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.executeUpdate(DML_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(), is(0));
         verify(statement).executeUpdate(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -206,7 +206,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeUpdate(DML_SQL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
         assertThat(actual.executeUpdate(), is(0));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
@@ -224,7 +224,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(Statement.NO_GENERATED_KEYS), is(10));
         verify(statement).executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -240,7 +240,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL, new int[] {1})).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(new int[] {1}), is(10));
         verify(statement).executeUpdate(DML_SQL, new int[] {1});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -256,7 +256,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL, new String[] {"col"})).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(new String[] {"col"}), is(10));
         verify(statement).executeUpdate(DML_SQL, new String[] {"col"});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -272,7 +272,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL)).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertFalse(actual.execute());
         verify(statement).execute(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -291,7 +291,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DML_SQL)).thenReturn(false);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
         assertFalse(actual.execute());
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
@@ -310,7 +310,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.execute(DML_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertFalse(actual.execute());
         verify(statement).execute(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -330,7 +330,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DML_SQL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
         assertFalse(actual.execute());
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
@@ -348,7 +348,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DQL_SQL)).thenReturn(true);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementUnits(DQL_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement, "ds_0"));
         assertTrue(actual.execute());
         verify(statement).execute(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -367,7 +367,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DQL_SQL)).thenReturn(true);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
         assertTrue(actual.execute());
         verify(statement1).execute(DQL_SQL);
         verify(statement2).execute(DQL_SQL);
@@ -385,7 +385,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertFalse(actual.execute(Statement.NO_GENERATED_KEYS));
         verify(statement).execute(DML_SQL, Statement.NO_GENERATED_KEYS);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -401,7 +401,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertFalse(actual.execute(new int[] {1}));
         verify(statement).execute(DML_SQL, new int[] {1});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -417,7 +417,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL, new String[] {"col"})).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertFalse(actual.execute(new String[] {"col"}));
         verify(statement).execute(DML_SQL, new String[] {"col"});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -435,7 +435,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.execute(DML_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementUnits(DML_SQL, statement, "ds_0"));
+        StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         try {
             assertFalse(actual.execute());
         } catch (final SQLException ignore) {
@@ -444,18 +444,18 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
     }
     
-    private Collection<StatementUnit> createStatementUnits(final String sql, final Statement statement, final String dataSource) {
-        Collection<StatementUnit> result = new LinkedList<>();
+    private Collection<StatementExecuteUnit> createStatementExecuteUnits(final String sql, final Statement statement, final String dataSource) {
+        Collection<StatementExecuteUnit> result = new LinkedList<>();
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        result.add(new StatementUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), statement));
+        result.add(new StatementExecuteUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), statement));
         return result;
     }
     
-    private Collection<StatementUnit> createStatementUnits(final String sql, final Statement statement1, final String dataSource1, final Statement statement2, final String dataSource2) {
-        Collection<StatementUnit> result = new LinkedList<>();
-        result.addAll(createStatementUnits(sql, statement1, dataSource1));
-        result.addAll(createStatementUnits(sql, statement2, dataSource2));
+    private Collection<StatementExecuteUnit> createStatementExecuteUnits(final String sql, final Statement statement1, final String dataSource1, final Statement statement2, final String dataSource2) {
+        Collection<StatementExecuteUnit> result = new LinkedList<>();
+        result.addAll(createStatementExecuteUnits(sql, statement1, dataSource1));
+        result.addAll(createStatementExecuteUnits(sql, statement2, dataSource2));
         return result;
     }
 }

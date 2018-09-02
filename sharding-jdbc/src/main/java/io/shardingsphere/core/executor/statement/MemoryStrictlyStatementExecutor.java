@@ -34,16 +34,16 @@ public final class MemoryStrictlyStatementExecutor extends StatementExecutor {
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Collection<StatementUnit> statementUnits;
+    private final Collection<StatementExecuteUnit> statementExecuteUnits;
     
-    public MemoryStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<StatementUnit> statementUnits) {
+    public MemoryStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<StatementExecuteUnit> statementExecuteUnits) {
         super(sqlType);
         this.executeTemplate = executeTemplate;
-        this.statementUnits = statementUnits;
+        this.statementExecuteUnits = statementExecuteUnits;
     }
     
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.execute(statementUnits, executeCallback);
+        return executeTemplate.execute(statementExecuteUnits, executeCallback);
     }
 }
