@@ -89,53 +89,44 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        if (TransactionTypeHolder.get().equals(TransactionType.LOCAL)) {
-            Collection<SQLException> exceptions = new LinkedList<>();
-            for (Connection each : cachedConnections.values()) {
-                try {
-                    each.setAutoCommit(autoCommit);
-                } catch (final SQLException ex) {
-                    exceptions.add(ex);
-                }
-            }
-            throwSQLExceptionIfNecessary(exceptions);
-        } else {
-            ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
-        }
+        doTransaction(TransactionOperationType.BEGIN);
     }
     
     @Override
     public final void commit() throws SQLException {
-        if (TransactionTypeHolder.get().equals(TransactionType.LOCAL)) {
-            Collection<SQLException> exceptions = new LinkedList<>();
-            for (Connection each : cachedConnections.values()) {
-                try {
-                    each.commit();
-                } catch (final SQLException ex) {
-                    exceptions.add(ex);
-                }
-            }
-            throwSQLExceptionIfNecessary(exceptions);
-        } else {
-            ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
-        }
+        doTransaction(TransactionOperationType.COMMIT);
     }
     
     @Override
     public final void rollback() throws SQLException {
-        if (TransactionTypeHolder.get().equals(TransactionType.LOCAL)) {
-            Collection<SQLException> exceptions = new LinkedList<>();
-            for (Connection each : cachedConnections.values()) {
-                try {
-                    each.rollback();
-                } catch (final SQLException ex) {
-                    exceptions.add(ex);
-                }
-            }
-            throwSQLExceptionIfNecessary(exceptions);
-        } else {
-            ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
+        doTransaction(TransactionOperationType.ROLLBACK);
+    }
+    
+    private void doTransaction(final TransactionOperationType operationType) throws SQLException {
+        if (!TransactionTypeHolder.get().equals(TransactionType.LOCAL)) {
+            ShardingEventBusInstance.getInstance().post(createTransactionEvent(operationType));
         }
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (Connection each : cachedConnections.values()) {
+            try {
+                switch (operationType) {
+                    case BEGIN:
+                        each.setAutoCommit(autoCommit);
+                        return;
+                    case COMMIT:
+                        each.commit();
+                        return;
+                    case ROLLBACK:
+                        each.rollback();
+                        return;
+                    default:
+                        throw new UnsupportedOperationException(operationType.name());
+                }
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
