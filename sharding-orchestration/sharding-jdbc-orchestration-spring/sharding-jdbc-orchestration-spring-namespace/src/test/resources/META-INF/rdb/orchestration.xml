@@ -43,4 +43,11 @@
         </orchestraion:reg>
     </orchestraion:orchestration>
 
+    <orchestraion:orchestration id="bindingTableRuleDatasourceOrchestration">
+        <orchestraion:data-source data-source-ref="bindingTableRuleDatasource"/>
+        <orchestraion:reg id="regCenter" type="sharding">
+            <orchestraion:zookeeper server-lists="localhost:2181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+        </orchestraion:reg>
+    </orchestraion:orchestration>
+
 </beans>
