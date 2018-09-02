@@ -19,9 +19,7 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
@@ -103,9 +101,20 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private void doTransaction(final TransactionOperationType operationType) throws SQLException {
-        if (!TransactionTypeHolder.get().equals(TransactionType.LOCAL)) {
-            ShardingEventBusInstance.getInstance().post(createTransactionEvent(operationType));
+        switch (TransactionTypeHolder.get()) {
+            case LOCAL:
+                doLocalTransaction(operationType);
+                break;
+            case XA:
+                ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType));
+                break;
+            case BASE:
+            default:
+                throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
         }
+    }
+    
+    private void doLocalTransaction(final TransactionOperationType operationType) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -125,17 +134,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             } catch (final SQLException ex) {
                 exceptions.add(ex);
             }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
-    }
-    
-    private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
-        switch (TransactionTypeHolder.get()) {
-            case XA:
-                return new XATransactionEvent(operationType);
-            case BASE:
-            default:
-                throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
+            throwSQLExceptionIfNecessary(exceptions);
         }
     }
     
