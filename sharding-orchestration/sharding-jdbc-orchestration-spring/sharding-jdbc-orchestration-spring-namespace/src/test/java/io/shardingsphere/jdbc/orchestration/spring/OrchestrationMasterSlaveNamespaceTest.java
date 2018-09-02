@@ -42,7 +42,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveNamespace.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveDataSourceNamespace.xml")
 public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass

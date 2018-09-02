@@ -18,7 +18,6 @@
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.springframework.beans.factory.DisposableBean;
@@ -80,8 +79,8 @@ public final class OrchestrationMasterSlaveDataSourceFactoryBean implements Fact
     
     @Override
     public void afterPropertiesSet() throws SQLException {
-        orchestrationMasterSlaveDataSource = 
-                (OrchestrationMasterSlaveDataSource) OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props, orchestrationConfig);
+//        orchestrationMasterSlaveDataSource =
+//                (OrchestrationMasterSlaveDataSource) OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props, orchestrationConfig);
     }
     
     @Override

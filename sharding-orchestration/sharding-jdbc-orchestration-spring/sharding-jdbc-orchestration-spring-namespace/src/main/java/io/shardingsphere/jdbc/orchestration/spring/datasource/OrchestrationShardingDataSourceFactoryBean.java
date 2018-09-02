@@ -18,7 +18,6 @@
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.springframework.beans.factory.DisposableBean;
@@ -79,8 +78,8 @@ public final class OrchestrationShardingDataSourceFactoryBean implements Factory
     
     @Override
     public void afterPropertiesSet() throws SQLException {
-        orchestrationShardingDataSource =
-                (OrchestrationShardingDataSource) OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
+//        orchestrationShardingDataSource =
+//                (OrchestrationShardingDataSource) OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, configMap, props, orchestrationConfig);
     }
     
     @Override
