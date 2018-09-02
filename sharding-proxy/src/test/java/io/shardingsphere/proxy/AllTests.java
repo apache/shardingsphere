@@ -17,26 +17,20 @@
 
 package io.shardingsphere.proxy;
 
+import io.shardingsphere.proxy.config.AllConfigTests;
+import io.shardingsphere.proxy.listener.AllListenerTests;
+import io.shardingsphere.proxy.runtime.AllRuntimeTests;
 import io.shardingsphere.proxy.transport.AllTransportTests;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthPluginDataTest;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.AuthorityHandlerTest;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.ConnectionIdGeneratorTest;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakePacketTest;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.HandshakeResponse41PacketTest;
-import io.shardingsphere.proxy.transport.mysql.packet.handshake.RandomGeneratorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllTransportTests.class, 
-        AuthorityHandlerTest.class,
-        AuthPluginDataTest.class,
-        ConnectionIdGeneratorTest.class,
-        HandshakePacketTest.class,
-        HandshakeResponse41PacketTest.class,
-        RandomGeneratorTest.class
+        AllRuntimeTests.class, 
+        AllListenerTests.class,
+        AllConfigTests.class, 
+        AllTransportTests.class
 })
 public final class AllTests {
 }

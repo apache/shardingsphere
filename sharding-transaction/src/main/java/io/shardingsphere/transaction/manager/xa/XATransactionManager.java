@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.manager.xa;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;

@@ -19,14 +19,12 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
-import io.shardingsphere.transaction.event.local.LocalTransactionEvent;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -86,31 +84,57 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void setAutoCommit(final boolean autoCommit) {
+    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
+        doTransaction(TransactionOperationType.BEGIN);
     }
     
     @Override
-    public final void commit() {
-        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
+    public final void commit() throws SQLException {
+        doTransaction(TransactionOperationType.COMMIT);
     }
     
     @Override
-    public final void rollback() {
-        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
+    public final void rollback() throws SQLException {
+        doTransaction(TransactionOperationType.ROLLBACK);
     }
     
-    private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
+    private void doTransaction(final TransactionOperationType operationType) throws SQLException {
         switch (TransactionTypeHolder.get()) {
             case LOCAL:
-                return new LocalTransactionEvent(operationType, cachedConnections.values(), autoCommit);
+                doLocalTransaction(operationType);
+                break;
             case XA:
-                return new XATransactionEvent(operationType);
+                ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType));
+                break;
             case BASE:
             default:
                 throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
+        }
+    }
+    
+    private void doLocalTransaction(final TransactionOperationType operationType) throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (Connection each : cachedConnections.values()) {
+            try {
+                switch (operationType) {
+                    case BEGIN:
+                        each.setAutoCommit(autoCommit);
+                        continue;
+                    case COMMIT:
+                        each.commit();
+                        continue;
+                    case ROLLBACK:
+                        each.rollback();
+                        continue;
+                    default:
+                        throw new UnsupportedOperationException(operationType.name());
+                }
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+            throwSQLExceptionIfNecessary(exceptions);
         }
     }
     

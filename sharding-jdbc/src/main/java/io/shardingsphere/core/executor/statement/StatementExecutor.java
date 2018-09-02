@@ -18,22 +18,20 @@
 package io.shardingsphere.core.executor.statement;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Statement Executor for multiple threads.
+ * Statement executor.
  * 
  * @author gaohongtao
  * @author caohao
@@ -41,13 +39,9 @@ import java.util.Map;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class StatementExecutor {
-    
-    private final SQLExecuteTemplate executeTemplate;
+public abstract class StatementExecutor {
     
     private final SQLType sqlType;
-    
-    private final Collection<StatementUnit> statementUnits;
     
     /**
      * Execute query.
@@ -62,10 +56,10 @@ public final class StatementExecutor {
             
             @Override
             protected ResultSet executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return executeUnit.getStatement().executeQuery(executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+                return executeUnit.getStatement().executeQuery(executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
-        return executeTemplate.execute(statementUnits, executeCallback);
+        return executeCallback(executeCallback);
     }
     
     /**
@@ -142,10 +136,10 @@ public final class StatementExecutor {
             
             @Override
             protected Integer executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return updater.executeUpdate(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+                return updater.executeUpdate(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
-        List<Integer> results = executeTemplate.execute(statementUnits, executeCallback);
+        List<Integer> results = executeCallback(executeCallback);
         return accumulate(results);
     }
     
@@ -231,15 +225,17 @@ public final class StatementExecutor {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return executor.execute(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql());
+                return executor.execute(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
-        List<Boolean> result = executeTemplate.execute(statementUnits, executeCallback);
+        List<Boolean> result = executeCallback(executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
         return result.get(0);
     }
+    
+    protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
     
     private interface Updater {
         

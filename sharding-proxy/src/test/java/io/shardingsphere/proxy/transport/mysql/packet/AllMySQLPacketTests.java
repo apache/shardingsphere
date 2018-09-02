@@ -26,6 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        MySQLPacketPayloadTest.class, 
         AllMySQLGenericPacketTests.class, 
         AllMySQLHandshakeTests.class, 
         AllMySQLCommandPacketTests.class

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.executor.sql;
 
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 
 import java.sql.Statement;
 
@@ -29,11 +29,11 @@ import java.sql.Statement;
 public interface StatementExecuteUnit {
     
     /**
-     * Get SQL execute unit.
+     * Get route unit.
      * 
-     * @return SQL execute unit
+     * @return route unit
      */
-    SQLExecutionUnit getSqlExecutionUnit();
+    RouteUnit getRouteUnit();
     
     /**
      * Get statement.

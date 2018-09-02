@@ -233,6 +233,7 @@ public final class SQLCasesLoader {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private static Collection<? extends Enum> getDatabaseTypes(final String databaseTypes, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
         if (Strings.isNullOrEmpty(databaseTypes)) {
             return allDatabaseTypes;

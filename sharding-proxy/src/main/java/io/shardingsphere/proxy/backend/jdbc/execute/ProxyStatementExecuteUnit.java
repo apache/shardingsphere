@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,7 @@ import java.sql.Statement;
 @Getter
 public final class ProxyStatementExecuteUnit implements StatementExecuteUnit {
     
-    private final SQLExecutionUnit sqlExecutionUnit;
+    private final RouteUnit routeUnit;
     
     private final Statement statement;
 }

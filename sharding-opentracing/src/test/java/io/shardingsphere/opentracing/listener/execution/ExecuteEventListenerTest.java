@@ -17,17 +17,16 @@
 
 package io.shardingsphere.opentracing.listener.execution;
 
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.statement.StatementUnit;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
 import org.junit.After;
@@ -52,7 +51,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
     private ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(5);
     
-    private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
+    private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     
     @After
     public void tearDown() {
@@ -73,7 +72,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             }
         };
         sqlExecuteTemplate.execute(Collections.singleton(
-                new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
+                new StatementUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(2));
     }
     
@@ -82,10 +81,10 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         List<StatementUnit> statementUnitList = new ArrayList<>(2);
         Statement stm1 = mock(Statement.class);
         when(stm1.getConnection()).thenReturn(mock(Connection.class));
-        statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm1));
+        statementUnitList.add(new StatementUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm1));
         Statement stm2 = mock(Statement.class);
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
-        statementUnitList.add(new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
+        statementUnitList.add(new StatementUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
@@ -105,10 +104,10 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1, 2), Arrays.<Object>asList(3, 4));
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
-        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("insert into ...", parameterSets)), preparedStatement1));
+        statementUnitList.add(new BatchPreparedStatementUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", parameterSets)), preparedStatement1));
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        statementUnitList.add(new BatchPreparedStatementUnit(new SQLExecutionUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
+        statementUnitList.add(new BatchPreparedStatementUnit(new RouteUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
@@ -136,6 +135,6 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             }
         };
         sqlExecuteTemplate.execute(Collections.singleton(
-                new StatementUnit(new SQLExecutionUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
+                new StatementUnit(new RouteUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
     }
 }

@@ -26,9 +26,9 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
-import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
-import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -74,6 +74,8 @@ public final class RuleRegistry {
     
     private ConnectionMode connectionMode;
     
+    private int maxConnectionsSizePerQuery;
+    
     private int acceptorSize;
     
     private int executorSize;
@@ -101,7 +103,6 @@ public final class RuleRegistry {
     
     /**
      * Register rule registry.
-     *
      */
     public void register() {
         ShardingEventBusInstance.getInstance().register(this);
@@ -118,6 +119,7 @@ public final class RuleRegistry {
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
+        maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
@@ -145,7 +147,8 @@ public final class RuleRegistry {
      * @param executeEngine sharding execute engine
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource));
+        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, 
+                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), maxConnectionsSizePerQuery);
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {

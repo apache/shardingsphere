@@ -30,6 +30,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,7 +53,9 @@ public final class ColumnDefinition41PacketTest {
         when(resultSetMetaData.getColumnName(1)).thenReturn("id");
         when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(10);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        new ColumnDefinition41Packet(1, resultSetMetaData, 1).write(payload);
+        ColumnDefinition41Packet actual = new ColumnDefinition41Packet(1, resultSetMetaData, 1);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verifyWrite();
     }
     
@@ -62,7 +66,9 @@ public final class ColumnDefinition41PacketTest {
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn((long) 0x0c);
         when(payload.readStringLenenc()).thenReturn("def", ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id");
-        new ColumnDefinition41Packet(payload).write(payload);
+        ColumnDefinition41Packet actual = new ColumnDefinition41Packet(payload);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verifyWrite();
     }
     

@@ -71,7 +71,9 @@ public final class ComInitDbPacketTest {
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        new ComInitDbPacket(1, payload).write(payload);
+        ComInitDbPacket actual = new ComInitDbPacket(1, payload);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_INIT_DB.getValue());
         verify(payload).writeStringEOF(ShardingConstant.LOGIC_SCHEMA_NAME);
     }

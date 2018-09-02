@@ -17,7 +17,8 @@
 
 package io.shardingsphere.proxy.transport;
 
-import io.shardingsphere.proxy.transport.common.codec.PacketCodecFactoryTest;
+import io.shardingsphere.proxy.transport.common.codec.AllCommonCodecTests;
+import io.shardingsphere.proxy.transport.mysql.codec.MySQLPacketCodecTest;
 import io.shardingsphere.proxy.transport.mysql.constant.AllMySQLConstantTests;
 import io.shardingsphere.proxy.transport.mysql.packet.AllMySQLPacketTests;
 import org.junit.runner.RunWith;
@@ -26,8 +27,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        PacketCodecFactoryTest.class,
-        AllMySQLConstantTests.class,
+        AllCommonCodecTests.class, 
+        AllMySQLConstantTests.class, 
+        MySQLPacketCodecTest.class, 
         AllMySQLPacketTests.class
 })
 public final class AllTransportTests {

@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +38,9 @@ public final class TextResultSetRowPacketTest {
     public void assertWrite() {
         when(payload.readInt1()).thenReturn(1);
         when(payload.readStringLenenc()).thenReturn("value_a", null, "value_c");
-        new TextResultSetRowPacket(payload, 3).write(payload);
+        TextResultSetRowPacket actual = new TextResultSetRowPacket(payload, 3);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeStringLenenc("value_a");
         verify(payload).writeStringLenenc("value_c");
         verify(payload).writeInt1(0xfb);

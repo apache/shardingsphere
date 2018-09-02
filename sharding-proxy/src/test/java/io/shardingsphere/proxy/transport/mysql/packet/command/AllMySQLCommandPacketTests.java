@@ -24,8 +24,17 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuit
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41PacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePacketsTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistryTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryProtocolValueTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryResultSetRowPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.NullBitmapTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPrepareOKPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacketTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.ComQueryPacketTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -35,12 +44,20 @@ import org.junit.runners.Suite.SuiteClasses;
         CommandPacketTypeTest.class, 
         CommandPacketFactoryTest.class, 
         CommandResponsePacketsTest.class, 
-        QueryResponsePacketsTest.class,
-        FieldCountPacketTest.class,
-        ColumnDefinition41PacketTest.class,
-        TextResultSetRowPacketTest.class,
+        QueryResponsePacketsTest.class, 
+        BinaryStatementRegistryTest.class, 
+        NullBitmapTest.class, 
+        BinaryProtocolValueTest.class, 
+        FieldCountPacketTest.class, 
+        ColumnDefinition41PacketTest.class, 
+        TextResultSetRowPacketTest.class, 
         ComFieldListPacketTest.class, 
-        
+        ComQueryPacketTest.class, 
+        ComStmtPreparePacketTest.class, 
+        ComStmtPrepareOKPacketTest.class, 
+        BinaryResultSetRowPacketTest.class, 
+        ComStmtExecutePacketTest.class, 
+        ComStmtClosePacketTest.class, 
         ComInitDbPacketTest.class, 
         ComPingPacketTest.class, 
         ComQuitPacketTest.class, 

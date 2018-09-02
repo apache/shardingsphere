@@ -105,6 +105,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         public void run() {
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection()) {
+                setBackendConnection(backendConnection);
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection);
                 Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
                 if (!responsePackets.isPresent()) {
@@ -132,9 +133,12 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         }
         
         private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
+            if (!context.channel().isActive()) {
+                return;
+            }
             currentSequenceId = headPacketsCount;
             while (queryCommandPacket.next()) {
-                while (!context.channel().isWritable()) {
+                while (!context.channel().isWritable() && context.channel().isActive()) {
                     synchronized (MySQLFrontendHandler.this) {
                         try {
                             MySQLFrontendHandler.this.wait();
