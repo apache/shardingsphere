@@ -20,69 +20,45 @@ package io.shardingsphere.jdbc.orchestration.internal.datasource;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
  * Orchestration master-slave datasource.
  *
- * @author caohao
  * @author panjuan
  */
 @Slf4j
-public final class OrchestrationMasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
     
     private MasterSlaveDataSource dataSource;
     
-    private final OrchestrationFacade orchestrationFacade;
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private boolean isCircuitBreak;
-    
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(getAllDataSources(masterSlaveDataSource.getDataSourceMap(), masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName(), masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames()));
+        super(orchestrationFacade, masterSlaveDataSource.getDataSourceMap());
         this.dataSource = masterSlaveDataSource;
-        this.orchestrationFacade = orchestrationFacade;
         initOrchestrationFacade(masterSlaveDataSource);
-        this.dataSourceMap = masterSlaveDataSource.getDataSourceMap();
-        ShardingEventBusInstance.getInstance().register(this);
     }
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
         MasterSlaveRule masterSlaveRule = masterSlaveDataSource.getMasterSlaveRule();
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
-        this.orchestrationFacade.init(masterSlaveDataSource.getDataSourceMap(), masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
-    }
-    
-    private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
-        Collection<DataSource> result = new LinkedList<>();
-        result.add(dataSourceMap.get(masterDataSourceName));
-        for (String each : slaveDataSourceNames) {
-            result.add(dataSourceMap.get(each));
-        }
-        return result;
+        getOrchestrationFacade().init(masterSlaveDataSource.getDataSourceMap(), masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
     }
     
     @Override
     public Connection getConnection() {
-        if (isCircuitBreak) {
+        if (isCircuitBreak()) {
             return new CircuitBreakerDataSource().getConnection();
         }
         return dataSource.getConnection();
@@ -91,7 +67,7 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     @Override
     public void close() {
         dataSource.close();
-        orchestrationFacade.close();
+        getOrchestrationFacade().close();
     }
     
     /**
@@ -117,24 +93,5 @@ public final class OrchestrationMasterSlaveDataSource extends AbstractDataSource
     public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
         Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new MasterSlaveDataSource(newDataSourceMap, dataSource.getMasterSlaveRule(), new LinkedHashMap<String, Object>(), dataSource.getShardingProperties());
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    /**
-     /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
-     */
-    @Subscribe
-    public void renew(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }

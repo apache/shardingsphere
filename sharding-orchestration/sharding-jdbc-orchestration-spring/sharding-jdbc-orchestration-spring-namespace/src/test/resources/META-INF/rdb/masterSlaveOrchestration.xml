@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+    <import resource="namespace/masterSlaveDataSourceNamespace.xml" />
+
+    <orchestraion:orchestration id="defaultMasterSlaveDataSourceOrchestration">
+        <orchestraion:data-source data-source-ref="defaultMasterSlaveDataSource"/>
+        <orchestraion:reg id="regCenter" type="master_slave">
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+        </orchestraion:reg>
+    </orchestraion:orchestration>
+
+    <orchestraion:orchestration id="randomMasterSlaveDataSourceOrchestration">
+        <orchestraion:data-source data-source-ref="randomMasterSlaveDataSource"/>
+        <orchestraion:reg id="regCenter" type="master_slave">
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+        </orchestraion:reg>
+    </orchestraion:orchestration>
+
+    <orchestraion:orchestration id="roundRobinMasterSlaveDataSourceOrchestration">
+        <orchestraion:data-source data-source-ref="roundRobinMasterSlaveDataSource"/>
+        <orchestraion:reg id="regCenter" type="master_slave">
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+        </orchestraion:reg>
+    </orchestraion:orchestration>
+
+    <orchestraion:orchestration id="refMasterSlaveDataSourceOrchestration">
+        <orchestraion:data-source data-source-ref="refMasterSlaveDataSource"/>
+        <orchestraion:reg id="regCenter" type="master_slave">
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+        </orchestraion:reg>
+    </orchestraion:orchestration>
+
+    <orchestraion:orchestration id="configMapDataSourceOrchestration">
+        <orchestraion:data-source data-source-ref="configMapDataSource"/>
+        <orchestraion:reg id="regCenter" type="master_slave">
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+        </orchestraion:reg>
+    </orchestraion:orchestration>
+</beans>

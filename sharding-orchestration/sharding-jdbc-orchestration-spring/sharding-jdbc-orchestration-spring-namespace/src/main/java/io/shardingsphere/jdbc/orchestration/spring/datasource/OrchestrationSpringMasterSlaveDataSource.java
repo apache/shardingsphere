@@ -17,24 +17,23 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Properties;
 
 /**
- * Sharding datasource for spring namespace.
+ * Orchestration master slave datasource for spring namespace.
  *
- * @author maxiaoguang
+ * @author panjuan
  */
-public class SpringShardingDataSource extends ShardingDataSource {
+public class OrchestrationSpringMasterSlaveDataSource extends OrchestrationMasterSlaveDataSource {
     
-    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                    final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+    public OrchestrationSpringMasterSlaveDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super((MasterSlaveDataSource) dataSource, new OrchestrationFacade(orchestrationConfig));
     }
 }
+

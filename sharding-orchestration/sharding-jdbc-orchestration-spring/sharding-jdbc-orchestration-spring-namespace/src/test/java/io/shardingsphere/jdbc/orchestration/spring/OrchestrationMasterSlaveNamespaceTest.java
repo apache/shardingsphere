@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.jdbc.orchestration.spring.util.FieldValueUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -42,7 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveNamespace.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveOrchestration.xml")
 public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
@@ -52,12 +53,12 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertMasterSlaveDataSourceType() {
-        assertTrue(null != applicationContext.getBean("defaultMasterSlaveDataSource", OrchestrationMasterSlaveDataSource.class));
+        assertTrue(null != applicationContext.getBean("defaultMasterSlaveDataSourceOrchestration", OrchestrationSpringMasterSlaveDataSource.class));
     }
     
     @Test
     public void assertDefaultMaserSlaveDataSource() {
-        MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSource");
+        MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceOrchestration");
         assertThat(masterSlaveRule.getMasterDataSourceName(), is("dbtbl_0_master"));
         assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
         assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
@@ -65,8 +66,8 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertTypeMasterSlaveDataSource() {
-        MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSource");
-        MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSource");
+        MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSourceOrchestration");
+        MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSourceOrchestration");
         assertTrue(randomSlaveRule.getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         assertTrue(roundRobinSlaveRule.getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
@@ -74,19 +75,19 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @Test
     public void assertRefMasterSlaveDataSource() {
         MasterSlaveLoadBalanceAlgorithm randomStrategy = this.applicationContext.getBean("randomStrategy", MasterSlaveLoadBalanceAlgorithm.class);
-        MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
+        MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSourceOrchestration");
         assertTrue(EqualsBuilder.reflectionEquals(masterSlaveRule.getLoadBalanceAlgorithm(), randomStrategy));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         OrchestrationMasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, OrchestrationMasterSlaveDataSource.class);
-        MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", false);
+        MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
         return dataSource.getMasterSlaveRule();
     }
     
     @Test
     public void assertConfigMapDataSource() {
-        Object masterSlaveDataSource = this.applicationContext.getBean("configMapDataSource");
+        Object masterSlaveDataSource = this.applicationContext.getBean("configMapDataSourceOrchestration");
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
@@ -95,13 +96,13 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertProperties() {
-        boolean showSQL = getShardingProperties("defaultMasterSlaveDataSource").getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean showSQL = getShardingProperties("defaultMasterSlaveDataSourceOrchestration").getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSQL);
     }
     
     private ShardingProperties getShardingProperties(final String masterSlaveDataSourceName) {
-        OrchestrationMasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, OrchestrationMasterSlaveDataSource.class);
-        MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", false);
+        OrchestrationSpringMasterSlaveDataSource masterSlaveDataSource = this.applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringMasterSlaveDataSource.class);
+        MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
         return dataSource.getShardingProperties();
     }
 }

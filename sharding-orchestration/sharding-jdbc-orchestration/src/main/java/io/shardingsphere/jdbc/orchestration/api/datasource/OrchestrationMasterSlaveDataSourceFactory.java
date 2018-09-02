@@ -29,8 +29,6 @@ import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Orchestration master-slave data source factory.
@@ -45,20 +43,12 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      * 
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap config map
-     * @param props properties
+     * @param masterSlaveDataSource master slave data source
      * @param orchestrationConfig orchestration configuration
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                              final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
-            return createDataSource(orchestrationConfig);
-        }
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+    public static DataSource createDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationFacade(orchestrationConfig));
     }
     
@@ -74,7 +64,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         ConfigurationService configService = orchestrationFacade.getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
         Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource( configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationFacade);
     }
 }

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd 
-                        ">
-    <import resource="datasource/masterSlaveDataSource.xml" />
-    <import resource="regCenter.xml" />
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
+
+    <import resource="../datasource/masterSlaveDataSource.xml" />
 
     <bean id="keyGenerator" class="io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
 
@@ -25,7 +24,7 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
 
-    <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy" registry-center-ref="regCenter">
+    <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">
         <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="keyGenerator">
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
@@ -37,7 +36,7 @@
         </sharding:sharding-rule>
     </sharding:data-source>
 
-    <sharding:data-source id="masterSlaveShardingDataSourceByUserStrategy" registry-center-ref="regCenter">
+    <sharding:data-source id="masterSlaveShardingDataSourceByUserStrategy">
         <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="keyGenerator">
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1" strategy-ref="randomStrategy"/>

@@ -17,6 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.api.yaml;
 
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
@@ -98,9 +100,12 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
                                                final YamlShardingRuleConfiguration yamlConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        return null == yamlConfig ? OrchestrationShardingDataSourceFactory.createDataSource(orchestrationConfig)
-                : OrchestrationShardingDataSourceFactory.createDataSource(
-                        dataSourceMap, yamlConfig.getShardingRuleConfiguration(), yamlConfig.getConfigMap(), yamlConfig.getProps(), orchestrationConfig);
+        if (null == yamlConfig) {
+            return OrchestrationShardingDataSourceFactory.createDataSource(orchestrationConfig);
+        } else {
+            ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(yamlConfig.getShardingRuleConfiguration(), dataSourceMap.keySet()), yamlConfig.getConfigMap(), yamlConfig.getProps());
+            return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
+        }
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {

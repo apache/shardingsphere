@@ -19,51 +19,38 @@ package io.shardingsphere.jdbc.orchestration.internal.datasource;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Orchestration sharding datasource.
  *
- * @author caohao
+ * @author panjuan
  */
 @Slf4j
-public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {
     
     private ShardingDataSource dataSource;
     
-    private final OrchestrationFacade orchestrationFacade;
-    
-    private Map<String, DataSource> dataSourceMap;
-    
-    private boolean isCircuitBreak;
-    
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(shardingDataSource.getDataSourceMap().values());
+        super(orchestrationFacade, shardingDataSource.getDataSourceMap());
         this.dataSource = shardingDataSource;
-        this.orchestrationFacade = orchestrationFacade;
-        this.orchestrationFacade.init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
-        this.dataSourceMap = shardingDataSource.getDataSourceMap();
-        ShardingEventBusInstance.getInstance().register(this);
+        getOrchestrationFacade().init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
     }
     
     @Override
     public Connection getConnection() {
-        if (isCircuitBreak) {
+        if (isCircuitBreak()) {
             return new CircuitBreakerDataSource().getConnection();
         }
         return dataSource.getConnection();
@@ -72,7 +59,7 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
     @Override
     public void close() {
         dataSource.close();
-        orchestrationFacade.close();
+        getOrchestrationFacade().close();
     }
     
     /**
@@ -96,22 +83,5 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties(), dataSource.getDatabaseType());
     }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
-     */
-    @Subscribe
-    public void renew(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
-    }
 }
+

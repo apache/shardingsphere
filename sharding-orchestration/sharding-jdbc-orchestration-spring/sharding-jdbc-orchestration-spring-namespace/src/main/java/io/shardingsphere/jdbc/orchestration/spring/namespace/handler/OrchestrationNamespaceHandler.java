@@ -17,22 +17,19 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.namespace.handler;
 
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.EtcdBeanDefinitionParser;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.ZookeeperBeanDefinitionParser;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.OrchestrationBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.OrchestrationBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Registry center namespace handler.
+ * Orchestration spring namespace handler for sharding.
  * 
- * @author caohao
+ * @author panjuan
  */
-public final class RegNamespaceHandler extends NamespaceHandlerSupport {
+public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(ZookeeperRegistryCenterBeanDefinitionParserTag.ROOT_TAG, new ZookeeperBeanDefinitionParser());
-        registerBeanDefinitionParser(EtcdRegistryCenterBeanDefinitionParserTag.ROOT_TAG, new EtcdBeanDefinitionParser());
+        registerBeanDefinitionParser(OrchestrationBeanDefinitionParserTag.ROOT_TAG, new OrchestrationBeanDefinitionParser());
     }
 }
