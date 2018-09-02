@@ -38,7 +38,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Slf4j
-public final class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {
+public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {
     
     private ShardingDataSource dataSource;
     
