@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.reg.newzk.client.retry;
 
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseOperation;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.DelayQueue;
 
@@ -27,7 +26,6 @@ import java.util.concurrent.DelayQueue;
  *
  * @author lidongbo
  */
-@Slf4j
 public enum AsyncRetryCenter {
     
     INSTANCE;
@@ -46,13 +44,7 @@ public enum AsyncRetryCenter {
      * @param delayRetryPolicy delay retry policy
      */
     public void init(final DelayRetryPolicy delayRetryPolicy) {
-        log.debug("delayRetryPolicy init");
-        if (null == delayRetryPolicy) {
-            log.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.defaultDelayPolicy");
-            this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
-            return;
-        }
-        this.delayRetryPolicy = delayRetryPolicy;
+        this.delayRetryPolicy = null == delayRetryPolicy ? DelayRetryPolicy.defaultDelayPolicy() : delayRetryPolicy;
     }
     
     /**
@@ -74,11 +66,9 @@ public enum AsyncRetryCenter {
      */
     public void add(final BaseOperation operation) {
         if (null == delayRetryPolicy) {
-            log.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.defaultDelayPolicy");
             delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
         }
         operation.setDelayPolicyExecutor(new DelayPolicyExecutor(delayRetryPolicy));
         queue.offer(operation);
-        log.debug("enqueue operation: {}", operation.toString());
     }
 }

@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.ContentionCallback;
 import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.election.LeaderElection;
@@ -53,17 +52,14 @@ public class ContentionStrategy extends UsualStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().getData(getProvider().getRealPath(key), callback, ctx);
-                log.debug("ContentionStrategy getData action: {}", key);
             }
         });
-        log.debug("ContentionStrategy getData executeContention");
     }
 
     @Override
     public final void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateElection(key, value, createMode, null);
         getProvider().executeContention(election);
-        log.debug("ContentionStrategy createCurrentOnly executeContention");
         election.waitDone();
     }
     
@@ -88,7 +84,6 @@ public class ContentionStrategy extends UsualStrategy {
     public final void update(final String key, final String value) throws KeeperException, InterruptedException {
         LeaderElection election = buildUpdateElection(key, value, null);
         getProvider().executeContention(election);
-        log.debug("ContentionStrategy update executeContention");
         election.waitDone();
     }
     
@@ -98,7 +93,6 @@ public class ContentionStrategy extends UsualStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().update(getProvider().getRealPath(key), value);
-                log.debug("ContentionStrategy update action: {}, value: {}", key, value);
             }
             
             @Override
@@ -114,7 +108,6 @@ public class ContentionStrategy extends UsualStrategy {
     public final void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
         LeaderElection election = buildDeleteElection(key, null);
         getProvider().executeContention(election);
-        log.debug("ContentionStrategy deleteOnlyCurrent executeContention");
         election.waitDone();
     }
     
@@ -125,7 +118,6 @@ public class ContentionStrategy extends UsualStrategy {
             @Override
             public void action() throws KeeperException, InterruptedException {
                 getProvider().delete(getProvider().getRealPath(key), callback, ctx);
-                log.debug("ContentionStrategy deleteOnlyCurrent action: {}, ctx: {}", key, ctx);
             }
         });
     }
@@ -151,7 +143,6 @@ public class ContentionStrategy extends UsualStrategy {
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateAllNeedElection(key, value, createMode, null);
         getProvider().executeContention(election);
-        log.debug("ContentionStrategy createAllNeedPath executeContention");
         election.waitDone();
     }
     
@@ -160,7 +151,6 @@ public class ContentionStrategy extends UsualStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                log.debug("ContentionStrategy createAllNeedPath action: {}", key);
                 createBegin(getProvider().getRealPath(key), value, createMode);
             }
             
@@ -182,10 +172,8 @@ public class ContentionStrategy extends UsualStrategy {
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (getProvider().exists(nodes.get(i))) {
-                log.info("create node exist: {}", nodes.get(i));
                 continue;
             }
-            log.debug("create node not exist: {}", nodes.get(i));
             if (i == nodes.size() - 1) {
                 getProvider().create(nodes.get(i), value, createMode);
             } else {
@@ -203,19 +191,15 @@ public class ContentionStrategy extends UsualStrategy {
                 deleteChildren(getProvider().getRealPath(key), true);
             }
         });
-        log.debug("ContentionStrategy deleteAllChildren executeContention");
     }
     
     private void deleteChildren(final String key, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
         List<String> children = getProvider().getChildren(key);
-        log.debug("deleteChildren:{}", children);
         for (String aChildren : children) {
             String child = PathUtil.getRealPath(key, aChildren);
             if (!getProvider().exists(child)) {
-                log.info("delete not exist: {}", child);
                 continue;
             }
-            log.debug("deleteChildren: {}", child);
             deleteChildren(child, true);
         }
         if (deleteCurrentNode) {
@@ -232,7 +216,6 @@ public class ContentionStrategy extends UsualStrategy {
                 deleteBranch(getProvider().getRealPath(key));
             }
         });
-        log.debug("ContentionStrategy deleteCurrentBranch executeContention");
     }
     
     private void deleteBranch(final String key) throws KeeperException, InterruptedException {
@@ -246,7 +229,6 @@ public class ContentionStrategy extends UsualStrategy {
                     getProvider().delete(node);
                 } catch (KeeperException.NotEmptyException e) {
                     log.warn("deleteBranch {} exist other children: {}", node, this.getChildren(node));
-                    log.debug(e.getMessage());
                     return;
                 }
             }

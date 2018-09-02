@@ -60,7 +60,6 @@ public final class RetryThread extends Thread {
                 Thread thread = new Thread(runnable);
                 thread.setDaemon(true);
                 thread.setName("zk-retry-" + threadIndex.incrementAndGet());
-                log.debug("new thread: {}", thread.getName());
                 return thread;
             }
         });
@@ -69,12 +68,10 @@ public final class RetryThread extends Thread {
 
     @Override
     public void run() {
-        log.debug("RetryThread start");
         for (;;) {
             final BaseOperation operation;
             try {
                 operation = queue.take();
-                log.debug("take operation: {}", operation.toString());
             } catch (final InterruptedException ex) {
                 log.error("retry interrupt ex: {}", ex.getMessage());
                 continue;
@@ -92,7 +89,6 @@ public final class RetryThread extends Thread {
                     }
                     if (result) {
                         queue.offer(operation);
-                        log.debug("enqueue again operation: {}", operation.toString());
                     }
                 }
             });
@@ -105,7 +101,6 @@ public final class RetryThread extends Thread {
             @Override
             public void run() {
                 try {
-                    log.debug("AsyncRetryCenter stop");
                     queue.clear();
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);

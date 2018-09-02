@@ -17,24 +17,14 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper;
 
-import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseClientTest;
-import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.StartWaitTest;
-import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestClient;
-import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestHolder;
-import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        BaseClientTest.class,
-        BaseTest.class,
-        StartWaitTest.class,
-        TestClient.class,
-        TestHolder.class,
-        TestSupport.class
+        StartWaitTest.class
     })
 public final class AllBaseTests {
 }

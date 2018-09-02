@@ -19,8 +19,6 @@ package io.shardingsphere.orchestration.reg.newzk;
 
 import io.shardingsphere.orchestration.reg.newzk.client.cache.PathResolveTest;
 import io.shardingsphere.orchestration.reg.newzk.client.cache.PathTreeTest;
-import io.shardingsphere.orchestration.reg.newzk.client.retry.TestCallable;
-import io.shardingsphere.orchestration.reg.newzk.client.retry.TestResultCallable;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.AllBaseTests;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.SyncRetryStrategyTest;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.UsualClientTest;
@@ -32,8 +30,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         PathResolveTest.class,
         PathTreeTest.class,
-        TestCallable.class,
-        TestResultCallable.class,
         SyncRetryStrategyTest.class,
         AllBaseTests.class,
         UsualClientTest.class
