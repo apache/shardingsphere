@@ -98,9 +98,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.setAutoCommit(autoCommit);
                 }
             });
-            return;
-        }
-        if (TransactionType.XA == TransactionTypeHolder.get()) {
+        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.BEGIN));
         }
     }
@@ -115,9 +113,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.commit();
                 }
             });
-            return;
-        }
-        if (TransactionType.XA == TransactionTypeHolder.get()) {
+        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.COMMIT));
         }
     }
@@ -132,9 +128,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.rollback();
                 }
             });
-            return;
-        }
-        if (TransactionType.XA == TransactionTypeHolder.get()) {
+        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         }
     }
