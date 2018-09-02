@@ -25,18 +25,17 @@ import java.util.Collection;
  * 
  * @author zhangliang
  * 
- * @param <I> type of input value
- * @param <O> type of output value
+ * @param <I> type of inputs value
+ * @param <O> type of outputs value
  */
 public interface ShardingGroupExecuteCallback<I, O> {
     
     /**
      * Execute callback.
      * 
-     * @param key input key
-     * @param values input values
+     * @param inputs input values
      * @return execute result
      * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(String key, Collection<I> values) throws SQLException;
+    Collection<O> execute(Collection<I> inputs) throws SQLException;
 }

@@ -18,6 +18,7 @@
     <xsd:element name="sharding-rule">
         <xsd:complexType>
             <xsd:sequence>
+                <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
             </xsd:sequence>
@@ -89,6 +90,23 @@
     <xsd:element name="none-strategy">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="master-slave-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="master-slave-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="master-slave-rule">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="strategy-ref" type="xsd:string" />
+            <xsd:attribute name="strategy-type" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="config-map">

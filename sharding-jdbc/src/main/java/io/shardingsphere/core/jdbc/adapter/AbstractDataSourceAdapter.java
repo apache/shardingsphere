@@ -19,12 +19,9 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.core.listener.JDBCListenerRegister;
 import lombok.Getter;
-
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -41,7 +38,7 @@ import java.util.logging.Logger;
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     static {
-        JDBCListenerRegister.register();
+        ShardingEventListenerRegistrySPILoader.registerListeners();
     }
     
     @Getter
@@ -51,7 +48,10 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
         databaseType = getDatabaseType(dataSources);
-        ShardingEventBusInstance.getInstance().register(this);
+    }
+    
+    public AbstractDataSourceAdapter(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -70,19 +70,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
-        }
-    }
-    
-    /**
-     * Renew abstract data source adapter.
-     *
-     * @param dataSources data sources
-     */
-    public void renew(final Collection<DataSource> dataSources) {
-        try {
-            databaseType = getDatabaseType(dataSources);
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
         }
     }
     

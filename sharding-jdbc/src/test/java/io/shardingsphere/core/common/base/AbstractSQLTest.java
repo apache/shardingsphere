@@ -20,7 +20,6 @@ package io.shardingsphere.core.common.base;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -138,8 +137,7 @@ public abstract class AbstractSQLTest {
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
         field.setAccessible(true);
-        ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
-        return shardingContext.getDataSourceMap();
+        return shardingDataSource.getDataSourceMap();
     }
     
     protected final void importDataSet() {

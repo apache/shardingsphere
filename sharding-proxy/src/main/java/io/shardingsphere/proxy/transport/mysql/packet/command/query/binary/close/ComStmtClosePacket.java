@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhangyonglun
  */
 @Slf4j
-public class ComStmtClosePacket implements CommandPacket {
+public final class ComStmtClosePacket implements CommandPacket {
     
     @Getter
     private final int sequenceId;
@@ -45,11 +45,11 @@ public class ComStmtClosePacket implements CommandPacket {
     }
     
     @Override
-    public final void write(final MySQLPacketPayload payload) {
+    public void write(final MySQLPacketPayload payload) {
     }
     
     @Override
-    public final Optional<CommandResponsePackets> execute() {
+    public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
         // TODO :yonglun need to clean PreparedStatementRegistry?
         return Optional.absent();

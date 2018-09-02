@@ -23,11 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * SQL route result.
@@ -44,25 +40,9 @@ public final class SQLRouteResult {
     
     private final GeneratedKey generatedKey;
     
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     public SQLRouteResult(final SQLStatement sqlStatement) {
         this(sqlStatement, null);
-    }
-    
-    /**
-     * Get SQL units grouped by data source name.
-     * 
-     * @return SQL units grouped by data source name.
-     */
-    public Map<String, Collection<SQLUnit>> getSQLUnitGroups() {
-        Map<String, Collection<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
-        for (SQLExecutionUnit each : executionUnits) {
-            if (!result.containsKey(each.getDataSource())) {
-                result.put(each.getDataSource(), new LinkedList<SQLUnit>());
-            }
-            result.get(each.getDataSource()).add(each.getSqlUnit());
-        }
-        return result;
     }
 }

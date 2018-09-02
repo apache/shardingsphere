@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +37,9 @@ public final class FieldCountPacketTest {
     @Test
     public void assertWrite() {
         when(payload.readInt1()).thenReturn(1, 3);
-        new FieldCountPacket(payload).write(payload);
+        FieldCountPacket actual = new FieldCountPacket(payload);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeIntLenenc(3);
     }
 }

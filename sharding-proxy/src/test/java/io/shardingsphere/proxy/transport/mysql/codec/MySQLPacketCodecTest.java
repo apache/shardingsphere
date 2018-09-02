@@ -17,57 +17,79 @@
 
 package io.shardingsphere.proxy.transport.mysql.codec;
 
-import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
-import io.shardingsphere.proxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
-import org.junit.Before;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MySQLPacketCodecTest {
+@RunWith(MockitoJUnitRunner.class)
+public final class MySQLPacketCodecTest {
     
-    private MySQLPacketCodec mySQLPacketCodec;
-
-    private ChannelHandlerContext channelHandlerContext;
-
+    @Mock
+    private ChannelHandlerContext context;
+    
+    @Mock
     private ByteBuf byteBuf;
-
-    @Before
-    public void init() {
-        mySQLPacketCodec = new MySQLPacketCodec();
-        channelHandlerContext = mock(ChannelHandlerContext.class);
-        byteBuf = mock(ByteBuf.class);
-    }
-
+    
     @Test
-    public void assertMySQLPacketDoDecode() {
-        final List<Object> out = Lists.newArrayList();
+    public void assertIsValidHeader() {
+        assertTrue(new MySQLPacketCodec().isValidHeader(50));
+    }
+    
+    @Test
+    public void assertIsInvalidHeader() {
+        assertFalse(new MySQLPacketCodec().isValidHeader(3));
+    }
+    
+    @Test
+    public void assertDoDecode() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
-        when(byteBuf.markReaderIndex().readMedium()).thenReturn(50);
-        when(byteBuf.readRetainedSlice(anyInt())).thenReturn(byteBuf);
-        mySQLPacketCodec.doDecode(channelHandlerContext, byteBuf, out, 54);
+        when(byteBuf.readMediumLE()).thenReturn(50);
+        when(byteBuf.readRetainedSlice(51)).thenReturn(byteBuf);
+        List<Object> out = new LinkedList<>();
+        new MySQLPacketCodec().doDecode(context, byteBuf, out, 54);
         assertThat(out.size(), is(1));
     }
-
+    
     @Test
-    public void assertMySQLPacketDoEncode() {
-        final MySQLPacket message = new ComQuitPacket(10);
-        when(channelHandlerContext.alloc()).thenReturn(mock(ByteBufAllocator.class));
-        when(channelHandlerContext.alloc().buffer()).thenReturn(byteBuf);
-        when(byteBuf.writeMediumLE(anyInt())).thenReturn(byteBuf);
-        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
-        when(byteBuf.writeBytes(ArgumentMatchers.<ByteBuf>any())).thenReturn(byteBuf);
-        mySQLPacketCodec.doEncode(channelHandlerContext, message, byteBuf);
+    public void assertDoDecodeWithStickyPacket() {
+        when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
+        when(byteBuf.readMediumLE()).thenReturn(50);
+        List<Object> out = new LinkedList<>();
+        new MySQLPacketCodec().doDecode(context, byteBuf, out, 40);
+        assertTrue(out.isEmpty());
+    }
+    
+    @Test
+    public void assertDoEncode() {
+        ByteBufAllocator byteBufAllocator = mock(ByteBufAllocator.class);
+        when(context.alloc()).thenReturn(byteBufAllocator);
+        ByteBuf payloadByteBuf = mock(ByteBuf.class);
+        when(byteBufAllocator.buffer()).thenReturn(payloadByteBuf);
+        when(payloadByteBuf.readableBytes()).thenReturn(50);
+        MySQLPacket actualMessage = mock(MySQLPacket.class);
+        when(actualMessage.getSequenceId()).thenReturn(1);
+        new MySQLPacketCodec().doEncode(context, actualMessage, byteBuf);
+        verify(actualMessage).write(ArgumentMatchers.<MySQLPacketPayload>any());
+        verify(byteBuf).writeMediumLE(50);
+        verify(byteBuf).writeByte(1);
+        verify(byteBuf).writeBytes(payloadByteBuf);
     }
 }

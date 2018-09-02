@@ -34,7 +34,6 @@ import lombok.Getter;
  * @author zhangliang
  * @author linjiaqi
  */
-@Getter
 public final class HandshakePacket implements MySQLPacket {
     
     private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
@@ -43,16 +42,17 @@ public final class HandshakePacket implements MySQLPacket {
     
     private final int capabilityFlagsLower = CapabilityFlag.calculateHandshakeCapabilityFlagsLower();
     
-    private final int characterSet = ServerInfo.CHARSET;
-    
     private final StatusFlag statusFlag = StatusFlag.SERVER_STATUS_AUTOCOMMIT;
     
     private final int capabilityFlagsUpper = CapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
     
+    @Getter
     private final int sequenceId;
     
+    @Getter
     private final int connectionId;
     
+    @Getter
     private final AuthPluginData authPluginData;
     
     public HandshakePacket(final int connectionId, final AuthPluginData authPluginData) {
@@ -66,14 +66,14 @@ public final class HandshakePacket implements MySQLPacket {
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         payload.readStringNul();
         connectionId = payload.readInt4();
-        final byte[] authPluginDataPart1 = payload.readStringNul().getBytes();
+        final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
         payload.readInt2();
         payload.readInt1();
         Preconditions.checkArgument(statusFlag.getValue() == payload.readInt2());
         payload.readInt2();
         payload.readInt1();
         payload.skipReserved(10);
-        byte[] authPluginDataPart2 = payload.readStringNul().getBytes();
+        byte[] authPluginDataPart2 = payload.readStringNulByBytes();
         authPluginData = new AuthPluginData(authPluginDataPart1, authPluginDataPart2);
     }
     

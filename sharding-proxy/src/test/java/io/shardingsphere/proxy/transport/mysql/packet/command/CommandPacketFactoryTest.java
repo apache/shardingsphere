@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.config.BackendNIOConfiguration;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -42,6 +43,7 @@ import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,10 +57,21 @@ public final class CommandPacketFactoryTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        RuleRegistry registry = RuleRegistry.getInstance();
+        setRuleRegistryBackendNIOConfig();
+        setRuleRegistryMetaData();
+    }
+    
+    private void setRuleRegistryBackendNIOConfig() throws ReflectiveOperationException {
         Field field = RuleRegistry.class.getDeclaredField("backendNIOConfig");
         field.setAccessible(true);
-        field.set(registry, new BackendNIOConfiguration(true, 1, 0));
+        field.set(RuleRegistry.getInstance(), new BackendNIOConfiguration(true, 1, 0));
+    }
+    
+    private void setRuleRegistryMetaData() throws ReflectiveOperationException {
+        Field field = RuleRegistry.class.getDeclaredField("metaData");
+        field.setAccessible(true);
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        field.set(RuleRegistry.getInstance(), shardingMetaData);
     }
     
     @Test

@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,10 +67,6 @@ public final class OKPacketTest {
         assertThat(actual.getLastInsertId(), is(9999L));
         assertThat(actual.getWarnings(), is(1));
         assertThat(actual.getInfo(), is("no info"));
-        verify(packetPayload, times(2)).readInt1();
-        verify(packetPayload, times(2)).readIntLenenc();
-        verify(packetPayload, times(2)).readInt2();
-        verify(packetPayload).readStringEOF();
     }
     
     @Test
