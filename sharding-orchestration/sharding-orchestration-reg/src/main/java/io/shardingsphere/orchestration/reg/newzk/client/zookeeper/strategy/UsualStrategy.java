@@ -142,8 +142,6 @@ public class UsualStrategy extends BaseStrategy {
         } catch (final KeeperException | InterruptedException ex) {
             if (ex instanceof KeeperException.NotEmptyException) {
                 deleteChildren(path, true);
-            } else if (ex instanceof KeeperException.NoNodeException) {
-                log.debug("path: {}, ex: {}", path, ex.getMessage());
             } else {
                 throw ex;
             }
@@ -169,7 +167,6 @@ public class UsualStrategy extends BaseStrategy {
             deleteRecursively(superPath);
         } catch (final KeeperException.NotEmptyException ex) {
             log.info("deleteRecursively exist children: {}, ex: {}", path, ex.getMessage());
-            log.debug("deleteRecursively {} exist other children: {}", path, getChildren(path));
         }
     }
 }

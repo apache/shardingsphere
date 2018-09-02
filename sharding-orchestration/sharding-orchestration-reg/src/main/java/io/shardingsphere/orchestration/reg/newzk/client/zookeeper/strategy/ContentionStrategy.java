@@ -172,7 +172,6 @@ public class ContentionStrategy extends UsualStrategy {
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (getProvider().exists(nodes.get(i))) {
-                log.info("create node exist: {}", nodes.get(i));
                 continue;
             }
             if (i == nodes.size() - 1) {
@@ -199,7 +198,6 @@ public class ContentionStrategy extends UsualStrategy {
         for (String aChildren : children) {
             String child = PathUtil.getRealPath(key, aChildren);
             if (!getProvider().exists(child)) {
-                log.info("delete not exist: {}", child);
                 continue;
             }
             deleteChildren(child, true);

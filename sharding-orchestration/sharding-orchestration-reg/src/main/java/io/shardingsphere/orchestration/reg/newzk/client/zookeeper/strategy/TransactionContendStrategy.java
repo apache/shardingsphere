@@ -24,7 +24,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.ZooKeeperTransaction;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
@@ -37,7 +36,6 @@ import java.util.Stack;
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
-@Slf4j
 public final class TransactionContendStrategy extends ContentionStrategy {
     
     public TransactionContendStrategy(final ITransactionProvider provider) {
@@ -78,7 +76,6 @@ public final class TransactionContendStrategy extends ContentionStrategy {
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (getProvider().exists(nodes.get(i))) {
-                log.info("create node exist: {}", nodes.get(i));
                 continue;
             }
             if (i == nodes.size() - 1) {
@@ -107,7 +104,6 @@ public final class TransactionContendStrategy extends ContentionStrategy {
         for (String each : children) {
             String child = PathUtil.getRealPath(key, each);
             if (!getProvider().exists(child)) {
-                log.info("delete not exist: {}", child);
                 continue;
             }
             deleteChildren(child, true, transaction);
