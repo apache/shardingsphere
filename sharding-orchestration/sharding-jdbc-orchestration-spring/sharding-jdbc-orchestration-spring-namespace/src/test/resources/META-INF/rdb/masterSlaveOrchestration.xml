@@ -6,7 +6,7 @@
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.io/schema/shardingsphere/orchestration
                            http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
-    <import resource="shardingDataSourceNamespace.xml" />
+    <import resource="masterSlaveDataSourceNamespace.xml" />
 
     <orchestraion:orchestration id="defaultMasterSlaveDataSourceOrchestration">
         <orchestraion:data-source data-source-ref="defaultMasterSlaveDataSource"/>
