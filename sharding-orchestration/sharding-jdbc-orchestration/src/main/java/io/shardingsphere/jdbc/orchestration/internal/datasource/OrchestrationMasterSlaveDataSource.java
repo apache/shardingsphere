@@ -40,7 +40,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Slf4j
-public final class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
+public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
     
     private MasterSlaveDataSource dataSource;
     
