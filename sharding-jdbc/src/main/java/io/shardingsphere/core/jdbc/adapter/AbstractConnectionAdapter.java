@@ -121,13 +121,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 switch (operationType) {
                     case BEGIN:
                         each.setAutoCommit(autoCommit);
-                        return;
+                        continue;
                     case COMMIT:
                         each.commit();
-                        return;
+                        continue;
                     case ROLLBACK:
                         each.rollback();
-                        return;
+                        continue;
                     default:
                         throw new UnsupportedOperationException(operationType.name());
                 }
