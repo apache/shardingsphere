@@ -139,13 +139,11 @@ public class UsualStrategy extends BaseStrategy {
         String path = getProvider().getRealPath(key);
         try {
             deleteOnlyCurrent(path);
-        } catch (final KeeperException | InterruptedException ex) {
-            if (ex instanceof KeeperException.NotEmptyException) {
-                deleteChildren(path, true);
-            } else {
-                throw ex;
-            }
+        } catch (final KeeperException.NotEmptyException ex) {
+            deleteChildren(path, true);
+        } catch (final KeeperException.NoNodeException ignored) {
         }
+
         String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
             deleteRecursively(superPath);

@@ -113,7 +113,6 @@ public final class PathTree implements AutoCloseable {
             return;
         }
         if (children.isEmpty()) {
-            log.info("attachIntoNode there are no children");
             return;
         }
         for (String each : children) {
