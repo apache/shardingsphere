@@ -122,7 +122,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
 
     @Test
     public void assertMultiBindingTableRulesDatasource() {
-        ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasource");
+        ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasourceOrchestration");
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
         Iterator<BindingTableRule> bindingTableRules = shardingRule.getBindingTableRules().iterator();
         BindingTableRule orderRule = bindingTableRules.next();
