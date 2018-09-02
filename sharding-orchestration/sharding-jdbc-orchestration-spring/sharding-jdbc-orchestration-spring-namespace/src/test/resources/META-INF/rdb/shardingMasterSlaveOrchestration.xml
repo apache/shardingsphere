@@ -11,14 +11,14 @@
     <orchestraion:orchestration id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration">
         <orchestraion:data-source data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy"/>
         <orchestraion:reg id="regCenter" type="sharding">
-            <orchestraion:zookeeper server-lists="localhost:2181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
         </orchestraion:reg>
     </orchestraion:orchestration>
 
     <orchestraion:orchestration id="masterSlaveShardingDataSourceByUserStrategyOrchestration">
         <orchestraion:data-source data-source-ref="masterSlaveShardingDataSourceByUserStrategy"/>
         <orchestraion:reg id="regCenter" type="sharding">
-            <orchestraion:zookeeper server-lists="localhost:2181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+            <orchestraion:zookeeper server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
         </orchestraion:reg>
     </orchestraion:orchestration>
 </beans>
