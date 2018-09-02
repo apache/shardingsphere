@@ -45,11 +45,12 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
         super(orchestrationFacade, shardingDataSource.getDataSourceMap());
         this.dataSource = shardingDataSource;
-        getOrchestrationFacade().init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
+        getOrchestrationFacade().init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), 
+                ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
     }
     
     @Override
-    public Connection getConnection() {
+    public final Connection getConnection() {
         if (isCircuitBreak()) {
             return new CircuitBreakerDataSource().getConnection();
         }
@@ -57,7 +58,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     @Override
-    public void close() {
+    public final void close() {
         dataSource.close();
         getOrchestrationFacade().close();
     }

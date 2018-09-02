@@ -65,7 +65,8 @@ public final class OrchestrationShardingDataSourceFactory {
         ConfigurationService configService = orchestrationFacade.getConfigService();
         ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
         Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
-        ShardingDataSource shardingDataSource = new ShardingDataSource(configService.loadDataSourceMap(), new ShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
+        ShardingDataSource shardingDataSource = new ShardingDataSource(configService.loadDataSourceMap(), 
+                new ShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationFacade);
     }
 }

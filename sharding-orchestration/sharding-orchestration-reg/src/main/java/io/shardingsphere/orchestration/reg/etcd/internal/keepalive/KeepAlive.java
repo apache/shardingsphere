@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.etcd.internal.keepalive;
 
-
 import etcdserverpb.LeaseGrpc;
 import etcdserverpb.LeaseGrpc.LeaseStub;
 import etcdserverpb.Rpc.LeaseKeepAliveRequest;

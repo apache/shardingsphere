@@ -22,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        AllYamlTests.class
-    })
+@Suite.SuiteClasses(AllYamlTests.class)
 public final class AllApiTests {
 }

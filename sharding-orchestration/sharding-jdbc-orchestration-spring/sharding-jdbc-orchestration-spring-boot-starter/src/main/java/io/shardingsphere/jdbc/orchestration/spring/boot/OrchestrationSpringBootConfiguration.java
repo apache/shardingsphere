@@ -75,10 +75,12 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         OrchestrationType type = orchestrationProperties.getType();
         Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
         if (OrchestrationType.SHARDING == type) {
-            ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), shardingProperties.getConfigMap(), shardingProperties.getProps());
+            ShardingDataSource shardingDataSource = new ShardingDataSource(
+                    dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), shardingProperties.getConfigMap(), shardingProperties.getProps());
             return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationProperties.getOrchestrationConfiguration());
         }
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(
+                dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSource, orchestrationProperties.getOrchestrationConfiguration());
     }
     

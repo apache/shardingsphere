@@ -103,7 +103,8 @@ public final class YamlOrchestrationShardingDataSourceFactory {
         if (null == yamlConfig) {
             return OrchestrationShardingDataSourceFactory.createDataSource(orchestrationConfig);
         } else {
-            ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(yamlConfig.getShardingRuleConfiguration(), dataSourceMap.keySet()), yamlConfig.getConfigMap(), yamlConfig.getProps());
+            ShardingDataSource shardingDataSource = new ShardingDataSource(
+                    dataSourceMap, new ShardingRule(yamlConfig.getShardingRuleConfiguration(), dataSourceMap.keySet()), yamlConfig.getConfigMap(), yamlConfig.getProps());
             return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
         }
     }
