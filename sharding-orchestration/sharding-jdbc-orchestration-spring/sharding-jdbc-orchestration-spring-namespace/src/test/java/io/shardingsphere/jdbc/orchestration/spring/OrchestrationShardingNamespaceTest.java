@@ -120,19 +120,19 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertThat(bindingTableRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
     }
 
-//    @Test
-//    public void assertMultiBindingTableRulesDatasource() {
-//        ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasource");
-//        assertThat(shardingRule.getBindingTableRules().size(), is(2));
-//        Iterator<BindingTableRule> bindingTableRules = shardingRule.getBindingTableRules().iterator();
-//        BindingTableRule orderRule = bindingTableRules.next();
-//        assertThat(orderRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
-//        assertThat(orderRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
-//        BindingTableRule userRule = bindingTableRules.next();
-//        assertThat(userRule.getBindingActualTable("dbtbl_0", "t_user", "t_user_detail"), is("t_user"));
-//        assertThat(userRule.getBindingActualTable("dbtbl_1", "t_user", "t_user_detail"), is("t_user"));
-//    }
-//
+    @Test
+    public void assertMultiBindingTableRulesDatasource() {
+        ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasource");
+        assertThat(shardingRule.getBindingTableRules().size(), is(2));
+        Iterator<BindingTableRule> bindingTableRules = shardingRule.getBindingTableRules().iterator();
+        BindingTableRule orderRule = bindingTableRules.next();
+        assertThat(orderRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
+        assertThat(orderRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
+        BindingTableRule userRule = bindingTableRules.next();
+        assertThat(userRule.getBindingActualTable("dbtbl_0", "t_user", "t_user_detail"), is("t_user"));
+        assertThat(userRule.getBindingActualTable("dbtbl_1", "t_user", "t_user_detail"), is("t_user"));
+    }
+
     @Test
     public void assertPropsDataSource() {
         OrchestrationSpringShardingDataSource shardingDataSource = this.applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
