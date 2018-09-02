@@ -23,6 +23,7 @@ import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfig
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
@@ -103,22 +104,22 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
 
     @Test
     public void assertMultiTableRulesDataSource() {
-        ShardingRule shardingRule = getShardingRule("multiTableRulesDataSource");
+        ShardingRule shardingRule = getShardingRule("multiTableRulesDataSourceOrchestration");
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
         assertThat(tableRules.next().getLogicTable(), is("t_order"));
         assertThat(tableRules.next().getLogicTable(), is("t_order_item"));
     }
-//
-//    @Test
-//    public void assertBindingTableRuleDatasource() {
-//        ShardingRule shardingRule = getShardingRule("bindingTableRuleDatasource");
-//        assertThat(shardingRule.getBindingTableRules().size(), is(1));
-//        BindingTableRule bindingTableRule = shardingRule.getBindingTableRules().iterator().next();
-//        assertThat(bindingTableRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
-//        assertThat(bindingTableRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
-//    }
-//
+
+    @Test
+    public void assertBindingTableRuleDatasource() {
+        ShardingRule shardingRule = getShardingRule("bindingTableRuleDatasourceOrchestration");
+        assertThat(shardingRule.getBindingTableRules().size(), is(1));
+        BindingTableRule bindingTableRule = shardingRule.getBindingTableRules().iterator().next();
+        assertThat(bindingTableRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
+        assertThat(bindingTableRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
+    }
+
 //    @Test
 //    public void assertMultiBindingTableRulesDatasource() {
 //        ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasource");
