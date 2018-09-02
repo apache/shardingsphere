@@ -209,8 +209,10 @@ public abstract class WhereClauseParser implements SQLClauseParser {
     private Condition parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         SQLExpression right = basicExpressionParser.parse(sqlStatement);
         // TODO if have more tables, and cannot find column belong to, should not add to condition, should parse binding table rule.
-        if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
-                && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+        if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
+            return new NullCondition();
+        }
+        if (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 return new Condition(column.get(), right);
@@ -221,28 +223,52 @@ public abstract class WhereClauseParser implements SQLClauseParser {
     
     private Condition parseInCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         lexerEngine.accept(Symbol.LEFT_PAREN);
+        boolean hasComplexExpression = false;
         List<SQLExpression> rights = new LinkedList<>();
         do {
-            rights.add(basicExpressionParser.parse(sqlStatement));
+            SQLExpression right = basicExpressionParser.parse(sqlStatement);
+            rights.add(right);
+            if (!(right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+                hasComplexExpression = true;
+            }
             skipsDoubleColon();
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         lexerEngine.accept(Symbol.RIGHT_PAREN);
-        Optional<Column> column = find(sqlStatement.getTables(), left);
-        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            return new Condition(column.get(), rights);
+        if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
+            return new NullCondition();
+        }
+        if (!hasComplexExpression) {
+            Optional<Column> column = find(sqlStatement.getTables(), left);
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+                return new Condition(column.get(), rights);
+            }
         }
         return new NullCondition();
     }
     
     private Condition parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
+        boolean hasComplexExpression = false;
         List<SQLExpression> rights = new LinkedList<>();
-        rights.add(basicExpressionParser.parse(sqlStatement));
+        SQLExpression right1 = basicExpressionParser.parse(sqlStatement);
+        rights.add(right1);
+        if (!(right1 instanceof SQLNumberExpression || right1 instanceof SQLTextExpression || right1 instanceof SQLPlaceholderExpression)) {
+            hasComplexExpression = true;
+        }
         skipsDoubleColon();
         lexerEngine.accept(DefaultKeyword.AND);
-        rights.add(basicExpressionParser.parse(sqlStatement));
-        Optional<Column> column = find(sqlStatement.getTables(), left);
-        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            return new Condition(column.get(), rights.get(0), rights.get(1));
+        SQLExpression right2 = basicExpressionParser.parse(sqlStatement);
+        rights.add(right2);
+        if (!(right2 instanceof SQLNumberExpression || right2 instanceof SQLTextExpression || right2 instanceof SQLPlaceholderExpression)) {
+            hasComplexExpression = true;
+        }
+        if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
+            return new NullCondition();
+        }
+        if (!hasComplexExpression) {
+            Optional<Column> column = find(sqlStatement.getTables(), left);
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+                return new Condition(column.get(), rights.get(0), rights.get(1));
+            }
         }
         return new NullCondition();
     }
