@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns="http://shardingsphere.io/schema/shardingsphere/orchestration"
+            targetNamespace="http://shardingsphere.io/schema/shardingsphere/orchestration"
+            elementFormDefault="qualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    <xsd:element name="orchestration">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="data-source" />
+                <xsd:element ref="reg" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="data-source">
+        <xsd:complexType>
+            <xsd:attribute name="data-source-ref" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="reg">
+        <xsd:complexType>
+            <xsd:choice>
+                <xsd:element ref="zookeeper" minOccurs="0" />
+                <xsd:element ref="etcd" minOccurs="0" />
+            </xsd:choice>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="regType" use="required"  />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:simpleType name="regType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="sharding"/>
+            <xsd:enumeration value="master_slave"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="zookeeper">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+                    <xsd:attribute name="namespace" type="xsd:string" use="required" />
+                    <xsd:attribute name="base-sleep-time-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-sleep-time-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-retries" type="xsd:string" />
+                    <xsd:attribute name="session-timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="connection-timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="digest" type="xsd:string" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="etcd">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+                    <xsd:attribute name="time-to-live-seconds" type="xsd:string" />
+                    <xsd:attribute name="timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="retry-interval-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-retries" type="xsd:string" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
