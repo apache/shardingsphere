@@ -78,7 +78,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
                 new String[]{this.applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
         assertThat(shardingRule.getDefaultKeyGenerator().getClass().getName(), is(IncrementKeyGenerator.class.getCanonicalName()));
     }
-
+    
     @Test
     public void assertTableRuleWithAttributesDataSource() {
         ShardingRule shardingRule = getShardingRule("tableRuleWithAttributesDataSourceOrchestration");
@@ -110,7 +110,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertThat(tableRules.next().getLogicTable(), is("t_order"));
         assertThat(tableRules.next().getLogicTable(), is("t_order_item"));
     }
-
+    
     @Test
     public void assertBindingTableRuleDatasource() {
         ShardingRule shardingRule = getShardingRule("bindingTableRuleDatasourceOrchestration");
@@ -132,7 +132,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertThat(userRule.getBindingActualTable("dbtbl_0", "t_user", "t_user_detail"), is("t_user"));
         assertThat(userRule.getBindingActualTable("dbtbl_1", "t_user", "t_user_detail"), is("t_user"));
     }
-
+    
     @Test
     public void assertPropsDataSource() {
         OrchestrationSpringShardingDataSource shardingDataSource = this.applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
@@ -154,7 +154,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     public void assertShardingDataSourceType() {
         assertTrue(this.applicationContext.getBean("simpleShardingOrchestration") instanceof OrchestrationSpringShardingDataSource);
     }
-
+    
     @Test
     public void assertDefaultActualDataNodes() {
         OrchestrationSpringShardingDataSource multiTableRulesDataSource = this.applicationContext.getBean("multiTableRulesDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
