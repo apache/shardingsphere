@@ -37,7 +37,7 @@ public final class RegBeanDefinitionParser extends AbstractBeanDefinitionParser 
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return ZookeeperRegistryCenterBeanDefinitionParserTag.ROOT_TAG.equals(element.getTagName()) ? getZookeeperConfiguration(element) : getEtcdConfiguration(element);
+        return ZookeeperRegistryCenterBeanDefinitionParserTag.ROOT_TAG.equals(element.getLocalName()) ? getZookeeperConfiguration(element) : getEtcdConfiguration(element);
     }
     
     private AbstractBeanDefinition getZookeeperConfiguration(final Element element) {
