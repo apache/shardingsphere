@@ -59,7 +59,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private void setOrchestrationType(final Element element) {
-        orchestrationType = ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(element.getTagName()) ? OrchestrationType.SHARDING : OrchestrationType.MASTER_SLAVE;
+        orchestrationType = ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(element.getLocalName()) ? OrchestrationType.SHARDING : OrchestrationType.MASTER_SLAVE;
     }
     
     private BeanDefinition getOrchestrationConfiguration(final Element element) {
