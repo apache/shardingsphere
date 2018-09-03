@@ -17,7 +17,9 @@
 
 package io.shardingsphere.example.jdbc.main.orche.java.zookeeper;
 
+import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
@@ -33,7 +35,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -63,8 +64,11 @@ public class MasterSlaveOnly {
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new ConcurrentHashMap<String, Object>(), new Properties(),
-                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.MASTER_SLAVE));
+        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource)
+                MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties());
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
+                "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.MASTER_SLAVE);
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSource, orchestrationConfig);
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
