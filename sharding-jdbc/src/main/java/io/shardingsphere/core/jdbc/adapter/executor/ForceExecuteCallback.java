@@ -15,19 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction;
+package io.shardingsphere.core.jdbc.adapter.executor;
 
-import io.shardingsphere.core.event.ShardingEventListenerRegistry;
+import java.sql.SQLException;
 
 /**
- * Transaction listener registry.
+ * Force execute callback.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of target to be executed
  */
-public final class LocalTransactionListenerRegistry implements ShardingEventListenerRegistry {
+public interface ForceExecuteCallback<T> {
     
-    @Override
-    public void register() {
-        new LocalTransactionListener().register();
-    }
+    /**
+     * Execute.
+     * 
+     * @param target target to be executed 
+     * @throws SQLException SQL exception
+     */
+    void execute(T target) throws SQLException;
 }

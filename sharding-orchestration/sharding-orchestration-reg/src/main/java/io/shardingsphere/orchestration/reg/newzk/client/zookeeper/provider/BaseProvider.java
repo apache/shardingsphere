@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.provider;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.election.LeaderElection;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
@@ -92,11 +91,9 @@ public class BaseProvider implements IProvider {
     @Override
     public final void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         if (exists(key)) {
-            log.debug("node exist: {}", key);
             return;
         }
         holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
-        log.debug("BaseProvider createCurrentOnly: {}", key);
     }
 
     @Override
@@ -111,13 +108,11 @@ public class BaseProvider implements IProvider {
     @Override
     public final void delete(final String key) throws KeeperException, InterruptedException {
         holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION);
-        log.debug("BaseProvider deleteOnlyCurrent: {}", key);
     }
     
     @Override
     public final void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) {
         holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION, callback, ctx);
-        log.debug("BaseProvider deleteOnlyCurrent: {}, ctx: {}", key, ctx);
     }
 
     @Override

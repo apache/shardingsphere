@@ -21,10 +21,8 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.fixture.TestDataSource;
-import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -39,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -51,8 +49,6 @@ public final class ShardingConnectionTest {
     private static final String DS_NAME = "default";
     
     private ShardingConnection connection;
-    
-    private ShardingContext shardingContext;
     
     @BeforeClass
     public static void init() throws SQLException {
@@ -74,8 +70,6 @@ public final class ShardingConnectionTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        shardingContext = Mockito.mock(ShardingContext.class);
         ShardingDataSource shardingDataSource = Mockito.mock(ShardingDataSource.class);
         when(shardingDataSource.getDataSourceMap()).thenReturn(dataSourceMap);
         connection = new ShardingConnection(shardingDataSource);

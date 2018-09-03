@@ -112,7 +112,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     }
     
     @Override
-    public void close() {
+    public final void close() {
         closeOriginalDataSources();
     }
     

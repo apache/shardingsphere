@@ -64,7 +64,8 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         ConfigurationService configService = orchestrationFacade.getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
         Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(
+                configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationFacade);
     }
 }

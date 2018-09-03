@@ -23,8 +23,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        XATransactionListenerTest.class
-})
+@SuiteClasses(XATransactionListenerTest.class)
 public final class AllListenerTests {
 }

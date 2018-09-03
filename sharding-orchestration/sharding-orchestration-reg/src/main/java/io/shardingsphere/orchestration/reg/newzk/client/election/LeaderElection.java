@@ -59,7 +59,6 @@ public abstract class LeaderElection {
                 try {
                     retryCount--;
                     if (retryCount < 0) {
-                        log.info("Election node exceed retry count");
                         return;
                     }
                     executeContention(realNode, provider);

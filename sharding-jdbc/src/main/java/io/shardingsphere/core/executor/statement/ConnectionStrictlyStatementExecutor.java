@@ -35,17 +35,17 @@ public final class ConnectionStrictlyStatementExecutor extends StatementExecutor
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Collection<ShardingExecuteGroup<StatementUnit>> statementUnitGroups;
+    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups;
     
-    public ConnectionStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<StatementUnit>> statementUnitGroups) {
+    public ConnectionStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups) {
         super(sqlType);
         this.executeTemplate = executeTemplate;
-        this.statementUnitGroups = statementUnitGroups;
+        this.executeGroups = executeGroups;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.executeGroup((Collection) statementUnitGroups, executeCallback);
+        return executeTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
 }

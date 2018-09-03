@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.ContentionCallback;
 import io.shardingsphere.orchestration.reg.newzk.client.action.ITransactionProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.election.LeaderElection;
@@ -25,7 +24,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.provider.BaseProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.transaction.ZooKeeperTransaction;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
@@ -38,7 +36,6 @@ import java.util.Stack;
  * @author lidongbo
  * @since zookeeper 3.4.0
  */
-@Slf4j
 public final class TransactionContendStrategy extends ContentionStrategy {
     
     public TransactionContendStrategy(final ITransactionProvider provider) {
@@ -49,7 +46,6 @@ public final class TransactionContendStrategy extends ContentionStrategy {
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
         LeaderElection election = buildCreateAllNeedElection(key, value, createMode, null);
         getProvider().executeContention(election);
-        log.debug("ContentionStrategy createAllNeedPath executeContention");
         election.waitDone();
     }
     
@@ -58,7 +54,6 @@ public final class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                log.debug("ContentionStrategy createAllNeedPath action: {}", key);
                 ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
                 createBegin(key, value, createMode, transaction);
                 transaction.commit();
@@ -81,10 +76,8 @@ public final class TransactionContendStrategy extends ContentionStrategy {
         List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
             if (getProvider().exists(nodes.get(i))) {
-                log.info("create node exist: {}", nodes.get(i));
                 continue;
             }
-            log.debug("node not exist and create: {}", nodes.get(i));
             if (i == nodes.size() - 1) {
                 ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
@@ -104,7 +97,6 @@ public final class TransactionContendStrategy extends ContentionStrategy {
                 transaction.commit();
             }
         });
-        log.debug("ContentionStrategy deleteAllChildren executeContention");
     }
     
     private void deleteChildren(final String key, final boolean deleteCurrentNode, final ZooKeeperTransaction transaction) throws KeeperException, InterruptedException {
@@ -112,10 +104,8 @@ public final class TransactionContendStrategy extends ContentionStrategy {
         for (String each : children) {
             String child = PathUtil.getRealPath(key, each);
             if (!getProvider().exists(child)) {
-                log.info("delete not exist: {}", child);
                 continue;
             }
-            log.debug("deleteChildren: {}", child);
             deleteChildren(child, true, transaction);
         }
         if (deleteCurrentNode) {
@@ -134,7 +124,6 @@ public final class TransactionContendStrategy extends ContentionStrategy {
                 transaction.commit();
             }
         });
-        log.debug("ContentionStrategy deleteCurrentBranch executeContention");
     }
 
     private void deleteBranch(final String key, final ZooKeeperTransaction transaction) throws KeeperException, InterruptedException {

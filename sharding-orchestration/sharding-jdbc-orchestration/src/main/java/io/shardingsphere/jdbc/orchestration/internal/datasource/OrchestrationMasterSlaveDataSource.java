@@ -52,12 +52,14 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
         MasterSlaveRule masterSlaveRule = masterSlaveDataSource.getMasterSlaveRule();
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
-        getOrchestrationFacade().init(masterSlaveDataSource.getDataSourceMap(), masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
+        getOrchestrationFacade().init(masterSlaveDataSource.getDataSourceMap(), 
+                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
     }
     
     @Override
-    public Connection getConnection() {
+    public final Connection getConnection() {
         if (isCircuitBreak()) {
             return new CircuitBreakerDataSource().getConnection();
         }
@@ -65,7 +67,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     @Override
-    public void close() {
+    public final void close() {
         dataSource.close();
         getOrchestrationFacade().close();
     }
@@ -78,9 +80,9 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      */
     @Subscribe
     public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) throws SQLException {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = masterSlaveEvent.getMasterSlaveRuleConfig();
         dataSource.close();
-        dataSource = new MasterSlaveDataSource(masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
+        dataSource = new MasterSlaveDataSource(
+                masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
     }
     
     /**

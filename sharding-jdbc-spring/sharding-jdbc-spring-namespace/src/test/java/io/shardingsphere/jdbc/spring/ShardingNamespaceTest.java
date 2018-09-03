@@ -110,7 +110,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
-    public void assertmasterSlaveShardingDataSourceByDefaultStrategy() {
+    public void assertMasterSlaveShardingDataSourceByDefaultStrategy() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByDefaultStrategy");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
@@ -124,7 +124,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
-    public void assertmasterSlaveShardingDataSourceByUserStrategy() {
+    public void assertMasterSlaveShardingDataSourceByUserStrategy() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategy");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));

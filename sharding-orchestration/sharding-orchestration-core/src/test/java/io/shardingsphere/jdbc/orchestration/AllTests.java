@@ -23,8 +23,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        AllInternalTests.class
-    })
+@SuiteClasses(AllInternalTests.class)
 public final class AllTests {
 }

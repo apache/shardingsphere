@@ -77,7 +77,6 @@ public abstract class BaseClient implements IClient {
     
     @Override
     public synchronized boolean start(final int waitingTime, final TimeUnit timeUnit) throws InterruptedException, IOException {
-        log.debug("start wait:{}, units:{}", waitingTime, timeUnit);
         prepareStart();
         holder.start(waitingTime, timeUnit);
         return holder.isConnected();
@@ -120,7 +119,6 @@ public abstract class BaseClient implements IClient {
             return;
         }
         context.setGlobalZookeeperEventListener(globalZookeeperEventListener);
-        log.debug("globalListenerRegistered:{}", globalZookeeperEventListener.getKey());
     }
     
     @Override
@@ -128,7 +126,6 @@ public abstract class BaseClient implements IClient {
         final String path = PathUtil.getRealPath(rootNode, key);
         zookeeperEventListener.setPath(path);
         context.getWatchers().put(zookeeperEventListener.getKey(), zookeeperEventListener);
-        log.debug("register watcher:{}", path);
     }
     
     @Override
@@ -138,7 +135,6 @@ public abstract class BaseClient implements IClient {
         }
         if (context.getWatchers().containsKey(key)) {
             context.getWatchers().remove(key);
-            log.debug("unregisterWatch:{}", key);
         }
     }
     
@@ -148,7 +144,6 @@ public abstract class BaseClient implements IClient {
     
     private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
         if (rootExist) {
-            log.debug("root exist");
             return;
         }
         try {
@@ -156,9 +151,7 @@ public abstract class BaseClient implements IClient {
                 holder.getZooKeeper().create(rootNode, date, authorities, CreateMode.PERSISTENT);
             }
             rootExist = true;
-            log.debug("creating root:{}", rootNode);
         } catch (final KeeperException.NodeExistsException ex) {
-            log.warn("root create:{}", ex.getMessage());
             rootExist = true;
             return;
         }
@@ -169,7 +162,6 @@ public abstract class BaseClient implements IClient {
                 rootExist = false;
             }
         }));
-        log.debug("created root:{}", rootNode);
     }
     
     protected final void deleteNamespace() throws KeeperException, InterruptedException {
@@ -179,7 +171,6 @@ public abstract class BaseClient implements IClient {
             log.info("delete root :{}", ex.getMessage());
         }
         rootExist = false;
-        log.debug("delete root:{}", rootNode);
     }
     
     final void setAuthorities(final String scheme, final byte[] auth, final List<ACL> authorities) {

@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.reg.newzk.client.retry;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
@@ -28,7 +27,6 @@ import java.util.Random;
  * @author lidongbo
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class DelayPolicyExecutor {
     
     private final DelayRetryPolicy delayRetryPolicy;
@@ -68,6 +66,5 @@ public final class DelayPolicyExecutor {
         } else {
             executeTick += delayRetryPolicy.getDelayUpperBound();
         }
-        log.debug("next executeCount:{}, executeTick:{}", executeCount, executeTick);
     }
 }

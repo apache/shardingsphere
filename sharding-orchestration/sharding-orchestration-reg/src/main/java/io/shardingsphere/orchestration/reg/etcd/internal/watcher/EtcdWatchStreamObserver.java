@@ -17,8 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.etcd.internal.watcher;
 
-
-
 import etcdserverpb.Rpc;
 import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;

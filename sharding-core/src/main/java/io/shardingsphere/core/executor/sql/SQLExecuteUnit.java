@@ -15,25 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.statement;
+package io.shardingsphere.core.executor.sql;
 
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.Statement;
 
 /**
- * Statement execute unit.
+ * SQL execute unit.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class StatementUnit implements StatementExecuteUnit {
+public interface SQLExecuteUnit {
     
-    private final RouteUnit routeUnit;
+    /**
+     * Get route unit.
+     * 
+     * @return route unit
+     */
+    RouteUnit getRouteUnit();
     
-    private final Statement statement;
+    /**
+     * Get statement.
+     * 
+     * @return statement
+     */
+    Statement getStatement();
 }

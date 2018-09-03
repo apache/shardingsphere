@@ -17,18 +17,14 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.cache;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.IClient;
 import io.shardingsphere.orchestration.reg.newzk.client.util.EmbedTestingServer;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.BaseTest;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.base.TestSupport;
-import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.After;
 import org.junit.Before;
@@ -42,27 +38,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 public class PathTreeTest extends BaseTest {
     
     private PathTree pathTree;
     
     private IClient testClient;
     
-    private ZookeeperEventListener zookeeperEventListener = new ZookeeperEventListener() {
-        
-        @Override
-        public void process(final WatchedEvent event) {
-            log.debug("debug event :" + event.toString());
-        }
-    };
-    
     @Before
     public void start() throws IOException, InterruptedException {
         EmbedTestingServer.start();
         ClientFactory creator = new ClientFactory();
         testClient = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
-                .watch(zookeeperEventListener).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
+                .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     
         pathTree = new PathTree(TestSupport.ROOT, testClient);
     }

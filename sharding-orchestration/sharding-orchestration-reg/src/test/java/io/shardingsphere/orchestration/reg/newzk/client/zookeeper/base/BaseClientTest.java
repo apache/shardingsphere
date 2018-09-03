@@ -24,7 +24,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstan
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.ClientFactory;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.ZookeeperEventListener;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -52,7 +51,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Getter
-@Slf4j
 public abstract class BaseClientTest extends BaseTest {
     
     private IClient testClient;
@@ -148,9 +146,7 @@ public abstract class BaseClientTest extends BaseTest {
         AsyncCallback.DataCallback callback = new AsyncCallback.DataCallback() {
             @Override
             public void processResult(final int rc, final String path, final Object ctx, final byte[] data, final Stat stat) {
-                String result = new String(data);
-                log.info("rc:" + rc + ",path:" + path + ",ctx:" + ctx + ",stat:" + stat);
-                assertThat(result, is(ctx));
+                assertThat(new String(data), is(ctx));
                 ready.countDown();
             }
         };
@@ -220,7 +216,6 @@ public abstract class BaseClientTest extends BaseTest {
         client.createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
         key = "a/c/cc";
         client.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
-        log.debug("getNumChildren:" + getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren());
         assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
         client.deleteAllChildren("a");
         assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
@@ -307,8 +302,7 @@ public abstract class BaseClientTest extends BaseTest {
                     case NodeChildrenChanged:
                         try {
                             actual.add("update_" + event.getPath() + "_" + client.getDataString(event.getPath()));
-                        } catch (final KeeperException | InterruptedException e) {
-                            log.debug(e.getMessage());
+                        } catch (final KeeperException | InterruptedException ignored) {
                         }
                         break;
                     case NodeDeleted:

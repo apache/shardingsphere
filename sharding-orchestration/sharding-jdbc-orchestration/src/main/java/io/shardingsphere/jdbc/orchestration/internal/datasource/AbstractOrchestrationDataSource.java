@@ -26,7 +26,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -60,12 +59,6 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
         }
         return result;
     }
-    
-    @Override
-    public abstract Connection getConnection();
-    
-    @Override
-    public abstract void close();
     
     /**
      /**
