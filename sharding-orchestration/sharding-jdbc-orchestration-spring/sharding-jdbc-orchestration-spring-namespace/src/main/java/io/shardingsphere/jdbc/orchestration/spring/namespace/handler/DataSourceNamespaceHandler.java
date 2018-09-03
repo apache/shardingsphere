@@ -17,19 +17,21 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.namespace.handler;
 
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.OrchestrationBeanDefinitionParserTag;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.OrchestrationBeanDefinitionParser;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.DataSourceBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Orchestration spring namespace handler for sharding.
+ * Data source spring namespace handler for sharding.
  * 
  * @author panjuan
  */
-public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport {
+public final class DataSourceNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(OrchestrationBeanDefinitionParserTag.ROOT_TAG, new OrchestrationBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }
