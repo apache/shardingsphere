@@ -22,7 +22,8 @@ import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.transaction.algorithm.ModuloShardingAlgorithm;
+import io.shardingsphere.example.transaction.algorithm.PreciseModuloDatabaseShardingAlgorithm;
+import io.shardingsphere.example.transaction.algorithm.PreciseModuloTableShardingAlgorithm;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -33,39 +34,34 @@ import java.util.Properties;
 
 public class ShardingDatasourceUtil {
     
-    public static DataSource getShardingDataSource(final DatasourceType type) throws SQLException {
+    public static DataSource getShardingDataSource(DatasourceType type) throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualDataNodes("ds_trans_${0..10}.t_order_${0..10}");
+        orderTableRuleConfig.setActualDataNodes("ds_trans_${0..1}.t_order_${0..1}");
+        orderTableRuleConfig.setKeyGeneratorColumnName("order_id");
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
         orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualDataNodes("ds_trans_${0..10}.t_order_item_${0..10}");
+        orderItemTableRuleConfig.setActualDataNodes("ds_trans_${0..1}.t_order_item_${0..1}");
+        orderItemTableRuleConfig.setKeyGeneratorColumnName("order_item_id");
         shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
     
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
     
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingAlgorithm()));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseModuloDatabaseShardingAlgorithm()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloTableShardingAlgorithm()));
     
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(type), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
+        Properties properties = new Properties();
+        properties.put("sql.show", true);
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(type), shardingRuleConfig, new HashMap<String, Object>(), properties);
     }
     
     private static Map<String, DataSource> createDataSourceMap(final DatasourceType type) {
-        Map<String, DataSource> result = new HashMap<>(10, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds_trans_0", createDataSource("ds_trans_0", type));
         result.put("ds_trans_1", createDataSource("ds_trans_1", type));
-        result.put("ds_trans_2", createDataSource("ds_trans_2", type));
-        result.put("ds_trans_3", createDataSource("ds_trans_3", type));
-        result.put("ds_trans_4", createDataSource("ds_trans_4", type));
-        result.put("ds_trans_5", createDataSource("ds_trans_5", type));
-        result.put("ds_trans_6", createDataSource("ds_trans_6", type));
-        result.put("ds_trans_7", createDataSource("ds_trans_7", type));
-        result.put("ds_trans_8", createDataSource("ds_trans_8", type));
-        result.put("ds_trans_9", createDataSource("ds_trans_9", type));
-        result.put("ds_trans_10", createDataSource("ds_trans_10", type));
         return result;
     }
     

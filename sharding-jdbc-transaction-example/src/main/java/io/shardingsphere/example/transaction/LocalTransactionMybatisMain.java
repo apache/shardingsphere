@@ -17,16 +17,15 @@
 
 package io.shardingsphere.example.transaction;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.example.transaction.fixture.DataRepository;
-import io.shardingsphere.example.transaction.fixture.DatasourceType;
-import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
+import io.shardingsphere.example.transaction.service.DemoService;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class XaTransactionMain {
-    
-    public static void main(final String[] args) throws Exception {
-        TransactionTypeHolder.set(TransactionType.XA);
-        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.XA)).demo();
+public class LocalTransactionMybatisMain {
+    public static void main(final String[] args) {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/shardingDatabasesTables.xml")) {
+            DemoService demoService = applicationContext.getBean(DemoService.class);
+            demoService.demo();
+        }
     }
 }
