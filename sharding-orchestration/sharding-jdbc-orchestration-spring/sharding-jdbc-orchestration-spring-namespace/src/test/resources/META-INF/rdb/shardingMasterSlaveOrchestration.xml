@@ -10,6 +10,6 @@
 
     <orchestraion:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
 
-    <orchestraion:sharding-data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" reg-ref="regCenter" />
-    <orchestraion:sharding-data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" reg-ref="regCenter" />
+    <orchestraion:sharding-data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" registry-center-ref="regCenter" />
 </beans>
