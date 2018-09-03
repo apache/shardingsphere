@@ -18,11 +18,8 @@
 package io.shardingsphere.example.transaction;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.example.transaction.algorithm.ModuloShardingAlgorithm;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.example.transaction.fixture.DatasourceType;
+import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
 import io.shardingsphere.transaction.api.SoftTransactionManager;
 import io.shardingsphere.transaction.api.config.NestedBestEffortsDeliveryJobConfiguration;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
@@ -34,16 +31,13 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public class BEDTransactionMain {
     
     private static boolean useNestedJob = true;
     
     public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = getShardingDataSource();
+        DataSource dataSource = ShardingDatasourceUtil.getShardingDataSource(DatasourceType.LOCAL);
         dropTable(dataSource);
         createTable(dataSource);
         insert(dataSource);
@@ -52,8 +46,8 @@ public class BEDTransactionMain {
     
     private static void createTable(final DataSource dataSource) throws SQLException {
         executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (item_id BIGINT NOT "
-            + "NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id))");
+        executeUpdate(dataSource, "CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT "
+            + "NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
     }
     
     private static void dropTable(final DataSource dataSource) throws SQLException {
@@ -70,7 +64,7 @@ public class BEDTransactionMain {
     }
     
     private static void insert(final DataSource dataSource) throws SQLException {
-        String sql = "INSERT INTO t_order VALUES (1000, 10, 'INIT');";
+        String sql = String.format("INSERT INTO t_order VALUES (%s, %s, 'INIT');", 21474843647L, 10);
         try (Connection conn = dataSource.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
@@ -78,9 +72,9 @@ public class BEDTransactionMain {
     }
     
     private static void updateFailure(final DataSource dataSource) throws SQLException {
-        String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
+        String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=21474843647";
         String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
-        String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
+        String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=21474843647";
         SoftTransactionManager transactionManager = new SoftTransactionManager(getSoftTransactionConfiguration(dataSource));
         transactionManager.init();
         BEDSoftTransaction transaction = (BEDSoftTransaction) transactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
@@ -90,7 +84,7 @@ public class BEDTransactionMain {
             transaction.begin(connection);
             PreparedStatement preparedStatement1 = connection.prepareStatement(sql1);
             PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
-            preparedStatement2.setObject(1, 1000);
+            preparedStatement2.setObject(1, 21474843647L);
             PreparedStatement preparedStatement3 = connection.prepareStatement(sql3);
             preparedStatement1.executeUpdate();
             preparedStatement2.executeUpdate();
@@ -101,41 +95,6 @@ public class BEDTransactionMain {
                 connection.close();
             }
         }
-    }
-    
-    private static DataSource getShardingDataSource() throws SQLException {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("t_order");
-        orderTableRuleConfig.setActualDataNodes("ds_trans_${0..1}.t_order_${0..1}");
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-        
-        TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
-        orderItemTableRuleConfig.setLogicTable("t_order_item");
-        orderItemTableRuleConfig.setActualDataNodes("ds_trans_${0..1}.t_order_item_${0..1}");
-        shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-        
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingAlgorithm()));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingAlgorithm()));
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
-    }
-    
-    private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_trans_0", createDataSource("ds_trans_0"));
-        result.put("ds_trans_1", createDataSource("ds_trans_1"));
-        return result;
-    }
-    
-    private static DataSource createDataSource(final String dataSourceName) {
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
-        result.setUrl(String.format("jdbc:mysql://localhost:3306/%s", dataSourceName));
-        result.setUsername("root");
-        result.setPassword("");
-        return result;
     }
     
     private static DataSource createTransactionLogDataSource() {
