@@ -21,16 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Orchestration parser tag constants.
+ * Sharding data source parser tag constants.
  * 
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrchestrationBeanDefinitionParserTag {
+public final class ShardingDataSourceBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "orchestration";
+    public static final String ROOT_TAG = "sharding-data-source";
     
-    public static final String DATA_SOURCE_TAG = "data-source";
+    public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
     
-    public static final String REG_TAG = "reg";
+    public static final String REG_REF_TAG = "reg-ref";
+    
+    public static final String OVERWRITE_TAG = "overwrite";
 }
