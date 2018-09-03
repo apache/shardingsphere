@@ -15,20 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.example.transaction.service;
+package io.shardingsphere.example.transaction.fixture.repository;
 
-import io.shardingsphere.example.transaction.entity.Order;
-import io.shardingsphere.example.transaction.entity.OrderItem;
-import io.shardingsphere.example.transaction.repository.OrderItemRepository;
-import io.shardingsphere.example.transaction.repository.OrderRepository;
-import org.springframework.stereotype.Service;
+import io.shardingsphere.example.transaction.fixture.entity.Order;
+import io.shardingsphere.example.transaction.fixture.entity.OrderItem;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class DemoService {
+@Transactional
+@Component
+public class TransactionalDao {
     
     @Resource
     private OrderRepository orderRepository;
@@ -36,11 +37,17 @@ public class DemoService {
     @Resource
     private OrderItemRepository orderItemRepository;
     
-    public void demo() {
+    public void createTable() {
         orderRepository.createIfNotExistsTable();
         orderItemRepository.createIfNotExistsTable();
+    }
+    
+    public void truncateTable() {
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
+    }
+    
+    public List<Long> insertData() {
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
@@ -54,16 +61,44 @@ public class DemoService {
             OrderItem item = new OrderItem();
             item.setOrderId(orderId);
             item.setUserId(51);
-            item.setStatus("INSERT_TEST");
             orderItemRepository.insert(item);
         }
         System.out.println(orderItemRepository.selectAll());
+        return orderIds;
+    }
+    
+    public List<Long> insertFailed() {
+        List<Long> orderIds = new ArrayList<>(10);
+        System.out.println("1.Insert failed--------------");
+        for (int i = 0; i < 10; i++) {
+            Order order = new Order();
+            order.setUserId(51);
+            order.setStatus("INSERT_TEST");
+            orderRepository.insert(order);
+            long orderId = order.getOrderId();
+            orderIds.add(orderId);
+            
+            OrderItem item = new OrderItem();
+            item.setOrderId(orderId);
+            item.setUserId(51);
+            orderItemRepository.insert(item);
+            
+        }
+        int runtime = orderIds.size() / 0;
+        System.out.println(orderItemRepository.selectAll());
+        return orderIds;
+    }
+    
+    public void deleteData(List<Long> orderIds) {
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
         }
         System.out.println(orderItemRepository.selectAll());
+    }
+    
+    public void dropTable() {
         orderItemRepository.dropTable();
         orderRepository.dropTable();
     }

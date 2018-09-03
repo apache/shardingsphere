@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.example.transaction.repository;
+package io.shardingsphere.example.transaction.fixture.repository;
 
-
-import io.shardingsphere.example.transaction.entity.Order;
-import io.shardingsphere.example.transaction.entity.OrderItem;
+import io.shardingsphere.example.transaction.fixture.entity.Order;
+import io.shardingsphere.example.transaction.fixture.entity.OrderItem;
 
 import java.util.List;
 

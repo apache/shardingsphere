@@ -15,15 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.example.transaction.entity;
+package io.shardingsphere.example.transaction.fixture.entity;
 
-public final class Order {
+public final class OrderItem {
+    
+    private long orderItemId;
     
     private long orderId;
     
     private int userId;
     
-    private String status;
+    public long getOrderItemId() {
+        return orderItemId;
+    }
+    
+    public void setOrderItemId(final long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
     
     public long getOrderId() {
         return orderId;
@@ -41,16 +49,9 @@ public final class Order {
         this.userId = userId;
     }
     
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(final String status) {
-        this.status = status;
-    }
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, status: %s", orderId, userId, status);
+        return String.format("order_item_id:%s, order_id: %s, user_id: %s", orderItemId, orderId, userId);
     }
 }

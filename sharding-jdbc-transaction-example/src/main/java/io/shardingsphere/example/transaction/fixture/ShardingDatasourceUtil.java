@@ -22,8 +22,8 @@ import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.transaction.algorithm.PreciseModuloDatabaseShardingAlgorithm;
-import io.shardingsphere.example.transaction.algorithm.PreciseModuloTableShardingAlgorithm;
+import io.shardingsphere.example.transaction.fixture.algorithm.PreciseModuloDatabaseShardingAlgorithm;
+import io.shardingsphere.example.transaction.fixture.algorithm.PreciseModuloTableShardingAlgorithm;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -54,7 +54,8 @@ public class ShardingDatasourceUtil {
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloTableShardingAlgorithm()));
     
         Properties properties = new Properties();
-        properties.put("sql.show", true);
+        properties.put("sql.show", false);
+//        properties.put("executor.size", 16);
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(type), shardingRuleConfig, new HashMap<String, Object>(), properties);
     }
     

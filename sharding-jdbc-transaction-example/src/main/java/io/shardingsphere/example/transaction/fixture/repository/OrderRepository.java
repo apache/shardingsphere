@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.example.transaction.repository;
+package io.shardingsphere.example.transaction.fixture.repository;
 
-import io.shardingsphere.example.transaction.entity.Order;
+import io.shardingsphere.example.transaction.fixture.entity.Order;
 
 public interface OrderRepository {
     

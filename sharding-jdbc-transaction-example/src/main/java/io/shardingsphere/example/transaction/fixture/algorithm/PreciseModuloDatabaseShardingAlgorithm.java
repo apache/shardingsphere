@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.transaction.algorithm;
+package io.shardingsphere.example.transaction.fixture.algorithm;
 
 import io.shardingsphere.core.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
