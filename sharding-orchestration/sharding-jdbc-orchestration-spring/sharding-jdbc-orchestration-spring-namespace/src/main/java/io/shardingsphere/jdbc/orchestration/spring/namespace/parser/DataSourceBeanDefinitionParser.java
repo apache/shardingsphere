@@ -17,26 +17,17 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.namespace.parser;
 
-import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
-
-import java.lang.reflect.Field;
 
 /**
  * Data source parser for spring namespace.
@@ -69,55 +60,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.OVERWRITE_TAG));
         factory.addConstructorArgValue(orchestrationType);
         return factory.getBeanDefinition();
-    }
-    
-    private RegistryCenterConfiguration getRegCenterConfig(final Element element) {
-        Element regElement = DomUtils.getChildElementByTagName(element, ZookeeperRegistryCenterBeanDefinitionParserTag.ROOT_TAG);
-        if (null == regElement) {
-            regElement = DomUtils.getChildElementByTagName(element, EtcdRegistryCenterBeanDefinitionParserTag.ROOT_TAG);
-            return getEtcdConfiguration(regElement);
-        }
-        return getZookeeperConfiguration(regElement);
-    }
-    
-    private ZookeeperConfiguration getZookeeperConfiguration(final Element element) {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.BASE_SLEEP_TIME_MILLISECONDS_TAG, "baseSleepTimeMilliseconds", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.MAX_SLEEP_TIME_MILLISECONDS_TAG, "maxSleepTimeMilliseconds", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.MAX_RETRIES_TAG, "maxRetries", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.SESSION_TIMEOUT_MILLISECONDS_TAG, "sessionTimeoutMilliseconds", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.CONNECTION_TIMEOUT_MILLISECONDS_TAG, "connectionTimeoutMilliseconds", element, result);
-        setRegistryCenterConfiguration(ZookeeperRegistryCenterBeanDefinitionParserTag.DIGEST_TAG, "digest", element, result);
-        return result;
-    }
-    
-    private EtcdConfiguration getEtcdConfiguration(final Element element) {
-        EtcdConfiguration result = new EtcdConfiguration();
-        setRegistryCenterConfiguration(EtcdRegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, result);
-        setRegistryCenterConfiguration(EtcdRegistryCenterBeanDefinitionParserTag.TIME_TO_LIVE_SECONDS_TAG, "timeToLiveSeconds", element, result);
-        setRegistryCenterConfiguration(EtcdRegistryCenterBeanDefinitionParserTag.TIMEOUT_MILLISECONDS_TAG, "timeoutMilliseconds", element, result);
-        setRegistryCenterConfiguration(EtcdRegistryCenterBeanDefinitionParserTag.RETRY_INTERVAL_MILLISECONDS_TAG, "retryIntervalMilliseconds", element, result);
-        setRegistryCenterConfiguration(EtcdRegistryCenterBeanDefinitionParserTag.MAX_RETRIES_TAG, "maxRetries", element, result);
-        return result;
-    }
-    
-    private void setRegistryCenterConfiguration(final String attributeName, final String propertyName, final Element element, final RegistryCenterConfiguration regConfiguration) {
-        String attributeValue = element.getAttribute(attributeName);
-        if (!Strings.isNullOrEmpty(attributeValue)) {
-            try {
-                Field field = ZookeeperConfiguration.class.getDeclaredField(propertyName);
-                field.setAccessible(true);
-                String fieldTypeName = field.getType().toString();
-                if (fieldTypeName.endsWith("int")) {
-                    field.set(regConfiguration, Integer.valueOf(attributeValue));
-                } else {
-                    field.set(regConfiguration, attributeValue);
-                }
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
     }
 }
 
