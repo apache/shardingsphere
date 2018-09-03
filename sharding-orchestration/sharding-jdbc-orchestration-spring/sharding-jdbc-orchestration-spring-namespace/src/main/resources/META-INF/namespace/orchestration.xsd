@@ -9,7 +9,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="reg-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
@@ -17,7 +17,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="reg-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
