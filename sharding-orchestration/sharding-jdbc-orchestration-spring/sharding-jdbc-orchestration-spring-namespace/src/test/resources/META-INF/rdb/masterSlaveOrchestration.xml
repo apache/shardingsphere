@@ -10,9 +10,9 @@
 
     <orchestraion:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
 
-    <orchestraion:master-slave-data-source id="defaultMasterSlaveDataSourceOrchestration" data-source-ref="defaultMasterSlaveDataSource" reg-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="randomMasterSlaveDataSourceOrchestration" data-source-ref="randomMasterSlaveDataSource" reg-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="roundRobinMasterSlaveDataSourceOrchestration" data-source-ref="roundRobinMasterSlaveDataSource" reg-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="refMasterSlaveDataSourceOrchestration" data-source-ref="refMasterSlaveDataSource" reg-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="configMapDataSourceOrchestration" data-source-ref="configMapDataSource" reg-ref="regCenter" />
+    <orchestraion:master-slave-data-source id="defaultMasterSlaveDataSourceOrchestration" data-source-ref="defaultMasterSlaveDataSource" registry-center-ref="regCenter" />
+    <orchestraion:master-slave-data-source id="randomMasterSlaveDataSourceOrchestration" data-source-ref="randomMasterSlaveDataSource" registry-center-ref="regCenter" />
+    <orchestraion:master-slave-data-source id="roundRobinMasterSlaveDataSourceOrchestration" data-source-ref="roundRobinMasterSlaveDataSource" registry-center-ref="regCenter" />
+    <orchestraion:master-slave-data-source id="refMasterSlaveDataSourceOrchestration" data-source-ref="refMasterSlaveDataSource" registry-center-ref="regCenter" />
+    <orchestraion:master-slave-data-source id="configMapDataSourceOrchestration" data-source-ref="configMapDataSource" registry-center-ref="regCenter" />
 </beans>
