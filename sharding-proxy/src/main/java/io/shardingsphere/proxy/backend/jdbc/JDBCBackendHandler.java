@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.backend.jdbc;
 
-import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -89,14 +88,11 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
+        if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
+            return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
+        }
+        
         if (routeResult.getExecutionUnits().isEmpty()) {
-            if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
-                String schema = ((UseStatement) routeResult.getSqlStatement()).getSchema();
-                if (Strings.isNullOrEmpty(schema) || !PROXY_CONTEXT.schemaExists(schema)) {
-                    return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
-                }
-                frontendHandler.setSchema(schema);
-            }
             return new CommandResponsePackets(new OKPacket(1));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();

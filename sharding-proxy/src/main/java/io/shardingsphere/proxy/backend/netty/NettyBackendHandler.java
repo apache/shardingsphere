@@ -24,8 +24,11 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.merger.dal.show.ProxyShowDatabasesMergedResult;
+import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLExecutionUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -35,12 +38,13 @@ import io.shardingsphere.proxy.backend.AbstractBackendHandler;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.netty.client.BackendNettyClientManager;
+import io.shardingsphere.proxy.backend.netty.client.response.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.proxy.backend.netty.future.SynchronizedFuture;
-import io.shardingsphere.proxy.backend.netty.client.response.mysql.MySQLQueryResult;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -78,6 +82,8 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private static final BackendNettyClientManager CLIENT_MANAGER = BackendNettyClientManager.getInstance();
     
+    private final FrontendHandler frontendHandler;
+    
     private final RuleRegistry ruleRegistry;
     
     private final int connectionId;
@@ -104,6 +110,10 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     }
     
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
+        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        if (sqlStatement instanceof UseStatement) {
+            return handleUseStatement((UseStatement) sqlStatement, frontendHandler);
+        }
         String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), PROXY_CONTEXT.isShowSQL()).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
@@ -114,13 +124,16 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
         }
-        return merge(new SQLJudgeEngine(sql).judge(), packets, queryResults);
+        return merge(sqlStatement, packets, queryResults);
     }
     
     private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable(), databaseType, PROXY_CONTEXT.isShowSQL(), ruleRegistry.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(sql);
+        if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
+            return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
+        }
         if (routeResult.getExecutionUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
@@ -199,6 +212,9 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
+            if (mergedResult instanceof ShowDatabasesMergedResult) {
+                mergedResult = new ProxyShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+            }
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }

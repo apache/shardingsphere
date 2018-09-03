@@ -89,7 +89,7 @@ public final class ProxyContext {
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
-        boolean useNIO = false;
+        this.useNIO = false;
         // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         proxyAuthority = serverConfiguration.getProxyAuthority();
         for (YamlProxyShardingRuleConfiguration config : shardingRuleConfigurations) {

@@ -53,7 +53,7 @@ public final class BackendHandlerFactory {
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
         return PROXY_CONTEXT.isUseNIO()
-                ? new NettyBackendHandler(PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), connectionId, sequenceId, sql, databaseType)
+                ? new NettyBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
     }
     
@@ -72,7 +72,7 @@ public final class BackendHandlerFactory {
     public static BackendHandler newBinaryProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection,
             final DatabaseType databaseType, final FrontendHandler frontendHandler) {
-        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), connectionId, sequenceId, sql, databaseType)
+        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getSchema()), sql,
                 JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
     }
