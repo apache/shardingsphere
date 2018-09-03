@@ -11,8 +11,8 @@
     <orchestraion:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
 
     <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" reg-ref="regCenter" />
-    <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" reg-ref="regCenter" />
-    <orchestraion:sharding-data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="simpleShardingDataSource" reg-ref="regCenter" />
+    <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" reg-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" reg-ref="regCenter" />
     <orchestraion:sharding-data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" reg-ref="regCenter" />
     <orchestraion:sharding-data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" reg-ref="regCenter" />
     <orchestraion:sharding-data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" reg-ref="regCenter" />
