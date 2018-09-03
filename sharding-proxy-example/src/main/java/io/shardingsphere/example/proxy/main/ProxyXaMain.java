@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.example.proxy;
+package io.shardingsphere.example.proxy.main;
 
-import io.shardingsphere.example.proxy.repository.RawJdbcRepository;
+import io.shardingsphere.example.proxy.repository.XaRawJdbcRepository;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
- * 1. Copy resources/config.yaml to sharding-proxy conf folder and overwrite original file.
- * 2. Please make sure sharding-proxy is running before you run this example.
+ * 1. Modify proxy.transaction.enabled: `false` to `true` to enable XA transaction on file resources/config.yaml.
+ * 2. Copy resources/config.yaml to sharding-proxy conf folder and overwrite original file.
+ * 3. Please make sure sharding-proxy is running before you run this example.
  */
-public final class ProxyMain {
-    
+public class ProxyXaMain {
     private static final String PROXY_IP = "localhost";
     
     private static final int PROXY_PORT = 3307;
     
     public static void main(String[] args) throws SQLException {
-        RawJdbcRepository rawJdbcRepository = new RawJdbcRepository(createDataSource());
+        XaRawJdbcRepository rawJdbcRepository = new XaRawJdbcRepository(createDataSource());
         rawJdbcRepository.demo();
     }
     

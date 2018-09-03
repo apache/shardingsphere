@@ -35,3 +35,4 @@ shardingRule:
 
   props:
     sql.show: true
+#    proxy.transaction.enabled: false

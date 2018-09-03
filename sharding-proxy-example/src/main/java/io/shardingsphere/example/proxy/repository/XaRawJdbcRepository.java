@@ -81,8 +81,7 @@ public class XaRawJdbcRepository {
                 orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
                 statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
             }
-            
-            int i = 10 / 0;
+            makeException();
             connection.commit();
         } catch (Exception ex) {
             connection.rollback();
@@ -91,6 +90,10 @@ public class XaRawJdbcRepository {
             connection.close();
             statement.close();
         }
+    }
+    
+    private void makeException() {
+        System.out.println(10 / 0);
     }
     
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
@@ -110,7 +113,7 @@ public class XaRawJdbcRepository {
         try {
             for (int i = 1; i <= 10; i++) {
                 Long orderId = getRandomOrderId(connection, i);
-                String sql = String.format("UPDATE t_order SET status='UPDATE_1' WHERE user_id=? and order_id=?");
+                String sql = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=? and order_id=?";
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setObject(1, i);
                 preparedStatement.setObject(2, orderId);
@@ -127,15 +130,15 @@ public class XaRawJdbcRepository {
     
     private Long getRandomOrderId(Connection connection, int userId) throws SQLException {
         Statement statement = connection.createStatement();
-        int index = (int) (Math.random()*500);
-        ResultSet resultSet = statement.executeQuery("select order_id from t_order where user_id=" + userId);
+        int index = (int) (Math.random() * 500);
+        ResultSet resultSet = statement.executeQuery("SELECT order_id FROM t_order WHERE user_id=" + userId);
         long location = 0;
         while (resultSet.next()) {
             if (++location == index) {
                 return resultSet.getLong(1);
             }
         }
-        return 0l;
+        return 0L;
     }
     
     private void queryWithEqual() throws SQLException {
