@@ -39,11 +39,11 @@ import org.w3c.dom.Element;
 import java.lang.reflect.Field;
 
 /**
- * Orchestration parser for spring namespace.
+ * Data source parser for spring namespace.
  * 
  * @author panjuan
  */
-public final class OrchestrationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     private OrchestrationType orchestrationType;
     
