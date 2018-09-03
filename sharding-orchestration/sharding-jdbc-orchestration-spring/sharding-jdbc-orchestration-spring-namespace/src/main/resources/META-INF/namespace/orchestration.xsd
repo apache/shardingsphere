@@ -8,7 +8,7 @@
     <xsd:element name="sharding-data-source">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="data-source-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-ref" type="xsd:string" />
             <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
@@ -16,7 +16,7 @@
     <xsd:element name="master-slave-data-source">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="data-source-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-ref" type="xsd:string" />
             <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
