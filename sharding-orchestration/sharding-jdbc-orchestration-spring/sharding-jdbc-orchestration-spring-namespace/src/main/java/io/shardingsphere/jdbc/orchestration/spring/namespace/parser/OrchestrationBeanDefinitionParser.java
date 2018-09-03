@@ -23,7 +23,7 @@ import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.OrchestrationBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
@@ -45,32 +45,29 @@ import java.lang.reflect.Field;
  */
 public final class OrchestrationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
+    private OrchestrationType orchestrationType;
+    
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = OrchestrationType.SHARDING == getOrchestrationType(element) ? BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class)
+        setOrchestrationType(element);
+        BeanDefinitionBuilder factory = OrchestrationType.SHARDING == orchestrationType ? BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class)
                 : BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
-        factory.addConstructorArgReference(getRefDataSourceName(element));
+        
+        factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_REF_TAG));
         factory.addConstructorArgValue(getOrchestrationConfiguration(element));
         return factory.getBeanDefinition();
     }
     
-    private String getRefDataSourceName(final Element element) {
-        Element dataSourceElement = DomUtils.getChildElementByTagName(element, OrchestrationBeanDefinitionParserTag.DATA_SOURCE_TAG);
-        return dataSourceElement.getAttribute("data-source-ref");
-    }
-    
-    private OrchestrationType getOrchestrationType(final Element element) {
-        Element regElement = DomUtils.getChildElementByTagName(element, OrchestrationBeanDefinitionParserTag.REG_TAG);
-        return OrchestrationType.valueFrom(regElement.getAttribute("type"));
+    private void setOrchestrationType(final Element element) {
+        orchestrationType = ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(element.getTagName()) ? OrchestrationType.SHARDING : OrchestrationType.MASTER_SLAVE;
     }
     
     private BeanDefinition getOrchestrationConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
-        Element regElement = DomUtils.getChildElementByTagName(element, OrchestrationBeanDefinitionParserTag.REG_TAG);
-        factory.addConstructorArgValue(regElement.getAttribute("id"));
-        factory.addConstructorArgValue(getRegCenterConfig(regElement));
-        factory.addConstructorArgValue(regElement.getAttribute("overwrite"));
-        factory.addConstructorArgValue(OrchestrationType.valueFrom(regElement.getAttribute("type")));
+        factory.addConstructorArgValue(element.getAttribute(ID_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.REG_REF_TAG));
+        factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.OVERWRITE_TAG));
+        factory.addConstructorArgValue(orchestrationType);
         return factory.getBeanDefinition();
     }
     
