@@ -51,7 +51,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig), masterSlaveDataSource.getDataSourceMap());
         this.dataSource = masterSlaveDataSource;
-        initOrchestrationFacade(masterSlaveDataSource);
+        initOrchestrationFacade(dataSource);
     }
     
     public OrchestrationMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
@@ -61,6 +61,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
         dataSource = new MasterSlaveDataSource(
                 configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
+        initOrchestrationFacade(dataSource);
     }
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
