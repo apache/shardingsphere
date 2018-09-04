@@ -28,7 +28,6 @@ import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,17 +51,14 @@ public abstract class SagaSQLExeucteCallback<T> extends SQLExecuteCallback<T> {
      * Saga transaction don't execute sql immediately, but send event to listener.
      *
      * @param executeUnit exeucte unit
-     * @return return true if T is Boolean, 0 if T is Integer
+     * @return return false if T is Boolean, 0 if T is Integer
      * @throws SQLException sql exception
      */
     @Override
     protected T executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-        List<List<Object>> params = executeUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets();
-        for (List<Object> each : params) {
-            SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), each, transactionId);
-            event.setExecuteSuccess();
-            shardingEventBus.post(event);
-        }
+        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), null, transactionId);
+        event.setExecuteSuccess();
+        shardingEventBus.post(event);
         return exeucteResult();
     }
     
