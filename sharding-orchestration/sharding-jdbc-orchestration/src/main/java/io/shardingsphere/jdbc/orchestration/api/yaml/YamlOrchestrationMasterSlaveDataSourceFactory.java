@@ -19,7 +19,7 @@ package io.shardingsphere.jdbc.orchestration.api.yaml;
 
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
 import lombok.AccessLevel;
