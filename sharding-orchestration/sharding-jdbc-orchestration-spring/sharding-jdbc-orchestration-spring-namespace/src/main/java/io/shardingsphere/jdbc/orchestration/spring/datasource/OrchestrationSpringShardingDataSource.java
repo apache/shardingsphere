@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
