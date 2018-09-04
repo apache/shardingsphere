@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.datasource;
+package io.shardingsphere.jdbc.orchestration.api.datasource;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
@@ -26,6 +26,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.AbstractOrchestrationDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import lombok.extern.slf4j.Slf4j;
