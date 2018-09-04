@@ -17,9 +17,7 @@
 
 package io.shardingsphere.example.jdbc.main.orche.java.etcd;
 
-import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
@@ -62,11 +60,9 @@ public class MasterSlaveOnly {
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource)
-                MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.MASTER_SLAVE);
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSource, orchestrationConfig);
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
