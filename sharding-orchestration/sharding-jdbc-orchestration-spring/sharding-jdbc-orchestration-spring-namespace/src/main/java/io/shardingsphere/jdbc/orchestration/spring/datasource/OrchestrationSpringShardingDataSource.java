@@ -35,4 +35,8 @@ public class OrchestrationSpringShardingDataSource extends OrchestrationSharding
     public OrchestrationSpringShardingDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super((ShardingDataSource) dataSource, new OrchestrationFacade(orchestrationConfig));
     }
+    
+    public OrchestrationSpringShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig));
+    }
 }
