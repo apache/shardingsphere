@@ -18,7 +18,6 @@
 package io.shardingsphere.example.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.example.transaction.fixture.DataRepository;
 import io.shardingsphere.example.transaction.fixture.DatasourceType;
 import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
@@ -26,7 +25,6 @@ import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
 public class XaTransactionMain {
     
     public static void main(final String[] args) throws Exception {
-        TransactionTypeHolder.set(TransactionType.XA);
-        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.XA)).demo();
+        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.XA), TransactionType.XA).demo();
     }
 }

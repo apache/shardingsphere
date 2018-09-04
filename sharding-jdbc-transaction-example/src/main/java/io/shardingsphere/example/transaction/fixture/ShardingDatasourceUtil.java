@@ -55,7 +55,6 @@ public class ShardingDatasourceUtil {
     
         Properties properties = new Properties();
         properties.put("sql.show", false);
-//        properties.put("executor.size", 16);
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(type), shardingRuleConfig, new HashMap<String, Object>(), properties);
     }
     
