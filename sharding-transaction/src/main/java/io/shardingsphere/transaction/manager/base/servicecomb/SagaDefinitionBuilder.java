@@ -23,8 +23,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Saga definition builder.
@@ -40,9 +41,9 @@ public final class SagaDefinitionBuilder {
     
     private String[] parents = new String[]{};
     
-    private List<String> newRequestIds = new LinkedList<>();
+    private ConcurrentLinkedQueue<Object> newRequestIds = new ConcurrentLinkedQueue<>();
     
-    private List<SagaRequest> requests = new LinkedList<>();
+    private ConcurrentLinkedQueue<Object> requests = new ConcurrentLinkedQueue<>();
     
     /**
      * Add child request node to definition graph.
@@ -54,9 +55,10 @@ public final class SagaDefinitionBuilder {
      * @param compensationSql    compensation sql
      * @param compensationParams compensation sql parameters
      */
-    public void addChildRequest(final String id, final String datasource, final String sql, final List<Object> params, final String compensationSql, final List<Object> compensationParams) {
-        Operation transaction = new Operation(sql, params);
-        Operation compensation = new Operation(compensationSql, compensationParams);
+    public void addChildRequest(final String id, final String datasource, final String sql, final List<List<Object>> params,
+                                final String compensationSql, final List<Collection<Object>> compensationParams) {
+        Transaction transaction = new Transaction(sql, params);
+        Compensation compensation = new Compensation(compensationSql, compensationParams);
         requests.add(new SagaRequest(id, datasource, TYPE, transaction, compensation, parents));
         newRequestIds.add(id);
     }
@@ -66,7 +68,7 @@ public final class SagaDefinitionBuilder {
      */
     public void switchParents() {
         parents = newRequestIds.toArray(new String[]{});
-        newRequestIds = new LinkedList<>();
+        newRequestIds = new ConcurrentLinkedQueue<>();
     }
     
     /**
@@ -91,19 +93,28 @@ public final class SagaDefinitionBuilder {
         
         private final String type;
         
-        private final Operation transaction;
+        private final Transaction transaction;
         
-        private final Operation compensation;
+        private final Compensation compensation;
         
         private final String[] parents;
     }
     
     @RequiredArgsConstructor
     @Getter
-    private static class Operation {
+    private static class Transaction {
         
         private final String sql;
         
-        private final List<Object> params;
+        private final List<List<Object>> params;
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static class Compensation {
+        
+        private final String sql;
+        
+        private final List<Collection<Object>> params;
     }
 }
