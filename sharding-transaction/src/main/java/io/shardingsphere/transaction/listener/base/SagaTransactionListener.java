@@ -29,9 +29,13 @@ import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
 import io.shardingsphere.transaction.manager.base.servicecomb.SagaDefinitionBuilder;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
+import io.shardingsphere.transaction.revert.RevertResult;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -79,25 +83,39 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
      * listen Saga Sql execution event.
      *
      * @param sqlExecutionEvent saga sql execution event
+     * @throws SQLException SQL exception
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listenSQLExecutionEvent(final SagaSQLExecutionEvent sqlExecutionEvent) {
+    public void listenSQLExecutionEvent(final SagaSQLExecutionEvent sqlExecutionEvent) throws SQLException {
         switch (sqlExecutionEvent.getEventType()) {
             case BEFORE_EXECUTE:
                 sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).switchParents();
                 break;
             case EXECUTE_SUCCESS:
                 //TODO generate revert sql by sql and params in event
+                RevertResult result = RevertEngineHolder.getInstance().getRevertEngine().revert(
+                        sqlExecutionEvent.getDataSource(),
+                        sqlExecutionEvent.getSqlUnit().getSql(),
+                        sqlExecutionEvent.getSqlUnit().getParameterSets());
                 sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).addChildRequest(
                         sqlExecutionEvent.getId(),
                         sqlExecutionEvent.getDataSource(),
                         sqlExecutionEvent.getSqlUnit().getSql(),
-                        Lists.newArrayList(sqlExecutionEvent.getParameters()),
-                        "", null);
+                        copyList(sqlExecutionEvent.getSqlUnit().getParameterSets()),
+                        result.getRevertSQL(),
+                        result.getRevertSQLParams());
                 break;
             case EXECUTE_FAILURE:
             default:
         }
+    }
+    
+    private List<List<Object>> copyList(final List<List<Object>> origin) {
+        List<List<Object>> result = new ArrayList<>();
+        for (List<Object> each : origin) {
+            result.add(Lists.newArrayList(each));
+        }
+        return result;
     }
 }
