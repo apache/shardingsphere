@@ -90,6 +90,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
         
                 @Override
@@ -97,7 +98,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.setAutoCommit(autoCommit);
                 }
             });
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.BEGIN));
         }
