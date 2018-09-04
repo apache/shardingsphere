@@ -112,9 +112,9 @@ weight = 1
 ### Orchestration by Zookeeper
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    DataSource dataSource = new OrchestrationShardingDataSource(
+                 createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
+                     new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
@@ -127,8 +127,8 @@ weight = 1
 ### Orchestration by Etcd
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+    DataSource dataSource = new OrchestrationShardingDataSource (
+                 createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
                  new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {

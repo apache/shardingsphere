@@ -112,8 +112,8 @@ weight = 1
 ### 使用Zookeeper的数据治理
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+    DataSource dataSource = new OrchestrationShardingDataSource(
+                 createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
                      new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
@@ -127,8 +127,8 @@ weight = 1
 ### 使用Etcd的数据治理
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+    DataSource dataSource = new OrchestrationShardingDataSource (
+                 createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
                  new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
