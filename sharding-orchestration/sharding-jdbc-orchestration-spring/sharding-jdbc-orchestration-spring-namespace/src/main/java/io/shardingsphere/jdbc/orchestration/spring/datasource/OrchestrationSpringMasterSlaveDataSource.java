@@ -35,5 +35,9 @@ public class OrchestrationSpringMasterSlaveDataSource extends OrchestrationMaste
     public OrchestrationSpringMasterSlaveDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super((MasterSlaveDataSource) dataSource, new OrchestrationFacade(orchestrationConfig));
     }
+    
+    public OrchestrationSpringMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig));
+    }
 }
 
