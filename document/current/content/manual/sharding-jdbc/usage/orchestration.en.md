@@ -51,7 +51,7 @@ orchestration:
 ```
 
 ```java
-    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = new OrchestrationShardingDataSource(yamlFile);
 ```
 
 ## Using spring
@@ -88,15 +88,16 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestra
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                        ">
-    <sharding:data-source id="shardingDatabaseTableDataSource" registry-center-ref="regCenter" />
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+     <import resource="namespace/shardingDataSourceNamespace.xml" />
+     <orchestraion:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+     <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
 </beans>
 ```
 
