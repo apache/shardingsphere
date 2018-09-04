@@ -17,11 +17,9 @@
 
 package io.shardingsphere.example.jdbc.main.orche.java.etcd;
 
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
@@ -63,11 +61,9 @@ public class ShardingOnlyWithDatabases {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        ShardingDataSource shardingDataSource = (ShardingDataSource)
-                ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING);
-        return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

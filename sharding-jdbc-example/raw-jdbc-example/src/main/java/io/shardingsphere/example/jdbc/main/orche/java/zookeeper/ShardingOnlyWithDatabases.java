@@ -65,11 +65,9 @@ public class ShardingOnlyWithDatabases {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        ShardingDataSource shardingDataSource = (ShardingDataSource)
-                ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING);
-        return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

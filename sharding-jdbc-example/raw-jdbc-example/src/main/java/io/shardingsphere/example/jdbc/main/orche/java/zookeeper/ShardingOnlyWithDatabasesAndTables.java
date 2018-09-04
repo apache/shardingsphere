@@ -17,12 +17,10 @@
 
 package io.shardingsphere.example.jdbc.main.orche.java.zookeeper;
 
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
@@ -69,11 +67,9 @@ public class ShardingOnlyWithDatabasesAndTables {
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
-        ShardingDataSource shardingDataSource = (ShardingDataSource) 
-                ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING);
-        return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

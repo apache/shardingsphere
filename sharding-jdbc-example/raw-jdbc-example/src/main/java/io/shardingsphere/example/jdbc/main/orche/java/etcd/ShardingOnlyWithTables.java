@@ -62,11 +62,9 @@ public class ShardingOnlyWithTables {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        ShardingDataSource shardingDataSource = (ShardingDataSource)
-                ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING);
-        return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

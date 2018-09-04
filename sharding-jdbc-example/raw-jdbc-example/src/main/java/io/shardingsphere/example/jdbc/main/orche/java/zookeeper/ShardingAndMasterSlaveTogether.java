@@ -77,11 +77,9 @@ public class ShardingAndMasterSlaveTogether {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        ShardingDataSource shardingDataSource = (ShardingDataSource)
-                ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING);
-        return OrchestrationShardingDataSourceFactory.createDataSource(shardingDataSource, orchestrationConfig);
+        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
