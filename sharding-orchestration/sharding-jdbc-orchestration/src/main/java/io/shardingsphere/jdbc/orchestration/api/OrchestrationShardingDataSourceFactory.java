@@ -14,13 +14,13 @@
  * limitations under the License.
  * </p>
  */
+package io.shardingsphere.jdbc.orchestration.api;
 
-package io.shardingsphere.jdbc.orchestration.api.datasource;
-
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,43 +28,42 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
-
 /**
  * Orchestration sharding data source factory.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrchestrationMasterSlaveDataSourceFactory {
+public final class OrchestrationShardingDataSourceFactory {
     
     /**
-     * Create master-slave data source.
+     * Create sharding data source.
      *
      * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap config map
-     * @param props properties
+     * @param shardingRuleConfig sharding rule configuration
      * @param orchestrationConfig orchestration configuration
-     * @return master-slave data source
+     * @param configMap config map
+     * @param props properties for data source
+     * @return sharding data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
+                                              final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
-        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationConfig);
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     
     /**
-     * Create master-slave data source.
+     * Create sharding data source.
      *
      * @param orchestrationConfig orchestration configuration
-     * @return master-slave data source
+     * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        return new OrchestrationMasterSlaveDataSource(orchestrationConfig);
+        return new OrchestrationShardingDataSource(orchestrationConfig);
     }
 }
-
