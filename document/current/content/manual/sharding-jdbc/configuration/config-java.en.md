@@ -267,14 +267,14 @@ Enumeration of properties.
 
 | *Name*              | *DataType*                 | *Description*                       |
 | ------------------- |  ------------------------- | ----------------------------------- |
-| shardingDataSource  | ShardingDataSource         | The data source to be orchestrate   |
+| shardingDataSource  | ShardingDataSource         | The data source to be orchestrated  |
 | orchestrationConfig | OrchestrationConfiguration | Orchestration configuration         |
 
 #### OrchestrationMasterSlaveDataSource
 
 | *Name*                | *DataType*                   | *Description*                          |
 | --------------------- | ---------------------------- | -------------------------------------- |
-| masterSlaveDataSource | MasterSlaveDataSource        | The data source to be orchestrate      |
+| masterSlaveDataSource | MasterSlaveDataSource        | The data source to be orchestrated     |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration configuration            |
  
 #### OrchestrationConfiguration
