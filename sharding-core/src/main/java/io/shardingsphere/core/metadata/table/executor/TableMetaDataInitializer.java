@@ -30,7 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -87,11 +87,14 @@ public final class TableMetaDataInitializer {
     }
     
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new LinkedHashSet<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(dataSourceName, null, null, null)) {
+             ResultSet resultSet = connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
-                result.add(resultSet.getString("TABLE_NAME"));
+                String tableName = resultSet.getString("TABLE_NAME");
+                if (!tableName.contains("$")) {
+                    result.add(tableName);
+                }
             }
         }
         return result;
