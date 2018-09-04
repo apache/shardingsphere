@@ -51,7 +51,7 @@ orchestration:
 ```
 
 ```java
-    DataSource dataSource = new OrchestrationShardingDataSource(yamlFile);
+    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## Using spring

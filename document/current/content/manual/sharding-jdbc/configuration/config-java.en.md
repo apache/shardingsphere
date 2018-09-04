@@ -112,10 +112,12 @@ weight = 1
 ### Orchestration by Zookeeper
 
 ```java
-    DataSource dataSource = new OrchestrationShardingDataSource(
-                 createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
-                     new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
-    
+       DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
+       DataSource dataSource = new OrchestrationShardingDataSource(
+                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                    createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
+                        new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
+
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists("localhost:2181");
@@ -127,10 +129,12 @@ weight = 1
 ### Orchestration by Etcd
 
 ```java
-    DataSource dataSource = new OrchestrationShardingDataSource (
-                 createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
-    
+    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
+        DataSource dataSource = new OrchestrationShardingDataSource (
+                     createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                     createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
+                     new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+        
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
         result.setServerLists("http://localhost:2379");
@@ -263,18 +267,24 @@ Enumeration of properties.
 
 ### Orchestration
 
-#### OrchestrationShardingDataSource
+#### OrchestrationShardingDataSourceFactory
 
 | *Name*              | *DataType*                 | *Description*                       |
 | ------------------- |  ------------------------- | ----------------------------------- |
-| shardingDataSource  | ShardingDataSource         | The data source to be orchestrated  |
+| dataSourceMap       | Map\<String, DataSource\>  | Same with ShardingDataSourceFactory |
+| shardingRuleConfig  | ShardingRuleConfiguration  | Same with ShardingDataSourceFactory |
+| configMap (?)       | Map\<String, Object\>      | Same with ShardingDataSourceFactory |
+| props (?)           | Properties                 | Same with ShardingDataSourceFactory |
 | orchestrationConfig | OrchestrationConfiguration | Orchestration configuration         |
 
-#### OrchestrationMasterSlaveDataSource
+#### OrchestrationMasterSlaveDataSourceFactory
 
 | *Name*                | *DataType*                   | *Description*                          |
 | --------------------- | ---------------------------- | -------------------------------------- |
-| masterSlaveDataSource | MasterSlaveDataSource        | The data source to be orchestrated     |
+| dataSourceMap         | Map\<String, DataSource\>    | Same with MasterSlaveDataSourceFactory |
+| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same with MasterSlaveDataSourceFactory |
+| configMap (?)         | Map\<String, Object\>        | Same with MasterSlaveDataSourceFactory |
+| props (?)             | Properties                   | Same with ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration configuration            |
  
 #### OrchestrationConfiguration

@@ -112,25 +112,30 @@ weight = 1
 ### 使用Zookeeper的数据治理
 
 ```java
+DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
     DataSource dataSource = new OrchestrationShardingDataSource(
+                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
                  createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
                      new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
-    
+                      
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists("localhost:2181");
         result.setNamespace("orchestration-demo");
         return result;
     }
+
 ```
 
 ### 使用Etcd的数据治理
 
 ```java
-    DataSource dataSource = new OrchestrationShardingDataSource (
-                 createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
-    
+   DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
+       DataSource dataSource = new OrchestrationShardingDataSource (
+                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                    createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
+                    new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+       
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
         result.setServerLists("http://localhost:2379");
@@ -274,24 +279,30 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 ### 数据治理
 
-#### OrchestrationShardingDataSource
+#### OrchestrationShardingDataSourceFactory
 
-数据分片 + 数据治理的数据源。
+数据分片 + 数据治理的数据源工厂。
 
 | *名称*               | *数据类型*                  | *说明*                      |
 | ------------------- |  ------------------------- | --------------------------- |
-| shardingDataSource  | ShardingDataSource         | 被治理的数据源                |
+| dataSourceMap       | Map\<String, DataSource\>  | 同ShardingDataSourceFactory |
+| shardingRuleConfig  | ShardingRuleConfiguration  | 同ShardingDataSourceFactory |
+| configMap (?)       | Map\<String, Object\>      | 同ShardingDataSourceFactory |
+| props (?)           | Properties                 | 同ShardingDataSourceFactory |
 | orchestrationConfig | OrchestrationConfiguration | 数据治理规则配置              |
 
-#### OrchestrationMasterSlaveDataSource
+#### OrchestrationMasterSlaveDataSourceFactory
 
-读写分离 + 数据治理的数据源。
+读写分离 + 数据治理的数据源工厂。
 
 | *名称*                 | *数据类型*                    | *说明*                         |
 | --------------------- | ---------------------------- | ------------------------------ |
-| masterSlaveDataSource | MasterSlaveDataSource        | 被治理的数据源                   |
+| dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
+| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
+| configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
+| props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
- 
+
 #### OrchestrationConfiguration
 
 数据治理规则配置对象。
