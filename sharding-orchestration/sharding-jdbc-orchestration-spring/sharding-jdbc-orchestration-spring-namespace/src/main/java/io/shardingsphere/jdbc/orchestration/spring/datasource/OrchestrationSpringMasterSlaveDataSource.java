@@ -30,7 +30,7 @@ import java.sql.SQLException;
  *
  * @author panjuan
  */
-public class OrchestrationSpringMasterSlaveDataSource extends OrchestrationMasterSlaveDataSource {
+public final class OrchestrationSpringMasterSlaveDataSource extends OrchestrationMasterSlaveDataSource {
     
     public OrchestrationSpringMasterSlaveDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super((MasterSlaveDataSource) dataSource, new OrchestrationFacade(orchestrationConfig));
