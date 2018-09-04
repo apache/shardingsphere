@@ -19,9 +19,8 @@ package io.shardingsphere.jdbc.orchestration.api.yaml;
 
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -102,10 +101,10 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
                                                final YamlMasterSlaveRuleConfiguration yamlConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == yamlConfig) {
-            return new OrchestrationMasterSlaveDataSource(new OrchestrationFacade(orchestrationConfig));
+            return new OrchestrationMasterSlaveDataSource(orchestrationConfig);
         } else {
             MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, yamlConfig.getMasterSlaveRuleConfiguration(), yamlConfig.getConfigMap(), yamlConfig.getProps());
-            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationFacade(orchestrationConfig));
+            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationConfig);
         }
     }
     
