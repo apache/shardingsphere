@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.datasource;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
@@ -24,6 +25,7 @@ import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,15 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         super(orchestrationFacade, masterSlaveDataSource.getDataSourceMap());
         this.dataSource = masterSlaveDataSource;
         initOrchestrationFacade(masterSlaveDataSource);
+    }
+    
+    public OrchestrationMasterSlaveDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(orchestrationFacade, orchestrationFacade.getConfigService().loadDataSourceMap());
+        ConfigurationService configService = orchestrationFacade.getConfigService();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+        Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
+        dataSource = new MasterSlaveDataSource(
+                configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
     }
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
