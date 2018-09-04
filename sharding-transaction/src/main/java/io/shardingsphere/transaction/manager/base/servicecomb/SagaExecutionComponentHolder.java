@@ -47,7 +47,7 @@ public final class SagaExecutionComponentHolder {
     
     private static final SagaExecutionComponentHolder INSTANCE = new SagaExecutionComponentHolder();
     
-    private final TransportFactory<SQLTransport> TRANSPORT_FACTORY = new TransportFactory<SQLTransport>() {
+    private final TransportFactory<SQLTransport> transportFactory = new TransportFactory<SQLTransport>() {
         @Override
         public SQLTransport getTransport() {
             return SQLTransportSPILoader.getInstance().getSqlTransport();
@@ -66,7 +66,7 @@ public final class SagaExecutionComponentHolder {
     
     private SagaExecutionComponent createSagaExecutionComponent() {
         EmbeddedPersistentStore persistentStore = new EmbeddedPersistentStore();
-        FromJsonFormat<SagaDefinition> fromJsonFormat = new JacksonFromJsonFormat(TRANSPORT_FACTORY);
+        FromJsonFormat<SagaDefinition> fromJsonFormat = new JacksonFromJsonFormat(transportFactory);
         GraphBasedSagaFactory sagaFactory = new GraphBasedSagaFactory(3000, persistentStore, new ChildrenExtractor(), executorService);
         return new SagaExecutionComponent(persistentStore, fromJsonFormat, null, sagaFactory);
     }
