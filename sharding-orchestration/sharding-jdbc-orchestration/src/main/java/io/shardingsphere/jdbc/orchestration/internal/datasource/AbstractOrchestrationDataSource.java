@@ -52,6 +52,13 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
         ShardingEventBusInstance.getInstance().register(this);
     }
     
+    public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(orchestrationFacade.getConfigService().loadDataSourceMap().values());
+        this.orchestrationFacade = orchestrationFacade;
+        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSourceMap();
+        ShardingEventBusInstance.getInstance().register(this);
+    }
+    
     protected final Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (String each : disabledDataSourceNames) {
