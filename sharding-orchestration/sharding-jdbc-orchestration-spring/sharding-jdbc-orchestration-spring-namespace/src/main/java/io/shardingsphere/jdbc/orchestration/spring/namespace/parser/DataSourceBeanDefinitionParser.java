@@ -17,6 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.namespace.parser;
 
+import com.google.common.base.Strings;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
@@ -43,10 +44,16 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         setOrchestrationType(element);
         BeanDefinitionBuilder factory = OrchestrationType.SHARDING == orchestrationType ? BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class)
                 : BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
-        
-        factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_REF_TAG));
-        factory.addConstructorArgValue(getOrchestrationConfiguration(element));
+        configureFactory(element, factory);
         return factory.getBeanDefinition();
+    }
+    
+    private void configureFactory(final Element element, final BeanDefinitionBuilder factory) {
+        String dataSourceName = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_REF_TAG);
+        if (!Strings.isNullOrEmpty(dataSourceName)) {
+            factory.addConstructorArgReference(dataSourceName);
+        }
+        factory.addConstructorArgValue(getOrchestrationConfiguration(element));
     }
     
     private void setOrchestrationType(final Element element) {
