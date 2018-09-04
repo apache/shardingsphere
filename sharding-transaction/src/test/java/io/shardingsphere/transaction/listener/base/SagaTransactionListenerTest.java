@@ -25,25 +25,31 @@ import io.shardingsphere.transaction.event.base.SagaSQLExecutionEvent;
 import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.manager.base.servicecomb.SagaDefinitionBuilder;
+import io.shardingsphere.transaction.revert.RevertEngine;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
+import io.shardingsphere.transaction.revert.RevertResult;
 import org.apache.servicecomb.saga.core.SagaRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,12 +62,18 @@ public class SagaTransactionListenerTest {
     @Mock
     private BASETransactionManager<SagaTransactionEvent> sagaTransactionManager;
     
+    @Mock
+    private RevertEngine revertEngine;
+    
     private static String id = "1";
     
     private Map<String, SagaDefinitionBuilder> builderMap;
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException, SQLException {
+        RevertResult result = new RevertResult();
+        result.setRevertSQL("");
+        when(revertEngine.revert(anyString(), anyString(), ArgumentMatchers.<List<Object>>anyList())).thenReturn(result);
         when(sagaTransactionManager.getTransactionId()).thenReturn(id);
         Field transactionManager = SagaTransactionListener.class.getDeclaredField("transactionManager");
         Field sagaDefinitionBuilderMap = SagaTransactionListener.class.getDeclaredField("sagaDefinitionBuilderMap");
@@ -70,6 +82,7 @@ public class SagaTransactionListenerTest {
         transactionManager.set(listener, sagaTransactionManager);
         builderMap = (Map<String, SagaDefinitionBuilder>) sagaDefinitionBuilderMap.get(listener);
         listener.register();
+        RevertEngineHolder.getInstance().setRevertEngine(revertEngine);
     }
     
     @After
@@ -113,7 +126,7 @@ public class SagaTransactionListenerTest {
     @Test
     public void assertListenSagaSQLExecutionEvent() throws NoSuchFieldException, IllegalAccessException {
         builderMap.put(id, new SagaDefinitionBuilder());
-        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent("ds", new SQLUnit("", null), Collections.emptyList(), id);
+        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent("ds", new SQLUnit("", new ArrayList<List<Object>>()), Collections.emptyList(), id);
         event.setExecuteSuccess();
         eventBus.post(event);
         assertThat(getRequestLength(), is(1));
@@ -127,7 +140,7 @@ public class SagaTransactionListenerTest {
         SagaDefinitionBuilder builder = builderMap.get(id);
         Field requests = SagaDefinitionBuilder.class.getDeclaredField("requests");
         requests.setAccessible(true);
-        List<SagaRequest> list = (List<SagaRequest>) requests.get(builder);
+        ConcurrentLinkedQueue<SagaRequest> list = (ConcurrentLinkedQueue<SagaRequest>) requests.get(builder);
         return list.size();
     }
     

@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SagaDefinitionBuilderTest {
@@ -38,26 +39,34 @@ public class SagaDefinitionBuilderTest {
     private static final String EXAMPLE_DELETE_SQL = "DELETE FROM ds_0.tb_0 WHERE id=?";
     private static final String EXAMPLE_UPDATE_SQL = "UPDATE ds_1.tb_1 SET value=? where id=?";
     
-    private static final List<Object> INSERT_PARAMS = new ArrayList<Object>() {{
-        add(1);
-        add("xxx");
+    private static final List<List<Object>> INSERT_PARAMS = new ArrayList<List<Object>>() {{
+        add(new ArrayList<Object>() {{
+            add(1);
+            add("xxx");
+        }});
     }};
-    private static final List<Object> DELETE_PARAMS = new ArrayList<Object>() {{
-        add(1);
+    private static final List<Collection<Object>> DELETE_PARAMS = new ArrayList<Collection<Object>>() {{
+        add(new ArrayList<Object>() {{
+            add(1);
+        }});
     }};
-    private static final List<Object> UPDATE_PARAMS = new ArrayList<Object>() {{
-        add("yyy");
-        add(2);
+    private static final List<List<Object>> UPDATE_PARAMS = new ArrayList<List<Object>>() {{
+        add(new ArrayList<Object>() {{
+            add("yyy");
+            add(2);
+        }});
     }};
-    private static final List<Object> UPDATE_C_PARAMS = new ArrayList<Object>() {{
-        add("xxx");
-        add(2);
+    private static final List<Collection<Object>> UPDATE_C_PARAMS = new ArrayList<Collection<Object>>() {{
+        add(new ArrayList<Object>() {{
+            add("xxx");
+            add(2);
+        }});
     }};
     
     private static final String EXPECT_EMPTY_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[]}";
-    private static final String EXPECT_SINGLE_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[{\"id\":\"1\",\"datasource\":\"ds_0\",\"type\":\"sql\",\"transaction\":{\"sql\":\"INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)\",\"params\":[1,\"xxx\"]},\"compensation\":{\"sql\":\"DELETE FROM ds_0.tb_0 WHERE id=?\",\"params\":[1]},\"parents\":[]}]}";
-    private static final String EXPECT_DOUBLE_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[{\"id\":\"1\",\"datasource\":\"ds_0\",\"type\":\"sql\",\"transaction\":{\"sql\":\"INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)\",\"params\":[1,\"xxx\"]},\"compensation\":{\"sql\":\"DELETE FROM ds_0.tb_0 WHERE id=?\",\"params\":[1]},\"parents\":[]},{\"id\":\"2\",\"datasource\":\"ds_1\",\"type\":\"sql\",\"transaction\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[\"yyy\",2]},\"compensation\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[\"xxx\",2]},\"parents\":[]}]}";
-    private static final String EXPECT_PARENTS_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[{\"id\":\"1\",\"datasource\":\"ds_0\",\"type\":\"sql\",\"transaction\":{\"sql\":\"INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)\",\"params\":[1,\"xxx\"]},\"compensation\":{\"sql\":\"DELETE FROM ds_0.tb_0 WHERE id=?\",\"params\":[1]},\"parents\":[]},{\"id\":\"2\",\"datasource\":\"ds_1\",\"type\":\"sql\",\"transaction\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[\"yyy\",2]},\"compensation\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[\"xxx\",2]},\"parents\":[\"1\"]}]}";
+    private static final String EXPECT_SINGLE_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[{\"id\":\"1\",\"datasource\":\"ds_0\",\"type\":\"sql\",\"transaction\":{\"sql\":\"INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)\",\"params\":[[1,\"xxx\"]]},\"compensation\":{\"sql\":\"DELETE FROM ds_0.tb_0 WHERE id=?\",\"params\":[[1]]},\"parents\":[]}]}";
+    private static final String EXPECT_DOUBLE_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[{\"id\":\"1\",\"datasource\":\"ds_0\",\"type\":\"sql\",\"transaction\":{\"sql\":\"INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)\",\"params\":[[1,\"xxx\"]]},\"compensation\":{\"sql\":\"DELETE FROM ds_0.tb_0 WHERE id=?\",\"params\":[[1]]},\"parents\":[]},{\"id\":\"2\",\"datasource\":\"ds_1\",\"type\":\"sql\",\"transaction\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[[\"yyy\",2]]},\"compensation\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[[\"xxx\",2]]},\"parents\":[]}]}";
+    private static final String EXPECT_PARENTS_SQL_DEFINITION = "{\"policy\":\"BackwardRecovery\",\"requests\":[{\"id\":\"1\",\"datasource\":\"ds_0\",\"type\":\"sql\",\"transaction\":{\"sql\":\"INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)\",\"params\":[[1,\"xxx\"]]},\"compensation\":{\"sql\":\"DELETE FROM ds_0.tb_0 WHERE id=?\",\"params\":[[1]]},\"parents\":[]},{\"id\":\"2\",\"datasource\":\"ds_1\",\"type\":\"sql\",\"transaction\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[[\"yyy\",2]]},\"compensation\":{\"sql\":\"UPDATE ds_1.tb_1 SET value=? where id=?\",\"params\":[[\"xxx\",2]]},\"parents\":[\"1\"]}]}";
     
     @Before
     public void setUp() {
