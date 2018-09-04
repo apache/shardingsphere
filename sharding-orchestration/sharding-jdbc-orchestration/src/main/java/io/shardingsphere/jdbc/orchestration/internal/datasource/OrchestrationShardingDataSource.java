@@ -29,7 +29,6 @@ import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitB
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,7 +41,6 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@Slf4j
 public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {
     
     private ShardingDataSource dataSource;

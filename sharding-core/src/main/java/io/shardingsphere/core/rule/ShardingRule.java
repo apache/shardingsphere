@@ -35,7 +35,6 @@ import io.shardingsphere.core.util.StringUtil;
 import lombok.Getter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -133,16 +132,9 @@ public final class ShardingRule {
             return tableRule.get();
         }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
-            return createTableRuleWithDefaultDataSource(logicTableName);
+            return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
         }
         throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
-    }
-    
-    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable(logicTableName);
-        tableRuleConfig.setActualDataNodes(shardingDataSourceNames.getDefaultDataSourceName() + "." + logicTableName);
-        return new TableRule(tableRuleConfig, new ShardingDataSourceNames(shardingRuleConfig, Collections.singletonList(shardingDataSourceNames.getDefaultDataSourceName())));
     }
     
     /**

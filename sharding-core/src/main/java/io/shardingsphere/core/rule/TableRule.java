@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,6 +62,17 @@ public final class TableRule {
     private final KeyGenerator keyGenerator;
     
     private final String logicIndex;
+    
+    public TableRule(final String defaultDataSourceName, final String logicTableName) {
+        logicTable = logicTableName.toLowerCase();
+        actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
+        dataNodeIndexMap = Collections.emptyMap();
+        databaseShardingStrategy = null;
+        tableShardingStrategy = null;
+        generateKeyColumn = null;
+        keyGenerator = null;
+        logicIndex = null;
+    }
     
     public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames) {
         Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
