@@ -112,10 +112,10 @@ public class XaRawJdbcRepository {
         connection.setAutoCommit(false);
         try {
             for (int i = 1; i <= 10; i++) {
-                Long orderId = getRandomOrderId(connection, i);
+                Long orderId = getRandomOrderId(connection, 10);
                 String sql = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=? and order_id=?";
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setObject(1, i);
+                preparedStatement.setObject(1, 10);
                 preparedStatement.setObject(2, orderId);
                 preparedStatement.executeUpdate();
             }
@@ -130,7 +130,7 @@ public class XaRawJdbcRepository {
     
     private Long getRandomOrderId(Connection connection, int userId) throws SQLException {
         Statement statement = connection.createStatement();
-        int index = (int) (Math.random() * 500);
+        int index = (int) (Math.random() * 10);
         ResultSet resultSet = statement.executeQuery("SELECT order_id FROM t_order WHERE user_id=" + userId);
         long location = 0;
         while (resultSet.next()) {

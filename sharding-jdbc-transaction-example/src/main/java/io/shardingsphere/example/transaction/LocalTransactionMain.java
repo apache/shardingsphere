@@ -18,7 +18,6 @@
 package io.shardingsphere.example.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.example.transaction.fixture.DataRepository;
 import io.shardingsphere.example.transaction.fixture.DatasourceType;
 import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
@@ -26,7 +25,6 @@ import io.shardingsphere.example.transaction.fixture.ShardingDatasourceUtil;
 public class LocalTransactionMain {
 
     public static void main(final String[] args) throws Exception {
-        TransactionTypeHolder.set(TransactionType.LOCAL);
-        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.LOCAL)).demo();
+        new DataRepository(ShardingDatasourceUtil.getShardingDataSource(DatasourceType.LOCAL), TransactionType.LOCAL).demo();
     }
 }

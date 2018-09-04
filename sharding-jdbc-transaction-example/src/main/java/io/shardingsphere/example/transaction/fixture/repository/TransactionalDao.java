@@ -69,7 +69,7 @@ public class TransactionalDao {
     
     public List<Long> insertFailed() {
         List<Long> orderIds = new ArrayList<>(10);
-        System.out.println("1.Insert failed--------------");
+        System.out.println("2.Insert failed--------------");
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
@@ -90,7 +90,7 @@ public class TransactionalDao {
     }
     
     public void deleteData(List<Long> orderIds) {
-        System.out.println("2.Delete--------------");
+        System.out.println("3.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
