@@ -22,7 +22,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
