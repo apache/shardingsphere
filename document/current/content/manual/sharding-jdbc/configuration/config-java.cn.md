@@ -274,28 +274,22 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 ### 数据治理
 
-#### OrchestrationShardingDataSourceFactory
+#### OrchestrationShardingDataSource
 
-数据分片 + 数据治理的数据源创建工厂。
+数据分片 + 数据治理的数据源。
 
 | *名称*               | *数据类型*                  | *说明*                      |
 | ------------------- |  ------------------------- | --------------------------- |
-| dataSourceMap       | Map\<String, DataSource\>  | 同ShardingDataSourceFactory |
-| shardingRuleConfig  | ShardingRuleConfiguration  | 同ShardingDataSourceFactory |
-| configMap (?)       | Map\<String, Object\>      | 同ShardingDataSourceFactory |
-| props (?)           | Properties                 | 同ShardingDataSourceFactory |
+| shardingDataSource  | ShardingDataSource         | 被治理的数据源                |
 | orchestrationConfig | OrchestrationConfiguration | 数据治理规则配置              |
 
-#### OrchestrationMasterSlaveDataSourceFactory
+#### OrchestrationMasterSlaveDataSource
 
-读写分离 + 数据治理的数据源创建工厂。
+读写分离 + 数据治理的数据源。
 
 | *名称*                 | *数据类型*                    | *说明*                         |
 | --------------------- | ---------------------------- | ------------------------------ |
-| dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
-| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
-| configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
-| props (?)             | Properties                   | 同ShardingDataSourceFactory    |
+| masterSlaveDataSource | MasterSlaveDataSource        | 被治理的数据源                   |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
  
 #### OrchestrationConfiguration

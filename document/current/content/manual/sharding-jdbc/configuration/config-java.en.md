@@ -263,24 +263,18 @@ Enumeration of properties.
 
 ### Orchestration
 
-#### OrchestrationShardingDataSourceFactory
+#### OrchestrationShardingDataSource
 
 | *Name*              | *DataType*                 | *Description*                       |
 | ------------------- |  ------------------------- | ----------------------------------- |
-| dataSourceMap       | Map\<String, DataSource\>  | Same with ShardingDataSourceFactory |
-| shardingRuleConfig  | ShardingRuleConfiguration  | Same with ShardingDataSourceFactory |
-| configMap (?)       | Map\<String, Object\>      | Same with ShardingDataSourceFactory |
-| props (?)           | Properties                 | Same with ShardingDataSourceFactory |
+| shardingDataSource  | ShardingDataSource         | The data source to be orchestrate   |
 | orchestrationConfig | OrchestrationConfiguration | Orchestration configuration         |
 
-#### OrchestrationMasterSlaveDataSourceFactory
+#### OrchestrationMasterSlaveDataSource
 
 | *Name*                | *DataType*                   | *Description*                          |
 | --------------------- | ---------------------------- | -------------------------------------- |
-| dataSourceMap         | Map\<String, DataSource\>    | Same with MasterSlaveDataSourceFactory |
-| masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same with MasterSlaveDataSourceFactory |
-| configMap (?)         | Map\<String, Object\>        | Same with MasterSlaveDataSourceFactory |
-| props (?)             | Properties                   | Same with ShardingDataSourceFactory    |
+| masterSlaveDataSource | MasterSlaveDataSource        | The data source to be orchestrate      |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration configuration            |
  
 #### OrchestrationConfiguration
