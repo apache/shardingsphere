@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.shardingsphere.jdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import io.shardingsphere.jdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSource;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;

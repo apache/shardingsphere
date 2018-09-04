@@ -15,13 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.internal.datasource;
+package io.shardingsphere.jdbc.orchestration.api.datasource;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.AbstractOrchestrationDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +52,15 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         this.dataSource = shardingDataSource;
         getOrchestrationFacade().init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), 
                 ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
+    }
+    
+    public OrchestrationShardingDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
+        super(orchestrationFacade, orchestrationFacade.getConfigService().loadDataSourceMap());
+        ConfigurationService configService = orchestrationFacade.getConfigService();
+        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
+        Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
+        dataSource = new ShardingDataSource(configService.loadDataSourceMap(),
+                new ShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
     }
     
     @Override

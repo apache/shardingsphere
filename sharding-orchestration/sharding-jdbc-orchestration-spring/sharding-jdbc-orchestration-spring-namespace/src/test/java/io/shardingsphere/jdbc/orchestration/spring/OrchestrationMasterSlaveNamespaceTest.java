@@ -25,7 +25,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.jdbc.orchestration.spring.util.FieldValueUtil;

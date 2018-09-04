@@ -5,37 +5,22 @@
             targetNamespace="http://shardingsphere.io/schema/shardingsphere/orchestration"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
-    <xsd:element name="orchestration">
+    <xsd:element name="sharding-data-source">
         <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="data-source" />
-                <xsd:element ref="reg" />
-            </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="data-source">
-        <xsd:complexType>
-            <xsd:attribute name="data-source-ref" type="xsd:string" use="required" />
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="reg">
-        <xsd:complexType>
-            <xsd:choice>
-                <xsd:element ref="zookeeper" minOccurs="0" />
-                <xsd:element ref="etcd" minOccurs="0" />
-            </xsd:choice>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="type" type="regType" use="required"  />
+            <xsd:attribute name="data-source-ref" type="xsd:string" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:simpleType name="regType">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="sharding"/>
-            <xsd:enumeration value="master_slave"/>
-        </xsd:restriction>
-    </xsd:simpleType>
+    <xsd:element name="master-slave-data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-ref" type="xsd:string" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+        </xsd:complexType>
+    </xsd:element>
     <xsd:element name="zookeeper">
         <xsd:complexType>
             <xsd:complexContent>

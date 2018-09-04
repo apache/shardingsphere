@@ -17,8 +17,12 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.namespace.handler;
 
-import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.OrchestrationBeanDefinitionParserTag;
-import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.OrchestrationBeanDefinitionParser;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.DataSourceBeanDefinitionParser;
+import io.shardingsphere.jdbc.orchestration.spring.namespace.parser.RegBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -30,6 +34,9 @@ public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(OrchestrationBeanDefinitionParserTag.ROOT_TAG, new OrchestrationBeanDefinitionParser());
+        registerBeanDefinitionParser(ZookeeperRegistryCenterBeanDefinitionParserTag.ROOT_TAG, new RegBeanDefinitionParser());
+        registerBeanDefinitionParser(EtcdRegistryCenterBeanDefinitionParserTag.ROOT_TAG, new RegBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }
