@@ -23,10 +23,9 @@ import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.DataSourceUtil;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -78,11 +77,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         if (OrchestrationType.SHARDING == type) {
             ShardingDataSource shardingDataSource = new ShardingDataSource(
                     dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), shardingProperties.getConfigMap(), shardingProperties.getProps());
-            return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration()));
+            return new OrchestrationShardingDataSource(shardingDataSource, orchestrationProperties.getOrchestrationConfiguration());
         }
         MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(
                 dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
-        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration()));
+        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationProperties.getOrchestrationConfiguration());
     }
     
     @Override
