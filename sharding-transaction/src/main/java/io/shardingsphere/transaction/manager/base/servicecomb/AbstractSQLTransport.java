@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.base.servicecomb;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.servicecomb.saga.core.SagaResponse;
 import org.apache.servicecomb.saga.core.TransportFailedException;
 import org.apache.servicecomb.saga.format.JsonSuccessfulSagaResponse;
@@ -32,6 +33,7 @@ import java.util.List;
  *
  * @author yangyi
  */
+@Slf4j
 public abstract class AbstractSQLTransport implements SQLTransport {
     
     /**
@@ -43,13 +45,20 @@ public abstract class AbstractSQLTransport implements SQLTransport {
      * @return saga execute response
      */
     @Override
-    public SagaResponse with(final String datasource, final String sql, final List<String> params) {
+    public SagaResponse with(final String datasource, final String sql, final List<List<String>> params) {
         Connection connection = getConnection(datasource);
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int parameterIndex = 0; parameterIndex < params.size(); parameterIndex++) {
-                statement.setObject(parameterIndex + 1, params.get(parameterIndex));
+            if (params.isEmpty()) {
+                statement.executeUpdate();
+            } else {
+                for (List<String> each : params) {
+                    for (int parameterIndex = 0; parameterIndex < each.size(); parameterIndex++) {
+                        statement.setObject(parameterIndex + 1, each.get(parameterIndex));
+                    }
+                    statement.addBatch();
+                }
+                statement.executeBatch();
             }
-            statement.executeUpdate();
         } catch (SQLException e) {
             throw new TransportFailedException("execute SQL " + sql + " occur exception: ", e);
         }
