@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.spring.boot.util.EmbedTestingServer;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.BeforeClass;
