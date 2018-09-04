@@ -23,6 +23,7 @@ import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
@@ -47,19 +48,20 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     
     private MasterSlaveDataSource dataSource;
     
-    public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(orchestrationFacade, masterSlaveDataSource.getDataSourceMap());
+    public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig), masterSlaveDataSource.getDataSourceMap());
         this.dataSource = masterSlaveDataSource;
-        initOrchestrationFacade(masterSlaveDataSource);
+        initOrchestrationFacade(dataSource);
     }
     
-    public OrchestrationMasterSlaveDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(orchestrationFacade, orchestrationFacade.getConfigService().loadDataSourceMap());
-        ConfigurationService configService = orchestrationFacade.getConfigService();
+    public OrchestrationMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig));
+        ConfigurationService configService = getOrchestrationFacade().getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
         Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
         dataSource = new MasterSlaveDataSource(
                 configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
+        initOrchestrationFacade(dataSource);
     }
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {

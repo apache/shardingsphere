@@ -18,9 +18,8 @@
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -33,10 +32,10 @@ import java.sql.SQLException;
 public final class OrchestrationSpringShardingDataSource extends OrchestrationShardingDataSource {
     
     public OrchestrationSpringShardingDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super((ShardingDataSource) dataSource, new OrchestrationFacade(orchestrationConfig));
+        super((ShardingDataSource) dataSource, orchestrationConfig);
     }
     
     public OrchestrationSpringShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig));
+        super(orchestrationConfig);
     }
 }
