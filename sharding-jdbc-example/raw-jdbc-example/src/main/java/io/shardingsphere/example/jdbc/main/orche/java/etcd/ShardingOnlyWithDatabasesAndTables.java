@@ -17,16 +17,14 @@
 
 package io.shardingsphere.example.jdbc.main.orche.java.etcd;
 
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;

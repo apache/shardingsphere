@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>spring-namespace-example</artifactId>
-        <version>3.0.0.M3-SNAPSHOT</version>
+        <version>3.0.0.M3</version>
     </parent>
     <artifactId>spring-namespace-mybatis-example</artifactId>
     
@@ -22,6 +22,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>6.1.7.jre7-preview</version>
         </dependency>
     </dependencies>
 </project>
