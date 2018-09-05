@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0.M3-SNAPSHOT</version>
+        <version>3.0.0.M3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-orchestration</artifactId>
@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <sharding-sphere.version>3.0.0.M3-SNAPSHOT</sharding-sphere.version>
+        <sharding-sphere.version>3.0.0.M3</sharding-sphere.version>
     </properties>
     
     <dependencies>
