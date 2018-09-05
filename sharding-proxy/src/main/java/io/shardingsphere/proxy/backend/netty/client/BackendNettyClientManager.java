@@ -48,15 +48,6 @@ public final class BackendNettyClientManager {
     }
     
     /**
-     * Initialize backend netty client map.
-     */
-    public void init() {
-        for (String schema : PROXY_CONTEXT.getSchemaNames()) {
-            clientMap.put(schema, new BackendNettyClient(PROXY_CONTEXT.getRuleRegistry(schema)));
-        }
-    }
-    
-    /**
      * get backend netty client of schema.
      *
      * @param schema schema
@@ -72,7 +63,9 @@ public final class BackendNettyClientManager {
      * @throws InterruptedException interrupted exception
      */
     public void start() throws InterruptedException {
-        for (BackendNettyClient backendNettyClient : clientMap.values()) {
+        for (String schema : PROXY_CONTEXT.getSchemaNames()) {
+            BackendNettyClient backendNettyClient = new BackendNettyClient(PROXY_CONTEXT.getRuleRegistry(schema));
+            clientMap.put(schema, backendNettyClient);
             backendNettyClient.start();
         }
     }
