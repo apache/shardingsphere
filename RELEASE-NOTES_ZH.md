@@ -15,6 +15,7 @@
 
 #### Sharding-Proxy
 
+1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) 支持XA事务
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) 支持登录认证
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) 支持注册中心进行治理
 
@@ -40,7 +41,7 @@
 ### API调整
 
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) 调整Orchestration模块Maven坐标
-1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) 修改Sharding + Master-slave配置的Spring namespace API
+1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) 修改Sharding + Master-slave配置的Spring namespace xsd
 
 
 ### 缺陷修正
@@ -55,6 +56,7 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) 使用Groovy解析行表达式可能导致内存泄漏
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) 无法解析PostgreSQL的双引号占位符
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) 支持SQL `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) `GROUP BY / ORDER BY`产生的补列不应展现在查询结果中
 1. [ISSUE #1186](https://github.com/sharding-sphere/sharding-sphere/issues/1186) 在MEMORY_STRICTLY模式中，并发环境下可能产生死锁
 
 #### Sharding-JDBC
@@ -63,7 +65,6 @@
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) 支持JDBC中设置事务隔离级别
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) 在Mybatis中使用`Round-robin`的读写分离算法路由存在问题
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) 无法在`Spring Boot`的`YAML`中处理占位符
-1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) `GROUP BY / ORDER BY`产生的补列不应展现在查询结果中
 
 ## 2.0.3
 
