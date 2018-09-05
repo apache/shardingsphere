@@ -66,7 +66,7 @@ public final class Bootstrap {
         CONFIG_LOADER.loadConfiguration();
         int port = getPort(args);
         ProxyListenerRegister.register();
-        if (null == CONFIG_LOADER.getServerConfiguration().getOrchestration()) {
+        if (null == CONFIG_LOADER.getYamlServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(port);
         } else {
             // startWithRegistryCenter(localConfig, port);
@@ -85,7 +85,7 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final int port) throws InterruptedException {
-        PROXY_CONTEXT.init(CONFIG_LOADER.getServerConfiguration(), CONFIG_LOADER.getYamlProxyShardingRuleConfigurations());
+        PROXY_CONTEXT.init(CONFIG_LOADER.getYamlServerConfiguration(), CONFIG_LOADER.getYamlProxyShardingRuleConfigurations());
         new ShardingProxy().start(port);
     }
     

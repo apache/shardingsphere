@@ -28,10 +28,10 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.FileFilter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
@@ -53,9 +53,11 @@ public final class ProxyConfigLoader {
     
     private static final String DEFAULT_SERVER_CONFIG_FILE = "server.yaml";
     
-    private YamlProxyServerConfiguration serverConfiguration;
+    private YamlProxyServerConfiguration yamlServerConfiguration;
     
     private Collection<YamlProxyShardingRuleConfiguration> yamlProxyShardingRuleConfigurations = new LinkedList<>();
+    
+    private Collection<String> schemaNames = new LinkedList<>();
     
     /**
      * Get instance of proxy config loader.
@@ -72,11 +74,13 @@ public final class ProxyConfigLoader {
      * @throws IOException IO exception
      */
     public void loadConfiguration() throws IOException {
-        serverConfiguration = loadServerConfiguration(new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH + DEFAULT_SERVER_CONFIG_FILE).getFile()));
+        yamlServerConfiguration = loadServerConfiguration(new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH + DEFAULT_SERVER_CONFIG_FILE).getFile()));
         File configDir = new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH).getFile());
         File[] shardingRuleConfiFiles = findShardingRuleConfiFiles(configDir);
         for (File shardingRuleConfigFile : shardingRuleConfiFiles) {
-            yamlProxyShardingRuleConfigurations.add(loadShardingRuleConfiguration(shardingRuleConfigFile));
+            YamlProxyShardingRuleConfiguration yamlProxyShardingRuleConfiguration = loadShardingRuleConfiguration(shardingRuleConfigFile);
+            yamlProxyShardingRuleConfigurations.add(yamlProxyShardingRuleConfiguration);
+            schemaNames.add(yamlProxyShardingRuleConfiguration.getSchemaName());
         }
     }
     
@@ -88,8 +92,9 @@ public final class ProxyConfigLoader {
             YamlProxyShardingRuleConfiguration result = new Yaml(new Constructor(YamlProxyShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlProxyShardingRuleConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
             Preconditions.checkNotNull(result.getSchemaName(), String.format("schemalName configuration in file `%s` can not be null.", yamlFile.getName()));
+            Preconditions.checkState(!schemaNames.contains(result.getSchemaName()), String.format("schemalName `%s` has already exist.", result.getSchemaName()));
             Preconditions.checkState(!result.getDataSources().isEmpty(), String.format("Data sources configuration in file `%s` can not be empty.", yamlFile.getName()));
-            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != serverConfiguration.getOrchestration(),
+            Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != yamlServerConfiguration.getOrchestration(),
                     String.format("Configuration invalid in file `%s`, sharding rule, local and orchestration configuration can not be both null.", yamlFile.getName()));
             return result;
         }
