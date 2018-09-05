@@ -37,9 +37,8 @@
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) 支持Spring bean的方式在命名空间中注入自增序列生成器对象
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) 支持Spring bean的方式在命名空间中注入分片算法对象
 
-### 结构调整
-
 ### API调整
+
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) 调整Orchestration模块Maven坐标
 1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) 修改Sharding + Master-slave配置的Spring namespace API
 

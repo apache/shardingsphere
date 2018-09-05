@@ -37,8 +37,6 @@
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Reconstruct orchestration module to make it independent
 
-### Changes
-
 ### API changes
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Adjust the maven coordinate for Orchestration module
 1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) Change Spring namespace API for Sharding + Master-slave configuration
