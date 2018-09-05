@@ -41,7 +41,7 @@ public enum ShardingPropertiesConstant {
      * Default: false
      * </p>
      */
-    SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
+    SQL_SHOW("sql.show", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Worker group or user group thread max size.
@@ -82,13 +82,15 @@ public enum ShardingPropertiesConstant {
      */
     CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
-    PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", Boolean.FALSE.toString(), boolean.class),
+    MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
     
-    PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
+    PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
-    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", 8 + "", int.class),
+    PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", String.valueOf(Boolean.FALSE), boolean.class),
     
-    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", 60 + "", int.class);
+    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", String.valueOf(8), int.class),
+    
+    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", String.valueOf(60), int.class);
     
     private final String key;
     

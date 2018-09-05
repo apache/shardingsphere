@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -29,10 +28,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ConnectionIdGenerator {
     
-    @Getter
-    private static ConnectionIdGenerator instance = new ConnectionIdGenerator();
+    private static final ConnectionIdGenerator INSTANCE = new ConnectionIdGenerator();
     
     private int currentId;
+    
+    /**
+     * Get instance.
+     * 
+     * @return instance
+     */
+    public static ConnectionIdGenerator getInstance() {
+        return INSTANCE;
+    } 
     
     /**
      * Get next connection id.

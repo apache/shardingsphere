@@ -20,8 +20,8 @@ package io.shardingsphere.proxy;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.ProxyBasicRule;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.jdbc.orchestration.internal.OrchestrationProxyConfiguration;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.config.YamlProxyConfiguration;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
@@ -64,7 +64,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws InterruptedException, IOException {
         YamlProxyConfiguration localConfig = loadLocalConfiguration(new File(Bootstrap.class.getResource(getConfig(args)).getFile()));
         int port = getPort(args);
-        ProxyListenerRegister.register();
+        new ProxyListenerRegister().register();
         if (null == localConfig.getOrchestration()) {
             startWithoutRegistryCenter(localConfig, port);
         } else {

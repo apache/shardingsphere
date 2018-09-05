@@ -33,23 +33,17 @@ import java.util.Arrays;
 @Getter
 public final class AuthorityHandler {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
-    
-    private final AuthPluginData authPluginData;
-    
-    public AuthorityHandler() {
-        authPluginData = new AuthPluginData();
-    }
+    private final AuthPluginData authPluginData = new AuthPluginData();
     
     /**
-     * Login into sharding proxy.
+     * Login.
      *
-     * @param username connection username.
-     * @param authResponse connection auth response.
-     * @return login success or failure.
+     * @param username connection username
+     * @param authResponse connection auth response
+     * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        ProxyAuthority proxyAuthority = RULE_REGISTRY.getProxyAuthority();
+        ProxyAuthority proxyAuthority = RuleRegistry.getInstance().getProxyAuthority();
         if (Strings.isNullOrEmpty(proxyAuthority.getPassword())) {
             return proxyAuthority.getUsername().equals(username);
         }

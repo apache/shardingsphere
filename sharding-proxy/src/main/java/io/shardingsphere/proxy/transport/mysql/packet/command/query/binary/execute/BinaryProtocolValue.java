@@ -91,6 +91,9 @@ public final class BinaryProtocolValue {
      * @param binaryData binary data to be written
      */
     public void write(final Object binaryData) {
+        if (null == binaryData) {
+            return;
+        }
         switch (columnType) {
             case MYSQL_TYPE_STRING:
             case MYSQL_TYPE_VARCHAR:
@@ -108,11 +111,7 @@ public final class BinaryProtocolValue {
                 payload.writeStringLenenc(binaryData.toString());
                 break;
             case MYSQL_TYPE_LONGLONG:
-                if (binaryData instanceof BigDecimal) {
-                    payload.writeInt8(((BigDecimal) binaryData).longValue());
-                } else {
-                    payload.writeInt8((Long) binaryData);
-                }
+                writeInt8(binaryData);
                 break;
             case MYSQL_TYPE_LONG:
             case MYSQL_TYPE_INT24:
@@ -141,6 +140,14 @@ public final class BinaryProtocolValue {
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Cannot find MySQL type '%s' in column type when write binary protocol value", columnType));
+        }
+    }
+    
+    private void writeInt8(final Object binaryData) {
+        if (binaryData instanceof BigDecimal) {
+            payload.writeInt8(((BigDecimal) binaryData).longValue());
+        } else {
+            payload.writeInt8((Long) binaryData);
         }
     }
 }

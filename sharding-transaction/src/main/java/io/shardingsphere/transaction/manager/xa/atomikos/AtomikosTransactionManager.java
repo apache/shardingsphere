@@ -21,9 +21,9 @@ import com.atomikos.beans.PropertyUtils;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
@@ -95,14 +95,20 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         result.setTestQuery("SELECT 1");
-        Properties xaProperties = getXAProperties(dataSourceParameter);
+        Properties xaProperties;
+        // TODO zhaojun: generic data source properties, can use MySQL only for now 
+        if (xaDataSource.getClass().getName().equals("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource")) {
+            xaProperties = getMySQLXAProperties(dataSourceParameter);
+        } else {
+            xaProperties = new Properties();
+        }
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);
         result.setXaProperties(xaProperties);
         return result;
     }
     
-    private Properties getXAProperties(final DataSourceParameter dataSourceParameter) {
+    private Properties getMySQLXAProperties(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));

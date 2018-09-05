@@ -19,9 +19,12 @@ package io.shardingsphere.jdbc.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.jdbc.spring.datasource.SpringShardingDataSource;
+import io.shardingsphere.jdbc.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingsphere.jdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -34,6 +37,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,6 +79,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
         parseDefaultTableShardingStrategy(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
+        factory.addPropertyValue("masterSlaveRuleConfigs", parseMasterSlaveRulesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
         parseKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
@@ -106,6 +111,45 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         if (!Strings.isNullOrEmpty(defaultTableShardingStrategy)) {
             factory.addPropertyReference("defaultTableShardingStrategyConfig", defaultTableShardingStrategy);
         }
+    }
+    
+    private List<BeanDefinition> parseMasterSlaveRulesConfig(final Element element) {
+        Element masterSlaveRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULES_TAG);
+        if (null == masterSlaveRulesElement) {
+            return new LinkedList<>();
+        }
+        List<Element> masterSlaveRuleElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        List<BeanDefinition> result = new ManagedList<>(masterSlaveRuleElements.size());
+        for (Element each : masterSlaveRuleElements) {
+            result.add(parseMasterSlaveRuleConfig(each));
+        }
+        return result;
+    }
+    
+    private BeanDefinition parseMasterSlaveRuleConfig(final Element masterSlaveElement) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
+        factory.addPropertyValue("name", masterSlaveElement.getAttribute(ID_ATTRIBUTE));
+        factory.addPropertyValue("masterDataSourceName", masterSlaveElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE));
+        factory.addPropertyValue("slaveDataSourceNames", parseSlaveDataSourcesRef(masterSlaveElement));
+        String strategyRef = masterSlaveElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(strategyRef)) {
+            factory.addPropertyReference("loadBalanceAlgorithm", strategyRef);
+        } else {
+            factory.addPropertyValue("loadBalanceAlgorithm", parseStrategyType(masterSlaveElement).getAlgorithm());
+        }
+        return factory.getBeanDefinition();
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithmType parseStrategyType(final Element element) {
+        String result = element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.STRATEGY_TYPE_ATTRIBUTE);
+        return Strings.isNullOrEmpty(result) ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType() : MasterSlaveLoadBalanceAlgorithmType.valueOf(result);
+    }
+    
+    private Collection<String> parseSlaveDataSourcesRef(final Element element) {
+        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE));
+        Collection<String> result = new ManagedList<>(slaveDataSources.size());
+        result.addAll(slaveDataSources);
+        return result;
     }
     
     private List<BeanDefinition> parseTableRulesConfig(final Element element) {

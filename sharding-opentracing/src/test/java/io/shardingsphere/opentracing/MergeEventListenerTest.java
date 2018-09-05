@@ -30,6 +30,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.merger.MergeEngine;
@@ -72,6 +73,8 @@ public final class MergeEventListenerTest {
     
     private MergeEngine mergeEngine;
     
+    private ShardingDataSource shardingDataSource;
+    
     @BeforeClass
     public static void init() {
         ShardingTracer.init(TRACER);
@@ -104,6 +107,8 @@ public final class MergeEventListenerTest {
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.MySQL);
         when(shardingContext.isShowSQL()).thenReturn(true);
         mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
+        shardingDataSource = Mockito.mock(ShardingDataSource.class);
+        when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -118,7 +123,7 @@ public final class MergeEventListenerTest {
     
     @Test
     public void assertPreparedStatementRouting() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingContext), "show databases");
+        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "show databases");
         Method mergeMethod = ShardingPreparedStatement.class.getDeclaredMethod("merge", MergeEngine.class);
         mergeMethod.setAccessible(true);
         mergeMethod.invoke(statement, mergeEngine);
@@ -127,7 +132,7 @@ public final class MergeEventListenerTest {
     
     @Test
     public void assertStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingContext));
+        ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
         Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
         mergeMethod.setAccessible(true);
         mergeMethod.invoke(statement, mergeEngine);
@@ -138,7 +143,7 @@ public final class MergeEventListenerTest {
     public void assertException() {
         try {
             MergeEngine errorMergeEngine = new DALMergeEngine(null, null, new ShowColumnsStatement(), null);
-            ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingContext));
+            ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
             Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
             mergeMethod.setAccessible(true);
             mergeMethod.invoke(statement, errorMergeEngine);

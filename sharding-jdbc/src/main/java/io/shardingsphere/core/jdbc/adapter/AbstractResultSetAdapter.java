@@ -18,6 +18,8 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
+import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSetMetaData;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import lombok.Getter;
@@ -28,8 +30,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,6 +47,8 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     private final Statement statement;
     
     private boolean closed;
+    
+    private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement) {
         Preconditions.checkArgument(!resultSets.isEmpty());
@@ -67,15 +69,13 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Override
     public final void close() throws SQLException {
         closed = true;
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (ResultSet each : resultSets) {
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.close();
             }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
+        });
     }
     
     @Override
@@ -85,15 +85,13 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (ResultSet each : resultSets) {
-            try {
-                each.setFetchDirection(direction);
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.setFetchDirection(direction);
             }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
+        });
     }
     
     @Override
@@ -103,15 +101,13 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (ResultSet each : resultSets) {
-            try {
-                each.setFetchSize(rows);
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.setFetchSize(rows);
             }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
+        });
     }
     
     @Override
@@ -136,14 +132,12 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void clearWarnings() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (ResultSet each : resultSets) {
-            try {
-                each.clearWarnings();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.clearWarnings();
             }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
+        });
     }
 }

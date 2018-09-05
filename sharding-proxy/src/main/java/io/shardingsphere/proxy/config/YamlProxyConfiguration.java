@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.proxy.config;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -22,7 +23,6 @@ import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashMap;
@@ -33,10 +33,9 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@NoArgsConstructor
 @Getter
 @Setter
-public class YamlProxyConfiguration {
+public final class YamlProxyConfiguration {
     
     private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     

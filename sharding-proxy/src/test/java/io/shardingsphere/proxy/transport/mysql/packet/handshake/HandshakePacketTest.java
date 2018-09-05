@@ -17,91 +17,60 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
-import com.google.common.primitives.Bytes;
-import io.netty.buffer.ByteBuf;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Arrays;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class HandshakePacketTest {
     
-    private HandshakePacket handshakePacket;
+    @Mock
+    private MySQLPacketPayload payload;
     
     private final byte[] part1 = {106, 105, 55, 122, 117, 98, 115, 109};
     
     private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
     
-    @Before
-    public void setUp() {
-        AuthPluginData authPluginData = new AuthPluginData(part1, part2);
-        handshakePacket = new HandshakePacket(1, authPluginData);
+    @Test
+    public void assertNewWithPayload() {
+        when(payload.readInt1()).thenReturn(1, ServerInfo.PROTOCOL_VERSION, ServerInfo.CHARSET, 0);
+        when(payload.readStringNul()).thenReturn(ServerInfo.SERVER_VERSION);
+        when(payload.readStringNulByBytes()).thenReturn(part1, part2);
+        when(payload.readInt4()).thenReturn(1000);
+        when(payload.readInt2()).thenReturn(
+                CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), CapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
+        HandshakePacket actual = new HandshakePacket(payload);
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getConnectionId(), is(1000));
+        assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
+        assertThat(actual.getAuthPluginData().getAuthPluginDataPart2(), is(part2));
+        verify(payload).skipReserved(10);
     }
     
     @Test
     public void assertWrite() {
-        ByteBuf byteBuf = mock(ByteBuf.class);
-        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
-        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
-        when(byteBuf.writeBytes(byteBuf)).thenReturn(byteBuf);
-        handshakePacket.write(payload);
-        assertThat(handshakePacket.getSequenceId(), is(0));
-    }
-    
-    @Test
-    public void assertGetProtocolVersion() {
-        assertThat(handshakePacket.getProtocolVersion(), is(ServerInfo.PROTOCOL_VERSION));
-    }
-    
-    @Test
-    public void assertGetServerVersion() {
-        assertThat(handshakePacket.getServerVersion(), is(ServerInfo.SERVER_VERSION));
-    }
-    
-    @Test
-    public void assertGetCapabilityFlagsLower() {
-        assertThat(handshakePacket.getCapabilityFlagsLower(), is(CapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
-    }
-    
-    @Test
-    public void assertGetCapabilityFlagsUpper() {
-        assertThat(handshakePacket.getCapabilityFlagsUpper(), is(CapabilityFlag.calculateHandshakeCapabilityFlagsUpper()));
-    }
-    
-    @Test
-    public void assertGetCharacterSet() {
-        assertThat(handshakePacket.getCharacterSet(), is(ServerInfo.CHARSET));
-    }
-    
-    @Test
-    public void assertGetStatusFlag() {
-        assertThat(handshakePacket.getStatusFlag(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT));
-    }
-    
-    @Test
-    public void assertGetSequenceId() {
-        assertThat(handshakePacket.getSequenceId(), is(0));
-    }
-    
-    @Test
-    public void assertGetConnectionId() {
-        assertThat(handshakePacket.getConnectionId(), is(1));
-    }
-    
-    @Test
-    public void assertGetAuthPluginData() {
-        byte[] actual = Bytes.concat(part1, part2);
-        assertTrue(Arrays.equals(handshakePacket.getAuthPluginData().getAuthPluginData(), actual));
+        AuthPluginData authPluginData = new AuthPluginData(part1, part2);
+        new HandshakePacket(1000, authPluginData).write(payload);
+        verify(payload).writeInt1(ServerInfo.PROTOCOL_VERSION);
+        verify(payload).writeStringNul(ServerInfo.SERVER_VERSION);
+        verify(payload).writeInt4(1000);
+        verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
+        verify(payload).writeInt2(CapabilityFlag.calculateHandshakeCapabilityFlagsLower());
+        verify(payload).writeInt1(ServerInfo.CHARSET);
+        verify(payload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        verify(payload).writeInt2(CapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
+        verify(payload).writeInt1(0);
+        verify(payload).writeReserved(10);
+        verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
     }
 }

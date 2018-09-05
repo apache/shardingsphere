@@ -73,7 +73,9 @@ public final class ComFieldListPacketTest {
     public void assertWrite() {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        new ComFieldListPacket(1, 1000, payload, backendConnection).write(payload);
+        ComFieldListPacket actual = new ComFieldListPacket(1, 1000, payload, backendConnection);
+        assertThat(actual.getSequenceId(), is(1));
+        actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
         verify(payload).writeStringNul("tbl");
         verify(payload).writeStringEOF("-");
