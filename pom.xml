@@ -8,14 +8,17 @@
     
     <modules>
         <module>sharding-core</module>
+        
         <module>sharding-jdbc</module>
         <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-transaction-parent</module>
+        
+        <module>sharding-proxy</module>
+        
+        <module>sharding-transaction</module>
         <module>sharding-orchestration</module>
         <module>sharding-opentracing</module>
-        <module>sharding-proxy</module>
         <module>sharding-sql-test</module>
-        <module>sharding-transaction</module>
     </modules>
     
     <properties>
