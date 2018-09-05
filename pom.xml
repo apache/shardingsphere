@@ -18,6 +18,7 @@
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module>
         <module>sharding-opentracing</module>
+        
         <module>sharding-sql-test</module>
     </modules>
     
