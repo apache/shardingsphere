@@ -18,7 +18,38 @@ The smallest unit of data sharding. It consists of data source name and table na
 
 ## Binding Table
 
-The relational tables with the same sharding rules. e.g. The order table sharding with order_id, and the order item table also sharding with order_id. As a result, order table and order item table are BindingTable of each other. The cascade querie for binding tables do not use Cartesian product association, therefore the efficiency for cascade query will be greatly improved.
+The relational tables with the same sharding rules. 
+For example: The t_order table and t_order_item table are all  sharding with order_id, then they are binding table each other. 
+Query between binding tables do not use cartesian product join, efficiency of join query will be greatly improved.
+
+If SQL is:
+
+```sql
+SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+```
+
+If absent binding tables configuration, we assume sharding key is order_id, value `10` should route to sharding `0`, and value `11` should route to sharding `1`, the SQL after route are:
+
+```sql
+SELECT i.* FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+
+SELECT i.* FROM t_order_0 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+
+SELECT i.* FROM t_order_1 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+
+SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+```
+
+If binding tables configuration are present, the SQL after route are:
+
+```sql
+SELECT i.* FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+
+SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
+```
+
+Table t_order is the first table at the left of `FROM`, Sharding-Sphere make this table as main table in this query. 
+Route engine should only use main table's strategy, t_order_item just use t_order's sharding condition.
 
 ## Logic Index
 
