@@ -25,7 +25,6 @@ import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 //import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
