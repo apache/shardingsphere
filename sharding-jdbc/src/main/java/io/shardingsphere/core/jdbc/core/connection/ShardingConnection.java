@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.jdbc.core.connection;
 
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
@@ -41,11 +43,16 @@ import java.util.Map;
  * @author caohao
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final ShardingDataSource shardingDataSource;
+    
+    public ShardingConnection(final ShardingDataSource shardingDataSource) {
+        this.shardingDataSource = shardingDataSource;
+//        setOverallExecutionEventThreadLocal(new OverallExecutionEvent(true));
+        ShardingEventBusInstance.getInstance().post(getOverallExecutionEventThreadLocal());
+    }
     
     /**
      * Release connection.

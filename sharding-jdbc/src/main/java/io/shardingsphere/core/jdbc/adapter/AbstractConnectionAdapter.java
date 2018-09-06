@@ -20,6 +20,7 @@ package io.shardingsphere.core.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
@@ -27,6 +28,8 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -55,6 +58,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
+    @Getter
+    OverallExecutionEvent overallExecutionEventThreadLocal = new OverallExecutionEvent(true);
+    
     /**
      * Get database connection.
      *
@@ -63,6 +69,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+//        ShardingEventBusInstance.getInstance().post(overallExecutionEventThreadLocal);
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -117,6 +124,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void close() throws SQLException {
         closed = true;
+        overallExecutionEventThreadLocal.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(overallExecutionEventThreadLocal);
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();

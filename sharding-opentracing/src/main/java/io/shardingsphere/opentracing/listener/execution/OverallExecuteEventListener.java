@@ -50,7 +50,11 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final OverallExecutionEvent event) {
-        tracing(event);
+        try {
+            tracing(event);
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     @Override

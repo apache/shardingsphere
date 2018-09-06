@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
+import io.opentracing.BaseSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.executor.sql.SQLExecutionEvent;
