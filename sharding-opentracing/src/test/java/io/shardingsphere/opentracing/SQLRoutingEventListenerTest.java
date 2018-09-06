@@ -61,7 +61,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SqlParsingEventListenerTest {
+public final class SQLRoutingEventListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
@@ -115,7 +115,7 @@ public final class SqlParsingEventListenerTest {
     }
     
     @Test
-    public void assertPreparedStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void assertPreparedStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "select * from t_order");
         Method sqlRouteMethod = ShardingPreparedStatement.class.getDeclaredMethod("sqlRoute");
         sqlRouteMethod.setAccessible(true);
@@ -125,7 +125,7 @@ public final class SqlParsingEventListenerTest {
     }
     
     @Test
-    public void assertStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void assertStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
         Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
         sqlRouteMethod.setAccessible(true);
