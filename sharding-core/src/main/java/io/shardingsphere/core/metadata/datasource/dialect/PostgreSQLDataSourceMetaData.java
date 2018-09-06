@@ -41,7 +41,7 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:postgresql://([a-zA-Z0-9\\-\\.]+):?([0-9]*)/(\\w+)");
+    private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)");
     
     public PostgreSQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
