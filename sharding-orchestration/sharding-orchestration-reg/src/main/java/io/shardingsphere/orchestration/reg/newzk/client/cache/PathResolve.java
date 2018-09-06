@@ -19,14 +19,12 @@ package io.shardingsphere.orchestration.reg.newzk.client.cache;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Path hierarchy resolve.
  *
  * @author lidongbo
  */
-@Slf4j
 @RequiredArgsConstructor
 final class PathResolve {
     

@@ -21,7 +21,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Getter
 @Setter
-@Slf4j
 public final class PathNode {
     
     private final Map<String, PathNode> children = new ConcurrentHashMap<>();
@@ -65,7 +63,6 @@ public final class PathNode {
             return this;
         }
         pathResolve.next();
-        log.debug("PathNode set: {}, value: {}", pathResolve.getCurrent(), value);
         if (children.containsKey(pathResolve.getCurrent())) {
             return children.get(pathResolve.getCurrent()).set(pathResolve, value);
         }

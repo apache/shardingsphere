@@ -20,7 +20,7 @@ package io.shardingsphere.core.executor.fixture;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.event.executor.sql.SQLExecutionEvent;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -36,8 +36,8 @@ public final class ExecutorTestUtil {
      * @param event SQL execution event
      */
     public static void listen(final EventCaller eventCaller, final SQLExecutionEvent event) {
-        eventCaller.verifyDataSource(event.getDataSource());
-        eventCaller.verifySQL(event.getSqlUnit().getSql());
+        eventCaller.verifyDataSource(event.getRouteUnit().getDataSourceName());
+        eventCaller.verifySQL(event.getRouteUnit().getSqlUnit().getSql());
         eventCaller.verifyParameters(event.getParameters());
         eventCaller.verifyEventExecutionType(event.getEventType());
         if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {

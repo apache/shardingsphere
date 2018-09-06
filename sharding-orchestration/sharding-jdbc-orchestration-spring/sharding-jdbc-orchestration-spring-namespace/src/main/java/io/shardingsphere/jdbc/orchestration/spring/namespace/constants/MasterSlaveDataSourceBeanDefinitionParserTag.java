@@ -21,20 +21,19 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Master-slave data source parser tag constants.
+ * Master slave data source parser tag constants.
  * 
- * @author caohao
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveDataSourceBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "data-source";
+    public static final String ROOT_TAG = "master-slave-data-source";
     
-    public static final String MASTER_DATA_SOURCE_NAME_ATTRIBUTE = "master-data-source-name";
+    public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
     
-    public static final String SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE = "slave-data-source-names";
+    public static final String REG_REF_TAG = "registry-center-ref";
     
-    public static final String STRATEGY_REF_ATTRIBUTE = "strategy-ref";
-    
-    public static final String STRATEGY_TYPE_ATTRIBUTE = "strategy-type";
+    public static final String OVERWRITE_TAG = "overwrite";
 }
+

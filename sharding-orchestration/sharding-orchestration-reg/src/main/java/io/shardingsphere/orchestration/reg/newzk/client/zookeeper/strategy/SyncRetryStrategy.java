@@ -17,14 +17,12 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.retry.DelayRetryPolicy;
 import io.shardingsphere.orchestration.reg.newzk.client.retry.RetryCallable;
 import io.shardingsphere.orchestration.reg.newzk.client.retry.RetryResultCallable;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
@@ -37,19 +35,13 @@ import java.util.List;
  * @author lidongbo
  */
 @Getter(value = AccessLevel.PROTECTED)
-@Slf4j
 public class SyncRetryStrategy extends UsualStrategy {
     
     private final DelayRetryPolicy delayRetryPolicy;
     
     public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
-        if (null == delayRetryPolicy) {
-            log.info("RetryCallable constructor context's delayRetryPolicy is null");
-            this.delayRetryPolicy = DelayRetryPolicy.defaultDelayPolicy();
-        } else {
-            this.delayRetryPolicy = delayRetryPolicy;
-        }
+        this.delayRetryPolicy = null == delayRetryPolicy ? DelayRetryPolicy.defaultDelayPolicy() : delayRetryPolicy;
     }
 
     @Override

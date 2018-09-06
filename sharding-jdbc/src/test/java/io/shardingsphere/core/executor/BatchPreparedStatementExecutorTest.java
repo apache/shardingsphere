@@ -21,10 +21,10 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
-import io.shardingsphere.core.executor.batch.BatchPreparedStatementUnit;
+import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecuteUnit;
 import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.rewrite.SQLBuilder;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -49,7 +49,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Test
     public void assertNoPreparedStatement() throws SQLException {
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(
-                DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), Collections.<BatchPreparedStatementUnit>emptyList());
+                DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), Collections.<BatchPreparedStatementExecuteUnit>emptyList());
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
     
@@ -59,7 +59,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(
-                DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2));
+                DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
@@ -80,7 +80,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), 
-                createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
+                createBatchPreparedStatementExecuteUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
@@ -101,7 +101,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement.executeBatch()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(),
-                createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2));
+                createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
@@ -123,7 +123,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(),
-                createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
+                createBatchPreparedStatementExecuteUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
@@ -137,26 +137,27 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifyException(exp);
     }
     
-    private Collection<BatchPreparedStatementUnit> createPreparedStatementUnits(final String sql, final PreparedStatement preparedStatement, final String dataSource, final int addBatchTimes) {
+    private Collection<BatchPreparedStatementExecuteUnit> createBatchPreparedStatementExecuteUnits(
+            final String sql, final PreparedStatement preparedStatement, final String dataSource, final int addBatchTimes) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        BatchPreparedStatementUnit batchPreparedStatementUnit = 
-                new BatchPreparedStatementUnit(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement);
-        batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().clear();
+        BatchPreparedStatementExecuteUnit batchPreparedStatementExecuteUnit = 
+                new BatchPreparedStatementExecuteUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement);
+        batchPreparedStatementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets().clear();
         for (int i = 0; i < addBatchTimes; i++) {
-            batchPreparedStatementUnit.getSqlExecutionUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));
-            batchPreparedStatementUnit.mapAddBatchCount(i);
+            batchPreparedStatementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets().add(Collections.<Object>singletonList(i + 1));
+            batchPreparedStatementExecuteUnit.mapAddBatchCount(i);
         }
-        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
-        result.add(batchPreparedStatementUnit);
+        Collection<BatchPreparedStatementExecuteUnit> result = new LinkedList<>();
+        result.add(batchPreparedStatementExecuteUnit);
         return result;
     }
     
-    private Collection<BatchPreparedStatementUnit> createPreparedStatementUnits(
+    private Collection<BatchPreparedStatementExecuteUnit> createBatchPreparedStatementExecuteUnits(
             final String sql, final PreparedStatement preparedStatement1, final String dataSource1, final PreparedStatement preparedStatement2, final String dataSource2, final int addBatchTimes) {
-        Collection<BatchPreparedStatementUnit> result = new LinkedList<>();
-        result.addAll(createPreparedStatementUnits(sql, preparedStatement1, dataSource1, addBatchTimes));
-        result.addAll(createPreparedStatementUnits(sql, preparedStatement2, dataSource2, addBatchTimes));
+        Collection<BatchPreparedStatementExecuteUnit> result = new LinkedList<>();
+        result.addAll(createBatchPreparedStatementExecuteUnits(sql, preparedStatement1, dataSource1, addBatchTimes));
+        result.addAll(createBatchPreparedStatementExecuteUnits(sql, preparedStatement2, dataSource2, addBatchTimes));
         return result;
     }
 }

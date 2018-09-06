@@ -21,7 +21,6 @@ import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.zookeeper.section.Connection;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
 /**
@@ -29,7 +28,6 @@ import org.apache.zookeeper.KeeperException;
  *
  * @author lidongbo
  */
-@Slf4j
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class RetryCallable {
     
@@ -60,7 +58,6 @@ public abstract class RetryCallable {
         try {
             call();
         } catch (final KeeperException ex) {
-            log.warn("exec KeeperException: {}", ex.getMessage());
             delayPolicyExecutor.next();
             if (Connection.needReset(ex)) {
                 provider.resetConnection();
@@ -73,11 +70,9 @@ public abstract class RetryCallable {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
             if (delay > 0) {
-                log.debug("exec delay: {}", delay);
                 Thread.sleep(delay);
             } else {
                 if (delayPolicyExecutor.hasNext()) {
-                    log.debug("exec hasNext");
                     exec();
                 }
                 break;

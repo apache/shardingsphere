@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-jdbc-orchestration-spring</artifactId>
-        <version>3.0.0.M3-SNAPSHOT</version>
+        <version>3.0.0.M4-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
 
@@ -19,6 +19,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-spring-namespace</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

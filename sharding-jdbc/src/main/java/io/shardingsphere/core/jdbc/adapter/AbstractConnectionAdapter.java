@@ -19,12 +19,15 @@ package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
+import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
+import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
@@ -36,9 +39,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -57,6 +58,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
+    
+    private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     @Getter
     OverallExecutionEvent overallExecutionEventThreadLocal = new OverallExecutionEvent(true);
@@ -93,31 +96,49 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void setAutoCommit(final boolean autoCommit) {
+    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
-        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
+        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
+            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        
+                @Override
+                public void execute(final Connection connection) throws SQLException {
+                    connection.setAutoCommit(autoCommit);
+                }
+            });
+        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
+            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.BEGIN));
+        }
     }
     
     @Override
-    public final void commit() {
-        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
+    public final void commit() throws SQLException {
+        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+            
+                @Override
+                public void execute(final Connection connection) throws SQLException {
+                    connection.commit();
+                }
+            });
+        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
+            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.COMMIT));
+        }
     }
     
     @Override
-    public final void rollback() {
-        ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
-    }
-    
-    private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
-        switch (TransactionTypeHolder.get()) {
-            case LOCAL:
-                return new LocalTransactionEvent(operationType, cachedConnections.values(), autoCommit);
-            case XA:
-                return new XATransactionEvent(operationType);
-            case BASE:
-            default:
-                throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
+    public final void rollback() throws SQLException {
+        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+            
+                @Override
+                public void execute(final Connection connection) throws SQLException {
+                    connection.rollback();
+                }
+            });
+        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
+            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         }
     }
     
@@ -129,15 +150,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
+        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+            
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.close();
             }
-        }
-        throwSQLExceptionIfNecessary(exceptions);
+        });
     }
     
     @Override
@@ -154,9 +173,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
         recordMethodInvocation(Connection.class, "setReadOnly", new Class[] {boolean.class}, new Object[] {readOnly});
-        for (Connection each : cachedConnections.values()) {
-            each.setReadOnly(readOnly);
-        }
+        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.setReadOnly(readOnly);
+            }
+        });
     }
     
     @Override
@@ -171,9 +194,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[] {int.class}, new Object[] {level});
-        for (Connection each : cachedConnections.values()) {
-            each.setTransactionIsolation(level);
-        }
+        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.setTransactionIsolation(level);
+            }
+        });
     }
     
     // ------- Consist with MySQL driver implementation -------

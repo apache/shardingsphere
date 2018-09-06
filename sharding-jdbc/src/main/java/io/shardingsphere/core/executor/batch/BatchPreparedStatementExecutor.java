@@ -19,10 +19,10 @@ package io.shardingsphere.core.executor.batch;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -58,8 +58,8 @@ public abstract class BatchPreparedStatementExecutor {
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected int[] executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return executeUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+                return sqlExecuteUnit.getStatement().executeBatch();
             }
         };
         return accumulate(executeCallback(callback));
@@ -68,7 +68,7 @@ public abstract class BatchPreparedStatementExecutor {
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (BatchPreparedStatementUnit each : getBatchPreparedStatementUnitGroups()) {
+        for (BatchPreparedStatementExecuteUnit each : getBatchPreparedStatementUnitGroups()) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
                 if (DatabaseType.Oracle == dbType) {
@@ -84,5 +84,5 @@ public abstract class BatchPreparedStatementExecutor {
     
     protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
     
-    protected abstract Collection<BatchPreparedStatementUnit> getBatchPreparedStatementUnitGroups();
+    protected abstract Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups();
 }

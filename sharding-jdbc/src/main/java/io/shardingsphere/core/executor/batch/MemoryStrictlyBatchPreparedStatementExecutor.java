@@ -19,8 +19,8 @@ package io.shardingsphere.core.executor.batch;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -35,10 +35,10 @@ public final class MemoryStrictlyBatchPreparedStatementExecutor extends BatchPre
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits;
+    private final Collection<BatchPreparedStatementExecuteUnit> batchPreparedStatementUnits;
     
     public MemoryStrictlyBatchPreparedStatementExecutor(final DatabaseType dbType, final SQLType sqlType, final int batchCount, 
-                                                        final SQLExecuteTemplate executeTemplate, final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits) {
+                                                        final SQLExecuteTemplate executeTemplate, final Collection<BatchPreparedStatementExecuteUnit> batchPreparedStatementUnits) {
         super(dbType, sqlType, batchCount);
         this.executeTemplate = executeTemplate;
         this.batchPreparedStatementUnits = batchPreparedStatementUnits;
@@ -50,7 +50,7 @@ public final class MemoryStrictlyBatchPreparedStatementExecutor extends BatchPre
     }
     
     @Override
-    protected Collection<BatchPreparedStatementUnit> getBatchPreparedStatementUnitGroups() {
+    protected Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups() {
         return batchPreparedStatementUnits;
     }
 }

@@ -18,8 +18,8 @@
 package io.shardingsphere.core.executor.prepared;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,16 +34,16 @@ public final class MemoryStrictlyPreparedStatementExecutor extends PreparedState
     
     private final SQLExecuteTemplate executeTemplate;
     
-    private final Collection<PreparedStatementUnit> preparedStatementUnits;
+    private final Collection<PreparedStatementExecuteUnit> preparedStatementExecuteUnits;
     
-    public MemoryStrictlyPreparedStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<PreparedStatementUnit> preparedStatementUnits) {
+    public MemoryStrictlyPreparedStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<PreparedStatementExecuteUnit> preparedStatementExecuteUnits) {
         super(sqlType);
         this.executeTemplate = executeTemplate;
-        this.preparedStatementUnits = preparedStatementUnits;
+        this.preparedStatementExecuteUnits = preparedStatementExecuteUnits;
     }
     
     @Override
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return executeTemplate.execute(preparedStatementUnits, executeCallback);
+        return executeTemplate.execute(preparedStatementExecuteUnits, executeCallback);
     }
 }

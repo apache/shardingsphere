@@ -95,7 +95,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     @Override
-    public void close() {
+    public final void close() {
         closeOriginalDataSources();
         shardingContext.close();
     }

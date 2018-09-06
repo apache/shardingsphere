@@ -20,7 +20,7 @@ package io.shardingsphere.jdbc.orchestration.spring;
 import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import io.shardingsphere.jdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.jdbc.orchestration.spring.util.FieldValueUtil;
@@ -37,7 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/shardingMasterSlaveNamespace.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/shardingMasterSlaveOrchestration.xml")
 public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
@@ -47,26 +47,26 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     
     @Test
     public void assertMasterSlaveShardingDataSourceByUserStrategy() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategy");
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategyOrchestration");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_1"));
         assertNotNull(dataSourceMap.get("dbtbl_1_master"));
         assertNotNull(dataSourceMap.get("dbtbl_1_slave_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
-        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategy");
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategyOrchestration");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
     }
     
     @Test
     public void assertMasterSlaveShardingDataSourceByDefaultStrategy() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByDefaultStrategy");
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByDefaultStrategyOrchestration");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
         assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1_master"));
         assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
-        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByDefaultStrategy");
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByDefaultStrategyOrchestration");
         assertThat(shardingRule.getMasterSlaveRules().iterator().next().getLoadBalanceAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
@@ -75,15 +75,15 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
-        OrchestrationShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
+        OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationSpringShardingDataSource.class);
+        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
         return dataSource.getDataSourceMap();
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
-        OrchestrationShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource");
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext");
+        OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationSpringShardingDataSource.class);
+        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
+        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", true);
         return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
     }
 }

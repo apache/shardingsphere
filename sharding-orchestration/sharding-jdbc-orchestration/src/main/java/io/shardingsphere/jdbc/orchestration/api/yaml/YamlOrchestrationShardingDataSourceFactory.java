@@ -17,8 +17,10 @@
 
 package io.shardingsphere.jdbc.orchestration.api.yaml;
 
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
 import lombok.AccessLevel;
@@ -98,9 +100,13 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, 
                                                final YamlShardingRuleConfiguration yamlConfig, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        return null == yamlConfig ? OrchestrationShardingDataSourceFactory.createDataSource(orchestrationConfig)
-                : OrchestrationShardingDataSourceFactory.createDataSource(
-                        dataSourceMap, yamlConfig.getShardingRuleConfiguration(), yamlConfig.getConfigMap(), yamlConfig.getProps(), orchestrationConfig);
+        if (null == yamlConfig) {
+            return new OrchestrationShardingDataSource(orchestrationConfig);
+        } else {
+            ShardingDataSource shardingDataSource = new ShardingDataSource(
+                    dataSourceMap, new ShardingRule(yamlConfig.getShardingRuleConfiguration(), dataSourceMap.keySet()), yamlConfig.getConfigMap(), yamlConfig.getProps());
+            return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
+        }
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {

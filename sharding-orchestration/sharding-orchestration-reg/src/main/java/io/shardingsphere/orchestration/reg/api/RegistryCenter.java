@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.api;
 
-
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 import java.util.List;

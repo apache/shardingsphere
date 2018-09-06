@@ -17,62 +17,67 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.datasource;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
+import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Orchestration sharding datasource.
  *
- * @author caohao
+ * @author panjuan
  */
-@Slf4j
-public final class OrchestrationShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {
     
     private ShardingDataSource dataSource;
     
-    private final OrchestrationFacade orchestrationFacade;
-    
-    private Map<String, DataSource> dataSourceMap;
-    
-    private boolean isCircuitBreak;
-    
-    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(shardingDataSource.getDataSourceMap().values());
+    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig), shardingDataSource.getDataSourceMap());
         this.dataSource = shardingDataSource;
-        this.orchestrationFacade = orchestrationFacade;
-        this.orchestrationFacade.init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
-        this.dataSourceMap = shardingDataSource.getDataSourceMap();
-        ShardingEventBusInstance.getInstance().register(this);
+        initOrchestrationFacade(dataSource);
+    }
+    
+    public OrchestrationShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig));
+        ConfigurationService configService = getOrchestrationFacade().getConfigService();
+        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
+        Preconditions.checkNotNull(shardingRuleConfig, "Missing the sharding rule configuration on register center");
+        dataSource = new ShardingDataSource(configService.loadDataSourceMap(),
+                new ShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
+        initOrchestrationFacade(dataSource);
+    }
+    
+    private void initOrchestrationFacade(final ShardingDataSource shardingDataSource) {
+        getOrchestrationFacade().init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+                ConfigMapContext.getInstance().getShardingConfig(), shardingDataSource.getShardingProperties().getProps());
     }
     
     @Override
-    public Connection getConnection() {
-        if (isCircuitBreak) {
+    public final Connection getConnection() {
+        if (isCircuitBreak()) {
             return new CircuitBreakerDataSource().getConnection();
         }
         return dataSource.getConnection();
     }
     
     @Override
-    public void close() {
+    public final void close() {
         dataSource.close();
-        orchestrationFacade.close();
+        getOrchestrationFacade().close();
     }
     
     /**
@@ -96,22 +101,5 @@ public final class OrchestrationShardingDataSource extends AbstractDataSourceAda
         Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties(), dataSource.getDatabaseType());
     }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
-     */
-    @Subscribe
-    public void renew(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
-    }
 }
+

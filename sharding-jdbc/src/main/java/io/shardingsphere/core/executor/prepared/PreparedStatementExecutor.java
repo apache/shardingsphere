@@ -18,10 +18,10 @@
 package io.shardingsphere.core.executor.prepared;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
@@ -54,8 +54,8 @@ public abstract class PreparedStatementExecutor {
         SQLExecuteCallback<ResultSet> executeCallback = new SQLExecuteCallback<ResultSet>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected ResultSet executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return ((PreparedStatement) executeUnit.getStatement()).executeQuery();
+            protected ResultSet executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+                return ((PreparedStatement) sqlExecuteUnit.getStatement()).executeQuery();
             }
         };
         return executeCallback(executeCallback);
@@ -73,8 +73,8 @@ public abstract class PreparedStatementExecutor {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return ((PreparedStatement) executeUnit.getStatement()).executeUpdate();
+            protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+                return ((PreparedStatement) sqlExecuteUnit.getStatement()).executeUpdate();
             }
         };
         List<Integer> results = executeCallback(executeCallback);
@@ -101,8 +101,8 @@ public abstract class PreparedStatementExecutor {
         SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Boolean executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-                return ((PreparedStatement) executeUnit.getStatement()).execute();
+            protected Boolean executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+                return ((PreparedStatement) sqlExecuteUnit.getStatement()).execute();
             }
         };
         List<Boolean> result = executeCallback(executeCallback);

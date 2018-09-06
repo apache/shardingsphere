@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.newzk.client.zookeeper.strategy;
 
-
 import io.shardingsphere.orchestration.reg.newzk.client.action.IProvider;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.newzk.client.utility.ZookeeperConstants;
@@ -100,26 +99,21 @@ public class UsualStrategy extends BaseStrategy {
                 } else {
                     createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
-                log.debug("node not exist and create: {}", nodes.get(i));
-            } catch (final KeeperException.NodeExistsException ex) {
-                log.debug("create node exist: {}", nodes.get(i));
+            } catch (final KeeperException.NodeExistsException ignored) {
             }
         }
     }
     
     @Override
     public void deleteAllChildren(final String key) throws KeeperException, InterruptedException {
-        log.debug("deleteAllChildren: {}", key);
         deleteChildren(getProvider().getRealPath(key), true);
     }
     
     private void deleteChildren(final String path, final boolean deleteCurrentNode) throws KeeperException, InterruptedException {
-        log.debug("deleteChildren: {}", path);
         List<String> children;
         try {
             children = getProvider().getChildren(path);
-        } catch (final KeeperException.NoNodeException ex) {
-            log.warn("deleteChildren node not exist: {}, ex: {}", path, ex.getMessage());
+        } catch (final KeeperException.NoNodeException ignored) {
             return;
         }
         for (String each : children) {
@@ -142,31 +136,24 @@ public class UsualStrategy extends BaseStrategy {
     */
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
-        log.debug("deleteCurrentBranch: {}", key);
         String path = getProvider().getRealPath(key);
         try {
             deleteOnlyCurrent(path);
-        } catch (final KeeperException | InterruptedException ex) {
-            if (ex instanceof KeeperException.NotEmptyException) {
-                deleteChildren(path, true);
-            } else if (ex instanceof KeeperException.NoNodeException) {
-                log.debug("path: {}, ex: {}", path, ex.getMessage());
-            } else {
-                throw ex;
-            }
+        } catch (final KeeperException.NotEmptyException ex) {
+            deleteChildren(path, true);
+        } catch (final KeeperException.NoNodeException ignored) {
         }
+
         String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
             deleteRecursively(superPath);
         } catch (final KeeperException.NotEmptyException ex) {
             log.warn("deleteCurrentBranch exist children: {}, ex: {}", path, ex.getMessage());
-        } catch (final KeeperException.NoNodeException ex) {
-            log.debug("deleteCurrentBranch: {}, ex: {}", superPath, ex.getMessage());
+        } catch (final KeeperException.NoNodeException ignored) {
         }
     }
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
-        log.debug("deleteRecursively: {}", path);
         int index = path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR);
         if (index == 0) {
             deleteOnlyCurrent(path);
@@ -178,7 +165,6 @@ public class UsualStrategy extends BaseStrategy {
             deleteRecursively(superPath);
         } catch (final KeeperException.NotEmptyException ex) {
             log.info("deleteRecursively exist children: {}, ex: {}", path, ex.getMessage());
-            log.debug("deleteRecursively {} exist other children: {}", path, getChildren(path));
         }
     }
 }

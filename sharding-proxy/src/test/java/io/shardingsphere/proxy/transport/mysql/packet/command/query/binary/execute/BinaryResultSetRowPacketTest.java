@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,7 +36,7 @@ public final class BinaryResultSetRowPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    @Test
+    @Test 
     public void assertWrite() {
         BinaryResultSetRowPacket actual = new BinaryResultSetRowPacket(1, 2, Arrays.<Object>asList("value", null), Arrays.asList(ColumnType.MYSQL_TYPE_STRING, ColumnType.MYSQL_TYPE_STRING));
         assertThat(actual.getSequenceId(), is(1));

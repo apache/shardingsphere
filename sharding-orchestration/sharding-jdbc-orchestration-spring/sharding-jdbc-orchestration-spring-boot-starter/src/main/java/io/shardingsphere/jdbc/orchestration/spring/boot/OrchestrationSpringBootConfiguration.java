@@ -19,9 +19,12 @@ package io.shardingsphere.jdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.DataSourceUtil;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.api.datasource.OrchestrationShardingDataSourceFactory;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
 import io.shardingsphere.jdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
@@ -71,11 +74,14 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public DataSource dataSource() throws SQLException {
         OrchestrationType type = orchestrationProperties.getType();
         Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
-        return OrchestrationType.SHARDING == type
-                ? OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap,
-                shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration())
-                : OrchestrationMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(),
-                masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps(), orchestrationProperties.getOrchestrationConfiguration());
+        if (OrchestrationType.SHARDING == type) {
+            ShardingDataSource shardingDataSource = new ShardingDataSource(
+                    dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), shardingProperties.getConfigMap(), shardingProperties.getProps());
+            return new OrchestrationShardingDataSource(shardingDataSource, orchestrationProperties.getOrchestrationConfiguration());
+        }
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(
+                dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
+        return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationProperties.getOrchestrationConfiguration());
     }
     
     @Override

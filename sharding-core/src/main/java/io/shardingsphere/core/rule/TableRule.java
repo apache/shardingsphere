@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,6 +62,17 @@ public final class TableRule {
     private final KeyGenerator keyGenerator;
     
     private final String logicIndex;
+    
+    public TableRule(final String defaultDataSourceName, final String logicTableName) {
+        logicTable = logicTableName.toLowerCase();
+        actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
+        dataNodeIndexMap = Collections.emptyMap();
+        databaseShardingStrategy = null;
+        tableShardingStrategy = null;
+        generateKeyColumn = null;
+        keyGenerator = null;
+        logicIndex = null;
+    }
     
     public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames) {
         Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
@@ -112,14 +124,14 @@ public final class TableRule {
      *
      * @return data node groups, key is data source name, value is tables belong to this data source
      */
-    public Map<String, List<String>> getDataNodeGroups() {
-        Map<String, List<String>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
+    public Map<String, List<DataNode>> getDataNodeGroups() {
+        Map<String, List<DataNode>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
         for (DataNode each : actualDataNodes) {
             String dataSourceName = each.getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<String>());
+                result.put(dataSourceName, new LinkedList<DataNode>());
             }
-            result.get(dataSourceName).add(each.getTableName());
+            result.get(dataSourceName).add(each);
         }
         return result;
     }

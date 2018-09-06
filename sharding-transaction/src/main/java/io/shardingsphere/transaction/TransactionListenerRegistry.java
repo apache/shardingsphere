@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.event.ShardingEventListenerRegistry;
-import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
 import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 
 /**
@@ -30,7 +29,6 @@ public final class TransactionListenerRegistry implements ShardingEventListenerR
     
     @Override
     public void register() {
-        new LocalTransactionListener().register();
         new XATransactionListener().register();
     }
 }
