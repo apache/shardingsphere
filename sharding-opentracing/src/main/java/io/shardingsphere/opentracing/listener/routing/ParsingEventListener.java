@@ -22,40 +22,40 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
-import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
-import io.opentracing.BaseSpan;
 
 /**
- * SQL route event listener.
+ * SQL parsing event listener.
  *
- * @author chenqingyang
+ * @author zhangyonglun
  */
-public final class RouteEventListener extends OpenTracingListener<RoutingEvent> {
+public final class ParsingEventListener extends OpenTracingListener<ParsingEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/routing/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/parsing/";
     
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
     
     private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
     
     /**
-     * Listen routing event.
+     * Listen parsing event.
      *
-     * @param event SQL routing event
+     * @param event SQL parsing event
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final RoutingEvent event) {
+    public void listen(final ParsingEvent event) {
         tracing(event);
     }
     
     @Override
-    protected void beforeExecute(final RoutingEvent event) {
+    protected void beforeExecute(final ParsingEvent event) {
 //        if (ExecutorDataMap.getDataMap().containsKey(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
 //            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
 //        }
