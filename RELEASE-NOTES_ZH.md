@@ -56,7 +56,7 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) 使用Groovy解析行表达式可能导致内存泄漏
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) 无法解析PostgreSQL的双引号占位符
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) 支持SQL `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
-1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) `GROUP BY / ORDER BY`产生的补列不应展现在查询结果中
+1. [ISSUE #1120](https://github.com/sharding-sphere/sharding-sphere/issues/1120) `GROUP BY / ORDER BY`产生的补列不应展现在查询结果中
 1. [ISSUE #1186](https://github.com/sharding-sphere/sharding-sphere/issues/1186) 在MEMORY_STRICTLY模式中，并发环境下可能产生死锁
 
 #### Sharding-JDBC
