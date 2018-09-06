@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
@@ -40,7 +40,7 @@ public final class MergeEventListener extends OpenTracingListener<MergeEvent> {
     
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
     
-//    private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
+    private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
     
     /**
      * Listen result set merge event.
@@ -58,6 +58,7 @@ public final class MergeEventListener extends OpenTracingListener<MergeEvent> {
 //        if (ExecutorDataMap.getDataMap().containsKey(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
 //            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
 //        }
+        trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         if (null == branchSpan.get()) {
             branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startManual());
         }
@@ -70,11 +71,11 @@ public final class MergeEventListener extends OpenTracingListener<MergeEvent> {
         }
         branchSpan.get().finish();
         branchSpan.remove();
-//        if (null == trunkInBranchSpan.get()) {
-//            return;
-//        }
-//        trunkInBranchSpan.get().deactivate();
-//        trunkInBranchSpan.remove();
+        if (null == trunkInBranchSpan.get()) {
+            return;
+        }
+        trunkInBranchSpan.get().deactivate();
+        trunkInBranchSpan.remove();
     }
     
     @Override
