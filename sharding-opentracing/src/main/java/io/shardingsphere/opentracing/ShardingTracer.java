@@ -24,6 +24,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
+import io.shardingsphere.opentracing.listener.routing.ParsingEventListener;
 import io.shardingsphere.opentracing.listener.routing.RouteEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -69,6 +70,7 @@ public final class ShardingTracer {
         new OverallExecuteEventListener().register();
         new SQLExecuteEventListener().register();
         new MergeEventListener().register();
+        new ParsingEventListener().register();
     }
     
     /**
