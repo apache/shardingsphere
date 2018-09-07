@@ -21,13 +21,13 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.opentracing.listener.RouteEventListener;
 import io.shardingsphere.opentracing.listener.connection.ConnectionCloseEventListener;
 import io.shardingsphere.opentracing.listener.connection.GetConnectionEventListener;
 import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
 import io.shardingsphere.opentracing.listener.parsing.ParsingEventListener;
-import io.shardingsphere.opentracing.listener.routing.RouteEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
