@@ -22,7 +22,6 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.ConnectionCloseEvent;
-import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -57,7 +56,8 @@ public final class ConnectionCloseEventListener extends OpenTracingListener<Conn
 //        }
 //        trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
 //        if (null == branchSpan.get()) {
-        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
+        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
+            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
 //        }
     }
     
