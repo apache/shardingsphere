@@ -24,7 +24,11 @@ rangeClause:
 	| NUMBER OFFSET NUMBER
 	;
 
+columnNames:
+	columnName (COMMA columnName)*
+	;
+	
 columnList:
-	LEFT_PAREN columnName (COMMA columnName)* RIGHT_PAREN
+	LEFT_PAREN columnNames RIGHT_PAREN
 	;
 
