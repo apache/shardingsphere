@@ -25,11 +25,10 @@ import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * SQL execute overall event listener.
- * 
+ *
  * @author gaohongtao
  * @author wangkai
  * @author maxiaoguang
@@ -50,11 +49,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final OverallExecutionEvent event) {
-        try {
-            tracing(event);
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-        }
+        tracing(event);
     }
     
     @Override
@@ -79,11 +74,10 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     
     /**
      * Tests if sql execute event in this overall event thread.
-     * 
+     *
      * @return sql execute event in this overall event thread or not.
      */
     public static boolean isTrunkThread() {
         return null != SPAN.get();
     }
-
 }

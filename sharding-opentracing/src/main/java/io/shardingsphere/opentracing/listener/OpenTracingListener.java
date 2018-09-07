@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * Opentracing listener.
- * 
+ *
  * @author zhangliang
  * 
  * @param <T> type of sharding event
