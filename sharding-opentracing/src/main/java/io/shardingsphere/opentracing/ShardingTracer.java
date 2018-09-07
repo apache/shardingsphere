@@ -24,7 +24,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.listener.RouteEventListener;
 import io.shardingsphere.opentracing.listener.connection.ConnectionCloseEventListener;
 import io.shardingsphere.opentracing.listener.connection.GetConnectionEventListener;
-import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
+import io.shardingsphere.opentracing.listener.SQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.MergeEventListener;
 import io.shardingsphere.opentracing.listener.ParsingEventListener;

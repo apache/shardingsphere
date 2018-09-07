@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener.execution;
+package io.shardingsphere.opentracing.listener;
 
 import com.google.common.base.Joiner;
 import com.google.common.eventbus.AllowConcurrentEvents;
