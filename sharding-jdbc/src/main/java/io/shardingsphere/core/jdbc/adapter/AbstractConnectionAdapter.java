@@ -75,19 +75,26 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final Connection getConnection(final String dataSourceName) throws SQLException {
         GetConnectionEvent event = new GetConnectionEvent(dataSourceName);
         ShardingEventBusInstance.getInstance().post(event);
-        if (cachedConnections.containsKey(dataSourceName)) {
+        try {
+            if (cachedConnections.containsKey(dataSourceName)) {
+                event.setExecuteSuccess();
+                return cachedConnections.get(dataSourceName);
+            }
+            DataSource dataSource = getDataSourceMap().get(dataSourceName);
+            Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+            Connection result = dataSource.getConnection();
+            cachedConnections.put(dataSourceName, result);
+            replayMethodsInvocation(result);
             event.setExecuteSuccess();
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setExecuteFailure(ex);
+            throw ex;
+        } finally {
             ShardingEventBusInstance.getInstance().post(event);
-            return cachedConnections.get(dataSourceName);
         }
-        DataSource dataSource = getDataSourceMap().get(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-        Connection result = dataSource.getConnection();
-        cachedConnections.put(dataSourceName, result);
-        replayMethodsInvocation(result);
-        event.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(event);
-        return result;
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -162,15 +169,15 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 ShardingEventBusInstance.getInstance().post(event);
                 try {
                     cachedConnectionsEntrySet.getValue().close();
+                    event.setExecuteSuccess();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
                     event.setExecuteFailure(ex);
-                    ShardingEventBusInstance.getInstance().post(event);
                     throw ex;
+                } finally {
+                    ShardingEventBusInstance.getInstance().post(event);
                 }
-                event.setExecuteSuccess();
-                ShardingEventBusInstance.getInstance().post(event);
             }
         });
         overallExecutionEventThreadLocal.setExecuteSuccess();
