@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.opentracing.listener.ConnectionCloseEventListener;
 import io.shardingsphere.opentracing.listener.GetConnectionEventListener;
 import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
@@ -73,6 +74,7 @@ public final class ShardingTracer {
         new MergeEventListener().register();
         new ParsingEventListener().register();
         new GetConnectionEventListener().register();
+        new ConnectionCloseEventListener().register();
     }
     
     /**
