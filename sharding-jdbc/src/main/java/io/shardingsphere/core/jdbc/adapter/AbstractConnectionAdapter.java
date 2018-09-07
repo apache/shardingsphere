@@ -63,7 +63,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private final ForceExecuteTemplate<Map.Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
     
     @Getter
-    OverallExecutionEvent overallExecutionEventThreadLocal = new OverallExecutionEvent(true);
+    private final OverallExecutionEvent overallExecutionEventThreadLocal = new OverallExecutionEvent(true);
     
     /**
      * Get database connection.
