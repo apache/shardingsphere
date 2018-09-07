@@ -45,7 +45,6 @@ import io.shardingsphere.core.jdbc.core.resultset.ShardingResultSet;
 import io.shardingsphere.core.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
-import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
@@ -146,7 +145,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
                 connection.getShardingDataSource().getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(),
                 connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
-            result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
+            result = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         } finally {
             clearBatch();
         }
@@ -376,12 +375,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
                 connection.getShardingDataSource().getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(),
                 connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
-            currentResultSet = new ShardingResultSet(resultSets, merge(mergeEngine), this);
+            currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         }
         return currentResultSet;
-    }
-    
-    private MergedResult merge(final MergeEngine mergeEngine) throws SQLException {
-        return mergeEngine.merge();
     }
 }
