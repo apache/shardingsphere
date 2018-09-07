@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
-import io.shardingsphere.core.event.routing.RoutingEvent;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -37,7 +37,6 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -87,19 +86,18 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         ParsingEvent event = new ParsingEvent(logicSQL);
         ShardingEventBusInstance.getInstance().post(event);
-        SQLStatement sqlStatement;
         try {
-            sqlStatement = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            SQLStatement sqlStatement = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            event.setExecuteSuccess();
+            return sqlStatement;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             event.setExecuteFailure(ex);
-            ShardingEventBusInstance.getInstance().post(event);
             throw ex;
+        } finally {
+            ShardingEventBusInstance.getInstance().post(event);
         }
-        event.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(event);
-        return sqlStatement;
     }
     
     @Override
