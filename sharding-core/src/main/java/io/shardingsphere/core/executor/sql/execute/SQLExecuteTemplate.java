@@ -17,25 +17,22 @@
 
 package io.shardingsphere.core.executor.sql.execute;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-//import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+
+//import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 
 /**
  * SQL execute template.
- * 
+ *
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
@@ -50,8 +47,8 @@ public final class SQLExecuteTemplate {
      * Execute.
      *
      * @param sqlExecuteUnits SQL execute units
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param callback        SQL execute callback
+     * @param <T>             class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -62,10 +59,10 @@ public final class SQLExecuteTemplate {
     /**
      * Execute.
      *
-     * @param sqlExecuteUnits SQL execute units
+     * @param sqlExecuteUnits      SQL execute units
      * @param firstExecuteCallback first SQL execute callback
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param callback             SQL execute callback
+     * @param <T>                  class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -93,8 +90,8 @@ public final class SQLExecuteTemplate {
      * Execute group.
      *
      * @param sqlExecuteGroups SQL execute groups
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param callback         SQL execute callback
+     * @param <T>              class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -106,15 +103,15 @@ public final class SQLExecuteTemplate {
      * Execute group.
      *
      * @param sqlExecuteGroups SQL execute groups
-     * @param firstCallback first SQL execute callback
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param firstCallback    first SQL execute callback
+     * @param callback         SQL execute callback
+     * @param <T>              class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends SQLExecuteUnit>> sqlExecuteGroups,
-                               final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
+                                    final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
 //        OverallExecutionEvent event = new OverallExecutionEvent(sqlExecuteGroups.size() > 1);
 //        ShardingEventBusInstance.getInstance().post(event);
         try {
