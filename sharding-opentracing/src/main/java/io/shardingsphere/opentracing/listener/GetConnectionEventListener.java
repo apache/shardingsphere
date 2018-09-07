@@ -24,7 +24,6 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * Get connection event listener.
@@ -36,7 +35,7 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/getConnection/";
     
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
-
+    
     /**
      * Listen getConnection event.
      *
