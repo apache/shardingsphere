@@ -19,16 +19,12 @@ package io.shardingsphere.opentracing.listener.parsing;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
-import io.shardingsphere.core.event.routing.RoutingEvent;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
-import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
 
 /**
  * SQL parsing event listener.

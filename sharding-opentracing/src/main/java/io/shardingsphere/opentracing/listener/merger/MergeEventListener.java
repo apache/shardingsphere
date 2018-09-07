@@ -19,15 +19,12 @@ package io.shardingsphere.opentracing.listener.merger;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.listener.OpenTracingListener;
 import io.shardingsphere.opentracing.ShardingTags;
-import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
 
 /**
  * Result set merge event listener.
