@@ -18,14 +18,12 @@
 package io.shardingsphere.core.jdbc.core.connection;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,7 +36,7 @@ import java.util.Map;
 
 /**
  * Connection that support sharding.
- * 
+ *
  * @author zhangliang
  * @author caohao
  * @author gaohongtao
