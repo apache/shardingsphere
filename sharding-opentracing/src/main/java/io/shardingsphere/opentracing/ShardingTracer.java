@@ -27,7 +27,7 @@ import io.shardingsphere.opentracing.listener.connection.GetConnectionEventListe
 import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
 import io.shardingsphere.opentracing.listener.OverallExecuteEventListener;
 import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
-import io.shardingsphere.opentracing.listener.parsing.ParsingEventListener;
+import io.shardingsphere.opentracing.listener.ParsingEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
