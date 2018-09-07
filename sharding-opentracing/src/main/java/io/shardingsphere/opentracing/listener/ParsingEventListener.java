@@ -24,7 +24,6 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * SQL parsing event listener.
@@ -57,7 +56,8 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
 //        }
 //        trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
 //        if (null == branchSpan.get()) {
-        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startManual());
+        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
+            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startManual());
 //        }
     }
     
