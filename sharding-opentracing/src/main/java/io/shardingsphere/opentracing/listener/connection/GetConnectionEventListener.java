@@ -15,40 +15,41 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.connection;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.connection.ConnectionCloseEvent;
+import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
- * Connection close event listener.
+ * Get connection event listener.
  *
  * @author zhangyonglun
  */
-public final class ConnectionCloseEventListener extends OpenTracingListener<ConnectionCloseEvent> {
+public final class GetConnectionEventListener extends OpenTracingListener<GetConnectionEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/connectionClose/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/getConnection/";
     
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
-    
+
     /**
-     * Listen connectionClose event.
+     * Listen getConnection event.
      *
-     * @param event Connection close event
+     * @param event Get connection event
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final ConnectionCloseEvent event) {
+    public void listen(final GetConnectionEvent event) {
         tracing(event);
     }
     
     @Override
-    protected void beforeExecute(final ConnectionCloseEvent event) {
+    protected void beforeExecute(final GetConnectionEvent event) {
         branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
             .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
     }
