@@ -21,7 +21,9 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
+import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.event.transaction.local.LocalTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
@@ -72,7 +74,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-//        ShardingEventBusInstance.getInstance().post(overallExecutionEventThreadLocal);
+        GetConnectionEvent event = new GetConnectionEvent(dataSourceName);
+        ShardingEventBusInstance.getInstance().post(event);
         if (cachedConnections.containsKey(dataSourceName)) {
             return cachedConnections.get(dataSourceName);
         }
@@ -81,6 +84,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         Connection result = dataSource.getConnection();
         cachedConnections.put(dataSourceName, result);
         replayMethodsInvocation(result);
+        event.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(event);
         return result;
     }
     

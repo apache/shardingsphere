@@ -30,5 +30,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class GetConnectionEvent extends ShardingEvent {
     
-    private final String sql;
+    private final String dataSource;
 }
