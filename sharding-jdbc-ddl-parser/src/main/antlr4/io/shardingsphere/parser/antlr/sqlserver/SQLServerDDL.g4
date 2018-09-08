@@ -19,65 +19,21 @@ createDiskTable:
     		createTableDefinition (COMMA createTableDefinition)*
     		periodClause?  
     RIGHT_PAREN  
-    (ON ( schemeName LEFT_PAREN  columnName RIGHT_PAREN   
+    (ON ( schemaName LEFT_PAREN  columnName RIGHT_PAREN   
            | fileGroup   
            | STRING ) )?   
     (TEXTIMAGE_ON (fileGroup | STRING) )?   
-    	((FILESTREAM_ON (schemeName) 
+    	((FILESTREAM_ON (schemaName) 
            | fileGroup   
            | STRING) )?  
     (WITH LEFT_PAREN  tableOption (COMMA tableOption)*  RIGHT_PAREN)?  
   	;
  
 periodClause:
- 	COMMA PERIOD FOR SYSTEM_TIME LEFT_PAREN  systemStartTimeColumnName   
-    COMMA systemEndTimeColumnName RIGHT_PAREN
+ 	PERIOD FOR SYSTEM_TIME LEFT_PAREN  columnName   
+    COMMA columnName RIGHT_PAREN
     ;
- 
-systemStartTimeColumnName:
-	ID
-	;
-	
-systemEndTimeColumnName:
-	ID
-	;
 
-schemeName:
-	ID
-	;
-	
-fileGroup:
-	ID
-	;
-
-groupName:
-	ID
-	;
-	
-constraintName:
-	ID
-	;
-
-keyName:
-	ID
-	;
-	
-typeName:
-	ID
-	;
-	
-xmlSchemaCollection:
-	ID
-	;
-
-columnSetName:
-	ID
-	;
-
-directoryName:
-	ID
-	;
-	
 createTableDefinition:
 	columnDefinition  
     | computedColumnDefinition    
@@ -152,7 +108,7 @@ primaryKeyWithClause:
 
 primaryKeyOnClause:
 	ON (
-		(schemeName LEFT_PAREN  columnName RIGHT_PAREN)   
+		(schemaName LEFT_PAREN  columnName RIGHT_PAREN)   
          | fileGroup 
          | STRING 
         ) 
@@ -191,12 +147,12 @@ columnIndex:
  	INDEX indexName ( CLUSTERED | NONCLUSTERED )?  
     ( WITH LEFT_PAREN  indexOption (COMMA indexOption)*  RIGHT_PAREN )?  
     ( ON ( 
-    		(schemeName LEFT_PAREN columnName RIGHT_PAREN)  
+    		(schemaName LEFT_PAREN columnName RIGHT_PAREN)  
          | fileGroup  
          | DEFAULT   
          )  
     )?   
-    ( FILESTREAM_ON ( fileGroup | schemeName | STRING ) )?  
+    ( FILESTREAM_ON ( fileGroup | schemaName | STRING ) )?  
 	;
 	
 computedColumnDefinition :  
@@ -253,12 +209,12 @@ tableIndex:
 	    (WITH LEFT_PAREN  indexOption ( COMMA indexOption)* RIGHT_PAREN)?   
 	    ( ON 
 	    	( 
-	    		(schemeName LEFT_PAREN columnName RIGHT_PAREN)  
+	    		(schemaName LEFT_PAREN columnName RIGHT_PAREN)  
 	         	| groupName  
 	         	| DEFAULT   
 	         )  
 	    )?   
-	    ( FILESTREAM_ON ( groupName | schemeName | STRING ) )?  
+	    ( FILESTREAM_ON ( groupName | schemaName | STRING ) )?  
 	)   
 	;
 	
@@ -315,7 +271,7 @@ partitionRange:
 createMemoryTable:	
     LEFT_PAREN  
 		columnOption (COMMA columnOption)*
-		periodClause?  
+		(COMMA periodClause)?  
     RIGHT_PAREN 
     (WITH LEFT_PAREN tableOptOption ( COMMA tableOptOption)* RIGHT_PAREN)? 
 	; 
@@ -469,3 +425,208 @@ windowFrameFollowing:
   | NUMBER FOLLOWING  
   | CURRENT ROW  
 ;
+
+alterTable:
+	alterTableOp
+	(alterColumn
+	|addColumn
+	|alterDrop
+	|alterCheckConstraint
+	|alterTrigger
+	|alterTracking
+	|alterSwitch
+	|alterSet
+	|alterRebuild
+	|fileTableOption
+	|stretchConfiguration)
+	;
+alterTableOp:
+	ALTER TABLE tableName
+	;
+	
+alterColumn:
+	 ALTER COLUMN columnName   
+    (   
+       dataType   
+        (
+        	(COLLATE collationName)   
+       		|( NULL | NOT NULL ) 
+        	|( SPARSE )
+        )*
+      | ((ADD | DROP)  ( ROWGUIDCOL | PERSISTED | NOT FOR REPLICATION | SPARSE | HIDDEN_)) 
+      | ((ADD | DROP) MASKED (WITH LEFT_PAREN FUNCTION EQ_OR_ASSIGN STRING RIGHT_PAREN )?) 
+    )   
+    (WITH LEFT_PAREN ONLINE EQ_OR_ASSIGN ON | OFF RIGHT_PAREN)?  
+    ;
+alterIndex:
+	 ALTER INDEX indexName   
+     typeName  REBUILD 
+     (NONCLUSTERED? WITH LEFT_PAREN BUCKET_COUNT EQ_OR_ASSIGN NUMBER RIGHT_PAREN)?
+    ;
+
+addColumn:
+	 (WITH (CHECK | NOCHECK))?
+	 ADD   
+   	 (
+   	 	(alterColumnAddOption (COMMA  alterColumnAddOption)*) 
+      |(
+      	(columnNameGeneratedClause COMMA periodClause)
+        |(periodClause COMMA columnNameGeneratedClause)
+        )
+      )  
+	;
+	
+alterColumnAddOption:
+	  columnDefinition  
+      | computedColumnDefinition  
+      | tableConstraint   
+      | columnSetDefinition
+      | columnIndex
+      ;
+      
+columnNameGeneratedClause:
+	columnNameGenerated
+    DEFAULT simpleExpr (WITH VALUES)? COMMA  
+    columnNameGenerated
+	;
+	
+columnNameGenerated:
+	columnName typeName GENERATED ALWAYS AS ROW START   
+    HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
+    ;
+    	
+alterDrop:
+	DROP 
+	(
+		alterTableDropConstraint
+		|alterTableDropColumn
+		|(PERIOD FOR SYSTEM_TIME)
+	)
+	;
+	
+alterTableDropConstraint:
+	CONSTRAINT? (IF EXISTS)?  
+	dropConstraintName (COMMA dropConstraintName)
+	;
+	
+dropConstraintName:
+	constraintName dropConstraintWithClause?
+	;
+
+dropConstraintWithClause:
+  	WITH  LEFT_PAREN dropConstraintOption ( COMMA dropConstraintOption)* RIGHT_PAREN   
+	;
+
+alterTableDropColumn:
+	COLUMN (IF EXISTS)?  
+	columnName (COMMA columnName)*
+	;
+
+dropConstraintOption:    
+    (   
+        (MAXDOP EQ_OR_ASSIGN NUMBER ) 
+      | (ONLINE EQ_OR_ASSIGN ( ON | OFF ))  
+      | (MOVE TO   
+         ( schemaName LEFT_PAREN columnName RIGHT_PAREN | fileGroup | STRING ) ) 
+    )
+    ;  
+    
+alterTableOption:  
+    SET LEFT_PAREN LOCK_ESCALATION EQ_OR_ASSIGN (AUTO | TABLE | DISABLE) RIGHT_PAREN  
+	;
+	
+alterCheckConstraint:  
+    WITH? (CHECK | NOCHECK) CONSTRAINT   
+        (ALL | (constraintName (COMMA constraintName)*))  
+	;
+	
+alterTrigger: 
+	(ENABLE| DISABLE) TRIGGER   
+        (ALL | (triggerName ( COMMA triggerName)*))  
+	;
+	
+alterTracking:
+	(ENABLE | DISABLE) CHANGE_TRACKING   
+    (WITH LEFT_PAREN TRACK_COLUMNS_UPDATED EQ_OR_ASSIGN (ON | OFF) RIGHT_PAREN )?
+	;
+	
+alterSwitch:
+	SWITCH ( PARTITION expr )?  
+        TO tableName   
+        ( PARTITION expr)?  
+        ( WITH LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?  
+	;
+alterSet:	
+    SET   
+        LEFT_PAREN  
+            ( FILESTREAM_ON EQ_OR_ASSIGN   
+                ( schemaName | fileGroup | STRING ) )  
+            | (SYSTEM_VERSIONING EQ_OR_ASSIGN   
+                  (   
+                      OFF   
+                  	|alterSetOnClause 
+                  ) 
+               ) 
+          RIGHT_PAREN 
+        ; 
+
+alterSetOnClause:
+	ON   
+      (LEFT_PAREN 
+      		HISTORY_TABLE EQ_OR_ASSIGN tableName   
+            (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? 
+            (COMMA HISTORY_RETENTION_PERIOD EQ_OR_ASSIGN 
+	        	( 
+	             	INFINITE | NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ) 
+	            ) 
+             )?  
+     RIGHT_PAREN  
+    )?
+ 	; 
+      
+alterRebuild:
+    REBUILD   
+    	(
+      		((PARTITION EQ_OR_ASSIGN ALL)? ( WITH LEFT_PAREN rebuildOption ( COMMA rebuildOption)* RIGHT_PAREN )) 
+      		| ( PARTITION EQ_OR_ASSIGN numberRange (WITH LEFT_PAREN singlePartitionRebuildOption (COMMA singlePartitionRebuildOption)* RIGHT_PAREN )?)  
+      	)
+    ;		
+	
+fileTableOption :  
+    ((ENABLE | DISABLE) FILETABLE_NAMESPACE)  
+   	|(SET LEFT_PAREN FILETABLE_DIRECTORY EQ_OR_ASSIGN directoryName RIGHT_PAREN ) 
+    ;  
+
+stretchConfiguration :  
+    SET 
+    	LEFT_PAREN  
+	        REMOTE_DATA_ARCHIVE   
+	        (  
+	            (EQ_OR_ASSIGN ON LEFT_PAREN  tableStretchOptions  RIGHT_PAREN)  
+	          | (EQ_OR_ASSIGN OFF_WITHOUT_DATA_RECOVERY LEFT_PAREN MIGRATION_STATE EQ_OR_ASSIGN PAUSED RIGHT_PAREN)  
+	          | (LEFT_PAREN tableStretchOptions (COMMA )? RIGHT_PAREN)  
+	        )  
+        RIGHT_PAREN  
+	;
+
+singlePartitionRebuildOption :  
+      (SORT_IN_TEMPDB EQ_OR_ASSIGN ( ON | OFF ))  
+    | (MAXDOP EQ_OR_ASSIGN NUMBER)  
+    | (DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE))  
+    | (ONLINE EQ_OR_ASSIGN ( ON (LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?| OFF)) 
+	;
+
+lowPriorityLockWait:  
+    WAIT_AT_LOW_PRIORITY LEFT_PAREN MAX_DURATION EQ_OR_ASSIGN NUMBER ( MINUTES )? COMMA
+    ABORT_AFTER_WAIT EQ_OR_ASSIGN ( NONE | SELF | BLOCKERS ) RIGHT_PAREN   
+;
+
+rebuildOption:   
+    DATA_COMPRESSION EQ_OR_ASSIGN (COLUMNSTORE | COLUMNSTORE_ARCHIVE )
+    (ON PARTITIONS LEFT_PAREN numberRange (COMMA numberRange)* RIGHT_PAREN)   
+	;
+
+	
+numberRange:
+	NUMBER (TO NUMBER)?
+	;
