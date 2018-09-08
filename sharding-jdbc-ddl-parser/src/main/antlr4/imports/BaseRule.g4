@@ -13,7 +13,16 @@ indexName: ID;
 alias: ID;
 cteName:ID;
 
-
+	
+fileGroup:ID;
+groupName:ID;
+constraintName:ID;
+keyName:ID;
+typeName:ID;
+xmlSchemaCollection:ID;
+columnSetName: ID;
+directoryName:ID;
+triggerName:ID;
 
 idList:
     LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
