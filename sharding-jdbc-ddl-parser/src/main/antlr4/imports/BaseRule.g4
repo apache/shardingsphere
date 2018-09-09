@@ -12,6 +12,7 @@ collationName: ID;
 indexName: ID;
 alias: ID;
 cteName:ID;
+parserName: ID;
 
 	
 fileGroup: ID;
