@@ -54,26 +54,12 @@ havingClause:
 	HAVING  expr
 	;
 	
-orderByClause: 
-	ORDER BY groupByItem (COMMA groupByItem)*
-	;
-	
-groupByItem:
-	(columnName | NUMBER |expr)  (ASC|DESC)?
-	;
-	
 limitClause:
 	LIMIT rangeClause
 	;
 	
-	
 partitionClause: 
 	PARTITION idList
-	;
-
-
-functionCall:
-	ID LEFT_PAREN(|expr ( COMMA  expr)*) RIGHT_PAREN
 	;
 
 selectExprs:
@@ -86,6 +72,5 @@ subquery:
 	;
 	   
 alias: ID ;	
-expr: ;
-selectExpr: ;
+selectExpr:;
 tableReferences: ;
