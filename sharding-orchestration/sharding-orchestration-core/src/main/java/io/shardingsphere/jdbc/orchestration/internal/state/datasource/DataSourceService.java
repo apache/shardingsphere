@@ -134,7 +134,9 @@ public final class DataSourceService {
         
         for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
-                schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
+                if(schemaRuleMap.get(each.getKey()).getMasterSlaveRule() != null){
+                    schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
+                }
             }
         }
         return schemaRuleMap;

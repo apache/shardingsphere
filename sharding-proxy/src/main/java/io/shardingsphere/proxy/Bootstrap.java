@@ -91,9 +91,9 @@ public final class Bootstrap {
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfiguration, final Collection<YamlProxyShardingRuleConfiguration> shardingRuleConfigurations,
                                                 final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfiguration.getOrchestration().getOrchestrationConfiguration())) {
-            
-            orchestrationFacade.init(getOrchestrationConfiguration(serverConfiguration, shardingRuleConfigurations));
-            
+            if(!shardingRuleConfigurations.isEmpty()){
+                orchestrationFacade.init(getOrchestrationConfiguration(serverConfiguration, shardingRuleConfigurations));
+            }
             PROXY_CONTEXT.init(orchestrationFacade.getConfigService().loadProxyServerConiguration(), orchestrationFacade.getConfigService().loadProxyDataSources(),
                     orchestrationFacade.getConfigService().loadProxyConfiguration());
             new ShardingProxy().start(port);
