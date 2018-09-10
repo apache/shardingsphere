@@ -26,9 +26,9 @@ import static org.junit.Assert.assertThat;
 public class SQLServerDataSourceMetaDataTest {
     @Test
     public void assertGetALLProperties() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1:3306;DatabaseName=ds_0");
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getPort(), is(9999));
         assertThat(actual.getSchemeName(), is("ds_0"));
     }
     
@@ -38,6 +38,14 @@ public class SQLServerDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
         assertThat(actual.getSchemeName(), is("ds_0"));
+    }
+    
+    @Test
+    public void assertGetPropertiesWithMinus() {
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://host-0;DatabaseName=ds-0");
+        assertThat(actual.getHostName(), is("host-0"));
+        assertThat(actual.getPort(), is(1433));
+        assertThat(actual.getSchemeName(), is("ds-0"));
     }
     
     @Test(expected = ShardingException.class)

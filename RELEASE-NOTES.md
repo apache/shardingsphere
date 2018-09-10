@@ -15,6 +15,7 @@
 
 #### Sharding-Proxy
 
+1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) Support XA transaction
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support registry center
 
@@ -35,13 +36,11 @@
 1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support `$->{..}` for inline expression 
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support inject key generator objects by spring namespace
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
-1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Reconstruct orchestration module to make it independent
-
-### Changes
 
 ### API changes
-1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Adjust the maven coordinate for Orchestration module
-1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) Change Spring namespace API for Sharding + Master-slave configuration
+
+1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Adjust the maven artifactId for Orchestration module
+1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) Change Spring namespace xsd for Sharding + Master-slave configuration
 
 ### Bug Fixes
 
@@ -55,6 +54,7 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Inline expression with groovy may cause memory leak
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) Fail to parsing PostgreSQL due to the quotation
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1120](https://github.com/sharding-sphere/sharding-sphere/issues/1120) Derived columns of `GROUP BY / ORDER BY` appear in query result
 1. [ISSUE #1186](https://github.com/sharding-sphere/sharding-sphere/issues/1186) Dead lock may occur on MEMORY_STRICTLY mode when get connection on concurrency environment
 
 #### Sharding-JDBC
@@ -63,7 +63,6 @@
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
-1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) Derived columns of `GROUP BY / ORDER BY` appear in query result
 
 ## 2.0.3
 
