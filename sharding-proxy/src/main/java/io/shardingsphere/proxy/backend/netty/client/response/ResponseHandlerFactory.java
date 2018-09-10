@@ -33,14 +33,15 @@ public final class ResponseHandlerFactory {
     /**
      * Create new instance of response handler factory for using netty connect backend.
      *
-     * @param databaseType database type
+     * @param databaseType   database type
      * @param dataSourceName data source name
+     * @param schema         schema
      * @return new instance of response handler factory for using netty connect backend
      */
-    public static ResponseHandler newInstance(final DatabaseType databaseType, final String dataSourceName) {
+    public static ResponseHandler newInstance(final DatabaseType databaseType, final String dataSourceName, final String schema) {
         switch (databaseType) {
             case MySQL:
-                return new MySQLResponseHandler(dataSourceName);
+                return new MySQLResponseHandler(dataSourceName, schema);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

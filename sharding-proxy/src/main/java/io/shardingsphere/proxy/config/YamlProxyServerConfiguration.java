@@ -15,20 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
+package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Properties;
+
 /**
- * Use statement.
- *
- * @author zhangliang
+ * proxy server configuration for yaml.
+ * 
+ * @author chenqingyang
  */
-public final class UseStatement extends DALStatement {
+@NoArgsConstructor
+@Getter
+@Setter
+public final class YamlProxyServerConfiguration {
     
-    @Getter
-    @Setter
-    private String schema;
+    private ProxyAuthority proxyAuthority = new ProxyAuthority();
+    
+    private YamlOrchestrationConfiguration orchestration;
+    
+    private Properties props = new Properties();
 }

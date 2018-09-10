@@ -103,6 +103,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     public void watchProxy() {
         watchProxy(ConfigurationNode.DATA_SOURCE_NODE_PATH);
         watchProxy(ConfigurationNode.PROXY_RULE_NODE_PATH);
+        watchProxy(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH);
     }
     
     private void watchProxy(final String node) {
@@ -112,8 +113,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(
-                            new ProxyConfigurationEventBusEvent(dataSourceService.getAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
+                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(configService.loadProxyServerConiguration(), 
+                            dataSourceService.getProxyAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
                 }
             }
         });

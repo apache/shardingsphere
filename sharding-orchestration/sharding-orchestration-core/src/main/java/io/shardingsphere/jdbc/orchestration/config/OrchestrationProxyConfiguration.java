@@ -17,7 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.config;
 
-import io.shardingsphere.core.api.config.ProxyBasicRule;
+import io.shardingsphere.core.api.config.ProxyServerConfiguration;
+import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,9 @@ import java.util.Map;
 @Getter
 public final class OrchestrationProxyConfiguration {
     
-    private final Map<String, DataSourceParameter> dataSources;
+    private final ProxyServerConfiguration serverConfiguration;
     
-    private final ProxyBasicRule proxyBasicRule;
+    private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
+    
+    private final Map<String, ProxySchemaRule> schemaShardingRuleMap;
 }

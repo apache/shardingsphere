@@ -27,7 +27,8 @@ import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -47,11 +48,10 @@ import java.sql.SQLException;
 /**
  * COM_QUERY command packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
- *
  * @author zhangliang
  * @author linjiaqi
  * @author zhaojun
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  */
 @Slf4j
 public final class ComQueryPacket implements QueryCommandPacket {
@@ -63,17 +63,20 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    private final FrontendHandler frontendHandler;
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
+        this.frontendHandler = frontendHandler;
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         backendHandler = null;
+        frontendHandler = null;
     }
     
     @Override
@@ -92,7 +95,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
+        if (TransactionType.XA == ProxyContext.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready 

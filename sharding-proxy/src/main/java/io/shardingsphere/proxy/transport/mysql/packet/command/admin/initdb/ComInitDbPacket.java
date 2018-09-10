@@ -18,7 +18,8 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -31,10 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * COM_INIT_DB command packet.
- * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
  *
  * @author zhangliang
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
  */
 @Slf4j
 public final class ComInitDbPacket implements CommandPacket {
@@ -44,9 +44,12 @@ public final class ComInitDbPacket implements CommandPacket {
     
     private final String schemaName;
     
-    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload) {
+    private FrontendHandler frontendHandler;
+    
+    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         schemaName = payload.readStringEOF();
+        this.frontendHandler = frontendHandler;
     }
     
     @Override
@@ -58,7 +61,10 @@ public final class ComInitDbPacket implements CommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
-        return Optional.of(ShardingConstant.LOGIC_SCHEMA_NAME.equalsIgnoreCase(schemaName)
-                ? new CommandResponsePackets(new OKPacket(getSequenceId() + 1)) : new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName)));
+        if (ProxyContext.getInstance().schemaExists(schemaName)) {
+            frontendHandler.setSchema(schemaName);
+            return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
+        }
+        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName)));
     }
 }

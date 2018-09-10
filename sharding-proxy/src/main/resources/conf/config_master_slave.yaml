@@ -10,6 +10,8 @@
 
 # The example of master-slave rule.
 
+#schemaName: sharding_db
+#
 #dataSources:
 #  ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
