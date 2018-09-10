@@ -1,5 +1,5 @@
 grammar MySQLDDL;
-import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase,DDLBase,Symbol;
+import MySQLKeyword, DataType, Keyword, MySQLDQL, DQLBase,DDLBase, BaseRule,Symbol;
 
 createIndex:
 	CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName
@@ -312,10 +312,6 @@ keyPart:
     columnName (LEFT_PAREN NUMBER RIGHT_PAREN)? (ASC | DESC)?
 	;
 
-indexName:
-	ID
-	;
-		
 indexType:
     USING (BTREE | HASH)
 	;
@@ -326,10 +322,6 @@ indexOption:
   | WITH PARSER parserName
   | COMMENT STRING
 	;
-	
-parserName:
-	ID
-	;
 
 engineName:
 	ID
@@ -338,10 +330,6 @@ engineName:
 
 partitionNames:
 	partitionName (COMMA partitionName)*
-	;
-
-partitionName:
-	ID
 	;
 
 partitionOptions:

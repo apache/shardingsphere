@@ -1,5 +1,5 @@
 grammar PostgreDDL;
-import PostgreKeyword, DataType, Keyword, BaseRule,DDLBase,MySQLDQL,DQLBase,Symbol;
+import PostgreKeyword, DataType, Keyword,BaseRule,Symbol;
 
 createIndex:
 	CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName indexType?
@@ -282,14 +282,6 @@ defaultExpr:
 	CURRENT_TIMESTAMP
 	|expr;
 
-exprsWithParen:
-	LEFT_PAREN exprs RIGHT_PAREN
-	;
-
-exprWithParen:
-	LEFT_PAREN expr RIGHT_PAREN
-	;
-
 collateClause:
 	COLLATE collationName
 	;
@@ -312,7 +304,7 @@ columnConstraintOption:
 	;
 
 checkOption:
-	CHECK exprWithParen (NO INHERIT )?
+	CHECK expr (NO INHERIT )?
 	;
 
 action:
@@ -368,9 +360,9 @@ excludeParam:
 	excludeElement WITH operator
 	;
 
-excludeElement:
-	(columnName | exprWithParen) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
-	;
+excludeElement:	
+	(columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
+	; 
 
 operator:
 	SAFE_EQ
@@ -463,25 +455,6 @@ alterTableNameExists:
 	alterTableOp (IF EXISTS)? tableName 
 	;
 
-roleName:
-	ID
-	;
-	
-partitionName:
-	ID
-	;
-	
-triggerName:
-	ID
-	;
-	
-rewriteRuleName:
-	ID
-	;
-	
-ownerName:
-	ID
-	;
 
 alterTableAction:
     (ADD COLUMN? (IF NOT EXISTS )? columnName dataType collateClause? (columnConstraint columnConstraint*)?)
