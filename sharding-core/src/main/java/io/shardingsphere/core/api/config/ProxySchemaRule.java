@@ -15,28 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.orche.config;
+package io.shardingsphere.core.api.config;
 
-import io.shardingsphere.core.api.config.ProxySchemaRule;
-import io.shardingsphere.core.api.config.ProxyServerConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Proxy configuration event bus event.
+ * schema sharding rule.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ProxyConfigurationEventBusEvent {
+@Setter
+public final class ProxySchemaRule {
     
-    private final ProxyServerConfiguration serverConfiguration;
+    private YamlShardingRuleConfiguration shardingRule;
     
-    private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
-    private final Map<String, ProxySchemaRule> schemaShardingRuleMap;
 }

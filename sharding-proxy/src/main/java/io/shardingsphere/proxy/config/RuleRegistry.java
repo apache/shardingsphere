@@ -17,14 +17,11 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
-import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
-import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -32,6 +29,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -66,25 +64,35 @@ public final class RuleRegistry {
     
     private String schemaName;
     
+    @Setter
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    private boolean isCircuitBreak;
+    public RuleRegistry(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
+        init(dataSources, rule, schemaName);
+    }
     
-    public RuleRegistry(final YamlProxyShardingRuleConfiguration config) {
-        Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
+    /**
+     * Initialize rule registry.
+     *
+     * @param dataSources data sources
+     * @param rule        proxy rule configuration
+     * @param schemaName  schema name
+     */
+    public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
+        Properties properties = null == rule.getShardingRule() ? rule.getMasterSlaveRule().getProps() : rule.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
         shardingRule = new ShardingRule(
-                null == config.getShardingRule() ? new ShardingRuleConfiguration() : config.getShardingRule().getShardingRuleConfiguration(), config.getDataSources().keySet());
-        if (null != config.getMasterSlaveRule()) {
-            masterSlaveRule = new MasterSlaveRule(config.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
+                null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
+        if (null != rule.getMasterSlaveRule()) {
+            masterSlaveRule = new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        dataSourceConfigurationMap = config.getDataSources();
+        dataSourceConfigurationMap = dataSources;
         backendDataSource = new JDBCBackendDataSource(this);
-        schemaName = config.getSchemaName();
+        this.schemaName = schemaName;
     }
     
     /**
@@ -111,37 +119,6 @@ public final class RuleRegistry {
      */
     public boolean isMasterSlaveOnly() {
         return shardingRule.getTableRules().isEmpty() && null != masterSlaveRule;
-    }
-    
-    /**
-     * Renew rule registry.
-     *
-     * @param proxyConfigurationEventBusEvent proxy event bus event.
-     */
-    @Subscribe
-    public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
-        backendDataSource.close();
-        // init(proxyConfigurationEventBusEvent.getDataSources(), proxyConfigurationEventBusEvent.getProxyBasicRule());
-    }
-    
-    /**
-     * Renew disable dataSource names.
-     *
-     * @param disabledStateEventBusEvent jdbc disabled event bus event
-     */
-    @Subscribe
-    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
-     */
-    @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
     /**

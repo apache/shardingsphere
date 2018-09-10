@@ -40,6 +40,8 @@ public final class ConfigurationNode {
     
     public static final String RULE_NODE_PATH = "/rule";
     
+    public static final String SERVER_CONFIG_NODE_PATH = "/server";
+    
     public static final String CONFIG_MAP_NODE_PATH = "/configmap";
     
     public static final String SHARDING_RULE_NODE_PATH = SHARDING_NODE_PATH + RULE_NODE_PATH;
@@ -55,6 +57,8 @@ public final class ConfigurationNode {
     public static final String MASTER_SLAVE_PROPS_NODE_PATH = MASTER_SLAVE_NODE_PATH + "/props";
     
     public static final String PROXY_RULE_NODE_PATH = PROXY_NODE_PATH + RULE_NODE_PATH;
+    
+    public static final String PROXY_SERVER_CONFIG_NODE_PATH = PROXY_NODE_PATH + SERVER_CONFIG_NODE_PATH;
     
     private final String name;
     

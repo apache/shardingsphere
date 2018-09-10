@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.listener;
 
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
 import io.shardingsphere.transaction.listener.xa.XATransactionListener;
 import lombok.AccessLevel;
@@ -38,6 +39,6 @@ public final class ProxyListenerRegister {
     public static void register() {
         new LocalTransactionListener().register();
         new XATransactionListener().register();
-        // RuleRegistry.getInstance().register();
+        ProxyContext.getInstance().register();
     }
 }

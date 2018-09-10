@@ -18,17 +18,24 @@
 package io.shardingsphere.proxy.config;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.api.config.ProxySchemaRule;
+import io.shardingsphere.core.api.config.ProxyServerConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.orche.config.ProxyConfigurationEventBusEvent;
+import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
+import io.shardingsphere.core.event.orche.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +71,8 @@ public final class ProxyContext {
     
     private TransactionType transactionType;
     
+    private boolean isCircuitBreak;
+    
     /**
      * Get instance of proxy context.
      *
@@ -74,12 +83,29 @@ public final class ProxyContext {
     }
     
     /**
+     * Register rule registry.
+     */
+    public void register() {
+        ShardingEventBusInstance.getInstance().register(this);
+    }
+    
+    /**
      * Initialize proxy context.
      *
-     * @param serverConfiguration        yanl server configuration
-     * @param shardingRuleConfigurations yaml shrding rule configuration
+     * @param serverConfiguration proxy server configuration
+     * @param schemaDataSources   proxy schema datasources
+     * @param schemaRules         proxy schema sharding rule
      */
-    public synchronized void init(final YamlProxyServerConfiguration serverConfiguration, final Collection<YamlProxyShardingRuleConfiguration> shardingRuleConfigurations) {
+    public synchronized void init(final ProxyServerConfiguration serverConfiguration, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
+                                  final Map<String, ProxySchemaRule> schemaRules) {
+        initServerConfiguration(serverConfiguration);
+        for (Map.Entry<String, ProxySchemaRule> entry : schemaRules.entrySet()) {
+            schemaNames.add(entry.getKey());
+            ruleRegistryMap.put(entry.getKey(), new RuleRegistry(schemaDataSources.get(entry.getKey()), entry.getValue(), entry.getKey()));
+        }
+    }
+    
+    private void initServerConfiguration(final ProxyServerConfiguration serverConfiguration) {
         Properties properties = serverConfiguration.getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
@@ -92,10 +118,6 @@ public final class ProxyContext {
         this.useNIO = false;
         // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         proxyAuthority = serverConfiguration.getProxyAuthority();
-        for (YamlProxyShardingRuleConfiguration config : shardingRuleConfigurations) {
-            schemaNames.add(config.getSchemaName());
-            ruleRegistryMap.put(config.getSchemaName(), new RuleRegistry(config));
-        }
     }
     
     /**
@@ -134,11 +156,49 @@ public final class ProxyContext {
     
     /**
      * get a default schema.
-     * 
+     *
      * @return schema
      */
     public String getDefaultSchema() {
         return schemaNames.get(0);
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
+    }
+    
+    /**
+     * Renew proxy configuration.
+     *
+     * @param proxyConfigurationEventBusEvent proxy event bus event.
+     */
+    @Subscribe
+    public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
+        initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
+        for (Map.Entry<String, RuleRegistry> each : ruleRegistryMap.entrySet()) {
+            each.getValue().getBackendDataSource().close();
+            each.getValue().init(proxyConfigurationEventBusEvent.getSchemaDataSourceMap().get(each.getKey()),
+                    proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(each.getKey()),
+                    each.getKey());
+        }
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
+        for (Map.Entry<String, RuleRegistry> each : ruleRegistryMap.entrySet()) {
+            each.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(each.getKey()));
+        }
     }
     
 }

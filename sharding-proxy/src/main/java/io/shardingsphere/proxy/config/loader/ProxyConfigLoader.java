@@ -91,8 +91,8 @@ public final class ProxyConfigLoader {
         ) {
             YamlProxyShardingRuleConfiguration result = new Yaml(new Constructor(YamlProxyShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlProxyShardingRuleConfiguration.class);
             Preconditions.checkNotNull(result, String.format("Configuration file `%s` is invalid.", yamlFile.getName()));
-            Preconditions.checkNotNull(result.getSchemaName(), String.format("schemalName configuration in file `%s` can not be null.", yamlFile.getName()));
-            Preconditions.checkState(!schemaNames.contains(result.getSchemaName()), String.format("schemalName `%s` has already exist.", result.getSchemaName()));
+            Preconditions.checkNotNull(result.getSchemaName(), String.format("schemaName configuration in file `%s` can not be null.", yamlFile.getName()));
+            Preconditions.checkState(!schemaNames.contains(result.getSchemaName()), String.format("schemaName `%s` has already exist.", result.getSchemaName()));
             Preconditions.checkState(!result.getDataSources().isEmpty(), String.format("Data sources configuration in file `%s` can not be empty.", yamlFile.getName()));
             Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != yamlServerConfiguration.getOrchestration(),
                     String.format("Configuration invalid in file `%s`, sharding rule, local and orchestration configuration can not be both null.", yamlFile.getName()));

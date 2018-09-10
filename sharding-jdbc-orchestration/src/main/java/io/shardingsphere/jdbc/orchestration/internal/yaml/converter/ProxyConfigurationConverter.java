@@ -17,12 +17,14 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.yaml.converter;
 
-import io.shardingsphere.core.api.config.ProxyBasicRule;
+import io.shardingsphere.core.api.config.ProxyServerConfiguration;
+import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
-import io.shardingsphere.jdbc.orchestration.internal.yaml.representer.ProxyConfigurationRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
+
+import java.util.Map;
 
 /**
  * Proxy Config converter.
@@ -35,23 +37,42 @@ public final class ProxyConfigurationConverter {
     private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
-     * Convert yaml proxy configuration to yaml string.
+     * Convert schema sharding rule configuration map to yaml string.
      *
-     * @param proxyBasicRule Yaml proxy configuration
+     * @param schemaShardingRuleMap Schema sharding rule map
      * @return Yaml string
      */
-    public static String proxyConfigToYaml(final ProxyBasicRule proxyBasicRule) {
-        Yaml yaml = new Yaml(new ProxyConfigurationRepresenter());
-        return yaml.dumpAsMap(proxyBasicRule);
+    public static String proxyRuleConfigToYaml(final Map<String, ProxySchemaRule> schemaShardingRuleMap) {
+        return YAML.dumpAsMap(schemaShardingRuleMap);
     }
     
     /**
-     * Convert yaml to proxy configuration .
+     * Convert yaml to schema sharding rule configuration map.
      *
-     * @param yamlProxyConfigYamlString String in yaml
-     * @return Yaml proxy configuration
+     * @param schemaShardingRuleMapString String in yaml
+     * @return schema sharding rule configuration map
      */
-    public static ProxyBasicRule proxyConfigFromYaml(final String yamlProxyConfigYamlString) {
-        return YAML.loadAs(yamlProxyConfigYamlString, ProxyBasicRule.class);
+    public static Map<String, ProxySchemaRule> proxyRuleConfigFromYaml(final String schemaShardingRuleMapString) {
+        return (Map<String, ProxySchemaRule>) YAML.load(schemaShardingRuleMapString);
+    }
+    
+    /**
+     * Convert proxy proxy server configuration to yaml string.
+     *
+     * @param serverConfiguration proxy proxy server configuration
+     * @return Yaml string
+     */
+    public static String proxyServerConfigToYaml(final ProxyServerConfiguration serverConfiguration) {
+        return YAML.dumpAsMap(serverConfiguration);
+    }
+    
+    /**
+     * Convert yaml to proxy proxy server configuration.
+     *
+     * @param serverConfigurationString String in yaml
+     * @return proxy server configuration
+     */
+    public static ProxyServerConfiguration proxyServerConfigFromYaml(final String serverConfigurationString) {
+        return YAML.loadAs(serverConfigurationString, ProxyServerConfiguration.class);
     }
 }
