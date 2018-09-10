@@ -88,7 +88,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        if (RuleRegistry.getInstance().isCircuitBreak()) {
+        if (ProxyContext.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);

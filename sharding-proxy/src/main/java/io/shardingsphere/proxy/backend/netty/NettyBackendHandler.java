@@ -225,7 +225,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     // TODO refresh table meta data by SQL parse result
     private void refreshTableMetaData(final String logicTableName) throws SQLException {
         TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(), 
-                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(ruleRegistry.getBackendDataSource()), ruleRegistry.getMaxConnectionsSizePerQuery());
+                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(ruleRegistry.getBackendDataSource()), PROXY_CONTEXT.getMaxConnectionsSizePerQuery());
         ruleRegistry.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleRegistry.getShardingRule()));
     }
     

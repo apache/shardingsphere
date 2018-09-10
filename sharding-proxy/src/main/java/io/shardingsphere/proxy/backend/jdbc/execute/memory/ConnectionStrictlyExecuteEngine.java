@@ -41,7 +41,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateRespon
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import lombok.RequiredArgsConstructor;
 
@@ -65,7 +65,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
     
     public ConnectionStrictlyExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         super(backendConnection, jdbcExecutorWrapper);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(RuleRegistry.getInstance().getMaxConnectionsSizePerQuery());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery());
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     

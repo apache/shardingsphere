@@ -58,8 +58,6 @@ public final class RuleRegistry {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private int maxConnectionsSizePerQuery;
-    
     private BackendNIOConfiguration backendNIOConfig;
     
     private ShardingMetaData metaData;
@@ -83,7 +81,7 @@ public final class RuleRegistry {
     public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
         Properties properties = null == rule.getShardingRule() ? rule.getMasterSlaveRule().getProps() : rule.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
@@ -105,7 +103,7 @@ public final class RuleRegistry {
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
         metaData = new ShardingMetaData(getDataSourceURLs(dataSourceConfigurationMap), shardingRule, 
-                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), maxConnectionsSizePerQuery);
+                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), ProxyContext.getInstance().getMaxConnectionsSizePerQuery());
     }
     
     private static Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {

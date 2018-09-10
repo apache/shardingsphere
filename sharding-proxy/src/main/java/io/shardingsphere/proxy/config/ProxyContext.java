@@ -63,6 +63,8 @@ public final class ProxyContext {
     
     private boolean useNIO;
     
+    private int maxConnectionsSizePerQuery;
+    
     private int acceptorSize;
     
     private int executorSize;
@@ -109,6 +111,7 @@ public final class ProxyContext {
         Properties properties = serverConfiguration.getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
+        maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
