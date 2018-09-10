@@ -28,6 +28,7 @@ GT: '>';
 GTE: '>=';
 LT: '<' ;
 LTE: '<=' ;
+POUND_: '#';
 
 LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
