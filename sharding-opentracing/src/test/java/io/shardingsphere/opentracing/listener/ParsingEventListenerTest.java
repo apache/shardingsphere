@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener.parsing;
+package io.shardingsphere.opentracing.listener;
 
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.jdbc.core.ShardingContext;

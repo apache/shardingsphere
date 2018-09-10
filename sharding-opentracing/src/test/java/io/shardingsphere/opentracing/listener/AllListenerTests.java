@@ -17,7 +17,6 @@
 
 package io.shardingsphere.opentracing.listener;
 
-import io.shardingsphere.opentracing.listener.execution.ExecuteEventListenerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
