@@ -24,7 +24,6 @@ import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.opentracing.fixture.ShardingContextBuilder;
-import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -39,12 +38,10 @@ import static org.mockito.Mockito.when;
 
 public final class ParsingEventListenerTest extends BaseEventListenerTest {
     
-    private final ShardingContext shardingContext;
-    
     private final ShardingDataSource shardingDataSource;
     
     public ParsingEventListenerTest() throws SQLException {
-        shardingContext = ShardingContextBuilder.build();
+        ShardingContext shardingContext = ShardingContextBuilder.build();
         shardingDataSource = Mockito.mock(ShardingDataSource.class);
         when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
     }
