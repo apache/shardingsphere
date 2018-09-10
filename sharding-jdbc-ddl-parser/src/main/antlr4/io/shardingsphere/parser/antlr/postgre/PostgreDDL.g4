@@ -1,6 +1,89 @@
 grammar PostgreDDL;
 import PostgreKeyword, DataType, Keyword,BaseRule,Symbol;
 
+createIndex:
+    CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName indexType?
+    keyParts
+    withStorageParameters?
+    tableSpaceClause?
+    whereClause?
+    ;
+
+alterIndex:
+    (alterIndexName(renameIndex | setTableSpace | setStorageParameter | resetStorageParameter))
+    | alterIndexDependsOnExtension
+    | alterIndexSetTableSpace
+    ;
+
+dropIndex:
+    DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA indexName)* (CASCADE | RESTRICT)
+    ;
+
+indexType:
+    USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
+	;
+
+keyParts:
+    LEFT_PAREN keyPart (COMMA keyPart)* RIGHT_PAREN
+    ;
+
+keyPart:
+    (columnName | simpleExpr | LEFT_PAREN simpleExpr RIGHT_PAREN) collateClause? opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
+	;
+
+simpleExpr:
+    | functionCall
+    | liter
+    | ID
+    ;
+    
+    
+
+alterIndexName:
+    ALTER INDEX (IF EXISTS)? indexName
+    ;
+
+renameIndex:
+    RENAME TO indexName
+    ;
+
+setTableSpace:
+    SET TABLESPACE tablespaceName
+    ;
+
+setStorageParameter:
+    SET storageParametersWithParen
+    ;
+
+resetStorageParameter:
+    RESET storageParametersWithParen
+    ;
+    
+storageParametersWithParen:
+    LEFT_PAREN storageParameters RIGHT_PAREN
+    ;
+
+alterIndexDependsOnExtension:
+    ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
+    ;
+
+alterIndexSetTableSpace:
+    ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
+    SET TABLESPACE tablespaceName (NOWAIT)?
+    ;
+
+rowNames:
+    rowName (COMMA rowName)*
+    ;
+
+rowName:
+    ID
+    ;
+
+whereClause:
+    WHERE expr
+    ;
+
 createTable:
 	createBasicTable
 	|createTypeTable
@@ -9,7 +92,7 @@ createTable:
 
 createBasicTable:
 	createTableHeader
-	createDefinitions 
+	createDefinitions
 	inheritClause?
 	partitionClause?
 	tableWithClause?
@@ -20,45 +103,45 @@ createBasicTable:
 createTableHeader:
 	CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
 	;
-	
+
 createDefinitions:
    LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
    ;
-   
+
 createDefinition:
  	(columnName dataType collateClause? columnConstraint*)
     | tableConstraint
     | LIKE tableName likeOption*
  	;
- 		
+
 inheritClause:
-	INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN 
+	INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN
 	;
 
 partitionClause:
-	PARTITION BY (RANGE | LIST) LEFT_PAREN partitionClauseParam (COMMA partitionClauseParam)* RIGHT_PAREN 
+	PARTITION BY (RANGE | LIST) LEFT_PAREN partitionClauseParam (COMMA partitionClauseParam)* RIGHT_PAREN
 	;
-	
+
 partitionClauseParam:
-	(columnName | expr) collateClause? opclass? 
+	(columnName | LEFT_PAREN simpleExpr RIGHT_PAREN) collateClause? opclass?
 	;
 
 tableWithClause:
 	withStorageParameters
-	|(WITH OIDS) 
+	|(WITH OIDS)
 	|(WITHOUT OIDS)
 	;
 
 commitClause:
-	ON COMMIT (PRESERVE ROWS | DELETE ROWS | DROP) 
+	ON COMMIT (PRESERVE ROWS | DELETE ROWS | DROP)
 	;
 
 tableSpaceClause:
 	TABLESPACE tablespaceName
 	;
-	
-createTypeTable:	
-	createTableHeader 
+
+createTypeTable:
+	createTableHeader
 	typeNameClause
 	createDefinition1s?
 	partitionClause?
@@ -68,17 +151,17 @@ createTypeTable:
 	;
 
 typeNameClause:
-	OF typeName 
+	OF typeName
 	;
-	
+
 createDefinition1s:
 	LEFT_PAREN createDefinition1 (COMMA createDefinition1)* RIGHT_PAREN
 	;
 
 createDefinition1:
 	(columnName (WITH OPTIONS )? columnConstraint*)
-    | tableConstraint 
-    ;	
+    | tableConstraint
+    ;
 
 createTableForPartition:
 	createTableHeader
@@ -90,11 +173,11 @@ createTableForPartition:
 	commitClause?
 	tableSpaceClause?
 	;
-	
+
 partitionOfParent:
 	PARTITION OF tableName
 	;
-	
+
 forValuesParition:
 	FOR VALUES partitionBoundSpec
 	;
@@ -109,11 +192,11 @@ inValueOption:
 	;
 
 inValue:
-	NUMBER 
-	|STRING 
-	|TRUE 
-	|FALSE 
-	|NULL 
+	NUMBER
+	|STRING
+	|TRUE
+	|FALSE
+	|NULL
 	;
 
 fromValue:
@@ -121,14 +204,14 @@ fromValue:
 	|MINVALUE
 	|MAXVALUE
 	;
-	
+
 fromValueOption:
-	LEFT_PAREN fromValue (COMMA fromValue)* RIGHT_PAREN 
+	LEFT_PAREN fromValue (COMMA fromValue)* RIGHT_PAREN
 	;
-	
+
 createTableOptions:
 	;
-	
+
 dataType:
 	basicDataType (LEFT_BRACKET RIGHT_BRACKET)*
 	;
@@ -136,13 +219,13 @@ dataType:
 basicDataType:
 	BIGINT
 	|INT8
-	|BIGSERIAL	
+	|BIGSERIAL
 	|SERIAL8
 	|BIT VARYING? numericPrecision?
 	|VARBIT numericPrecision?
 	|BOOLEAN
 	|BOOL
-	|BOX
+//	|BOX
 	|BYTEA
 	|((CHARACTER VARYING?) | CHAR | VARCHAR) numericPrecision?
 	|CIDR
@@ -181,14 +264,14 @@ basicDataType:
 	|XML
 	;
 
-intervalType:	
+intervalType:
 	INTERVAL intervalFields? numericPrecision?
 	;
-		
+
 intervalFields:
 	intervalField (TO intervalField)?
 	;
-	
+
 intervalField:
 	YEAR
 	|MONTH
@@ -196,37 +279,36 @@ intervalField:
 	|HOUR
 	|MINUTE
 	|SECOND
-	;		
+	;
 numericPrecision:
 	LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
 	;
-		
-defaultExpr: 
+
+defaultExpr:
 	CURRENT_TIMESTAMP
 	|expr;
 
-	
 collateClause:
 	COLLATE collationName
 	;
-	
+
 columnConstraint:
 	constraintClause?
 	columnConstraintOption
 	constraintOptionalParam
 	;
-	
+
 columnConstraintOption:
 	(NOT NULL)
-	|NULL 
+	|NULL
   	|checkOption
   	|(DEFAULT defaultExpr)
-    |(GENERATED ( ALWAYS | BY DEFAULT ) AS IDENTITY ( LEFT_PAREN sequenceOptions RIGHT_PAREN )?) 
-    |(UNIQUE indexParameters) 
+    |(GENERATED ( ALWAYS | BY DEFAULT ) AS IDENTITY ( LEFT_PAREN sequenceOptions RIGHT_PAREN )?)
+    |(UNIQUE indexParameters)
     |(PRIMARY KEY indexParameters)
-    |(REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action )? (ON UPDATE action )?) 
+    |(REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action )? (ON UPDATE action )?)
 	;
-	
+
 checkOption:
 	CHECK expr (NO INHERIT )?
 	;
@@ -238,25 +320,25 @@ action:
 	|(SET NULL)
 	|(SET DEFAULT)
 	;
-	
+
 sequenceOptions:
 	sequenceOption
 	(START WITH? NUMBER)?
-	(CACHE NUMBER)? 
+	(CACHE NUMBER)?
 	(NO? CYCLE)?
 	;
-	
+
 sequenceOption:
 	(INCREMENT BY? NUMBER)?
 	(MINVALUE NUMBER | NO MINVALUE)?
 	(MAXVALUE NUMBER | NO MAXVALUE)?
 	;
-	
+
 likeOption:
-	(INCLUDING | EXCLUDING ) 
+	(INCLUDING | EXCLUDING )
 	(COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
 	;
-	
+
 tableConstraint:
 	constraintClause?
 	tableConstraintOption
@@ -265,12 +347,12 @@ tableConstraint:
 
 tableConstraintOption:
 	checkOption
-	|(UNIQUE columnList indexParameters) 
+	|(UNIQUE columnList indexParameters)
 	|(PRIMARY KEY columnList indexParameters)
-	|(EXCLUDE (USING extensionName)? LEFT_PAREN excludeParam (COMMA excludeParam)* RIGHT_PAREN  indexParameters (WHERE ( predicate ))?) 
-	|(FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON DELETE action )? (ON UPDATE action)?) 
+	|(EXCLUDE (USING extensionName)? LEFT_PAREN excludeParam (COMMA excludeParam)* RIGHT_PAREN  indexParameters (WHERE ( predicate ))?)
+	|(FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON DELETE action )? (ON UPDATE action)?)
 	;
-	
+
 indexParameters:
 	withStorageParameters?
 	(USING INDEX TABLESPACE tablespaceName)?
@@ -279,7 +361,7 @@ indexParameters:
 extensionName:
 	ID
 	;
-	
+
 excludeParam:
 	excludeElement WITH operator
 	;
@@ -287,7 +369,7 @@ excludeParam:
 excludeElement:	
 	(columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
 	; 
-	
+
 operator:
 	SAFE_EQ
 	|EQ_OR_ASSIGN
@@ -301,7 +383,7 @@ operator:
 	|OR_SYM
 	|NOT_SYM
 	;
-		
+
 typeName:ID;
 constraintName:ID;
 constraintClause:
@@ -309,26 +391,26 @@ constraintClause:
 	;
 
 withStorageParameters:
-	WITH LEFT_PAREN storageParameters RIGHT_PAREN 
+	WITH storageParametersWithParen
 	;
-	
+
 storageParameters:
 	storageParameterWithValue (COMMA storageParameterWithValue)*
 	;
-	
+
 storageParameterWithValue:
-	storageParameter (EQ_OR_ASSIGN NUMBER)?
+	storageParameter EQ_OR_ASSIGN simpleExpr
 	;
-	
+
 storageParameter:
 	ID
-	;	
- 	
+	;
+
 opclass:
 	ID
-	; 	
+	;
 
-alterTable:	
+alterTable:
 	(alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint))
     |(alterTableNameExists(renameTable | setSchema |attachTableSpace |detachTableSpace))
     |alterTableSetTableSpace
@@ -526,7 +608,6 @@ castExprWithColon:
 collateExpr:
 	expr COLLATE expr
 	;
-
 
 arrayConstructorWithCast:
 	arrayConstructor castExprWithColon?
