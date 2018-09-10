@@ -168,10 +168,3 @@ REPLACE: R E P L A C E;
 RANGE: R A N G E;
 LIST: L I S T;
 COMMIT: C O M M I T;
-
-
-ID: 
-	(BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA? DOT)?
-	(BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA?)
-	|[a-zA-Z_$0-9]+ DOT ASTERISK
-	;

@@ -4,6 +4,12 @@ grammar BaseRule;
 
 import DataType,Keyword,Symbol;
 
+ID: 
+	(BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA? DOT)?
+	(BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA?)
+	|[a-zA-Z_$0-9]+ DOT ASTERISK
+	;
+	
 schemaName: ID;
 tableName: ID;
 columnName: ID; 
