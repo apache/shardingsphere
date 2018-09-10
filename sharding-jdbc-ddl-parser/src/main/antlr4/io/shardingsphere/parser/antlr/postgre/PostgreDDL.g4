@@ -2,9 +2,9 @@ grammar PostgreDDL;
 import PostgreKeyword, DataType, Keyword,BaseRule,Symbol;
 
 createIndex:
-	CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName indexType?
-	keyParts
-	withStorageParameters?
+    CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName indexType?
+    keyParts
+    withStorageParameters?
     tableSpaceClause?
     whereClause?
     ;
@@ -36,6 +36,8 @@ simpleExpr:
     | liter
     | ID
     ;
+    
+    
 
 alterIndexName:
     ALTER INDEX (IF EXISTS)? indexName
@@ -50,11 +52,15 @@ setTableSpace:
     ;
 
 setStorageParameter:
-    SET LEFT_PAREN storageParameters RIGHT_PAREN
+    SET storageParametersWithParen
     ;
 
 resetStorageParameter:
-    RESET LEFT_PAREN storageParameters RIGHT_PAREN
+    RESET storageParametersWithParen
+    ;
+    
+storageParametersWithParen:
+    LEFT_PAREN storageParameters RIGHT_PAREN
     ;
 
 alterIndexDependsOnExtension:
@@ -385,7 +391,7 @@ constraintClause:
 	;
 
 withStorageParameters:
-	WITH LEFT_PAREN storageParameters RIGHT_PAREN
+	WITH storageParametersWithParen
 	;
 
 storageParameters:
