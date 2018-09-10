@@ -147,7 +147,7 @@ columnNameGeneratedClause:
 	;
 	
 columnNameGenerated:
-	columnName typeName GENERATED ALWAYS AS ROW START   
+	columnName typeName GENERATED ALWAYS AS ROW (START | END)?   
     HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
     ;
  
@@ -297,37 +297,10 @@ lowPriorityLockWait:
 ;
 
 rebuildOption:   
-     (compressionOption (ON PARTITIONS LEFT_PAREN numberRange (COMMA numberRange)* RIGHT_PAREN))
-    | eqOnOffOption
-	| MAXDOP EQ_OR_ASSIGN NUMBER  
+    | indexOption
  	| (ONLINE EQ_OR_ASSIGN (OFF | onLowPriorLockWait))   
 	;
   
-  
- eqOnOffOption:
-  	(
-  		PAD_INDEX
-  		|FILLFACTOR
-  		|IGNORE_DUP_KEY
-  		|STATISTICS_NORECOMPUTE
-  		|ALLOW_ROW_LOCKS
-  		|ALLOW_PAGE_LOCKS
-  		|SORT_IN_TEMPDB
-  	)eqOnOff
-  	;
-  	
-  eqOnOff:
-  	EQ_OR_ASSIGN ( ON | OFF )
-  	;
-
-compressionOption:
-	DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
-	;
-	
-numberRange:
-	NUMBER (TO NUMBER)?
-	;
-
 alterIndex:
 	 ALTER INDEX indexName   
      typeName  REBUILD 
@@ -368,4 +341,8 @@ tableOption:
   
  mergeOrSplit:
  	(SPLIT | MERGE) RANGE LEFT_PAREN simpleExpr RIGHT_PAREN   
+ 	;
+ 
+ numberRange:
+ 	NUMBER (TO NUMBER)?
  	;

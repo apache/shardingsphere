@@ -198,13 +198,6 @@ memoryTablePrimaryConstraintOption:
 	       | hashWithBucket)
 	;
 	
-columnNameWithSortsWithParen:
-	LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
-	;
-		
-columnNameWithSort:
-	columnName ( ASC | DESC )?
-	;
 	
 tableIndex: 
 	(  
@@ -246,7 +239,9 @@ tableOption:
 	     | (OFF LEFT_PAREN  MIGRATION_STATE EQ_OR_ASSIGN PAUSED RIGHT_PAREN)  
 		)   
 	)
-	|tableOptOption     
+	|tableOptOption
+	|distributionOption
+	|dataWareHouseTableOption     
 	;
 
 tableOptOption :  
@@ -256,43 +251,31 @@ tableOptOption :
         (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN )?)   
   ;
 
-dataWareHouseTableOption : 	
+distributionOption : 	
      DISTRIBUTION EQ_OR_ASSIGN 
      (
      	(HASH LEFT_PAREN columnName RIGHT_PAREN)
       	| ROUND_ROBIN 
       	| REPLICATE
       ) 
-	;    
+	; 
+	
+dataWareHouseTableOption:
+    (CLUSTERED COLUMNSTORE INDEX)
+    | HEAP   
+    | dataWareHousePartitionOption
+    ;
+ 
+ dataWareHousePartitionOption:
+ 	(PARTITION LEFT_PAREN columnName  RANGE (LEFT | RIGHT)?  
+        FOR VALUES LEFT_PAREN  simpleExpr (COMMA simpleExpr)* RIGHT_PAREN  RIGHT_PAREN)
+ 	; 
+ 	
 tableStretchOptions:  
      ( FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
        MIGRATION_STATE EQ_OR_ASSIGN ( OUTBOUND | INBOUND | PAUSED )  
 	;
 	
-indexOption :     
-   	(PAD_INDEX EQ_OR_ASSIGN ( ON | OFF ) ) 
-	| (FILLFACTOR EQ_OR_ASSIGN NUMBER) 
-	| (IGNORE_DUP_KEY EQ_OR_ASSIGN ( ON | OFF ))  
-	| (STATISTICS_NORECOMPUTE EQ_OR_ASSIGN ( ON | OFF ))  
-	| (STATISTICS_INCREMENTAL EQ_OR_ASSIGN ( ON | OFF ))  
-	| (ALLOW_ROW_LOCKS EQ_OR_ASSIGN ( ON | OFF))  
-	| (ALLOW_PAGE_LOCKS EQ_OR_ASSIGN( ON | OFF))   
-	| (COMPRESSION_DELAY EQ_OR_ASSIGN NUMBER MINUTES?)
-	| (DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE )  
-	   ( ON PARTITIONS LEFT_PAREN partitionExpressions  RIGHT_PAREN )?)
-	;
 
-partitionExpressions:
-	partitionExpression (COMMA partitionExpression)*
-	;
-
-partitionExpression:
-	NUMBER 
-	|partitionRange
-	;
-	
-partitionRange:   
-	NUMBER TO NUMBER  
-	;
 
 
