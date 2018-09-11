@@ -47,6 +47,7 @@ import java.util.Map;
  * @author caohao
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class StatementExecutor {
     
@@ -297,3 +298,4 @@ public final class StatementExecutor {
         boolean execute(Statement statement, String sql) throws SQLException;
     }
 }
+
