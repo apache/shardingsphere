@@ -104,9 +104,12 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Test
     public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
-        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(),
                 createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
