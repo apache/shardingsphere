@@ -108,9 +108,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         try {
             clearPrevious();
             sqlRoute(sql);
-            statementExecutor = getStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingDataSource().getShardingContext().getShardingRule(), statementExecutor.executeQuery(),
+                    connection.getShardingDataSource().getShardingContext().getShardingRule(), getStatementExecutor().executeQuery(),
                     routeResult.getSqlStatement(), connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(new LinkedList<>(statementExecutor.getResultSets()), merge(mergeEngine), this);
         } finally {
@@ -230,7 +229,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private StatementExecutor getStatementExecutor() {
-        return new StatementExecutor(routeResult.getSqlStatement().getType(), resultSetType, resultSetConcurrency, resultSetHoldability, connection, routeResult.getRouteUnits());
+        statementExecutor = new StatementExecutor(routeResult.getSqlStatement().getType(), resultSetType, resultSetConcurrency, resultSetHoldability, connection, routeResult.getRouteUnits());
+        return statementExecutor;
     }
     
     private void clearPrevious() throws SQLException {
