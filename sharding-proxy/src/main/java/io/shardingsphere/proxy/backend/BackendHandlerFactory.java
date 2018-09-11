@@ -20,7 +20,7 @@ package io.shardingsphere.proxy.backend;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.backend.jdbc.execute.memory.ConnectionStrictlyExecuteEngine;
+import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.proxy.backend.netty.NettyBackendHandler;
@@ -53,7 +53,7 @@ public final class BackendHandlerFactory {
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO()
-                ? new NettyBackendHandler(connectionId, sequenceId, sql, databaseType) : new JDBCBackendHandler(sql, new ConnectionStrictlyExecuteEngine(backendConnection, new StatementExecutorWrapper()));
+                ? new NettyBackendHandler(connectionId, sequenceId, sql, databaseType) : new JDBCBackendHandler(sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper()));
     }
     
     /**
@@ -70,6 +70,6 @@ public final class BackendHandlerFactory {
     public static BackendHandler newBinaryProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType) {
         return RULE_REGISTRY.getBackendNIOConfig().isUseNIO() ? new NettyBackendHandler(connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(sql, new ConnectionStrictlyExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(parameters)));
+                : new JDBCBackendHandler(sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(parameters)));
     }
 }
