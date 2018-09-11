@@ -285,8 +285,11 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateWithColumnNames() throws SQLException {
         Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(statement.executeUpdate(DML_SQL, new String[] {"col"})).thenReturn(10);
-        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        when(statement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(new String[] {"col"}), is(10));
         verify(statement).executeUpdate(DML_SQL, new String[] {"col"});
