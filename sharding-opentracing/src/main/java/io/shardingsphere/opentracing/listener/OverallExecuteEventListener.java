@@ -62,7 +62,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     }
     
     @Override
-    protected void tracingFinish() {
+    protected void tracingFinish(final OverallExecutionEvent event) {
         SPAN.get().deactivate();
         SPAN.remove();
     }

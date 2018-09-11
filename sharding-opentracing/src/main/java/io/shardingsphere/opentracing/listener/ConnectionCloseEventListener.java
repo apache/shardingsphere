@@ -54,7 +54,7 @@ public final class ConnectionCloseEventListener extends OpenTracingListener<Conn
     }
     
     @Override
-    protected void tracingFinish() {
+    protected void tracingFinish(final ConnectionCloseEvent event) {
         if (null == branchSpan.get()) {
             return;
         }

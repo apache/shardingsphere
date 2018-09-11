@@ -69,7 +69,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     }
     
     @Override
-    protected void tracingFinish() {
+    protected void tracingFinish(final SQLExecutionEvent event) {
         if (null == branchSpan.get()) {
             return;
         }
