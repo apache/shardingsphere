@@ -74,13 +74,13 @@ public final class PreparedStatementExecutor {
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     @Getter
-    private final Collection<ResultSet> resultSets = new LinkedList<>();
+    private final List<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
-    private final Collection<PreparedStatement> statements = new LinkedList<>();
+    private final List<PreparedStatement> statements = new LinkedList<>();
     
     @Getter
-    private final Collection<Collection<Object>> parameterSets = new LinkedList<>();
+    private final List<List<Object>> parameterSets = new LinkedList<>();
     
     public PreparedStatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) {
         this.sqlType = sqlType;
