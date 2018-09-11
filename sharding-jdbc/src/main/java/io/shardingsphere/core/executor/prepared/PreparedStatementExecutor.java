@@ -34,7 +34,6 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,8 +51,8 @@ import java.util.Map;
  * @author zhangliang
  * @author caohao
  * @author maxiaoguang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 public abstract class PreparedStatementExecutor {
     
     private final SQLType sqlType;
@@ -64,7 +63,7 @@ public abstract class PreparedStatementExecutor {
     
     private final int resultSetHoldability;
     
-    private boolean returnGeneratedKeys;
+    private final boolean returnGeneratedKeys;
     
     private final ShardingConnection connection;
     
@@ -78,7 +77,7 @@ public abstract class PreparedStatementExecutor {
     private Collection<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
-    private Collection<Statement> statements = new LinkedList<>();
+    private Collection<PreparedStatement> statements = new LinkedList<>();
     
     public PreparedStatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) {
         this.sqlType = sqlType;
@@ -112,8 +111,9 @@ public abstract class PreparedStatementExecutor {
     }
     
     private QueryResult getQueryResult(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-        ResultSet resultSet = ((PreparedStatement) sqlExecuteUnit.getStatement()).executeQuery();
-        statements.add(sqlExecuteUnit.getStatement());
+        PreparedStatement preparedStatement = (PreparedStatement) sqlExecuteUnit.getStatement();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        statements.add(preparedStatement);
         resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == sqlExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
@@ -180,11 +180,15 @@ public abstract class PreparedStatementExecutor {
             
             @Override
             public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
-                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
+                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
             }
         });
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+    }
+    
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 }
 
