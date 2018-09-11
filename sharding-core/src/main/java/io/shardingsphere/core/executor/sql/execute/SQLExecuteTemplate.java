@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.executor.sql.execute;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
@@ -32,7 +30,7 @@ import java.util.List;
 
 /**
  * SQL execute template.
- * 
+ *
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
@@ -47,8 +45,8 @@ public final class SQLExecuteTemplate {
      * Execute.
      *
      * @param sqlExecuteUnits SQL execute units
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param callback        SQL execute callback
+     * @param <T>             class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -59,30 +57,21 @@ public final class SQLExecuteTemplate {
     /**
      * Execute.
      *
-     * @param sqlExecuteUnits SQL execute units
+     * @param sqlExecuteUnits      SQL execute units
      * @param firstExecuteCallback first SQL execute callback
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param callback             SQL execute callback
+     * @param <T>                  class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> execute(final Collection<? extends SQLExecuteUnit> sqlExecuteUnits,
                                final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
-        OverallExecutionEvent event = new OverallExecutionEvent(sqlExecuteUnits.size() > 1);
-        ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = executeEngine.execute((Collection) sqlExecuteUnits, firstExecuteCallback, callback);
-            event.setExecuteSuccess();
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            event.setExecuteFailure(ex);
+            return executeEngine.execute((Collection) sqlExecuteUnits, firstExecuteCallback, callback);
+        } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
-        } finally {
-            ShardingEventBusInstance.getInstance().post(event);
         }
     }
     
@@ -90,8 +79,8 @@ public final class SQLExecuteTemplate {
      * Execute group.
      *
      * @param sqlExecuteGroups SQL execute groups
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param callback         SQL execute callback
+     * @param <T>              class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -103,29 +92,20 @@ public final class SQLExecuteTemplate {
      * Execute group.
      *
      * @param sqlExecuteGroups SQL execute groups
-     * @param firstCallback first SQL execute callback
-     * @param callback SQL execute callback
-     * @param <T> class type of return value
+     * @param firstCallback    first SQL execute callback
+     * @param callback         SQL execute callback
+     * @param <T>              class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends SQLExecuteUnit>> sqlExecuteGroups, 
-                               final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
-        OverallExecutionEvent event = new OverallExecutionEvent(sqlExecuteGroups.size() > 1);
-        ShardingEventBusInstance.getInstance().post(event);
+    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends SQLExecuteUnit>> sqlExecuteGroups,
+                                    final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
-            List<T> result = executeEngine.groupExecute((Collection) sqlExecuteGroups, firstCallback, callback);
-            event.setExecuteSuccess();
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            event.setExecuteFailure(ex);
+            return executeEngine.groupExecute((Collection) sqlExecuteGroups, firstCallback, callback);
+        } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
-        } finally {
-            ShardingEventBusInstance.getInstance().post(event);
         }
     }
 }

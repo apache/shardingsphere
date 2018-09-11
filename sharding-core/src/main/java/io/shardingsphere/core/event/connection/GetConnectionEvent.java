@@ -15,14 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.merger;
+package io.shardingsphere.core.event.connection;
 
 import io.shardingsphere.core.event.ShardingEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Merge event.
- * 
- * @author chenqingyang
+ * Get connection event.
+ *
+ * @author zhangyonglun
  */
-public final class MergeEvent extends ShardingEvent {
+@RequiredArgsConstructor
+@Getter
+public final class GetConnectionEvent extends ShardingEvent {
+    
+    private final String dataSource;
+    
+    @Setter
+    private String url = "";
 }

@@ -15,20 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener.execution;
+package io.shardingsphere.opentracing.listener;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.statement.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
 import org.junit.After;
 import org.junit.Test;
 
@@ -72,8 +71,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             }
         };
         sqlExecuteTemplate.execute(Collections.singleton(
-                new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
-        assertThat(getTracer().finishedSpans().size(), is(2));
+            new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
+        assertThat(getTracer().finishedSpans().size(), is(1));
     }
     
     @Test
@@ -95,9 +94,9 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             }
         };
         sqlExecuteTemplate.execute(statementExecuteUnits, executeCallback);
-        assertThat(getTracer().finishedSpans().size(), is(3));
+        assertThat(getTracer().finishedSpans().size(), is(2));
     }
-
+    
     @Test
     public void assertBatchPreparedStatement() throws SQLException {
         List<BatchPreparedStatementExecuteUnit> batchPreparedStatementExecuteUnits = new ArrayList<>(2);
@@ -118,7 +117,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             }
         };
         sqlExecuteTemplate.execute(batchPreparedStatementExecuteUnits, executeCallback);
-        assertThat(getTracer().finishedSpans().size(), is(3));
+        assertThat(getTracer().finishedSpans().size(), is(2));
     }
     
     @Test(expected = SQLException.class)
@@ -135,6 +134,6 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
             }
         };
         sqlExecuteTemplate.execute(Collections.singleton(
-                new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
+            new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement)), executeCallback);
     }
 }

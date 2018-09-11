@@ -21,6 +21,9 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.connection.ConnectionCloseEvent;
+import io.shardingsphere.core.event.connection.GetConnectionEvent;
+import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -28,6 +31,7 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,6 +60,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
+    private final ForceExecuteTemplate<Map.Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
+    
+    @Getter
+    private final OverallExecutionEvent overallExecutionEventThreadLocal = new OverallExecutionEvent(true);
+    
     /**
      * Get database connection.
      *
@@ -64,15 +73,30 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        if (cachedConnections.containsKey(dataSourceName)) {
-            return cachedConnections.get(dataSourceName);
+        GetConnectionEvent event = new GetConnectionEvent(dataSourceName);
+        ShardingEventBusInstance.getInstance().post(event);
+        try {
+            if (cachedConnections.containsKey(dataSourceName)) {
+                event.setUrl(cachedConnections.get(dataSourceName).getMetaData().getURL());
+                event.setExecuteSuccess();
+                return cachedConnections.get(dataSourceName);
+            }
+            DataSource dataSource = getDataSourceMap().get(dataSourceName);
+            Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+            Connection result = dataSource.getConnection();
+            cachedConnections.put(dataSourceName, result);
+            replayMethodsInvocation(result);
+            event.setUrl(result.getMetaData().getURL());
+            event.setExecuteSuccess();
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setExecuteFailure(ex);
+            throw ex;
+        } finally {
+            ShardingEventBusInstance.getInstance().post(event);
         }
-        DataSource dataSource = getDataSourceMap().get(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-        Connection result = dataSource.getConnection();
-        cachedConnections.put(dataSourceName, result);
-        replayMethodsInvocation(result);
-        return result;
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -90,9 +114,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
+                
                 @Override
                 public void execute(final Connection connection) throws SQLException {
                     connection.setAutoCommit(autoCommit);
@@ -107,7 +131,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void commit() throws SQLException {
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
+                
                 @Override
                 public void execute(final Connection connection) throws SQLException {
                     connection.commit();
@@ -122,7 +146,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void rollback() throws SQLException {
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
+                
                 @Override
                 public void execute(final Connection connection) throws SQLException {
                     connection.rollback();
@@ -139,13 +163,28 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        forceExecuteTemplateForClose.execute(cachedConnections.entrySet(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.close();
+            public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
+                Connection connection = cachedConnectionsEntrySet.getValue();
+                ConnectionCloseEvent event = new ConnectionCloseEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
+                ShardingEventBusInstance.getInstance().post(event);
+                try {
+                    connection.close();
+                    event.setExecuteSuccess();
+                    // CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    // CHECKSTYLE:ON
+                    event.setExecuteFailure(ex);
+                    throw ex;
+                } finally {
+                    ShardingEventBusInstance.getInstance().post(event);
+                }
             }
         });
+        overallExecutionEventThreadLocal.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(overallExecutionEventThreadLocal);
     }
     
     @Override
@@ -161,9 +200,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
-        recordMethodInvocation(Connection.class, "setReadOnly", new Class[] {boolean.class}, new Object[] {readOnly});
+        recordMethodInvocation(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
         forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
+            
             @Override
             public void execute(final Connection connection) throws SQLException {
                 connection.setReadOnly(readOnly);
@@ -182,9 +221,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
-        recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[] {int.class}, new Object[] {level});
+        recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
         forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
+            
             @Override
             public void execute(final Connection connection) throws SQLException {
                 connection.setTransactionIsolation(level);

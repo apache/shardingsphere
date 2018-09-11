@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener.routing;
+package io.shardingsphere.opentracing.listener;
 
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -24,7 +24,6 @@ import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.opentracing.fixture.ShardingContextBuilder;
-import io.shardingsphere.opentracing.listener.BaseEventListenerTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -37,20 +36,18 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-public final class RoutingEventListenerTest extends BaseEventListenerTest {
-    
-    private final ShardingContext shardingContext;
+public final class ParsingEventListenerTest extends BaseEventListenerTest {
     
     private final ShardingDataSource shardingDataSource;
     
-    public RoutingEventListenerTest() throws SQLException {
-        shardingContext = ShardingContextBuilder.build();
+    public ParsingEventListenerTest() throws SQLException {
+        ShardingContext shardingContext = ShardingContextBuilder.build();
         shardingDataSource = Mockito.mock(ShardingDataSource.class);
         when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
     }
     
     @Test
-    public void assertPreparedStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void assertPreparedStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "select * from t_order");
         Method sqlRouteMethod = ShardingPreparedStatement.class.getDeclaredMethod("sqlRoute");
         sqlRouteMethod.setAccessible(true);
@@ -60,7 +57,7 @@ public final class RoutingEventListenerTest extends BaseEventListenerTest {
     }
     
     @Test
-    public void assertStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void assertStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
         Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
         sqlRouteMethod.setAccessible(true);

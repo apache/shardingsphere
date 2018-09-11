@@ -15,20 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.routing;
+package io.shardingsphere.core.event.connection;
 
 import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Routing event.
+ * Connection close event.
  *
- * @author chenqingyang
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class RoutingEvent extends ShardingEvent {
+public final class ConnectionCloseEvent extends ShardingEvent {
     
-    private final String sql;
+    private final String dataSource;
+    
+    private final String url;
 }
