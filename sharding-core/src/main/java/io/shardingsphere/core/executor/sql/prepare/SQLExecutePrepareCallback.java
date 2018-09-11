@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.sql.prepare;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 
@@ -27,6 +28,7 @@ import java.sql.SQLException;
  * SQL execute prepare callback.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public interface SQLExecutePrepareCallback {
     
@@ -44,8 +46,9 @@ public interface SQLExecutePrepareCallback {
      * 
      * @param connection connection
      * @param routeUnit route unit
+     * @param connectionMode connection mode
      * @return SQL execute unit
      * @throws SQLException SQL exception
      */
-    SQLExecuteUnit createSQLExecuteUnit(Connection connection, RouteUnit routeUnit) throws SQLException;
+    SQLExecuteUnit createSQLExecuteUnit(Connection connection, RouteUnit routeUnit, ConnectionMode connectionMode) throws SQLException;
 }
