@@ -146,39 +146,26 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public ResultSet executeQuery() throws SQLException {
-        routedStatements.clear();
         ResultSet result;
         try {
+            clearPrevious();
             sqlRoute();
-            List<ResultSet> resultSets = getPreparedStatementExecutor().executeQuery();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingDataSource().getShardingContext().getShardingRule(), getQueryResults(resultSets), routeResult.getSqlStatement(), 
+                    connection.getShardingDataSource().getShardingContext().getShardingRule(), getPreparedStatementExecutor().executeQuery(), routeResult.getSqlStatement(),
                     connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
-            result = new ShardingResultSet(resultSets, merge(mergeEngine), this);
+            result = new ShardingResultSet(preparedStatementExecutor.getResultSets(), merge(mergeEngine), this);
         } finally {
             clearBatch();
         }
         currentResultSet = result;
+        inputAfter();
         return result;
     }
-    
-    private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
-        List<QueryResult> result = new ArrayList<>(resultSets.size());
-        for (ResultSet each : resultSets) {
-            if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
-                result.add(new StreamQueryResult(each));
-            } else {
-                result.add(new MemoryQueryResult(each));
-            }
-        }
-        return result;
-    }
-    
+  
     @Override
     public int executeUpdate() throws SQLException {
-        routedStatements.clear();
-        routedStatements.iterator().next().close()
         try {
+            clearPrevious();
             sqlRoute();
             return getPreparedStatementExecutor().executeUpdate();
         } finally {
@@ -260,17 +247,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingEventBusInstance.getInstance().post(event);
     }
     
-    private void clearPrevious() throws SQLException {
-        for (Statement each : routedStatements) {
-            each.close();
-        }
+    private void clearPrevious() {
         routedStatements.clear();
     }
     
     private void inputAfter() {
         for (PreparedStatement each : preparedStatementExecutor.getStatements()) {
             routedStatements.add(each);
-            replayMethodsInvocation(each);
+            replaySetParameter(each, preparedStatementExecutor.getParameterSets().iterator().next());
         }
     }
     
@@ -307,7 +291,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private PreparedStatementExecuteUnit getPreparedStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit) throws SQLException {
         PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
         routedStatements.add(preparedStatement);
-        replaySetParameter(preparedStatement, routeUnit.getSqlUnit().getParameterSets().get(0));
+        replaySetParameter(preparedStatement,  routeUnit.getSqlUnit().getParameterSets().get(0));
         return new PreparedStatementExecuteUnit(routeUnit, preparedStatement);
     }
     
