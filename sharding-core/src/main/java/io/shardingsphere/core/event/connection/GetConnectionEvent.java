@@ -34,5 +34,5 @@ public final class GetConnectionEvent extends ShardingEvent {
     private final String dataSource;
     
     @Setter
-    private String url;
+    private String url = "";
 }
