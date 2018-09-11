@@ -34,6 +34,7 @@ import java.util.List;
  * Backend handler factory.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BackendHandlerFactory {
@@ -73,3 +74,4 @@ public final class BackendHandlerFactory {
                 : new JDBCBackendHandler(sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(parameters)));
     }
 }
+
