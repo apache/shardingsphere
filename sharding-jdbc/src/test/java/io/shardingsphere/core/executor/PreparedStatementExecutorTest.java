@@ -89,10 +89,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
-        when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
-        when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement1.getConnection()).thenReturn(connection);
+        when(preparedStatement2.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
                 SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         List<ResultSet> actualResultSets = actual.executeQuery();
