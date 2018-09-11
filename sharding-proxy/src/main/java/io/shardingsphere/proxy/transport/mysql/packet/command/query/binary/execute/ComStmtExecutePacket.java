@@ -35,6 +35,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommand
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatement;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementParameterType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol.BinaryProtocolValue;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol.BinaryProtocolValueFactory;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +108,8 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private List<Object> getParameters(final MySQLPacketPayload payload, final int parametersCount) {
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            result.add(nullBitmap.isNullParameter(parameterIndex) ? null : new BinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType(), payload).read());
+            BinaryProtocolValue binaryProtocolValue = BinaryProtocolValueFactory.getBinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType());
+            result.add(nullBitmap.isNullParameter(parameterIndex) ? null : binaryProtocolValue.read(payload));
         }
         return result;
     }

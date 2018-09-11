@@ -26,10 +26,10 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPa
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePacketsTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistryTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.close.ComStmtClosePacketTest;
-import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryProtocolValueTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.BinaryResultSetRowPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.ComStmtExecutePacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.NullBitmapTest;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol.AllMySQLBinaryProtocolTests;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPrepareOKPacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacketTest;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacketTest;
@@ -46,8 +46,8 @@ import org.junit.runners.Suite.SuiteClasses;
         CommandResponsePacketsTest.class, 
         QueryResponsePacketsTest.class, 
         BinaryStatementRegistryTest.class, 
-        NullBitmapTest.class, 
-        BinaryProtocolValueTest.class, 
+        NullBitmapTest.class,
+        AllMySQLBinaryProtocolTests.class, 
         FieldCountPacketTest.class, 
         ColumnDefinition41PacketTest.class, 
         TextResultSetRowPacketTest.class, 
