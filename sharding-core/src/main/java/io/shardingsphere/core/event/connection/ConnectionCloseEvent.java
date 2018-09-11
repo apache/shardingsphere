@@ -31,4 +31,6 @@ import lombok.RequiredArgsConstructor;
 public final class ConnectionCloseEvent extends ShardingEvent {
     
     private final String dataSource;
+    
+    private final String url;
 }

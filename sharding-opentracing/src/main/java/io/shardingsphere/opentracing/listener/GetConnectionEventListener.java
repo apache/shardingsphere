@@ -50,7 +50,7 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     @Override
     protected void beforeExecute(final GetConnectionEvent event) {
         branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
-            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl()).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
+            .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl()).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
     }
     
     @Override
