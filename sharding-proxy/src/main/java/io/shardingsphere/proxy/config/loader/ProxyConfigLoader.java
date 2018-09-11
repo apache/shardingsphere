@@ -49,7 +49,7 @@ public final class ProxyConfigLoader {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
-    private static final Pattern PATTERN_CONFIG_FILE_NAME = Pattern.compile("config-\\w+.yaml");
+    private static final Pattern PATTERN_CONFIG_FILE_NAME = Pattern.compile("config-[\\w\\-]+.yaml");
     
     private static final String DEFAULT_SERVER_CONFIG_FILE = "server.yaml";
     
@@ -77,6 +77,7 @@ public final class ProxyConfigLoader {
         yamlServerConfiguration = loadServerConfiguration(new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH + DEFAULT_SERVER_CONFIG_FILE).getFile()));
         File configDir = new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH).getFile());
         File[] shardingRuleConfiFiles = findShardingRuleConfiFiles(configDir);
+        Preconditions.checkState(shardingRuleConfiFiles.length > 0, "No sharding Configuration file found");
         for (File shardingRuleConfigFile : shardingRuleConfiFiles) {
             YamlProxyShardingRuleConfiguration yamlProxyShardingRuleConfiguration = loadShardingRuleConfiguration(shardingRuleConfigFile);
             yamlProxyShardingRuleConfigurations.add(yamlProxyShardingRuleConfiguration);
