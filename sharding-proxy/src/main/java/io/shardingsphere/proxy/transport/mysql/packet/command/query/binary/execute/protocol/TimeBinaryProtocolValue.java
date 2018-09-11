@@ -33,22 +33,16 @@ public final class TimeBinaryProtocolValue implements BinaryProtocolValue {
     
     @Override
     public Object read(final MySQLPacketPayload payload) {
-        Timestamp result;
-        Calendar calendar = Calendar.getInstance();
         int length = payload.readInt1();
         payload.readInt1();
         payload.readInt4();
         switch (length) {
             case 0:
-                return new Timestamp(0);
+                return new Timestamp(0L);
             case 8:
-                calendar.set(0, Calendar.JANUARY, 0, payload.readInt1(), payload.readInt1(), payload.readInt1());
-                result = new Timestamp(calendar.getTimeInMillis());
-                result.setNanos(0);
-                return result;
+                return getTimestamp(payload);
             case 12:
-                calendar.set(0, Calendar.JANUARY, 0, payload.readInt1(), payload.readInt1(), payload.readInt1());
-                result = new Timestamp(calendar.getTimeInMillis());
+                Timestamp result = getTimestamp(payload);
                 result.setNanos(payload.readInt4());
                 return result;
             default:
@@ -56,37 +50,48 @@ public final class TimeBinaryProtocolValue implements BinaryProtocolValue {
         }
     }
     
+    private Timestamp getTimestamp(final MySQLPacketPayload payload) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(0, Calendar.JANUARY, 0, payload.readInt1(), payload.readInt1(), payload.readInt1());
+        Timestamp result = new Timestamp(calendar.getTimeInMillis());
+        result.setNanos(0);
+        return result;
+    }
+    
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
         Date date = (Date) value;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date.getTime());
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        int second = calendar.get(Calendar.SECOND);
-        Timestamp timestamp = new Timestamp(date.getTime());
-        int millisecond = timestamp.getNanos();
-        boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
-        boolean isMillisecondValueAbsent = 0 == millisecond;
-        if (isTimeValueAbsent && isMillisecondValueAbsent) {
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
+        int nanos = new Timestamp(date.getTime()).getNanos();
+        boolean isTimeAbsent = 0 == hourOfDay && 0 == minutes && 0 == seconds;
+        boolean isNanosAbsent = 0 == nanos;
+        if (isTimeAbsent && isNanosAbsent) {
             payload.writeInt1(0);
             return;
         }
-        if (isMillisecondValueAbsent) {
+        if (isNanosAbsent) {
             payload.writeInt1(8);
-            payload.writeInt1(0);
-            payload.writeInt4(0);
-            payload.writeInt1(hour);
-            payload.writeInt1(minute);
-            payload.writeInt1(second);
+            writeTime(payload, hourOfDay, minutes, seconds);
             return;
         }
         payload.writeInt1(12);
+        writeTime(payload, hourOfDay, minutes, seconds);
+        writeNanos(payload, nanos);
+    }
+    
+    private void writeTime(final MySQLPacketPayload payload, final int hourOfDay, final int minutes, final int seconds) {
         payload.writeInt1(0);
         payload.writeInt4(0);
-        payload.writeInt1(hour);
-        payload.writeInt1(minute);
-        payload.writeInt1(second);
-        payload.writeInt4(millisecond);
+        payload.writeInt1(hourOfDay);
+        payload.writeInt1(minutes);
+        payload.writeInt1(seconds);
+    }
+    
+    private void writeNanos(final MySQLPacketPayload payload, final int nanos) {
+        payload.writeInt4(nanos);
     }
 }

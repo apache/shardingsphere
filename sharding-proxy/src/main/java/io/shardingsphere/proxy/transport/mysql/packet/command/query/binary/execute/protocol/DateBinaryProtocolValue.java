@@ -35,7 +35,7 @@ public final class DateBinaryProtocolValue implements BinaryProtocolValue {
         int length = payload.readInt1();
         switch (length) {
             case 0:
-                return new Timestamp(0);
+                return new Timestamp(0L);
             case 4:
                 return getTimestampForDate(payload);
             case 7:
@@ -68,42 +68,48 @@ public final class DateBinaryProtocolValue implements BinaryProtocolValue {
         calendar.setTimeInMillis(timestamp.getTime());
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        int second = calendar.get(Calendar.SECOND);
-        int millisecond = timestamp.getNanos();
-        boolean isDateValueAbsent = 0 == year && 0 == month && 0 == day;
-        boolean isTimeValueAbsent = 0 == hour && 0 == minute && 0 == second;
-        boolean isMillisecondValueAbsent = 0 == millisecond;
-        if (isDateValueAbsent && isTimeValueAbsent && isMillisecondValueAbsent) {
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
+        int nanos = timestamp.getNanos();
+        boolean isDateAbsent = 0 == year && 0 == month && 0 == dayOfMonth;
+        boolean isTimeAbsent = 0 == hourOfDay && 0 == minutes && 0 == seconds;
+        boolean isNanosAbsent = 0 == nanos;
+        if (isDateAbsent && isTimeAbsent && isNanosAbsent) {
             payload.writeInt1(0);
             return;
         }
-        if (isTimeValueAbsent && isMillisecondValueAbsent) {
+        if (isTimeAbsent && isNanosAbsent) {
             payload.writeInt1(4);
-            payload.writeInt2(year);
-            payload.writeInt1(month);
-            payload.writeInt1(day);
+            writeDate(payload, year, month, dayOfMonth);
             return;
         }
-        if (isMillisecondValueAbsent) {
+        if (isNanosAbsent) {
             payload.writeInt1(7);
-            payload.writeInt2(year);
-            payload.writeInt1(month);
-            payload.writeInt1(day);
-            payload.writeInt1(hour);
-            payload.writeInt1(minute);
-            payload.writeInt1(second);
+            writeDate(payload, year, month, dayOfMonth);
+            writeTime(payload, hourOfDay, minutes, seconds);
             return;
         }
         payload.writeInt1(11);
+        writeDate(payload, year, month, dayOfMonth);
+        writeTime(payload, hourOfDay, minutes, seconds);
+        writeNanos(payload, nanos);
+    }
+    
+    private void writeDate(final MySQLPacketPayload payload, final int year, final int month, final int dayOfMonth) {
         payload.writeInt2(year);
         payload.writeInt1(month);
-        payload.writeInt1(day);
-        payload.writeInt1(hour);
-        payload.writeInt1(minute);
-        payload.writeInt1(second);
-        payload.writeInt4(millisecond);
+        payload.writeInt1(dayOfMonth);
+    }
+    
+    private void writeTime(final MySQLPacketPayload payload, final int hourOfDay, final int minutes, final int seconds) {
+        payload.writeInt1(hourOfDay);
+        payload.writeInt1(minutes);
+        payload.writeInt1(seconds);
+    }
+    
+    private void writeNanos(final MySQLPacketPayload payload, final int nanos) {
+        payload.writeInt4(nanos);
     }
 }
