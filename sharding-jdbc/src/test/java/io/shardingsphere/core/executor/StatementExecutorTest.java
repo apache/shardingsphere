@@ -454,8 +454,11 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteWithColumnIndexes() throws SQLException {
         Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
-        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        when(statement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertFalse(actual.execute(new int[] {1}));
         verify(statement).execute(DML_SQL, new int[] {1});
