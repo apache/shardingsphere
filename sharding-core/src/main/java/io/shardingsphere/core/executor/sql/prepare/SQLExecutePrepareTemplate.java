@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -38,6 +39,7 @@ import java.util.Map.Entry;
  *
  * @author zhaojun
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLExecutePrepareTemplate {
@@ -85,9 +87,11 @@ public final class SQLExecutePrepareTemplate {
     private ShardingExecuteGroup<SQLExecuteUnit> getSQLExecuteGroup(
             final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<SQLExecuteUnit> result = new LinkedList<>();
+        ConnectionMode connectionMode = 1 == sqlUnitGroup.size() ? ConnectionMode.MEMORY_STRICTLY : ConnectionMode.CONNECTION_STRICTLY;
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createSQLExecuteUnit(connection, new RouteUnit(dataSourceName, each)));
+            result.add(callback.createSQLExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
         }
         return new ShardingExecuteGroup<>(result);
     }
 }
+
