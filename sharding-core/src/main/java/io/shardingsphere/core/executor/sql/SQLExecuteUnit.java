@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.sql;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.routing.RouteUnit;
 
 import java.sql.Statement;
@@ -25,6 +26,7 @@ import java.sql.Statement;
  * SQL execute unit.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public interface SQLExecuteUnit {
     
@@ -41,4 +43,11 @@ public interface SQLExecuteUnit {
      * @return statement
      */
     Statement getStatement();
+    
+    /**
+     * Get connection mode.
+     *
+     * @return connection mode
+     */
+    ConnectionMode getConnectionMode();
 }
