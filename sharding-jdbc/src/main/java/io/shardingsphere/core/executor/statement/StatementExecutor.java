@@ -17,16 +17,26 @@
 
 package io.shardingsphere.core.executor.statement;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.routing.RouteUnit;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -38,10 +48,34 @@ import java.util.Map;
  * @author zhangliang
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
-public abstract class StatementExecutor {
+public final class StatementExecutor {
     
     private final SQLType sqlType;
+    
+    private final int resultSetType;
+    
+    private final int resultSetConcurrency;
+    
+    private final int resultSetHoldability;
+    
+    private final ShardingConnection connection;
+    
+    private final Collection<RouteUnit> routeUnits;
+    
+    private final SQLExecuteTemplate sqlExecuteTemplate;
+    
+    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
+    
+    public StatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits, final ShardingContext shardingContext) {
+        this.sqlType = sqlType;
+        this.resultSetType = resultSetType;
+        this.resultSetConcurrency = resultSetConcurrency;
+        this.resultSetHoldability = resultSetHoldability;
+        this.routeUnits = routeUnits;
+        this.connection = shardingConnection;
+        sqlExecuteTemplate = new SQLExecuteTemplate(shardingContext.getExecuteEngine());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(shardingContext.getMaxConnectionsSizePerQuery());
+    }
     
     /**
      * Execute query.
@@ -235,7 +269,23 @@ public abstract class StatementExecutor {
         return result.get(0);
     }
     
-    protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
+    @SuppressWarnings("unchecked")
+    private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+    
+            @Override
+            public Connection getConnection(final String dataSourceName) throws SQLException {
+                return connection.getConnection(dataSourceName);
+            }
+    
+            @Override
+            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+                Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+            }
+        });
+        return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+    }
     
     private interface Updater {
         
