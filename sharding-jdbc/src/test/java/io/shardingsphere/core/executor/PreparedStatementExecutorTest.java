@@ -184,10 +184,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(preparedStatement1.executeUpdate()).thenReturn(10);
         when(preparedStatement2.executeUpdate()).thenReturn(20);
-        when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
-        when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement1.getConnection()).thenReturn(connection);
+        when(preparedStatement2.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
                 SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertThat(actual.executeUpdate(), is(30));
