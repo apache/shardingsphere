@@ -109,7 +109,6 @@ public final class StatementExecutor {
     
     private QueryResult getQueryResult(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
         ResultSet resultSet = sqlExecuteUnit.getStatement().executeQuery(sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql());
-        statements.add(sqlExecuteUnit.getStatement());
         resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == sqlExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
@@ -299,6 +298,7 @@ public final class StatementExecutor {
             @Override
             public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+                statements.add(statement);
                 return new StatementExecuteUnit(routeUnit, statement, connectionMode);
             }
         });
