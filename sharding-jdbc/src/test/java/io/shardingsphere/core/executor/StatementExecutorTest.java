@@ -134,11 +134,14 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = mock(Statement.class);
         Statement statement2 = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         SQLException exp = new SQLException();
         when(statement1.executeQuery(DQL_SQL)).thenThrow(exp);
         when(statement2.executeQuery(DQL_SQL)).thenThrow(exp);
-        when(statement1.getConnection()).thenReturn(mock(Connection.class));
-        when(statement2.getConnection()).thenReturn(mock(Connection.class));
+        when(statement1.getConnection()).thenReturn(connection);
+        when(statement2.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
