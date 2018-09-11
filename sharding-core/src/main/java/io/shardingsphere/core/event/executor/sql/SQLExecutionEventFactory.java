@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * SQL execution event.
- * 
+ *
  * @author gaohongtao
  * @author maxiaoguang
  */
@@ -35,10 +35,11 @@ public final class SQLExecutionEventFactory {
     
     /**
      * Create SQL execution event.
-     * 
-     * @param sqlType SQL type
+     *
+     * @param sqlType        SQL type
      * @param sqlExecuteUnit SQL execute unit
-     * @param parameters parameters
+     * @param parameters     parameters
+     * @param url            url
      * @return SQL execution event
      */
     public static SQLExecutionEvent createEvent(final SQLType sqlType, final SQLExecuteUnit sqlExecuteUnit, final List<Object> parameters, final String url) {
