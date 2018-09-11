@@ -79,7 +79,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             if (cachedConnections.containsKey(dataSourceName)) {
                 event.setUrl(cachedConnections.get(dataSourceName).getMetaData().getURL());
                 event.setExecuteSuccess();
-                ShardingEventBusInstance.getInstance().post(event);
                 return cachedConnections.get(dataSourceName);
             }
             DataSource dataSource = getDataSourceMap().get(dataSourceName);
