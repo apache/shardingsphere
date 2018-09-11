@@ -21,8 +21,8 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -31,13 +31,31 @@ import java.sql.Statement;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class StatementExecuteUnit implements SQLExecuteUnit {
+    
+    private static final Integer CONNECTION_FETCH_ONE_ROW_A_TIME = 0;
+    
+    private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
     private final RouteUnit routeUnit;
     
     private final Statement statement;
     
     private final ConnectionMode connectionMode;
+    
+    public StatementExecuteUnit(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+        this.routeUnit = routeUnit;
+        this.statement = statement;
+        this.connectionMode = connectionMode;
+        setFetchSizeForStatement();
+    }
+    
+    private void setFetchSizeForStatement() throws SQLException {
+        if (connectionMode == ConnectionMode.MEMORY_STRICTLY) {
+            statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
+        } else {
+            statement.setFetchSize(CONNECTION_FETCH_ONE_ROW_A_TIME);
+        }
+    }
 }
