@@ -392,8 +392,11 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteForSingleStatementWithDQL() throws SQLException {
         Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(statement.execute(DQL_SQL)).thenReturn(true);
-        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        when(statement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement, "ds_0"));
         assertTrue(actual.execute());
         verify(statement).execute(DQL_SQL);
