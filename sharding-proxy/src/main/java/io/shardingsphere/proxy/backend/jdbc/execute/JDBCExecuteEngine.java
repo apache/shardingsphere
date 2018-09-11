@@ -71,9 +71,9 @@ import java.util.Map;
  * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final List<QueryResult> queryResults = new LinkedList<>();
@@ -219,4 +219,5 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
 }
+
 
