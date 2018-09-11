@@ -88,8 +88,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             for (SQLExecutionEvent each : events) {
                 each.setExecuteFailure(ex);
                 shardingEventBus.post(each);
-                ExecutorExceptionHandler.handleException(ex);
             }
+            ExecutorExceptionHandler.handleException(ex);
             return null;
         }
     } 
