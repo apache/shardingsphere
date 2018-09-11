@@ -115,9 +115,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Test
     public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
-        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
                 SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
