@@ -79,10 +79,13 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
-        when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
-        when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement1.getConnection()).thenReturn(connection);
+        when(preparedStatement2.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), 
                 createBatchPreparedStatementExecuteUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
