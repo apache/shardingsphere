@@ -202,9 +202,12 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateForSingleStatementFailure() throws SQLException {
         Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         SQLException exp = new SQLException();
         when(statement.executeUpdate(DML_SQL)).thenThrow(exp);
-        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        when(statement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement, "ds_0"));
         assertThat(actual.executeUpdate(), is(0));
         verify(statement).executeUpdate(DML_SQL);
@@ -220,11 +223,14 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteUpdateForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = mock(Statement.class);
         Statement statement2 = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         SQLException exp = new SQLException();
         when(statement1.executeUpdate(DML_SQL)).thenThrow(exp);
         when(statement2.executeUpdate(DML_SQL)).thenThrow(exp);
-        when(statement1.getConnection()).thenReturn(mock(Connection.class));
-        when(statement2.getConnection()).thenReturn(mock(Connection.class));
+        when(statement1.getConnection()).thenReturn(connection);
+        when(statement2.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DML, getExecuteTemplate(), createStatementExecuteUnits(DML_SQL, statement1, "ds_0", statement2, "ds_1"));
         assertThat(actual.executeUpdate(), is(0));
         verify(statement1).executeUpdate(DML_SQL);
