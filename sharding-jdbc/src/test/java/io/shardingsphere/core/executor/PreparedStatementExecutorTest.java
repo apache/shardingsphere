@@ -27,6 +27,7 @@ import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,8 +66,11 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
                 SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
