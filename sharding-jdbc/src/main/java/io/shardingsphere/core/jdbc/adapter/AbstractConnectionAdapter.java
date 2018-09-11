@@ -75,14 +75,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final Connection getConnection(final String dataSourceName) throws SQLException {
         GetConnectionEvent event = new GetConnectionEvent(dataSourceName);
         ShardingEventBusInstance.getInstance().post(event);
-        if (cachedConnections.containsKey(dataSourceName)) {
-            Connection result = cachedConnections.get(dataSourceName);
-            event.setUrl(cachedConnections.get(dataSourceName).getMetaData().getURL());
-            event.setExecuteSuccess();
-            ShardingEventBusInstance.getInstance().post(event);
-            return result;
-        }
         try {
+            if (cachedConnections.containsKey(dataSourceName)) {
+                event.setUrl(cachedConnections.get(dataSourceName).getMetaData().getURL());
+                event.setExecuteSuccess();
+                ShardingEventBusInstance.getInstance().post(event);
+                return cachedConnections.get(dataSourceName);
+            }
             DataSource dataSource = getDataSourceMap().get(dataSourceName);
             Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
             Connection result = dataSource.getConnection();
