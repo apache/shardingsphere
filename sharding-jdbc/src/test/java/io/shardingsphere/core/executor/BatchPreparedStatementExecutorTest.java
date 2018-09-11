@@ -28,6 +28,7 @@ import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -56,8 +57,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Test
     public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
-        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(
                 DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
