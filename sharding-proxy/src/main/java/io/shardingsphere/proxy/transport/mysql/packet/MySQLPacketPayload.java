@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
  * Payload operation for MySQL packet data types.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/describing-packets.html">describing packets</a>
- * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">binary protocol value</a>
  * 
  * @author zhangliang
  * @author zhangyonglun
