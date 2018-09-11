@@ -63,10 +63,12 @@ public final class DateBinaryProtocolValue implements BinaryProtocolValue {
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
+        // TODO :yonglun confirm here is cannot set YEAR == 0, it at least 1970 here
         Timestamp timestamp = (Timestamp) value;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp.getTime());
         int year = calendar.get(Calendar.YEAR);
+        // TODO :yonglun confirm here is month + 1, and isDateAbsent adjust is 0 == month, is it never == 0?
         int month = calendar.get(Calendar.MONTH) + 1;
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
