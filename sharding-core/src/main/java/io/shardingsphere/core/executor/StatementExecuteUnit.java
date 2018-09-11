@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.backend.jdbc.execute;
+package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
