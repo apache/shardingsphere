@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.listener;
 
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,18 +34,18 @@ public final class ProxyListenerRegisterTest {
     private final ProxyListenerRegister proxyListenerRegister = new ProxyListenerRegister();
     
     @Mock
-    private RuleRegistry ruleRegistry;
+    private ProxyContext proxyContext;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        Field field = ProxyListenerRegister.class.getDeclaredField("ruleRegistry");
+        Field field = ProxyListenerRegister.class.getDeclaredField("proxyContext");
         field.setAccessible(true);
-        field.set(proxyListenerRegister, ruleRegistry);
+        field.set(proxyListenerRegister, proxyContext);
     }
     
     @Test
     public void assertRegister() {
         proxyListenerRegister.register();
-        verify(ruleRegistry).register();
+        verify(proxyContext).register();
     }
 }
