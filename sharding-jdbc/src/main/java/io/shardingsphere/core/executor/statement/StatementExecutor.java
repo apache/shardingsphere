@@ -72,10 +72,10 @@ public final class StatementExecutor {
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     @Getter
-    private final Collection<ResultSet> resultSets = new LinkedList<>();
+    private final List<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
-    private final Collection<Statement> statements = new LinkedList<>();
+    private final List<Statement> statements = new LinkedList<>();
     
     public StatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) {
         this.sqlType = sqlType;
