@@ -92,7 +92,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement1.executeQuery(DQL_SQL)).thenReturn(resultSet1);
-        when(statement1.getConnection()).thenReturn(mock(Connection.class));
+        when(statement1.getConnection()).thenReturn(connection);
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
         when(statement2.getConnection()).thenReturn(connection);
         StatementExecutor actual = new MemoryStrictlyStatementExecutor(SQLType.DQL, getExecuteTemplate(), createStatementExecuteUnits(DQL_SQL, statement1, "ds_0", statement2, "ds_1"));
