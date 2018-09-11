@@ -32,7 +32,7 @@ import java.sql.Statement;
  * @author panjuan
  */
 @Getter
-public final class StatementExecuteUnit implements SQLExecuteUnit {
+public class StatementExecuteUnit implements SQLExecuteUnit {
     
     private static final Integer CONNECTION_FETCH_ONE_ROW_A_TIME = 0;
     
