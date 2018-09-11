@@ -17,6 +17,9 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
+import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.proxy.backend.SQLExecuteEngine;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
@@ -47,6 +50,7 @@ import java.util.List;
  *
  * @author zhaojun
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -63,7 +67,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private List<ColumnType> columnTypes;
     
-    protected final ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected final ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys, final ConnectionMode connectionMode) throws SQLException {
         backendConnection.add(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
@@ -74,17 +78,17 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         if (0 == resultSetMetaData.getColumnCount()) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1));
         }
-        return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet));
+        return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet, connectionMode));
     }
     
-    protected final ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    protected final ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final boolean isReturnGeneratedKeys, final ConnectionMode connectionMode) throws SQLException {
         backendConnection.add(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
         }
         ResultSet resultSet = statement.getResultSet();
         backendConnection.add(resultSet);
-        return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet));
+        return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet, connectionMode));
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
@@ -103,5 +107,7 @@ public abstract class JDBCExecuteEngine implements SQLExecuteEngine {
         return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
     }
     
-    protected abstract QueryResult createQueryResult(ResultSet resultSet) throws SQLException;
+    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+    }
 }
