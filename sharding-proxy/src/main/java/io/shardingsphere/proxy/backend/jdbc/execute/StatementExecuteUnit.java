@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
@@ -28,6 +29,7 @@ import java.sql.Statement;
  * Execute unit for JDBC statement.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -36,4 +38,6 @@ public final class StatementExecuteUnit implements SQLExecuteUnit {
     private final RouteUnit routeUnit;
     
     private final Statement statement;
+    
+    private final ConnectionMode connectionMode;
 }
