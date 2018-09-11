@@ -74,10 +74,13 @@ public final class PreparedStatementExecutor {
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     @Getter
-    private Collection<ResultSet> resultSets = new LinkedList<>();
+    private final Collection<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
-    private Collection<PreparedStatement> statements = new LinkedList<>();
+    private final Collection<PreparedStatement> statements = new LinkedList<>();
+    
+    @Getter
+    private final Collection<Collection<Object>> parameterSets = new LinkedList<>();
     
     public PreparedStatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) {
         this.sqlType = sqlType;
@@ -113,7 +116,6 @@ public final class PreparedStatementExecutor {
     private QueryResult getQueryResult(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) sqlExecuteUnit.getStatement();
         ResultSet resultSet = preparedStatement.executeQuery();
-        statements.add(preparedStatement);
         resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == sqlExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
@@ -181,6 +183,8 @@ public final class PreparedStatementExecutor {
             @Override
             public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
+                statements.add(preparedStatement);
+                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
                 return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
             }
         });
