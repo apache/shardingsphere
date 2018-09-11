@@ -2,15 +2,18 @@
 
 ## Abstract
 
-Sharding-Sphere is an ecosystem of transparent distributed database middleware, focusing on data sharding, distributed transaction and database orchestration. It provides maximum compatibility for applications through Sharding-JDBC (a driver to implement JDBC) or Sharding-Proxy (a proxy to implement database protocol).
+Sharding-Sphere is an ecosystem of transparent distributed database middleware, focusing on data sharding, distributed transaction and database orchestration. 
+It provides maximum compatibility for applications through Sharding-JDBC (a driver to implement JDBC) or Sharding-Proxy (a proxy to implement database protocol).
 
 ## Proposal
 
-With a large number of end users, Sharding-Sphere has a fairly huge community in China. It is also widely adopted by many [companies and organizations](http://shardingsphere.io/community/en/company/) as a solution to process their massive amounts of data. 
+With a large number of end users, Sharding-Sphere has a fairly huge community in China. 
+It is also widely adopted by many [companies and organizations](http://shardingsphere.io/community/en/company/) as a solution to process their massive amounts of data. 
 
 We believe that bringing Sharding-Sphere into Apache Software Foundation could advance development of a stronger and more diverse open source community.
 
-Dangdang submits this proposal to donate Sharding-Sphere's source codes and all related documentations to Apache Software Foundation. The codes are already under Apache License Version 2.0.
+Dangdang submits this proposal to donate Sharding-Sphere's source codes and all related documentations to Apache Software Foundation. 
+The codes are already under Apache License Version 2.0.
 
 - Code base: <https://github.com/sharding-sphere/sharding-sphere>
 
@@ -70,41 +73,13 @@ See the details See the details [here](http://shardingsphere.io/community/en/org
 ### Community
 
 Now we have set development teams for Sharding-Sphere respectively in JingDong, Dangdang and Bestpay. 
-Companies like Sohu and Shurenyun have shown great interest in Sharding-Sphere. 
+Companies like Sohu and Dataman have shown great interest in Sharding-Sphere. 
 We hope to grow the base of contributors by inviting all those who offer contributions through The Apache Way. 
 Right now, we make use of github as code hosting as well as gitter for community communication.
 
 ### Core Developers
 
 The core developers, including experienced open source developers and team leaders, have formed a group full of diversity.
-
-#### PMC members
-
-* 张亮, Liang Zhang, Java and architect expert, Jingdong
-
-* 曹昊, Hao Cao, Senior Architect, Dangdang
-
-* 吴晟, Sheng Wu, APM and tracing expert, Apache SkyWalking(incubator) creator & PMC member
-
-* 高洪涛, Hongtao Gao, Database and APM expert, Apache SkyWalking(incubator) PMC member
-
-* 史海峰, Haifeng Shi, @PegasusS Ex-Director, ele.me
-
-* 张小虎, Haifeng Shi, @pottieva Ex-Director, CHINA TELECOM Bestpay
-
-#### Committer members
-
-* 张永伦, Yonglun Zhang, @tuohai666 Senior engineer, Jingdong
-
-* 潘娟, Juan Pan, @tristaZero Senior DBA, Jingdong
-
-* 赵俊, Jun Zhao, @cherrylzhao Senior engineer, Jingdong
-
-* 岳令, Ling Yue, @ling.yue QA Engineer, Dangdang
-
-* 马晓光, Xiaoguang Ma, Senior engineer, huimai365
-
-* 陈清阳, QingYang Chen, @beckhampu Senior engineer, CHINA TELECOM Bestpay
 
 ## Known Risks
 
@@ -116,14 +91,25 @@ Thus, it is very unlikely that Sharding-Sphere becomes orphaned.
 
 ### Inexperience with Open Source
 
-The current core developers all work for companies that have developed or contributed to many open source projects, 
-such as [Apache SkyWalking (Incubating)](https://github.com/apache/incubator-skywalking), [Apache Dubbo (Incubator)](https://incubator.apache.org/projects/dubbo.html), CNCF OpenTracing, [Elastic-Job](https://github.com/elasticjob) and so on. 
+The current core developers all work for companies that have developed or contributed to many open source projects. 
+
+Liang Zhang, PMC. He is the lead of two open source projects, Sharding-Sphere and [Elastic-Job](https://github.com/elasticjob). 
+Also Committer of [Apache Dubbo (Incubator)](https://incubator.apache.org/projects/dubbo.html).
+
+Sheng Wu, PMC. He is the  PPMC and committer of [Apache SkyWalking(Incubating)](https://github.com/apache/incubator-skywalking), 
+[Apache Zipkin(Incubating)](https://zipkin.io/) contributor, CNCF [OpenTracing](http://opentracing.io/) member. 
+Also contributed a lot other open source projects.
+
+Hongtao Gao, PMC. He is the PPMC and committer of [Apache SkyWalking(Incubating)](https://github.com/apache/incubator-skywalking) too. 
+Also contribute a lot of features of [Elastic-Job](https://github.com/elasticjob).
+ 
 Therefore, we believe we have enough experience to deal with open source.
 
 ### Homogenous Developers
 
-The current core developers work across a variety of organizations including Jingdong, Dangdang and CHINA TELECOM Bestpay; some individual developers are accepted as core developers of Sharding-Sphere as well. 
-Considering that Sohu and dataman have shown great interest in Sharding-Sphere, we plan to encourage them to contribute and invite them as contributors to work together.
+The current core developers work across a variety of organizations including Jingdong, Dangdang and CHINA TELECOM Bestpay; 
+some individual developers are accepted as core developers of Sharding-Sphere as well. 
+Considering that Sohu and Dataman have shown great interest in Sharding-Sphere, we plan to encourage them to contribute and invite them as contributors to work together.
 
 ### Reliance on Salaried Developers
 
@@ -166,37 +152,43 @@ Dangdang will provide SGA and all committers will sign ICLA after Sharding-Spher
 As all dependencies are managed using Apache Maven, none of the external libraries need to be packaged in a source distribution. 
 All dependencies have Apache compatible licenses except MySQL (GPL-2.0).
 
-We will remove MySQL dependencies in future. 
-MySQL JDBC driver is adopted by Sharding-Proxy to connect MySQL now; we will use SPI to load JDBC dirver, so MySQL JDBC driver is no longer provided on Sharding-Sphere.
+We will remove MySQL dependencies in future. MySQL JDBC driver is adopted by Sharding-Proxy to connect MySQL now; 
+We will use SPI to load JDBC driver, so MySQL JDBC driver is no longer provided on Sharding-Sphere.
 
-| *Dependency*                         | *License*       |
-| ------------------------------------ | --------------- |
-| guava                                | Apache-2.0      |
-| commons-lang3                        | Apache-2.0      |
-| commons-pool                         | Apache-2.0      |
-| commons-dbcp                         | Apache-2.0      |
-| netty                                | Apache-2.0      |
-| curator                              | Apache-2.0      |
-| grpc                                 | Apache-2.0      |
-| lombok                               | MIT             |
-| groovy                               | Apache-2.0      |
-| snakeyaml                            | Apache-2.0      |
-| gson                                 | Apache-2.0      |
-| spring-context-support               | Apache-2.0      |
-| spring-context-test                  | Apache-2.0      |
-| spring-boot-starter                  | Apache-2.0      |
-| spring-boot-configuration-processor  | Apache-2.0      |
-| spring-boot-starter-test             | Apache-2.0      |
-| slf4j                                | MIT             |
-| logback                              | EPL-1.0         |
-| junit                                | EPL-1.0         |
-| hamcrest                             | BSD 3-clause    |
-| mockito                              | MIT             |
-| h2                                   | MPL-2.0/EPL-1.0 |
-| mysql                                | GPL-2.0         |
-| postgresql                           | BSD             |
-| mssql-jdbc                           | MIT             |
-| HikariCP                             | Apache-2.0      |
+| *Dependency*                         | *License*       | *Comments*                                                     |
+| ------------------------------------ | --------------- | -------------------------------------------------------------- |
+| Guava                                | Apache-2.0      |                                                                |
+| Guava Retrying                       | Apache-2.0      |                                                                |
+| commons-lang3                        | Apache-2.0      |                                                                |
+| commons-codec                        | Apache-2.0      |                                                                |
+| commons-pool                         | Apache-2.0      |                                                                |
+| commons-dbcp                         | Apache-2.0      |                                                                |
+| netty                                | Apache-2.0      |                                                                |
+| curator                              | Apache-2.0      |                                                                |
+| grpc                                 | Apache-2.0      |                                                                |
+| protobuf                             | BSD 3-clause    |                                                                |
+| lombok                               | MIT             |                                                                |
+| groovy                               | Apache-2.0      |                                                                |
+| snakeyaml                            | Apache-2.0      |                                                                |
+| gson                                 | Apache-2.0      |                                                                |
+| spring-context-support               | Apache-2.0      |                                                                |
+| spring-context-test                  | Apache-2.0      |                                                                |
+| spring-boot-starter                  | Apache-2.0      |                                                                |
+| spring-boot-configuration-processor  | Apache-2.0      |                                                                |
+| spring-boot-starter-test             | Apache-2.0      |                                                                |
+| slf4j                                | MIT             |                                                                |
+| logback                              | EPL-1.0         |                                                                |
+| junit                                | EPL-1.0         |                                                                |
+| hamcrest                             | BSD 3-clause    |                                                                |
+| mockito                              | MIT             |                                                                |
+| h2                                   | MPL-2.0/EPL-1.0 |                                                                |
+| mysql                                | GPL-2.0         | Will remove before first apache release, use SPI instead of it |
+| postgresql                           | BSD             |                                                                |
+| mssql-jdbc                           | MIT             |                                                                |
+| HikariCP                             | Apache-2.0      |                                                                |
+| ANTLR                                | BSD             |                                                                |
+| Quartz                               | Apache-2.0      |                                                                |
+| OpenTracing                          | BSD             |                                                                |
 
 
 ## Required Resources
@@ -209,7 +201,7 @@ MySQL JDBC driver is adopted by Sharding-Proxy to connect MySQL now; we will use
 
 ### Issue Tracking
 
-<https://github.com/sharding-sphere/sharding-sphere/issues>
+The community would like to continue using GitHub Issues.
 
 ### Continuous Integration tool
 
@@ -217,13 +209,9 @@ Travis
 
 ### Mailing Lists
 
-[sharding@googlegroups.com](mailto:sharding+subscribe@googlegroups.com)
-
-### Communication
-
-Gitter <https://gitter.im/shardingsphere/Lobby>
-
-Slack <https://sharding.slack.com>
+- Sharding-Sphere-dev: for development discussions
+- Sharding-Sphere-private: for PPMC discussions
+- Sharding-Sphere-notifications: for users notifications
 
 ## Initial Committers
 
@@ -249,8 +237,12 @@ Slack <https://sharding.slack.com>
 
 ### Champion
 
+- Benjamin Hindman
+
 ### Mentors
+
+- Willem Ning Jiang
 
 ### Sponsoring Entity
 
-We are expecting the Apache Incubator could sponsor Sharding-Sphere.
+We are expecting the Apache Incubator could sponsor this project.
