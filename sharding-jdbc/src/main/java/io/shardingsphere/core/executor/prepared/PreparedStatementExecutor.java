@@ -53,7 +53,7 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
-public abstract class PreparedStatementExecutor {
+public final class PreparedStatementExecutor {
     
     private final SQLType sqlType;
     
