@@ -111,7 +111,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
                     connection.getShardingDataSource().getShardingContext().getShardingRule(), getStatementExecutor().executeQuery(),
                     routeResult.getSqlStatement(), connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
-            result = new ShardingResultSet(new LinkedList<>(statementExecutor.getResultSets()), merge(mergeEngine), this);
+            result = new ShardingResultSet(statementExecutor.getResultSets(), merge(mergeEngine), this);
         } finally {
             currentResultSet = null;
         }
