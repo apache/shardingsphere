@@ -19,7 +19,6 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prep
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -56,8 +55,11 @@ public final class ComStmtPreparePacket implements CommandPacket {
     
     private final SQLParsingEngine sqlParsingEngine;
     
+    private final FrontendHandler frontendHandler;
+    
     public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
+        this.frontendHandler = frontendHandler;
         sql = payload.readStringEOF();
         RuleRegistry ruleRegistry = ProxyContext.getInstance().getRuleRegistry(frontendHandler.getSchema());
         sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable());
@@ -78,7 +80,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
                 new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME,
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getSchema(),
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {
