@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import com.google.common.primitives.Bytes;
 import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,15 +39,15 @@ public final class AuthorityHandlerTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        initProxyAuthorityForRuleRegistry();
+        initProxyAuthorityForProxyContext();
         initAuthPluginDataForAuthorityHandler();
     }
     
-    private void initProxyAuthorityForRuleRegistry() throws ReflectiveOperationException {
+    private void initProxyAuthorityForProxyContext() throws ReflectiveOperationException {
         ProxyAuthority proxyAuthority = new ProxyAuthority();
-        Field field = RuleRegistry.class.getDeclaredField("proxyAuthority");
+        Field field = ProxyContext.class.getDeclaredField("proxyAuthority");
         field.setAccessible(true);
-        field.set(RuleRegistry.getInstance(), proxyAuthority);
+        field.set(ProxyContext.getInstance(), proxyAuthority);
     }
     
     private void initAuthPluginDataForAuthorityHandler() throws ReflectiveOperationException {
@@ -59,15 +59,15 @@ public final class AuthorityHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        RuleRegistry.getInstance().getProxyAuthority().setUsername("root");
-        RuleRegistry.getInstance().getProxyAuthority().setPassword("root");
+        ProxyContext.getInstance().getProxyAuthority().setUsername("root");
+        ProxyContext.getInstance().getProxyAuthority().setPassword("root");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authorityHandler.login("root", authResponse));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        RuleRegistry.getInstance().getProxyAuthority().setUsername("root");
+        ProxyContext.getInstance().getProxyAuthority().setUsername("root");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authorityHandler.login("root", authResponse));
     }

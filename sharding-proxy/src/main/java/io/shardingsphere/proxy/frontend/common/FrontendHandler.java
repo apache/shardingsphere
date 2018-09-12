@@ -22,6 +22,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import io.shardingsphere.proxy.config.ProxyContext;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -35,7 +37,11 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     @Setter
     private volatile BackendConnection backendConnection;
-    
+
+    @Getter
+    @Setter
+    private String schema;
+
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
@@ -49,6 +55,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         if (!authorized) {
             auth(context, (ByteBuf) message);
             authorized = true;
+            schema = ProxyContext.getInstance().getDefaultSchema();
         } else {
             executeCommand(context, (ByteBuf) message);
         }

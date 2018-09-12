@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,9 +36,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhaojun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class BackendConnection implements AutoCloseable {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    @Getter
+    private final RuleRegistry ruleRegistry;
     
     private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
@@ -52,7 +56,7 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        Connection result = RULE_REGISTRY.getBackendDataSource().getConnection(dataSourceName);
+        Connection result = ruleRegistry.getBackendDataSource().getConnection(dataSourceName);
         cachedConnections.add(result);
         return result;
     }

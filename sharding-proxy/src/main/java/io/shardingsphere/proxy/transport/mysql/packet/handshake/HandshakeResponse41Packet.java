@@ -49,6 +49,7 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
     @Getter
     private final byte[] authResponse;
     
+    @Getter
     private final String database;
     
     public HandshakeResponse41Packet(final MySQLPacketPayload payload) {

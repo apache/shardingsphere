@@ -25,7 +25,9 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,19 +40,22 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    
+    private final RuleRegistry ruleRegistry;
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        return RULE_REGISTRY.isMasterSlaveOnly() ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+        return ruleRegistry.isMasterSlaveOnly() ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
     }
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(RULE_REGISTRY.getMasterSlaveRule(), RULE_REGISTRY.isShowSQL()).route(sql)) {
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), PROXY_CONTEXT.isShowSQL()).route(sql)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(sql, Collections.<List<Object>>emptyList())));
         }
         return result;
@@ -58,7 +63,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                RULE_REGISTRY.getShardingRule(), RULE_REGISTRY.getMetaData().getTable(), databaseType, RULE_REGISTRY.isShowSQL(), RULE_REGISTRY.getMetaData().getDataSource());
+                ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable(), databaseType, PROXY_CONTEXT.isShowSQL(), ruleRegistry.getMetaData().getDataSource());
         return routingEngine.route(sql);
     }
     

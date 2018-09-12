@@ -19,6 +19,7 @@ package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.DisabledStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -78,7 +79,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
+                    ShardingEventBusInstance.getInstance().post(new ProxyDisabledStateEventBusEvent(dataSourceService.getProxyDisabledDataSourceNames()));
                 }
             }
         });

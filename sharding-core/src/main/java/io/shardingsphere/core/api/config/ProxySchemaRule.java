@@ -15,20 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
+package io.shardingsphere.core.api.config;
 
-import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Use statement.
+ * schema sharding rule.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class UseStatement extends DALStatement {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public final class ProxySchemaRule {
     
-    @Getter
-    @Setter
-    private String schema;
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    
 }

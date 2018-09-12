@@ -24,7 +24,8 @@ import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.constant.NewParametersBoundFlag;
@@ -76,7 +77,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComStmtExecutePacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+    public ComStmtExecutePacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         binaryStatement = BinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
@@ -92,7 +93,8 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL);
+        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, sequenceId, binaryStatement.getSql(), parameters, backendConnection, 
+                DatabaseType.MySQL, frontendHandler);
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
@@ -136,7 +138,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        if (RuleRegistry.getInstance().isCircuitBreak()) {
+        if (ProxyContext.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         return Optional.of(backendHandler.execute());
