@@ -33,7 +33,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  * @author wangkai
  * @author maxiaoguang
  */
-public final class OverallExecuteEventListener extends OpenTracingListener<RootInvokeEvent> {
+public final class RootInvokeEventListener extends OpenTracingListener<RootInvokeEvent> {
     
     public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
     

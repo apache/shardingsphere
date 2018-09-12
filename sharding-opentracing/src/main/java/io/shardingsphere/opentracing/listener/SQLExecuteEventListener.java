@@ -56,8 +56,8 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     @Override
     protected void beforeExecute(final SQLExecutionEvent event) {
-        if (ExecutorDataMap.getDataMap().containsKey(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
-            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
+        if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !RootInvokeEventListener.isTrunkThread() && null == branchSpan.get()) {
+            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
         if (null == branchSpan.get()) {
             branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
