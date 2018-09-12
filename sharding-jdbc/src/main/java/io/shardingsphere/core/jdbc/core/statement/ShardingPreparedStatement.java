@@ -18,7 +18,6 @@
 package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
@@ -55,10 +54,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * PreparedStatement that support sharding.
@@ -247,27 +244,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         } finally {
             clearBatch();
         }
-    }
-    
-    private List<List<BatchPreparedStatementExecuteUnit>> partitionBatchPreparedStatementUnitGroups() {
-        List<List<BatchPreparedStatementExecuteUnit>> result = new LinkedList<>();
-        for (List<BatchPreparedStatementExecuteUnit> each : getBatchPreparedStatementUnitGroups().values()) {
-            int desiredPartitionSize = Math.max(each.size() / connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery(), 1);
-            result.addAll(Lists.partition(each, desiredPartitionSize));
-        }
-        return result;
-    }
-    
-    private Map<String, List<BatchPreparedStatementExecuteUnit>> getBatchPreparedStatementUnitGroups() {
-        Map<String, List<BatchPreparedStatementExecuteUnit>> result = new HashMap<>(batchStatementUnits.size(), 1);
-        for (BatchPreparedStatementExecuteUnit each : batchStatementUnits) {
-            String dataSourceName = each.getRouteUnit().getDataSourceName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<BatchPreparedStatementExecuteUnit>());
-            }
-            result.get(dataSourceName).add(each);
-        } 
-        return result;
     }
     
     @Override
