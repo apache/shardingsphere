@@ -217,51 +217,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         }
     }
     
-    private void initStatementExecutor() throws SQLException {
-        statementExecutor.init(routeResult);
-        replayMethodForStatements();
-    }
-    
-    private void replayMethodForStatements() {
-        for (Statement each : statementExecutor.getStatements()) {
-            replayMethodsInvocation(each);
-        }
-    }
-    
-    private void clearPrevious() throws SQLException {
-        statementExecutor.clear();
-    }
-    
-    private void sqlRoute(final String sql) {
-        ShardingContext shardingContext = connection.getShardingDataSource().getShardingContext();
-        RoutingEvent event = new RoutingEvent(sql);
-        ShardingEventBusInstance.getInstance().post(event);
-        try {
-            routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), 
-                    shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource()).route(sql);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            event.setExecuteFailure(ex);
-            ShardingEventBusInstance.getInstance().post(event);
-            throw ex;
-        }
-        event.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(event);
-    }
-    
-    // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData() throws SQLException {
-        if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
-            String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingDataSource().getShardingContext().getMetaData().getDataSource(),
-                    connection.getShardingDataSource().getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getShardingDataSource().getDataSourceMap()), 
-                    connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-            connection.getShardingDataSource().getShardingContext().getMetaData().getTable().put(
-                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingDataSource().getShardingContext().getShardingRule()));
-        }
-    }
-    
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
@@ -306,6 +261,47 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         return currentResultSet;
     }
     
+    private void initStatementExecutor() throws SQLException {
+        statementExecutor.init(routeResult);
+        replayMethodForStatements();
+    }
+    
+    private void replayMethodForStatements() {
+        for (Statement each : statementExecutor.getStatements()) {
+            replayMethodsInvocation(each);
+        }
+    }
+    
+    private void sqlRoute(final String sql) {
+        ShardingContext shardingContext = connection.getShardingDataSource().getShardingContext();
+        RoutingEvent event = new RoutingEvent(sql);
+        ShardingEventBusInstance.getInstance().post(event);
+        try {
+            routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(),
+                    shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource()).route(sql);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(event);
+            throw ex;
+        }
+        event.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(event);
+    }
+    
+    // TODO refresh table meta data by SQL parse result
+    private void refreshTableMetaData() throws SQLException {
+        if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
+            String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingDataSource().getShardingContext().getMetaData().getDataSource(),
+                    connection.getShardingDataSource().getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getShardingDataSource().getDataSourceMap()),
+                    connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+            connection.getShardingDataSource().getShardingContext().getMetaData().getTable().put(
+                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingDataSource().getShardingContext().getShardingRule()));
+        }
+    }
+    
     private MergedResult merge(final MergeEngine mergeEngine) throws SQLException {
         MergeEvent event = new MergeEvent();
         try {
@@ -321,6 +317,10 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
+    }
+    
+    private void clearPrevious() throws SQLException {
+        statementExecutor.clear();
     }
     
     @Override
