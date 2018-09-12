@@ -92,8 +92,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
 
     private int batchCount;
     
+    @Getter(AccessLevel.NONE)
     private final PreparedStatementExecutor preparedStatementExecutor;
     
+    @Getter(AccessLevel.NONE)
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
     @Getter(AccessLevel.NONE)
