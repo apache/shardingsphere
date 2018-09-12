@@ -218,5 +218,19 @@ public final class BatchPreparedStatementExecutor {
         }
         return result;
     }
+    
+    /**
+     * Clear data.
+     *
+     * @throws SQLException sql exception
+     */
+    public void clear() throws SQLException {
+        for (SQLExecuteUnit each : executeUnits) {
+            each.getStatement().close();
+        }
+        routeUnits.clear();
+        resultSets.clear();
+        executeGroups.clear();
+    }
 }
 
