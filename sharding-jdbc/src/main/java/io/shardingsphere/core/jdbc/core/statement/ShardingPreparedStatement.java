@@ -149,7 +149,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             clearBatch();
         }
         currentResultSet = result;
-        inputAfter();
         return result;
     }
   
@@ -162,7 +161,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         } finally {
             refreshTableMetaData();
             clearBatch();
-            inputAfter();
         }
     }
     
@@ -175,7 +173,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         } finally {
             refreshTableMetaData();
             clearBatch();
-            inputAfter();
         }
     }
     
@@ -218,7 +215,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         sqlRoute();
         for (RouteUnit each : routeResult.getRouteUnits()) {
             BatchPreparedStatementExecuteUnit batchStatementUnit = getBatchPreparedStatementExecuteUnit(each);
-            replaySetParameter(batchStatementUnit.getStatement(), each.getSqlUnit().getParameterSets().get(0));
             result.add(batchStatementUnit);
         }
         return result;
@@ -244,16 +240,17 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         routedStatements.clear();
     }
     
-    private void inputAfter() {
-        for (PreparedStatement each : preparedStatementExecutor.getStatements()) {
-            routedStatements.add(each);
-            replaySetParameter(each, preparedStatementExecutor.getParameterSets().iterator().next());
-        }
-    }
-    
     private PreparedStatementExecutor getPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor = new PreparedStatementExecutor(routeResult.getSqlStatement().getType(), resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection, routeResult.getRouteUnits());
+        setParametersForStatements();
+        routedStatements.addAll(preparedStatementExecutor.getStatements());
         return preparedStatementExecutor;
+    }
+    
+    private void setParametersForStatements() {
+        for (PreparedStatement each : preparedStatementExecutor.getStatements()) {
+            replaySetParameter(each, preparedStatementExecutor.getParameterSets().iterator().next());
+        }
     }
     
     private BatchPreparedStatementExecuteUnit getBatchPreparedStatementExecuteUnit(final RouteUnit routeUnit) throws SQLException {
