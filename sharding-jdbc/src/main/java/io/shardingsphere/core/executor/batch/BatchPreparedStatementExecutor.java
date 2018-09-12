@@ -57,8 +57,7 @@ import java.util.Map.Entry;
  * @author maxiaoguang
  * @author panjuan
  */
-@RequiredArgsConstructor
-public abstract class BatchPreparedStatementExecutor {
+public final class BatchPreparedStatementExecutor {
     
     private final DatabaseType dbType;
     
