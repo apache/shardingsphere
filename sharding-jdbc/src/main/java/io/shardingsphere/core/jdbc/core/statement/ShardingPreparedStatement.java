@@ -141,8 +141,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             sqlRoute();
+            initPreparedStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingDataSource().getShardingContext().getShardingRule(), initPreparedStatementExecutor().executeQuery(), routeResult.getSqlStatement(),
+                    connection.getShardingDataSource().getShardingContext().getShardingRule(), preparedStatementExecutor.executeQuery(), routeResult.getSqlStatement(),
                     connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(preparedStatementExecutor.getResultSets(), merge(mergeEngine), this);
         } finally {
@@ -157,7 +158,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             sqlRoute();
-            return initPreparedStatementExecutor().executeUpdate();
+            initPreparedStatementExecutor();
+            return preparedStatementExecutor.executeUpdate();
         } finally {
             refreshTableMetaData();
             clearBatch();
@@ -169,7 +171,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             sqlRoute();
-            return initPreparedStatementExecutor().execute();
+            initPreparedStatementExecutor();
+            return preparedStatementExecutor.execute();
         } finally {
             refreshTableMetaData();
             clearBatch();
