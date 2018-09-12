@@ -15,15 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-    ParsingEventListenerTest.class,
-    ExecuteEventListenerTest.class
+@SuiteClasses({
+        BinaryProtocolValueFactoryTest.class, 
+        StringLenencBinaryProtocolValueTest.class, 
+        Int8BinaryProtocolValueTest.class, 
+        Int4BinaryProtocolValueTest.class, 
+        Int2BinaryProtocolValueTest.class, 
+        Int1BinaryProtocolValueTest.class, 
+        DoubleBinaryProtocolValueTest.class, 
+        FloatBinaryProtocolValueTest.class, 
+        DateBinaryProtocolValueTest.class, 
+        TimeBinaryProtocolValueTest.class
 })
-public final class AllListenerTests {
+public final class AllMySQLBinaryProtocolTests {
 }

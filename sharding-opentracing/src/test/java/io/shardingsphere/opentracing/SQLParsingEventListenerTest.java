@@ -33,14 +33,10 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
-import io.shardingsphere.core.merger.MergeEngine;
-import io.shardingsphere.core.merger.dal.DALMergeEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -65,13 +61,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MergeEventListenerTest {
+public final class SQLParsingEventListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
     private ShardingContext shardingContext;
-    
-    private MergeEngine mergeEngine;
     
     private ShardingDataSource shardingDataSource;
     
@@ -106,7 +100,6 @@ public final class MergeEventListenerTest {
         when(shardingContext.getMetaData()).thenReturn(shardingMetaData);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.MySQL);
         when(shardingContext.isShowSQL()).thenReturn(true);
-        mergeEngine = new DALMergeEngine(null, null, new ShowDatabasesStatement(), null);
         shardingDataSource = Mockito.mock(ShardingDataSource.class);
         when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
     }
@@ -122,33 +115,33 @@ public final class MergeEventListenerTest {
     }
     
     @Test
-    public void assertPreparedStatementRouting() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "show databases");
-        Method mergeMethod = ShardingPreparedStatement.class.getDeclaredMethod("merge", MergeEngine.class);
-        mergeMethod.setAccessible(true);
-        mergeMethod.invoke(statement, mergeEngine);
+    public void assertPreparedStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "select * from t_order");
+        Method sqlRouteMethod = ShardingPreparedStatement.class.getDeclaredMethod("sqlRoute");
+        sqlRouteMethod.setAccessible(true);
+        sqlRouteMethod.invoke(statement);
         assertThat(TRACER.finishedSpans().size(), is(1));
+        
     }
     
     @Test
-    public void assertStatementRouting() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void assertStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
-        Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
-        mergeMethod.setAccessible(true);
-        mergeMethod.invoke(statement, mergeEngine);
+        Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
+        sqlRouteMethod.setAccessible(true);
+        sqlRouteMethod.invoke(statement, "select * from t_order");
         assertThat(TRACER.finishedSpans().size(), is(1));
     }
     
     @Test
     public void assertException() {
         try {
-            MergeEngine errorMergeEngine = new DALMergeEngine(null, null, new ShowColumnsStatement(), null);
             ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
-            Method mergeMethod = ShardingStatement.class.getDeclaredMethod("merge", MergeEngine.class);
-            mergeMethod.setAccessible(true);
-            mergeMethod.invoke(statement, errorMergeEngine);
+            Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
+            sqlRouteMethod.setAccessible(true);
+            sqlRouteMethod.invoke(statement, "111");
             // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
         }
         assertThat(TRACER.finishedSpans().size(), is(1));

@@ -15,14 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.merger;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
-import io.shardingsphere.core.event.ShardingEvent;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
 /**
- * Merge event.
+ * Binary protocol value for string lenenc.
  * 
- * @author chenqingyang
+ * @author zhangyonglun
+ * @author zhangliang
  */
-public final class MergeEvent extends ShardingEvent {
+public final class StringLenencBinaryProtocolValue implements BinaryProtocolValue {
+    
+    @Override
+    public Object read(final MySQLPacketPayload payload) {
+        return payload.readStringLenenc();
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload payload, final Object value) {
+        payload.writeStringLenenc(value.toString());
+    }
 }

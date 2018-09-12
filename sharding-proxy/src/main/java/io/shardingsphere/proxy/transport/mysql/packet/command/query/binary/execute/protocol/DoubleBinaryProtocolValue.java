@@ -15,21 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.sql;
+package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
-import io.shardingsphere.core.routing.RouteUnit;
-
-import java.util.List;
+import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
 /**
- * DML execution event.
+ * Binary protocol value for double.
  * 
+ * @author zhangyonglun
  * @author zhangliang
- * @author maxiaoguang
  */
-public final class DMLExecutionEvent extends SQLExecutionEvent {
+public final class DoubleBinaryProtocolValue implements BinaryProtocolValue {
     
-    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
-        super(routeUnit, parameters, url);
+    @Override
+    public Object read(final MySQLPacketPayload payload) {
+        return payload.getByteBuf().readDoubleLE();
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload payload, final Object value) {
+        payload.getByteBuf().writeDoubleLE(Double.parseDouble(value.toString()));
     }
 }

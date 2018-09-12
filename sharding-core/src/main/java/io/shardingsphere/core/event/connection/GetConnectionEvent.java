@@ -15,21 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.sql;
+package io.shardingsphere.core.event.connection;
 
-import io.shardingsphere.core.routing.RouteUnit;
-
-import java.util.List;
+import io.shardingsphere.core.event.ShardingEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * DML execution event.
- * 
- * @author zhangliang
- * @author maxiaoguang
+ * Get connection event.
+ *
+ * @author zhangyonglun
  */
-public final class DMLExecutionEvent extends SQLExecutionEvent {
+@RequiredArgsConstructor
+@Getter
+public final class GetConnectionEvent extends ShardingEvent {
     
-    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
-        super(routeUnit, parameters, url);
-    }
+    private final String dataSource;
+    
+    @Setter
+    private String url = "";
 }
