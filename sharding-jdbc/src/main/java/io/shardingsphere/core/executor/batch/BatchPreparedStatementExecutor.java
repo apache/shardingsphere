@@ -18,6 +18,9 @@
 package io.shardingsphere.core.executor.batch;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -46,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Prepared statement executor to process add batch.
@@ -101,10 +105,34 @@ public abstract class BatchPreparedStatementExecutor {
     }
     
     public List<BatchPreparedStatementExecuteUnit> getRoutedBatchExecuteUnits(final Collection<RouteUnit> routeUnits) {
-    
+        Collection<RouteUnit> newRouteUnits = new LinkedList<>(routeUnits);
+        Collection<RouteUnit> oldRouteUnits = new LinkedList<>(this.routeUnits);
+        newRouteUnits.removeAll(this.routeUnits);
+        oldRouteUnits.retainAll(routeUnits);
+        this.routeUnits.addAll(newRouteUnits);
+        
+        
     
     }
     
+    private void handleOldRouteUnits(final Collection<RouteUnit> oldRouteUnits) {
+        for (final RouteUnit each : oldRouteUnits) {
+            addParametersForExecuteUnit(each);
+        }
+    }
+    
+    private void addParametersForExecuteUnit(final RouteUnit each) {
+        Optional<SQLExecuteUnit> preparedBatchStatementOptional = Iterators.tryFind(executeUnits.iterator(), new Predicate<SQLExecuteUnit>() {
+    
+            @Override
+            public boolean apply(final SQLExecuteUnit input) {
+                return input.getRouteUnit().equals(each);
+            }
+        });
+        if (preparedBatchStatementOptional.isPresent()) {
+            preparedBatchStatementOptional.get().getRouteUnit().getSqlUnit().getParameterSets().add(each.getSqlUnit().getParameterSets().get(0));
+        }
+    }
     
     /**
      * Init.
