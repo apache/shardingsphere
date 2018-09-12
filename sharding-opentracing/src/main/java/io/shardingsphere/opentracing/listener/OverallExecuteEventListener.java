@@ -21,7 +21,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.root.OverallExecutionEvent;
+import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -33,7 +33,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  * @author wangkai
  * @author maxiaoguang
  */
-public final class OverallExecuteEventListener extends OpenTracingListener<OverallExecutionEvent> {
+public final class OverallExecuteEventListener extends OpenTracingListener<RootInvokeEvent> {
     
     public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
     
@@ -48,12 +48,12 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final OverallExecutionEvent event) {
+    public void listen(final RootInvokeEvent event) {
         tracing(event);
     }
     
     @Override
-    protected void beforeExecute(final OverallExecutionEvent event) {
+    protected void beforeExecute(final RootInvokeEvent event) {
         ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         SPAN.set(activeSpan);
         if (event.isParallelExecute()) {
@@ -62,7 +62,7 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
     }
     
     @Override
-    protected void tracingFinish(final OverallExecutionEvent event) {
+    protected void tracingFinish(final RootInvokeEvent event) {
         SPAN.get().deactivate();
         SPAN.remove();
     }

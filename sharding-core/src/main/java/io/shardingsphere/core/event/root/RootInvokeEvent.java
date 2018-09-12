@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OverallExecutionEvent extends ShardingEvent {
+public final class RootInvokeEvent extends ShardingEvent {
     
     private final boolean parallelExecute;
 }
