@@ -142,7 +142,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             clearPrevious();
             sqlRoute();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingDataSource().getShardingContext().getShardingRule(), getPreparedStatementExecutor().executeQuery(), routeResult.getSqlStatement(),
+                    connection.getShardingDataSource().getShardingContext().getShardingRule(), initPreparedStatementExecutor().executeQuery(), routeResult.getSqlStatement(),
                     connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(preparedStatementExecutor.getResultSets(), merge(mergeEngine), this);
         } finally {
@@ -157,7 +157,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             sqlRoute();
-            return getPreparedStatementExecutor().executeUpdate();
+            return initPreparedStatementExecutor().executeUpdate();
         } finally {
             refreshTableMetaData();
             clearBatch();
@@ -169,7 +169,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             sqlRoute();
-            return getPreparedStatementExecutor().execute();
+            return initPreparedStatementExecutor().execute();
         } finally {
             refreshTableMetaData();
             clearBatch();
@@ -231,11 +231,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         routedStatements.clear();
     }
     
-    private PreparedStatementExecutor getPreparedStatementExecutor() throws SQLException {
+    private void initPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor.init(routeResult);
         setParametersForStatements();
         routedStatements.addAll(preparedStatementExecutor.getStatements());
-        return preparedStatementExecutor;
     }
     
     private void setParametersForStatements() {
