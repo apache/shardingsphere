@@ -19,18 +19,14 @@ package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecuteUnit;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
-import io.shardingsphere.core.executor.batch.ConnectionStrictlyBatchPreparedStatementExecutor;
-import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -247,13 +243,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
-            if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
-                return new MemoryStrictlyBatchPreparedStatementExecutor(connection.getShardingDataSource().getShardingContext().getDatabaseType(), 
-                        routeResult.getSqlStatement().getType(), batchCount, sqlExecuteTemplate, batchStatementUnits).executeBatch();
-            }
-            return new ConnectionStrictlyBatchPreparedStatementExecutor(connection.getShardingDataSource().getShardingContext().getDatabaseType(), 
-                    routeResult.getSqlStatement().getType(), batchCount, sqlExecuteTemplate, partitionBatchPreparedStatementUnitGroups()).executeBatch();
+            return batchPreparedStatementExecutor.executeBatch();
         } finally {
             clearBatch();
         }
