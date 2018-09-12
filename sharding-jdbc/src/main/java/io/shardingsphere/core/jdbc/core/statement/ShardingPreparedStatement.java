@@ -29,6 +29,7 @@ import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.batch.ConnectionStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.batch.MemoryStrictlyBatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
+import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -230,14 +231,16 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void setParametersForStatements() {
-        for (PreparedStatement each : preparedStatementExecutor.getStatements()) {
-            replaySetParameter(each, preparedStatementExecutor.getParameterSets().iterator().next());
+        for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
+            replaySetParameter(preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
         }
     }
     
     private void setBatchParametersForStatements() {
-        for (PreparedStatement each : batchPreparedStatementExecutor.getStatements()) {
-            replaySetParameter(each, preparedStatementExecutor.getParameterSets().iterator().next());
+        for (SQLExecuteUnit each : batchPreparedStatementExecutor.getExecuteUnits()) {
+            for (List<Object> parameters : each.getRouteUnit().getSqlUnit().getParameterSets()) {
+                replaySetParameter((PreparedStatement) each.getStatement(), parameters);
+            }
         }
     }
     
