@@ -228,3 +228,97 @@ fromValue:
 	|MINVALUE
 	|MAXVALUE
 	;
+
+privateExprOfDb:
+ 	aggregateExpression
+ 	|windowFunction
+ 	|arrayConstructorWithCast
+ 	|(TIMESTAMP (WITH TIME ZONE)? STRING)
+ 	|extractFromFunction
+ 	;
+ 
+ pgExpr:
+ 	|castExpr
+ 	|collateExpr
+ 	|expr
+ 	;
+ 	
+ aggregateExpression:
+ 	ID (
+ 		(LEFT_PAREN (ALL | DISTINCT)? exprs  orderByClause? RIGHT_PAREN)
+ 		|asteriskWithParen
+ 		| (LEFT_PAREN exprs RIGHT_PAREN  WITHIN GROUP LEFT_PAREN orderByClause RIGHT_PAREN)
+ 		)  
+ 	filterClause ?
+ 	;
+ 	
+ filterClause:
+ 	FILTER LEFT_PAREN WHERE booleanPrimary RIGHT_PAREN
+ 	;
+ 	
+ asteriskWithParen:
+ 	LEFT_PAREN ASTERISK RIGHT_PAREN
+ 	;
+ 
+ windowFunction:
+ 	ID (exprsWithParen | asteriskWithParen) 
+ 	filterClause? windowFunctionWithClause
+ 	; 
+ 
+ windowFunctionWithClause:
+ 	OVER (ID | LEFT_PAREN windowDefinition RIGHT_PAREN )
+ 	;	
+ 
+ windowDefinition:
+ 	ID? (PARTITION BY exprs)?
+	(orderByExpr (COMMA orderByExpr)*)?
+	frameClause?
+ 	;
+ 	
+ orderByExpr:
+ 	ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
+ 	;
+ 	
+ frameClause:
+ 	((RANGE | ROWS) frameStart)
+	 |(RANGE | ROWS ) BETWEEN frameStart AND frameEnd
+	;
+	
+frameStart:
+	(UNBOUNDED PRECEDING)
+	|(NUMBER PRECEDING)
+	|(CURRENT ROW)
+	|(NUMBER FOLLOWING)
+	|(UNBOUNDED FOLLOWING)
+	;
+
+frameEnd:
+	frameStart
+	;
+
+castExpr:
+	(CAST LEFT_PAREN expr AS dataType RIGHT_PAREN)
+	|(expr COLON COLON dataType)
+	;
+
+castExprWithColon:
+	COLON COLON dataType(LEFT_BRACKET RIGHT_BRACKET)*
+	;
+		
+collateExpr:
+	expr COLLATE expr
+	;
+
+arrayConstructorWithCast:
+	arrayConstructor castExprWithColon?
+	 |(ARRAY LEFT_BRACKET RIGHT_BRACKET castExprWithColon)	
+	;
+	
+arrayConstructor:
+	| ARRAY LEFT_BRACKET exprs RIGHT_BRACKET
+	| ARRAY LEFT_BRACKET arrayConstructor (COMMA arrayConstructor)* RIGHT_BRACKET
+	;
+
+extractFromFunction:
+	EXTRACT LEFT_PAREN ID FROM ID RIGHT_PAREN
+	;
