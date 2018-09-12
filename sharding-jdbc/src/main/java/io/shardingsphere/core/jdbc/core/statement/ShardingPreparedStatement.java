@@ -235,6 +235,12 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
     }
     
+    private void setBatchParametersForStatements() {
+        for (PreparedStatement each : batchPreparedStatementExecutor.getStatements()) {
+            replaySetParameter(each, preparedStatementExecutor.getParameterSets().iterator().next());
+        }
+    }
+    
     @Override
     public int[] executeBatch() throws SQLException {
         try {
