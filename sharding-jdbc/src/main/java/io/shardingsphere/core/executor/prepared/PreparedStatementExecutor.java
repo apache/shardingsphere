@@ -86,6 +86,7 @@ public final class PreparedStatementExecutor {
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
+    @Getter(AccessLevel.NONE)
     private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
     public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
