@@ -132,10 +132,10 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param orchestrationProxyConfiguration yaml proxy configuration
+     * @param orchestrationProxyConfig yaml proxy configuration
      */
-    public void init(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
-        configService.persistProxyConfiguration(orchestrationProxyConfiguration, isOverwrite);
+    public void init(final OrchestrationProxyConfiguration orchestrationProxyConfig) {
+        configService.persistProxyConfiguration(orchestrationProxyConfig, isOverwrite);
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initProxyListeners();

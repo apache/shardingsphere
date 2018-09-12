@@ -30,7 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -52,14 +52,13 @@ public final class ConfigurationLoader {
     
     private Collection<RuleConfiguration> ruleConfigurations = new LinkedList<>();
     
-    private Collection<String> schemaNames = new LinkedHashSet<>();
-    
     /**
      * load all configuration.
      *
      * @throws IOException IO exception
      */
     public void load() throws IOException {
+        Collection<String> schemaNames = new HashSet<>();
         serverConfiguration = loadServerConfiguration(new File(ConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
         File configPath = new File(ConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
         for (File each : findRuleConfigurationFiles(configPath)) {
