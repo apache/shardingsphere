@@ -36,8 +36,8 @@ import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -94,7 +94,7 @@ public final class BatchPreparedStatementExecutor {
     private final Collection<SQLExecuteUnit> executeUnits = new LinkedList<>();
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
-                                          final ShardingConnection shardingConnection) throws SQLException {
+                                          final ShardingConnection shardingConnection) {
         this.dbType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
@@ -109,12 +109,13 @@ public final class BatchPreparedStatementExecutor {
      * Add batch for route units.
      *
      * @param batchCount batch count
-     * @param routeUnits route units
+     * @param routeResult route result
      * @throws SQLException sql exception
      */
-    public void addBatchForRouteUnits(final int batchCount, final Collection<RouteUnit> routeUnits) throws SQLException {
+    public void addBatchForRouteUnits(final int batchCount, final SQLRouteResult routeResult) throws SQLException {
+        sqlType = routeResult.getSqlStatement().getType();
         handleOldRouteUnits(new LinkedList<>(this.routeUnits));
-        handleNewRouteUnits(new LinkedList<>(routeUnits), batchCount);
+        handleNewRouteUnits(new LinkedList<>(routeResult.getRouteUnits()), batchCount);
     }
     
     private void handleOldRouteUnits(final Collection<RouteUnit> oldRouteUnits) {
