@@ -19,9 +19,9 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Binary protocol value for time.
@@ -60,13 +60,12 @@ public final class TimeBinaryProtocolValue implements BinaryProtocolValue {
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        Date date = (Date) value;
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(date.getTime());
+        calendar.setTimeInMillis(((Time) value).getTime());
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
         int seconds = calendar.get(Calendar.SECOND);
-        int nanos = new Timestamp(date.getTime()).getNanos();
+        int nanos = new Timestamp(calendar.getTimeInMillis()).getNanos();
         boolean isTimeAbsent = 0 == hourOfDay && 0 == minutes && 0 == seconds;
         boolean isNanosAbsent = 0 == nanos;
         if (isTimeAbsent && isNanosAbsent) {
