@@ -55,7 +55,7 @@ import java.util.Map;
  */
 public final class StatementExecutor {
     
-    private final SQLType sqlType;
+    private SQLType sqlType;
     
     private final int resultSetType;
     
@@ -65,7 +65,7 @@ public final class StatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final Collection<RouteUnit> routeUnits;
+    private final Collection<RouteUnit> routeUnits = new LinkedList<>();
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -77,12 +77,10 @@ public final class StatementExecutor {
     @Getter
     private final List<Statement> statements = new LinkedList<>();
     
-    public StatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) {
-        this.sqlType = sqlType;
+    public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
-        this.routeUnits = routeUnits;
         this.connection = shardingConnection;
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
