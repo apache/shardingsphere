@@ -14,13 +14,16 @@ schemaName: ID;
 tableName: ID;
 columnName: ID; 
 tablespaceName: ID;
-collationName: ID;
+collationName: STRING | ID;
 indexName: ID;
 alias: ID;
 cteName:ID;
 parserName: ID;
+extensionName: ID;
+rowName: ID;
+storageParameter: ID;
+opclass: ID;
 
-	
 fileGroup: ID;
 groupName: ID;
 constraintName: ID;
@@ -50,12 +53,24 @@ rangeClause:
 	| NUMBER OFFSET NUMBER
 	;
 
+tableNames:
+	tableName (COMMA tableName)*
+	;
+
 columnNames:
 	columnName (COMMA columnName)*
 	;
 	
 columnList:
 	LEFT_PAREN columnNames RIGHT_PAREN
+	;
+
+indexNames:
+    indexName (COMMA indexName)*
+    ;
+
+rowNames:
+	rowName (COMMA rowName)*
 	;
 
 exprs:
@@ -145,7 +160,7 @@ simpleExpr:
 	;
 
 functionCall:
-	ID LEFT_PAREN(|expr ( COMMA  expr)*) RIGHT_PAREN
+	ID LEFT_PAREN(| simpleExpr ( COMMA  simpleExpr)*) RIGHT_PAREN
 	;	
  
  privateExprOfDb:
