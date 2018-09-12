@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,6 +49,8 @@ import static org.mockito.Mockito.when;
 
 public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
+    private static final String HOST_URL = "jdbc:mysql://127.0.0.1:3306/ds_0";
+    
     private ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(5);
     
     private final SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
@@ -61,6 +64,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     public void assertSingleStatement() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
+        when(statement.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(statement.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
@@ -80,9 +85,13 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         List<StatementExecuteUnit> statementExecuteUnits = new ArrayList<>(2);
         Statement stm1 = mock(Statement.class);
         when(stm1.getConnection()).thenReturn(mock(Connection.class));
+        when(stm1.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(stm1.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm1));
         Statement stm2 = mock(Statement.class);
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
+        when(stm2.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(stm2.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -103,9 +112,13 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1, 2), Arrays.<Object>asList(3, 4));
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement1.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(preparedStatement1.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         batchPreparedStatementExecuteUnits.add(new BatchPreparedStatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", parameterSets)), preparedStatement1));
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
+        when(preparedStatement2.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(preparedStatement2.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         batchPreparedStatementExecuteUnits.add(new BatchPreparedStatementExecuteUnit(new RouteUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -124,6 +137,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     public void assertSQLException() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
+        when(statement.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        when(statement.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DQL, isExceptionThrown, dataMap) {
