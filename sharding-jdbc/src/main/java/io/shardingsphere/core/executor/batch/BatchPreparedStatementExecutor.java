@@ -88,7 +88,7 @@ public abstract class BatchPreparedStatementExecutor {
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     @Getter
-    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups;
+    private final Collection<SQLExecuteUnit> executeUnits = new LinkedList<>();
     
     public BatchPreparedStatementExecutor(final DatabaseType dbType, final SQLType sqlType, final int batchCount, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) throws SQLException {
@@ -101,10 +101,11 @@ public abstract class BatchPreparedStatementExecutor {
         this.returnGeneratedKeys = returnGeneratedKeys;
         this.routeUnits = routeUnits;
         this.connection = shardingConnection;
-        this.executeGroups = obtainExecuteGroups();
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
     }
+    
+    
     
     private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
         return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
