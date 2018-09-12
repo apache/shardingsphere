@@ -104,18 +104,29 @@ public abstract class BatchPreparedStatementExecutor {
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
     }
     
-    public List<BatchPreparedStatementExecuteUnit> getRoutedBatchExecuteUnits(final Collection<RouteUnit> routeUnits) {
-        Collection<RouteUnit> newRouteUnits = new LinkedList<>(routeUnits);
-        Collection<RouteUnit> oldRouteUnits = new LinkedList<>(this.routeUnits);
-        newRouteUnits.removeAll(this.routeUnits);
-        oldRouteUnits.retainAll(routeUnits);
-        this.routeUnits.addAll(newRouteUnits);
-        
-        
+    public List<BatchPreparedStatementExecuteUnit> getRoutedBatchExecuteUnits(final Collection<RouteUnit> routeUnits) throws SQLException {
+        handleOldRouteUnits(new LinkedList<>(this.routeUnits));
+        return handleNewRouteUnits(new LinkedList<>(routeUnits));
+    }
     
+    private List<BatchPreparedStatementExecuteUnit> createNewExecuteUnits(final Collection<RouteUnit> newRouteUnits) throws SQLException {
+        List<BatchPreparedStatementExecuteUnit> result = new LinkedList<>();
+        for (RouteUnit each : newRouteUnits) {
+            result.add(new BatchPreparedStatementExecuteUnit(each, createPreparedStatement(connection.getConnection(each.getDataSourceName()), each.getSqlUnit().getSql()), ConnectionMode.CONNECTION_STRICTLY));
+        }
+        return result;
+    }
+    
+    private List<BatchPreparedStatementExecuteUnit> handleNewRouteUnits(final Collection<RouteUnit> newRouteUnits) throws SQLException {
+        newRouteUnits.removeAll(this.routeUnits);
+        List<BatchPreparedStatementExecuteUnit> newExecuteUnits = createNewExecuteUnits(newRouteUnits);
+        this.routeUnits.addAll(newRouteUnits);
+        this.executeUnits.addAll(newExecuteUnits);
+        return newExecuteUnits;
     }
     
     private void handleOldRouteUnits(final Collection<RouteUnit> oldRouteUnits) {
+        oldRouteUnits.retainAll(routeUnits);
         for (final RouteUnit each : oldRouteUnits) {
             addParametersForExecuteUnit(each);
         }
