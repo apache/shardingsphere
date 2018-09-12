@@ -160,57 +160,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
     }
     
-    // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData() throws SQLException {
-        if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
-            String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingDataSource().getShardingContext().getMetaData().getDataSource(),
-                    connection.getShardingDataSource().getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getShardingDataSource().getDataSourceMap()), 
-                    connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-            connection.getShardingDataSource().getShardingContext().getMetaData().getTable().put(
-                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingDataSource().getShardingContext().getShardingRule()));
-        }
-    }
-    
-    @Override
-    public void clearBatch() {
-        currentResultSet = null;
-        clearParameters();
-        batchStatementUnits.clear();
-        batchCount = 0;
-    }
-    
-    private void sqlRoute() {
-        RoutingEvent event = new RoutingEvent(sql);
-        ShardingEventBusInstance.getInstance().post(event);
-        try {
-            routeResult = routingEngine.route(getParameters());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            event.setExecuteFailure(ex);
-            ShardingEventBusInstance.getInstance().post(event);
-            throw ex;
-        }
-        event.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(event);
-    }
-    
-    private void clearPrevious() throws SQLException {
-       preparedStatementExecutor.clear();
-    }
-    
-    private void initPreparedStatementExecutor() throws SQLException {
-        preparedStatementExecutor.init(routeResult);
-        setParametersForStatements();
-    }
-    
-    private void setParametersForStatements() {
-        for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
-            replaySetParameter(preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
-        }
-    }
-    
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
@@ -255,6 +204,45 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return currentResultSet;
     }
     
+    // TODO refresh table meta data by SQL parse result
+    private void refreshTableMetaData() throws SQLException {
+        if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
+            String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingDataSource().getShardingContext().getMetaData().getDataSource(),
+                    connection.getShardingDataSource().getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getShardingDataSource().getDataSourceMap()),
+                    connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+            connection.getShardingDataSource().getShardingContext().getMetaData().getTable().put(
+                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingDataSource().getShardingContext().getShardingRule()));
+        }
+    }
+    
+    private void sqlRoute() {
+        RoutingEvent event = new RoutingEvent(sql);
+        ShardingEventBusInstance.getInstance().post(event);
+        try {
+            routeResult = routingEngine.route(getParameters());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            event.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(event);
+            throw ex;
+        }
+        event.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(event);
+    }
+    
+    private void initPreparedStatementExecutor() throws SQLException {
+        preparedStatementExecutor.init(routeResult);
+        setParametersForStatements();
+    }
+    
+    private void setParametersForStatements() {
+        for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
+            replaySetParameter(preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
+        }
+    }
+    
     private MergedResult merge(final MergeEngine mergeEngine) throws SQLException {
         MergeEvent event = new MergeEvent();
         try {
@@ -270,6 +258,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
+    }
+    
+    private void clearPrevious() throws SQLException {
+        preparedStatementExecutor.clear();
     }
     
     @Override
@@ -300,6 +292,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                 replaySetParameter((PreparedStatement) each.getStatement(), parameters);
             }
         }
+    }
+    
+    @Override
+    public void clearBatch() {
+        currentResultSet = null;
+        clearParameters();
+        batchStatementUnits.clear();
+        batchCount = 0;
     }
     
     @Override
