@@ -33,6 +33,7 @@ import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -84,6 +85,18 @@ public final class StatementExecutor {
         this.connection = shardingConnection;
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+    }
+    
+    /**
+     * Init executor.
+     *
+     * @param routeResult route result
+     * @throws SQLException sql exception
+     */
+    public void init(final SQLRouteResult routeResult) throws SQLException {
+        sqlType = routeResult.getSqlStatement().getType();
+        routeUnits.addAll(routeResult.getRouteUnits());
+        executeGroups.addAll(obtainExecuteGroups());
     }
     
     /**
