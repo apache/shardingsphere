@@ -92,7 +92,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
 
     private int batchCount;
     
-    private PreparedStatementExecutor preparedStatementExecutor;
+    private final PreparedStatementExecutor preparedStatementExecutor;
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
@@ -131,6 +131,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingContext shardingContext = connection.getShardingDataSource().getShardingContext();
         routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(),
                 shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource());
+        preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
     
@@ -231,7 +232,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private PreparedStatementExecutor getPreparedStatementExecutor() throws SQLException {
-        preparedStatementExecutor = new PreparedStatementExecutor(routeResult.getSqlStatement().getType(), resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection, routeResult.getRouteUnits());
+        preparedStatementExecutor.init(routeResult);
         setParametersForStatements();
         routedStatements.addAll(preparedStatementExecutor.getStatements());
         return preparedStatementExecutor;
