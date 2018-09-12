@@ -105,6 +105,23 @@ public final class StatementExecutor {
         executeGroups.addAll(obtainExecuteGroups());
     }
     
+    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
+        return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+    
+            @Override
+            public Connection getConnection(final String dataSourceName) throws SQLException {
+                return connection.getConnection(dataSourceName);
+            }
+    
+            @Override
+            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+                Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+                statements.add(statement);
+                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+            }
+        });
+    }
+    
     /**
      * Execute query.
      * 
@@ -305,20 +322,6 @@ public final class StatementExecutor {
     
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
-    
-            @Override
-            public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getConnection(dataSourceName);
-            }
-    
-            @Override
-            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
-                statements.add(statement);
-                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
-            }
-        });
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
     
