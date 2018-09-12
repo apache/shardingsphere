@@ -30,7 +30,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  *
  * @author zhangyonglun
  */
-public final class ConnectionCloseEventListener extends OpenTracingListener<CloseConnectionEvent> {
+public final class CloseConnectionEventListener extends OpenTracingListener<CloseConnectionEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/connectionClose/";
     
