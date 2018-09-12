@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConnectionCloseEvent extends ShardingEvent {
+public final class CloseConnectionEvent extends ShardingEvent {
     
     private final String dataSource;
     

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.connection.ConnectionCloseEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
@@ -171,7 +171,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                ConnectionCloseEvent event = new ConnectionCloseEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
+                CloseConnectionEvent event = new CloseConnectionEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
                 ShardingEventBusInstance.getInstance().post(event);
                 try {
                     connection.close();

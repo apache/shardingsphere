@@ -21,7 +21,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.connection.ConnectionCloseEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -30,7 +30,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  *
  * @author zhangyonglun
  */
-public final class ConnectionCloseEventListener extends OpenTracingListener<ConnectionCloseEvent> {
+public final class ConnectionCloseEventListener extends OpenTracingListener<CloseConnectionEvent> {
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/connectionClose/";
     
@@ -43,19 +43,19 @@ public final class ConnectionCloseEventListener extends OpenTracingListener<Conn
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final ConnectionCloseEvent event) {
+    public void listen(final CloseConnectionEvent event) {
         tracing(event);
     }
     
     @Override
-    protected void beforeExecute(final ConnectionCloseEvent event) {
+    protected void beforeExecute(final CloseConnectionEvent event) {
         branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
             .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
     }
     
     @Override
-    protected void tracingFinish(final ConnectionCloseEvent event) {
+    protected void tracingFinish(final CloseConnectionEvent event) {
         if (null == branchSpan.get()) {
             return;
         }
