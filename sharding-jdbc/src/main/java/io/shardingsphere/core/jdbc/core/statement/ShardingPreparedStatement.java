@@ -76,12 +76,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final ShardingConnection connection;
     
-    private final int resultSetType;
-    
-    private final int resultSetConcurrency;
-    
-    private final int resultSetHoldability;
-    
     private final PreparedStatementRoutingEngine routingEngine;
     
     private final List<BatchPreparedStatementExecuteUnit> batchStatementUnits = new LinkedList<>();
@@ -97,9 +91,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Getter(AccessLevel.NONE)
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
-    
-    @Getter(AccessLevel.NONE)
-    private final boolean returnGeneratedKeys;
     
     @Getter(AccessLevel.NONE)
     private SQLRouteResult routeResult;
@@ -125,11 +116,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private ShardingPreparedStatement(final ShardingConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys) {
         this.connection = connection;
-        this.resultSetType = resultSetType;
-        this.resultSetConcurrency = resultSetConcurrency;
-        this.resultSetHoldability = resultSetHoldability;
         this.sql = sql;
-        this.returnGeneratedKeys = returnGeneratedKeys;
         ShardingContext shardingContext = connection.getShardingDataSource().getShardingContext();
         routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(),
                 shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource());
@@ -287,7 +274,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
-        if (returnGeneratedKeys && generatedKey.isPresent()) {
+        if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new GeneratedKeysResultSet(routeResult.getGeneratedKey().getGeneratedKeys().iterator(), generatedKey.get().getColumn().getName(), this);
         }
         if (1 == routedStatements.size()) {
@@ -343,6 +330,21 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
+    }
+    
+    @Override
+    public int getResultSetType() {
+        return preparedStatementExecutor.getResultSetType();
+    }
+    
+    @Override
+    public int getResultSetConcurrency() {
+        return preparedStatementExecutor.getResultSetConcurrency();
+    }
+    
+    @Override
+    public int getResultSetHoldability() {
+        return preparedStatementExecutor.getResultSetHoldability();
     }
 }
 
