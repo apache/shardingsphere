@@ -50,6 +50,8 @@ import java.util.Properties;
 @Getter
 public final class RuleRegistry {
     
+    private final String schemaName;
+    
     private ShardingRule shardingRule;
     
     private MasterSlaveRule masterSlaveRule;
@@ -62,13 +64,12 @@ public final class RuleRegistry {
     
     private ShardingMetaData metaData;
     
-    private String schemaName;
-    
     @Setter
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    public RuleRegistry(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
-        init(dataSources, rule, schemaName);
+    public RuleRegistry(final String schemaName, final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule) {
+        this.schemaName = schemaName;
+        init(dataSources, rule);
     }
     
     /**
@@ -76,9 +77,8 @@ public final class RuleRegistry {
      *
      * @param dataSources data sources
      * @param rule proxy rule configuration
-     * @param schemaName schema name
      */
-    public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
+    public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule) {
         Properties properties = null == rule.getShardingRule() ? rule.getMasterSlaveRule().getProps() : rule.getShardingRule().getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         
@@ -93,7 +93,6 @@ public final class RuleRegistry {
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         dataSourceConfigurationMap = dataSources;
         backendDataSource = new JDBCBackendDataSource(this);
-        this.schemaName = schemaName;
     }
     
     /**

@@ -102,8 +102,9 @@ public final class ProxyContext {
     public synchronized void init(final ProxyServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, ProxySchemaRule> schemaRules) {
         initServerConfiguration(serverConfig);
         for (Entry<String, ProxySchemaRule> entry : schemaRules.entrySet()) {
-            schemaNames.add(entry.getKey());
-            ruleRegistryMap.put(entry.getKey(), new RuleRegistry(schemaDataSources.get(entry.getKey()), entry.getValue(), entry.getKey()));
+            String schemaName = entry.getKey();
+            schemaNames.add(schemaName);
+            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
         }
     }
     
@@ -185,7 +186,7 @@ public final class ProxyContext {
             String schemaName = entry.getKey();
             RuleRegistry ruleRegistry = entry.getValue();
             ruleRegistry.getBackendDataSource().close();
-            ruleRegistry.init(proxyConfigurationEventBusEvent.getSchemaDataSourceMap().get(schemaName), proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(schemaName), schemaName);
+            ruleRegistry.init(proxyConfigurationEventBusEvent.getSchemaDataSourceMap().get(schemaName), proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(schemaName));
         }
     }
     
