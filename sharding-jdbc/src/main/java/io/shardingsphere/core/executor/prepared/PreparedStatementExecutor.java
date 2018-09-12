@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor.prepared;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
@@ -77,12 +79,13 @@ public final class PreparedStatementExecutor {
     private final List<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
-    private final List<PreparedStatement> statements = new LinkedList<>();
-    
-    @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
-    public PreparedStatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) {
+    @Getter
+    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups;
+    
+    public PreparedStatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
+                                     final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits)throws SQLException {
         this.sqlType = sqlType;
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
@@ -90,9 +93,47 @@ public final class PreparedStatementExecutor {
         this.returnGeneratedKeys = returnGeneratedKeys;
         this.routeUnits = routeUnits;
         this.connection = shardingConnection;
+        this.executeGroups = obtainExecuteGroups();
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
     }
+    
+    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
+        return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+    
+            @Override
+            public Connection getConnection(final String dataSourceName) throws SQLException {
+                return connection.getConnection(dataSourceName);
+            }
+    
+            @Override
+            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
+                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
+                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
+            }
+        });
+    }
+    
+    /**
+     * Get statements.
+     *
+     * @return prepared statements
+     */
+    public List<PreparedStatement> getStatements() {
+        List<PreparedStatement> result = new LinkedList<>();
+        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
+            result.addAll(Lists.transform(each.getInputs(), new Function<SQLExecuteUnit, PreparedStatement>() {
+            
+                @Override
+                public PreparedStatement apply(final SQLExecuteUnit input) {
+                    return (PreparedStatement) input.getStatement();
+                }
+            }));
+        }
+        return result;
+    }
+    
     
     /**
      * Execute query.
@@ -173,26 +214,12 @@ public final class PreparedStatementExecutor {
     
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
-            
-            @Override
-            public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getConnection(dataSourceName);
-            }
-            
-            @Override
-            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                statements.add(preparedStatement);
-                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
-                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
-            }
-        });
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
     
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
         return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
+    
 }
 
