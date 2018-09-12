@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.batch;
+package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
