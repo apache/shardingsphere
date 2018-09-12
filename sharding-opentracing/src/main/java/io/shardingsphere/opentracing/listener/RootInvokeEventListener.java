@@ -37,7 +37,7 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     
     public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/execute/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/rootInvoke/";
     
     private static final ThreadLocal<ActiveSpan> SPAN = new ThreadLocal<>();
     

@@ -32,7 +32,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  */
 public final class CloseConnectionEventListener extends OpenTracingListener<CloseConnectionEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/connectionClose/";
+    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/closeConnection/";
     
     private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
     
