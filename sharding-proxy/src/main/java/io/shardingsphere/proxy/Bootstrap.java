@@ -25,7 +25,7 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.YamlProxyServerConfiguration;
 import io.shardingsphere.proxy.config.YamlProxyShardingRuleConfiguration;
-import io.shardingsphere.proxy.config.loader.ProxyConfigLoader;
+import io.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
 import lombok.AccessLevel;
@@ -48,7 +48,7 @@ public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
     
-    private static final ProxyConfigLoader CONFIG_LOADER = ProxyConfigLoader.getInstance();
+    private static final ProxyConfigurationLoader CONFIG_LOADER = ProxyConfigurationLoader.getInstance();
     
     private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
     
@@ -63,10 +63,10 @@ public final class Bootstrap {
         CONFIG_LOADER.loadConfiguration();
         int port = getPort(args);
         new ProxyListenerRegister().register();
-        if (null == CONFIG_LOADER.getYamlServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(CONFIG_LOADER.getYamlServerConfiguration(), CONFIG_LOADER.getYamlProxyShardingRuleConfigurations(), port);
+        if (null == CONFIG_LOADER.getServerConfig().getOrchestration()) {
+            startWithoutRegistryCenter(CONFIG_LOADER.getServerConfig(), CONFIG_LOADER.getRuleConfigs(), port);
         } else {
-            startWithRegistryCenter(CONFIG_LOADER.getYamlServerConfiguration(), CONFIG_LOADER.getYamlProxyShardingRuleConfigurations(), port);
+            startWithRegistryCenter(CONFIG_LOADER.getServerConfig(), CONFIG_LOADER.getRuleConfigs(), port);
         }
     }
     
