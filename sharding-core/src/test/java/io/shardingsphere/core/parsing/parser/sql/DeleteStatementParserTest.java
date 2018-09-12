@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
@@ -35,13 +36,13 @@ import static org.junit.Assert.assertThat;
 
 public final class DeleteStatementParserTest extends AbstractStatementParserTest {
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = SQLParsingUnsupportedException.class)
     public void parseStatementWithDeleteMultipleTable() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, null).parse(false);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = SQLParsingUnsupportedException.class)
     public void parseStatementWithDeleteMultipleTableWithUsing() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, null).parse(false);
