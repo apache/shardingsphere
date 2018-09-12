@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.executor.prepared;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
@@ -79,6 +77,9 @@ public final class PreparedStatementExecutor {
     private final List<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
+    private final List<PreparedStatement> statements = new LinkedList<>();
+    
+    @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     @Getter
@@ -109,31 +110,12 @@ public final class PreparedStatementExecutor {
             @Override
             public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
+                statements.add(preparedStatement);
                 parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
                 return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
             }
         });
     }
-    
-    /**
-     * Get statements.
-     *
-     * @return prepared statements
-     */
-    public List<PreparedStatement> getStatements() {
-        List<PreparedStatement> result = new LinkedList<>();
-        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
-            result.addAll(Lists.transform(each.getInputs(), new Function<SQLExecuteUnit, PreparedStatement>() {
-            
-                @Override
-                public PreparedStatement apply(final SQLExecuteUnit input) {
-                    return (PreparedStatement) input.getStatement();
-                }
-            }));
-        }
-        return result;
-    }
-    
     
     /**
      * Execute query.
