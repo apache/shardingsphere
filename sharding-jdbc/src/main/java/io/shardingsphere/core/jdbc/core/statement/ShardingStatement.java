@@ -23,7 +23,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
-import io.shardingsphere.core.executor.statement.StatementExecutor;
+import io.shardingsphere.core.executor.StatementExecutor;
 import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
