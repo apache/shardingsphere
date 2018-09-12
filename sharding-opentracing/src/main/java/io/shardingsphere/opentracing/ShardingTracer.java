@@ -67,9 +67,9 @@ public final class ShardingTracer {
     
     private static void registerListeners() {
         new OverallExecuteEventListener().register();
-        new SQLExecuteEventListener().register();
         new ParsingEventListener().register();
         new GetConnectionEventListener().register();
+        new SQLExecuteEventListener().register();
         new ConnectionCloseEventListener().register();
     }
     
