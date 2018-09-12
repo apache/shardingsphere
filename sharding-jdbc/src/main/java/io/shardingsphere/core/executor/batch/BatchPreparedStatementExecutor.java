@@ -26,13 +26,11 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
-import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -86,6 +84,8 @@ public final class BatchPreparedStatementExecutor {
     
     @Getter
     private final Collection<SQLExecuteUnit> executeUnits = new LinkedList<>();
+    
+    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
@@ -152,29 +152,16 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    /**
-     * Init.
-     *
-     * @param sqlType sql type
-     */
-    public void init(final SQLType sqlType) {
-        this.sqlType = sqlType;
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
-    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
-        return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
-        
-            @Override
-            public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getConnection(dataSourceName);
-            }
-        
-            @Override
-            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
-            }
-        });
+    /**
+     * Init executor.
+     *
+     */
+    public void init() {
+        executeGroups.addAll(sqlExecutePrepareTemplate.getExecuteUnitGroups(executeUnits));
     }
     
     /**
@@ -216,10 +203,6 @@ public final class BatchPreparedStatementExecutor {
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
-    }
-    
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     private Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups() {
