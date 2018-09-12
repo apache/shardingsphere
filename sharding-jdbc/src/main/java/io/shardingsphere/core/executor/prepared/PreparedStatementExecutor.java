@@ -214,5 +214,20 @@ public final class PreparedStatementExecutor {
         return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
+    /**
+     * Clear data.
+     *
+     * @throws SQLException sql exception
+     */
+    public void clear() throws SQLException {
+        for (Statement each : statements) {
+            each.close();
+        }
+        routeUnits.clear();
+        resultSets.clear();
+        statements.clear();
+        parameterSets.clear();
+        executeGroups.clear();
+    }
 }
 
