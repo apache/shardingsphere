@@ -27,13 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * proxy sharding rule configuration for yaml.
+ * Rule configuration.
  *
  * @author panjuan
  */
 @Getter
 @Setter
-public final class YamlProxyShardingRuleConfiguration {
+public final class RuleConfiguration {
     
     private String schemaName;
     
@@ -42,5 +42,4 @@ public final class YamlProxyShardingRuleConfiguration {
     private YamlShardingRuleConfiguration shardingRule;
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
 }

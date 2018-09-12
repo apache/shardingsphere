@@ -75,8 +75,8 @@ public final class RuleRegistry {
      * Initialize rule registry.
      *
      * @param dataSources data sources
-     * @param rule        proxy rule configuration
-     * @param schemaName  schema name
+     * @param rule proxy rule configuration
+     * @param schemaName schema name
      */
     public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
         Properties properties = null == rule.getShardingRule() ? rule.getMasterSlaveRule().getProps() : rule.getShardingRule().getProps();

@@ -38,5 +38,5 @@ public final class OrchestrationProxyConfiguration {
     
     private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
     
-    private final Map<String, ProxySchemaRule> schemaShardingRuleMap;
+    private final Map<String, ProxySchemaRule> schemaRuleMap;
 }
