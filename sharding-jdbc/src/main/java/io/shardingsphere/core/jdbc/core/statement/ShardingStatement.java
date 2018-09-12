@@ -45,12 +45,12 @@ import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -66,8 +66,6 @@ import java.util.List;
 public final class ShardingStatement extends AbstractStatementAdapter {
     
     private final ShardingConnection connection;
-    
-    private final Collection<Statement> routedStatements = new LinkedList<>();
     
     private StatementExecutor statementExecutor;
     
@@ -339,6 +337,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     @Override
     public int getResultSetHoldability() {
         return statementExecutor.getResultSetHoldability();
+    }
+    
+    @Override
+    public Collection<Statement> getRoutedStatements() {
+        return statementExecutor.getStatements();
     }
 }
 
