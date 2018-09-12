@@ -74,8 +74,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final List<BatchPreparedStatementExecuteUnit> batchStatementUnits = new LinkedList<>();
     
-    private final Collection<PreparedStatement> routedStatements = new LinkedList<>();
-
     private final String sql;
 
     private int batchCount;
@@ -220,7 +218,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             return new GeneratedKeysResultSet(routeResult.getGeneratedKey().getGeneratedKeys().iterator(), generatedKey.get().getColumn().getName(), this);
         }
         if (1 == preparedStatementExecutor.getStatements().size()) {
-            return routedStatements.iterator().next().getGeneratedKeys();
+            return preparedStatementExecutor.getStatements().iterator().next().getGeneratedKeys();
         }
         return new GeneratedKeysResultSet();
     }
@@ -318,5 +316,12 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public int getResultSetHoldability() {
         return preparedStatementExecutor.getResultSetHoldability();
     }
+    
+    @Override
+    public Collection<PreparedStatement> getRoutedStatements() {
+        return preparedStatementExecutor.getStatements();
+    }
 }
+
+
 
