@@ -225,18 +225,19 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         return statementExecutor;
     }
     
-    private void clearPrevious() throws SQLException {
-        for (Statement each : routedStatements) {
-            each.close();
-        }
-        routedStatements.clear();
+    private void initStatementExecutor() throws SQLException {
+        statementExecutor.init(routeResult);
+        replayMethodForStatements();
     }
     
-    private void inputAfter() {
+    private void replayMethodForStatements() {
         for (Statement each : statementExecutor.getStatements()) {
-            routedStatements.add(each);
             replayMethodsInvocation(each);
         }
+    }
+    
+    private void clearPrevious() throws SQLException {
+        statementExecutor.clear();
     }
     
     private void sqlRoute(final String sql) {
@@ -345,3 +346,4 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         return statementExecutor.getResultSetHoldability();
     }
 }
+
