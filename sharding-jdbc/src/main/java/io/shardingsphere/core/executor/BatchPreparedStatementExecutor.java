@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.batch;
+package io.shardingsphere.core.executor;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -25,8 +25,6 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.BatchPreparedStatementExecuteUnit;
-import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
