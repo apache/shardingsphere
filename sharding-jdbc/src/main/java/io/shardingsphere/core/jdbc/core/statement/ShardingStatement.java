@@ -45,7 +45,6 @@ import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -287,13 +286,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == routedStatements.size() && routeResult.getSqlStatement() instanceof DQLStatement) {
-            currentResultSet = routedStatements.iterator().next().getResultSet();
+        if (1 == statementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
+            currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
             return currentResultSet;
         }
-        List<ResultSet> resultSets = new ArrayList<>(routedStatements.size());
-        List<QueryResult> queryResults = new ArrayList<>(routedStatements.size());
-        for (Statement each : routedStatements) {
+        List<ResultSet> resultSets = new ArrayList<>(statementExecutor.getStatements().size());
+        List<QueryResult> queryResults = new ArrayList<>(statementExecutor.getStatements().size());
+        for (Statement each : statementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet));
