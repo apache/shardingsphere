@@ -34,6 +34,7 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -54,10 +55,13 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
+@Getter
 public final class PreparedStatementExecutor {
     
+    @Getter(AccessLevel.NONE)
     private SQLType sqlType;
     
+    @Getter(AccessLevel.NONE)
     private final int resultSetType;
     
     private final int resultSetConcurrency;
@@ -66,24 +70,23 @@ public final class PreparedStatementExecutor {
     
     private final boolean returnGeneratedKeys;
     
+    @Getter(AccessLevel.NONE)
     private final ShardingConnection connection;
     
     private Collection<RouteUnit> routeUnits;
     
+    @Getter(AccessLevel.NONE)
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
+    @Getter(AccessLevel.NONE)
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
-    @Getter
     private final List<ResultSet> resultSets = new LinkedList<>();
     
-    @Getter
     private final List<PreparedStatement> statements = new LinkedList<>();
     
-    @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
-    @Getter
     private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
     public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
