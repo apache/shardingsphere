@@ -18,12 +18,13 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -37,13 +38,13 @@ public final class DateBinaryProtocolValueTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    @Test
-    public void assertReadWithZeroByte() {
-        assertThat(new DateBinaryProtocolValue().read(payload), CoreMatchers.<Object>is(new Timestamp(0)));
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertReadWithZeroByte() throws SQLException {
+        new DateBinaryProtocolValue().read(payload);
     }
 
     @Test
-    public void assertReadWithFourBytes() {
+    public void assertReadWithFourBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(4, 12, 31);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
@@ -54,7 +55,7 @@ public final class DateBinaryProtocolValueTest {
     }
 
     @Test
-    public void assertReadWithSevenBytes() {
+    public void assertReadWithSevenBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(7, 12, 31, 10, 59, 0);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
@@ -68,7 +69,7 @@ public final class DateBinaryProtocolValueTest {
     }
 
     @Test
-    public void assertReadWithElevenBytes() {
+    public void assertReadWithElevenBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(11, 12, 31, 10, 59, 0);
         when(payload.readInt2()).thenReturn(2018);
         when(payload.readInt4()).thenReturn(500);
@@ -83,7 +84,7 @@ public final class DateBinaryProtocolValueTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void assertReadWithIllegalArgument() {
+    public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
         new DateBinaryProtocolValue().read(payload);
     }

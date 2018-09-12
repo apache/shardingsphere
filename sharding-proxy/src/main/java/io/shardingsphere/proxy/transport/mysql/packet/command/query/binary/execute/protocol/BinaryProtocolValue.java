@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
+import java.sql.SQLException;
+
 /**
  * Binary protocol value.
  *
@@ -34,8 +36,9 @@ public interface BinaryProtocolValue {
      *
      * @param payload payload operation for MySQL packet
      * @return binary value result
+     * @throws SQLException SQL exception
      */
-    Object read(MySQLPacketPayload payload);
+    Object read(MySQLPacketPayload payload) throws SQLException;
     
     /**
      * Write binary protocol value.

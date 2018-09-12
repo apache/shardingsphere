@@ -31,6 +31,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.C
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.sql.SQLException;
+
 /**
  * Command packet factory.
  *
@@ -48,8 +50,9 @@ public final class CommandPacketFactory {
      * @param payload MySQL packet payload
      * @param backendConnection backend connection
      * @return command packet
+     * @throws SQLException SQL exception
      */
-    public static CommandPacket newInstance(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public static CommandPacket newInstance(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {

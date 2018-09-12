@@ -19,6 +19,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -31,11 +33,11 @@ import java.util.Calendar;
 public final class DateBinaryProtocolValue implements BinaryProtocolValue {
     
     @Override
-    public Object read(final MySQLPacketPayload payload) {
+    public Object read(final MySQLPacketPayload payload) throws SQLException {
         int length = payload.readInt1();
         switch (length) {
             case 0:
-                return new Timestamp(0L);
+                throw new SQLFeatureNotSupportedException("Can not support date format if year, month, day is absent.");
             case 4:
                 return getTimestampForDate(payload);
             case 7:
@@ -63,25 +65,18 @@ public final class DateBinaryProtocolValue implements BinaryProtocolValue {
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        // TODO :yonglun confirm here is cannot set YEAR == 0, it at least 1970 here
         Timestamp timestamp = (Timestamp) value;
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp.getTime());
+        calendar.setTime(timestamp);
         int year = calendar.get(Calendar.YEAR);
-        // TODO :yonglun confirm here is month + 1, and isDateAbsent adjust is 0 == month, is it never == 0?
         int month = calendar.get(Calendar.MONTH) + 1;
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
         int seconds = calendar.get(Calendar.SECOND);
         int nanos = timestamp.getNanos();
-        boolean isDateAbsent = 0 == year && 0 == month && 0 == dayOfMonth;
         boolean isTimeAbsent = 0 == hourOfDay && 0 == minutes && 0 == seconds;
         boolean isNanosAbsent = 0 == nanos;
-        if (isDateAbsent && isTimeAbsent && isNanosAbsent) {
-            payload.writeInt1(0);
-            return;
-        }
         if (isTimeAbsent && isNanosAbsent) {
             payload.writeInt1(4);
             writeDate(payload, year, month, dayOfMonth);

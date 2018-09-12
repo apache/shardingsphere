@@ -72,7 +72,7 @@ public final class ComStmtExecutePacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    public void assertWrite() throws SQLException {
         BinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
