@@ -81,6 +81,8 @@ public final class StatementExecutor {
     
     private final List<Statement> statements = new LinkedList<>();
     
+    private final List<List<Object>> parameterSets = new LinkedList<>();
+    
     @Getter(AccessLevel.NONE)
     private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
@@ -117,6 +119,7 @@ public final class StatementExecutor {
             public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
                 statements.add(statement);
+                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
                 return new StatementExecuteUnit(routeUnit, statement, connectionMode);
             }
         });
@@ -323,6 +326,22 @@ public final class StatementExecutor {
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+    }
+    
+    /**
+     * Clear data.
+     *
+     * @throws SQLException sql exception
+     */
+    public void clear() throws SQLException {
+        for (Statement each : statements) {
+            each.close();
+        }
+        routeUnits.clear();
+        resultSets.clear();
+        statements.clear();
+        parameterSets.clear();
+        executeGroups.clear();
     }
     
     private interface Updater {
