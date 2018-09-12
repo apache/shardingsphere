@@ -20,8 +20,6 @@ package io.shardingsphere.proxy.config;
 import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -36,7 +34,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Sharding rule registry.
@@ -60,8 +57,6 @@ public final class RuleRegistry {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private BackendNIOConfiguration backendNIOConfig;
-    
     private ShardingMetaData metaData;
     
     @Setter
@@ -76,17 +71,10 @@ public final class RuleRegistry {
      * Initialize rule registry.
      *
      * @param dataSources data sources
-     * @param rule proxy rule configuration
+     * @param rule rule configuration
      */
     public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule) {
-        Properties properties = null == rule.getShardingRule() ? rule.getMasterSlaveRule().getProps() : rule.getShardingRule().getProps();
-        ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        
-        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
-        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
-        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-        shardingRule = new ShardingRule(
-                null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
+        shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
         if (null != rule.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }

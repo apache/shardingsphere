@@ -118,7 +118,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         synchronizedFuture = new SynchronizedFuture(1);
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
         executeSQL(dataSourceName, sql);
-        List<QueryResult> queryResults = synchronizedFuture.get(ruleRegistry.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(PROXY_CONTEXT.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         FutureRegistry.getInstance().delete(connectionId);
         List<CommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
@@ -142,7 +142,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         for (RouteUnit each : routeResult.getRouteUnits()) {
             executeSQL(each.getDataSourceName(), each.getSqlUnit().getSql());
         }
-        List<QueryResult> queryResults = synchronizedFuture.get(ruleRegistry.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
+        List<QueryResult> queryResults = synchronizedFuture.get(PROXY_CONTEXT.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         FutureRegistry.getInstance().delete(connectionId);
         List<CommandResponsePackets> packets = new ArrayList<>(queryResults.size());
         for (QueryResult each : queryResults) {
@@ -168,7 +168,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
             channelMap.put(dataSourceName, new ArrayList<Channel>());
         }
         SimpleChannelPool pool = CLIENT_MANAGER.getBackendNettyClient(ruleRegistry.getSchemaName()).getPoolMap().get(dataSourceName);
-        Channel channel = pool.acquire().get(ruleRegistry.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
+        Channel channel = pool.acquire().get(PROXY_CONTEXT.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
         channel.writeAndFlush(new ComQueryPacket(sequenceId, sql));

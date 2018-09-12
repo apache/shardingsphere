@@ -74,6 +74,8 @@ public final class ProxyContext {
     
     private TransactionType transactionType;
     
+    private BackendNIOConfiguration backendNIOConfig;
+    
     private boolean isCircuitBreak;
     
     /**
@@ -121,6 +123,9 @@ public final class ProxyContext {
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
         useNIO = false;
         // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
         proxyAuthority = serverConfiguration.getProxyAuthority();
     }
     
