@@ -67,12 +67,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private final ShardingConnection connection;
     
-    private final int resultSetType;
-    
-    private final int resultSetConcurrency;
-    
-    private final int resultSetHoldability;
-    
     private final Collection<Statement> routedStatements = new LinkedList<>();
     
     private StatementExecutor statementExecutor;
@@ -97,9 +91,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        this.resultSetType = resultSetType;
-        this.resultSetConcurrency = resultSetConcurrency;
-        this.resultSetHoldability = resultSetHoldability;
+        this.statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
     }
     
     @Override
@@ -336,5 +328,20 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             ShardingEventBusInstance.getInstance().post(event);
             throw ex;
         }
+    }
+    
+    @Override
+    public int getResultSetType() {
+        return statementExecutor.getResultSetType();
+    }
+    
+    @Override
+    public int getResultSetConcurrency() {
+        return statementExecutor.getResultSetConcurrency();
+    }
+    
+    @Override
+    public int getResultSetHoldability() {
+        return statementExecutor.getResultSetHoldability();
     }
 }
