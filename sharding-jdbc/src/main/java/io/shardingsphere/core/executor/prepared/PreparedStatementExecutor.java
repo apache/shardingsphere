@@ -33,6 +33,7 @@ import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -55,7 +56,7 @@ import java.util.Map;
  */
 public final class PreparedStatementExecutor {
     
-    private final SQLType sqlType;
+    private SQLType sqlType;
     
     private final int resultSetType;
     
@@ -67,7 +68,7 @@ public final class PreparedStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final Collection<RouteUnit> routeUnits;
+    private Collection<RouteUnit> routeUnits;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -83,20 +84,28 @@ public final class PreparedStatementExecutor {
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     @Getter
-    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups;
+    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
-    public PreparedStatementExecutor(final SQLType sqlType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
-                                     final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits)throws SQLException {
-        this.sqlType = sqlType;
+    public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.returnGeneratedKeys = returnGeneratedKeys;
-        this.routeUnits = routeUnits;
         this.connection = shardingConnection;
-        this.executeGroups = obtainExecuteGroups();
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+    }
+    
+    /**
+     * Init executor.
+     *
+     * @param routeResult route result
+     * @throws SQLException sql exception
+     */
+    public void init(final SQLRouteResult routeResult) throws SQLException {
+        sqlType = routeResult.getSqlStatement().getType();
+        routeUnits = routeResult.getRouteUnits();
+        executeGroups.addAll(obtainExecuteGroups());
     }
     
     private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
