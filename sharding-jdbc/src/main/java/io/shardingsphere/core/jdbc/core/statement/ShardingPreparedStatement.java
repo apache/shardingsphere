@@ -236,7 +236,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingEventBusInstance.getInstance().post(event);
     }
     
-    private void clearPrevious() {
+    private void clearPrevious() throws SQLException {
+        for (PreparedStatement each : routedStatements) {
+            each.close();
+        }
         routedStatements.clear();
     }
     
