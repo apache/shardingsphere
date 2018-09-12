@@ -64,6 +64,20 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
+    /**
+     * Get execute unit groups.
+     *
+     * @param sqlExecuteUnits sql execute units
+     * @return statement execute unit groups
+     */
+    public Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroups(final Collection<SQLExecuteUnit> sqlExecuteUnits) {
+        Collection<ShardingExecuteGroup<SQLExecuteUnit>> result = new LinkedList<>();
+        for (List<SQLExecuteUnit> each : getExecuteUnitGroupsByDataSource(sqlExecuteUnits).values()) {
+            result.addAll(getExecuteUnitGroupsPerDataBase(each));
+        }
+        return result;
+    }
+    
     private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<RouteUnit> routeUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
@@ -107,28 +121,13 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroups(final Collection<SQLExecuteUnit> sqlExecuteUnits) {
+    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroupsPerDataBase(final List<SQLExecuteUnit> sqlExecuteUnits) {
         Collection<ShardingExecuteGroup<SQLExecuteUnit>> result = new LinkedList<>();
-        for (List<SQLExecuteUnit> each : getExecuteUnitGroupsByDataSource(sqlExecuteUnits).values()) {
-            int desiredPartitionSize = Math.max(each.size() / maxConnectionsSizePerQuery, 1);
-            for (:
-                 ) {
-                
-            }
-            
-            result.addAll();
+        int desiredPartitionSize = Math.max(sqlExecuteUnits.size() / maxConnectionsSizePerQuery, 1);
+        for (List<SQLExecuteUnit> each : Lists.partition(sqlExecuteUnits, desiredPartitionSize)) {
+            result.add(new ShardingExecuteGroup<>(each));
         }
         return result;
-    }
-    
-    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroupsPerPartition()
-    
-    private ShardingExecuteGroup<SQLExecuteUnit> getExecuteGroup(final List<SQLExecuteUnit> executeUnits) {
-        for (SQLExecuteUnit each : executeUnits) {
-        
-        }
-        ConnectionMode connectionMode = 1 == each.size() ? ConnectionMode.MEMORY_STRICTLY : ConnectionMode.CONNECTION_STRICTLY;
-    
     }
 }
 
