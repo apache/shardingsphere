@@ -75,9 +75,9 @@ public abstract class AbstractBackendHandler implements BackendHandler {
     /**
      * handle use databases statement.
      *
-     * @param useStatement    use statement
+     * @param useStatement use statement
      * @param frontendHandler frontend handler
-     * @return
+     * @return response packets
      */
     protected CommandResponsePackets handleUseStatement(final UseStatement useStatement, final FrontendHandler frontendHandler) {
         String schema = useStatement.getSchema();

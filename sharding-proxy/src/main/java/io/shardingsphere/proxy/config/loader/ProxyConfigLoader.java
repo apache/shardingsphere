@@ -76,9 +76,9 @@ public final class ProxyConfigLoader {
     public void loadConfiguration() throws IOException {
         yamlServerConfiguration = loadServerConfiguration(new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH + DEFAULT_SERVER_CONFIG_FILE).getFile()));
         File configDir = new File(ProxyConfigLoader.class.getResource(DEFAULT_CONFIG_PATH).getFile());
-        File[] shardingRuleConfiFiles = findShardingRuleConfiFiles(configDir);
-        Preconditions.checkState(shardingRuleConfiFiles.length > 0, "No sharding Configuration file found");
-        for (File shardingRuleConfigFile : shardingRuleConfiFiles) {
+        File[] shardingRuleConfigFiles = findShardingRuleConfigFiles(configDir);
+        Preconditions.checkState(shardingRuleConfigFiles.length > 0, "No sharding Configuration file found");
+        for (File shardingRuleConfigFile : shardingRuleConfigFiles) {
             YamlProxyShardingRuleConfiguration yamlProxyShardingRuleConfiguration = loadShardingRuleConfiguration(shardingRuleConfigFile);
             yamlProxyShardingRuleConfigurations.add(yamlProxyShardingRuleConfiguration);
             schemaNames.add(yamlProxyShardingRuleConfiguration.getSchemaName());
@@ -115,15 +115,13 @@ public final class ProxyConfigLoader {
         }
     }
     
-    private File[] findShardingRuleConfiFiles(final File dir) {
-        return dir.listFiles(new FileFilter() {
+    private File[] findShardingRuleConfigFiles(final File directory) {
+        return directory.listFiles(new FileFilter() {
+            
             @Override
             public boolean accept(final File pathname) {
                 String name = pathname.getName();
-                if (PATTERN_CONFIG_FILE_NAME.matcher(name).matches()) {
-                    return true;
-                }
-                return false;
+                return PATTERN_CONFIG_FILE_NAME.matcher(name).matches();
             }
         });
     }

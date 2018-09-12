@@ -22,7 +22,6 @@ import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.config.ProxyContext;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
@@ -61,9 +60,6 @@ public final class ComStmtExecutePacketTest {
     
     @Mock
     private FrontendHandler frontendHandler;
-    
-    @Mock
-    private RuleRegistry ruleRegistry;
     
     @Before
     public void setUp() throws ReflectiveOperationException {

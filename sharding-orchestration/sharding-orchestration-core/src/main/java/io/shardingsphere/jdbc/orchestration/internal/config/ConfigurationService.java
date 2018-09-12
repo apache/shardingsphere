@@ -356,7 +356,7 @@ public final class ConfigurationService {
      * 
      * @return proxy server configuration
      */
-    public ProxyServerConfiguration loadProxyServerConiguration() {
+    public ProxyServerConfiguration loadProxyServerConfiguration() {
         try {
             ProxyServerConfiguration result = ProxyConfigurationConverter.proxyServerConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH)));
             Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()), "Authority configuration is invalid.");

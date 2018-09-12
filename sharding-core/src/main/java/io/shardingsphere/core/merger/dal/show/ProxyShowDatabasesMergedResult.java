@@ -38,16 +38,16 @@ public final class ProxyShowDatabasesMergedResult implements MergedResult {
     
     private List<String> schemas;
     
-    private int currenIndex;
+    private int currentIndex;
     
     public ProxyShowDatabasesMergedResult(final List<String> schemas) {
         this.schemas = schemas;
     }
     
     @Override
-    public boolean next() throws SQLException {
-        if (currenIndex < schemas.size()) {
-            currenIndex++;
+    public boolean next() {
+        if (currentIndex < schemas.size()) {
+            currentIndex++;
             return true;
         }
         return false;
@@ -58,12 +58,11 @@ public final class ProxyShowDatabasesMergedResult implements MergedResult {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
             throw new SQLFeatureNotSupportedException();
         }
-        Object result = schemas.get(currenIndex - 1);
-        return result;
+        return schemas.get(currentIndex - 1);
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+    public Object getValue(final String columnLabel, final Class<?> type) {
         return new SQLFeatureNotSupportedException();
     }
     

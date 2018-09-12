@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.jdbc.orchestration.api;
 
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
@@ -28,6 +29,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
+
 /**
  * Orchestration sharding data source factory.
  *

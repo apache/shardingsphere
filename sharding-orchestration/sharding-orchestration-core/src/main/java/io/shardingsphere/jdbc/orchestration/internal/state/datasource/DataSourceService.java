@@ -21,7 +21,6 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
@@ -134,19 +133,12 @@ public final class DataSourceService {
         
         for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
-                if(schemaRuleMap.get(each.getKey()).getMasterSlaveRule() != null){
+                if (null != schemaRuleMap.get(each.getKey()).getMasterSlaveRule()) {
                     schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
                 }
             }
         }
         return schemaRuleMap;
-    }
-    
-    private void removeDisabledDataSourceNames(final String disabledDataSourceName,
-                                               final Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules) {
-        for (Map.Entry<String, YamlMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
-            each.getValue().getSlaveDataSourceNames().remove(disabledDataSourceName);
-        }
     }
     
     /**

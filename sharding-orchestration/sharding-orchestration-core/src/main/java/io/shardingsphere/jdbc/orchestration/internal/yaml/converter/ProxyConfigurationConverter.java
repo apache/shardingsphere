@@ -52,8 +52,9 @@ public final class ProxyConfigurationConverter {
      * @param schemaShardingRuleMapString String in yaml
      * @return schema sharding rule configuration map
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, ProxySchemaRule> proxyRuleConfigFromYaml(final String schemaShardingRuleMapString) {
-        return (Map<String, ProxySchemaRule>) YAML.load(schemaShardingRuleMapString);
+        return (Map) YAML.load(schemaShardingRuleMapString);
     }
     
     /**
