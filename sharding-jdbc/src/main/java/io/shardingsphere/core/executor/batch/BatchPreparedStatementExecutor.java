@@ -85,12 +85,6 @@ public final class BatchPreparedStatementExecutor {
     private final List<ResultSet> resultSets = new LinkedList<>();
     
     @Getter
-    private final List<PreparedStatement> statements = new LinkedList<>();
-    
-    @Getter
-    private final List<List<Object>> parameterSets = new LinkedList<>();
-    
-    @Getter
     private final Collection<SQLExecuteUnit> executeUnits = new LinkedList<>();
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
@@ -178,8 +172,6 @@ public final class BatchPreparedStatementExecutor {
             @Override
             public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                statements.add(preparedStatement);
-                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
                 return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
             }
         });
