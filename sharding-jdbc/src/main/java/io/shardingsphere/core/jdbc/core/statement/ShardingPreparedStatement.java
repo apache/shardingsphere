@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
-import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecuteUnit;
+import io.shardingsphere.core.executor.BatchPreparedStatementExecuteUnit;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
