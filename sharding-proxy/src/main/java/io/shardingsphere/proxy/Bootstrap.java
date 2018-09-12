@@ -25,7 +25,7 @@ import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.ServerConfiguration;
 import io.shardingsphere.proxy.config.RuleConfiguration;
-import io.shardingsphere.proxy.config.ProxyConfigurationLoader;
+import io.shardingsphere.proxy.config.ConfigurationLoader;
 import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
 import lombok.AccessLevel;
@@ -48,7 +48,7 @@ public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
     
-    private static final ProxyConfigurationLoader CONFIG_LOADER = ProxyConfigurationLoader.getInstance();
+    private static final ConfigurationLoader CONFIG_LOADER = ConfigurationLoader.getInstance();
     
     private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
     

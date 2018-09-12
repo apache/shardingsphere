@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
@@ -42,9 +43,9 @@ import java.util.regex.Pattern;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ProxyConfigurationLoader {
+public final class ConfigurationLoader {
     
-    private static final ProxyConfigurationLoader INSTANCE = new ProxyConfigurationLoader();
+    private static final ConfigurationLoader INSTANCE = new ConfigurationLoader();
     
     private static final String CONFIG_PATH = "/conf/";
     
@@ -63,7 +64,7 @@ public final class ProxyConfigurationLoader {
      *
      * @return instance of proxy configuration loader.
      */
-    public static ProxyConfigurationLoader getInstance() {
+    public static ConfigurationLoader getInstance() {
         return INSTANCE;
     }
     
@@ -73,15 +74,16 @@ public final class ProxyConfigurationLoader {
      * @throws IOException IO exception
      */
     public void loadConfiguration() throws IOException {
-        serverConfiguration = loadServerConfiguration(new File(ProxyConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
-        File configPath = new File(ProxyConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
-        File[] ruleConfigFiles = findRuleConfigurationFiles(configPath);
-        Preconditions.checkState(ruleConfigFiles.length > 0, "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
-        for (File each : ruleConfigFiles) {
-            RuleConfiguration ruleConfig = loadRuleConfiguration(each);
-            Preconditions.checkState(schemaNames.add(ruleConfig.getSchemaName()), "Schema name `%s` must unique at all rule configurations.", ruleConfig.getSchemaName());
-            ruleConfigurations.add(ruleConfig);
+        serverConfiguration = loadServerConfiguration(new File(ConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
+        File configPath = new File(ConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
+        for (File each : findRuleConfigurationFiles(configPath)) {
+            Optional<RuleConfiguration> ruleConfig = loadRuleConfiguration(each);
+            if (ruleConfig.isPresent()) {
+                Preconditions.checkState(schemaNames.add(ruleConfig.get().getSchemaName()), "Schema name `%s` must unique at all rule configurations.", ruleConfig.get().getSchemaName());
+                ruleConfigurations.add(ruleConfig.get());
+            }
         }
+        Preconditions.checkState(!ruleConfigurations.isEmpty(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
     }
     
     private ServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
@@ -96,18 +98,20 @@ public final class ProxyConfigurationLoader {
         }
     }
     
-    private RuleConfiguration loadRuleConfiguration(final File yamlFile) throws IOException {
+    private Optional<RuleConfiguration> loadRuleConfiguration(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
             RuleConfiguration result = new Yaml(new Constructor(RuleConfiguration.class)).loadAs(inputStreamReader, RuleConfiguration.class);
-            Preconditions.checkNotNull(result, "Configuration file `%s` is invalid.", yamlFile.getName());
+            if (null == result) {
+                return Optional.absent();
+            }
             Preconditions.checkNotNull(result.getSchemaName(), "Property `schemaName` in file `%s` is required.", yamlFile.getName());
             Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
             Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != serverConfiguration.getOrchestration(),
                     "Configuration invalid in file `%s`, local and orchestration configuration are required at least one.", yamlFile.getName());
-            return result;
+            return Optional.of(result);
         }
     }
     
