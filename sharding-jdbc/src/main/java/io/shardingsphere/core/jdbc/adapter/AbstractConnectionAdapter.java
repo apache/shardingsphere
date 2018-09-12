@@ -159,6 +159,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void close() throws SQLException {
+        if (closed) {
+            return;
+        }
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
@@ -168,20 +171,18 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                if (!connection.isClosed()) {
-                    ConnectionCloseEvent event = new ConnectionCloseEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
+                ConnectionCloseEvent event = new ConnectionCloseEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
+                ShardingEventBusInstance.getInstance().post(event);
+                try {
+                    connection.close();
+                    event.setExecuteSuccess();
+                    // CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    // CHECKSTYLE:ON
+                    event.setExecuteFailure(ex);
+                    throw ex;
+                } finally {
                     ShardingEventBusInstance.getInstance().post(event);
-                    try {
-                        connection.close();
-                        event.setExecuteSuccess();
-                        // CHECKSTYLE:OFF
-                    } catch (final Exception ex) {
-                        // CHECKSTYLE:ON
-                        event.setExecuteFailure(ex);
-                        throw ex;
-                    } finally {
-                        ShardingEventBusInstance.getInstance().post(event);
-                    }
                 }
             }
         });
