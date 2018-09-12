@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.overall;
+package io.shardingsphere.core.event.root;
 
 import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;

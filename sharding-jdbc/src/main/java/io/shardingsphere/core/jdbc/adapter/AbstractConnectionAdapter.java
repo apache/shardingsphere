@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
-import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
+import io.shardingsphere.core.event.root.OverallExecutionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
