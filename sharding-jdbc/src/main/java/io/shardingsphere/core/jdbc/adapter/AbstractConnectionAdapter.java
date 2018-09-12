@@ -18,6 +18,8 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
@@ -34,7 +36,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -44,7 +46,7 @@ import java.util.Map;
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
-    private final Map<String, Connection> cachedConnections = new HashMap<>();
+    private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
     
     private boolean autoCommit = true;
     
@@ -65,8 +67,19 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
         if (cachedConnections.containsKey(dataSourceName)) {
-            return cachedConnections.get(dataSourceName);
+            return new ArrayList<>(cachedConnections.get(dataSourceName)).get(0);
         }
+        return getNewConnection(dataSourceName);
+    }
+    
+    /**
+     * Get database new connection.
+     *
+     * @param dataSourceName data source name
+     * @return database connection
+     * @throws SQLException SQL exception
+     */
+    public final Connection getNewConnection(final String dataSourceName) throws SQLException {
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Connection result = dataSource.getConnection();
