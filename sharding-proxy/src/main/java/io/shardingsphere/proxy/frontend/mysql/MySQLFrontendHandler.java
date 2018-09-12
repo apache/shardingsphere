@@ -135,7 +135,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             }
         }
         
-        private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
+        private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
             int sequenceId = payload.readInt1();
             int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
             return CommandPacketFactory.newInstance(sequenceId, connectionId, payload, backendConnection, frontendHandler);

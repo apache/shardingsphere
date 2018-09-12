@@ -42,8 +42,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -84,38 +86,38 @@ public final class CommandPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithComQuitPacket() {
+    public void assertNewInstanceWithComQuitPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_QUIT.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComQuitPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComInitDbPacket() {
+    public void assertNewInstanceWithComInitDbPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_INIT_DB.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComInitDbPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComFieldListPacket() {
+    public void assertNewInstanceWithComFieldListPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_FIELD_LIST.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComFieldListPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComQueryPacket() {
+    public void assertNewInstanceWithComQueryPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_QUERY.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComQueryPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtPreparePacket() {
+    public void assertNewInstanceWithComStmtPreparePacket() throws SQLException {
         when(frontendHandler.getSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_PREPARE.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComStmtPreparePacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtExecutePacket() {
+    public void assertNewInstanceWithComStmtExecutePacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_EXECUTE.getValue(), NewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
         when(payload.readInt4()).thenReturn(1);
         BinaryStatementRegistry.getInstance().register("", 1);
@@ -123,157 +125,157 @@ public final class CommandPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithComStmtClosePacket() {
+    public void assertNewInstanceWithComStmtClosePacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_CLOSE.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComStmtClosePacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComPingPacket() {
+    public void assertNewInstanceWithComPingPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_PING.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComPingPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComSleepPacket() {
+    public void assertNewInstanceWithComSleepPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_SLEEP.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComCreateDbPacket() {
+    public void assertNewInstanceWithComCreateDbPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_CREATE_DB.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDropDbPacket() {
+    public void assertNewInstanceWithComDropDbPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_DROP_DB.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComRefreshPacket() {
+    public void assertNewInstanceWithComRefreshPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_REFRESH.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComShutDownPacket() {
+    public void assertNewInstanceWithComShutDownPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_SHUTDOWN.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStatisticsPacket() {
+    public void assertNewInstanceWithComStatisticsPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STATISTICS.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComProcessInfoPacket() {
+    public void assertNewInstanceWithComProcessInfoPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_PROCESS_INFO.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComConnectPacket() {
+    public void assertNewInstanceWithComConnectPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_CONNECT.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComProcessKillPacket() {
+    public void assertNewInstanceWithComProcessKillPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_PROCESS_KILL.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDebugPacket() {
+    public void assertNewInstanceWithComDebugPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_DEBUG.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComTimePacket() {
+    public void assertNewInstanceWithComTimePacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_TIME.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDelayedInsertPacket() {
+    public void assertNewInstanceWithComDelayedInsertPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_DELAYED_INSERT.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComChangeUserPacket() {
+    public void assertNewInstanceWithComChangeUserPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_CHANGE_USER.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComBinlogDumpPacket() {
+    public void assertNewInstanceWithComBinlogDumpPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_BINLOG_DUMP.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComTableDumpPacket() {
+    public void assertNewInstanceWithComTableDumpPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_TABLE_DUMP.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComConnectOutPacket() {
+    public void assertNewInstanceWithComConnectOutPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_CONNECT_OUT.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComRegisterSlavePacket() {
+    public void assertNewInstanceWithComRegisterSlavePacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_REGISTER_SLAVE.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtSendLongDataPacket() {
+    public void assertNewInstanceWithComStmtSendLongDataPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_SEND_LONG_DATA.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtResetPacket() {
+    public void assertNewInstanceWithComStmtResetPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_RESET.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComSetOptionPacket() {
+    public void assertNewInstanceWithComSetOptionPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_SET_OPTION.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtFetchPacket() {
+    public void assertNewInstanceWithComStmtFetchPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_FETCH.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDaemonPacket() {
+    public void assertNewInstanceWithComDaemonPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_DAEMON.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComBinlogDumpGTIDPacket() {
+    public void assertNewInstanceWithComBinlogDumpGTIDPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_BINLOG_DUMP_GTID.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComResetConnectionPacket() {
+    public void assertNewInstanceWithComResetConnectionPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_RESET_CONNECTION.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(UnsupportedCommandPacket.class));
     }
