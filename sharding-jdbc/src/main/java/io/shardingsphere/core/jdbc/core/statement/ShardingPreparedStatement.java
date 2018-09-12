@@ -214,36 +214,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
-    public void addBatch() throws SQLException {
-        try {
-            sqlRoute();
-            batchPreparedStatementExecutor.addBatchForRouteUnits(batchCount, routeResult);
-            batchCount++;
-        } finally {
-            currentResultSet = null;
-            clearParameters();
-        }
-    }
-    
-    @Override
-    public int[] executeBatch() throws SQLException {
-        try {
-            setBatchParametersForStatements();
-            return batchPreparedStatementExecutor.executeBatch();
-        } finally {
-            clearBatch();
-        }
-    }
-    
-    private void setBatchParametersForStatements() {
-        for (SQLExecuteUnit each : batchPreparedStatementExecutor.getExecuteUnits()) {
-            for (List<Object> parameters : each.getRouteUnit().getSqlUnit().getParameterSets()) {
-                replaySetParameter((PreparedStatement) each.getStatement(), parameters);
-            }
-        }
-    }
-    
-    @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
@@ -301,6 +271,36 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             event.setExecuteFailure(ex);
             ShardingEventBusInstance.getInstance().post(event);
             throw ex;
+        }
+    }
+    
+    @Override
+    public void addBatch() throws SQLException {
+        try {
+            sqlRoute();
+            batchPreparedStatementExecutor.addBatchForRouteUnits(batchCount, routeResult);
+            batchCount++;
+        } finally {
+            currentResultSet = null;
+            clearParameters();
+        }
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
+        try {
+            setBatchParametersForStatements();
+            return batchPreparedStatementExecutor.executeBatch();
+        } finally {
+            clearBatch();
+        }
+    }
+    
+    private void setBatchParametersForStatements() {
+        for (SQLExecuteUnit each : batchPreparedStatementExecutor.getExecuteUnits()) {
+            for (List<Object> parameters : each.getRouteUnit().getSqlUnit().getParameterSets()) {
+                replaySetParameter((PreparedStatement) each.getStatement(), parameters);
+            }
         }
     }
     
