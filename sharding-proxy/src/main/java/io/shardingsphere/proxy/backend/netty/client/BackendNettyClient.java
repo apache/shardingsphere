@@ -32,6 +32,7 @@ import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,8 @@ public final class BackendNettyClient {
     
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    
     private final RuleRegistry ruleRegistry;
     
     private final int maxConnections;
@@ -66,8 +69,8 @@ public final class BackendNettyClient {
     
     public BackendNettyClient(final RuleRegistry ruleRegistry) {
         this.ruleRegistry = ruleRegistry;
-        maxConnections = ruleRegistry.getBackendNIOConfig().getMaxConnections();
-        connectionTimeoutSeconds = ruleRegistry.getBackendNIOConfig().getConnectionTimeoutSeconds();
+        maxConnections = PROXY_CONTEXT.getBackendNIOConfig().getMaxConnections();
+        connectionTimeoutSeconds = PROXY_CONTEXT.getBackendNIOConfig().getConnectionTimeoutSeconds();
         
     }
     

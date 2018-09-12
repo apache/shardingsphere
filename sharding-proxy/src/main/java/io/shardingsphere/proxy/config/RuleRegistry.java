@@ -20,8 +20,6 @@ package io.shardingsphere.proxy.config;
 import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -36,7 +34,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Sharding rule registry.
@@ -50,6 +47,8 @@ import java.util.Properties;
 @Getter
 public final class RuleRegistry {
     
+    private final String schemaName;
+    
     private ShardingRule shardingRule;
     
     private MasterSlaveRule masterSlaveRule;
@@ -58,42 +57,30 @@ public final class RuleRegistry {
     
     private Map<String, DataSourceParameter> dataSourceConfigurationMap;
     
-    private BackendNIOConfiguration backendNIOConfig;
-    
     private ShardingMetaData metaData;
-    
-    private String schemaName;
     
     @Setter
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    public RuleRegistry(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
-        init(dataSources, rule, schemaName);
+    public RuleRegistry(final String schemaName, final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule) {
+        this.schemaName = schemaName;
+        init(dataSources, rule);
     }
     
     /**
      * Initialize rule registry.
      *
      * @param dataSources data sources
-     * @param rule        proxy rule configuration
-     * @param schemaName  schema name
+     * @param rule rule configuration
      */
-    public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule, final String schemaName) {
-        Properties properties = null == rule.getShardingRule() ? rule.getMasterSlaveRule().getProps() : rule.getShardingRule().getProps();
-        ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        
-        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
-        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
-        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-        shardingRule = new ShardingRule(
-                null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
+    public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule) {
+        shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
         if (null != rule.getMasterSlaveRule()) {
             masterSlaveRule = new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         dataSourceConfigurationMap = dataSources;
         backendDataSource = new JDBCBackendDataSource(this);
-        this.schemaName = schemaName;
     }
     
     /**

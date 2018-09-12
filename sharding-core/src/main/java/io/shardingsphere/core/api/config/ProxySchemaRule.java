@@ -19,24 +19,20 @@ package io.shardingsphere.core.api.config;
 
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * schema sharding rule.
  *
  * @author panjuan
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ProxySchemaRule {
     
-    private YamlShardingRuleConfiguration shardingRule;
+    private final YamlShardingRuleConfiguration shardingRule;
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    private final YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
 }

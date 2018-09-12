@@ -173,7 +173,7 @@ public final class ConfigurationService {
      */
     public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
         persistProxyDataSourceParameterConfiguration(orchestrationProxyConfiguration.getSchemaDataSourceMap(), isOverwrite);
-        persistProxyRuleConfiguration(orchestrationProxyConfiguration.getSchemaShardingRuleMap(), isOverwrite);
+        persistProxyRuleConfiguration(orchestrationProxyConfiguration.getSchemaRuleMap(), isOverwrite);
         persistProxyServerConfiguration(orchestrationProxyConfiguration.getServerConfiguration(), isOverwrite);
     }
     
