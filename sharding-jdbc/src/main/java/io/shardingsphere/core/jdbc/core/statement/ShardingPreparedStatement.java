@@ -182,18 +182,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         batchCount = 0;
     }
     
-    @Override
-    public void addBatch() throws SQLException {
-        try {
-            sqlRoute();
-            batchPreparedStatementExecutor.addBatchForRouteUnits(batchCount, routeResult);
-            batchCount++;
-        } finally {
-            currentResultSet = null;
-            clearParameters();
-        }
-    }
-    
     private void sqlRoute() {
         RoutingEvent event = new RoutingEvent(sql);
         ShardingEventBusInstance.getInstance().post(event);
@@ -211,21 +199,39 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void clearPrevious() throws SQLException {
-        for (PreparedStatement each : routedStatements) {
-            each.close();
-        }
-        routedStatements.clear();
+       preparedStatementExecutor.clear();
     }
     
     private void initPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor.init(routeResult);
         setParametersForStatements();
-        routedStatements.addAll(preparedStatementExecutor.getStatements());
     }
     
     private void setParametersForStatements() {
         for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
             replaySetParameter(preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
+        }
+    }
+    
+    @Override
+    public void addBatch() throws SQLException {
+        try {
+            sqlRoute();
+            batchPreparedStatementExecutor.addBatchForRouteUnits(batchCount, routeResult);
+            batchCount++;
+        } finally {
+            currentResultSet = null;
+            clearParameters();
+        }
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
+        try {
+            setBatchParametersForStatements();
+            return batchPreparedStatementExecutor.executeBatch();
+        } finally {
+            clearBatch();
         }
     }
     
@@ -238,21 +244,12 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
-    public int[] executeBatch() throws SQLException {
-        try {
-            return batchPreparedStatementExecutor.executeBatch();
-        } finally {
-            clearBatch();
-        }
-    }
-    
-    @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new GeneratedKeysResultSet(routeResult.getGeneratedKey().getGeneratedKeys().iterator(), generatedKey.get().getColumn().getName(), this);
         }
-        if (1 == routedStatements.size()) {
+        if (1 == preparedStatementExecutor.getStatements().size()) {
             return routedStatements.iterator().next().getGeneratedKeys();
         }
         return new GeneratedKeysResultSet();
@@ -270,13 +267,13 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == routedStatements.size() && routeResult.getSqlStatement() instanceof DQLStatement) {
-            currentResultSet = routedStatements.iterator().next().getResultSet();
+        if (1 == preparedStatementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
+            currentResultSet = preparedStatementExecutor.getStatements().iterator().next().getResultSet();
             return currentResultSet;
         }
-        List<ResultSet> resultSets = new ArrayList<>(routedStatements.size());
-        List<QueryResult> queryResults = new ArrayList<>(routedStatements.size());
-        for (PreparedStatement each : routedStatements) {
+        List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
+        List<QueryResult> queryResults = new ArrayList<>(preparedStatementExecutor.getStatements().size());
+        for (PreparedStatement each : preparedStatementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet));
