@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
-import io.shardingsphere.core.executor.BatchPreparedStatementExecuteUnit;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
@@ -54,7 +53,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -71,8 +69,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private final ShardingConnection connection;
     
     private final PreparedStatementRoutingEngine routingEngine;
-    
-    private final List<BatchPreparedStatementExecuteUnit> batchStatementUnits = new LinkedList<>();
     
     private final String sql;
 
@@ -295,11 +291,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
-    public void clearBatch() {
+    public void clearBatch() throws SQLException {
         currentResultSet = null;
-        clearParameters();
-        batchStatementUnits.clear();
         batchCount = 0;
+        batchPreparedStatementExecutor.clear();
+        clearParameters();
     }
     
     @Override
@@ -322,6 +318,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return preparedStatementExecutor.getStatements();
     }
 }
+
 
 
 
