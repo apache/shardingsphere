@@ -17,16 +17,32 @@
 
 package io.shardingsphere.core.executor.batch;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.routing.RouteUnit;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,6 +61,68 @@ public abstract class BatchPreparedStatementExecutor {
     private final SQLType sqlType;
     
     private final int batchCount;
+    
+    private final int resultSetType;
+    
+    private final int resultSetConcurrency;
+    
+    private final int resultSetHoldability;
+    
+    private final boolean returnGeneratedKeys;
+    
+    private final ShardingConnection connection;
+    
+    private final Collection<RouteUnit> routeUnits;
+    
+    private final SQLExecuteTemplate sqlExecuteTemplate;
+    
+    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
+    
+    @Getter
+    private final List<ResultSet> resultSets = new LinkedList<>();
+    
+    @Getter
+    private final List<PreparedStatement> statements = new LinkedList<>();
+    
+    @Getter
+    private final List<List<Object>> parameterSets = new LinkedList<>();
+    
+    @Getter
+    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups;
+    
+    public BatchPreparedStatementExecutor(final DatabaseType dbType, final SQLType sqlType, final int batchCount, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
+                                          final ShardingConnection shardingConnection, final Collection<RouteUnit> routeUnits) throws SQLException {
+        this.dbType = dbType;
+        this.sqlType = sqlType;
+        this.batchCount = batchCount;
+        this.resultSetType = resultSetType;
+        this.resultSetConcurrency = resultSetConcurrency;
+        this.resultSetHoldability = resultSetHoldability;
+        this.returnGeneratedKeys = returnGeneratedKeys;
+        this.routeUnits = routeUnits;
+        this.connection = shardingConnection;
+        this.executeGroups = obtainExecuteGroups();
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+    }
+    
+    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
+        return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+        
+            @Override
+            public Connection getConnection(final String dataSourceName) throws SQLException {
+                return connection.getConnection(dataSourceName);
+            }
+        
+            @Override
+            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
+                statements.add(preparedStatement);
+                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
+                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
+            }
+        });
+    }
     
     /**
      * Execute batch.
@@ -82,7 +160,27 @@ public abstract class BatchPreparedStatementExecutor {
         return result;
     }
     
-    protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
+    @SuppressWarnings("unchecked")
+    private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+    }
     
-    protected abstract Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups();
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+    
+    private Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups() {
+        Collection<BatchPreparedStatementExecuteUnit> result = new LinkedList<>();
+        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
+            result.addAll(Lists.transform(each.getInputs(), new Function<SQLExecuteUnit, BatchPreparedStatementExecuteUnit>() {
+                
+                @Override
+                public BatchPreparedStatementExecuteUnit apply(final SQLExecuteUnit input) {
+                    return (BatchPreparedStatementExecuteUnit) input;
+                }
+            }));
+        }
+        return result;
+    }
 }
+
