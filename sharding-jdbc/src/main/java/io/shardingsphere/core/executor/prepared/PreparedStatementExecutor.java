@@ -61,7 +61,6 @@ public final class PreparedStatementExecutor {
     @Getter(AccessLevel.NONE)
     private SQLType sqlType;
     
-    @Getter(AccessLevel.NONE)
     private final int resultSetType;
     
     private final int resultSetConcurrency;
