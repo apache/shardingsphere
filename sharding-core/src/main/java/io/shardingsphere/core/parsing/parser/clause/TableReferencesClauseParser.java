@@ -76,7 +76,13 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             parseTableReference(sqlStatement, isSingleTableOnly);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
-    
+
+    /**
+     * Parse table references.
+     *
+     * @param sqlStatement SQL statement
+     * @param isSingleTableOnly is parse single table only
+     */
     protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         parseTableFactor(sqlStatement, isSingleTableOnly);
     }
@@ -148,7 +154,12 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         lexerEngine.skipAll(joinTypeKeywordArrays);
         return true;
     }
-    
+
+    /**
+     * Get keywords for join type.
+     *
+     * @return new Keyword object array
+     */
     protected Keyword[] getKeywordsForJoinType() {
         return new Keyword[0];
     }
