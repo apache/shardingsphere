@@ -1,12 +1,8 @@
-##################      ##################
-# Here you can configure the rules for the proxy.
-#
-# If you want to configure orchestration, authorization, and proxy properties, please refer to this file.
-#
-##################      ##################
-
-
-# The example of server configuration.
+######################################################################################################
+# 
+# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# 
+######################################################################################################
 
 #orchestration:
 #  name: orchestration_ds
@@ -18,7 +14,7 @@
 #
 #proxyAuthority:
 #  username: root
-#  password: root  
+#  password: root
 #
 #props:
 #  # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
