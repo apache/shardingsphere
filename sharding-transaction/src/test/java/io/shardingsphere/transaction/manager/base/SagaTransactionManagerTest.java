@@ -55,13 +55,13 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertBegin() {
-        transactionManager.begin(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        transactionManager.begin(new SagaTransactionEvent(TransactionOperationType.BEGIN, null));
         assertThat(36 == transactionManager.getTransactionId().length(), is(true));
     }
     
     @Test
     public void assertCommit() {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, null);
         event.setSagaJson(sagaJson);
         transactionManager.commit(event);
         assertThat(null == transactionManager.getTransactionId(), is(true));
@@ -69,12 +69,15 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertRollback() {
-        transactionManager.rollback(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+        transactionManager.rollback(new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null));
         assertThat( null == transactionManager.getTransactionId(), is(true));
     }
     
     @Test
     public void assertGetStatus() {
-        assertThat(new SagaTransactionManager().getStatus(), is(Status.STATUS_NO_TRANSACTION));
+        transactionManager.begin(new SagaTransactionEvent(TransactionOperationType.BEGIN, null));
+        assertThat(transactionManager.getStatus(), is(Status.STATUS_ACTIVE));
+        transactionManager.rollback(new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null));
+        assertThat(transactionManager.getStatus(), is(Status.STATUS_NO_TRANSACTION));
     }
 }

@@ -37,6 +37,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.transaction.Status;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -69,6 +70,8 @@ public class SagaTransactionListenerTest {
     
     private Map<String, SagaDefinitionBuilder> builderMap;
     
+    private Map<String, RevertEngine> revertEngines;
+    
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException, SQLException {
         RevertResult result = new RevertResult();
@@ -77,12 +80,14 @@ public class SagaTransactionListenerTest {
         when(sagaTransactionManager.getTransactionId()).thenReturn(id);
         Field transactionManager = SagaTransactionListener.class.getDeclaredField("transactionManager");
         Field sagaDefinitionBuilderMap = SagaTransactionListener.class.getDeclaredField("sagaDefinitionBuilderMap");
+        Field revertEngineMap = SagaTransactionListener.class.getDeclaredField("revertEngineMap");
         transactionManager.setAccessible(true);
         sagaDefinitionBuilderMap.setAccessible(true);
+        revertEngineMap.setAccessible(true);
         transactionManager.set(listener, sagaTransactionManager);
         builderMap = (Map<String, SagaDefinitionBuilder>) sagaDefinitionBuilderMap.get(listener);
+        revertEngines = (Map<String, RevertEngine>) revertEngineMap.get(listener);
         listener.register();
-        RevertEngineHolder.getInstance().setRevertEngine(revertEngine);
     }
     
     @After
@@ -92,40 +97,47 @@ public class SagaTransactionListenerTest {
     
     @Test
     public void assertListenBegin() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.BEGIN);
+        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.BEGIN, null);
         eventBus.post(event);
         verify(sagaTransactionManager).begin(event);
         assertThat(builderMap.size(), is(1));
+        assertThat(revertEngines.size(), is(1));
     }
     
     @Test
     public void assertListenCommitWithoutBegin() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, null);
         eventBus.post(event);
         verify(sagaTransactionManager, never()).commit(event);
     }
     
     @Test
     public void assertListenCommitWithBegin() throws SQLException {
-        eventBus.post(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+        eventBus.post(new SagaTransactionEvent(TransactionOperationType.BEGIN, null));
         assertThat(builderMap.size(), is(1));
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
+        assertThat(revertEngines.size(), is(1));
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, null);
         eventBus.post(event);
         verify(sagaTransactionManager).commit(event);
         assertThat(builderMap.size(), is(0));
+        assertThat(revertEngines.size(), is(0));
     }
     
     @Test
     public void assertListenRollback() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.ROLLBACK);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null);
         eventBus.post(event);
         verify(sagaTransactionManager).rollback(event);
         assertThat(builderMap.size(), is(0));
+        assertThat(revertEngines.size(), is(0));
     }
     
     @Test
     public void assertListenSagaSQLExecutionEvent() throws NoSuchFieldException, IllegalAccessException {
         builderMap.put(id, new SagaDefinitionBuilder());
+        revertEngines.put(id, revertEngine);
         SagaSQLExecutionEvent event = new SagaSQLExecutionEvent("ds", new SQLUnit("", new ArrayList<List<Object>>()), Collections.emptyList(), id);
         event.setExecuteSuccess();
         eventBus.post(event);
