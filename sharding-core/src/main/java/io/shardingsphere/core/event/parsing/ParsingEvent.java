@@ -26,9 +26,5 @@ import lombok.RequiredArgsConstructor;
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class ParsingEvent extends ShardingEvent {
-    
-    private final String sql;
+public class ParsingEvent extends ShardingEvent {
 }
