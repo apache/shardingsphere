@@ -22,6 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
+import io.shardingsphere.core.event.parsing.ParsingStartEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -48,7 +49,7 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     @Override
     protected void beforeExecute(final ParsingEvent event) {
         getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
-            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startManual());
+            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), ((ParsingStartEvent) event).getSql()).startManual());
     }
     
     @Override
