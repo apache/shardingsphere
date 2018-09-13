@@ -28,8 +28,7 @@ import java.util.Map;
 /**
  * Batch route unit.
  * 
- * @author gaohongtao
- * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 @EqualsAndHashCode
@@ -54,3 +53,4 @@ public final class BatchRouteUnit extends RouteUnit {
         jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);
     }
 }
+
