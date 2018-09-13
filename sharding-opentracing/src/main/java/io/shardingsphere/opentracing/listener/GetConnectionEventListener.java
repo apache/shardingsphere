@@ -34,7 +34,7 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/getConnection/";
     
-    private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
+    private final ThreadLocal<Span> span = new ThreadLocal<>();
     
     /**
      * Listen getConnection event.
@@ -49,22 +49,22 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     
     @Override
     protected void beforeExecute(final GetConnectionEvent event) {
-        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
     }
     
     @Override
     protected void tracingFinish(final GetConnectionEvent event) {
-        if (null == branchSpan.get()) {
+        if (null == span.get()) {
             return;
         }
-        branchSpan.get().setTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]);
-        branchSpan.get().finish();
-        branchSpan.remove();
+        span.get().setTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]);
+        span.get().finish();
+        span.remove();
     }
     
     @Override
     protected Span getFailureSpan() {
-        return branchSpan.get();
+        return span.get();
     }
 }
