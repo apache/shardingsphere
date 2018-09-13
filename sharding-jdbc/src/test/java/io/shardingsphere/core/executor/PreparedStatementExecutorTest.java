@@ -19,12 +19,11 @@ package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementExecutor;
-import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
-import io.shardingsphere.core.executor.prepared.PreparedStatementExecuteUnit;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.routing.RouteUnit;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,10 +51,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     
     private static final String DML_SQL = "DELETE FROM table_x";
     
+    private static final ShardingConnection CONNECTION = Mockito.mock(ShardingConnection.class);
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoStatement() throws SQLException {
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(SQLType.DQL, getExecuteTemplate(), Collections.<PreparedStatementExecuteUnit>emptyList());
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(1, 1, 1, false, CONNECTION);
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
