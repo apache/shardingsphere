@@ -27,12 +27,5 @@ import lombok.Setter;
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class GetConnectionEvent extends ShardingEvent {
-    
-    private final String dataSource;
-    
-    @Setter
-    private String url = "";
+public class GetConnectionEvent extends ShardingEvent {
 }
