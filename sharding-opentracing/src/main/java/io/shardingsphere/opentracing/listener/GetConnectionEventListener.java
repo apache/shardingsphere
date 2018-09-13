@@ -35,7 +35,7 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/getConnection/";
     
     /**
-     * Listen getConnection event.
+     * Listen get connection event.
      *
      * @param event Get connection event
      */
