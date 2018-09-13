@@ -22,6 +22,8 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
@@ -171,18 +173,19 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                CloseConnectionEvent event = new CloseConnectionEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
-                ShardingEventBusInstance.getInstance().post(event);
+                CloseConnectionEvent startEvent = new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
+                ShardingEventBusInstance.getInstance().post(startEvent);
+                CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
-                    event.setExecuteSuccess();
+                    finishEvent.setExecuteSuccess();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    event.setExecuteFailure(ex);
+                    finishEvent.setExecuteFailure(ex);
                     throw ex;
                 } finally {
-                    ShardingEventBusInstance.getInstance().post(event);
+                    ShardingEventBusInstance.getInstance().post(finishEvent);
                 }
             }
         });
