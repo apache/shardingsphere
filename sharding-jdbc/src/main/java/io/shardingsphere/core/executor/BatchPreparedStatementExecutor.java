@@ -287,8 +287,8 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException sql exception
      */
     public void clear() throws SQLException {
-        for (SQLExecuteUnit each : executeUnits) {
-            each.getStatement().close();
+        for (Statement each : getStatements()) {
+            each.close();
         }
         routeUnits.clear();
         resultSets.clear();
