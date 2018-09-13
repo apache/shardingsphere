@@ -30,7 +30,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -131,13 +130,6 @@ public abstract class AbstractSQLTest {
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
-    }
-    
-    private static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
-        field.setAccessible(true);
-        return shardingDataSource.getDataSourceMap();
     }
     
     protected final void importDataSet() {

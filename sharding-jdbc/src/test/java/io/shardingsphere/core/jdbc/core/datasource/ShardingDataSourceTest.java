@@ -23,13 +23,11 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -161,11 +159,5 @@ public final class ShardingDataSourceTest {
         tableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
-    }
-    
-    private ShardingProperties getShardingProperties(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
-        Field field = ShardingDataSource.class.getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        return (ShardingProperties) field.get(shardingDataSource);
     }
 }

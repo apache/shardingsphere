@@ -60,11 +60,11 @@ public final class ConfigurationService {
     /**
      * Persist sharding configuration.
      *
-     * @param dataSourceMap      data source map
+     * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
-     * @param configMap          config map
-     * @param props              sharding properties
-     * @param isOverwrite        is overwrite registry center's configuration
+     * @param configMap config map
+     * @param props sharding properties
+     * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistShardingConfiguration(
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
@@ -119,11 +119,11 @@ public final class ConfigurationService {
     /**
      * Persist master-slave configuration.
      *
-     * @param dataSourceMap         data source map
+     * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap             config map
-     * @param props                 props
-     * @param isOverwrite           is overwrite registry center's configuration
+     * @param configMap config map
+     * @param props props
+     * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistMasterSlaveConfiguration(
             final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap,
@@ -168,13 +168,13 @@ public final class ConfigurationService {
     /**
      * Persist proxy configuration.
      *
-     * @param orchestrationProxyConfiguration orchestration proxy configuration
-     * @param isOverwrite                     is overwrite registry center's configuration
+     * @param orchestrationProxyConfig orchestration proxy configuration
+     * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfiguration, final boolean isOverwrite) {
-        persistProxyDataSourceParameterConfiguration(orchestrationProxyConfiguration.getSchemaDataSourceMap(), isOverwrite);
-        persistProxyRuleConfiguration(orchestrationProxyConfiguration.getSchemaShardingRuleMap(), isOverwrite);
-        persistProxyServerConfiguration(orchestrationProxyConfiguration.getServerConfiguration(), isOverwrite);
+    public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfig, final boolean isOverwrite) {
+        persistProxyDataSourceParameterConfiguration(orchestrationProxyConfig.getSchemaDataSourceMap(), isOverwrite);
+        persistProxyRuleConfiguration(orchestrationProxyConfig.getSchemaRuleMap(), isOverwrite);
+        persistProxyServerConfiguration(orchestrationProxyConfig.getServerConfiguration(), isOverwrite);
     }
     
     private void persistProxyDataSourceParameterConfiguration(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final boolean isOverwrite) {
@@ -356,7 +356,7 @@ public final class ConfigurationService {
      * 
      * @return proxy server configuration
      */
-    public ProxyServerConfiguration loadProxyServerConiguration() {
+    public ProxyServerConfiguration loadProxyServerConfiguration() {
         try {
             ProxyServerConfiguration result = ProxyConfigurationConverter.proxyServerConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH)));
             Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()), "Authority configuration is invalid.");

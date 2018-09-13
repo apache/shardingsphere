@@ -113,7 +113,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(configService.loadProxyServerConiguration(), 
+                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(configService.loadProxyServerConfiguration(), 
                             dataSourceService.getProxyAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
                 }
             }

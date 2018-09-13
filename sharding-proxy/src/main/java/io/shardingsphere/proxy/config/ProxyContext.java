@@ -39,11 +39,12 @@ import lombok.NoArgsConstructor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * proxy context.
+ * Proxy context.
  *
  * @author chenqingyang
  */
@@ -73,6 +74,8 @@ public final class ProxyContext {
     
     private TransactionType transactionType;
     
+    private BackendNIOConfiguration backendNIOConfig;
+    
     private boolean isCircuitBreak;
     
     /**
@@ -85,7 +88,7 @@ public final class ProxyContext {
     }
     
     /**
-     * Register rule registry.
+     * Register listener.
      */
     public void register() {
         ShardingEventBusInstance.getInstance().register(this);
@@ -94,16 +97,16 @@ public final class ProxyContext {
     /**
      * Initialize proxy context.
      *
-     * @param serverConfiguration proxy server configuration
-     * @param schemaDataSources   proxy schema datasources
-     * @param schemaRules         proxy schema sharding rule
+     * @param serverConfig server configuration
+     * @param schemaDataSources data source map
+     * @param schemaRules schema rule map
      */
-    public synchronized void init(final ProxyServerConfiguration serverConfiguration, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                                  final Map<String, ProxySchemaRule> schemaRules) {
-        initServerConfiguration(serverConfiguration);
-        for (Map.Entry<String, ProxySchemaRule> entry : schemaRules.entrySet()) {
-            schemaNames.add(entry.getKey());
-            ruleRegistryMap.put(entry.getKey(), new RuleRegistry(schemaDataSources.get(entry.getKey()), entry.getValue(), entry.getKey()));
+    public synchronized void init(final ProxyServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, ProxySchemaRule> schemaRules) {
+        initServerConfiguration(serverConfig);
+        for (Entry<String, ProxySchemaRule> entry : schemaRules.entrySet()) {
+            String schemaName = entry.getKey();
+            schemaNames.add(schemaName);
+            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
         }
     }
     
@@ -118,8 +121,11 @@ public final class ProxyContext {
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
-        this.useNIO = false;
+        useNIO = false;
         // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
+        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
         proxyAuthority = serverConfiguration.getProxyAuthority();
     }
     
@@ -129,8 +135,8 @@ public final class ProxyContext {
      * @param executeEngine sharding execute engine
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        for (RuleRegistry ruleRegistry : ruleRegistryMap.values()) {
-            ruleRegistry.initShardingMetaData(executeEngine);
+        for (RuleRegistry each : ruleRegistryMap.values()) {
+            each.initShardingMetaData(executeEngine);
         }
     }
     
@@ -151,10 +157,7 @@ public final class ProxyContext {
      * @return rule registry of schema
      */
     public RuleRegistry getRuleRegistry(final String schema) {
-        if (Strings.isNullOrEmpty(schema)) {
-            return null;
-        }
-        return ruleRegistryMap.get(schema);
+        return Strings.isNullOrEmpty(schema) ? null : ruleRegistryMap.get(schema);
     }
     
     /**
@@ -184,24 +187,25 @@ public final class ProxyContext {
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
         initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
-        for (Map.Entry<String, RuleRegistry> each : ruleRegistryMap.entrySet()) {
-            each.getValue().getBackendDataSource().close();
-            each.getValue().init(proxyConfigurationEventBusEvent.getSchemaDataSourceMap().get(each.getKey()),
-                    proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(each.getKey()),
-                    each.getKey());
+        for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+            entry.getValue().getBackendDataSource().close();
+        }
+        ruleRegistryMap.clear();
+        for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
+            String schemaName = entry.getKey();
+            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(schemaName)));
         }
     }
     
     /**
-     * Renew disable dataSource names.
+     * Renew disabled data source names.
      *
      * @param disabledStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        for (Map.Entry<String, RuleRegistry> each : ruleRegistryMap.entrySet()) {
-            each.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(each.getKey()));
+        for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+            entry.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
         }
     }
-    
 }

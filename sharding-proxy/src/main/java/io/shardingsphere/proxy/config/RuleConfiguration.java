@@ -15,26 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.token;
+package io.shardingsphere.proxy.config;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Multiple insert values token.
+ * Rule configuration.
  *
- * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-@ToString
-public final class MultipleInsertValuesToken implements SQLToken {
+@Setter
+public final class RuleConfiguration {
     
-    private final int beginPosition;
+    private String schemaName;
     
-    private final List<String> values = new LinkedList<>();
+    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
+    
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
 }

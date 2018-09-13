@@ -65,9 +65,6 @@ public final class ComStmtPreparePacketTest {
     private MySQLPacketPayload payload;
     
     @Mock
-    private RuleRegistry ruleRegistry;
-    
-    @Mock
     private FrontendHandler frontendHandler;
     
     @Before
