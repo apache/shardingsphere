@@ -32,6 +32,7 @@ import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.routing.BatchRouteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import lombok.Getter;
@@ -42,6 +43,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +74,7 @@ public final class BatchPreparedStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final Collection<RouteUnit> routeUnits = new LinkedList<>();
+    private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -119,7 +121,7 @@ public final class BatchPreparedStatementExecutor {
         handleNewRouteUnits(new LinkedList<>(routeResult.getRouteUnits()), batchCount);
     }
     
-    private void handleOldRouteUnits(final Collection<RouteUnit> oldRouteUnits) {
+    private void handleOldRouteUnits(final Collection<BatchRouteUnit> oldRouteUnits) {
         oldRouteUnits.retainAll(routeUnits);
         for (final RouteUnit each : oldRouteUnits) {
             addParametersForExecuteUnit(each);
@@ -145,6 +147,15 @@ public final class BatchPreparedStatementExecutor {
         List<BatchPreparedStatementExecuteUnit> newExecuteUnits = createNewExecuteUnits(newRouteUnits, batchCount);
         this.routeUnits.addAll(newRouteUnits);
         this.executeUnits.addAll(newExecuteUnits);
+    }
+    
+    
+    private Collection<BatchRouteUnit> createBatchRouteUnits(final List<RouteUnit> routeUnits) {
+        Collection<BatchRouteUnit> result = new LinkedList<>();
+        for (RouteUnit each : routeUnits) {
+            result.add(new BatchRouteUnit(each));
+        }
+        return result;
     }
     
     private List<BatchPreparedStatementExecuteUnit> createNewExecuteUnits(final Collection<RouteUnit> newRouteUnits, final int batchCount) throws SQLException {
