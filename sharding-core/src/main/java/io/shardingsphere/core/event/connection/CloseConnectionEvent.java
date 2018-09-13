@@ -26,11 +26,5 @@ import lombok.RequiredArgsConstructor;
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class CloseConnectionEvent extends ShardingEvent {
-    
-    private final String dataSource;
-    
-    private final String url;
+public class CloseConnectionEvent extends ShardingEvent {
 }
