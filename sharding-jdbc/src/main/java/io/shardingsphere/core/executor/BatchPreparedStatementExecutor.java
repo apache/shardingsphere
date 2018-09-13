@@ -277,12 +277,24 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException sql exception
      */
     public void clear() throws SQLException {
-        for (Statement each : getStatements()) {
-            each.close();
-        }
+        clearStatements();
+        clearConnections();
+        connections.clear();
         routeUnits.clear();
         resultSets.clear();
         executeGroups.clear();
+    }
+    
+    private void clearStatements() throws SQLException {
+        for (Statement each : getStatements()) {
+            each.close();
+        }
+    }
+    
+    private void clearConnections() {
+        for (Connection each : connections) {
+            connection.release(each);
+        }
     }
 }
 
