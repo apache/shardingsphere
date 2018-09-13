@@ -47,12 +47,7 @@ public final class SagaExecutionComponentHolder {
     
     private static final SagaExecutionComponentHolder INSTANCE = new SagaExecutionComponentHolder();
     
-    private final TransportFactory<SQLTransport> transportFactory = new TransportFactory<SQLTransport>() {
-        @Override
-        public SQLTransport getTransport() {
-            return SQLTransportSPILoader.getInstance().getSqlTransport();
-        }
-    };
+    private final TransportFactory<SQLTransport> transportFactory = ShardingTransportFactorySPILoader.getInstance().getTransportFactory();
     
     private final ExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5, ShardingThreadFactoryBuilder.build("Saga-%d")));
     
@@ -84,7 +79,7 @@ public final class SagaExecutionComponentHolder {
         
         @Override
         public Map<String, List<EventEnvelope>> findPendingSagaEvents() {
-            //TODO find pending saga event form persistent store
+            //TODO find pending saga event from persistent store
             return null;
         }
     }
