@@ -274,7 +274,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            setBatchParametersForStatements();
+            initBatchPreparedStatementExecutor();
             return batchPreparedStatementExecutor.executeBatch();
         } finally {
             clearBatch();
@@ -283,7 +283,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
         batchPreparedStatementExecutor.init();
-        setParametersForStatements();
+        setBatchParametersForStatements();
     }
     
     private void setBatchParametersForStatements() {
