@@ -53,11 +53,11 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     
     private static final String DML_SQL = "DELETE FROM table_x";
     
-    private static final ShardingConnection connection = Mockito.mock(ShardingConnection.class);
+    private static final ShardingConnection CONNECTION = Mockito.mock(ShardingConnection.class);
     
     @Test
     public void assertNoStatement() throws SQLException {
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
@@ -70,7 +70,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         QueryResult queryResult = mock(QueryResult.class);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeQuery(), is(Collections.singletonList(queryResult)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -93,7 +93,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         List<QueryResult> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(queryResult1));
         assertThat(actualResultSets, hasItem(queryResult2));
@@ -114,7 +114,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.executeQuery(DQL_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeQuery(), is(Collections.singletonList((QueryResult) null)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -134,7 +134,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeQuery(DQL_SQL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         List<QueryResult> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
@@ -153,7 +153,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL)).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(), is(10));
         verify(statement).executeUpdate(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -172,7 +172,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeUpdate(DML_SQL)).thenReturn(20);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(), is(30));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
@@ -191,7 +191,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.executeUpdate(DML_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(), is(0));
         verify(statement).executeUpdate(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -211,7 +211,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeUpdate(DML_SQL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(), is(0));
         verify(statement1).executeUpdate(DML_SQL);
         verify(statement2).executeUpdate(DML_SQL);
@@ -229,7 +229,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(Statement.NO_GENERATED_KEYS), is(10));
         verify(statement).executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -245,7 +245,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL, new int[] {1})).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(new int[] {1}), is(10));
         verify(statement).executeUpdate(DML_SQL, new int[] {1});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -261,7 +261,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.executeUpdate(DML_SQL, new String[] {"col"})).thenReturn(10);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertThat(actual.executeUpdate(new String[] {"col"}), is(10));
         verify(statement).executeUpdate(DML_SQL, new String[] {"col"});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -277,7 +277,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL)).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute());
         verify(statement).execute(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -296,7 +296,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DML_SQL)).thenReturn(false);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute());
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
@@ -315,7 +315,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.execute(DML_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute());
         verify(statement).execute(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -335,7 +335,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DML_SQL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute());
         verify(statement1).execute(DML_SQL);
         verify(statement2).execute(DML_SQL);
@@ -353,7 +353,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DQL_SQL)).thenReturn(true);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertTrue(actual.execute());
         verify(statement).execute(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -372,7 +372,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DQL_SQL)).thenReturn(true);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertTrue(actual.execute());
         verify(statement1).execute(DQL_SQL);
         verify(statement2).execute(DQL_SQL);
@@ -390,7 +390,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute(Statement.NO_GENERATED_KEYS));
         verify(statement).execute(DML_SQL, Statement.NO_GENERATED_KEYS);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -406,7 +406,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute(new int[] {1}));
         verify(statement).execute(DML_SQL, new int[] {1});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -422,7 +422,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = mock(Statement.class);
         when(statement.execute(DML_SQL, new String[] {"col"})).thenReturn(false);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         assertFalse(actual.execute(new String[] {"col"}));
         verify(statement).execute(DML_SQL, new String[] {"col"});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -440,7 +440,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         SQLException exp = new SQLException();
         when(statement.execute(DML_SQL)).thenThrow(exp);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, connection);
+        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
         try {
             assertFalse(actual.execute());
         } catch (final SQLException ignore) {
