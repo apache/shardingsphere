@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,20 +63,6 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    /**
-     * Get execute unit groups.
-     *
-     * @param sqlExecuteUnits sql execute units
-     * @return statement execute unit groups
-     */
-    public Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroups(final Collection<SQLExecuteUnit> sqlExecuteUnits) {
-        Collection<ShardingExecuteGroup<SQLExecuteUnit>> result = new LinkedList<>();
-        for (List<SQLExecuteUnit> each : getExecuteUnitGroupsByDataSource(sqlExecuteUnits).values()) {
-            result.addAll(getExecuteUnitGroupsPerDataBase(each));
-        }
-        return result;
-    }
-    
     private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<RouteUnit> routeUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
@@ -107,27 +92,6 @@ public final class SQLExecutePrepareTemplate {
             result.add(callback.createSQLExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
         }
         return new ShardingExecuteGroup<>(result);
-    }
-    
-    private Map<String, List<SQLExecuteUnit>> getExecuteUnitGroupsByDataSource(final Collection<SQLExecuteUnit> sqlExecuteUnits) {
-        Map<String, List<SQLExecuteUnit>> result = new HashMap<>(sqlExecuteUnits.size(), 1);
-        for (SQLExecuteUnit each : sqlExecuteUnits) {
-            String dataSourceName = each.getRouteUnit().getDataSourceName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<SQLExecuteUnit>());
-            }
-            result.get(dataSourceName).add(each);
-        }
-        return result;
-    }
-    
-    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroupsPerDataBase(final List<SQLExecuteUnit> sqlExecuteUnits) {
-        Collection<ShardingExecuteGroup<SQLExecuteUnit>> result = new LinkedList<>();
-        int desiredPartitionSize = Math.max(sqlExecuteUnits.size() / maxConnectionsSizePerQuery, 1);
-        for (List<SQLExecuteUnit> each : Lists.partition(sqlExecuteUnits, desiredPartitionSize)) {
-            result.add(new ShardingExecuteGroup<>(each));
-        }
-        return result;
     }
 }
 
