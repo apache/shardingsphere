@@ -24,7 +24,6 @@ import io.shardingsphere.core.event.merger.MergeEvent;
 import io.shardingsphere.core.event.routing.RoutingEvent;
 import io.shardingsphere.core.executor.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.PreparedStatementExecutor;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -282,10 +281,16 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
     }
     
+    private void initBatchPreparedStatementExecutor() throws SQLException {
+        batchPreparedStatementExecutor.init();
+        setParametersForStatements();
+    }
+    
     private void setBatchParametersForStatements() {
-        for (SQLExecuteUnit each : batchPreparedStatementExecutor.getExecuteUnits()) {
-            for (List<Object> parameters : each.getRouteUnit().getSqlUnit().getParameterSets()) {
-                replaySetParameter((PreparedStatement) each.getStatement(), parameters);
+        for (Statement each : batchPreparedStatementExecutor.getStatements()) {
+            List<List<Object>> parameterSet = batchPreparedStatementExecutor.getParameterSet(each);
+            for (List<Object> parameters : parameterSet) {
+                replaySetParameter((PreparedStatement) each, parameters);
             }
         }
     }
