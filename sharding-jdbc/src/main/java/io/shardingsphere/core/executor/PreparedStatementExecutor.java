@@ -114,7 +114,7 @@ public final class PreparedStatementExecutor {
     
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getConnection(dataSourceName);
+                return connection.getNewConnection(dataSourceName);
             }
     
             @Override
