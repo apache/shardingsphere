@@ -15,21 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.revert;
 
-import io.shardingsphere.transaction.listener.AllListenerTests;
-import io.shardingsphere.transaction.manager.AllManagerTests;
-import io.shardingsphere.transaction.revert.AllRevertTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        TransactionTypeHolderTest.class, 
-        AllManagerTests.class, 
-        AllListenerTests.class,
-        AllRevertTest.class
+@Suite.SuiteClasses({
+        EmptyRevertEngineTest.class,
+        RevertEngineHolderTest.class
 })
-public final class AllTests {
+public class AllRevertTest {
 }
