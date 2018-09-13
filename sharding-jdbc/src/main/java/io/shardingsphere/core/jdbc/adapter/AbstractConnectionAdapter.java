@@ -28,6 +28,8 @@ import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
+import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
+import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -65,9 +67,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     private final ForceExecuteTemplate<Map.Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
-    
-    @Getter
-    private final RootInvokeEvent rootInvokeEvent = new RootInvokeEvent(true);
     
     /**
      * Get database connection.
@@ -193,8 +192,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             }
         });
-        rootInvokeEvent.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(rootInvokeEvent);
+        RootInvokeEvent finishEvent = new RootInvokeFinishEvent();
+        finishEvent.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(finishEvent);
     }
     
     @Override
