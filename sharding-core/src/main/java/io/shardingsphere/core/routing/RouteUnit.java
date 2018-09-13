@@ -32,7 +32,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class RouteUnit {
+public class RouteUnit {
     
     private final String dataSourceName;
     
