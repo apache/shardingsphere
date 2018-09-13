@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.event.connection;
 
-import io.shardingsphere.core.event.ShardingEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Connection close event.
  *
