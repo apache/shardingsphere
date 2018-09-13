@@ -47,21 +47,21 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     
     @Override
     protected void beforeExecute(final ParsingEvent event) {
-        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
+        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
             .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startManual());
     }
     
     @Override
     protected void tracingFinish(final ParsingEvent event) {
-        if (null == span.get()) {
+        if (null == getSpan().get()) {
             return;
         }
-        span.get().finish();
-        span.remove();
+        getSpan().get().finish();
+        getSpan().remove();
     }
     
     @Override
     protected Span getFailureSpan() {
-        return span.get();
+        return getSpan().get();
     }
 }
