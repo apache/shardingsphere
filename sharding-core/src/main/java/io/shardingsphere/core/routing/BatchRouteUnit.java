@@ -31,7 +31,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = { "routeUnit" })
 @ToString
 public final class BatchRouteUnit {
     
