@@ -110,7 +110,7 @@ public final class StatementExecutor {
     
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getConnection(dataSourceName);
+                return connection.getNewConnection(dataSourceName);
             }
     
             @Override
