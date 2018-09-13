@@ -39,9 +39,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/executeSQL/";
     
-    private final ThreadLocal<Span> span = new ThreadLocal<>();
-    
-    private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
+//    private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
     
     /**
      * Listen SQL execution event.
