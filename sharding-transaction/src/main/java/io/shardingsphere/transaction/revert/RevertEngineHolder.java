@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.revert;
 
-import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -26,13 +25,42 @@ import lombok.Setter;
  *
  * @author yangyi
  */
-public class RevertEngineHolder {
+public final class RevertEngineHolder {
     
     private static final RevertEngineHolder INSTANCE = new RevertEngineHolder();
     
+    private final ThreadLocal<RevertEngine> revertEngines = new ThreadLocal<>();
+    
     @Setter
-    @Getter
-    private RevertEngine revertEngine;
+    private RevertEngine defaultRevertEngine = new EmptyRevertEngine();
+    
+    /**
+     * get revertEngine for current thread.
+     *
+     * @return revertEngine
+     */
+    public RevertEngine getRevertEngine() {
+        if (null == revertEngines.get()) {
+            return defaultRevertEngine;
+        }
+        return revertEngines.get();
+    }
+    
+    /**
+     * remove revertEngine for currnet thread.
+     */
+    public void remove() {
+        revertEngines.remove();
+    }
+    
+    /**
+     * set revertEngine for current thread.
+     *
+     * @param revertEngine revertEngine
+     */
+    public void setRevertEngine(final RevertEngine revertEngine) {
+        revertEngines.set(revertEngine);
+    }
     
     /**
      * get holder.

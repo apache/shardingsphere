@@ -29,10 +29,12 @@ import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
 import io.shardingsphere.transaction.manager.base.servicecomb.SagaDefinitionBuilder;
+import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import io.shardingsphere.transaction.revert.RevertResult;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Status;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +54,8 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
     
     private final Map<String, SagaDefinitionBuilder> sagaDefinitionBuilderMap = new ConcurrentHashMap<>();
     
+    private final Map<String, RevertEngine> revertEngineMap = new ConcurrentHashMap<>();
+    
     @Subscribe
     @AllowConcurrentEvents
     @Override
@@ -60,6 +64,7 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
             case COMMIT:
                 try {
                     transactionEvent.setSagaJson(sagaDefinitionBuilderMap.remove(transactionManager.getTransactionId()).build());
+                    revertEngineMap.remove(transactionManager.getTransactionId());
                     doTransaction(transactionManager, transactionEvent);
                 } catch (JsonProcessingException e) {
                     // shouldn't really happen, but is declared as possibility so:
@@ -69,11 +74,15 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
                 break;
             case ROLLBACK:
                 sagaDefinitionBuilderMap.remove(transactionManager.getTransactionId());
+                revertEngineMap.remove(transactionManager.getTransactionId());
                 doTransaction(transactionManager, transactionEvent);
                 break;
             case BEGIN:
-                doTransaction(transactionManager, transactionEvent);
-                sagaDefinitionBuilderMap.put(transactionManager.getTransactionId(), new SagaDefinitionBuilder());
+                if (transactionManager.getStatus() == Status.STATUS_NO_TRANSACTION) {
+                    doTransaction(transactionManager, transactionEvent);
+                    sagaDefinitionBuilderMap.put(transactionManager.getTransactionId(), new SagaDefinitionBuilder());
+                    revertEngineMap.put(transactionManager.getTransactionId(), RevertEngineHolder.getInstance().getRevertEngine());
+                }
                 break;
             default:
         }
@@ -94,7 +103,7 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
                 break;
             case EXECUTE_SUCCESS:
                 //TODO generate revert sql by sql and params in event
-                RevertResult result = RevertEngineHolder.getInstance().getRevertEngine().revert(
+                RevertResult result = revertEngineMap.get(sqlExecutionEvent.getTransactionId()).revert(
                         sqlExecutionEvent.getDataSource(),
                         sqlExecutionEvent.getSqlUnit().getSql(),
                         sqlExecutionEvent.getSqlUnit().getParameterSets());
