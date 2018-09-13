@@ -101,7 +101,7 @@ public final class ProxyContext {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      */
-    public synchronized void init(final ProxyServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, ProxySchemaRule> schemaRules) {
+    public void init(final ProxyServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, ProxySchemaRule> schemaRules) {
         initServerConfiguration(serverConfig);
         for (Entry<String, ProxySchemaRule> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
