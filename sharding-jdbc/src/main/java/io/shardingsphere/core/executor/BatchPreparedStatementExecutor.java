@@ -240,6 +240,44 @@ public final class BatchPreparedStatementExecutor {
     }
     
     /**
+     * Get statements.
+     *
+     * @return statements
+     */
+    public List<Statement> getStatements() {
+        List<Statement> result = new LinkedList<>();
+        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
+            result.addAll(Lists.transform(each.getInputs(), new Function<SQLExecuteUnit, Statement>() {
+                
+                @Override
+                public Statement apply(final SQLExecuteUnit input) {
+                    return input.getStatement();
+                }
+            }));
+        }
+        return result;
+    }
+    
+    /**
+     * Get parameter sets.
+     *
+     * @param statement statement
+     * @return parameter sets
+     */
+    public List<List<Object>> getParameterSets(final Statement statement) {
+        Optional<SQLExecuteUnit> target = Optional.absent();
+        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
+            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<SQLExecuteUnit>() {
+                @Override
+                public boolean apply(final SQLExecuteUnit input) {
+                    return input.getStatement().equals(statement);
+                }
+            });
+        }
+        return target.isPresent() ? target.get().getRouteUnit().getSqlUnit().getParameterSets() : new LinkedList<List<Object>>();
+    }
+    
+    /**
      * Clear data.
      *
      * @throws SQLException sql exception
