@@ -20,6 +20,8 @@ package io.shardingsphere.core.executor.sql.execute;
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.executor.SQLExecutionFinishEvent;
+import io.shardingsphere.core.event.executor.SQLExecutionStartEvent;
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.event.executor.SQLExecutionEvent;
@@ -27,6 +29,7 @@ import io.shardingsphere.core.event.executor.SQLExecutionEventFactory;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.routing.RouteUnit;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -71,22 +74,24 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     private T execute0(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        List<SQLExecutionEvent> events = new LinkedList<>();
-        for (List<Object> each : sqlExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets()) {
-            SQLExecutionEvent event = SQLExecutionEventFactory.createEvent(sqlType, sqlExecuteUnit, each, sqlExecuteUnit.getStatement().getConnection().getMetaData().getURL());
-            events.add(event);
-            shardingEventBus.post(event);
+        RouteUnit routeUnit = sqlExecuteUnit.getRouteUnit();
+        List<List<Object>> parameterSets = routeUnit.getSqlUnit().getParameterSets();
+        for (List<Object> each : parameterSets) {
+            SQLExecutionEvent startEvent = new SQLExecutionStartEvent(routeUnit, each, sqlExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+            shardingEventBus.post(startEvent);
         }
         try {
             T result = executeSQL(sqlExecuteUnit);
-            for (SQLExecutionEvent each : events) {
-                each.setExecuteSuccess();
+            for (List<Object> each : parameterSets) {
+                SQLExecutionEvent finishEvent = new SQLExecutionFinishEvent(routeUnit, each);
+                finishEvent.setExecuteSuccess();
                 shardingEventBus.post(each);
             }
             return result;
         } catch (final SQLException ex) {
-            for (SQLExecutionEvent each : events) {
-                each.setExecuteFailure(ex);
+            for (List<Object> each : parameterSets) {
+                SQLExecutionEvent finishEvent = new SQLExecutionFinishEvent(routeUnit, each);
+                finishEvent.setExecuteSuccess();
                 shardingEventBus.post(each);
             }
             ExecutorExceptionHandler.handleException(ex);
