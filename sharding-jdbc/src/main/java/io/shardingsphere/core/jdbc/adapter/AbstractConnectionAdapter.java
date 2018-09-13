@@ -43,6 +43,7 @@ import java.util.Map;
  * Adapter for {@code Connection}.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
