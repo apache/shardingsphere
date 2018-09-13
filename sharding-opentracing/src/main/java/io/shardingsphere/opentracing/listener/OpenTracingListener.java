@@ -19,6 +19,7 @@ package io.shardingsphere.opentracing.listener;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.BaseSpan;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
@@ -38,6 +39,8 @@ import java.util.Map;
 public abstract class OpenTracingListener<T extends ShardingEvent> {
     
     static final ThreadLocal<ActiveSpan> ACTIVE_SPAN = new ThreadLocal<>();
+    
+    private final ThreadLocal<Span> span = new ThreadLocal<>();
     
     /**
      * Register listener.
