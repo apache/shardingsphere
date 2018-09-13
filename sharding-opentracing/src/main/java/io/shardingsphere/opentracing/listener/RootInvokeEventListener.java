@@ -39,8 +39,6 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/rootInvoke/";
     
-    private static final ThreadLocal<ActiveSpan> activeSpan = new ThreadLocal<>();
-    
     /**
      * Listen overall sql execution event.
      *
@@ -55,7 +53,7 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     @Override
     protected void beforeExecute(final RootInvokeEvent event) {
         ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        activeSpan.set(span);
+        ACTIVE_SPAN.set(span);
         if (event.isParallelExecute()) {
             ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());
         }
@@ -63,13 +61,13 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     
     @Override
     protected void tracingFinish(final RootInvokeEvent event) {
-        activeSpan.get().deactivate();
-        activeSpan.remove();
+        ACTIVE_SPAN.get().deactivate();
+        ACTIVE_SPAN.remove();
     }
     
     @Override
     protected ActiveSpan getFailureSpan() {
-        return activeSpan.get();
+        return ACTIVE_SPAN.get();
     }
     
     /**
@@ -78,6 +76,6 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
      * @return sql execute event in this overall event thread or not.
      */
     public static boolean isTrunkThread() {
-        return null != activeSpan.get();
+        return null != ACTIVE_SPAN.get();
     }
 }
