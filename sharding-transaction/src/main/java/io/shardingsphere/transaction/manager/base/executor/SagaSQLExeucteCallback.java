@@ -59,8 +59,8 @@ public abstract class SagaSQLExeucteCallback<T> extends SQLExecuteCallback<T> {
         SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), null, transactionId);
         event.setExecuteSuccess();
         shardingEventBus.post(event);
-        return exeucteResult();
+        return executeResult();
     }
     
-    protected abstract T exeucteResult();
+    protected abstract T executeResult();
 }
