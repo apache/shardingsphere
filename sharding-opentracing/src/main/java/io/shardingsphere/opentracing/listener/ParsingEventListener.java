@@ -34,7 +34,7 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/parsing/";
     
-    private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
+    private final ThreadLocal<Span> span = new ThreadLocal<>();
     
     /**
      * Listen parsing event.
@@ -49,21 +49,21 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     
     @Override
     protected void beforeExecute(final ParsingEvent event) {
-        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
+        span.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
             .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), event.getSql()).startManual());
     }
     
     @Override
     protected void tracingFinish(final ParsingEvent event) {
-        if (null == branchSpan.get()) {
+        if (null == span.get()) {
             return;
         }
-        branchSpan.get().finish();
-        branchSpan.remove();
+        span.get().finish();
+        span.remove();
     }
     
     @Override
     protected Span getFailureSpan() {
-        return branchSpan.get();
+        return span.get();
     }
 }
