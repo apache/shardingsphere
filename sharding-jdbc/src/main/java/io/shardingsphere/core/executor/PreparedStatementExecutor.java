@@ -70,8 +70,6 @@ public final class PreparedStatementExecutor {
     @Getter(AccessLevel.NONE)
     private final ShardingConnection connection;
     
-    private final Collection<RouteUnit> routeUnits = new LinkedList<>();
-    
     @Getter(AccessLevel.NONE)
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -105,11 +103,10 @@ public final class PreparedStatementExecutor {
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         sqlType = routeResult.getSqlStatement().getType();
-        routeUnits.addAll(routeResult.getRouteUnits());
-        executeGroups.addAll(obtainExecuteGroups());
+        executeGroups.addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
     }
     
-    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups() throws SQLException {
+    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
         return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
     
             @Override
@@ -222,7 +219,6 @@ public final class PreparedStatementExecutor {
         for (Statement each : statements) {
             each.close();
         }
-        routeUnits.clear();
         resultSets.clear();
         statements.clear();
         parameterSets.clear();
