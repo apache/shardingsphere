@@ -33,15 +33,17 @@ import java.util.Map;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class BatchRouteUnit extends RouteUnit {
+public final class BatchRouteUnit {
+    
+    private final RouteUnit routeUnit;
     
     private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new LinkedHashMap<>();
     
     @Getter(AccessLevel.NONE)
     private int actualCallAddBatchTimes;
     
-    public BatchRouteUnit(final String dataSourceName, final SQLUnit sqlUnit) {
-        super(dataSourceName, sqlUnit);
+    public BatchRouteUnit(final RouteUnit routeUnit) {
+        this.routeUnit = routeUnit;
     }
     
     /**
