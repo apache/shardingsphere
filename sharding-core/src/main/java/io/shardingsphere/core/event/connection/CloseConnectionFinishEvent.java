@@ -18,7 +18,7 @@
 package io.shardingsphere.core.event.connection;
 
 /**
- * Connection close event.
+ * Connection close finish event.
  *
  * @author zhangyonglun
  */
