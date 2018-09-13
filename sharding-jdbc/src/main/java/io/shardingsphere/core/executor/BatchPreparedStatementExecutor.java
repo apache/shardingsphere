@@ -206,7 +206,7 @@ public final class BatchPreparedStatementExecutor {
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (BatchPreparedStatementExecuteUnit each : getBatchPreparedStatementUnitGroups()) {
+        for (BatchRouteUnit each : routeUnits) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
                 if (DatabaseType.Oracle == dbType) {
@@ -223,20 +223,6 @@ public final class BatchPreparedStatementExecutor {
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
-    }
-    
-    private Collection<BatchPreparedStatementExecuteUnit> getBatchPreparedStatementUnitGroups() {
-        Collection<BatchPreparedStatementExecuteUnit> result = new LinkedList<>();
-        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
-            result.addAll(Lists.transform(each.getInputs(), new Function<SQLExecuteUnit, BatchPreparedStatementExecuteUnit>() {
-                
-                @Override
-                public BatchPreparedStatementExecuteUnit apply(final SQLExecuteUnit input) {
-                    return (BatchPreparedStatementExecuteUnit) input;
-                }
-            }));
-        }
-        return result;
     }
     
     /**
