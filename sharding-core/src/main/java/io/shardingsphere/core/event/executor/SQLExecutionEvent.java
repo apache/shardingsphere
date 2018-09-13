@@ -37,4 +37,6 @@ public class SQLExecutionEvent extends ShardingEvent {
     private final RouteUnit routeUnit;
     
     private final List<Object> parameters;
+    
+    private final String url;
 }
