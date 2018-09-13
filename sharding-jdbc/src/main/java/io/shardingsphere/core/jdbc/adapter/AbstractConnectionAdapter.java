@@ -25,6 +25,8 @@ import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
+import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
+import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
@@ -75,12 +77,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        GetConnectionEvent event = new GetConnectionEvent(dataSourceName);
-        ShardingEventBusInstance.getInstance().post(event);
+        GetConnectionEvent startEvent = new GetConnectionStartEvent(dataSourceName);
+        ShardingEventBusInstance.getInstance().post(startEvent);
         try {
             if (cachedConnections.containsKey(dataSourceName)) {
-                event.setUrl(cachedConnections.get(dataSourceName).getMetaData().getURL());
-                event.setExecuteSuccess();
+                GetConnectionEvent finishEvent = new GetConnectionFinishEvent(cachedConnections.get(dataSourceName).getMetaData().getURL());
+                finishEvent.setExecuteSuccess();
+                ShardingEventBusInstance.getInstance().post(finishEvent);
                 return cachedConnections.get(dataSourceName);
             }
             DataSource dataSource = getDataSourceMap().get(dataSourceName);
@@ -88,16 +91,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             Connection result = dataSource.getConnection();
             cachedConnections.put(dataSourceName, result);
             replayMethodsInvocation(result);
-            event.setUrl(result.getMetaData().getURL());
-            event.setExecuteSuccess();
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(result.getMetaData().getURL());
+            finishEvent.setExecuteSuccess();
+            ShardingEventBusInstance.getInstance().post(finishEvent);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            event.setExecuteFailure(ex);
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent("");
+            finishEvent.setExecuteFailure(ex);
+            ShardingEventBusInstance.getInstance().post(finishEvent);
             throw ex;
-        } finally {
-            ShardingEventBusInstance.getInstance().post(event);
         }
     }
     
