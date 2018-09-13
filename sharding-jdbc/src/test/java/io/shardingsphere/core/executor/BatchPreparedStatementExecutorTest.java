@@ -40,6 +40,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     private static final ShardingConnection CONNECTION = Mockito.mock(ShardingConnection.class);
     
+    @Override
+    public void setUp() {
+        when(CONNECTION.getShardingDataSource().getShardingContext().getExecuteEngine()).thenReturn(mock(ShardingExecuteEngine.class));
+    }
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoPreparedStatement() throws SQLException {
