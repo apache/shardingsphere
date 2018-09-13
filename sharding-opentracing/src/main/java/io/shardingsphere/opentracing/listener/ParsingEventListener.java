@@ -34,8 +34,6 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/parsing/";
     
-    private final ThreadLocal<Span> span = new ThreadLocal<>();
-    
     /**
      * Listen parsing event.
      *
