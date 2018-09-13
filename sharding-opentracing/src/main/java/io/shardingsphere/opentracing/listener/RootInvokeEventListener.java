@@ -27,7 +27,7 @@ import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
 /**
- * SQL execute overall event listener.
+ * Root invoke event listener.
  *
  * @author gaohongtao
  * @author wangkai
@@ -40,9 +40,9 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/rootInvoke/";
     
     /**
-     * Listen overall sql execution event.
+     * Listen root invoke event.
      *
-     * @param event overall sql execution event
+     * @param event Root invoke event
      */
     @Subscribe
     @AllowConcurrentEvents
