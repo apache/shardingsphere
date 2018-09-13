@@ -26,7 +26,5 @@ import lombok.RequiredArgsConstructor;
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
 public final class CloseConnectionFinishEvent extends CloseConnectionEvent {
 }
