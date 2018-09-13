@@ -34,8 +34,6 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/closeConnection/";
     
-    private final ThreadLocal<Span> span = new ThreadLocal<>();
-    
     /**
      * Listen connectionClose event.
      *
