@@ -37,12 +37,6 @@ import static org.junit.Assert.assertThat;
 public final class DeleteStatementParserTest extends AbstractStatementParserTest {
 
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void parseStatementWithDeleteMultipleTable() {
-        ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, null).parse(false);
-    }
-    
-    @Test(expected = SQLParsingUnsupportedException.class)
     public void parseStatementWithDeleteMultipleTableWithUsing() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, null).parse(false);
