@@ -29,7 +29,7 @@ import java.util.List;
  */
 public final class DQLExecutionEvent extends SQLExecutionEvent {
     
-    public DQLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
-        super(routeUnit, parameters, url);
+    public DQLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters) {
+        super(routeUnit, parameters);
     }
 }
