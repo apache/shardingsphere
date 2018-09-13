@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.fixture;
 
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
-import io.shardingsphere.core.event.executor.sql.SQLExecutionEvent;
+import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
