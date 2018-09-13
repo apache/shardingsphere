@@ -35,9 +35,9 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/closeConnection/";
     
     /**
-     * Listen connectionClose event.
+     * Listen close connection event.
      *
-     * @param event Connection close event
+     * @param event Close connection event
      */
     @Subscribe
     @AllowConcurrentEvents
