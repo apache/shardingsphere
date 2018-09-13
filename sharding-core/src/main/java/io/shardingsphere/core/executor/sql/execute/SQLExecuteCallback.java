@@ -85,14 +85,14 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             for (List<Object> each : parameterSets) {
                 SQLExecutionEvent finishEvent = new SQLExecutionFinishEvent(routeUnit, each);
                 finishEvent.setExecuteSuccess();
-                shardingEventBus.post(each);
+                shardingEventBus.post(finishEvent);
             }
             return result;
         } catch (final SQLException ex) {
             for (List<Object> each : parameterSets) {
                 SQLExecutionEvent finishEvent = new SQLExecutionFinishEvent(routeUnit, each);
                 finishEvent.setExecuteSuccess();
-                shardingEventBus.post(each);
+                shardingEventBus.post(finishEvent);
             }
             ExecutorExceptionHandler.handleException(ex);
             return null;
