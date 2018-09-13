@@ -17,7 +17,6 @@
 
 package io.shardingsphere.proxy.config;
 
-import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.config.ProxySchemaRule;
 import io.shardingsphere.core.api.config.ProxyServerConfiguration;
@@ -26,12 +25,12 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.jdbc.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
+import io.shardingsphere.jdbc.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -157,7 +156,7 @@ public final class ProxyContext {
      * @return rule registry of schema
      */
     public RuleRegistry getRuleRegistry(final String schema) {
-        return Strings.isNullOrEmpty(schema) ? null : ruleRegistryMap.get(schema);
+        return ruleRegistryMap.get(schema);
     }
     
     /**
