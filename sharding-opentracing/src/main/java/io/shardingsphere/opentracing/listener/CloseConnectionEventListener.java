@@ -22,6 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -48,8 +49,8 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     @Override
     protected void beforeExecute(final CloseConnectionEvent event) {
         getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-            .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
-            .withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
+            .withTag(Tags.PEER_HOSTNAME.getKey(), ((CloseConnectionStartEvent) event).getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
+            .withTag(Tags.DB_INSTANCE.getKey(), ((CloseConnectionStartEvent) event).getDataSource()).startManual());
     }
     
     @Override
