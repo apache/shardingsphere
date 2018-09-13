@@ -84,6 +84,8 @@ public final class BatchPreparedStatementExecutor {
     @Getter
     private final List<ResultSet> resultSets = new LinkedList<>();
     
+    private final Collection<Connection> connections = new LinkedList<>();
+    
     private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
@@ -118,7 +120,9 @@ public final class BatchPreparedStatementExecutor {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getNewConnection(dataSourceName);
+                Connection conn = connection.getNewConnection(dataSourceName);
+                connections.add(conn);
+                return conn;
             }
             
             @Override
