@@ -131,7 +131,7 @@ public final class BackendNettyClient {
                         new BackendNettyClientChannelPoolHandler(dataSourceName, ruleRegistry.getSchemaName()), maxConnections);
             }
         };
-        for (String each : ruleRegistry.getDataSourceConfigurationMap().keySet()) {
+        for (String each : ruleRegistry.getDataSources().keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
             Channel[] channels = new Channel[maxConnections];
             for (int i = 0; i < maxConnections; i++) {

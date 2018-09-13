@@ -55,7 +55,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private Map<String, DataSource> createDataSourceMap() {
         TransactionType transactionType = ProxyContext.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = ruleRegistry.getDataSourceConfigurationMap();
+        Map<String, DataSourceParameter> dataSourceParameters = ruleRegistry.getDataSources();
         // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
         return getNormalDataSourceMap(transactionType, dataSourceParameters);
     }

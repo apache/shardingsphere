@@ -188,10 +188,12 @@ public final class ProxyContext {
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
         initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
         for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+            entry.getValue().getBackendDataSource().close();
+        }
+        ruleRegistryMap.clear();
+        for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
             String schemaName = entry.getKey();
-            RuleRegistry ruleRegistry = entry.getValue();
-            ruleRegistry.getBackendDataSource().close();
-            ruleRegistry.init(proxyConfigurationEventBusEvent.getSchemaDataSourceMap().get(schemaName), proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(schemaName));
+            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaShardingRuleMap().get(schemaName)));
         }
     }
     

@@ -20,9 +20,7 @@ package io.shardingsphere.proxy.config;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -32,7 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -41,11 +39,8 @@ import java.util.regex.Pattern;
  *
  * @author chenqingyang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ConfigurationLoader {
-    
-    private static final ConfigurationLoader INSTANCE = new ConfigurationLoader();
     
     private static final String CONFIG_PATH = "/conf/";
     
@@ -57,23 +52,13 @@ public final class ConfigurationLoader {
     
     private Collection<RuleConfiguration> ruleConfigurations = new LinkedList<>();
     
-    private Collection<String> schemaNames = new LinkedHashSet<>();
-    
     /**
-     * Get instance of proxy configuration loader.
-     *
-     * @return instance of proxy configuration loader.
-     */
-    public static ConfigurationLoader getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * load all proxy configuration.
+     * load all configuration.
      *
      * @throws IOException IO exception
      */
-    public void loadConfiguration() throws IOException {
+    public void load() throws IOException {
+        Collection<String> schemaNames = new HashSet<>();
         serverConfiguration = loadServerConfiguration(new File(ConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
         File configPath = new File(ConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
         for (File each : findRuleConfigurationFiles(configPath)) {

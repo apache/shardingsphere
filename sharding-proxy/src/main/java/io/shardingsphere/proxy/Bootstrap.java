@@ -48,10 +48,6 @@ public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
     
-    private static final ConfigurationLoader CONFIG_LOADER = ConfigurationLoader.getInstance();
-    
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
-    
     /**
      * Main Entrance.
      *
@@ -60,13 +56,14 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        CONFIG_LOADER.loadConfiguration();
+        ConfigurationLoader configLoader = new ConfigurationLoader();
+        configLoader.load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
-        if (null == CONFIG_LOADER.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(CONFIG_LOADER.getServerConfiguration(), CONFIG_LOADER.getRuleConfigurations(), port);
+        if (null == configLoader.getServerConfiguration().getOrchestration()) {
+            startWithoutRegistryCenter(configLoader.getServerConfiguration(), configLoader.getRuleConfigurations(), port);
         } else {
-            startWithRegistryCenter(CONFIG_LOADER.getServerConfiguration(), CONFIG_LOADER.getRuleConfigurations(), port);
+            startWithRegistryCenter(configLoader.getServerConfiguration(), configLoader.getRuleConfigurations(), port);
         }
     }
     
@@ -83,7 +80,7 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(final ServerConfiguration serverConfig, final Collection<RuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         OrchestrationProxyConfiguration orchestrationConfig = getOrchestrationConfiguration(serverConfig, ruleConfigs);
-        PROXY_CONTEXT.init(orchestrationConfig.getServerConfiguration(), orchestrationConfig.getSchemaDataSourceMap(), orchestrationConfig.getSchemaRuleMap());
+        ProxyContext.getInstance().init(orchestrationConfig.getServerConfiguration(), orchestrationConfig.getSchemaDataSourceMap(), orchestrationConfig.getSchemaRuleMap());
         new ShardingProxy().start(port);
     }
     
@@ -92,7 +89,7 @@ public final class Bootstrap {
             if (!ruleConfigs.isEmpty()) {
                 orchestrationFacade.init(getOrchestrationConfiguration(serverConfig, ruleConfigs));
             }
-            PROXY_CONTEXT.init(orchestrationFacade.getConfigService().loadProxyServerConfiguration(), 
+            ProxyContext.getInstance().init(orchestrationFacade.getConfigService().loadProxyServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
             new ShardingProxy().start(port);
         }
