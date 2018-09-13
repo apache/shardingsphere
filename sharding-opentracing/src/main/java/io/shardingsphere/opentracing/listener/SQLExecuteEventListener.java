@@ -39,6 +39,8 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/executeSQL/";
     
+    private final ThreadLocal<Boolean> isTrunkThread = new ThreadLocal<>();
+    
     /**
      * Listen SQL execution event.
      *
@@ -52,7 +54,8 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     @Override
     protected void beforeExecute(final SQLExecutionEvent event) {
-        if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !RootInvokeEventListener.isTrunkThread() && null == getSpan().get()) {
+        isTrunkThread.set(RootInvokeEventListener.isTrunkThread());
+        if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !isTrunkThread.get() && null == getSpan().get()) {
             ACTIVE_SPAN.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
         if (null == getSpan().get()) {
@@ -66,16 +69,12 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     @Override
     protected void tracingFinish(final SQLExecutionEvent event) {
-        if (null == getSpan().get()) {
-            return;
-        }
         getSpan().get().finish();
         getSpan().remove();
-        if (null == ACTIVE_SPAN.get()) {
-            return;
+        if (!isTrunkThread.get()) {
+            ACTIVE_SPAN.get().deactivate();
+            ACTIVE_SPAN.remove();
         }
-        ACTIVE_SPAN.get().deactivate();
-        ACTIVE_SPAN.remove();
     }
     
     @Override
