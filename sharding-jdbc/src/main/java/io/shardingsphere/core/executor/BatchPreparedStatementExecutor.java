@@ -99,6 +99,14 @@ public final class BatchPreparedStatementExecutor {
     }
     
     /**
+     * Init executor.
+     *
+     */
+    public void init() {
+        executeGroups.addAll(sqlExecutePrepareTemplate.getExecuteUnitGroups(executeUnits));
+    }
+    
+    /**
      * Add batch for route units.
      *
      * @param batchCount batch count
@@ -153,14 +161,6 @@ public final class BatchPreparedStatementExecutor {
     
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
         return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    /**
-     * Init executor.
-     *
-     */
-    public void init() {
-        executeGroups.addAll(sqlExecutePrepareTemplate.getExecuteUnitGroups(executeUnits));
     }
     
     /**
