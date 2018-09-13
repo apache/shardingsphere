@@ -82,6 +82,8 @@ public final class PreparedStatementExecutor {
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
+    private final Collection<Connection> connections = new LinkedList<>();
+    
     @Getter(AccessLevel.NONE)
     private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
     
@@ -111,7 +113,9 @@ public final class PreparedStatementExecutor {
     
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
-                return connection.getNewConnection(dataSourceName);
+                Connection conn = connection.getNewConnection(dataSourceName);
+                connections.add(conn);
+                return conn;
             }
     
             @Override
@@ -216,13 +220,25 @@ public final class PreparedStatementExecutor {
      * @throws SQLException sql exception
      */
     public void clear() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
+        clearStatements();
+        clearConnections();
+        connections.clear();
         resultSets.clear();
         statements.clear();
         parameterSets.clear();
         executeGroups.clear();
+    }
+    
+    private void clearStatements() throws SQLException {
+        for (Statement each : statements) {
+            each.close();
+        }
+    }
+    
+    private void clearConnections() {
+        for (Connection each : connections) {
+            connection.release(each);
+        }
     }
 }
 
