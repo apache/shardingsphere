@@ -15,20 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.base.fixture;
+package io.shardingsphere.transaction.manager.base.servicecomb;
 
-import io.shardingsphere.transaction.manager.base.servicecomb.AbstractSQLTransport;
+import io.shardingsphere.transaction.manager.base.fixture.FixtureShardingTransportFactory;
+import org.junit.Test;
 
-import java.sql.Connection;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
-/**
- * Fixture SQLTransport for SPI test.
- *
- * @author yangyi
- */
-public final class FixtureSQLTransport extends AbstractSQLTransport {
-    @Override
-    protected Connection getConnection(String datasource) {
-        return null;
+public class ShardingTrasportFactoryTest {
+    
+    @Test
+    public void assertGerInstanceWithSPI() {
+        assertThat(ShardingTransportFactorySPILoader.getInstance().getTransportFactory(), instanceOf(FixtureShardingTransportFactory.class));
     }
 }
