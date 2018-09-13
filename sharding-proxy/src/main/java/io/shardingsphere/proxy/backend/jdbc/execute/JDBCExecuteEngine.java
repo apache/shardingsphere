@@ -77,6 +77,8 @@ import java.util.Map;
 @Setter
 public class JDBCExecuteEngine implements SQLExecuteEngine {
     
+    private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
     private final List<QueryResult> queryResults = new LinkedList<>();
     
     private final BackendConnection backendConnection;
@@ -179,7 +181,11 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         
         @Override
         public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-            return new StatementExecuteUnit(routeUnit, getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys), connectionMode);
+            Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
+            if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
+                statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
+            }
+            return new StatementExecuteUnit(routeUnit, statement, connectionMode);
         }
     }
     
