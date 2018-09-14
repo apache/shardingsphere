@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Parsing event.
+ * Parsing finish event.
  *
  * @author zhangyonglun
  */
