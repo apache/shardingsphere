@@ -255,7 +255,7 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        Optional<SQLExecuteUnit> target = Optional.absent();
+        Optional<SQLExecuteUnit> target;
         List<List<Object>> result = new LinkedList<>();
         for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
             target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<SQLExecuteUnit>() {
@@ -264,9 +264,10 @@ public final class BatchPreparedStatementExecutor {
                     return input.getStatement().equals(statement);
                 }
             });
-        }
-        if (target.isPresent()) {
-            result.addAll(target.get().getRouteUnit().getSqlUnit().getParameterSets());
+            if (target.isPresent()) {
+                result.addAll(target.get().getRouteUnit().getSqlUnit().getParameterSets());
+                break;
+            }
         }
         return result;
     }
