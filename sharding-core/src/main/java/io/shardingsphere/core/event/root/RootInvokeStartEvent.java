@@ -22,9 +22,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Overall sql execution event.
+ * Root invoke start event.
  * 
- * @author gaohongtao
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
