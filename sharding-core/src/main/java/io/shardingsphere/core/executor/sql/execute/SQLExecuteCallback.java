@@ -20,14 +20,13 @@ package io.shardingsphere.core.executor.sql.execute;
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.ShardingExecuteCallback;
-import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.event.executor.SQLExecutionEventFactory;
+import io.shardingsphere.core.executor.ShardingExecuteCallback;
+import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import io.shardingsphere.core.routing.RouteUnit;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
