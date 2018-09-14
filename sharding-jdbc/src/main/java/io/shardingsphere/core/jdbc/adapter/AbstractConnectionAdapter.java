@@ -73,8 +73,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        GetConnectionEvent startEvent = new GetConnectionStartEvent(dataSourceName);
-        ShardingEventBusInstance.getInstance().post(startEvent);
+        ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
         try {
             if (cachedConnections.containsKey(dataSourceName)) {
                 GetConnectionEvent finishEvent = new GetConnectionFinishEvent(cachedConnections.get(dataSourceName).getMetaData().getURL());
