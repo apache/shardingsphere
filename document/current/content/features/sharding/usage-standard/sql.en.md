@@ -60,6 +60,8 @@ Simply speaking, none-functional subquery can be supported in most cases, such a
 
 In addition, subquery containing aggregate functions are not supported currently due to merge constraints.
 
+Can not support SQL which include schema. Because of Sharding-Sphere is manage multiple data sources as one logic data source, so all SQL should be in one logic schema.
+
 ## Example
 
 ### Supported SQL
@@ -95,3 +97,4 @@ In addition, subquery containing aggregate functions are not supported currently
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION               |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL           |
 | SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | brackets redundancy |
+| SELECT * FROM ds.tbl_name1                                                                  | inculde schema      |
