@@ -43,7 +43,7 @@ public final class BatchRouteUnit {
     private int actualCallAddBatchTimes;
     
     public BatchRouteUnit(final RouteUnit routeUnit) {
-        this.routeUnit = new RouteUnit(routeUnit.getDataSourceName(), routeUnit.getSqlUnit());
+        this.routeUnit = routeUnit;
     }
     
     /**
