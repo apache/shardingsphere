@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * Get connection event.
+ * Get connection finish event.
  *
  * @author zhangyonglun
  */
