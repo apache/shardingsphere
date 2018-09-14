@@ -17,13 +17,12 @@
 
 package io.shardingsphere.core.event.root;
 
-import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Root invoke start event.
- * 
+ *
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
