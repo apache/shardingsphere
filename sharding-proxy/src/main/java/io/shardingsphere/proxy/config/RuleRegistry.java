@@ -36,6 +36,8 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.proxy.revert.ProxyRevertEngine;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -110,7 +112,7 @@ public final class RuleRegistry {
      * Initialize rule registry.
      *
      * @param dataSources data sources
-     * @param config yaml proxy configuration
+     * @param config      yaml proxy configuration
      */
     public synchronized void init(final Map<String, DataSourceParameter> dataSources, final ProxyBasicRule config) {
         Properties properties = null == config.getShardingRule() ? config.getMasterSlaveRule().getProps() : config.getShardingRule().getProps();
@@ -118,7 +120,7 @@ public final class RuleRegistry {
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
-        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
+        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? getTransactionType(shardingProperties) : TransactionType.LOCAL;
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
@@ -136,6 +138,7 @@ public final class RuleRegistry {
         dataSourceConfigurationMap = dataSources;
         backendDataSource = new JDBCBackendDataSource();
         proxyAuthority = config.getProxyAuthority();
+        RevertEngineHolder.getInstance().setDefaultRevertEngine(new ProxyRevertEngine());
     }
     
     /**
@@ -213,5 +216,9 @@ public final class RuleRegistry {
             result.remove(each);
         }
         return result;
+    }
+    
+    private TransactionType getTransactionType(final ShardingProperties shardingProperties) {
+        return TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE));
     }
 }

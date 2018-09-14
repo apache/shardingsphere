@@ -18,6 +18,7 @@
 package io.shardingsphere.core.constant.properties;
 
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -76,13 +77,33 @@ public enum ShardingPropertiesConstant {
      * 
      * <p>
      * CONNECTION_STRICTLY:
-     * harding-Sphere will release connections after get the overall rows from the ResultSet.
+     * Sharding-Sphere will release connections after get the overall rows from the ResultSet.
      * Meanwhile, the cost of the memory will be increased.
      * </p>
      */
     CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
     PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", Boolean.FALSE.toString(), boolean.class),
+    
+    /**
+     * Transaction type of proxy.
+     *
+     * <p>
+     * LOCAL:
+     * Sharding-Sphere will run with LOCAL transaction.
+     * </p>
+     *
+     * <p>
+     * XA:
+     * Sharding-Sphere will run with XA transaction.
+     * </p>
+     *
+     * <p>
+     * BASE:
+     * Sharding-Sphere will run with BASE transaction.
+     * </p>
+     */
+    PROXY_TRANSACTION_TYPE("proxy.transaction.type", TransactionType.LOCAL.name(), String.class),
     
     PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
     
