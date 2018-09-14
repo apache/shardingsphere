@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
@@ -29,7 +28,6 @@ import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -37,7 +35,6 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -176,8 +173,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                CloseConnectionEvent startEvent = new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL());
-                ShardingEventBusInstance.getInstance().post(startEvent);
+                ShardingEventBusInstance.getInstance().post(new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL()));
                 CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
