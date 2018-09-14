@@ -19,6 +19,7 @@ package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
@@ -38,9 +39,15 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
+import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.base.executor.SagaSQLExeucteCallback;
 
+import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -74,9 +81,16 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(getStatementExecuteUnits(routeResult, isReturnGeneratedKeys), 
-                new FirstMemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys), 
-                new MemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
+        boolean isBaseTransaction = RuleRegistry.getInstance().getTransactionType() == TransactionType.BASE
+                && sqlType == SQLType.DML
+                && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
+    
+        SQLExecuteCallback<ExecuteResponseUnit> firstSQLExeucteCallback = isBaseTransaction ? new MemoryStrictlySagaExecuteCallback(sqlType, isExceptionThrown, dataMap)
+                : new FirstMemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> sqlExecuteCallback = isBaseTransaction ? firstSQLExeucteCallback
+                : new MemoryStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.execute(getStatementExecuteUnits(routeResult, isReturnGeneratedKeys), firstSQLExeucteCallback, sqlExecuteCallback);
+
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -146,6 +160,18 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         protected ExecuteResponseUnit executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
             executeUnit.getStatement().setFetchSize(FETCH_ONE_ROW_A_TIME);
             return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getSqlExecutionUnit().getSqlUnit().getSql(), isReturnGeneratedKeys);
+        }
+    }
+    
+    private final class MemoryStrictlySagaExecuteCallback extends SagaSQLExeucteCallback<ExecuteResponseUnit> {
+    
+        public MemoryStrictlySagaExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+            super(sqlType, isExceptionThrown, dataMap);
+        }
+    
+        @Override
+        protected ExecuteResponseUnit executeResult() {
+            return new ExecuteUpdateResponseUnit(new OKPacket(1));
         }
     }
 }
