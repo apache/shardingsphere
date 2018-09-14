@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.sql;
+package io.shardingsphere.core.event.executor;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;

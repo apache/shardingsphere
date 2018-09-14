@@ -23,7 +23,7 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.executor.sql.SQLExecutionEvent;
+import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -39,9 +39,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/executeSQL/";
     
-    private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
-    
-    private final ThreadLocal<ActiveSpan> trunkInBranchSpan = new ThreadLocal<>();
+    private final ThreadLocal<Boolean> isTrunkThread = new ThreadLocal<>();
     
     /**
      * Listen SQL execution event.
@@ -56,34 +54,29 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     @Override
     protected void beforeExecute(final SQLExecutionEvent event) {
-        if (ExecutorDataMap.getDataMap().containsKey(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION) && !OverallExecuteEventListener.isTrunkThread() && null == branchSpan.get()) {
-            trunkInBranchSpan.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OverallExecuteEventListener.OVERALL_SPAN_CONTINUATION)).activate());
+        isTrunkThread.set(RootInvokeEventListener.isTrunkThread());
+        if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !isTrunkThread.get()) {
+            ACTIVE_SPAN.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
-        if (null == branchSpan.get()) {
-            branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
-                .withTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName()).withTag(Tags.DB_TYPE.getKey(), "sql")
-                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
-                .withTag(Tags.DB_STATEMENT.getKey(), event.getRouteUnit().getSqlUnit().getSql()).startManual());
-        }
+        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+            .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
+            .withTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName()).withTag(Tags.DB_TYPE.getKey(), "sql")
+            .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
+            .withTag(Tags.DB_STATEMENT.getKey(), event.getRouteUnit().getSqlUnit().getSql()).startManual());
     }
     
     @Override
     protected void tracingFinish(final SQLExecutionEvent event) {
-        if (null == branchSpan.get()) {
-            return;
+        getSpan().get().finish();
+        getSpan().remove();
+        if (!isTrunkThread.get()) {
+            ACTIVE_SPAN.get().deactivate();
+            ACTIVE_SPAN.remove();
         }
-        branchSpan.get().finish();
-        branchSpan.remove();
-        if (null == trunkInBranchSpan.get()) {
-            return;
-        }
-        trunkInBranchSpan.get().deactivate();
-        trunkInBranchSpan.remove();
     }
     
     @Override
     protected Span getFailureSpan() {
-        return branchSpan.get();
+        return getSpan().get();
     }
 }

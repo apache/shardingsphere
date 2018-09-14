@@ -15,26 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.core.event.executor;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.executor.DMLExecutionEvent;
-import lombok.AllArgsConstructor;
+import io.shardingsphere.core.routing.RouteUnit;
 
-@AllArgsConstructor
-public final class TestDMLExecutionEventListener {
+import java.util.List;
+
+/**
+ * DML execution event.
+ *
+ * @author zhangliang
+ * @author maxiaoguang
+ */
+public final class DMLExecutionEvent extends SQLExecutionEvent {
     
-    private final EventCaller eventCaller;
-    
-    /**
-     * Listen event.
-     * 
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final DMLExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
+    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
+        super(routeUnit, parameters, url);
     }
 }

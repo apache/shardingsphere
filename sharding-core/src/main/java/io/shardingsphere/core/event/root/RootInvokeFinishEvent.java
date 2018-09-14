@@ -15,21 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.sql;
-
-import io.shardingsphere.core.routing.RouteUnit;
-
-import java.util.List;
+package io.shardingsphere.core.event.root;
 
 /**
- * DML execution event.
- * 
- * @author zhangliang
- * @author maxiaoguang
+ * Root invoke finish event.
+ *
+ * @author zhangyonglun
  */
-public final class DMLExecutionEvent extends SQLExecutionEvent {
-    
-    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
-        super(routeUnit, parameters, url);
-    }
+public final class RootInvokeFinishEvent extends RootInvokeEvent {
 }

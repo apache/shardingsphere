@@ -22,6 +22,8 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
+import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
+import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -34,10 +36,8 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     
     private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/getConnection/";
     
-    private final ThreadLocal<Span> branchSpan = new ThreadLocal<>();
-    
     /**
-     * Listen getConnection event.
+     * Listen get connection event.
      *
      * @param event Get connection event
      */
@@ -49,22 +49,22 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     
     @Override
     protected void beforeExecute(final GetConnectionEvent event) {
-        branchSpan.set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual());
+        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource()).startManual());
     }
     
     @Override
     protected void tracingFinish(final GetConnectionEvent event) {
-        if (null == branchSpan.get()) {
+        if (null == getSpan().get()) {
             return;
         }
-        branchSpan.get().setTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]);
-        branchSpan.get().finish();
-        branchSpan.remove();
+        getSpan().get().setTag(Tags.PEER_HOSTNAME.getKey(), ((GetConnectionFinishEvent) event).getUrl().split("//")[1].split("/")[0]);
+        getSpan().get().finish();
+        getSpan().remove();
     }
     
     @Override
     protected Span getFailureSpan() {
-        return branchSpan.get();
+        return getSpan().get();
     }
 }

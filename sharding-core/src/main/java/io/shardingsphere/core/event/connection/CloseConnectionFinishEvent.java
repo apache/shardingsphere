@@ -15,26 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.core.event.connection;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.executor.DMLExecutionEvent;
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
-public final class TestDMLExecutionEventListener {
-    
-    private final EventCaller eventCaller;
-    
-    /**
-     * Listen event.
-     * 
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final DMLExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+/**
+ * Close connection finish event.
+ *
+ * @author zhangyonglun
+ */
+public final class CloseConnectionFinishEvent extends CloseConnectionEvent {
 }

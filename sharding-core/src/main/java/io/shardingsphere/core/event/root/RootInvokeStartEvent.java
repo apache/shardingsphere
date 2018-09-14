@@ -15,26 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.core.event.root;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.executor.DMLExecutionEvent;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
-public final class TestDMLExecutionEventListener {
+/**
+ * Root invoke start event.
+ *
+ * @author zhangyonglun
+ */
+@RequiredArgsConstructor
+@Getter
+public final class RootInvokeStartEvent extends RootInvokeEvent {
     
-    private final EventCaller eventCaller;
-    
-    /**
-     * Listen event.
-     * 
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final DMLExecutionEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+    private final boolean parallelExecute;
 }

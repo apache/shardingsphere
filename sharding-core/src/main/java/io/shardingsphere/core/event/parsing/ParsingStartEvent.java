@@ -15,22 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
+package io.shardingsphere.core.event.parsing;
 
-import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Connection close event.
+ * Parsing start event.
  *
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConnectionCloseEvent extends ShardingEvent {
+public final class ParsingStartEvent extends ParsingEvent {
     
-    private final String dataSource;
-    
-    private final String url;
+    private final String sql;
 }
