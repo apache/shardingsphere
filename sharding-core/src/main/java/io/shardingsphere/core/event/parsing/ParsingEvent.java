@@ -18,8 +18,6 @@
 package io.shardingsphere.core.event.parsing;
 
 import io.shardingsphere.core.event.ShardingEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Parsing event.
