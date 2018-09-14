@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Connection close start event.
+ * Close connection start event.
  *
  * @author zhangyonglun
  */
