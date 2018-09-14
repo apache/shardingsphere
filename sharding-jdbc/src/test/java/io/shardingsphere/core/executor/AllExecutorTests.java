@@ -24,7 +24,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         StatementExecutorTest.class, 
         PreparedStatementExecutorTest.class,
-        BatchPreparedStatementExecutorTest.class
+        BatchPreparedStatementExecutorTest.class,
+        SQLExeucteCallbackFactoryTest.class
     })
 public final class AllExecutorTests {
 }
