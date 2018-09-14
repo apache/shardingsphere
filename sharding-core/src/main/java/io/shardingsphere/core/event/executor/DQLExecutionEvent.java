@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * DQL execution event.
- * 
+ *
  * @author gaohongtao
  * @author maxiaoguang
  */
