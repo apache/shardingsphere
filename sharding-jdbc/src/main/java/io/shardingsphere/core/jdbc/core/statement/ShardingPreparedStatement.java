@@ -264,7 +264,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             batchPreparedStatementExecutor.addBatchForRouteUnits(routeResult);
         } finally {
             currentResultSet = null;
-            clearParameters();
         }
     }
     
