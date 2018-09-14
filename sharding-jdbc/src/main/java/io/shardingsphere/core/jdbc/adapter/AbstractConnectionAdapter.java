@@ -87,19 +87,19 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void setAutoCommit(final boolean autoCommit) {
+    public void setAutoCommit(final boolean autoCommit) {
         this.autoCommit = autoCommit;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
         ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.BEGIN));
     }
     
     @Override
-    public final void commit() {
+    public void commit() {
         ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.COMMIT));
     }
     
     @Override
-    public final void rollback() {
+    public void rollback() {
         ShardingEventBusInstance.getInstance().post(createTransactionEvent(TransactionOperationType.ROLLBACK));
     }
     
@@ -110,7 +110,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             case XA:
                 return new XATransactionEvent(operationType);
             case BASE:
-                return new SagaTransactionEvent(operationType);
+                return new SagaTransactionEvent(operationType, this);
             default:
                 throw new UnsupportedOperationException(TransactionTypeHolder.get().name());
         }

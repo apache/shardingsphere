@@ -21,7 +21,9 @@ import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
+import io.shardingsphere.core.revert.JDBCRevertEngine;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -122,5 +124,23 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+    
+    @Override
+    public void setAutoCommit(final boolean autoCommit) {
+        RevertEngineHolder.getInstance().setRevertEngine(new JDBCRevertEngine(shardingContext));
+        super.setAutoCommit(autoCommit);
+    }
+    
+    @Override
+    public void commit() {
+        super.commit();
+        RevertEngineHolder.getInstance().remove();
+    }
+    
+    @Override
+    public void rollback() {
+        super.rollback();
+        RevertEngineHolder.getInstance().remove();
     }
 }
