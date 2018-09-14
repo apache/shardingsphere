@@ -18,9 +18,6 @@
 package io.shardingsphere.core.event.connection;
 
 import io.shardingsphere.core.event.ShardingEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Get connection event.
