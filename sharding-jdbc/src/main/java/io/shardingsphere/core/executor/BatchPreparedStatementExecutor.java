@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Prepared statement executor to process add batch.
@@ -82,7 +83,7 @@ public final class BatchPreparedStatementExecutor {
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     @Getter
-    private final List<ResultSet> resultSets = new LinkedList<>();
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final Collection<Connection> connections = new LinkedList<>();
     
