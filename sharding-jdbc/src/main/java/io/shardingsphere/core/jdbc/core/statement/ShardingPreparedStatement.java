@@ -70,8 +70,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private final PreparedStatementRoutingEngine routingEngine;
     
     private final String sql;
-
-    private int batchCount;
     
     @Getter(AccessLevel.NONE)
     private final PreparedStatementExecutor preparedStatementExecutor;
@@ -263,8 +261,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public void addBatch() throws SQLException {
         try {
             sqlRoute();
-            batchPreparedStatementExecutor.addBatchForRouteUnits(batchCount, routeResult);
-            batchCount++;
+            batchPreparedStatementExecutor.addBatchForRouteUnits(routeResult);
         } finally {
             currentResultSet = null;
             clearParameters();
@@ -299,7 +296,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public void clearBatch() throws SQLException {
         currentResultSet = null;
-        batchCount = 0;
         batchPreparedStatementExecutor.clear();
         clearParameters();
     }
