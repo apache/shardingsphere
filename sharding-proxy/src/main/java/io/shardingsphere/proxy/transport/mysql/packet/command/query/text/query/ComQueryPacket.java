@@ -34,6 +34,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePac
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import lombok.Getter;
@@ -87,8 +89,9 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
-            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
+
+        if (TransactionType.LOCAL != RuleRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
+            ShardingEventBusInstance.getInstance().post(createTransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready 
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
@@ -96,8 +99,22 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private boolean isInTransaction(final TransactionOperationType operationType) throws SQLException {
         // TODO zhaojun: research why rollback call twice here
+        TransactionType transactionType = RuleRegistry.getInstance().getTransactionType();
         return TransactionOperationType.ROLLBACK != operationType
-                || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
+                || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(transactionType).getStatus();
+    }
+    
+    private ShardingTransactionEvent createTransactionEvent(final TransactionOperationType operationType) {
+        TransactionType transactionType = RuleRegistry.getInstance().getTransactionType();
+        switch (transactionType) {
+            case XA:
+                return new XATransactionEvent(operationType);
+            case BASE:
+                return new SagaTransactionEvent(operationType, null);
+            case LOCAL:
+            default:
+                return null;
+        }
     }
     
     @Override
