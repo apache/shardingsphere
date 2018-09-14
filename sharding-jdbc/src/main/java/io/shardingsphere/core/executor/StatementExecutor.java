@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Statement executor.
@@ -73,7 +74,7 @@ public final class StatementExecutor {
     @Getter(AccessLevel.NONE)
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
-    private final List<ResultSet> resultSets = new LinkedList<>();
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final List<Statement> statements = new LinkedList<>();
     
