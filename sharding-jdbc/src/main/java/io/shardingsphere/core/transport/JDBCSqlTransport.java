@@ -19,6 +19,8 @@ package io.shardingsphere.core.transport;
 
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.transaction.manager.base.servicecomb.AbstractSQLTransport;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.servicecomb.saga.core.TransportFailedException;
 
@@ -30,6 +32,8 @@ import java.sql.SQLException;
  *
  * @author yangyi
  */
+@AllArgsConstructor
+@NoArgsConstructor
 public final class JDBCSqlTransport extends AbstractSQLTransport {
     
     @Setter
@@ -38,7 +42,11 @@ public final class JDBCSqlTransport extends AbstractSQLTransport {
     @Override
     protected Connection getConnection(final String datasource) throws TransportFailedException {
         try {
-            return shardingConnection.getConnection(datasource);
+            Connection connection = shardingConnection.getConnection(datasource);
+            if (!connection.isClosed() && !connection.getAutoCommit()) {
+                connection.setAutoCommit(true);
+            }
+            return connection;
         } catch (SQLException e) {
             throw new TransportFailedException("get connection of [" + datasource + "] occur exception ", e);
         }
