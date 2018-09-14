@@ -20,7 +20,7 @@ package io.shardingsphere.core.event.connection;
 import io.shardingsphere.core.event.ShardingEvent;
 
 /**
- * Connection close event.
+ * Close connection event.
  *
  * @author zhangyonglun
  */
