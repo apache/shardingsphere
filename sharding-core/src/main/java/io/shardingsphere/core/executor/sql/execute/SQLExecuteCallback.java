@@ -40,7 +40,7 @@ import java.util.Map;
  *
  * @author gaohongtao
  * @author zhangliang
- * 
+ *
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
@@ -74,8 +74,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         List<List<Object>> parameterSets = sqlExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
         String url = sqlExecuteUnit.getStatement().getConnection().getMetaData().getURL();
         for (List<Object> each : parameterSets) {
-            SQLExecutionEvent startEvent = SQLExecutionEventFactory.createEvent(sqlType, sqlExecuteUnit, each, url);
-            shardingEventBus.post(startEvent);
+            shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, sqlExecuteUnit, each, url));
         }
         try {
             T result = executeSQL(sqlExecuteUnit);
