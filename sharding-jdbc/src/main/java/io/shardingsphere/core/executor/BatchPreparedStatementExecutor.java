@@ -141,15 +141,14 @@ public final class BatchPreparedStatementExecutor {
     /**
      * Add batch for route units.
      *
-     * @param batchCount batch count
      * @param routeResult route result
      * @throws SQLException sql exception
      */
-    public void addBatchForRouteUnits(final int batchCount, final SQLRouteResult routeResult) throws SQLException {
-        this.batchCount = batchCount;
+    public void addBatchForRouteUnits(final SQLRouteResult routeResult) throws SQLException {
         sqlType = routeResult.getSqlStatement().getType();
         handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
+        batchCount++;
     }
     
     private Collection<BatchRouteUnit> createBatchRouteUnits(final Collection<RouteUnit> routeUnits) {
@@ -280,6 +279,7 @@ public final class BatchPreparedStatementExecutor {
     public void clear() throws SQLException {
         clearStatements();
         clearConnections();
+        batchCount = 0;
         connections.clear();
         routeUnits.clear();
         resultSets.clear();
