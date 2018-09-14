@@ -17,11 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.statement;
 
-import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.event.executor.DMLExecutionEvent;
 import io.shardingsphere.core.jdbc.JDBCTestSQL;
 import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.junit.Test;
@@ -31,10 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
