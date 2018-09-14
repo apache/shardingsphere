@@ -89,7 +89,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(columnLabelAndIndexMap.get(columnLabel));
+        return currentRow.get(columnLabelAndIndexMap.get(columnLabel) - 1);
     }
     
     @Override
@@ -99,7 +99,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnLabelAndIndexMap.get(columnLabel));
+        return currentRow.get(columnLabelAndIndexMap.get(columnLabel) - 1);
     }
     
     @Override
@@ -109,7 +109,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.get(columnLabelAndIndexMap.get(columnLabel));
+        return (InputStream) currentRow.get(columnLabelAndIndexMap.get(columnLabel) - 1);
     }
     
     @Override
