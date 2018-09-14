@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Prepared statement executor.
@@ -76,13 +77,14 @@ public final class PreparedStatementExecutor {
     @Getter(AccessLevel.NONE)
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
-    private final List<ResultSet> resultSets = new LinkedList<>();
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final List<PreparedStatement> statements = new LinkedList<>();
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     private final Collection<Connection> connections = new LinkedList<>();
+    
     
     @Getter(AccessLevel.NONE)
     private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
@@ -241,4 +243,3 @@ public final class PreparedStatementExecutor {
         }
     }
 }
-
