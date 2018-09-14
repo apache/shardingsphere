@@ -263,7 +263,7 @@ public final class SQLExecuteCallbackFactory {
     private static SQLExecuteCallback<Integer> getSagaUpdateSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         return new SagaSQLExeucteCallback<Integer>(sqlType, isExceptionThrown, dataMap) {
             @Override
-            protected Integer exeucteResult() {
+            protected Integer executeResult() {
                 return 0;
             }
         };
@@ -272,7 +272,7 @@ public final class SQLExecuteCallbackFactory {
     private static SQLExecuteCallback<Boolean> getSagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         return new SagaSQLExeucteCallback<Boolean>(sqlType, isExceptionThrown, dataMap) {
             @Override
-            protected Boolean exeucteResult() {
+            protected Boolean executeResult() {
                 return false;
             }
         };
