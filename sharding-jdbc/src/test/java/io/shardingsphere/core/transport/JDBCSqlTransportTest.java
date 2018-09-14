@@ -18,7 +18,6 @@
 package io.shardingsphere.core.transport;
 
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
-import io.shardingsphere.transaction.manager.base.servicecomb.SQLTransportSPILoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class JDBCSqlTransportTest {
     
-    private final JDBCSqlTransport sqlTransport = (JDBCSqlTransport) SQLTransportSPILoader.getInstance().getSqlTransport();
+    private final JDBCSqlTransport sqlTransport = new JDBCSqlTransport();
     
     private final String dsName = "ds";
     
@@ -57,7 +56,6 @@ public class JDBCSqlTransportTest {
     
     @Before
     public void setUp() throws SQLException {
-        when(preparedStatement.executeUpdate()).thenReturn(0);
         when(actualConnect.prepareStatement(sql)).thenReturn(preparedStatement);
         when(connection1.getConnection(dsName)).thenReturn(actualConnect);
         when(connection2.getConnection(dsName)).thenReturn(null);
@@ -66,19 +64,19 @@ public class JDBCSqlTransportTest {
     @Test
     public void assertGetConnection() throws SQLException {
         sqlTransport.setShardingConnection(connection1);
-        sqlTransport.with(dsName, sql, new ArrayList<String>());
+        sqlTransport.with(dsName, sql, new ArrayList<List<String>>());
         verify(connection1).getConnection(dsName);
     }
     
     @Test
     public void assertSetSqlParams() throws SQLException {
         sqlTransport.setShardingConnection(connection1);
-        List<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         final String param1 = "1";
         final String param2 = "xxx";
         list.add(param1);
         list.add(param2);
-        sqlTransport.with(dsName, sql, list);
+        sqlTransport.with(dsName, sql, new ArrayList<List<String>>() {{add(list);}});
         verify(preparedStatement).setObject(1, param1);
         verify(preparedStatement).setObject(2, param2);
     }
@@ -88,6 +86,6 @@ public class JDBCSqlTransportTest {
         sqlTransport.setShardingConnection(connection1);
         sqlTransport.renew(connection2);
         verify(connection1).close();
-        sqlTransport.with(dsName, sql, new ArrayList<String>());
+        sqlTransport.with(dsName, sql, new ArrayList<List<String>>());
     }
 }
