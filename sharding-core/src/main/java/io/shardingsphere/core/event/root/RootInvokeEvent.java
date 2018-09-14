@@ -18,12 +18,10 @@
 package io.shardingsphere.core.event.root;
 
 import io.shardingsphere.core.event.ShardingEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Root invoke event.
- * 
+ *
  * @author gaohongtao
  */
 public class RootInvokeEvent extends ShardingEvent {
