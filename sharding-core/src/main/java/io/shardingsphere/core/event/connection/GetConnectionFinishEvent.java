@@ -19,7 +19,6 @@ package io.shardingsphere.core.event.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Get connection finish event.
@@ -28,7 +27,6 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class GetConnectionFinishEvent extends GetConnectionEvent {
     
     private final String url;
