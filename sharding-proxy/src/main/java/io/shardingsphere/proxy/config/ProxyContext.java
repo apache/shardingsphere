@@ -18,8 +18,6 @@
 package io.shardingsphere.proxy.config;
 
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -28,6 +26,8 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.jdbc.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
@@ -169,16 +169,6 @@ public final class ProxyContext {
     }
     
     /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
-     */
-    @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
-    }
-    
-    /**
      * Renew proxy configuration.
      *
      * @param proxyConfigurationEventBusEvent proxy event bus event.
@@ -194,6 +184,16 @@ public final class ProxyContext {
             String schemaName = entry.getKey();
             ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
         }
+    }
+    
+    /**
+     * Renew circuit breaker dataSource names.
+     *
+     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     */
+    @Subscribe
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
+        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
     
     /**

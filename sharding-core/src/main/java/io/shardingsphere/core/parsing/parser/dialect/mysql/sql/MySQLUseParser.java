@@ -36,9 +36,7 @@ public final class MySQLUseParser extends AbstractUseParser {
     
     @Override
     public UseStatement parse() {
-        UseStatement result = new UseStatement();
         lexerEngine.nextToken();
-        result.setSchema(lexerEngine.getCurrentToken().getLiterals());
-        return result;
+        return new UseStatement(lexerEngine.getCurrentToken().getLiterals());
     }
 }
