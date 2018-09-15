@@ -56,4 +56,13 @@
             </and-condition>
         </or-condition>
     </parser-result>
+
+    <parser-result sql-case-id="update_without_condition">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="7" original-literals="t_order" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
