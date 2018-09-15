@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ProxySchemaRule;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
@@ -127,8 +127,8 @@ public final class DataSourceService {
      *
      * @return available yaml proxy configuration
      */
-    public Map<String, ProxySchemaRule> getAvailableYamlProxyConfiguration() {
-        Map<String, ProxySchemaRule> schemaRuleMap = configService.loadProxyConfiguration();
+    public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
+        Map<String, YamlRuleConfiguration> schemaRuleMap = configService.loadProxyConfiguration();
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
         
         for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {

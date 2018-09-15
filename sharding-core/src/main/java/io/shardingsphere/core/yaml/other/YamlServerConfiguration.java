@@ -15,26 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.api.config;
+package io.shardingsphere.core.yaml.other;
 
 import io.shardingsphere.core.rule.ProxyAuthority;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Properties;
 
 /**
- * proxy server configuration.
+ * Server configuration for yaml.
  *
  * @author chenqingyang
  */
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public final class ProxyServerConfiguration {
+public final class YamlServerConfiguration {
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     

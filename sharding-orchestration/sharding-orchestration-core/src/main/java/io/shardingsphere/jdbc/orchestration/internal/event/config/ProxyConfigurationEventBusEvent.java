@@ -17,8 +17,8 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.event.config;
 
-import io.shardingsphere.core.api.config.ProxySchemaRule;
-import io.shardingsphere.core.api.config.ProxyServerConfiguration;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +34,9 @@ import java.util.Map;
 @Getter
 public final class ProxyConfigurationEventBusEvent {
     
-    private final ProxyServerConfiguration serverConfiguration;
+    private final YamlServerConfiguration serverConfiguration;
     
     private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
     
-    private final Map<String, ProxySchemaRule> schemaShardingRuleMap;
+    private final Map<String, YamlRuleConfiguration> schemaRuleMap;
 }
