@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.config;
+package io.shardingsphere.proxy.config.yaml;
 
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
@@ -25,13 +25,13 @@ import lombok.Setter;
 import java.util.Properties;
 
 /**
- * proxy server configuration.
+ * Server configuration for yaml.
  * 
  * @author chenqingyang
  */
 @Getter
 @Setter
-public final class ServerConfiguration {
+public final class ProxyYamlServerConfiguration {
     
     private ProxyAuthority proxyAuthority = new ProxyAuthority();
     
