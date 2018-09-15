@@ -20,12 +20,11 @@ package io.shardingsphere.jdbc.orchestration.internal.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationProxyConfiguration;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.DataSourceParameterConverter;
 import io.shardingsphere.jdbc.orchestration.internal.yaml.converter.MasterSlaveConfigurationConverter;
@@ -168,13 +167,16 @@ public final class ConfigurationService {
     /**
      * Persist proxy configuration.
      *
-     * @param orchestrationProxyConfig orchestration proxy configuration
+     * @param serverConfig server configuration
+     * @param schemaDataSourceMap schema data source map
+     * @param schemaRuleMap schema rule map
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistProxyConfiguration(final OrchestrationProxyConfiguration orchestrationProxyConfig, final boolean isOverwrite) {
-        persistProxyDataSourceParameterConfiguration(orchestrationProxyConfig.getSchemaDataSourceMap(), isOverwrite);
-        persistProxyRuleConfiguration(orchestrationProxyConfig.getSchemaRuleMap(), isOverwrite);
-        persistProxyServerConfiguration(orchestrationProxyConfig.getServerConfiguration(), isOverwrite);
+    public void persistProxyConfiguration(final YamlServerConfiguration serverConfig, 
+                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap, final boolean isOverwrite) {
+        persistProxyDataSourceParameterConfiguration(schemaDataSourceMap, isOverwrite);
+        persistProxyRuleConfiguration(schemaRuleMap, isOverwrite);
+        persistProxyServerConfiguration(serverConfig, isOverwrite);
     }
     
     private void persistProxyDataSourceParameterConfiguration(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final boolean isOverwrite) {

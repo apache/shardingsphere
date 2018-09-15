@@ -20,7 +20,6 @@ package io.shardingsphere.proxy;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.ServerConfiguration;
@@ -79,15 +78,14 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final ServerConfiguration serverConfig, final Collection<RuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        OrchestrationProxyConfiguration orchestrationConfig = getOrchestrationConfiguration(serverConfig, ruleConfigs);
-        ProxyContext.getInstance().init(orchestrationConfig.getServerConfiguration(), orchestrationConfig.getSchemaDataSourceMap(), orchestrationConfig.getSchemaRuleMap());
+        ProxyContext.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         new ShardingProxy().start(port);
     }
     
     private static void startWithRegistryCenter(final ServerConfiguration serverConfig, final Collection<RuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration())) {
             if (!ruleConfigs.isEmpty()) {
-                orchestrationFacade.init(getOrchestrationConfiguration(serverConfig, ruleConfigs));
+                orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
             }
             ProxyContext.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
@@ -95,19 +93,29 @@ public final class Bootstrap {
         }
     }
     
-    private static OrchestrationProxyConfiguration getOrchestrationConfiguration(final ServerConfiguration serverConfig, final Collection<RuleConfiguration> localRuleConfigs) {
-        Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = new HashMap<>();
-        Map<String, YamlRuleConfiguration> schemaRuleMap = new HashMap<>();
-        for (RuleConfiguration each : localRuleConfigs) {
-            schemaDataSourceMap.put(each.getSchemaName(), each.getDataSources());
-            YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
-            yamlRuleConfig.setShardingRule(each.getShardingRule());
-            yamlRuleConfig.setMasterSlaveRule(each.getMasterSlaveRule());
-            schemaRuleMap.put(each.getSchemaName(), yamlRuleConfig);
-        }
+    private static YamlServerConfiguration getYamlServerConfiguration(final ServerConfiguration serverConfig) {
         YamlServerConfiguration yamlServerConfig = new YamlServerConfiguration();
         yamlServerConfig.setProxyAuthority(serverConfig.getProxyAuthority());
         yamlServerConfig.setProps(serverConfig.getProps());
-        return new OrchestrationProxyConfiguration(yamlServerConfig, schemaDataSourceMap, schemaRuleMap);
+        return yamlServerConfig;
+    }
+    
+    private static Map<String, Map<String, DataSourceParameter>> getSchemaDataSourceMap(final Collection<RuleConfiguration> localRuleConfigs) {
+        Map<String, Map<String, DataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
+        for (RuleConfiguration each : localRuleConfigs) {
+            result.put(each.getSchemaName(), each.getDataSources());
+        }
+        return result;
+    }
+    
+    private static Map<String, YamlRuleConfiguration> getRuleConfiguration(final Collection<RuleConfiguration> localRuleConfigs) {
+        Map<String, YamlRuleConfiguration> result = new HashMap<>();
+        for (RuleConfiguration each : localRuleConfigs) {
+            YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
+            yamlRuleConfig.setShardingRule(each.getShardingRule());
+            yamlRuleConfig.setMasterSlaveRule(each.getMasterSlaveRule());
+            result.put(each.getSchemaName(), yamlRuleConfig);
+        }
+        return result;
     }
 }
