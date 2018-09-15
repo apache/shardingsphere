@@ -43,14 +43,6 @@ import static org.junit.Assert.assertTrue;
 public final class UpdateStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void parseWithoutCondition() {
-        ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule, null);
-        DMLStatement updateStatement = (DMLStatement) statementParser.parse(false);
-        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-    }
-    
-    @Test
     public void parseWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 WHERE TABLE_XXX.field4<10 AND"
