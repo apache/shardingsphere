@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Proxy merged result for show databases.
+ * Merged result for show databases.
  *
  * @author chenqingyang
  */
