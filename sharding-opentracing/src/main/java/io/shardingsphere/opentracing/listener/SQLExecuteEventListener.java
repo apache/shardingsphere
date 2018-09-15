@@ -56,7 +56,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     protected void beforeExecute(final SQLExecutionEvent event) {
         isTrunkThread.set(RootInvokeEventListener.isTrunkThread());
         if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !isTrunkThread.get()) {
-            ACTIVE_SPAN.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
+            RootInvokeEventListener.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
         getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
@@ -70,8 +70,8 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
         getSpan().get().finish();
         getSpan().remove();
         if (!isTrunkThread.get()) {
-            ACTIVE_SPAN.get().deactivate();
-            ACTIVE_SPAN.remove();
+            RootInvokeEventListener.getActiveSpan().get().deactivate();
+            RootInvokeEventListener.getActiveSpan().remove();
         }
     }
     

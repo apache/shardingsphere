@@ -40,6 +40,8 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
+    private static final ThreadLocal<ActiveSpan> ACTIVE_SPAN = new ThreadLocal<>();
+    
     /**
      * Listen root invoke event.
      *
@@ -78,5 +80,14 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
      */
     public static boolean isTrunkThread() {
         return null != ACTIVE_SPAN.get();
+    }
+    
+    /**
+     * Get active span.
+     * 
+     * @return active span
+     */
+    public static ThreadLocal<ActiveSpan> getActiveSpan() {
+        return ACTIVE_SPAN;
     }
 }
