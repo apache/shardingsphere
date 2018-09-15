@@ -24,8 +24,6 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -60,8 +58,11 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     @Override
     protected void tracingFinish(final GetConnectionEvent event) {
         GetConnectionFinishEvent finishEvent = (GetConnectionFinishEvent) event;
-        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(finishEvent.getDatabaseType(), finishEvent.getUrl());
-        getSpan().get().setTag(Tags.PEER_HOSTNAME.getKey(), dataSourceMetaData.getHostName()).setTag(Tags.PEER_PORT.getKey(), dataSourceMetaData.getPort()).finish();
+        Span span = getSpan().get();
+        if (null != finishEvent.getDataSourceMetaData()) {
+            span = span.setTag(Tags.PEER_HOSTNAME.getKey(), finishEvent.getDataSourceMetaData().getHostName()).setTag(Tags.PEER_PORT.getKey(), finishEvent.getDataSourceMetaData().getPort());
+        }
+        span.finish();
         getSpan().remove();
     }
     

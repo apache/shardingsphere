@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.event.connection;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,9 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class CloseConnectionStartEvent extends CloseConnectionEvent {
     
-    private final DatabaseType databaseType;
-    
     private final String dataSource;
     
-    private final String url;
+    private final DataSourceMetaData dataSourceMetaData;
 }

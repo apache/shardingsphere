@@ -35,6 +35,7 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +83,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
         try {
             if (cachedConnections.containsKey(dataSourceName)) {
-                GetConnectionEvent finishEvent = new GetConnectionFinishEvent(databaseType, cachedConnections.get(dataSourceName).getMetaData().getURL());
+                GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, cachedConnections.get(dataSourceName).getMetaData().getURL()));
                 finishEvent.setExecuteSuccess();
                 ShardingEventBusInstance.getInstance().post(finishEvent);
                 return cachedConnections.get(dataSourceName);
@@ -92,14 +93,14 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             Connection result = dataSource.getConnection();
             cachedConnections.put(dataSourceName, result);
             replayMethodsInvocation(result);
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(databaseType, result.getMetaData().getURL());
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, cachedConnections.get(dataSourceName).getMetaData().getURL()));
             finishEvent.setExecuteSuccess();
             ShardingEventBusInstance.getInstance().post(finishEvent);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(databaseType, "");
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(null);
             finishEvent.setExecuteFailure(ex);
             ShardingEventBusInstance.getInstance().post(finishEvent);
             throw ex;
@@ -178,7 +179,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                ShardingEventBusInstance.getInstance().post(new CloseConnectionStartEvent(databaseType, cachedConnectionsEntrySet.getKey(), connection.getMetaData().getURL()));
+                ShardingEventBusInstance.getInstance().post(
+                        new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
                 CloseConnectionEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
