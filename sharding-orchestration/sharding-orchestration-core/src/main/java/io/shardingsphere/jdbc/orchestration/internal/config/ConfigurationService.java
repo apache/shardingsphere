@@ -330,9 +330,9 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load proxy schema sharding rule configuration.
+     * Load proxy configuration.
      *
-     * @return proxy schema sharding rule configuration
+     * @return proxy configuration
      */
     public Map<String, YamlRuleConfiguration> loadProxyConfiguration() {
         try {

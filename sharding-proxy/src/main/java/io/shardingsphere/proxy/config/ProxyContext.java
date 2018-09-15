@@ -140,7 +140,7 @@ public final class ProxyContext {
     }
     
     /**
-     * check schema exists.
+     * Check schema exists.
      *
      * @param schema schema
      * @return schema exists or not
@@ -150,7 +150,7 @@ public final class ProxyContext {
     }
     
     /**
-     * get rule registry of schema.
+     * Get rule registry of schema.
      *
      * @param schema schema
      * @return rule registry of schema
@@ -160,9 +160,9 @@ public final class ProxyContext {
     }
     
     /**
-     * get a default schema.
+     * Get default schema.
      *
-     * @return schema
+     * @return default schema
      */
     public String getDefaultSchema() {
         return schemaNames.get(0);

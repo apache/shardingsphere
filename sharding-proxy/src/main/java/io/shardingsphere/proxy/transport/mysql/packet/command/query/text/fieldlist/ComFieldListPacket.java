@@ -63,7 +63,7 @@ public final class ComFieldListPacket implements CommandPacket {
         this.sequenceId = sequenceId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, frontendHandler.getSchema()), 
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, frontendHandler.getCurrentSchema()), 
                 backendConnection, DatabaseType.MySQL, frontendHandler);
         this.frontendHandler = frontendHandler;
     }
@@ -89,7 +89,7 @@ public final class ComFieldListPacket implements CommandPacket {
         while (backendHandler.next()) {
             String columnName = backendHandler.getResultValue().getData().get(0).toString();
             result.getPackets().add(
-                    new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getSchema(), table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+                    new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getCurrentSchema(), table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.getPackets().add(new EofPacket(++currentSequenceId));
         return result;

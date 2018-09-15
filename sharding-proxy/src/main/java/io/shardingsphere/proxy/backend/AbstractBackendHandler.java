@@ -76,8 +76,7 @@ public abstract class AbstractBackendHandler implements BackendHandler {
         if (!PROXY_CONTEXT.schemaExists(schema)) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
-        frontendHandler.setSchema(schema);
+        frontendHandler.setCurrentSchema(schema);
         return new CommandResponsePackets(new OKPacket(1));
     }
-    
 }
