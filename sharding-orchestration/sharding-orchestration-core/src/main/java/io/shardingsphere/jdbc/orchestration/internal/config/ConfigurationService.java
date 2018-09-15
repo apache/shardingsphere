@@ -337,14 +337,12 @@ public final class ConfigurationService {
      */
     public Map<String, ProxySchemaRule> loadProxyConfiguration() {
         try {
-            Map<String, ProxySchemaRule> schemaShardingRuleMap = ProxyConfigurationConverter
-                    .proxyRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
-            Preconditions.checkState(null != schemaShardingRuleMap && !schemaShardingRuleMap.isEmpty(), "No available schema sharding rule configuration to load.");
-            for (Entry<String, ProxySchemaRule> entry : schemaShardingRuleMap.entrySet()) {
-                Preconditions.checkState(null != entry.getValue().getShardingRule() || null != entry.getValue().getMasterSlaveRule(),
-                        "Sharding rule or Master slave rule can not be both null.");
+            Map<String, ProxySchemaRule> result = ProxyConfigurationConverter.proxyRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
+            Preconditions.checkState(null != result && !result.isEmpty(), "No available schema sharding rule configuration to load.");
+            for (Entry<String, ProxySchemaRule> entry : result.entrySet()) {
+                Preconditions.checkState(null != entry.getValue().getShardingRule() || null != entry.getValue().getMasterSlaveRule(), "Sharding rule or Master slave rule can not be both null.");
             }
-            return schemaShardingRuleMap;
+            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

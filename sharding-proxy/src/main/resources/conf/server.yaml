@@ -6,7 +6,6 @@
 
 #orchestration:
 #  name: orchestration_ds
-#  type: SHARDING
 #  overwrite: true
 #  zookeeper:
 #    namespace: orchestration
