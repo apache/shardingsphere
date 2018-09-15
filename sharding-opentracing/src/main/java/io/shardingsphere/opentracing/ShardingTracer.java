@@ -45,7 +45,7 @@ public final class ShardingTracer {
      */
     public static void init() {
         String tracerClassName = System.getProperty(OPENTRACING_TRACER_CLASS_NAME);
-        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class.");
+        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class via system property `%s`", OPENTRACING_TRACER_CLASS_NAME);
         try {
             init((Tracer) Class.forName(tracerClassName).newInstance());
         } catch (final ReflectiveOperationException ex) {
@@ -55,7 +55,7 @@ public final class ShardingTracer {
     
     /**
      * Initialize sharding tracer.
-     *
+     * 
      * @param tracer opentracing tracer
      */
     public static void init(final Tracer tracer) {

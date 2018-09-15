@@ -33,7 +33,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  */
 public final class ParsingEventListener extends OpenTracingListener<ParsingEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/parsing/";
+    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/parseSQL/";
     
     /**
      * Listen parsing event.
@@ -48,7 +48,7 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     
     @Override
     protected void beforeExecute(final ParsingEvent event) {
-        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX)
+        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME)
             .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), ((ParsingStartEvent) event).getSql()).startManual());
     }
     

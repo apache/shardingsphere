@@ -38,12 +38,12 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     
     public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/rootInvoke/";
+    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
     /**
      * Listen root invoke event.
      *
-     * @param event Root invoke event
+     * @param event root invoke event
      */
     @Subscribe
     @AllowConcurrentEvents
@@ -53,7 +53,7 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     
     @Override
     protected void beforeExecute(final RootInvokeEvent event) {
-        ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
+        ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         ACTIVE_SPAN.set(span);
         if (((RootInvokeStartEvent) event).isParallelExecute()) {
             ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());

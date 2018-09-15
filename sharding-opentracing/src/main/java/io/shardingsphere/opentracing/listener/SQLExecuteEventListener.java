@@ -37,7 +37,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  */
 public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecutionEvent> {
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/executeSQL/";
+    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/executeSQL/";
     
     private final ThreadLocal<Boolean> isTrunkThread = new ThreadLocal<>();
     
@@ -58,7 +58,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
         if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !isTrunkThread.get()) {
             ACTIVE_SPAN.set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
-        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
             .withTag(Tags.PEER_HOSTNAME.getKey(), event.getUrl().split("//")[1].split("/")[0]).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
             .withTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName()).withTag(Tags.DB_TYPE.getKey(), "sql")
             .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
