@@ -24,7 +24,6 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.dal.show.ProxyShowDatabasesMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
@@ -213,7 +212,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         try {
             mergedResult = MergeEngineFactory.newInstance(ruleRegistry.getShardingRule(), queryResults, sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
             if (mergedResult instanceof ShowDatabasesMergedResult) {
-                mergedResult = new ProxyShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+                mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
             }
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));

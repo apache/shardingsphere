@@ -33,14 +33,14 @@ import lombok.Setter;
  */
 public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
-    private boolean authorized;
+    private volatile boolean authorized;
     
     @Setter
     private volatile BackendConnection backendConnection;
 
     @Getter
     @Setter
-    private String currentSchema;
+    private volatile String currentSchema;
 
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
