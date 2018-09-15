@@ -54,9 +54,6 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     
     @Override
     protected void tracingFinish(final ParsingEvent event) {
-        if (null == getSpan().get()) {
-            return;
-        }
         getSpan().get().finish();
         getSpan().remove();
     }

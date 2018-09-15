@@ -55,9 +55,6 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     
     @Override
     protected void tracingFinish(final GetConnectionEvent event) {
-        if (null == getSpan().get()) {
-            return;
-        }
         getSpan().get().setTag(Tags.PEER_HOSTNAME.getKey(), ((GetConnectionFinishEvent) event).getUrl().split("//")[1].split("/")[0]);
         getSpan().get().finish();
         getSpan().remove();
