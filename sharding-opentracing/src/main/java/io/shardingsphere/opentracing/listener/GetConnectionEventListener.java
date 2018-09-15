@@ -24,6 +24,8 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
@@ -49,14 +51,17 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     
     @Override
     protected void beforeExecute(final GetConnectionEvent event) {
-        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource()).startManual());
+        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
+                .withTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource()).startManual());
     }
     
     @Override
     protected void tracingFinish(final GetConnectionEvent event) {
-        getSpan().get().setTag(Tags.PEER_HOSTNAME.getKey(), ((GetConnectionFinishEvent) event).getUrl().split("//")[1].split("/")[0]);
-        getSpan().get().finish();
+        GetConnectionFinishEvent finishEvent = (GetConnectionFinishEvent) event;
+        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(finishEvent.getDatabaseType(), finishEvent.getUrl());
+        getSpan().get().setTag(Tags.PEER_HOSTNAME.getKey(), dataSourceMetaData.getHostName()).setTag(Tags.PEER_PORT.getKey(), dataSourceMetaData.getPort()).finish();
         getSpan().remove();
     }
     

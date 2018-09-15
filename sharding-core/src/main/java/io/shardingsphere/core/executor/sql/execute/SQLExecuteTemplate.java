@@ -45,8 +45,8 @@ public final class SQLExecuteTemplate {
      * Execute.
      *
      * @param sqlExecuteUnits SQL execute units
-     * @param callback        SQL execute callback
-     * @param <T>             class type of return value
+     * @param callback SQL execute callback
+     * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -57,10 +57,10 @@ public final class SQLExecuteTemplate {
     /**
      * Execute.
      *
-     * @param sqlExecuteUnits      SQL execute units
+     * @param sqlExecuteUnits SQL execute units
      * @param firstExecuteCallback first SQL execute callback
-     * @param callback             SQL execute callback
-     * @param <T>                  class type of return value
+     * @param callback SQL execute callback
+     * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -79,8 +79,8 @@ public final class SQLExecuteTemplate {
      * Execute group.
      *
      * @param sqlExecuteGroups SQL execute groups
-     * @param callback         SQL execute callback
-     * @param <T>              class type of return value
+     * @param callback SQL execute callback
+     * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
@@ -92,9 +92,9 @@ public final class SQLExecuteTemplate {
      * Execute group.
      *
      * @param sqlExecuteGroups SQL execute groups
-     * @param firstCallback    first SQL execute callback
-     * @param callback         SQL execute callback
-     * @param <T>              class type of return value
+     * @param firstCallback first SQL execute callback
+     * @param callback SQL execute callback
+     * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */

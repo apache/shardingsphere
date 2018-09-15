@@ -48,6 +48,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     private final ShardingDataSource shardingDataSource;
     
     public ShardingConnection(final ShardingDataSource shardingDataSource) {
+        super(shardingDataSource.getDatabaseType());
         this.shardingDataSource = shardingDataSource;
         ShardingEventBusInstance.getInstance().post(new RootInvokeStartEvent(true));
     }
