@@ -18,6 +18,7 @@
 package io.shardingsphere.core.event.executor;
 
 import io.shardingsphere.core.event.ShardingEvent;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,5 @@ public class SQLExecutionEvent extends ShardingEvent {
     
     private final List<Object> parameters;
     
-    private final String url;
+    private final DataSourceMetaData dataSourceMetaData;
 }

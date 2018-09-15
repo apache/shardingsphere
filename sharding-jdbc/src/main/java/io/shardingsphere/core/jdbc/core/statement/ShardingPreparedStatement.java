@@ -22,6 +22,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecuteUnit;
@@ -239,11 +240,12 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private PreparedStatementExecutor getPreparedStatementExecutor() throws SQLException {
+        DatabaseType databaseType = connection.getShardingDataSource().getShardingContext().getDatabaseType();
         SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
-            return new MemoryStrictlyPreparedStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForMemoryStrictly());
+            return new MemoryStrictlyPreparedStatementExecutor(databaseType, routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForMemoryStrictly());
         }
-        return new ConnectionStrictlyPreparedStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForConnectionStrictly());
+        return new ConnectionStrictlyPreparedStatementExecutor(databaseType, routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForConnectionStrictly());
     }
     
     private Collection<PreparedStatementExecuteUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {

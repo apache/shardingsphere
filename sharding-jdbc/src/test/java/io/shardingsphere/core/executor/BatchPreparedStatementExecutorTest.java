@@ -50,7 +50,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Test
     public void assertNoPreparedStatement() throws SQLException {
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(
-                DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), Collections.<BatchPreparedStatementExecuteUnit>emptyList());
+                DatabaseType.H2, SQLType.DML, 2, getExecuteTemplate(), Collections.<BatchPreparedStatementExecuteUnit>emptyList());
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
     
@@ -59,11 +59,12 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(
-                DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
+                DatabaseType.H2, SQLType.DML, 2, getExecuteTemplate(), createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
@@ -81,12 +82,13 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
         when(preparedStatement1.getConnection()).thenReturn(connection);
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(), 
+        BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.H2, SQLType.DML, 2, getExecuteTemplate(), 
                 createBatchPreparedStatementExecuteUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
@@ -106,11 +108,12 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(),
+        BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.H2, SQLType.DML, 2, getExecuteTemplate(),
                 createBatchPreparedStatementExecuteUnits(SQL, preparedStatement, "ds_0", 2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
@@ -129,13 +132,14 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement1.executeBatch()).thenThrow(exp);
         when(preparedStatement2.executeBatch()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(connection);
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.MySQL, SQLType.DML, 2, getExecuteTemplate(),
+        BatchPreparedStatementExecutor actual = new MemoryStrictlyBatchPreparedStatementExecutor(DatabaseType.H2, SQLType.DML, 2, getExecuteTemplate(),
                 createBatchPreparedStatementExecuteUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();

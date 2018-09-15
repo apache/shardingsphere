@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementExecutor;
@@ -56,7 +57,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoStatement() throws SQLException {
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(SQLType.DQL, getExecuteTemplate(), Collections.<PreparedStatementExecuteUnit>emptyList());
+        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), Collections.<PreparedStatementExecuteUnit>emptyList());
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
@@ -68,11 +69,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         ResultSet resultSet = mock(ResultSet.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -91,13 +93,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         ResultSet resultSet2 = mock(ResultSet.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         when(preparedStatement1.getConnection()).thenReturn(connection);
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(resultSet1));
         assertThat(actualResultSets, hasItem(resultSet2));
@@ -117,12 +120,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -139,6 +143,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement1.executeQuery()).thenThrow(exp);
         when(preparedStatement2.executeQuery()).thenThrow(exp);
@@ -146,7 +151,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
         verify(preparedStatement1).executeQuery();
@@ -165,11 +170,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement.executeUpdate()).thenReturn(10);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
         assertThat(actual.executeUpdate(), is(10));
         verify(preparedStatement).executeUpdate();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -186,13 +192,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement1.executeUpdate()).thenReturn(10);
         when(preparedStatement2.executeUpdate()).thenReturn(20);
         when(preparedStatement1.getConnection()).thenReturn(connection);
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertThat(actual.executeUpdate(), is(30));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
@@ -210,12 +217,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement).executeUpdate();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -232,6 +240,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement1.executeUpdate()).thenThrow(exp);
         when(preparedStatement2.executeUpdate()).thenThrow(exp);
@@ -239,7 +248,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
@@ -257,11 +266,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement.execute()).thenReturn(false);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -278,13 +288,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement1.execute()).thenReturn(false);
         when(preparedStatement2.execute()).thenReturn(false);
         when(preparedStatement1.getConnection()).thenReturn(connection);
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
@@ -302,12 +313,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -324,6 +336,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         SQLException exp = new SQLException();
         when(preparedStatement1.execute()).thenThrow(exp);
         when(preparedStatement2.execute()).thenThrow(exp);
@@ -331,7 +344,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
@@ -349,11 +362,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement.execute()).thenReturn(true);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
+                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
         assertTrue(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -370,13 +384,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
         when(preparedStatement1.execute()).thenReturn(true);
         when(preparedStatement2.execute()).thenReturn(true);
         when(preparedStatement1.getConnection()).thenReturn(connection);
         when(preparedStatement2.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
         assertTrue(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();

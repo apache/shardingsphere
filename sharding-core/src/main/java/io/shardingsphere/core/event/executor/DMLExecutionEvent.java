@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.event.executor;
 
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 public final class DMLExecutionEvent extends SQLExecutionEvent {
     
-    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
-        super(routeUnit, parameters, url);
+    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData) {
+        super(routeUnit, parameters, dataSourceMetaData);
     }
 }

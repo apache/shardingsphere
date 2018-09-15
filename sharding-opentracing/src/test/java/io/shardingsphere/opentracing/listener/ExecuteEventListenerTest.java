@@ -17,6 +17,7 @@
 
 package io.shardingsphere.opentracing.listener;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.batch.BatchPreparedStatementExecuteUnit;
@@ -68,7 +69,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(statement.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(DatabaseType.MySQL, SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) {
@@ -82,7 +83,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
     @Test
     public void assertMultiStatement() throws SQLException {
-        List<StatementExecuteUnit> statementExecuteUnits = new ArrayList<>(2);
+        final List<StatementExecuteUnit> statementExecuteUnits = new ArrayList<>(2);
         Statement stm1 = mock(Statement.class);
         when(stm1.getConnection()).thenReturn(mock(Connection.class));
         when(stm1.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
@@ -95,7 +96,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(DatabaseType.MySQL, SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) {
@@ -108,8 +109,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
     
     @Test
     public void assertBatchPreparedStatement() throws SQLException {
-        List<BatchPreparedStatementExecuteUnit> batchPreparedStatementExecuteUnits = new ArrayList<>(2);
-        List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1, 2), Arrays.<Object>asList(3, 4));
+        final List<BatchPreparedStatementExecuteUnit> batchPreparedStatementExecuteUnits = new ArrayList<>(2);
+        final List<List<Object>> parameterSets = Arrays.asList(Arrays.<Object>asList(1, 2), Arrays.<Object>asList(3, 4));
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement1.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
@@ -122,7 +123,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         batchPreparedStatementExecuteUnits.add(new BatchPreparedStatementExecuteUnit(new RouteUnit("ds_1", new SQLUnit("insert into ...", parameterSets)), preparedStatement2));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(DatabaseType.MySQL, SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) {
@@ -141,7 +142,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(statement.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DQL, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(DatabaseType.MySQL, SQLType.DQL, isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {

@@ -17,10 +17,11 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.stream;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -121,7 +122,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         private FirstMemoryStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(sqlType, isExceptionThrown, dataMap);
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
@@ -137,7 +138,7 @@ public final class MemoryStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         private MemoryStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(sqlType, isExceptionThrown, dataMap);
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
