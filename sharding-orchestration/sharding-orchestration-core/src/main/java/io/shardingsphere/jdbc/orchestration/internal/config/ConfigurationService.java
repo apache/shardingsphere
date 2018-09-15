@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -180,7 +181,7 @@ public final class ConfigurationService {
     private void persistProxyDataSourceParameterConfiguration(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration for Orchestration.");
-            for (Map.Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
+            for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(),
                         String.format("No available data source configuration in `%s` for Orchestration.", entry.getKey()));
             }
@@ -195,7 +196,7 @@ public final class ConfigurationService {
     private void persistProxyRuleConfiguration(final Map<String, ProxySchemaRule> schemaShardingRuleMap, final boolean isOverwrite) {
         if (isOverwrite || !hasProxyRuleConfig()) {
             Preconditions.checkState(null != schemaShardingRuleMap && !schemaShardingRuleMap.isEmpty(), "No available schema sharding rule configuration for Orchestration.");
-            for (Map.Entry<String, ProxySchemaRule> entry : schemaShardingRuleMap.entrySet()) {
+            for (Entry<String, ProxySchemaRule> entry : schemaShardingRuleMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue().getShardingRule() || null != entry.getValue().getMasterSlaveRule(),
                         String.format("No available proxy rule configuration in `%s` for Orchestration.", entry.getKey()));
             }
@@ -240,7 +241,7 @@ public final class ConfigurationService {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = DataSourceParameterConverter.dataSourceParameterMapFromYaml(
                     regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration to load.");
-            for (Map.Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
+            for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(),
                         "No available data source configuration.");
             }
@@ -339,7 +340,7 @@ public final class ConfigurationService {
             Map<String, ProxySchemaRule> schemaShardingRuleMap = ProxyConfigurationConverter
                     .proxyRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_RULE_NODE_PATH)));
             Preconditions.checkState(null != schemaShardingRuleMap && !schemaShardingRuleMap.isEmpty(), "No available schema sharding rule configuration to load.");
-            for (Map.Entry<String, ProxySchemaRule> entry : schemaShardingRuleMap.entrySet()) {
+            for (Entry<String, ProxySchemaRule> entry : schemaShardingRuleMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue().getShardingRule() || null != entry.getValue().getMasterSlaveRule(),
                         "Sharding rule or Master slave rule can not be both null.");
             }
