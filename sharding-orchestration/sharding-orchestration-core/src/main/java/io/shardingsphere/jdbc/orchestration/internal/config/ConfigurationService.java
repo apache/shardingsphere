@@ -126,9 +126,8 @@ public final class ConfigurationService {
      * @param props props
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistMasterSlaveConfiguration(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap,
-            final Properties props, final boolean isOverwrite) {
+    public void persistMasterSlaveConfiguration(final Map<String, DataSource> dataSourceMap, 
+                                                final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(dataSourceMap, isOverwrite);
         persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig, isOverwrite);
         persistMasterSlaveConfigMap(configMap, isOverwrite);
@@ -182,8 +181,7 @@ public final class ConfigurationService {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration for Orchestration.");
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
-                Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(),
-                        String.format("No available data source configuration in `%s` for Orchestration.", entry.getKey()));
+                Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), String.format("No available data source configuration in `%s` for Orchestration.", entry.getKey()));
             }
             regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(schemaDataSourceMap));
         }
@@ -242,8 +240,7 @@ public final class ConfigurationService {
                     regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration to load.");
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
-                Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(),
-                        "No available data source configuration.");
+                Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), "No available data source configuration.");
             }
             return schemaDataSourceMap;
             // CHECKSTYLE:OFF
@@ -365,6 +362,5 @@ public final class ConfigurationService {
             // CHECKSTYLE:ON
             throw new ShardingConfigurationException("No available proxy server configuration to load.");
         }
-        
     }
 }
