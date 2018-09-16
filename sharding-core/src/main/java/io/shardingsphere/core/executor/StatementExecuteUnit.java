@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 
@@ -31,7 +30,7 @@ import java.sql.Statement;
  * @author panjuan
  */
 @Getter
-public class StatementExecuteUnit implements SQLExecuteUnit {
+public final class StatementExecuteUnit {
     
     private final RouteUnit routeUnit;
     
