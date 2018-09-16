@@ -64,14 +64,28 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
+        int count = 0;
         for (PreparedStatement each : preparedStatements) {
             List<List<Object>> parameterSets = new LinkedList<>();
             parameterSets.add(Collections.singletonList((Object) 1));
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets));
+            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(routeUnit);
+            batchRouteUnit.mapAddBatchCount(0);
+            batchRouteUnit.mapAddBatchCount(1);
+            routeUnits.add(batchRouteUnit);
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
+            count++;
         }
         Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executeGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
+        field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");
+        field.setAccessible(true);
+        field.set(actual, routeUnits);
+        field = BatchPreparedStatementExecutor.class.getDeclaredField("batchCount");
+        field.setAccessible(true);
+        field.set(actual, count * 2);
     }
     
     @SuppressWarnings("unchecked")
@@ -89,11 +103,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
-        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(4)).verifySQL(SQL);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
