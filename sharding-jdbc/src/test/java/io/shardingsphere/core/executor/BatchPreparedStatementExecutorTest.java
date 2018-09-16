@@ -20,6 +20,7 @@ package io.shardingsphere.core.executor;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
+import io.shardingsphere.core.routing.BatchRouteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import org.junit.Test;
@@ -63,10 +64,13 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
             List<List<Object>> parameterSets = new LinkedList<>();
             parameterSets.add(Collections.singletonList((Object) 1));
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets));
+            routeUnits.add(new BatchRouteUnit(routeUnit));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executeGroups");
         field.setAccessible(true);
