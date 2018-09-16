@@ -95,7 +95,6 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         assertThat(getTracer().finishedSpans().size(), is(3));
     }
     
-    
     @Test(expected = SQLException.class)
     public void assertSQLException() throws SQLException {
         Statement statement = mock(Statement.class);
