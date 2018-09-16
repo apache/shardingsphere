@@ -512,19 +512,29 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBlobForColumnIndex() throws SQLException {
+    public void assertGetBlobForColumnIndex() {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             if (DatabaseType.H2 == each.getKey()) {
-                assertTrue(each.getValue().getBlob(1).length() > 0);
+                try {
+                    assertTrue(each.getValue().getBlob(1).length() > 0);
+                    fail("Expected an SQLException to be thrown");
+                } catch (final Exception exception) {
+                    assertFalse(exception.getMessage().isEmpty());
+                }
             }
         }
     }
     
     @Test
-    public void assertGetBlobForColumnLabel() throws SQLException {
+    public void assertGetBlobForColumnLabel() {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             if (DatabaseType.H2 == each.getKey()) {
-                assertTrue(each.getValue().getBlob(columnName).length() > 0);
+                try {
+                    assertTrue(each.getValue().getBlob(columnName).length() > 0);
+                    fail("Expected an SQLException to be thrown");
+                } catch (final Exception exception) {
+                    assertFalse(exception.getMessage().isEmpty());
+                }
             }
         }
     }
