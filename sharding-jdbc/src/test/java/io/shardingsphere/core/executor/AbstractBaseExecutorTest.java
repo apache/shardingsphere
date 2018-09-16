@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
@@ -34,10 +36,13 @@ import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +63,7 @@ public abstract class AbstractBaseExecutorTest {
     private TestOverallExecutionEventListener overallExecutionEventListener;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() throws SQLException, ReflectiveOperationException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
@@ -79,10 +84,13 @@ public abstract class AbstractBaseExecutorTest {
         ShardingContext shardingContext = mock(ShardingContext.class);
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getMaxConnectionsSizePerQuery()).thenReturn(1);
-        ShardingDataSource shardingDataSource = mock(ShardingDataSource.class);
-        when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getConnection()).thenReturn(mock(Connection.class));
+        Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
+        dataSourceSourceMap.put("ds_0", dataSource);
+        dataSourceSourceMap.put("ds_1", dataSource);
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceSourceMap, shardingContext, new ShardingProperties(new Properties()), DatabaseType.MySQL);
         connection = new ShardingConnection(shardingDataSource);
-        when(connection.getNewConnection(anyString())).thenReturn(mock(Connection.class));
     }
     
     @After
