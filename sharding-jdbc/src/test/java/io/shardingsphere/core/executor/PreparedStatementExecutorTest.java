@@ -84,20 +84,20 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertNoStatement() throws SQLException {
+    public void assertNoStatement() throws SQLException, ReflectiveOperationException {
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
+    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         QueryResult queryResult = mock(QueryResult.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        setSQLType(SQLType.DQL);
+        setSQLType(SQLType.DML);
         assertThat(actual.executeQuery(), is(Collections.singletonList(queryResult)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -109,7 +109,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException {
+    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         ResultSet resultSet1 = mock(ResultSet.class);
@@ -120,7 +120,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(1, 1, 1, false, CONNECTION);
+        setSQLType(SQLType.DML);
         List<QueryResult> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(queryResult1));
         assertThat(actualResultSets, hasItem(queryResult2));
@@ -136,7 +136,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException {
+    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
@@ -153,7 +153,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException {
+    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
@@ -176,7 +176,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException {
+    public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeUpdate()).thenReturn(10);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
@@ -192,7 +192,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException {
+    public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement1.executeUpdate()).thenReturn(10);
@@ -213,7 +213,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForSinglePreparedStatementFailure() throws SQLException {
+    public void assertExecuteUpdateForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
@@ -230,7 +230,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForMultiplePreparedStatementsFailure() throws SQLException {
+    public void assertExecuteUpdateForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
@@ -252,7 +252,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException {
+    public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.execute()).thenReturn(false);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
@@ -268,7 +268,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatementsSuccessWithDML() throws SQLException {
+    public void assertExecuteForMultiplePreparedStatementsSuccessWithDML() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement1.execute()).thenReturn(false);
@@ -289,7 +289,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementFailureWithDML() throws SQLException {
+    public void assertExecuteForSinglePreparedStatementFailureWithDML() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
@@ -306,7 +306,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatementsFailureWithDML() throws SQLException {
+    public void assertExecuteForMultiplePreparedStatementsFailureWithDML() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
@@ -328,7 +328,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException {
+    public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.execute()).thenReturn(true);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
@@ -344,7 +344,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatements() throws SQLException {
+    public void assertExecuteForMultiplePreparedStatements() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement1.execute()).thenReturn(true);
