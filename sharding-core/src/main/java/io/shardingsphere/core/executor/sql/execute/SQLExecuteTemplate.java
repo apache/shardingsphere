@@ -46,20 +46,20 @@ public final class SQLExecuteTemplate {
     /**
      * Execute.
      *
-     * @param StatementExecuteUnits SQL execute units
+     * @param statementExecuteUnits SQL execute units
      * @param callback SQL execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> StatementExecuteUnits, final SQLExecuteCallback<T> callback) throws SQLException {
-        return execute(StatementExecuteUnits, null, callback);
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> statementExecuteUnits, final SQLExecuteCallback<T> callback) throws SQLException {
+        return execute(statementExecuteUnits, null, callback);
     }
     
     /**
      * Execute.
      *
-     * @param StatementExecuteUnits SQL execute units
+     * @param statementExecuteUnits SQL execute units
      * @param firstExecuteCallback first SQL execute callback
      * @param callback SQL execute callback
      * @param <T> class type of return value
@@ -67,12 +67,12 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> StatementExecuteUnits,
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> statementExecuteUnits,
                                final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
-        OverallExecutionEvent event = new OverallExecutionEvent(StatementExecuteUnits.size() > 1);
+        OverallExecutionEvent event = new OverallExecutionEvent(statementExecuteUnits.size() > 1);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            List<T> result = executeEngine.execute((Collection) StatementExecuteUnits, firstExecuteCallback, callback);
+            List<T> result = executeEngine.execute((Collection) statementExecuteUnits, firstExecuteCallback, callback);
             event.setExecuteSuccess();
             return result;
             // CHECKSTYLE:OFF
