@@ -83,9 +83,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field2 = StatementExecutor.class.getDeclaredField("sqlType");
-        field2.setAccessible(true);
-        field2.set(actual, sqlType);
+        Field field = StatementExecutor.class.getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
     }
     
     private void setExecuteGroups(final List<Statement> statements, final SQLType sqlType) throws ReflectiveOperationException {
