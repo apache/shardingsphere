@@ -213,7 +213,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         RoutingEvent event = new RoutingEvent(sql);
         ShardingEventBusInstance.getInstance().post(event);
         try {
-            routeResult = routingEngine.route(getParameters());
+            routeResult = routingEngine.route(new ArrayList<>(getParameters()));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -264,6 +264,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             batchPreparedStatementExecutor.addBatchForRouteUnits(routeResult);
         } finally {
             currentResultSet = null;
+            clearParameters();
         }
     }
     
