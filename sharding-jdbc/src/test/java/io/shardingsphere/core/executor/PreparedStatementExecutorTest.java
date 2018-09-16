@@ -52,6 +52,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() {
         when(CONNECTION.getShardingDataSource().getShardingContext().getExecuteEngine()).thenReturn(mock(ShardingExecuteEngine.class));
+        when(CONNECTION.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery()).thenReturn(1);
     }
     
     @SuppressWarnings("unchecked")
