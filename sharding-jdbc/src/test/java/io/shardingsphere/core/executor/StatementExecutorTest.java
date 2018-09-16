@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
@@ -38,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -101,27 +99,27 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
 
     @Test
-    public void assertExecuteQueryForMultipleStatementsSuccess() throws SQLException {
+    public void assertExecuteQueryForMultipleStatementsSuccess() throws SQLException, ReflectiveOperationException {
         Statement statement1 = mock(Statement.class);
         Statement statement2 = mock(Statement.class);
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
+        when(resultSet1.getInt(1)).thenReturn(1);
+        when(resultSet2.getInt(1)).thenReturn(2);
         when(statement1.executeQuery(DQL_SQL)).thenReturn(resultSet1);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
-        List<QueryResult> actualResultSets = actual.executeQuery();
-        assertThat(actualResultSets, hasItem(queryResult1));
-        assertThat(actualResultSets, hasItem(queryResult2));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Arrays.asList(statement1, statement2));
+        List<QueryResult> result = actual.executeQuery();
+        List<ResultSet> resultSets = Arrays.asList(resultSet1, resultSet2);
+        for (int i = 0; i < result.size(); i++) {
+            assertThat((int) result.get(i).getValue(1, int.class), is(resultSets.get(i).getInt(1)));
+        }
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
-        verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
 
