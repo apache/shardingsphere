@@ -158,25 +158,23 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    private void handleOldRouteUnits(final Collection<BatchRouteUnit> oldRouteUnits) {
-        oldRouteUnits.retainAll(routeUnits);
-        for (final BatchRouteUnit each : oldRouteUnits) {
-            reviseBatchRouteUnit(each);
+    private void handleOldRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
+        for (final BatchRouteUnit each : newRouteUnits) {
+            Optional<BatchRouteUnit> batchRouteUnitOptional = Iterators.tryFind(routeUnits.iterator(), new Predicate<BatchRouteUnit>() {
+                @Override
+                public boolean apply(final BatchRouteUnit input) {
+                    return input.equals(each);
+                }
+            });
+            if (batchRouteUnitOptional.isPresent()) {
+                reviseBatchRouteUnit(batchRouteUnitOptional.get(), each);
+            }
         }
     }
     
-    private void reviseBatchRouteUnit(final BatchRouteUnit batchRouteUnit) {
-        Optional<BatchRouteUnit> batchRouteUnitOptional = Iterators.tryFind(routeUnits.iterator(), new Predicate<BatchRouteUnit>() {
-            
-            @Override
-            public boolean apply(final BatchRouteUnit input) {
-                return input.equals(batchRouteUnit);
-            }
-        });
-        if (batchRouteUnitOptional.isPresent()) {
-            batchRouteUnitOptional.get().getRouteUnit().getSqlUnit().getParameterSets().add(batchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().get(0));
-            batchRouteUnitOptional.get().mapAddBatchCount(batchCount);
-        }
+    private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
+        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().add(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().get(0));
+        oldBatchRouteUnit.mapAddBatchCount(batchCount);
     }
     
     private void handleNewRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) throws SQLException {
