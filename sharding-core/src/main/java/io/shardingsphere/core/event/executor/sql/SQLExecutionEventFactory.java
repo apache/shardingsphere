@@ -18,7 +18,7 @@
 package io.shardingsphere.core.event.executor.sql;
 
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,17 +37,17 @@ public final class SQLExecutionEventFactory {
      * Create SQL execution event.
      * 
      * @param sqlType SQL type
-     * @param sqlExecuteUnit SQL execute unit
+     * @param StatementExecuteUnit SQL execute unit
      * @param parameters parameters
      * @return SQL execution event
      */
-    public static SQLExecutionEvent createEvent(final SQLType sqlType, final SQLExecuteUnit sqlExecuteUnit, final List<Object> parameters) {
+    public static SQLExecutionEvent createEvent(final SQLType sqlType, final StatementExecuteUnit StatementExecuteUnit, final List<Object> parameters) {
         if (SQLType.DQL == sqlType) {
-            return new DQLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters);
+            return new DQLExecutionEvent(StatementExecuteUnit.getRouteUnit(), parameters);
         }
         if (SQLType.DML == sqlType) {
-            return new DMLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters);
+            return new DMLExecutionEvent(StatementExecuteUnit.getRouteUnit(), parameters);
         }
-        return new SQLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters);
+        return new SQLExecutionEvent(StatementExecuteUnit.getRouteUnit(), parameters);
     }
 }
