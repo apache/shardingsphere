@@ -17,15 +17,23 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLUnit;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,17 +46,37 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
-    private static final ShardingConnection CONNECTION = Mockito.mock(ShardingConnection.class);
+    private BatchPreparedStatementExecutor actual;
     
     @Override
-    public void setUp() {
-        when(CONNECTION.getShardingDataSource().getShardingContext().getExecuteEngine()).thenReturn(mock(ShardingExecuteEngine.class));
+    public void setUp() throws SQLException, ReflectiveOperationException {
+        super.setUp();
+        actual = new BatchPreparedStatementExecutor(1, 1, 1, false, getConnection());
+    }
+    
+    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
+        Field field = PreparedStatementExecutor.class.getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
+    }
+    
+    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) throws ReflectiveOperationException {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        for (PreparedStatement each : preparedStatements) {
+            List<List<Object>> parameterSets = new LinkedList<>();
+            parameterSets.add(Collections.singletonList((Object) 1));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        Field field = PreparedStatementExecutor.class.getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoPreparedStatement() throws SQLException {
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(1, 1, 1, false, CONNECTION);
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
     
