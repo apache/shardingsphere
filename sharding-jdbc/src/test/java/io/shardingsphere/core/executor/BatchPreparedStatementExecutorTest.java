@@ -64,13 +64,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
-        Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
             List<List<Object>> parameterSets = new LinkedList<>();
             parameterSets.add(Collections.singletonList((Object) 1));
-            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets));
-            routeUnits.add(new BatchRouteUnit(routeUnit));
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executeGroups");
         field.setAccessible(true);
