@@ -287,15 +287,6 @@ singlePartitionRebuildOption :
     | (ONLINE EQ_OR_ASSIGN (OFF |onLowPriorLockWait))
 	;
 
-onLowPriorLockWait:
-	ON (LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?
-	;
-
-lowPriorityLockWait:  
-    WAIT_AT_LOW_PRIORITY LEFT_PAREN MAX_DURATION EQ_OR_ASSIGN NUMBER ( MINUTES )? COMMA
-    ABORT_AFTER_WAIT EQ_OR_ASSIGN ( NONE | SELF | BLOCKERS ) RIGHT_PAREN   
-;
-
 rebuildOption:   
     | indexOption
  	| (ONLINE EQ_OR_ASSIGN (OFF | onLowPriorLockWait))   

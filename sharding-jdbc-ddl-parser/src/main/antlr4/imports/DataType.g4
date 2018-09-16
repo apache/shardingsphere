@@ -7,6 +7,10 @@ STRING:
     |SINGLE_QUOTA (SINGLE_QUOTA |.)*? SINGLE_QUOTA
 	;
 
+ZERO:
+    '0'
+    ;
+
 NUMBER:
      MINUS? INT_ DOT INT_+ EXP?
      |MINUS? INT_ | EXP

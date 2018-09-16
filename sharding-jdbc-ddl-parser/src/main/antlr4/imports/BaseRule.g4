@@ -12,6 +12,7 @@ ID:
 	
 schemaName: ID;
 tableName: ID;
+tableOrViewName: ID;
 columnName: ID; 
 tablespaceName: ID;
 collationName: STRING | ID;
