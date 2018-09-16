@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,7 +90,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
-            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds0", new SQLUnit(DQL_SQL, new ArrayList<List<Object>>())), each, ConnectionMode.MEMORY_STRICTLY));
+            List<List<Object>> parameterSets = new LinkedList<>();
+            parameterSets.add(Collections.singletonList((Object) 1));
+            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds0", new SQLUnit(DQL_SQL, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = StatementExecutor.class.getDeclaredField("executeGroups");
         field.setAccessible(true);
@@ -134,6 +135,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertThat(actual.executeQuery(), is(Collections.singletonList((QueryResult) null)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
+        verify(getEventCaller()).verifyException(exp);
     }
 
 //    @Test
