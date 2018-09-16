@@ -81,25 +81,24 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
+    public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(1, 1, 1, false, CONNECTION);
-    
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
+    public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
@@ -121,7 +120,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
+    public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
@@ -139,7 +138,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
+    public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
