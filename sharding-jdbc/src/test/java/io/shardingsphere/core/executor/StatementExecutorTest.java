@@ -19,6 +19,7 @@ package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
@@ -138,29 +139,29 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller()).verifyException(exp);
     }
 
-//    @Test
-//    public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException {
-//        Statement statement1 = mock(Statement.class);
-//        Statement statement2 = mock(Statement.class);
-//        SQLException exp = new SQLException();
-//        when(statement1.executeQuery(DQL_SQL)).thenThrow(exp);
-//        when(statement2.executeQuery(DQL_SQL)).thenThrow(exp);
-//        when(statement1.getConnection()).thenReturn(mock(Connection.class));
-//        when(statement2.getConnection()).thenReturn(mock(Connection.class));
-//        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
-//        List<QueryResult> actualResultSets = actual.executeQuery();
-//        assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
-//        verify(statement1).executeQuery(DQL_SQL);
-//        verify(statement2).executeQuery(DQL_SQL);
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
-//        verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
-//        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-//        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
-//        verify(getEventCaller(), times(2)).verifyException(exp);
-//    }
-//
+    @Test
+    public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException, ReflectiveOperationException {
+        Statement statement1 = mock(Statement.class);
+        Statement statement2 = mock(Statement.class);
+        SQLException exp = new SQLException();
+        when(statement1.executeQuery(DQL_SQL)).thenThrow(exp);
+        when(statement2.executeQuery(DQL_SQL)).thenThrow(exp);
+        when(statement1.getConnection()).thenReturn(mock(Connection.class));
+        when(statement2.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Arrays.asList(statement1, statement2));
+        List<QueryResult> actualResultSets = actual.executeQuery();
+        assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
+        verify(statement1).executeQuery(DQL_SQL);
+        verify(statement2).executeQuery(DQL_SQL);
+        verify(getEventCaller(), times(4)).verifyDataSource("ds0");
+        verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyException(exp);
+    }
+
 //    @Test
 //    public void assertExecuteUpdateForSingleStatementSuccess() throws SQLException {
 //        Statement statement = mock(Statement.class);
