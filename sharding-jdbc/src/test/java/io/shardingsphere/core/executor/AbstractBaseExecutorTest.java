@@ -23,8 +23,10 @@ import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -32,12 +34,19 @@ import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
     private ShardingExecuteEngine executeEngine;
     
-    private SQLExecuteTemplate executeTemplate;
+    private static ShardingConnection CONNECTION;
     
     @Mock
     private EventCaller eventCaller;
@@ -49,17 +58,31 @@ public abstract class AbstractBaseExecutorTest {
     private TestOverallExecutionEventListener overallExecutionEventListener;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
-        executeTemplate = new SQLExecuteTemplate(executeEngine);
         overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
+        setConnection();
+        register();
+    }
+    
+    private void register() {
         ShardingEventBusInstance.getInstance().register(overallExecutionEventListener);
         ShardingEventBusInstance.getInstance().register(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().register(dmlExecutionEventListener);
+    }
+    
+    private void setConnection() throws SQLException {
+        ShardingContext shardingContext = mock(ShardingContext.class);
+        when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
+        when(shardingContext.getMaxConnectionsSizePerQuery()).thenReturn(1);
+        ShardingDataSource shardingDataSource = mock(ShardingDataSource.class);
+        when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
+        CONNECTION = new ShardingConnection(shardingDataSource);
+        when(CONNECTION.getNewConnection(anyString())).thenReturn(mock(Connection.class));
     }
     
     @After
