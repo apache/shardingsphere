@@ -1,5 +1,5 @@
 grammar SQLServerAlterIndex;
-import SQLServerKeyword, DataType, Keyword, SQLServerBase,BaseRule,Symbol;
+import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
 alterIndex:
 	alterIndexOp
