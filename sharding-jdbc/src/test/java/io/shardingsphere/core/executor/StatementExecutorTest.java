@@ -20,6 +20,7 @@ package io.shardingsphere.core.executor;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -330,22 +332,23 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
 //        verify(getEventCaller(), times(0)).verifyException(null);
 //    }
 //
-//    @Test
-//    public void assertExecuteForSingleStatementFailureWithDML() throws SQLException, ReflectiveOperationException {
-//        Statement statement = mock(Statement.class);
-//        SQLException exp = new SQLException();
-//        when(statement.execute(DML_SQL)).thenThrow(exp);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        setSQLType(SQLType.DML);
-//        assertFalse(actual.execute());
-//        verify(statement).execute(DML_SQL);
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-//        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
-//        verify(getEventCaller()).verifyException(exp);
-//    }
+    @Test
+    public void assertExecuteForSingleStatementFailureWithDML() throws SQLException, ReflectiveOperationException {
+        Statement statement = mock(Statement.class);
+        SQLException exp = new SQLException();
+        when(statement.execute(DML_SQL)).thenThrow(exp);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        assertFalse(actual.execute());
+        verify(statement).execute(DML_SQL);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyException(exp);
+    }
 //
 //    @Test
 //    public void assertExecuteForMultipleStatementsFailureWithDML() throws SQLException, ReflectiveOperationException {
@@ -369,22 +372,23 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
 //        verify(getEventCaller(), times(2)).verifyException(exp);
 //    }
 //
-//    @Test
-//    public void assertExecuteForSingleStatementWithDQL() throws SQLException, ReflectiveOperationException {
-//        Statement statement = mock(Statement.class);
-//        when(statement.execute(DQL_SQL)).thenReturn(true);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        setSQLType(SQLType.DML);
-//        assertTrue(actual.execute());
-//        verify(statement).execute(DQL_SQL);
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
-//        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-//        verify(getEventCaller(), times(0)).verifyException(null);
-//    }
-//
+    @Test
+    public void assertExecuteForSingleStatementWithDQL() throws SQLException, ReflectiveOperationException {
+        Statement statement = mock(Statement.class);
+        when(statement.execute(DQL_SQL)).thenReturn(true);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        assertTrue(actual.execute());
+        verify(statement).execute(DQL_SQL);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
+    }
+
 //    @Test
 //    public void assertExecuteForMultipleStatements() throws SQLException, ReflectiveOperationException {
 //        Statement statement1 = mock(Statement.class);
@@ -406,68 +410,73 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
 //        verify(getEventCaller(), times(0)).verifyException(null);
 //    }
 //
-//    @Test
-//    public void assertExecuteWithAutoGeneratedKeys() throws SQLException, ReflectiveOperationException {
-//        Statement statement = mock(Statement.class);
-//        when(statement.execute(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        setSQLType(SQLType.DML);
-//        assertFalse(actual.execute(Statement.NO_GENERATED_KEYS));
-//        verify(statement).execute(DML_SQL, Statement.NO_GENERATED_KEYS);
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-//        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-//        verify(getEventCaller(), times(0)).verifyException(null);
-//    }
-//
-//    @Test
-//    public void assertExecuteWithColumnIndexes() throws SQLException, ReflectiveOperationException {
-//        Statement statement = mock(Statement.class);
-//        when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        setSQLType(SQLType.DML);
-//        assertFalse(actual.execute(new int[] {1}));
-//        verify(statement).execute(DML_SQL, new int[] {1});
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-//        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-//        verify(getEventCaller(), times(0)).verifyException(null);
-//    }
-//
-//    @Test
-//    public void assertExecuteWithColumnNames() throws SQLException, ReflectiveOperationException {
-//        Statement statement = mock(Statement.class);
-//        when(statement.execute(DML_SQL, new String[] {"col"})).thenReturn(false);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        setSQLType(SQLType.DML);
-//        assertFalse(actual.execute(new String[] {"col"}));
-//        verify(statement).execute(DML_SQL, new String[] {"col"});
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-//        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-//        verify(getEventCaller(), times(0)).verifyException(null);
-//    }
-//
-//    @Test
-//    public void assertOverallExceptionFailure() throws SQLException, ReflectiveOperationException {
-//        ExecutorExceptionHandler.setExceptionThrown(true);
-//        Statement statement = mock(Statement.class);
-//        SQLException exp = new SQLException();
-//        when(statement.execute(DML_SQL)).thenThrow(exp);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        setSQLType(SQLType.DML);
-//        try {
-//            assertFalse(actual.execute());
-//        } catch (final SQLException ignore) {
-//        }
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
-//    }
-//
+    @Test
+    public void assertExecuteWithAutoGeneratedKeys() throws SQLException, ReflectiveOperationException {
+        Statement statement = mock(Statement.class);
+        when(statement.execute(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        assertFalse(actual.execute(Statement.NO_GENERATED_KEYS));
+        verify(statement).execute(DML_SQL, Statement.NO_GENERATED_KEYS);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
+    }
+
+    @Test
+    public void assertExecuteWithColumnIndexes() throws SQLException, ReflectiveOperationException {
+        Statement statement = mock(Statement.class);
+        when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        assertFalse(actual.execute(new int[] {1}));
+        verify(statement).execute(DML_SQL, new int[] {1});
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
+    }
+
+    @Test
+    public void assertExecuteWithColumnNames() throws SQLException, ReflectiveOperationException {
+        Statement statement = mock(Statement.class);
+        when(statement.execute(DML_SQL, new String[] {"col"})).thenReturn(false);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        assertFalse(actual.execute(new String[] {"col"}));
+        verify(statement).execute(DML_SQL, new String[] {"col"});
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
+    }
+
+    @Test
+    public void assertOverallExceptionFailure() throws SQLException, ReflectiveOperationException {
+        ExecutorExceptionHandler.setExceptionThrown(true);
+        Statement statement = mock(Statement.class);
+        SQLException exp = new SQLException();
+        when(statement.execute(DML_SQL)).thenThrow(exp);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
+        try {
+            assertFalse(actual.execute());
+        } catch (final SQLException ignore) {
+        }
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
+    }
+
 }
