@@ -17,18 +17,24 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLUnit;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -53,6 +59,27 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void setUp() throws SQLException, ReflectiveOperationException {
         super.setUp();
         actual = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
+    }
+    
+    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
+        Field field = PreparedStatementExecutor.class.getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
+    }
+    
+    private void setExecuteGroups(final List<Statement> statements, final SQLType sqlType) throws ReflectiveOperationException {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
+        for (Statement each : statements) {
+            List<List<Object>> parameterSets = new LinkedList<>();
+            String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
+            parameterSets.add(Collections.singletonList((Object) 1));
+            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        Field field = PreparedStatementExecutor.class.getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
     }
     
     @SuppressWarnings("unchecked")
