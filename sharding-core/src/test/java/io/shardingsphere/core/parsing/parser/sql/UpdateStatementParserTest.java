@@ -30,10 +30,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -68,35 +66,6 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
         assertThat(shardingValues3.lowerEndpoint(), is((Comparable) 5));
         assertThat(shardingValues3.upperEndpoint(), is((Comparable) 20));
-    }
-    
-    @Test
-    public void parseWithParameter() {
-        String sql = "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?";
-        ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule, null);
-        DMLStatement updateStatement = (DMLStatement) statementParser.parse(false);
-        assertUpdateStatementWitParameter(updateStatement);
-    }
-    
-    private void assertUpdateStatementWitParameter(final DMLStatement updateStatement) {
-        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getAlias().get(), is("xxx"));
-        List<Object> actualParameters = Arrays.<Object>asList(0, 10, 20, 30, 40, 50, 60, 70, 80);
-        Condition condition1 = updateStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition1.getShardingValue(actualParameters)).getValues().iterator().next(), is((Comparable) 20));
-        Condition condition2 = updateStatement.getConditions().find(new Column("field2", "TABLE_XXX")).get();
-        assertThat(condition2.getOperator(), is(ShardingOperator.IN));
-        Iterator<?> shardingValue2 = ((ListShardingValue) condition2.getShardingValue(actualParameters)).getValues().iterator();
-        assertThat(shardingValue2.next(), is((Object) 40));
-        assertThat(shardingValue2.next(), is((Object) 50));
-        assertFalse(shardingValue2.hasNext());
-        Condition condition3 = updateStatement.getConditions().find(new Column("field3", "TABLE_XXX")).get();
-        assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
-        Range shardingValue3 = ((RangeShardingValue) condition3.getShardingValue(actualParameters)).getValueRange();
-        assertThat(shardingValue3.lowerEndpoint(), is((Comparable) 70));
-        assertThat(shardingValue3.upperEndpoint(), is((Comparable) 80));
     }
     
     @Test
