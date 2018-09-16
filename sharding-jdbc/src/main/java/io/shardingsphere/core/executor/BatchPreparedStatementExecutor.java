@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
@@ -87,7 +86,7 @@ public final class BatchPreparedStatementExecutor {
     
     private final Collection<Connection> connections = new LinkedList<>();
     
-    private final Collection<ShardingExecuteGroup<SQLExecuteUnit>> executeGroups = new LinkedList<>();
+    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
@@ -110,7 +109,7 @@ public final class BatchPreparedStatementExecutor {
         executeGroups.addAll(obtainExecuteGroups(routeUnits));
     }
     
-    private Collection<ShardingExecuteGroup<SQLExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException {
+    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException {
         return sqlExecutePrepareTemplate.getExecuteUnitGroups(Lists.transform(new ArrayList<>(routeUnits), new Function<BatchRouteUnit, RouteUnit>() {
     
             @Override
@@ -127,7 +126,7 @@ public final class BatchPreparedStatementExecutor {
             }
             
             @Override
-            public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
                 return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
             }
@@ -200,8 +199,8 @@ public final class BatchPreparedStatementExecutor {
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected int[] executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-                return sqlExecuteUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final StatementExecuteUnit StatementExecuteUnit) throws SQLException {
+                return StatementExecuteUnit.getStatement().executeBatch();
             }
         };
         return accumulate(executeCallback(callback));
@@ -236,11 +235,11 @@ public final class BatchPreparedStatementExecutor {
      */
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
-            result.addAll(Lists.transform(each.getInputs(), new Function<SQLExecuteUnit, Statement>() {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
+            result.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
-                public Statement apply(final SQLExecuteUnit input) {
+                public Statement apply(final StatementExecuteUnit input) {
                     return input.getStatement();
                 }
             }));
@@ -255,12 +254,12 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        Optional<SQLExecuteUnit> target;
+        Optional<StatementExecuteUnit> target;
         List<List<Object>> result = new LinkedList<>();
-        for (ShardingExecuteGroup<SQLExecuteUnit> each : executeGroups) {
-            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<SQLExecuteUnit>() {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
+            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
                 @Override
-                public boolean apply(final SQLExecuteUnit input) {
+                public boolean apply(final StatementExecuteUnit input) {
                     return input.getStatement().equals(statement);
                 }
             });
