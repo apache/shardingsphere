@@ -115,8 +115,6 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         ResultSet resultSet2 = mock(ResultSet.class);
         when(resultSet1.getInt(1)).thenReturn(1);
         when(resultSet2.getInt(1)).thenReturn(2);
-        QueryResult queryResult1 = mock(QueryResult.class);
-        QueryResult queryResult2 = mock(QueryResult.class);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
