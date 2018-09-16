@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -74,11 +75,10 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
-        
+        setExecuteGroups(Collections.singletonList(statement));
         assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
-        
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
