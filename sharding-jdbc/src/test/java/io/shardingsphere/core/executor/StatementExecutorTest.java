@@ -60,7 +60,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         
     }
     
-    private void setExecuteGroups(List) {
+    private void setExecuteGroups(final List<Statement> statements) {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
