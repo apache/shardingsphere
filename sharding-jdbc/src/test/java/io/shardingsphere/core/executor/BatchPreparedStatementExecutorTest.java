@@ -150,8 +150,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(2)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-        verify(getEventCaller(), times(2)).verifyException(exp);
+        verify(getEventCaller(), times(1)).verifyException(exp);
     }
     
     @Test
