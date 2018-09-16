@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
@@ -107,7 +106,7 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        Collection<ShardingExecuteGroup<SQLExecuteUnit>> sqlExecuteGroups =
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new JDBCExecuteEngine.ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
                 new JDBCExecuteEngine.FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
@@ -180,7 +179,7 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         
         @Override
-        public SQLExecuteUnit createSQLExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+        public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
             Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
             if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
                 statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
@@ -201,12 +200,12 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         
         @Override
-        public ExecuteResponseUnit executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
             if (hasMetaData) {
-                return executeWithoutMetadata(sqlExecuteUnit.getStatement(), sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql(), sqlExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+                return executeWithoutMetadata(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
             } else {
                 hasMetaData = true;
-                return executeWithMetadata(sqlExecuteUnit.getStatement(), sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql(), sqlExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+                return executeWithMetadata(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
             }
         }
     }
@@ -221,8 +220,8 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         
         @Override
-        public ExecuteResponseUnit executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-            return executeWithoutMetadata(sqlExecuteUnit.getStatement(), sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql(), sqlExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+            return executeWithoutMetadata(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
         }
     }
 }
