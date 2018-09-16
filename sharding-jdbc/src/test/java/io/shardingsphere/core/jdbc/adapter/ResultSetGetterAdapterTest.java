@@ -232,14 +232,24 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     @Test
     public void assertGetBytesForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertTrue(each.getBytes(1).length > 0);
+            try {
+                assertTrue(each.getBytes(1).length > 0);
+                fail("Expected an SQLException to be thrown");
+            } catch (final Exception exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
         }
     }
     
     @Test
     public void assertGetBytesForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
-            assertTrue(each.getBytes(columnName).length > 0);
+            try {
+                assertTrue(each.getBytes(columnName).length > 0);
+                fail("Expected an SQLException to be thrown");
+            } catch (final Exception exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
         }
     }
     
