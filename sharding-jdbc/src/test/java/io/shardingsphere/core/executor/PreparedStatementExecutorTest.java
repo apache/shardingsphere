@@ -67,11 +67,11 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         field.set(actual, sqlType);
     }
     
-    private void setExecuteGroups(final List<Statement> statements, final SQLType sqlType) throws ReflectiveOperationException {
+    private void setExecuteGroups(final List<PreparedStatement> statements, final SQLType sqlType) throws ReflectiveOperationException {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
-        for (Statement each : statements) {
+        for (PreparedStatement each : statements) {
             List<List<Object>> parameterSets = new LinkedList<>();
             String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
             parameterSets.add(Collections.singletonList((Object) 1));
@@ -85,7 +85,6 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoStatement() throws SQLException {
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(1, 1, 1, false, CONNECTION);
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
