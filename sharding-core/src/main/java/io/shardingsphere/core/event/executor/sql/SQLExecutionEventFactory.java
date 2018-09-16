@@ -37,17 +37,17 @@ public final class SQLExecutionEventFactory {
      * Create SQL execution event.
      * 
      * @param sqlType SQL type
-     * @param StatementExecuteUnit SQL execute unit
+     * @param statementExecuteUnit SQL execute unit
      * @param parameters parameters
      * @return SQL execution event
      */
-    public static SQLExecutionEvent createEvent(final SQLType sqlType, final StatementExecuteUnit StatementExecuteUnit, final List<Object> parameters) {
+    public static SQLExecutionEvent createEvent(final SQLType sqlType, final StatementExecuteUnit statementExecuteUnit, final List<Object> parameters) {
         if (SQLType.DQL == sqlType) {
-            return new DQLExecutionEvent(StatementExecuteUnit.getRouteUnit(), parameters);
+            return new DQLExecutionEvent(statementExecuteUnit.getRouteUnit(), parameters);
         }
         if (SQLType.DML == sqlType) {
-            return new DMLExecutionEvent(StatementExecuteUnit.getRouteUnit(), parameters);
+            return new DMLExecutionEvent(statementExecuteUnit.getRouteUnit(), parameters);
         }
-        return new SQLExecutionEvent(StatementExecuteUnit.getRouteUnit(), parameters);
+        return new SQLExecutionEvent(statementExecuteUnit.getRouteUnit(), parameters);
     }
 }
