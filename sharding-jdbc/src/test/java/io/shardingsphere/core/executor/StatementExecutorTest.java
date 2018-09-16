@@ -180,27 +180,27 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(0)).verifyException(null);
     }
 
-//    @Test
-//    public void assertExecuteUpdateForMultipleStatementsSuccess() throws SQLException {
-//        Statement statement1 = mock(Statement.class);
-//        Statement statement2 = mock(Statement.class);
-//        when(statement1.executeUpdate(DML_SQL)).thenReturn(10);
-//        when(statement2.executeUpdate(DML_SQL)).thenReturn(20);
-//        when(statement1.getConnection()).thenReturn(mock(Connection.class));
-//        when(statement2.getConnection()).thenReturn(mock(Connection.class));
-//        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
-//        assertThat(actual.executeUpdate(), is(30));
-//        verify(statement1).executeUpdate(DML_SQL);
-//        verify(statement2).executeUpdate(DML_SQL);
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
-//        verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
-//        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
-//        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-//        verify(getEventCaller(), times(0)).verifyException(null);
-//    }
-//
+    @Test
+    public void assertExecuteUpdateForMultipleStatementsSuccess() throws SQLException, ReflectiveOperationException {
+        Statement statement1 = mock(Statement.class);
+        Statement statement2 = mock(Statement.class);
+        when(statement1.executeUpdate(DML_SQL)).thenReturn(10);
+        when(statement2.executeUpdate(DML_SQL)).thenReturn(20);
+        when(statement1.getConnection()).thenReturn(mock(Connection.class));
+        when(statement2.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Arrays.asList(statement1, statement2), SQLType.DML);
+        assertThat(actual.executeUpdate(), is(30));
+        verify(statement1).executeUpdate(DML_SQL);
+        verify(statement2).executeUpdate(DML_SQL);
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
+    }
+
 //    @Test
 //    public void assertExecuteUpdateForSingleStatementFailure() throws SQLException {
 //        Statement statement = mock(Statement.class);
