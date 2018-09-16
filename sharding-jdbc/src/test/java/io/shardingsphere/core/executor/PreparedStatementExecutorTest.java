@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -93,12 +92,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
-        QueryResult queryResult = mock(QueryResult.class);
+        when(resultSet.getInt(1)).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
-        assertThat(actual.executeQuery(), is(Collections.singletonList(queryResult)));
+        assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
@@ -114,6 +113,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
+        when(resultSet1.getInt(1)).thenReturn(1);
+        when(resultSet2.getInt(1)).thenReturn(2);
         QueryResult queryResult1 = mock(QueryResult.class);
         QueryResult queryResult2 = mock(QueryResult.class);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
@@ -122,9 +123,11 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
-        List<QueryResult> actualResultSets = actual.executeQuery();
-        assertThat(actualResultSets, hasItem(queryResult1));
-        assertThat(actualResultSets, hasItem(queryResult2));
+        List<QueryResult> result = actual.executeQuery();
+        List<ResultSet> resultSets = Arrays.asList(resultSet1, resultSet2);
+        for (int i = 0; i < result.size(); i++) {
+            assertThat((int) result.get(i).getValue(1, int.class), is(resultSets.get(i).getInt(1)));
+        }
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
@@ -260,7 +263,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement.execute()).thenReturn(false);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DML);
-        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML );
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -298,9 +301,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        setSQLType(SQLType.DQL);
-        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
-        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -320,16 +322,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.execute()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        setSQLType(SQLType.DQL);
-        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
-        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
@@ -342,7 +342,6 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
-        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
         assertTrue(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -362,15 +361,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
-        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
         assertTrue(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
