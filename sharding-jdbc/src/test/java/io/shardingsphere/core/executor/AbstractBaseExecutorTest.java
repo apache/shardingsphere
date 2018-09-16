@@ -46,7 +46,7 @@ public abstract class AbstractBaseExecutorTest {
     
     private ShardingExecuteEngine executeEngine;
     
-    private static ShardingConnection CONNECTION;
+    private ShardingConnection connection;
     
     @Mock
     private EventCaller eventCaller;
@@ -81,8 +81,8 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingContext.getMaxConnectionsSizePerQuery()).thenReturn(1);
         ShardingDataSource shardingDataSource = mock(ShardingDataSource.class);
         when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
-        CONNECTION = new ShardingConnection(shardingDataSource);
-        when(CONNECTION.getNewConnection(anyString())).thenReturn(mock(Connection.class));
+        connection = new ShardingConnection(shardingDataSource);
+        when(connection.getNewConnection(anyString())).thenReturn(mock(Connection.class));
     }
     
     @After
