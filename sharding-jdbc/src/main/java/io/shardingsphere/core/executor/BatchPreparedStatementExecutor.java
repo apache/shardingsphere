@@ -199,8 +199,8 @@ public final class BatchPreparedStatementExecutor {
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected int[] executeSQL(final StatementExecuteUnit StatementExecuteUnit) throws SQLException {
-                return StatementExecuteUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+                return statementExecuteUnit.getStatement().executeBatch();
             }
         };
         return accumulate(executeCallback(callback));
