@@ -94,7 +94,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertNoPreparedStatement() throws SQLException {
+    public void assertNoPreparedStatement() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.executeBatch()).thenReturn(new int[] {0, 0});
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
     
@@ -171,7 +175,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-        verify(getEventCaller(), times(4)).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyException(exp);
     }
 }
