@@ -96,8 +96,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         QueryResult queryResult = mock(QueryResult.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
-        setSQLType(SQLType.DML);
-        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
         assertThat(actual.executeQuery(), is(Collections.singletonList(queryResult)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
