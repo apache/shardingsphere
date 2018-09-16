@@ -54,7 +54,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = PreparedStatementExecutor.class.getDeclaredField("sqlType");
+        Field field = BatchPreparedStatementExecutor.class.getDeclaredField("sqlType");
         field.setAccessible(true);
         field.set(actual, sqlType);
     }
@@ -68,7 +68,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             parameterSets.add(Collections.singletonList((Object) 1));
             preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = PreparedStatementExecutor.class.getDeclaredField("executeGroups");
+        Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executeGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }
