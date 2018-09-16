@@ -47,12 +47,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     
     private static final String DML_SQL = "DELETE FROM table_x";
     
-    private static final ShardingConnection CONNECTION = Mockito.mock(ShardingConnection.class);
+    private PreparedStatementExecutor actual;
     
     @Override
-    public void setUp() {
-        when(CONNECTION.getShardingDataSource().getShardingContext().getExecuteEngine()).thenReturn(mock(ShardingExecuteEngine.class));
-        when(CONNECTION.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery()).thenReturn(1);
+    public void setUp() throws SQLException, ReflectiveOperationException {
+        super.setUp();
+        actual = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
     }
     
     @SuppressWarnings("unchecked")
