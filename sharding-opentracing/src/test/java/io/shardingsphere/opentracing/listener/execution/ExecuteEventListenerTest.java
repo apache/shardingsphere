@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
@@ -65,7 +64,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) {
+            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) {
                 return 0;
             }
         };
@@ -88,7 +87,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DML, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) {
+            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) {
                 return 0;
             }
         };
@@ -106,7 +105,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(SQLType.DQL, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 throw new SQLException();
             }
         };
