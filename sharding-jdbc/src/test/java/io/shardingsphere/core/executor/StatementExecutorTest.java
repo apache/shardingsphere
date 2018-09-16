@@ -80,7 +80,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
-    private void setSQLType(final SQLType sqlType) throws NoSuchFieldException, IllegalAccessException {
+    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
         Field field2 = StatementExecutor.class.getDeclaredField("sqlType");
         field2.setAccessible(true);
         field2.set(actual, sqlType);
@@ -123,23 +123,19 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(0)).verifyException(null);
     }
 
-//    @Test
-//    public void assertExecuteQueryForSingleStatementFailure() throws SQLException {
-//        Statement statement = mock(Statement.class);
-//        SQLException exp = new SQLException();
-//        when(statement.executeQuery(DQL_SQL)).thenThrow(exp);
-//        when(statement.getConnection()).thenReturn(mock(Connection.class));
-//        StatementExecutor actual = new StatementExecutor(1, 1, 1, CONNECTION);
-//        assertThat(actual.executeQuery(), is(Collections.singletonList((QueryResult) null)));
-//        verify(statement).executeQuery(DQL_SQL);
-//        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-//        verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
-//        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-//        verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
-//        verify(getEventCaller()).verifyException(exp);
-//    }
-//
+    @Test
+    public void assertExecuteQueryForSingleStatementFailure() throws SQLException, ReflectiveOperationException {
+        Statement statement = mock(Statement.class);
+        SQLException exp = new SQLException();
+        when(statement.executeQuery(DQL_SQL)).thenThrow(exp);
+        when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(statement));
+        assertThat(actual.executeQuery(), is(Collections.singletonList((QueryResult) null)));
+        verify(statement).executeQuery(DQL_SQL);
+        verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
+    }
+
 //    @Test
 //    public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException {
 //        Statement statement1 = mock(Statement.class);
