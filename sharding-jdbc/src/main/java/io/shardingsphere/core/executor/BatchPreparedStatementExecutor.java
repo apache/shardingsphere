@@ -177,7 +177,7 @@ public final class BatchPreparedStatementExecutor {
         oldBatchRouteUnit.mapAddBatchCount(batchCount);
     }
     
-    private void handleNewRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) throws SQLException {
+    private void handleNewRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
         newRouteUnits.removeAll(routeUnits);
         for (BatchRouteUnit each : newRouteUnits) {
             each.mapAddBatchCount(batchCount);
