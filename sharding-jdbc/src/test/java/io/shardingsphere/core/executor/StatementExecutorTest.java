@@ -57,19 +57,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void setUp() throws SQLException, ReflectiveOperationException {
         super.setUp();
         actual = new StatementExecutor(1, 1, 1, getConnection());
-        
-    }
-    
-    private void setExecuteGroups(final List<Statement> statements) {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
-        List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
-        
-        final StatementExecuteUnit statementExecuteUnit = new StatementExecuteUnit(new RouteUnit("ds0", new SQLUnit(DQL_SQL, new ArrayList<List<Object>>())), statement, ConnectionMode.MEMORY_STRICTLY);
-        statementExecuteUnits.add(statementExecuteUnit);
-        Field field = StatementExecutor.class.getDeclaredField("executeGroups");
-        field.setAccessible(true);
-        field.set(actual, executeGroups);
     }
     
     @Test
@@ -86,20 +73,31 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSet.getInt(1)).thenReturn(1);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(mock(Connection.class));
+        setSQLType(SQLType.DQL);
         
-        
-        
-        
-
-        Field field2 = StatementExecutor.class.getDeclaredField("sqlType");
-        field2.setAccessible(true);
-        field2.set(actual, SQLType.DQL);
-        
-        assertThat((int)actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
+        assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
         verify(statement).executeQuery(DQL_SQL);
         verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
         
         verify(getEventCaller(), times(0)).verifyException(null);
+    }
+    
+    private void setSQLType(final SQLType sqlType) throws NoSuchFieldException, IllegalAccessException {
+        Field field2 = StatementExecutor.class.getDeclaredField("sqlType");
+        field2.setAccessible(true);
+        field2.set(actual, sqlType);
+    }
+    
+    private void setExecuteGroups(final List<Statement> statements) throws ReflectiveOperationException {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
+        for (Statement each : statements) {
+            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds0", new SQLUnit(DQL_SQL, new ArrayList<List<Object>>())), each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        Field field = StatementExecutor.class.getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
     }
 
     @Test
