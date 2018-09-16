@@ -20,7 +20,7 @@ package io.shardingsphere.core.executor.sql.prepare;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import lombok.RequiredArgsConstructor;
@@ -54,9 +54,9 @@ public final class SQLExecutePrepareTemplate {
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<ShardingExecuteGroup<SQLExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
-        Collection<ShardingExecuteGroup<SQLExecuteUnit>> result = new LinkedList<>();
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
         }
@@ -74,8 +74,8 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private List<ShardingExecuteGroup<SQLExecuteUnit>> getSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        List<ShardingExecuteGroup<SQLExecuteUnit>> result = new LinkedList<>();
+    private List<ShardingExecuteGroup<StatementExecuteUnit>> getSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        List<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
         for (List<SQLUnit> each : Lists.partition(sqlUnits, desiredPartitionSize)) {
             // TODO get connection sync to prevent dead lock
@@ -84,12 +84,12 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private ShardingExecuteGroup<SQLExecuteUnit> getSQLExecuteGroup(
+    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(
             final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
-        List<SQLExecuteUnit> result = new LinkedList<>();
+        List<StatementExecuteUnit> result = new LinkedList<>();
         ConnectionMode connectionMode = 1 == sqlUnitGroup.size() ? ConnectionMode.MEMORY_STRICTLY : ConnectionMode.CONNECTION_STRICTLY;
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createSQLExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
+            result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
         }
         return new ShardingExecuteGroup<>(result);
     }
