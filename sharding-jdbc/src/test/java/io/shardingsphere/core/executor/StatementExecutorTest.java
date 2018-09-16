@@ -174,7 +174,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(statement).executeUpdate(DML_SQL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
