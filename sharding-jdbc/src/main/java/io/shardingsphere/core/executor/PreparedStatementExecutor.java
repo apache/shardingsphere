@@ -102,10 +102,10 @@ public final class PreparedStatementExecutor {
     }
     
     /**
-     * Init executor.
+     * Initialize executor.
      *
      * @param routeResult route result
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         sqlType = routeResult.getSqlStatement().getType();
@@ -130,6 +130,10 @@ public final class PreparedStatementExecutor {
                 return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
             }
         });
+    }
+    
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     /**
@@ -212,10 +216,6 @@ public final class PreparedStatementExecutor {
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
-    }
-    
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     /**
