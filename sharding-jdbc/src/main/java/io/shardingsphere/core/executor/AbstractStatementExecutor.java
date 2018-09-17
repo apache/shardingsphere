@@ -44,10 +44,13 @@ public class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
     
+    @Getter
     private final int resultSetType;
     
+    @Getter
     private final int resultSetConcurrency;
     
+    @Getter
     private final int resultSetHoldability;
     
     private final ShardingConnection connection;
