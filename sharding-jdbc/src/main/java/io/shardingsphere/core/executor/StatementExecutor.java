@@ -54,47 +54,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author maxiaoguang
  * @author panjuan
  */
-@Getter
-public final class StatementExecutor {
+public final class StatementExecutor extends AbstractStatementExecutor {
     
-    private final DatabaseType databaseType;
-    
-    @Getter(AccessLevel.NONE)
     private SQLType sqlType;
-    
-    private final int resultSetType;
-    
-    private final int resultSetConcurrency;
-    
-    private final int resultSetHoldability;
-    
-    private final ShardingConnection connection;
-    
-    @Getter(AccessLevel.NONE)
-    private final SQLExecuteTemplate sqlExecuteTemplate;
-    
-    @Getter(AccessLevel.NONE)
-    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
-    
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final List<Statement> statements = new LinkedList<>();
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
-    private final Collection<Connection> connections = new LinkedList<>();
-    
-    @Getter(AccessLevel.NONE)
-    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
-    
     public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
-        this.resultSetType = resultSetType;
-        this.resultSetConcurrency = resultSetConcurrency;
-        this.resultSetHoldability = resultSetHoldability;
-        this.connection = shardingConnection;
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
     }
     
     /**
