@@ -84,6 +84,7 @@ public abstract class AbstractBaseExecutorTest {
         ShardingContext shardingContext = mock(ShardingContext.class);
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getMaxConnectionsSizePerQuery()).thenReturn(1);
+        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
