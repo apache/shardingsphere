@@ -56,6 +56,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
+    private SQLType sqlType;
+    
     private final boolean returnGeneratedKeys;
     
     @Getter
@@ -80,16 +82,16 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         sqlType = routeResult.getSqlStatement().getType();
-        executeGroups.addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
-        return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
-                Connection conn = connection.getNewConnection(dataSourceName);
-                connections.add(conn);
+                Connection conn = PreparedStatementExecutor.super.getConnection().getNewConnection(dataSourceName);
+                getConnections().add(conn);
                 return conn;
             }
             
