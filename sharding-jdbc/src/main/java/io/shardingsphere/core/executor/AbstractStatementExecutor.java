@@ -40,7 +40,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractStatementExecutor {
+public class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
     
