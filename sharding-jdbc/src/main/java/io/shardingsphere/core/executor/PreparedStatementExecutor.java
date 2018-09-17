@@ -114,14 +114,14 @@ public final class PreparedStatementExecutor {
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
         return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
-    
+            
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
                 Connection conn = connection.getNewConnection(dataSourceName);
                 connections.add(conn);
                 return conn;
             }
-    
+            
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());

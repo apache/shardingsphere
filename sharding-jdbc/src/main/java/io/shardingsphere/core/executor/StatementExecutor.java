@@ -110,14 +110,14 @@ public final class StatementExecutor {
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
         return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
-    
+            
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
                 Connection conn = connection.getNewConnection(dataSourceName);
                 connections.add(conn);
                 return conn;
             }
-    
+            
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -138,7 +138,7 @@ public final class StatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(databaseType, sqlType, isExceptionThrown, dataMap) {
-
+            
             @Override
             protected QueryResult executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 return getQueryResult(statementExecuteUnit);
