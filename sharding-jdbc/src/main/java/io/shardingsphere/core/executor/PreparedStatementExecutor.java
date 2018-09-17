@@ -54,8 +54,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author maxiaoguang
  * @author panjuan
  */
-@Getter
-public final class PreparedStatementExecutor {
+public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
     
