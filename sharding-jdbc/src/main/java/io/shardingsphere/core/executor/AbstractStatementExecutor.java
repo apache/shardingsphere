@@ -24,6 +24,7 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.routing.RouteUnit;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -40,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author panjuan
  */
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
