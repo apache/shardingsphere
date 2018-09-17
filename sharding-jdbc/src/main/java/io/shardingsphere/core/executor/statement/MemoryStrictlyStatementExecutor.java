@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.statement;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
@@ -36,8 +37,9 @@ public final class MemoryStrictlyStatementExecutor extends StatementExecutor {
     
     private final Collection<StatementExecuteUnit> statementExecuteUnits;
     
-    public MemoryStrictlyStatementExecutor(final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<StatementExecuteUnit> statementExecuteUnits) {
-        super(sqlType);
+    public MemoryStrictlyStatementExecutor(
+            final DatabaseType databaseType, final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<StatementExecuteUnit> statementExecuteUnits) {
+        super(databaseType, sqlType);
         this.executeTemplate = executeTemplate;
         this.statementExecuteUnits = statementExecuteUnits;
     }

@@ -19,6 +19,7 @@ package io.shardingsphere.core.jdbc.core.statement;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
@@ -239,11 +240,12 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private StatementExecutor getStatementExecutor() throws SQLException {
+        DatabaseType databaseType = connection.getShardingDataSource().getShardingContext().getDatabaseType();
         SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         if (ConnectionMode.MEMORY_STRICTLY == connection.getShardingDataSource().getShardingContext().getConnectionMode()) {
-            return new MemoryStrictlyStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForMemoryStrictly());
+            return new MemoryStrictlyStatementExecutor(databaseType, routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForMemoryStrictly());
         }
-        return new ConnectionStrictlyStatementExecutor(routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForConnectionStrictly());
+        return new ConnectionStrictlyStatementExecutor(databaseType, routeResult.getSqlStatement().getType(), sqlExecuteTemplate, getExecuteUnitsForConnectionStrictly());
     }
     
     private Collection<StatementExecuteUnit> getExecuteUnitsForMemoryStrictly() throws SQLException {

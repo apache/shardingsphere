@@ -17,9 +17,10 @@
 
 package io.shardingsphere.core.executor.statement;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class StatementExecutor {
     
+    private final DatabaseType databaseType;
+    
     private final SQLType sqlType;
     
     /**
@@ -52,7 +55,7 @@ public abstract class StatementExecutor {
     public List<ResultSet> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<ResultSet> executeCallback = new SQLExecuteCallback<ResultSet>(sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<ResultSet> executeCallback = new SQLExecuteCallback<ResultSet>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected ResultSet executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
@@ -132,7 +135,7 @@ public abstract class StatementExecutor {
     private int executeUpdate(final Updater updater) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
@@ -221,7 +224,7 @@ public abstract class StatementExecutor {
     private boolean execute(final Executor executor) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected Boolean executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {

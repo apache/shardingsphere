@@ -91,7 +91,7 @@ public final class ComStmtPreparePacketTest {
     }
     
     private void setFrontendHandlerSchema() {
-        when(frontendHandler.getSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     @Test

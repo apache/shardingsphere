@@ -15,24 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.api.config;
-
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.core.event.root;
 
 /**
- * schema sharding rule.
+ * Root invoke finish event.
  *
- * @author panjuan
+ * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class ProxySchemaRule {
-    
-    private final YamlShardingRuleConfiguration shardingRule;
-    
-    private final YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
+public final class RootInvokeFinishEvent extends RootInvokeEvent {
 }

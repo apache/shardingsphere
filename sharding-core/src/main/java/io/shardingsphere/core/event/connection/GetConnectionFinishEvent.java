@@ -15,28 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.jdbc.orchestration.config;
+package io.shardingsphere.core.event.connection;
 
-import io.shardingsphere.core.api.config.ProxyServerConfiguration;
-import io.shardingsphere.core.api.config.ProxySchemaRule;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
 /**
- * Orchestration proxy configuration.
+ * Get connection finish event.
  *
- * @author panjuan
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class OrchestrationProxyConfiguration {
+public final class GetConnectionFinishEvent extends GetConnectionEvent {
     
-    private final ProxyServerConfiguration serverConfiguration;
-    
-    private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
-    
-    private final Map<String, ProxySchemaRule> schemaRuleMap;
+    private final DataSourceMetaData dataSourceMetaData;
 }

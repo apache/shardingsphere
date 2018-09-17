@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.backend;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
@@ -72,20 +71,12 @@ public abstract class AbstractBackendHandler implements BackendHandler {
         return Optional.absent();
     }
     
-    /**
-     * handle use databases statement.
-     *
-     * @param useStatement use statement
-     * @param frontendHandler frontend handler
-     * @return response packets
-     */
-    protected CommandResponsePackets handleUseStatement(final UseStatement useStatement, final FrontendHandler frontendHandler) {
+    protected final CommandResponsePackets handleUseStatement(final UseStatement useStatement, final FrontendHandler frontendHandler) {
         String schema = useStatement.getSchema();
-        if (Strings.isNullOrEmpty(schema) || !PROXY_CONTEXT.schemaExists(schema)) {
+        if (!PROXY_CONTEXT.schemaExists(schema)) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
-        frontendHandler.setSchema(schema);
+        frontendHandler.setCurrentSchema(schema);
         return new CommandResponsePackets(new OKPacket(1));
     }
-    
 }

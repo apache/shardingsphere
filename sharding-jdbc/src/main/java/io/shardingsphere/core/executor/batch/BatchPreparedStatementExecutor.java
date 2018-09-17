@@ -40,7 +40,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public abstract class BatchPreparedStatementExecutor {
     
-    private final DatabaseType dbType;
+    private final DatabaseType databaseType;
     
     private final SQLType sqlType;
     
@@ -55,7 +55,7 @@ public abstract class BatchPreparedStatementExecutor {
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected int[] executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
@@ -71,7 +71,7 @@ public abstract class BatchPreparedStatementExecutor {
         for (BatchPreparedStatementExecuteUnit each : getBatchPreparedStatementUnitGroups()) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (DatabaseType.Oracle == dbType) {
+                if (DatabaseType.Oracle == databaseType) {
                     result[entry.getKey()] = value;
                 } else {
                     result[entry.getKey()] += value;

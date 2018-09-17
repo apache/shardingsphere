@@ -72,10 +72,10 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
             if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !ProxyContext.getInstance().schemaExists(response41.getDatabase())) {
-                    context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1,
-                            ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
+                    context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
+                    return;
                 }
-                setSchema(response41.getDatabase());
+                setCurrentSchema(response41.getDatabase());
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
@@ -113,7 +113,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         @Override
         public void run() {
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-                 BackendConnection backendConnection = new BackendConnection(ProxyContext.getInstance().getRuleRegistry(frontendHandler.getSchema()))) {
+                 BackendConnection backendConnection = new BackendConnection(ProxyContext.getInstance().getRuleRegistry(frontendHandler.getCurrentSchema()))) {
                 setBackendConnection(backendConnection);
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
                 Optional<CommandResponsePackets> responsePackets = commandPacket.execute();

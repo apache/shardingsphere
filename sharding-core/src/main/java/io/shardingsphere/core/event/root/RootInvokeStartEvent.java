@@ -15,28 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.api.config;
+package io.shardingsphere.core.event.root;
 
-import io.shardingsphere.core.rule.ProxyAuthority;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
 
 /**
- * proxy server configuration.
+ * Root invoke start event.
  *
- * @author chenqingyang
+ * @author zhangyonglun
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ProxyServerConfiguration {
+public final class RootInvokeStartEvent extends RootInvokeEvent {
     
-    private ProxyAuthority proxyAuthority = new ProxyAuthority();
-    
-    private Properties props = new Properties();
+    private final boolean parallelExecute;
 }

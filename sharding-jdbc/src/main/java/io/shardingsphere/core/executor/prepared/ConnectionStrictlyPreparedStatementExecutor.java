@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.prepared;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -38,8 +39,8 @@ public final class ConnectionStrictlyPreparedStatementExecutor extends PreparedS
     private final Collection<ShardingExecuteGroup<PreparedStatementExecuteUnit>> executeGroups;
     
     public ConnectionStrictlyPreparedStatementExecutor(
-            final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<PreparedStatementExecuteUnit>> executeGroups) {
-        super(sqlType);
+            final DatabaseType databaseType, final SQLType sqlType, final SQLExecuteTemplate executeTemplate, final Collection<ShardingExecuteGroup<PreparedStatementExecuteUnit>> executeGroups) {
+        super(databaseType, sqlType);
         this.executeTemplate = executeTemplate;
         this.executeGroups = executeGroups;
     }

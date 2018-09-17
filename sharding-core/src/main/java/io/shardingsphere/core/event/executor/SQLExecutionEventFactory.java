@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.sql;
+package io.shardingsphere.core.event.executor;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -36,19 +37,19 @@ public final class SQLExecutionEventFactory {
     /**
      * Create SQL execution event.
      *
-     * @param sqlType        SQL type
+     * @param sqlType SQL type
      * @param sqlExecuteUnit SQL execute unit
-     * @param parameters     parameters
-     * @param url            url
+     * @param parameters parameters
+     * @param dataSourceMetaData data source meta data
      * @return SQL execution event
      */
-    public static SQLExecutionEvent createEvent(final SQLType sqlType, final SQLExecuteUnit sqlExecuteUnit, final List<Object> parameters, final String url) {
+    public static SQLExecutionEvent createEvent(final SQLType sqlType, final SQLExecuteUnit sqlExecuteUnit, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData) {
         if (SQLType.DQL == sqlType) {
-            return new DQLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters, url);
+            return new DQLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters, dataSourceMetaData);
         }
         if (SQLType.DML == sqlType) {
-            return new DMLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters, url);
+            return new DMLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters, dataSourceMetaData);
         }
-        return new SQLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters, url);
+        return new SQLExecutionEvent(sqlExecuteUnit.getRouteUnit(), parameters, dataSourceMetaData);
     }
 }

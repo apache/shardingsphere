@@ -15,31 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.config;
+package io.shardingsphere.core.event.connection;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rule configuration.
+ * Get connection start event.
  *
- * @author panjuan
+ * @author zhangyonglun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class RuleConfiguration {
+public final class GetConnectionStartEvent extends GetConnectionEvent {
     
-    private String schemaName;
-    
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
-    
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    private final String dataSource;
 }

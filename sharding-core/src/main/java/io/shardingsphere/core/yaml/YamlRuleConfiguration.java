@@ -15,21 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.sql;
+package io.shardingsphere.core.yaml;
 
-import io.shardingsphere.core.routing.RouteUnit;
-
-import java.util.List;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * DML execution event.
- * 
- * @author zhangliang
- * @author maxiaoguang
+ * Rule configuration for yaml.
+ *
+ * @author panjuan
  */
-public final class DMLExecutionEvent extends SQLExecutionEvent {
+@Getter
+@Setter
+public final class YamlRuleConfiguration {
     
-    public DMLExecutionEvent(final RouteUnit routeUnit, final List<Object> parameters, final String url) {
-        super(routeUnit, parameters, url);
-    }
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
 }

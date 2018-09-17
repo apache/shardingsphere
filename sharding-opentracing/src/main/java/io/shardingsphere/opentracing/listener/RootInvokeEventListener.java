@@ -21,55 +21,56 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
+import io.shardingsphere.core.event.root.RootInvokeEvent;
+import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 
 /**
- * SQL execute overall event listener.
+ * Root invoke event listener.
  *
  * @author gaohongtao
  * @author wangkai
  * @author maxiaoguang
  */
-public final class OverallExecuteEventListener extends OpenTracingListener<OverallExecutionEvent> {
+public final class RootInvokeEventListener extends OpenTracingListener<RootInvokeEvent> {
     
     public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
     
-    private static final String OPERATION_NAME_PREFIX = "/Sharding-Sphere/execute/";
+    private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
-    private static final ThreadLocal<ActiveSpan> SPAN = new ThreadLocal<>();
+    private static final ThreadLocal<ActiveSpan> ACTIVE_SPAN = new ThreadLocal<>();
     
     /**
-     * Listen overall sql execution event.
+     * Listen root invoke event.
      *
-     * @param event overall sql execution event
+     * @param event root invoke event
      */
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final OverallExecutionEvent event) {
+    public void listen(final RootInvokeEvent event) {
         tracing(event);
     }
     
     @Override
-    protected void beforeExecute(final OverallExecutionEvent event) {
-        ActiveSpan activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME_PREFIX).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        SPAN.set(activeSpan);
-        if (event.isParallelExecute()) {
-            ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, activeSpan.capture());
+    protected void beforeExecute(final RootInvokeEvent event) {
+        ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
+        ACTIVE_SPAN.set(span);
+        if (((RootInvokeStartEvent) event).isParallelExecute()) {
+            ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());
         }
     }
     
     @Override
-    protected void tracingFinish(final OverallExecutionEvent event) {
-        SPAN.get().deactivate();
-        SPAN.remove();
+    protected void tracingFinish(final RootInvokeEvent event) {
+        ACTIVE_SPAN.get().deactivate();
+        ACTIVE_SPAN.remove();
     }
     
     @Override
     protected ActiveSpan getFailureSpan() {
-        return SPAN.get();
+        return ACTIVE_SPAN.get();
     }
     
     /**
@@ -78,6 +79,15 @@ public final class OverallExecuteEventListener extends OpenTracingListener<Overa
      * @return sql execute event in this overall event thread or not.
      */
     public static boolean isTrunkThread() {
-        return null != SPAN.get();
+        return null != ACTIVE_SPAN.get();
+    }
+    
+    /**
+     * Get active span.
+     * 
+     * @return active span
+     */
+    public static ThreadLocal<ActiveSpan> getActiveSpan() {
+        return ACTIVE_SPAN;
     }
 }

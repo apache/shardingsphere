@@ -15,22 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
+package io.shardingsphere.proxy.config.yaml;
 
-import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
- * Connection close event.
+ * Proxy configuration.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConnectionCloseEvent extends ShardingEvent {
+public final class ProxyConfiguration {
     
-    private final String dataSource;
+    private final ProxyYamlServerConfiguration serverConfiguration;
     
-    private final String url;
+    private final Map<String, ProxyYamlRuleConfiguration> ruleConfigurationMap;
 }

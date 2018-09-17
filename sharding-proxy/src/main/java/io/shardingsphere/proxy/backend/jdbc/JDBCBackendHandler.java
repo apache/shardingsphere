@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.dal.show.ProxyShowDatabasesMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
@@ -122,7 +121,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         mergedResult = MergeEngineFactory.newInstance(
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
         if (mergedResult instanceof ShowDatabasesMergedResult) {
-            mergedResult = new ProxyShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+            mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();

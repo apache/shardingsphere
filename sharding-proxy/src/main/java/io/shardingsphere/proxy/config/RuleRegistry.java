@@ -17,7 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
-import io.shardingsphere.core.api.config.ProxySchemaRule;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -62,7 +62,7 @@ public final class RuleRegistry {
     @Setter
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    public RuleRegistry(final String schemaName, final Map<String, DataSourceParameter> dataSources, final ProxySchemaRule rule) {
+    public RuleRegistry(final String schemaName, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
         this.schemaName = schemaName;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;

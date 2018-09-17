@@ -18,8 +18,9 @@
 package io.shardingsphere.core.executor.fixture;
 
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.event.executor.overall.OverallExecutionEvent;
-import io.shardingsphere.core.event.executor.sql.SQLExecutionEvent;
+import io.shardingsphere.core.event.executor.SQLExecutionEvent;
+import io.shardingsphere.core.event.root.RootInvokeEvent;
+import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,9 +32,9 @@ public final class ExecutorTestUtil {
     
     /**
      * Listen event.
-     * 
+     *
      * @param eventCaller event caller
-     * @param event SQL execution event
+     * @param event       SQL execution event
      */
     public static void listen(final EventCaller eventCaller, final SQLExecutionEvent event) {
         eventCaller.verifyDataSource(event.getRouteUnit().getDataSourceName());
@@ -49,10 +50,10 @@ public final class ExecutorTestUtil {
      * Listen event.
      *
      * @param eventCaller event caller
-     * @param event overall execution event
+     * @param event       overall execution event
      */
-    public static void listen(final EventCaller eventCaller, final OverallExecutionEvent event) {
-        eventCaller.verifyIsParallelExecute(event.isParallelExecute());
+    public static void listen(final EventCaller eventCaller, final RootInvokeEvent event) {
+        eventCaller.verifyIsParallelExecute(((RootInvokeStartEvent) event).isParallelExecute());
         if (ShardingEventType.EXECUTE_FAILURE == event.getEventType()) {
             eventCaller.verifyException(event.getException());
         }
@@ -60,7 +61,7 @@ public final class ExecutorTestUtil {
     
     /**
      * Clear thread local.
-     * 
+     *
      * @throws ReflectiveOperationException reflective operation exception
      */
     public static void clear() throws ReflectiveOperationException {

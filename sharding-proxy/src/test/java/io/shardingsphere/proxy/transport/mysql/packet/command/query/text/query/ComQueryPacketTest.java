@@ -113,7 +113,7 @@ public final class ComQueryPacketTest {
     }
     
     private void setFrontendHandlerSchema() {
-        when(frontendHandler.getSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     private void setTransactionType(final TransactionType transactionType) throws ReflectiveOperationException {

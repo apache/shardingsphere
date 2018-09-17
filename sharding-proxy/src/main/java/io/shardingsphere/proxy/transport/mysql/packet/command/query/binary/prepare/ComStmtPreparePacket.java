@@ -61,7 +61,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
         this.sequenceId = sequenceId;
         this.frontendHandler = frontendHandler;
         sql = payload.readStringEOF();
-        RuleRegistry ruleRegistry = ProxyContext.getInstance().getRuleRegistry(frontendHandler.getSchema());
+        RuleRegistry ruleRegistry = ProxyContext.getInstance().getRuleRegistry(frontendHandler.getCurrentSchema());
         sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable());
     }
     
@@ -80,7 +80,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
                 new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getSchema(),
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getCurrentSchema(),
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {

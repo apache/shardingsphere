@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.execute.memory;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
@@ -122,7 +123,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         private boolean hasMetaData;
     
         private FirstConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(sqlType, isExceptionThrown, dataMap);
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
@@ -142,7 +143,7 @@ public final class ConnectionStrictlyExecuteEngine extends JDBCExecuteEngine {
         private final boolean isReturnGeneratedKeys;
     
         private ConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(sqlType, isExceptionThrown, dataMap);
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         

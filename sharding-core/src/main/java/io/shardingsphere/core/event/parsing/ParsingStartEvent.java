@@ -15,20 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor.overall;
+package io.shardingsphere.core.event.parsing;
 
-import io.shardingsphere.core.event.ShardingEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Overall sql execution event.
- * 
- * @author gaohongtao
+ * Parsing start event.
+ *
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class OverallExecutionEvent extends ShardingEvent {
+public final class ParsingStartEvent extends ParsingEvent {
     
-    private final boolean parallelExecute;
+    private final String sql;
 }

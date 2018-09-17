@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.bed.sync;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.executor.sql.DMLExecutionEvent;
+import io.shardingsphere.core.event.executor.DMLExecutionEvent;
 import io.shardingsphere.transaction.api.SoftTransactionManager;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.bed.BEDSoftTransaction;

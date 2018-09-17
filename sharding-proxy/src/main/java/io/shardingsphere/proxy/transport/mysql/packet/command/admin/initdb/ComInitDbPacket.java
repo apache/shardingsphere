@@ -42,29 +42,29 @@ public final class ComInitDbPacket implements CommandPacket {
     @Getter
     private final int sequenceId;
     
-    private final String schemaName;
+    private final String schema;
     
     private FrontendHandler frontendHandler;
     
     public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
-        schemaName = payload.readStringEOF();
+        schema = payload.readStringEOF();
         this.frontendHandler = frontendHandler;
     }
     
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(CommandPacketType.COM_INIT_DB.getValue());
-        payload.writeStringEOF(schemaName);
+        payload.writeStringEOF(schema);
     }
     
     @Override
     public Optional<CommandResponsePackets> execute() {
-        log.debug("Schema name received for Sharding-Proxy: {}", schemaName);
-        if (ProxyContext.getInstance().schemaExists(schemaName)) {
-            frontendHandler.setSchema(schemaName);
+        log.debug("Schema name received for Sharding-Proxy: {}", schema);
+        if (ProxyContext.getInstance().schemaExists(schema)) {
+            frontendHandler.setCurrentSchema(schema);
             return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
         }
-        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schemaName)));
+        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schema)));
     }
 }

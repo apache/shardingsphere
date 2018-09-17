@@ -119,10 +119,8 @@ public final class SQLJudgeEngine {
     
     private SQLStatement getDALStatement(final TokenType tokenType, final LexerEngine lexerEngine) {
         if (DefaultKeyword.USE == tokenType) {
-            UseStatement result = new UseStatement();
             lexerEngine.nextToken();
-            result.setSchema(lexerEngine.getCurrentToken().getLiterals());
-            return result;
+            return new UseStatement(lexerEngine.getCurrentToken().getLiterals());
         }
         if (DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType) {
             return new DescribeStatement();

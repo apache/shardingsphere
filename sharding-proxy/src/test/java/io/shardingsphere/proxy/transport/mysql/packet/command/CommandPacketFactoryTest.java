@@ -81,7 +81,7 @@ public final class CommandPacketFactoryTest {
     }
     
     private void setFrontendHandlerSchema() {
-        when(frontendHandler.getSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     @Test
@@ -110,7 +110,7 @@ public final class CommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithComStmtPreparePacket() throws SQLException {
-        when(frontendHandler.getSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_PREPARE.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComStmtPreparePacket.class));
     }
