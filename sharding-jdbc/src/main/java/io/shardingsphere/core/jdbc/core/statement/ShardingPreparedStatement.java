@@ -109,7 +109,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ResultSet result;
         try {
             clearPrevious();
-            routeResult = routingEngine.route(new ArrayList<>(getParameters()));
+            sqlRoute();
             initPreparedStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingDataSource().getShardingContext().getShardingRule(), preparedStatementExecutor.executeQuery(), routeResult.getSqlStatement(),
                     connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
@@ -125,7 +125,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public int executeUpdate() throws SQLException {
         try {
             clearPrevious();
-            routeResult = routingEngine.route(new ArrayList<>(getParameters()));
+            sqlRoute();
             initPreparedStatementExecutor();
             return preparedStatementExecutor.executeUpdate();
         } finally {
@@ -138,7 +138,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public boolean execute() throws SQLException {
         try {
             clearPrevious();
-            routeResult = routingEngine.route(new ArrayList<>(getParameters()));
+            sqlRoute();
             initPreparedStatementExecutor();
             return preparedStatementExecutor.execute();
         } finally {
@@ -219,14 +219,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
-    public void addBatch() throws SQLException {
+    public void addBatch() {
         try {
-            routeResult = routingEngine.route(new ArrayList<>(getParameters()));
+            sqlRoute();
             batchPreparedStatementExecutor.addBatchForRouteUnits(routeResult);
         } finally {
             currentResultSet = null;
             clearParameters();
         }
+    }
+    
+    private void sqlRoute() {
+        routeResult = routingEngine.route(new ArrayList<>(getParameters()));
     }
     
     @Override
