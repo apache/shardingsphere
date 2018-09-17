@@ -29,6 +29,7 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,6 +52,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private SQLType sqlType;
     
+    @Getter
     private final boolean returnGeneratedKeys;
     
     public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
