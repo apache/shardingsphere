@@ -82,7 +82,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = StatementExecutor.class.getDeclaredField("sqlType");
+        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
         field.setAccessible(true);
         field.set(actual, sqlType);
     }
@@ -97,7 +97,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
             parameterSets.add(Collections.singletonList((Object) 1));
             statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = StatementExecutor.class.getDeclaredField("executeGroups");
+        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }
