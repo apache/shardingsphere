@@ -61,7 +61,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = PreparedStatementExecutor.class.getDeclaredField("sqlType");
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
         field.setAccessible(true);
         field.set(actual, sqlType);
     }
@@ -76,7 +76,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
             parameterSets.add(Collections.singletonList((Object) 1));
             preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = PreparedStatementExecutor.class.getDeclaredField("executeGroups");
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }

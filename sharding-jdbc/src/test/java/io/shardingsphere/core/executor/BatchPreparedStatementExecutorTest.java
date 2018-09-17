@@ -56,7 +56,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = BatchPreparedStatementExecutor.class.getDeclaredField("sqlType");
+        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
         field.setAccessible(true);
         field.set(actual, sqlType);
     }
@@ -82,7 +82,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private void setFields(final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits, final int count) throws NoSuchFieldException, IllegalAccessException {
-        Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executeGroups");
+        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
         field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");
