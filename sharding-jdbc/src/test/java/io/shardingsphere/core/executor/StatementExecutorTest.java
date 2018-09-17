@@ -59,7 +59,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Override
     public void setUp() throws SQLException, ReflectiveOperationException {
         super.setUp();
-        actual = new StatementExecutor(DatabaseType.H2,1, 1, 1, getConnection());
+        actual = new StatementExecutor(DatabaseType.H2, 1, 1, 1, getConnection());
     }
     
     @Test
@@ -461,5 +461,4 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
     }
-    
 }
