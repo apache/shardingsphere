@@ -24,7 +24,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -61,8 +60,6 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private final boolean returnGeneratedKeys;
     
     private int batchCount;
-    
-    private SQLType sqlType;
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
