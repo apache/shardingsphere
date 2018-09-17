@@ -222,7 +222,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public List<List<Object>> getParameterSet(final Statement statement) {
         Optional<StatementExecuteUnit> target;
         List<List<Object>> result = new LinkedList<>();
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
                 @Override
                 public boolean apply(final StatementExecuteUnit input) {
@@ -237,31 +237,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         return result;
     }
     
-    /**
-     * Clear data.
-     *
-     * @throws SQLException sql exception
-     */
+    @Override
     public void clear() throws SQLException {
-        clearStatements();
-        clearConnections();
+        super.clear();
         batchCount = 0;
-        connections.clear();
         routeUnits.clear();
-        resultSets.clear();
-        executeGroups.clear();
-    }
-    
-    private void clearStatements() throws SQLException {
-        for (Statement each : getStatements()) {
-            each.close();
-        }
-    }
-    
-    private void clearConnections() {
-        for (Connection each : connections) {
-            connection.release(each);
-        }
     }
 }
 
