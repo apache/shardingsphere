@@ -191,7 +191,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+        return getSqlExecuteTemplate().executeGroup((Collection) getExecuteGroups(), executeCallback);
     }
     
     /**
@@ -201,7 +201,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             result.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
