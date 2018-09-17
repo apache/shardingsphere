@@ -73,13 +73,6 @@ public abstract class AbstractStatementExecutor {
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
     }
     
-    /**
-     * Initialize executor.
-     *
-     * @exception SQLException sql exception
-     */
-    public abstract void init() throws SQLException;
-    
     @SuppressWarnings("unchecked")
     protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);

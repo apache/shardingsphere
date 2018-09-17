@@ -67,7 +67,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         this.returnGeneratedKeys = returnGeneratedKeys;
     }
     
-    @Override
+    /**
+     * Initialize executor.
+     *
+     * @throws SQLException SQL exception
+     */
     public void init() throws SQLException {
         getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
     }
