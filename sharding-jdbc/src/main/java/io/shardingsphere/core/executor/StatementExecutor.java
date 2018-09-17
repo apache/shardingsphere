@@ -98,10 +98,10 @@ public final class StatementExecutor {
     }
     
     /**
-     * Init executor.
+     * Initialize executor.
      *
      * @param routeResult route result
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         sqlType = routeResult.getSqlStatement().getType();
