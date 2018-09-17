@@ -57,9 +57,6 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private final boolean returnGeneratedKeys;
     
     @Getter
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
-    
-    @Getter
     private final List<PreparedStatement> statements = new LinkedList<>();
     
     @Getter
@@ -127,7 +124,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statementExecuteUnit.getStatement();
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSets.add(resultSet);
+        getResultSets().add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == statementExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
@@ -185,7 +182,6 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     @Override
     public void clear() throws SQLException {
         super.clear();
-        resultSets.clear();
         statements.clear();
         parameterSets.clear();
     }
