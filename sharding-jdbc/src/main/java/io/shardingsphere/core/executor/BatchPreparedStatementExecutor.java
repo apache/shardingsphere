@@ -101,9 +101,9 @@ public final class BatchPreparedStatementExecutor {
     }
     
     /**
-     * Init executor.
+     * Initialize executor.
      *
-     * @exception SQLException sql exception
+     * @exception SQLException SQL exception
      */
     public void init() throws SQLException {
         executeGroups.addAll(obtainExecuteGroups(routeUnits));
