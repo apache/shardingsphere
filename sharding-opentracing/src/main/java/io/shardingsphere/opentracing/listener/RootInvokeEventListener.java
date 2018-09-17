@@ -22,7 +22,6 @@ import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -57,9 +56,7 @@ public final class RootInvokeEventListener extends OpenTracingListener<RootInvok
     protected void beforeExecute(final RootInvokeEvent event) {
         ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         ACTIVE_SPAN.set(span);
-        if (((RootInvokeStartEvent) event).isParallelExecute()) {
-            ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());
-        }
+        ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());
     }
     
     @Override
