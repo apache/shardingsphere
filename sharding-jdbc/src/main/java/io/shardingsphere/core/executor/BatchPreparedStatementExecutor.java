@@ -33,6 +33,8 @@ import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.routing.BatchRouteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import lombok.Getter;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -55,6 +57,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
+    @Getter
     private final boolean returnGeneratedKeys;
     
     private int batchCount;
