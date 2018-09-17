@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
@@ -48,8 +47,6 @@ import java.util.Map;
  * @author panjuan
  */
 public final class StatementExecutor extends AbstractStatementExecutor {
-    
-    private SQLType sqlType;
     
     public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
