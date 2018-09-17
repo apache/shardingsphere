@@ -141,7 +141,6 @@ public final class BatchPreparedStatementExecutor {
      * Add batch for route units.
      *
      * @param routeResult route result
-     * @throws SQLException sql exception
      */
     public void addBatchForRouteUnits(final SQLRouteResult routeResult) {
         sqlType = routeResult.getSqlStatement().getType();
