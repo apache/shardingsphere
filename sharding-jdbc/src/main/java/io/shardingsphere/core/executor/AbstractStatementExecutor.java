@@ -73,7 +73,6 @@ public class AbstractStatementExecutor {
     @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
-    
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
