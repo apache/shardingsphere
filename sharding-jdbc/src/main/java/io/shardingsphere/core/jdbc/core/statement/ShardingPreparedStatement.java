@@ -100,7 +100,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.sql = sql;
         ShardingContext shardingContext = connection.getShardingDataSource().getShardingContext();
         routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource());
-        preparedStatementExecutor = new PreparedStatementExecutor(connection.getShardingDataSource().getDatabaseType(), resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
+        preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
     
