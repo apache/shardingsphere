@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.merger.QueryResult;
@@ -58,7 +57,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException, ReflectiveOperationException {
         super.setUp();
-        actual = new PreparedStatementExecutor(DatabaseType.H2, 1, 1, 1, false, getConnection());
+        actual = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
