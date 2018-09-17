@@ -56,16 +56,17 @@ public abstract class AbstractStatementExecutor {
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    @Getter
-    private final List<Statement> statements = new LinkedList<>();
+    private final Collection<Connection> connections = new LinkedList<>();
     
     @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     @Getter
+    private final List<Statement> statements = new LinkedList<>();
+    
+    @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<Connection> connections = new LinkedList<>();
     
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
