@@ -18,32 +18,25 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import lombok.AccessLevel;
-import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Statement executor.
@@ -57,10 +50,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class StatementExecutor extends AbstractStatementExecutor {
     
     private SQLType sqlType;
-    
-    private final List<Statement> statements = new LinkedList<>();
-    
-    private final List<List<Object>> parameterSets = new LinkedList<>();
     
     public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
@@ -90,8 +79,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
                 Statement statement = connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-                statements.add(statement);
-                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
+                getStatements().add(statement);
+                getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
                 return new StatementExecuteUnit(routeUnit, statement, connectionMode);
             }
         });

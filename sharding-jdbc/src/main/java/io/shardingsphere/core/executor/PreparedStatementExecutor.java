@@ -55,12 +55,6 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final boolean returnGeneratedKeys;
     
-    @Getter
-    private final List<PreparedStatement> statements = new LinkedList<>();
-    
-    @Getter
-    private final List<List<Object>> parameterSets = new LinkedList<>();
-    
     public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
         super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;

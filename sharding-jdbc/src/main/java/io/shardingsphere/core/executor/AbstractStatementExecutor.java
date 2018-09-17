@@ -57,6 +57,12 @@ public abstract class AbstractStatementExecutor {
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
     @Getter
+    private final List<Statement> statements = new LinkedList<>();
+    
+    @Getter
+    private final List<List<Object>> parameterSets = new LinkedList<>();
+    
+    @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final Collection<Connection> connections = new LinkedList<>();
@@ -79,13 +85,6 @@ public abstract class AbstractStatementExecutor {
     }
     
     /**
-     * Get statements.
-     *
-     * @return statements
-     */
-    public abstract List<Statement> getStatements();
-    
-    /**
      * Clear data.
      *
      * @throws SQLException sql exception
@@ -93,6 +92,8 @@ public abstract class AbstractStatementExecutor {
     public void clear() throws SQLException {
         clearStatements();
         clearConnections();
+        statements.clear();
+        parameterSets.clear();
         connections.clear();
         resultSets.clear();
         executeGroups.clear();
@@ -110,4 +111,3 @@ public abstract class AbstractStatementExecutor {
         }
     }
 }
-
