@@ -23,7 +23,6 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.routing.BatchRouteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 
@@ -53,8 +52,6 @@ public abstract class AbstractStatementExecutor {
     
     private final int resultSetHoldability;
     
-    private final boolean returnGeneratedKeys;
-    
     private final ShardingConnection connection;
     
     private final Collection<RouteUnit> routeUnits = new LinkedList<>();
@@ -70,13 +67,11 @@ public abstract class AbstractStatementExecutor {
     
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
-    public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
-                                     final ShardingConnection shardingConnection) {
+    public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
-        this.returnGeneratedKeys = returnGeneratedKeys;
         this.connection = shardingConnection;
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
@@ -91,7 +86,7 @@ public abstract class AbstractStatementExecutor {
         executeGroups.addAll(obtainExecuteGroups(routeUnits));
     }
     
-    protected abstract Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(Collection<BatchRouteUnit> routeUnits) throws SQLException;
+    protected abstract Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(Collection<RouteUnit> routeUnits) throws SQLException;
     
     @SuppressWarnings("unchecked")
     protected  <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
