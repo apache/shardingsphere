@@ -17,7 +17,9 @@
 
 package io.shardingsphere.core.jdbc.core.statement;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.BatchPreparedStatementExecutor;
 import io.shardingsphere.core.executor.PreparedStatementExecutor;
@@ -171,7 +173,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
         List<QueryResult> queryResults = new ArrayList<>(preparedStatementExecutor.getStatements().size());
-        for (PreparedStatement each : preparedStatementExecutor.getStatements()) {
+        for (Statement each : preparedStatementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet));
@@ -204,7 +206,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void setParametersForStatements() {
         for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
-            replaySetParameter(preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
+            replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
         }
     }
     
@@ -276,7 +278,12 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public Collection<PreparedStatement> getRoutedStatements() {
-        return preparedStatementExecutor.getStatements();
+        return Collections2.transform(preparedStatementExecutor.getStatements(), new Function<Statement, PreparedStatement>() {
+            @Override
+            public PreparedStatement apply(final Statement input) {
+                return (PreparedStatement) input;
+            }
+        });
     }
 }
 
