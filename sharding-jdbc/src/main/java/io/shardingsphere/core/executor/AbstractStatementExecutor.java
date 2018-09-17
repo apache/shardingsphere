@@ -24,6 +24,7 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.routing.BatchRouteUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -56,7 +57,7 @@ public abstract class AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
+    private final Collection<RouteUnit> routeUnits = new LinkedList<>();
     
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
