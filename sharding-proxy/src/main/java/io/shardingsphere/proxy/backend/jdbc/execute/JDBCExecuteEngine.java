@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.backend.jdbc.execute;
 
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
@@ -43,7 +44,7 @@ import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteQueryRe
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.proxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPacket;
@@ -95,7 +96,7 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(RuleRegistry.getInstance().getMaxConnectionsSizePerQuery());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery());
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
@@ -195,7 +196,7 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         private boolean hasMetaData;
         
         private FirstConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(sqlType, isExceptionThrown, dataMap);
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
@@ -215,7 +216,7 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         private ConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(sqlType, isExceptionThrown, dataMap);
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
