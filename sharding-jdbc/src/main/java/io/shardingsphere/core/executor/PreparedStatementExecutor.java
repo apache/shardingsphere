@@ -90,8 +90,8 @@ public final class PreparedStatementExecutor {
     @Getter(AccessLevel.NONE)
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
-    public PreparedStatementExecutor(final DatabaseType databaseType, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
-        this.databaseType = databaseType;
+    public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
+        this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
