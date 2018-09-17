@@ -26,25 +26,18 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.routing.BatchRouteUnit;
-import io.shardingsphere.core.routing.RouteUnit;
-import io.shardingsphere.core.routing.SQLRouteResult;
 import lombok.Getter;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -105,93 +98,6 @@ public abstract class AbstractStatementExecutor {
     }
     
     protected abstract Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException;
-    
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    /**
-     * Add batch for route units.
-     *
-     * @param routeResult route result
-     */
-    public void addBatchForRouteUnits(final SQLRouteResult routeResult) {
-        sqlType = routeResult.getSqlStatement().getType();
-        handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
-        handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
-        batchCount++;
-    }
-    
-    private Collection<BatchRouteUnit> createBatchRouteUnits(final Collection<RouteUnit> routeUnits) {
-        Collection<BatchRouteUnit> result = new LinkedList<>();
-        for (RouteUnit each : routeUnits) {
-            result.add(new BatchRouteUnit(each));
-        }
-        return result;
-    }
-    
-    private void handleOldRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        for (final BatchRouteUnit each : newRouteUnits) {
-            Optional<BatchRouteUnit> batchRouteUnitOptional = Iterators.tryFind(routeUnits.iterator(), new Predicate<BatchRouteUnit>() {
-                @Override
-                public boolean apply(final BatchRouteUnit input) {
-                    return input.equals(each);
-                }
-            });
-            if (batchRouteUnitOptional.isPresent()) {
-                reviseBatchRouteUnit(batchRouteUnitOptional.get(), each);
-            }
-        }
-    }
-    
-    private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
-        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().add(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().get(0));
-        oldBatchRouteUnit.mapAddBatchCount(batchCount);
-    }
-    
-    private void handleNewRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        newRouteUnits.removeAll(routeUnits);
-        for (BatchRouteUnit each : newRouteUnits) {
-            each.mapAddBatchCount(batchCount);
-        }
-        routeUnits.addAll(newRouteUnits);
-    }
-    
-    /**
-     * Execute batch.
-     * 
-     * @return execute results
-     * @throws SQLException SQL exception
-     */
-    public int[] executeBatch() throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown, dataMap) {
-            
-            @Override
-            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return statementExecuteUnit.getStatement().executeBatch();
-            }
-        };
-        return accumulate(executeCallback(callback));
-    }
-    
-    private int[] accumulate(final List<int[]> results) {
-        int[] result = new int[batchCount];
-        int count = 0;
-        for (BatchRouteUnit each : routeUnits) {
-            for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
-                int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (DatabaseType.Oracle == databaseType) {
-                    result[entry.getKey()] = value;
-                } else {
-                    result[entry.getKey()] += value;
-                }
-            }
-            count++;
-        }
-        return result;
-    }
     
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
