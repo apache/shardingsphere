@@ -22,7 +22,6 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.routing.RouteUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -53,8 +52,6 @@ public abstract class AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final Collection<RouteUnit> routeUnits = new LinkedList<>();
-    
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
@@ -81,11 +78,7 @@ public abstract class AbstractStatementExecutor {
      *
      * @exception SQLException sql exception
      */
-    public void init() throws SQLException {
-        executeGroups.addAll(obtainExecuteGroups(routeUnits));
-    }
-    
-    protected abstract Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(Collection<RouteUnit> routeUnits) throws SQLException;
+    public abstract void init() throws SQLException;
     
     @SuppressWarnings("unchecked")
     protected  <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
@@ -108,7 +101,6 @@ public abstract class AbstractStatementExecutor {
         clearStatements();
         clearConnections();
         connections.clear();
-        routeUnits.clear();
         resultSets.clear();
         executeGroups.clear();
     }
