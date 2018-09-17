@@ -192,6 +192,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      *
      * @return statements
      */
+    @Override
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
