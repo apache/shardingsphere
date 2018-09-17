@@ -77,12 +77,6 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
-        System.err.println("!!!!");
-        System.err.println(statementExecuteUnit.getStatement());
-        System.err.println(statementExecuteUnit.getStatement().getConnection());
-        System.err.println(statementExecuteUnit.getStatement().getConnection().getMetaData());
-        System.err.println(statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
-    
         DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         for (List<Object> each : parameterSets) {
             shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
