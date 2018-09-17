@@ -106,7 +106,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(databaseType, sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected QueryResult executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -118,7 +118,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private QueryResult getQueryResult(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
         ResultSet resultSet = statementExecuteUnit.getStatement().executeQuery(statementExecuteUnit.getRouteUnit().getSqlUnit().getSql());
-        resultSets.add(resultSet);
+        getResultSets().add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == statementExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
@@ -192,7 +192,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     private int executeUpdate(final Updater updater) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -281,7 +281,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     private boolean execute(final Executor executor) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -297,7 +297,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     @SuppressWarnings("unchecked")
     private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+        return getSqlExecuteTemplate().executeGroup((Collection) getExecuteGroups(), executeCallback);
     }
     
     /**
@@ -308,22 +308,13 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     public void clear() throws SQLException {
         clearStatements();
         clearConnections();
-        connections.clear();
-        resultSets.clear();
         statements.clear();
         parameterSets.clear();
-        executeGroups.clear();
     }
     
     private void clearStatements() throws SQLException {
         for (Statement each : statements) {
             each.close();
-        }
-    }
-    
-    private void clearConnections() {
-        for (Connection each : connections) {
-            connection.release(each);
         }
     }
     
