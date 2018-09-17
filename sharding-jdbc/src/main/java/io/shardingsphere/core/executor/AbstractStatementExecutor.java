@@ -17,11 +17,6 @@
 
 package io.shardingsphere.core.executor;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -50,8 +45,6 @@ public abstract class AbstractStatementExecutor {
     private final DatabaseType databaseType;
     
     private SQLType sqlType;
-    
-    private int batchCount;
     
     private final int resultSetType;
     
@@ -97,10 +90,10 @@ public abstract class AbstractStatementExecutor {
         executeGroups.addAll(obtainExecuteGroups(routeUnits));
     }
     
-    protected abstract Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException;
+    protected abstract Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(Collection<BatchRouteUnit> routeUnits) throws SQLException;
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+    protected  <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
     
@@ -109,43 +102,7 @@ public abstract class AbstractStatementExecutor {
      *
      * @return statements
      */
-    public List<Statement> getStatements() {
-        List<Statement> result = new LinkedList<>();
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
-            result.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
-                
-                @Override
-                public Statement apply(final StatementExecuteUnit input) {
-                    return input.getStatement();
-                }
-            }));
-        }
-        return result;
-    }
-    
-    /**
-     * Get parameter sets.
-     *
-     * @param statement statement
-     * @return parameter sets
-     */
-    public List<List<Object>> getParameterSet(final Statement statement) {
-        Optional<StatementExecuteUnit> target;
-        List<List<Object>> result = new LinkedList<>();
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
-            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
-                @Override
-                public boolean apply(final StatementExecuteUnit input) {
-                    return input.getStatement().equals(statement);
-                }
-            });
-            if (target.isPresent()) {
-                result.addAll(target.get().getRouteUnit().getSqlUnit().getParameterSets());
-                break;
-            }
-        }
-        return result;
-    }
+    public abstract List<Statement> getStatements();
     
     /**
      * Clear data.
@@ -155,7 +112,6 @@ public abstract class AbstractStatementExecutor {
     public void clear() throws SQLException {
         clearStatements();
         clearConnections();
-        batchCount = 0;
         connections.clear();
         routeUnits.clear();
         resultSets.clear();
