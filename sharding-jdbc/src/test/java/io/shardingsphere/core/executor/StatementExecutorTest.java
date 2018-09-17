@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -59,7 +58,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Override
     public void setUp() throws SQLException, ReflectiveOperationException {
         super.setUp();
-        actual = new StatementExecutor(DatabaseType.H2, 1, 1, 1, getConnection());
+        actual = new StatementExecutor(1, 1, 1, getConnection());
     }
     
     @Test
