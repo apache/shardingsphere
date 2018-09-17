@@ -38,7 +38,6 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.sql.ResultSet;
@@ -57,20 +56,17 @@ import java.util.List;
  * @author zhaojun
  * @author panjuan
  */
-@Getter
 public final class ShardingStatement extends AbstractStatementAdapter {
     
+    @Getter
     private final ShardingConnection connection;
     
-    private StatementExecutor statementExecutor;
+    private final StatementExecutor statementExecutor;
     
-    @Getter(AccessLevel.NONE)
     private boolean returnGeneratedKeys;
     
-    @Getter(AccessLevel.NONE)
     private SQLRouteResult routeResult;
     
-    @Getter(AccessLevel.NONE)
     private ResultSet currentResultSet;
     
     public ShardingStatement(final ShardingConnection connection) {
@@ -84,7 +80,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        this.statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
+        statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
     }
     
     @Override
