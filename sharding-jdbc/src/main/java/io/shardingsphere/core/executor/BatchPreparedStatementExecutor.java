@@ -100,8 +100,10 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         });
     }
     
+    @SuppressWarnings("MagicConstant")
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
     }
     
     /**
@@ -110,7 +112,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @param routeResult route result
      */
     public void addBatchForRouteUnits(final SQLRouteResult routeResult) {
-        sqlType = routeResult.getSqlStatement().getType();
+        setSqlType(routeResult.getSqlStatement().getType());
         handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         batchCount++;
@@ -160,7 +162,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
             
             @Override
             protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {

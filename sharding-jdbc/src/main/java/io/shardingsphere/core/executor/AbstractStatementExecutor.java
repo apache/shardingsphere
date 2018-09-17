@@ -25,6 +25,7 @@ import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,8 +45,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
-    
-    protected SQLType sqlType;
     
     @Getter
     private final int resultSetType;
@@ -75,18 +74,22 @@ public class AbstractStatementExecutor {
     
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
+    @Getter
+    @Setter
+    private SQLType sqlType;
+    
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
     }
     
     @SuppressWarnings("unchecked")
-    protected <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+    protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
     

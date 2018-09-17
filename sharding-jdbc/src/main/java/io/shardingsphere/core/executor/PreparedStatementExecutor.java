@@ -52,7 +52,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     @Getter
     private final boolean returnGeneratedKeys;
     
-    public PreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
+    public PreparedStatementExecutor(
+            final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
         super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
     }
@@ -64,7 +65,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
-        sqlType = routeResult.getSqlStatement().getType();
+        setSqlType(routeResult.getSqlStatement().getType());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
     }
     
@@ -88,8 +89,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         });
     }
     
+    @SuppressWarnings("MagicConstant")
     private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
     }
     
     /**
@@ -101,7 +104,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
             
             @Override
             protected QueryResult executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -127,7 +130,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public int executeUpdate() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
             
             @Override
             protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -155,7 +158,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public boolean execute() throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
