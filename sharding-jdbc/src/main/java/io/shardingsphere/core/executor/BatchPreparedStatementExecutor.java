@@ -61,9 +61,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
+    private final boolean returnGeneratedKeys;
+    
     private int batchCount;
     
-    private final boolean returnGeneratedKeys;
+    private SQLType sqlType;
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
@@ -160,7 +162,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -176,7 +178,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         for (BatchRouteUnit each : routeUnits) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (DatabaseType.Oracle == databaseType) {
+                if (DatabaseType.Oracle == getDatabaseType()) {
                     result[entry.getKey()] = value;
                 } else {
                     result[entry.getKey()] += value;
