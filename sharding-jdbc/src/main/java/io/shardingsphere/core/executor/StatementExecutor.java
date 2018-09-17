@@ -15,21 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.statement;
+package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
+import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
+import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
+import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLRouteResult;
+import lombok.AccessLevel;
+import lombok.Getter;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Statement executor.
@@ -38,31 +52,105 @@ import java.util.Map;
  * @author caohao
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
-@RequiredArgsConstructor
-public abstract class StatementExecutor {
+@Getter
+public final class StatementExecutor {
     
     private final DatabaseType databaseType;
     
-    private final SQLType sqlType;
+    @Getter(AccessLevel.NONE)
+    private SQLType sqlType;
     
+    private final int resultSetType;
+    
+    private final int resultSetConcurrency;
+    
+    private final int resultSetHoldability;
+    
+    private final ShardingConnection connection;
+    
+    @Getter(AccessLevel.NONE)
+    private final SQLExecuteTemplate sqlExecuteTemplate;
+    
+    @Getter(AccessLevel.NONE)
+    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
+    
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
+    
+    private final List<Statement> statements = new LinkedList<>();
+    
+    private final List<List<Object>> parameterSets = new LinkedList<>();
+    
+    private final Collection<Connection> connections = new LinkedList<>();
+    
+    @Getter(AccessLevel.NONE)
+    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+    
+    public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
+        this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
+        this.resultSetType = resultSetType;
+        this.resultSetConcurrency = resultSetConcurrency;
+        this.resultSetHoldability = resultSetHoldability;
+        this.connection = shardingConnection;
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
+    }
+    
+    /**
+     * Init executor.
+     *
+     * @param routeResult route result
+     * @throws SQLException sql exception
+     */
+    public void init(final SQLRouteResult routeResult) throws SQLException {
+        sqlType = routeResult.getSqlStatement().getType();
+        executeGroups.addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+    }
+    
+    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
+        return sqlExecutePrepareTemplate.getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+    
+            @Override
+            public Connection getConnection(final String dataSourceName) throws SQLException {
+                Connection conn = connection.getNewConnection(dataSourceName);
+                connections.add(conn);
+                return conn;
+            }
+    
+            @Override
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+                Statement statement = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+                statements.add(statement);
+                parameterSets.add(routeUnit.getSqlUnit().getParameterSets().get(0));
+                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+            }
+        });
+    }
+
     /**
      * Execute query.
      * 
      * @return result set list
      * @throws SQLException SQL exception
      */
-    public List<ResultSet> executeQuery() throws SQLException {
+    public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<ResultSet> executeCallback = new SQLExecuteCallback<ResultSet>(databaseType, sqlType, isExceptionThrown, dataMap) {
-            
+        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(databaseType, sqlType, isExceptionThrown, dataMap) {
+
             @Override
-            protected ResultSet executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-                return sqlExecuteUnit.getStatement().executeQuery(sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql());
+            protected QueryResult executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+                return getQueryResult(statementExecuteUnit);
             }
         };
         return executeCallback(executeCallback);
+    }
+    
+    private QueryResult getQueryResult(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+        ResultSet resultSet = statementExecuteUnit.getStatement().executeQuery(statementExecuteUnit.getRouteUnit().getSqlUnit().getSql());
+        resultSets.add(resultSet);
+        return ConnectionMode.MEMORY_STRICTLY == statementExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**
@@ -138,8 +226,8 @@ public abstract class StatementExecutor {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Integer executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-                return updater.executeUpdate(sqlExecuteUnit.getStatement(), sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql());
+            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+                return updater.executeUpdate(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
         List<Integer> results = executeCallback(executeCallback);
@@ -227,8 +315,8 @@ public abstract class StatementExecutor {
         SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
-            protected Boolean executeSQL(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-                return executor.execute(sqlExecuteUnit.getStatement(), sqlExecuteUnit.getRouteUnit().getSqlUnit().getSql());
+            protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+                return executor.execute(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql());
             }
         };
         List<Boolean> result = executeCallback(executeCallback);
@@ -238,7 +326,37 @@ public abstract class StatementExecutor {
         return result.get(0);
     }
     
-    protected abstract <T> List<T> executeCallback(SQLExecuteCallback<T> executeCallback) throws SQLException;
+    @SuppressWarnings("unchecked")
+    private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+        return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+    }
+    
+    /**
+     * Clear data.
+     *
+     * @throws SQLException sql exception
+     */
+    public void clear() throws SQLException {
+        clearStatements();
+        clearConnections();
+        connections.clear();
+        resultSets.clear();
+        statements.clear();
+        parameterSets.clear();
+        executeGroups.clear();
+    }
+    
+    private void clearStatements() throws SQLException {
+        for (Statement each : statements) {
+            each.close();
+        }
+    }
+    
+    private void clearConnections() {
+        for (Connection each : connections) {
+            connection.release(each);
+        }
+    }
     
     private interface Updater {
         
@@ -250,3 +368,4 @@ public abstract class StatementExecutor {
         boolean execute(Statement statement, String sql) throws SQLException;
     }
 }
+

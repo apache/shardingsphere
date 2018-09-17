@@ -15,42 +15,44 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.batch;
+package io.shardingsphere.core.routing;
 
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
-import io.shardingsphere.core.routing.RouteUnit;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import java.sql.PreparedStatement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Execute unit for JDBC prepared statement add batch.
+ * Batch route unit.
  * 
- * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class BatchPreparedStatementExecuteUnit implements SQLExecuteUnit {
+@EqualsAndHashCode(of = { "routeUnit" })
+@ToString
+public final class BatchRouteUnit {
     
     private final RouteUnit routeUnit;
-    
-    private final PreparedStatement statement;
     
     private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new LinkedHashMap<>();
     
     @Getter(AccessLevel.NONE)
     private int actualCallAddBatchTimes;
     
+    public BatchRouteUnit(final RouteUnit routeUnit) {
+        this.routeUnit = routeUnit;
+    }
+    
     /**
      * Map times of use JDBC API call addBatch and times of actual call addBatch after route.
-     * 
+     *
      * @param jdbcAddBatchTimes times of use JDBC API call addBatch
      */
     public void mapAddBatchCount(final int jdbcAddBatchTimes) {
         jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);
     }
 }
+

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.jdbc.adapter;
 
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.util.JDBCTestSQL;
@@ -26,7 +27,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -49,7 +49,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     private void assertAutoCommit(final ShardingConnection actual, final boolean autoCommit) throws SQLException {
         assertThat(actual.getAutoCommit(), is(autoCommit));
-        Map<String, Connection> cachedConnections = getCachedConnections(actual);
+        Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertThat(cachedConnections.size(), is(2));
         for (Connection each : cachedConnections.values()) {
             assertThat(each.getAutoCommit(), is(autoCommit));
@@ -88,7 +88,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     private void assertClose(final ShardingConnection actual, final boolean closed) throws SQLException {
         assertThat(actual.isClosed(), is(closed));
-        Map<String, Connection> cachedConnections = getCachedConnections(actual);
+        Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertThat(cachedConnections.size(), is(2));
         for (Connection each : cachedConnections.values()) {
             assertThat(each.isClosed(), is(closed));
@@ -109,7 +109,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     private void assertReadOnly(final ShardingConnection actual, final boolean readOnly) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
-        Map<String, Connection> cachedConnections = getCachedConnections(actual);
+        Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertThat(cachedConnections.size(), is(2));
         for (Connection each : cachedConnections.values()) {
             assertThat(each.isReadOnly(), is(readOnly));
@@ -138,7 +138,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     private void assertTransactionIsolation(final ShardingConnection actual, final int transactionIsolation) throws SQLException {
         assertThat(actual.getTransactionIsolation(), is(transactionIsolation));
-        Map<String, Connection> cachedConnections = getCachedConnections(actual);
+        Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertThat(cachedConnections.size(), is(2));
         for (Connection each : cachedConnections.values()) {
             assertThat(each.getTransactionIsolation(), is(transactionIsolation));
@@ -175,11 +175,11 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, Connection> getCachedConnections(final AbstractConnectionAdapter connectionAdapter) {
+    private Multimap<String, Connection> getCachedConnections(final AbstractConnectionAdapter connectionAdapter) {
         try {
             Field field = AbstractConnectionAdapter.class.getDeclaredField("cachedConnections");
             field.setAccessible(true);
-            return (Map<String, Connection>) field.get(connectionAdapter);
+            return (Multimap<String, Connection>) field.get(connectionAdapter);
         } catch (final ReflectiveOperationException ex) {
             throw new RuntimeException(ex);
         }
