@@ -2,7 +2,7 @@ grammar SQLServerDropIndex;
 import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
 dropIndex:
-    DROP INDEX tableOrViewName (WITH LEFT_PAREN dropIndexOptions RIGHT_PAREN)?
+    DROP INDEX indexName ON tableOrViewName (WITH LEFT_PAREN dropIndexOptions RIGHT_PAREN)?
     ;
 
 dropIndexOptions:
@@ -10,6 +10,6 @@ dropIndexOptions:
     ;
 
 dropIndexOption:
-    MAXDOP EQ_OR_ASSIGN NUMBER
-    | ONLINE EQ_OR_ASSIGN (ON | OFF)
+    (MAXDOP EQ_OR_ASSIGN NUMBER)
+    | (ONLINE EQ_OR_ASSIGN (ON | OFF))
     ;
