@@ -261,11 +261,13 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         clearParameters();
     }
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetType() {
         return preparedStatementExecutor.getResultSetType();
     }
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetConcurrency() {
         return preparedStatementExecutor.getResultSetConcurrency();

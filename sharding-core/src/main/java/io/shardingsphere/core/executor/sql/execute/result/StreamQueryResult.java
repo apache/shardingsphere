@@ -172,6 +172,7 @@ public final class StreamQueryResult implements QueryResult {
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         switch (type) {
@@ -186,6 +187,7 @@ public final class StreamQueryResult implements QueryResult {
         }
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         switch (type) {

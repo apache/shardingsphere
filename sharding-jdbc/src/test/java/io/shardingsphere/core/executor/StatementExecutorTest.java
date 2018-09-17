@@ -38,10 +38,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -62,7 +62,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertNoStatement() throws SQLException, ReflectiveOperationException {
+    public void assertNoStatement() throws SQLException {
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));

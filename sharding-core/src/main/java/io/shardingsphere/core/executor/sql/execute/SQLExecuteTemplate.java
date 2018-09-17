@@ -65,7 +65,8 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> statementExecuteUnits, final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(
+            final Collection<? extends StatementExecuteUnit> statementExecuteUnits, final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
             return executeEngine.execute((Collection) statementExecuteUnits, firstExecuteCallback, callback);
         } catch (final SQLException ex) {

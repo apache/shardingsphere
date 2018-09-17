@@ -24,7 +24,6 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
@@ -75,9 +74,6 @@ public final class ComQueryPacketTest {
     @Mock
     private FrontendHandler frontendHandler;
     
-    @Mock
-    private RuleRegistry ruleRegistry;
-    
     private Listener listener;
     
     @Before
@@ -104,7 +100,6 @@ public final class ComQueryPacketTest {
     
     private void setProxyContextRuleRegistryMap() throws ReflectiveOperationException {
         RuleRegistry ruleRegistry = mock(RuleRegistry.class);
-        ShardingMetaData metaData = mock(ShardingMetaData.class);
         Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
         ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
         Field field = ProxyContext.class.getDeclaredField("ruleRegistryMap");

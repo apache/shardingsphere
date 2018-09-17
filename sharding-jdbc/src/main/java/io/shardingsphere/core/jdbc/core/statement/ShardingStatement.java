@@ -267,11 +267,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         statementExecutor.clear();
     }
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetType() {
         return statementExecutor.getResultSetType();
     }
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetConcurrency() {
         return statementExecutor.getResultSetConcurrency();

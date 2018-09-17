@@ -66,7 +66,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
         Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
-        int count = 0;
         for (PreparedStatement each : preparedStatements) {
             List<List<Object>> parameterSets = new LinkedList<>();
             parameterSets.add(Collections.singletonList((Object) 1));
@@ -76,12 +75,12 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             batchRouteUnit.mapAddBatchCount(1);
             routeUnits.add(batchRouteUnit);
             preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
-            count++;
         }
-        setFields(executeGroups, routeUnits, count);
+        setFields(executeGroups, routeUnits);
     }
     
-    private void setFields(final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits, final int count) throws NoSuchFieldException, IllegalAccessException {
+    private void setFields(
+            final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) throws NoSuchFieldException, IllegalAccessException {
         Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);

@@ -51,12 +51,14 @@ public final class DateBinaryProtocolValue implements BinaryProtocolValue {
         }
     }
     
+    @SuppressWarnings("MagicConstant")
     private Timestamp getTimestampForDate(final MySQLPacketPayload payload) {
         Calendar result = Calendar.getInstance();
         result.set(payload.readInt2(), payload.readInt1() - 1, payload.readInt1());
         return new Timestamp(result.getTimeInMillis());
     }
     
+    @SuppressWarnings("MagicConstant")
     private Timestamp getTimestampForDatetime(final MySQLPacketPayload payload) {
         Calendar result = Calendar.getInstance();
         result.set(payload.readInt2(), payload.readInt1() - 1, payload.readInt1(), payload.readInt1(), payload.readInt1(), payload.readInt1());

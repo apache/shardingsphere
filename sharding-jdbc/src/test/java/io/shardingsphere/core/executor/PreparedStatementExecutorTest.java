@@ -81,9 +81,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         field.set(actual, executeGroups);
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    public void assertNoStatement() throws SQLException, ReflectiveOperationException {
+    public void assertNoStatement() throws SQLException {
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));

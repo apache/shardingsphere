@@ -73,8 +73,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 return 0;
             }
         };
-        sqlExecuteTemplate.execute(Collections.singleton(
-                new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)), executeCallback);
+        sqlExecuteTemplate.execute(Collections.singleton(new StatementExecuteUnit(new RouteUnit("ds_0", 
+                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)), executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(1));
     }
     
@@ -85,12 +85,14 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
         when(stm1.getConnection()).thenReturn(mock(Connection.class));
         when(stm1.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
         when(stm1.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
-        statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm1, ConnectionMode.MEMORY_STRICTLY));
+        statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", 
+                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm1, ConnectionMode.MEMORY_STRICTLY));
         Statement stm2 = mock(Statement.class);
         when(stm2.getConnection()).thenReturn(mock(Connection.class));
         when(stm2.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
         when(stm2.getConnection().getMetaData().getURL()).thenReturn(HOST_URL);
-        statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2, ConnectionMode.MEMORY_STRICTLY));
+        statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", 
+                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), stm2, ConnectionMode.MEMORY_STRICTLY));
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(DatabaseType.MySQL, SQLType.DML, isExceptionThrown, dataMap) {
@@ -119,7 +121,7 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 throw new SQLException();
             }
         };
-        sqlExecuteTemplate.execute(Collections.singleton(
-                new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)), executeCallback);
+        sqlExecuteTemplate.execute(Collections.singleton(new StatementExecuteUnit(new RouteUnit("ds_0", 
+                new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)), executeCallback);
     }
 }
