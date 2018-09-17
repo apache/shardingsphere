@@ -59,7 +59,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class BatchPreparedStatementExecutor {
     
-    private final DatabaseType dbType;
+    private final DatabaseType databaseType;
     
     private SQLType sqlType;
     
@@ -90,7 +90,7 @@ public final class BatchPreparedStatementExecutor {
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
-        this.dbType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
+        this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
@@ -194,7 +194,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(dbType, sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -210,7 +210,7 @@ public final class BatchPreparedStatementExecutor {
         for (BatchRouteUnit each : routeUnits) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (DatabaseType.Oracle == dbType) {
+                if (DatabaseType.Oracle == databaseType) {
                     result[entry.getKey()] = value;
                 } else {
                     result[entry.getKey()] += value;
