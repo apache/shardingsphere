@@ -57,60 +57,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class BatchPreparedStatementExecutor {
-    
-    private final DatabaseType databaseType;
-    
-    private SQLType sqlType;
-    
-    private int batchCount;
-    
-    private final int resultSetType;
-    
-    private final int resultSetConcurrency;
-    
-    private final int resultSetHoldability;
-    
-    private final boolean returnGeneratedKeys;
-    
-    private final ShardingConnection connection;
+public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
-    private final SQLExecuteTemplate sqlExecuteTemplate;
+    private int batchCount;
     
-    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
-    
-    @Getter
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
-    
-    private final Collection<Connection> connections = new LinkedList<>();
-    
-    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+    private final boolean returnGeneratedKeys;
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
-        this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
-        this.resultSetType = resultSetType;
-        this.resultSetConcurrency = resultSetConcurrency;
-        this.resultSetHoldability = resultSetHoldability;
+        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
-        this.connection = shardingConnection;
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
     }
     
-    /**
-     * Initialize executor.
-     *
-     * @exception SQLException SQL exception
-     */
+    @Override
     public void init() throws SQLException {
-        executeGroups.addAll(obtainExecuteGroups(routeUnits));
+        getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException {
-        return sqlExecutePrepareTemplate.getExecuteUnitGroups(Lists.transform(new ArrayList<>(routeUnits), new Function<BatchRouteUnit, RouteUnit>() {
+        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(Lists.transform(new ArrayList<>(routeUnits), new Function<BatchRouteUnit, RouteUnit>() {
     
             @Override
             public RouteUnit apply(final BatchRouteUnit input) {
@@ -120,8 +87,8 @@ public final class BatchPreparedStatementExecutor {
             
             @Override
             public Connection getConnection(final String dataSourceName) throws SQLException {
-                Connection conn = connection.getNewConnection(dataSourceName);
-                connections.add(conn);
+                Connection conn = BatchPreparedStatementExecutor.super.getConnection().getNewConnection(dataSourceName);
+                getConnections().add(conn);
                 return conn;
             }
             
