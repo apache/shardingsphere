@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
@@ -43,6 +44,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
+    
+    protected SQLType sqlType;
     
     @Getter
     private final int resultSetType;
