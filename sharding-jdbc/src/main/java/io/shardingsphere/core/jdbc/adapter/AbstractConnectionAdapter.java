@@ -29,7 +29,6 @@ import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -195,7 +194,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             }
         });
-        RootInvokeEvent finishEvent = new RootInvokeFinishEvent();
+        RootInvokeEvent finishEvent = new RootInvokeEvent();
         finishEvent.setExecuteSuccess();
         ShardingEventBusInstance.getInstance().post(finishEvent);
     }
