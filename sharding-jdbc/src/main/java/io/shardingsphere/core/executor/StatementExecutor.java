@@ -295,29 +295,6 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         return result.get(0);
     }
     
-    @SuppressWarnings("unchecked")
-    private <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        return getSqlExecuteTemplate().executeGroup((Collection) getExecuteGroups(), executeCallback);
-    }
-    
-    /**
-     * Clear data.
-     *
-     * @throws SQLException sql exception
-     */
-    public void clear() throws SQLException {
-        clearStatements();
-        clearConnections();
-        statements.clear();
-        parameterSets.clear();
-    }
-    
-    private void clearStatements() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
-    }
-    
     private interface Updater {
         
         int executeUpdate(Statement statement, String sql) throws SQLException;
