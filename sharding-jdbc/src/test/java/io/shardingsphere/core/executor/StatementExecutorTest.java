@@ -151,7 +151,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
-        verify(getEventCaller(), times(9)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
