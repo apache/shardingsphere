@@ -21,10 +21,11 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.opentracing.listener.execution.SQLExecuteEventListener;
-import io.shardingsphere.opentracing.listener.execution.OverallExecuteEventListener;
-import io.shardingsphere.opentracing.listener.merger.MergeEventListener;
-import io.shardingsphere.opentracing.listener.routing.RouteEventListener;
+import io.shardingsphere.opentracing.listener.CloseConnectionEventListener;
+import io.shardingsphere.opentracing.listener.GetConnectionEventListener;
+import io.shardingsphere.opentracing.listener.SQLExecuteEventListener;
+import io.shardingsphere.opentracing.listener.RootInvokeEventListener;
+import io.shardingsphere.opentracing.listener.ParsingEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -44,7 +45,7 @@ public final class ShardingTracer {
      */
     public static void init() {
         String tracerClassName = System.getProperty(OPENTRACING_TRACER_CLASS_NAME);
-        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class.");
+        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation class via system property `%s`", OPENTRACING_TRACER_CLASS_NAME);
         try {
             init((Tracer) Class.forName(tracerClassName).newInstance());
         } catch (final ReflectiveOperationException ex) {
@@ -54,7 +55,7 @@ public final class ShardingTracer {
     
     /**
      * Initialize sharding tracer.
-     *
+     * 
      * @param tracer opentracing tracer
      */
     public static void init(final Tracer tracer) {
@@ -65,10 +66,11 @@ public final class ShardingTracer {
     }
     
     private static void registerListeners() {
-        new RouteEventListener().register();
-        new OverallExecuteEventListener().register();
+        new RootInvokeEventListener().register();
+        new ParsingEventListener().register();
+        new GetConnectionEventListener().register();
         new SQLExecuteEventListener().register();
-        new MergeEventListener().register();
+        new CloseConnectionEventListener().register();
     }
     
     /**

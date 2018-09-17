@@ -17,12 +17,10 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dml.insert;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
-import io.shardingsphere.core.parsing.parser.token.GeneratedKeyToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.Getter;
@@ -56,20 +54,6 @@ public final class InsertStatement extends DMLStatement {
     private int generateKeyColumnIndex = -1;
     
     private int insertValuesListLastPosition;
-    
-    /**
-     * Find generated key token.
-     * 
-     * @return generated key token
-     */
-    public Optional<GeneratedKeyToken> findGeneratedKeyToken() {
-        for (SQLToken each : getSqlTokens()) {
-            if (each instanceof GeneratedKeyToken) {
-                return Optional.of((GeneratedKeyToken) each);
-            }
-        }
-        return Optional.absent();
-    }
     
     /**
      * Get items tokens.

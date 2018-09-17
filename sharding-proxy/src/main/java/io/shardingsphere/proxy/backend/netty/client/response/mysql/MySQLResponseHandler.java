@@ -24,7 +24,7 @@ import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.netty.client.response.ResponseHandler;
 import io.shardingsphere.proxy.backend.netty.future.FutureRegistry;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.runtime.ChannelRegistry;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
@@ -54,15 +54,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MySQLResponseHandler extends ResponseHandler {
     
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    
     private final DataSourceParameter dataSourceParameter;
     
     private final DataSourceMetaData dataSourceMetaData;
     
     private final Map<Integer, MySQLQueryResult> resultMap;
     
-    public MySQLResponseHandler(final String dataSourceName) {
-        dataSourceParameter = RuleRegistry.getInstance().getDataSourceConfigurationMap().get(dataSourceName);
-        dataSourceMetaData = RuleRegistry.getInstance().getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+    public MySQLResponseHandler(final String dataSourceName, final String schema) {
+        dataSourceParameter = PROXY_CONTEXT.getRuleRegistry(schema).getDataSources().get(dataSourceName);
+        dataSourceMetaData = PROXY_CONTEXT.getRuleRegistry(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
         resultMap = new HashMap<>();
     }
     
@@ -83,7 +85,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
             byte[] authResponse = securePasswordAuthentication(
                     (null == dataSourceParameter.getPassword() ? "" : dataSourceParameter.getPassword()).getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(
-                    handshakePacket.getSequenceId() + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET, 
+                    handshakePacket.getSequenceId() + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
                     dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemeName());
             ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);

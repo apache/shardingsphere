@@ -20,16 +20,24 @@ package io.shardingsphere.core.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.connection.CloseConnectionEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
+import io.shardingsphere.core.event.root.RootInvokeEvent;
+import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,7 +53,10 @@ import java.util.Map;
  * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
+    
+    private final DatabaseType databaseType;
     
     private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
     
@@ -58,6 +69,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
+    private final ForceExecuteTemplate<Map.Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
     
     /**
      * Get database connection.
@@ -104,9 +117,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[] {boolean.class}, new Object[] {autoCommit});
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
+                
                 @Override
                 public void execute(final Connection connection) throws SQLException {
                     connection.setAutoCommit(autoCommit);
@@ -121,7 +134,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void commit() throws SQLException {
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
+                
                 @Override
                 public void execute(final Connection connection) throws SQLException {
                     connection.commit();
@@ -136,7 +149,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void rollback() throws SQLException {
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
+                
                 @Override
                 public void execute(final Connection connection) throws SQLException {
                     connection.rollback();
@@ -149,19 +162,39 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void close() throws SQLException {
+        if (closed) {
+            return;
+        }
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.close();
+            public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
+                Connection connection = cachedConnectionsEntrySet.getValue();
+                ShardingEventBusInstance.getInstance().post(
+                        new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
+                CloseConnectionEvent finishEvent = new CloseConnectionFinishEvent();
+                try {
+                    connection.close();
+                    finishEvent.setExecuteSuccess();
+                    // CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    // CHECKSTYLE:ON
+                    finishEvent.setExecuteFailure(ex);
+                    throw ex;
+                } finally {
+                    ShardingEventBusInstance.getInstance().post(finishEvent);
+                }
             }
         });
+        RootInvokeEvent finishEvent = new RootInvokeFinishEvent();
+        finishEvent.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(finishEvent);
     }
-    
+                    
     @Override
     public final boolean isClosed() {
         return closed;
@@ -175,9 +208,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
-        recordMethodInvocation(Connection.class, "setReadOnly", new Class[] {boolean.class}, new Object[] {readOnly});
+        recordMethodInvocation(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
         forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
+            
             @Override
             public void execute(final Connection connection) throws SQLException {
                 connection.setReadOnly(readOnly);
@@ -196,9 +229,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
-        recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[] {int.class}, new Object[] {level});
+        recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
         forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
+            
             @Override
             public void execute(final Connection connection) throws SQLException {
                 connection.setTransactionIsolation(level);

@@ -36,11 +36,13 @@ public final class BackendNettyClientChannelInitializer extends ChannelInitializ
     
     private final String dataSourceName;
     
+    private final String schemaName;
+    
     @Override
     protected void initChannel(final Channel channel) {
         ChannelPipeline pipeline = channel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.newInstance(DatabaseType.MySQL));
-        pipeline.addLast(ResponseHandlerFactory.newInstance(DatabaseType.MySQL, dataSourceName));
+        pipeline.addLast(ResponseHandlerFactory.newInstance(DatabaseType.MySQL, dataSourceName, schemaName));
     }
 }

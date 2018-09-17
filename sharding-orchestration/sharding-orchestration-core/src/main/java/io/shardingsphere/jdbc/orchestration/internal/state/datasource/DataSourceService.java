@@ -18,10 +18,9 @@
 package io.shardingsphere.jdbc.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ProxyBasicRule;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNode;
 import io.shardingsphere.jdbc.orchestration.internal.state.StateNodeStatus;
@@ -30,12 +29,14 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Data source service.
- * 
+ *
  * @author caohao
  * @author zhangliang
  */
@@ -75,17 +76,20 @@ public final class DataSourceService {
     }
     
     /**
-     * Get available data source parameters.
+     * Get proxy available data source parameters.
      *
      * @return available data source parameters
      */
-    public Map<String, DataSourceParameter> getAvailableDataSourceParameters() {
-        Map<String, DataSourceParameter> result = configService.loadDataSources();
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
+    public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
+        Map<String, Map<String, DataSourceParameter>> schemaDatasources = configService.loadProxyDataSources();
+        Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
+        for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
+            for (String disabledDataSourceName : each.getValue()) {
+                schemaDatasources.get(each.getKey()).remove(disabledDataSourceName);
+            }
+            
         }
-        return result;
+        return schemaDatasources;
     }
     
     /**
@@ -119,25 +123,22 @@ public final class DataSourceService {
     }
     
     /**
-     *  Get available proxy rule configuration.
+     * Get available proxy rule configuration.
      *
      * @return available yaml proxy configuration
      */
-    public ProxyBasicRule getAvailableYamlProxyConfiguration() {
-        ProxyBasicRule result = configService.loadProxyConfiguration();
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
-        for (String each : disabledDataSourceNames) {
-            result.getMasterSlaveRule().getSlaveDataSourceNames().remove(each);
-            removeDisabledDataSourceNames(each, result.getShardingRule().getMasterSlaveRules());
+    public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
+        Map<String, YamlRuleConfiguration> schemaRuleMap = configService.loadProxyConfiguration();
+        Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
+        
+        for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
+            for (String disabledDataSourceName : each.getValue()) {
+                if (null != schemaRuleMap.get(each.getKey()).getMasterSlaveRule()) {
+                    schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
+                }
+            }
         }
-        return result;
-    }
-    
-    private void removeDisabledDataSourceNames(final String disabledDataSourceName,
-                                               final Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules) {
-        for (Map.Entry<String, YamlMasterSlaveRuleConfiguration> each : masterSlaveRules.entrySet()) {
-            each.getValue().getSlaveDataSourceNames().remove(disabledDataSourceName);
-        }
+        return schemaRuleMap;
     }
     
     /**
@@ -156,4 +157,28 @@ public final class DataSourceService {
         }
         return result;
     }
+    
+    /**
+     * Get proxy disabled data source names.
+     *
+     * @return disabled data source names
+     */
+    public Map<String, Collection<String>> getProxyDisabledDataSourceNames() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
+        List<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        for (String each : schemaDataSources) {
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
+                int pos = each.indexOf(".");
+                String schema = each.substring(0, pos);
+                String datasource = each.substring(pos + 1);
+                if (!result.containsKey(schema)) {
+                    result.put(schema, new LinkedList<String>());
+                }
+                result.get(schema).add(datasource);
+            }
+        }
+        return result;
+    }
+    
 }

@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -95,7 +96,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoPreparedStatement() throws SQLException, ReflectiveOperationException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {0, 0});
         setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement));
@@ -104,9 +105,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @Test
     public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
-        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
@@ -119,14 +119,22 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
+    private PreparedStatement getPreparedStatement() throws SQLException {
+        PreparedStatement statement = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(statement.getConnection()).thenReturn(connection);
+        return statement;
+    }
+    
     @Test
     public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
-        when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
-        when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
@@ -142,10 +150,9 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @Test
     public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
-        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
@@ -159,13 +166,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @Test
     public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement1.executeBatch()).thenThrow(exp);
         when(preparedStatement2.executeBatch()).thenThrow(exp);
-        when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
-        when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         setSQLType(SQLType.DQL);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));

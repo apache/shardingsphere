@@ -67,16 +67,7 @@ public interface SQLStatement {
     int getParametersIndex();
     
     /**
-     * Set index of parameters.
-     *
-     * @param parametersIndex index of parameters
-     */
-    void setParametersIndex(int parametersIndex);
-    
-    /**
      * Increase parameters index.
-     *
-     * @return increased parameters index
      */
-    int increaseParametersIndex();
+    void increaseParametersIndex();
 }

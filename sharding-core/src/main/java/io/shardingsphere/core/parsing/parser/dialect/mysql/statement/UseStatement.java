@@ -18,11 +18,17 @@
 package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
 
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Use statement.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
+@Getter
 public final class UseStatement extends DALStatement {
+    
+    private final String schema;
 }

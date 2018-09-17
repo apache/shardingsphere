@@ -143,7 +143,7 @@ public final class BatchPreparedStatementExecutor {
      * @param routeResult route result
      * @throws SQLException sql exception
      */
-    public void addBatchForRouteUnits(final SQLRouteResult routeResult) throws SQLException {
+    public void addBatchForRouteUnits(final SQLRouteResult routeResult) {
         sqlType = routeResult.getSqlStatement().getType();
         handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
@@ -194,7 +194,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(sqlType, isExceptionThrown, dataMap) {
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(dbType, sqlType, isExceptionThrown, dataMap) {
             
             @Override
             protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {

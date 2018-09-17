@@ -19,6 +19,11 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.parsing.ParsingEvent;
+import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.event.parsing.ParsingStartEvent;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -34,7 +39,6 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -60,7 +64,7 @@ import java.util.List;
 
 /**
  * Sharding router with parse.
- * 
+ *
  * @author zhangiang
  * @author maxiaoguang
  * @author panjuan
@@ -82,7 +86,20 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+        ShardingEventBusInstance.getInstance().post(new ParsingStartEvent(logicSQL));
+        ParsingEvent finishEvent = new ParsingFinishEvent();
+        try {
+            SQLStatement sqlStatement = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            finishEvent.setExecuteSuccess();
+            return sqlStatement;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            finishEvent.setExecuteFailure(ex);
+            throw ex;
+        } finally {
+            ShardingEventBusInstance.getInstance().post(finishEvent);
+        }
     }
     
     @Override

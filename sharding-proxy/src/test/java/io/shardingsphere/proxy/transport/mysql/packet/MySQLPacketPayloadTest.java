@@ -23,9 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
@@ -268,112 +265,6 @@ public final class MySQLPacketPayloadTest {
     public void assertWriteReserved() {
         new MySQLPacketPayload(byteBuf).writeReserved(10);
         verify(byteBuf, times(10)).writeByte(0);
-    }
-    
-    @Test
-    public void assertReadFloat() {
-        when(byteBuf.readFloatLE()).thenReturn(1f);
-        assertThat(new MySQLPacketPayload(byteBuf).readFloat(), is(1f));
-    }
-    
-    @Test
-    public void assertWriteFloat() {
-        new MySQLPacketPayload(byteBuf).writeFloat(1f);
-        verify(byteBuf).writeFloatLE(1f);
-    }
-    
-    @Test
-    public void assertReadDouble() {
-        when(byteBuf.readDoubleLE()).thenReturn(1d);
-        assertThat(new MySQLPacketPayload(byteBuf).readDouble(), is(1d));
-    }
-    
-    @Test
-    public void assertWriteDouble() {
-        new MySQLPacketPayload(byteBuf).writeDouble(1d);
-        verify(byteBuf).writeDoubleLE(1d);
-    }
-    
-    @Test
-    public void assertReadDateWithZeroByte() {
-        assertThat(new MySQLPacketPayload(byteBuf).readDate(), is(new Timestamp(0)));
-    }
-    
-    @Test
-    public void assertReadDateWithFourBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 4, (byte) 12, (byte) 31);
-        when(byteBuf.readShortLE()).thenReturn((short) 2018);
-        Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(new MySQLPacketPayload(byteBuf).readDate().getTime());
-        assertThat(actual.get(Calendar.YEAR), is(2018));
-        assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
-        assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
-    }
-    
-    @Test
-    public void assertReadDateWithSevenBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 7, (byte) 12, (byte) 31, (byte) 10, (byte) 59, (byte) 0);
-        when(byteBuf.readShortLE()).thenReturn((short) 2018);
-        Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(new MySQLPacketPayload(byteBuf).readDate().getTime());
-        assertThat(actual.get(Calendar.YEAR), is(2018));
-        assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
-        assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
-        assertThat(actual.get(Calendar.HOUR_OF_DAY), is(10));
-        assertThat(actual.get(Calendar.MINUTE), is(59));
-        assertThat(actual.get(Calendar.SECOND), is(0));
-    }
-    
-    @Test
-    public void assertReadDateWithElevenBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 11, (byte) 12, (byte) 31, (byte) 10, (byte) 59, (byte) 0);
-        when(byteBuf.readShortLE()).thenReturn((short) 2018);
-        when(byteBuf.readIntLE()).thenReturn(500);
-        Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(new MySQLPacketPayload(byteBuf).readDate().getTime());
-        assertThat(actual.get(Calendar.YEAR), is(2018));
-        assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
-        assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
-        assertThat(actual.get(Calendar.HOUR_OF_DAY), is(10));
-        assertThat(actual.get(Calendar.MINUTE), is(59));
-        assertThat(actual.get(Calendar.SECOND), is(0));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertReadDateWithIllegalArgument() {
-        when(byteBuf.readByte()).thenReturn((byte) 100);
-        new MySQLPacketPayload(byteBuf).readDate();
-    }
-    
-    @Test
-    public void assertReadTimeWithZeroByte() {
-        assertThat(new MySQLPacketPayload(byteBuf).readTime(), is(new Timestamp(0)));
-    }
-    
-    @Test
-    public void assertReadTimeWithEightBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 8, (byte) 0, (byte) 10, (byte) 59, (byte) 0);
-        Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(new MySQLPacketPayload(byteBuf).readTime().getTime());
-        assertThat(actual.get(Calendar.HOUR_OF_DAY), is(10));
-        assertThat(actual.get(Calendar.MINUTE), is(59));
-        assertThat(actual.get(Calendar.SECOND), is(0));
-    }
-    
-    @Test
-    public void assertReadTimeWithTwelveBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 12, (byte) 0, (byte) 10, (byte) 59, (byte) 0);
-        Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(new MySQLPacketPayload(byteBuf).readTime().getTime());
-        assertThat(actual.get(Calendar.HOUR_OF_DAY), is(10));
-        assertThat(actual.get(Calendar.MINUTE), is(59));
-        assertThat(actual.get(Calendar.SECOND), is(0));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertReadTimeWithIllegalArgument() {
-        when(byteBuf.readByte()).thenReturn((byte) 100);
-        new MySQLPacketPayload(byteBuf).readTime();
     }
     
     @Test

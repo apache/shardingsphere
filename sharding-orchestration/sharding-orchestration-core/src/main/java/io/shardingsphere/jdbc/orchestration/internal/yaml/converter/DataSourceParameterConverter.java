@@ -36,23 +36,23 @@ public final class DataSourceParameterConverter {
     private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
     
     /**
-     * Convert data source parameter map to Yaml string.
+     * Convert schema data source parameter map to Yaml string.
      *
-     * @param dataSourceParameterMap Data source map
+     * @param schemaDataSourceMap Schema data source map
      * @return Yaml string
      */
-    public static String dataSourceParameterMapToYaml(final Map<String, DataSourceParameter> dataSourceParameterMap) {
-        return YAML.dumpAsMap(dataSourceParameterMap);
+    public static String dataSourceParameterMapToYaml(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap) {
+        return YAML.dumpAsMap(schemaDataSourceMap);
     }
     
     /**
-     * Convert yaml to data source parameter map.
+     * Convert yaml to schema data source parameter map.
      *
      * @param dataSourceParameterMapYamlString String in yaml.
-     * @return Data source parameter Map.
+     * @return Schema data source parameter Map.
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, DataSourceParameter> dataSourceParameterMapFromYaml(final String dataSourceParameterMapYamlString) {
-        return (Map<String, DataSourceParameter>) YAML.load(dataSourceParameterMapYamlString);
+    public static Map<String, Map<String, DataSourceParameter>> dataSourceParameterMapFromYaml(final String dataSourceParameterMapYamlString) {
+        return (Map<String, Map<String, DataSourceParameter>>) YAML.load(dataSourceParameterMapYamlString);
     }
 }

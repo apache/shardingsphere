@@ -21,8 +21,10 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationProxyConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.jdbc.orchestration.internal.listener.ListenerFactory;
 import io.shardingsphere.jdbc.orchestration.internal.state.datasource.DataSourceService;
@@ -121,8 +123,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param configMap config map
      * @param props properties
      */
-    public void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
-                     final Map<String, Object> configMap, final Properties props) {
+    public void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
         configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
@@ -132,10 +133,12 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param orchestrationProxyConfiguration yaml proxy configuration
+     * @param serverConfig server configuration
+     * @param schemaDataSourceMap schema data source map
+     * @param schemaRuleMap schema rule map
      */
-    public void init(final OrchestrationProxyConfiguration orchestrationProxyConfiguration) {
-        configService.persistProxyConfiguration(orchestrationProxyConfiguration, isOverwrite);
+    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap) {
+        configService.persistProxyConfiguration(serverConfig, schemaDataSourceMap, schemaRuleMap, isOverwrite);
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initProxyListeners();

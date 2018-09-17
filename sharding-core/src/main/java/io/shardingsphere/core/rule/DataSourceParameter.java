@@ -35,7 +35,7 @@ public final class DataSourceParameter {
     
     private String password;
     
-    private Boolean autoCommit;
+    private boolean autoCommit;
     
     private long connectionTimeout;
     

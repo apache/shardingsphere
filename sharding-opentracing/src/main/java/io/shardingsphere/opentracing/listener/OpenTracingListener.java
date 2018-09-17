@@ -18,21 +18,26 @@
 package io.shardingsphere.opentracing.listener;
 
 import io.opentracing.BaseSpan;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Opentracing listener.
- * 
+ *
  * @author zhangliang
  * 
  * @param <T> type of sharding event
  */
+@Getter
 public abstract class OpenTracingListener<T extends ShardingEvent> {
+    
+    private final ThreadLocal<Span> span = new ThreadLocal<>();
     
     /**
      * Register listener.
@@ -48,11 +53,11 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
                 beforeExecute(event);
                 break;
             case EXECUTE_SUCCESS:
-                tracingFinish();
+                tracingFinish(event);
                 break;
             case EXECUTE_FAILURE:
                 getFailureSpan().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
-                tracingFinish();
+                tracingFinish(event);
                 break;
             default:
                 throw new UnsupportedOperationException(event.getEventType().name());
@@ -61,7 +66,7 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     
     protected abstract void beforeExecute(T event);
     
-    protected abstract void tracingFinish();
+    protected abstract void tracingFinish(T event);
     
     protected abstract BaseSpan<?> getFailureSpan();
     

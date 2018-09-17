@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.proxy.backend.BackendDataSource;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 
@@ -43,15 +44,18 @@ import java.util.Map.Entry;
 @Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
+    private final RuleRegistry ruleRegistry;
+    
     private final Map<String, DataSource> dataSourceMap;
     
-    public JDBCBackendDataSource() {
+    public JDBCBackendDataSource(final RuleRegistry ruleRegistry) {
+        this.ruleRegistry = ruleRegistry;
         dataSourceMap = createDataSourceMap();
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = RuleRegistry.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = RuleRegistry.getInstance().getDataSourceConfigurationMap();
+        TransactionType transactionType = ProxyContext.getInstance().getTransactionType();
+        Map<String, DataSourceParameter> dataSourceParameters = ruleRegistry.getDataSources();
         // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
         return getNormalDataSourceMap(transactionType, dataSourceParameters);
     }
@@ -91,7 +95,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        if (!RuleRegistry.getInstance().getDisabledDataSourceNames().isEmpty()) {
+        if (!ruleRegistry.getDisabledDataSourceNames().isEmpty()) {
             return getAvailableDataSourceMap();
         }
         return dataSourceMap;
@@ -99,7 +103,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : RuleRegistry.getInstance().getDisabledDataSourceNames()) {
+        for (String each : ruleRegistry.getDisabledDataSourceNames()) {
             result.remove(each);
         }
         return result;
