@@ -79,7 +79,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         setExecuteGroups(Collections.singletonList(statement), SQLType.DQL);
         assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
         verify(statement).executeQuery(DQL_SQL);
-        verify(getEventCaller(), times(8)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
     }
     
     private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
@@ -122,7 +122,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         }
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
@@ -135,7 +135,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         setExecuteGroups(Collections.singletonList(statement), SQLType.DQL);
         assertThat(actual.executeQuery(), is(Collections.singletonList((QueryResult) null)));
         verify(statement).executeQuery(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyIsParallelExecute(false);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller()).verifyException(exp);
     }
     
