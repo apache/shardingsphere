@@ -101,6 +101,10 @@
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </dml-test-case>
     
+    <dml-test-case sql-case-id="update_with_special_character">
+        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
+    </dml-test-case>
+    
     <dml-test-case sql-case-id="delete_with_sharding_value">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
     </dml-test-case>
@@ -108,7 +112,7 @@
     <dml-test-case sql-case-id="delete_without_sharding_value">
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </dml-test-case>
-
+    
     <dml-test-case sql-case-id="delete_with_special_character_without_sharding_value">
         <assertion expected-data-file="delete_with_special_character_without_sharding_value.xml" />
     </dml-test-case>
@@ -116,11 +120,11 @@
     <dml-test-case sql-case-id="delete_with_special_comments_without_sharding_value">
         <assertion expected-data-file="delete_with_special_comments_without_sharding_value.xml" />
     </dml-test-case>
-
+    
     <dml-test-case sql-case-id="delete_with_special_comments_return_without_sharding_value">
         <assertion expected-data-file="delete_with_special_comments_return_without_sharding_value.xml" />
     </dml-test-case>
-
+    
     <dml-test-case sql-case-id="delete_with_special_comments_returning_without_sharding_value">
         <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
     </dml-test-case>
