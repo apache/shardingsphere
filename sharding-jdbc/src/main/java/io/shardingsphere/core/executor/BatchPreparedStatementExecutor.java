@@ -87,7 +87,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             
             @Override
             public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
-                Connection conn = BatchPreparedStatementExecutor.super.getConnection().getNewConnection(dataSourceName, index);
+                Connection conn = BatchPreparedStatementExecutor.super.getConnection().getConnection(dataSourceName, index);
                 getConnections().add(conn);
                 return conn;
             }

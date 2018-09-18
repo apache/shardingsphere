@@ -68,7 +68,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             
             @Override
             public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
-                Connection conn = StatementExecutor.super.getConnection().getNewConnection(dataSourceName, index);
+                Connection conn = StatementExecutor.super.getConnection().getConnection(dataSourceName, index);
                 getConnections().add(conn);
                 return conn;
             }

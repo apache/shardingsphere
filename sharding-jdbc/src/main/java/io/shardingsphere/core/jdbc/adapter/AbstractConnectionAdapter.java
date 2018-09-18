@@ -46,7 +46,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -83,36 +82,18 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        try {
-            if (cachedConnections.containsKey(dataSourceName)) {
-                ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
-                GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType,
-                    new ArrayList<>(cachedConnections.get(dataSourceName)).get(0).getMetaData().getURL()));
-                finishEvent.setExecuteSuccess();
-                Connection result = new ArrayList<>(cachedConnections.get(dataSourceName)).get(0);
-                ShardingEventBusInstance.getInstance().post(finishEvent);
-                return result;
-            }
-            return getNewConnection(dataSourceName, 0);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(null);
-            finishEvent.setExecuteFailure(ex);
-            ShardingEventBusInstance.getInstance().post(finishEvent);
-            throw ex;
-        }
+        return getConnection(dataSourceName, 0);
     }
     
     /**
-     * Get database new connection.
+     * Get database connection.
      *
      * @param dataSourceName data source name
      * @param index index of connection
      * @return database connection
      * @throws SQLException SQL exception
      */
-    public final Connection getNewConnection(final String dataSourceName, final int index) throws SQLException {
+    public final Connection getConnection(final String dataSourceName, final int index) throws SQLException {
         ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);

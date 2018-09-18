@@ -74,7 +74,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             
             @Override
             public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
-                Connection conn = PreparedStatementExecutor.super.getConnection().getNewConnection(dataSourceName, index);
+                Connection conn = PreparedStatementExecutor.super.getConnection().getConnection(dataSourceName, index);
                 getConnections().add(conn);
                 return conn;
             }
