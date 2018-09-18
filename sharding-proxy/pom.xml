@@ -82,12 +82,12 @@
         <dependency>
             <groupId>org.apache.skywalking</groupId>
             <artifactId>apm-toolkit-opentracing</artifactId>
-            <version>5.0.0-beta2</version>
+            <version>5.0.0-RC2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.skywalking</groupId>
             <artifactId>apm-collector-core</artifactId>
-            <version>5.0.0-beta2</version>
+            <version>5.0.0-RC2</version>
         </dependency>
     </dependencies>
     
