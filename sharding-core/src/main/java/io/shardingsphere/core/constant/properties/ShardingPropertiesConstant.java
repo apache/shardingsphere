@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.constant.properties;
 
-import io.shardingsphere.core.constant.ConnectionMode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -64,23 +63,6 @@ public enum ShardingPropertiesConstant {
      * </p>
      */
     EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
-    
-    /**
-     * Connection mode of connected to databases.
-     *
-     * <p>
-     * MEMORY_STRICTLY:
-     * Sharding-Sphere holds as many connections as the count of actual tables routed in a database.
-     * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-     * </p>
-     * 
-     * <p>
-     * CONNECTION_STRICTLY:
-     * harding-Sphere will release connections after get the overall rows from the ResultSet.
-     * Meanwhile, the cost of the memory will be increased.
-     * </p>
-     */
-    CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
     
     MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
     
