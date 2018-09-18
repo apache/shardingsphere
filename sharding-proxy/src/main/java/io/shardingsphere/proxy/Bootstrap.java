@@ -21,6 +21,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.jdbc.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.yaml.ProxyConfiguration;
 import io.shardingsphere.proxy.config.yaml.ProxyYamlConfigurationLoader;
@@ -30,6 +31,7 @@ import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
+        ShardingTracer.init(new SkywalkingTracer());
         ProxyConfiguration proxyConfig = new ProxyYamlConfigurationLoader().load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
