@@ -19,7 +19,6 @@ package io.shardingsphere.core.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -66,8 +65,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         this.shardingContext = getShardingContext(shardingRule);
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties, final DatabaseType databaseType) {
-        super(databaseType);
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) {
+        super(shardingContext.getDatabaseType());
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
         this.shardingProperties = shardingProperties;
