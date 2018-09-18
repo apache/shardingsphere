@@ -20,7 +20,7 @@ package io.shardingsphere.core.jdbc.core.connection;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -42,14 +42,17 @@ import java.util.Map;
  * @author caohao
  * @author gaohongtao
  */
+@Getter
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
-    @Getter
-    private final ShardingDataSource shardingDataSource;
+    private final Map<String, DataSource> dataSourceMap;
     
-    public ShardingConnection(final ShardingDataSource shardingDataSource) {
-        super(shardingDataSource.getDatabaseType());
-        this.shardingDataSource = shardingDataSource;
+    private final ShardingContext shardingContext;
+    
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
+        super(shardingContext.getDatabaseType());
+        this.dataSourceMap = dataSourceMap;
+        this.shardingContext = shardingContext;
         ShardingEventBusInstance.getInstance().post(new RootInvokeEvent());
     }
     
@@ -67,15 +70,10 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    protected Map<String, DataSource> getDataSourceMap() {
-        return shardingDataSource.getDataSourceMap();
-    }
-    
-    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        Collection<MasterSlaveRule> masterSlaveRules = shardingDataSource.getShardingContext().getShardingRule().getMasterSlaveRules();
+        Collection<MasterSlaveRule> masterSlaveRules = shardingContext.getShardingRule().getMasterSlaveRules();
         if (masterSlaveRules.isEmpty()) {
-            return getConnection(shardingDataSource.getDataSourceMap().keySet().iterator().next()).getMetaData();
+            return getConnection(dataSourceMap.keySet().iterator().next()).getMetaData();
         }
         for (MasterSlaveRule each : masterSlaveRules) {
             if (getDataSourceMap().containsKey(each.getMasterDataSourceName())) {

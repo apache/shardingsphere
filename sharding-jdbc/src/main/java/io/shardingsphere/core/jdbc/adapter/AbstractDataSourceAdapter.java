@@ -22,6 +22,8 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import lombok.Getter;
+import lombok.Setter;
+
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -35,14 +37,15 @@ import java.util.logging.Logger;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
+@Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     static {
         ShardingEventListenerRegistrySPILoader.registerListeners();
     }
     
-    @Getter
-    private DatabaseType databaseType;
+    private final DatabaseType databaseType;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
@@ -71,16 +74,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
         }
-    }
-    
-    @Override
-    public final PrintWriter getLogWriter() {
-        return logWriter;
-    }
-    
-    @Override
-    public final void setLogWriter(final PrintWriter out) {
-        this.logWriter = out;
     }
     
     @Override

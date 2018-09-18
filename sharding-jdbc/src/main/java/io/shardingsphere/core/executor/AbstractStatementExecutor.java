@@ -79,13 +79,13 @@ public class AbstractStatementExecutor {
     private SQLType sqlType;
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.databaseType = shardingConnection.getShardingDataSource().getShardingContext().getDatabaseType();
+        this.databaseType = shardingConnection.getShardingContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingDataSource().getShardingContext().getExecuteEngine());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingContext().getMaxConnectionsSizePerQuery());
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine());
     }
     
     @SuppressWarnings("unchecked")

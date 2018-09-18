@@ -18,37 +18,28 @@
 package io.shardingsphere.opentracing.listener;
 
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.opentracing.fixture.ShardingContextBuilder;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 public final class ParsingEventListenerTest extends BaseEventListenerTest {
     
-    private final ShardingDataSource shardingDataSource;
-    
-    public ParsingEventListenerTest() throws SQLException {
-        ShardingContext shardingContext = ShardingContextBuilder.build();
-        shardingDataSource = Mockito.mock(ShardingDataSource.class);
-        when(shardingDataSource.getShardingContext()).thenReturn(shardingContext);
-    }
-    
     @Test
-    public void assertPreparedStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        ShardingPreparedStatement statement = new ShardingPreparedStatement(new ShardingConnection(shardingDataSource), "select * from t_order");
+    public void assertPreparedStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
+        ShardingPreparedStatement statement = new ShardingPreparedStatement(
+                new ShardingConnection(Collections.<String, DataSource>emptyMap(), ShardingContextBuilder.build()), "select * from t_order");
         Method sqlRouteMethod = ShardingPreparedStatement.class.getDeclaredMethod("sqlRoute");
         sqlRouteMethod.setAccessible(true);
         sqlRouteMethod.invoke(statement);
@@ -57,8 +48,8 @@ public final class ParsingEventListenerTest extends BaseEventListenerTest {
     }
     
     @Test
-    public void assertStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
+    public void assertStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
+        ShardingStatement statement = new ShardingStatement(new ShardingConnection(Collections.<String, DataSource>emptyMap(), ShardingContextBuilder.build()));
         Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
         sqlRouteMethod.setAccessible(true);
         sqlRouteMethod.invoke(statement, "select * from t_order");
@@ -68,7 +59,7 @@ public final class ParsingEventListenerTest extends BaseEventListenerTest {
     @Test
     public void assertException() {
         try {
-            ShardingStatement statement = new ShardingStatement(new ShardingConnection(shardingDataSource));
+            ShardingStatement statement = new ShardingStatement(new ShardingConnection(Collections.<String, DataSource>emptyMap(), ShardingContextBuilder.build()));
             Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
             sqlRouteMethod.setAccessible(true);
             sqlRouteMethod.invoke(statement, "111");

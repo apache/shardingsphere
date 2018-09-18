@@ -22,8 +22,8 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.TestDataSource;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -65,16 +65,15 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
+        ShardingContext shardingContext = mock(ShardingContext.class);
+        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        ShardingDataSource shardingDataSource = mock(ShardingDataSource.class);
-        when(shardingDataSource.getDatabaseType()).thenReturn(DatabaseType.H2);
-        when(shardingDataSource.getDataSourceMap()).thenReturn(dataSourceMap);
-        connection = new ShardingConnection(shardingDataSource);
+        connection = new ShardingConnection(dataSourceMap, shardingContext);
     }
     
     @After

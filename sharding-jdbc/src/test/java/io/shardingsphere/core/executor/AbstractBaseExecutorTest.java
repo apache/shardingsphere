@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
@@ -28,7 +27,6 @@ import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -41,7 +39,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -90,8 +87,7 @@ public abstract class AbstractBaseExecutorTest {
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceSourceMap, shardingContext, new ShardingProperties(new Properties()), DatabaseType.MySQL);
-        connection = new ShardingConnection(shardingDataSource);
+        connection = new ShardingConnection(dataSourceSourceMap, shardingContext);
     }
     
     @After

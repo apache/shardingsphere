@@ -91,8 +91,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             sqlRoute(sql);
             initStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingDataSource().getShardingContext().getShardingRule(), statementExecutor.executeQuery(),
-                    routeResult.getSqlStatement(), connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
+                    connection.getShardingContext().getShardingRule(), statementExecutor.executeQuery(),
+                    routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
             result = new ShardingResultSet(statementExecutor.getResultSets(), mergeEngine.merge(), this);
         } finally {
             currentResultSet = null;
@@ -227,8 +227,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingDataSource().getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), 
-                    connection.getShardingDataSource().getShardingContext().getMetaData().getTable());
+                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), 
+                    connection.getShardingContext().getMetaData().getTable());
             currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         }
         return currentResultSet;
@@ -246,7 +246,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private void sqlRoute(final String sql) {
-        ShardingContext shardingContext = connection.getShardingDataSource().getShardingContext();
+        ShardingContext shardingContext = connection.getShardingContext();
         routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(),
             shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.isShowSQL(), shardingContext.getMetaData().getDataSource()).route(sql);
     }
@@ -255,11 +255,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private void refreshTableMetaData() throws SQLException {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingDataSource().getShardingContext().getMetaData().getDataSource(),
-                    connection.getShardingDataSource().getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getShardingDataSource().getDataSourceMap()),
-                    connection.getShardingDataSource().getShardingContext().getMaxConnectionsSizePerQuery());
-            connection.getShardingDataSource().getShardingContext().getMetaData().getTable().put(
-                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingDataSource().getShardingContext().getShardingRule()));
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(),
+                    connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
+                    connection.getShardingContext().getMaxConnectionsSizePerQuery());
+            connection.getShardingContext().getMetaData().getTable().put(
+                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
         }
     }
     
