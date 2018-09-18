@@ -75,7 +75,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class JDBCExecuteEngine implements SQLExecuteEngine {
+public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
@@ -175,7 +175,7 @@ public class JDBCExecuteEngine implements SQLExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public Connection getConnection(final String dataSourceName) throws SQLException {
+        public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
             return getBackendConnection().getConnection(dataSourceName);
         }
         

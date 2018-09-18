@@ -100,7 +100,6 @@ public class AbstractStatementExecutor {
      */
     public void clear() throws SQLException {
         clearStatements();
-        clearConnections();
         statements.clear();
         parameterSets.clear();
         connections.clear();
@@ -111,12 +110,6 @@ public class AbstractStatementExecutor {
     private void clearStatements() throws SQLException {
         for (Statement each : getStatements()) {
             each.close();
-        }
-    }
-    
-    private void clearConnections() {
-        for (Connection each : connections) {
-            connection.release(each);
         }
     }
 }

@@ -36,10 +36,11 @@ public interface SQLExecutePrepareCallback {
      * Get connection.
      * 
      * @param dataSourceName data source name
+     * @param index index of connection
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String dataSourceName) throws SQLException;
+    Connection getConnection(String dataSourceName, int index) throws SQLException;
     
     /**
      * Create SQL execute unit.

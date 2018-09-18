@@ -73,8 +73,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
             
             @Override
-            public Connection getConnection(final String dataSourceName) throws SQLException {
-                Connection conn = PreparedStatementExecutor.super.getConnection().getNewConnection(dataSourceName);
+            public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
+                Connection conn = PreparedStatementExecutor.super.getConnection().getNewConnection(dataSourceName, index);
                 getConnections().add(conn);
                 return conn;
             }
