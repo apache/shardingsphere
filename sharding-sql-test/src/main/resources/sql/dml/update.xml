@@ -6,4 +6,6 @@
     <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
     <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL" />
     <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL" />
+    <sql-case id="update_with_special_comments" value="UPDATE /*+ index(field1) */ ONLY t_order SET status=? WHERE order_id = ? AND user_id = ? RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" />
+    <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
 </sql-cases>

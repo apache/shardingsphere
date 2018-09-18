@@ -104,4 +104,42 @@
         </or-condition>
     </parser-result>
 
+    <parser-result sql-case-id="update_with_special_comments" parameters="'update', 1, 1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="33" original-literals="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="2" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="update_without_parameters">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="7" original-literals="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
 </parser-result-sets>
