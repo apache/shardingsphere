@@ -133,10 +133,10 @@
         <or-condition>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
+                    <value literal="1000" type="int" />
                 </condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="1" type="int" />
+                    <value literal="10" type="int" />
                 </condition>
             </and-condition>
         </or-condition>
