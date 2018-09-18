@@ -108,8 +108,7 @@ indexOption :
 	| eqOnOffOption
 	| ((COMPRESSION_DELAY | MAX_DURATION) eqTime)
 	| MAXDOP EQ_OR_ASSIGN NUMBER
-	| (compressionOption
-	   ( ON PARTITIONS LEFT_PAREN partitionExpressions  RIGHT_PAREN )?)
+	| (compressionOption onPartitionClause?)
 	;
 	
 compressionOption:
@@ -142,6 +141,10 @@ eqOnOff:
   	EQ_OR_ASSIGN ( ON | OFF )
   	;
 
+onPartitionClause:
+	ON PARTITIONS LEFT_PAREN partitionExpressions RIGHT_PAREN
+	;
+
 partitionExpressions:
 	partitionExpression (COMMA partitionExpression)*
 	;
@@ -153,5 +156,14 @@ partitionExpression:
 	
 numberRange:   
 	NUMBER TO NUMBER  
+	;
+
+lowPriorityLockWait:
+    WAIT_AT_LOW_PRIORITY LEFT_PAREN MAX_DURATION EQ_OR_ASSIGN NUMBER ( MINUTES )? COMMA
+    ABORT_AFTER_WAIT EQ_OR_ASSIGN ( NONE | SELF | BLOCKERS ) RIGHT_PAREN
+;
+
+onLowPriorLockWait:
+	ON (LEFT_PAREN lowPriorityLockWait RIGHT_PAREN)?
 	;
 	
