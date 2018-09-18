@@ -82,20 +82,4 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertTrue(updateStatement.getConditions().getOrCondition().getAndConditions().isEmpty());
 
     }
-    
-    @Test
-    public void parseWithSpecialSyntax() {
-        parseWithSpecialSyntax(DatabaseType.Oracle, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(DatabaseType.Oracle, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG");
-    }
-    
-    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
-        ShardingRule shardingRule = createShardingRule();
-        DMLStatement updateStatement = (DMLStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, null).parse(false);
-        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        assertFalse(updateStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
-        Condition condition = updateStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Object) 1));
-    }
 }
