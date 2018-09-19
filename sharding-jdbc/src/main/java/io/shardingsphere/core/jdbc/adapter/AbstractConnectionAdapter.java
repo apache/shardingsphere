@@ -46,7 +46,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -82,36 +84,54 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnection(dataSourceName, 0);
+        return getConnections(dataSourceName, 1).get(0);
     }
     
     /**
-     * Get database connection.
+     * Get database connections.
      *
      * @param dataSourceName data source name
-     * @param index index of connection
-     * @return database connection
+     * @param connectionSize size of connection list to be get
+     * @return database connections
      * @throws SQLException SQL exception
      */
-    public final Connection getConnection(final String dataSourceName, final int index) throws SQLException {
+    public final List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
         ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections = cachedConnections.get(dataSourceName);
-        if (cachedConnections.get(dataSourceName).size() > index) {
-            Connection result = cachedConnections.get(dataSourceName).toArray(new Connection[connections.size()])[index];
-            postGetConnectionEvent(result);
-            return result;
+        List<Connection> result;
+        if (connections.size() >= connectionSize) {
+            result = new ArrayList<>(cachedConnections.get(dataSourceName)).subList(0, connectionSize);
+        } else if (!connections.isEmpty()) {
+            result = new ArrayList<>(connectionSize);
+            result.addAll(connections);
+            List<Connection> newConnections = createConnections(dataSource, connectionSize - connections.size());
+            result.addAll(newConnections);
+            cachedConnections.putAll(dataSourceName, newConnections);
+        } else {
+            result = new ArrayList<>(createConnections(dataSource, connectionSize));
+            cachedConnections.putAll(dataSourceName, result);
         }
-        Connection result = dataSource.getConnection();
-        cachedConnections.put(dataSourceName, result);
-        replayMethodsInvocation(result);
         postGetConnectionEvent(result);
         return result;
     }
     
-    private void postGetConnectionEvent(final Connection connection) throws SQLException {
-        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL()));
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    private synchronized List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+        List<Connection> result = new ArrayList<>(connectionSize);
+        synchronized (dataSource) {
+            for (int i = 0; i < connectionSize; i++) {
+                Connection connection = dataSource.getConnection();
+                replayMethodsInvocation(connection);
+                result.add(connection);
+            }
+        }
+        return result;
+    }
+    
+    private void postGetConnectionEvent(final List<Connection> connections) throws SQLException {
+        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
         finishEvent.setExecuteSuccess();
         ShardingEventBusInstance.getInstance().post(finishEvent);
     }

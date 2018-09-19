@@ -61,6 +61,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -175,8 +176,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
-            return getBackendConnection().getConnection(dataSourceName);
+        public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
+            return Collections.singletonList(getBackendConnection().getConnection(dataSourceName));
         }
         
         @Override
