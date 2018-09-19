@@ -6,8 +6,8 @@ truncate:
     ;
 
 tableNameParts:
-	tableNamePart (COMMA tableNamePart)*
-	;
+    tableNamePart (COMMA tableNamePart)*
+    ;
 
 tableNamePart:
     tableName ASTERISK?

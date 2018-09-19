@@ -2,22 +2,22 @@ grammar PostgreAlterTable;
 import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
 
 alterTable:
-	(alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint))
+    (alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint))
     |(alterTableNameExists(renameTable | setSchema |attachTableSpace |detachTableSpace))
     |alterTableSetTableSpace
     ;
 
 alterTableNameWithAsterisk:
-	alterTableOp (IF EXISTS)? ONLY? tableName ASTERISK?
-	;
+    alterTableOp (IF EXISTS)? ONLY? tableName ASTERISK?
+    ;
 
 alterTableOp:
-	ALTER TABLE
-	;
+    ALTER TABLE
+    ;
 
 alterTableActions:
-	alterTableAction (COMMA alterTableAction)*
-	;
+    alterTableAction (COMMA alterTableAction)*
+    ;
 
 alterTableAction:
     (ADD COLUMN? (IF NOT EXISTS )? columnName dataType collateClause? (columnConstraint columnConstraint*)?)
@@ -34,7 +34,7 @@ alterTableAction:
     |(alterColumnOp columnName RESET LEFT_PAREN attributeOptions RIGHT_PAREN)
     |(alterColumnOp columnName SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN))
     |(ADD tableConstraint (NOT VALID)?)
-   	|(ADD tableConstraintUsingIndex)
+       |(ADD tableConstraintUsingIndex)
     |(ALTER CONSTRAINT constraintName constraintOptionalParam)
     |(VALIDATE CONSTRAINT constraintName)
     |(DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?)
@@ -56,26 +56,26 @@ alterTableAction:
     |(NOT OF)
     |(OWNER TO (ownerName | CURRENT_USER | SESSION_USER))
     |(REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING))
-	;
+    ;
 
 alterColumnOp:
-	ALTER COLUMN?
-	;
+    ALTER COLUMN?
+    ;
 
 alterColumnSetOption:
-	(SET GENERATED (ALWAYS | BY DEFAULT))
-	|SET sequenceOption
-	|(RESTART (WITH? NUMBER)?)
-	;
+    (SET GENERATED (ALWAYS | BY DEFAULT))
+    |SET sequenceOption
+    |(RESTART (WITH? NUMBER)?)
+    ;
 
 attributeOptions:
-	attributeOption (COMMA attributeOption)*
-	;
+    attributeOption (COMMA attributeOption)*
+    ;
 
 //options:n_distinct and n_distinct_inherited, loosen match
 attributeOption:
-	ID EQ_OR_ASSIGN simpleExpr
-	;
+    ID EQ_OR_ASSIGN simpleExpr
+    ;
 
 tableConstraintUsingIndex:
     (CONSTRAINT constraintName)?
@@ -84,27 +84,27 @@ tableConstraintUsingIndex:
     ;
 
  constraintOptionalParam:
- 	(NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
- 	;
+     (NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
+     ;
 
 renameColumn:
-	 RENAME COLUMN? columnName TO columnName
+     RENAME COLUMN? columnName TO columnName
     ;
 
 renameConstraint:
-	RENAME CONSTRAINT constraintName TO constraintName
+    RENAME CONSTRAINT constraintName TO constraintName
     ;
 
 alterTableNameExists:
-	alterTableOp (IF EXISTS)? tableName
-	;
+    alterTableOp (IF EXISTS)? tableName
+    ;
 
 renameTable:
-	RENAME TO tableName
+    RENAME TO tableName
     ;
 
 setSchema:
-	SET SCHEMA schemaName
+    SET SCHEMA schemaName
     ;
 
 attachTableSpace:
@@ -116,6 +116,6 @@ detachTableSpace:
     ;
 
 alterTableSetTableSpace:
-	alterTableOp ALL IN TABLESPACE tablespaceName (OWNED BY roleName (COMMA roleName)* )?
+    alterTableOp ALL IN TABLESPACE tablespaceName (OWNED BY roleName (COMMA roleName)* )?
     SET TABLESPACE tablespaceName NOWAIT?
     ;

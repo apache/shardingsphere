@@ -4,63 +4,63 @@ import BaseRule,Keyword, Symbol,DataType;
 
 //define delete rule template 
 select: 
-	withClause
-	|unionSelect
-	;
+    withClause
+    |unionSelect
+    ;
 
 withClause:
-	WITH RECURSIVE? cteClause (COMMA cteClause)*
-	unionSelect
-	;
+    WITH RECURSIVE? cteClause (COMMA cteClause)*
+    unionSelect
+    ;
 
 cteClause:
-	cteName idList? AS subquery
-	;
-	
+    cteName idList? AS subquery
+    ;
+    
 unionSelect:
-	selectExpression (UNION ALL? selectExpression)*
-	;
+    selectExpression (UNION ALL? selectExpression)*
+    ;
 
 selectExpression:
-	selectClause 
-	fromClause? 
-	whereClause? 
-	groupByClause? 
-	orderByClause? 
-	limitClause?
-	;
-	
+    selectClause 
+    fromClause? 
+    whereClause? 
+    groupByClause? 
+    orderByClause? 
+    limitClause?
+    ;
+    
 selectClause:
-	SELECT selectSpec selectExprs
-	;
+    SELECT selectSpec selectExprs
+    ;
 
 selectSpec: ;
 
 fromClause: 
-	FROM tableReferences
-	;
+    FROM tableReferences
+    ;
 
 whereClause: 
-	WHERE expr
-	;
-	
+    WHERE expr
+    ;
+    
 groupByClause: 
-	GROUP BY groupByItem (COMMA groupByItem)* 
-	(WITH ROLLUP)? 
-	havingClause?
-	;
-	
+    GROUP BY groupByItem (COMMA groupByItem)* 
+    (WITH ROLLUP)? 
+    havingClause?
+    ;
+    
 havingClause: 
-	HAVING  expr
-	;
-	
+    HAVING  expr
+    ;
+    
 limitClause:
-	LIMIT rangeClause
-	;
-	
+    LIMIT rangeClause
+    ;
+    
 partitionClause: 
-	PARTITION idList
-	;
+    PARTITION idList
+    ;
 
 selectExprs:
     (ASTERISK (COMMA selectExpr)*) 
@@ -68,9 +68,9 @@ selectExprs:
     ;
  
 subquery:
-	LEFT_PAREN unionSelect RIGHT_PAREN
-	;
-	   
-alias: ID ;	
+    LEFT_PAREN unionSelect RIGHT_PAREN
+    ;
+       
+alias: ID ;    
 selectExpr:;
 tableReferences: ;

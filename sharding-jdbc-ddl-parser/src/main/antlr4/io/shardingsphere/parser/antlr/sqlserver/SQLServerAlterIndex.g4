@@ -2,19 +2,19 @@ grammar SQLServerAlterIndex;
 import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
 alterIndex:
-	alterIndexOp
-	(alterRebuild
-	| DISABLE
-	| alterReorganize
-	| alterSet
-	| alterResume
-	| PAUSE
-	| ABORT)
-	;
+    alterIndexOp
+    (alterRebuild
+    | DISABLE
+    | alterReorganize
+    | alterSet
+    | alterResume
+    | PAUSE
+    | ABORT)
+    ;
 
 alterIndexOp:
-	ALTER INDEX (indexName | ALL) ON tableOrViewName
-	;
+    ALTER INDEX (indexName | ALL) ON tableOrViewName
+    ;
 
 alterRebuild:
     REBUILD (((PARTITION EQ_OR_ASSIGN ALL)? withRebuildIndexOptions?)
@@ -44,7 +44,7 @@ rebuildIndexOption:
     | (MAXDOP EQ_OR_ASSIGN NUMBER)
     | (COMPRESSION_DELAY EQ_OR_ASSIGN (NUMBER (MINUTES)?))
     | (DATA_COMPRESSION EQ_OR_ASSIGN (NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE) onPartitionClause?)
-	;
+    ;
 
 withSinglePartitionRebuildIndexOptions:
     WITH LEFT_PAREN singlePartitionRebuildIndexOptions RIGHT_PAREN
@@ -65,7 +65,7 @@ singlePartitionRebuildIndexOption:
 
 alterReorganize:
     REORGANIZE (PARTITION EQ_OR_ASSIGN NUMBER)? withReorganizeOption?
-	;
+    ;
 
 withReorganizeOption:
     WITH LEFT_PAREN reorganizeOption RIGHT_PAREN

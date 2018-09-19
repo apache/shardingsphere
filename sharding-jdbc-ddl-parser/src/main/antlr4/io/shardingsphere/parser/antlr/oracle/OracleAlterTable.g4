@@ -3,298 +3,299 @@ grammar OracleAlterTable;
 import OracleKeyword, DataType, Keyword,OracleIndexBase, OracleTableBase,OracleBase,BaseRule,Symbol;
 
 alterTable:
-	ALTER TABLE tableName
- 	( alterTableProperties
-		| columnClauses
-		| constraintClauses
-		| alterTablePartitioning
-		| alterExternalTable
-		| moveTableClause
-	)?
-	( enableDisableClause
-	|((ENABLE | DISABLE) ( (TABLE LOCK) | (ALL TRIGGERS))) 
-	)* 
-	;
-	
+    ALTER TABLE tableName
+     ( alterTableProperties
+     | columnClauses
+     | constraintClauses
+     | alterTablePartitioning
+     | alterExternalTable
+     | moveTableClause
+    )?
+    ( enableDisableClause
+    |((ENABLE | DISABLE) ( (TABLE LOCK) | (ALL TRIGGERS))) 
+    )* 
+    ;
+    
 alterTableProperties:
- 	alterIotOrXml
-	| shrinkClause 
-  	| (READ (ONLY|WRITE))  
-  	| (REKEY encryptionSpec )
-	;
+    alterIotOrXml
+    | shrinkClause 
+    | (READ (ONLY|WRITE))  
+    | (REKEY encryptionSpec )
+    ;
 
 alterIotOrXml:
-	(
-	alterIotOrXmlRepeatHeader+
-  	| (RENAME TO tableName)
-  	)*
-  	alterIotClauses? alterXmlschemaClause?
-	;
+    (
+      alterIotOrXmlRepeatHeader+
+      | (RENAME TO tableName)
+    )*
+    alterIotClauses? alterXmlschemaClause?
+    ;
 
 alterIotOrXmlRepeatHeader:
-	physicalAttributesClause
-	| loggingClause
-	| tableCompression
-	| supplementalTableLogging
-	| allocateExtentClause
-	| deallocateUnusedClause
-	| ( CACHE | NOCACHE )
-	| (RESULT_CACHE LEFT_PAREN MODE (DEFAULT | FORCE) RIGHT_PAREN )
-	| upgradeTableClause
-	| recordsPerBlockClause
-	| parallelClause
-	| rowMovementClause
-	| flashbackArchiveClause
-	;	
-	 
+    physicalAttributesClause
+    | loggingClause
+    | tableCompression
+    | supplementalTableLogging
+    | allocateExtentClause
+    | deallocateUnusedClause
+    | ( CACHE | NOCACHE )
+    | (RESULT_CACHE LEFT_PAREN MODE (DEFAULT | FORCE) RIGHT_PAREN )
+    | upgradeTableClause
+    | recordsPerBlockClause
+    | parallelClause
+    | rowMovementClause
+    | flashbackArchiveClause
+    ;    
+     
 supplementalTableLogging:
-	addSupplementalLogClause
-	| dropSupplementalLogClause
-	;
+    addSupplementalLogClause
+    | dropSupplementalLogClause
+    ;
 
 addSupplementalLogClause:
-	ADD addSupplementalLogItem (COMMA addSupplementalLogItem)*
+    ADD addSupplementalLogItem (COMMA addSupplementalLogItem)*
     ;
     
 addSupplementalLogItem:
-	SUPPLEMENTAL LOG
-  	(supplementalLogGrpClause | supplementalIdKeyClause)
-  	;
+    SUPPLEMENTAL LOG
+    (supplementalLogGrpClause | supplementalIdKeyClause)
+    ;
 
 dropSupplementalLogClause:
-	DROP addSupplementalLogItem (COMMA addSupplementalLogItem)*
+    DROP addSupplementalLogItem (COMMA addSupplementalLogItem)*
     ;
     
 dropSupplementalLogItem:
-	SUPPLEMENTAL LOG
+    SUPPLEMENTAL LOG
     (supplementalIdKeyClause | (GROUP groupName))
-  	;
+      ;
 
 allocateExtentClause:
-	ALLOCATE EXTENT
-  	( LEFT_PAREN ( SIZE sizeClause
+    ALLOCATE EXTENT
+      ( LEFT_PAREN ( SIZE sizeClause
       | DATAFILE 'filename'
       | INSTANCE NUMBER
       ) *
     RIGHT_PAREN 
-  	)?
-	;
+      )?
+    ;
 
 deallocateUnusedClause:
-	DEALLOCATE UNUSED ( KEEP sizeClause )?
-	;
-	
+    DEALLOCATE UNUSED ( KEEP sizeClause )?
+    ;
+    
 upgradeTableClause:
-	UPGRADE ( NOT? INCLUDING DATA )?
-   	columnProperties?
-	;
+    UPGRADE ( NOT? INCLUDING DATA )?
+       columnProperties?
+    ;
 
 recordsPerBlockClause:
-	MINIMIZE 
-	| NOMINIMIZE
-	;
+    MINIMIZE 
+    | NOMINIMIZE
+    ;
 
 alterIotClauses:
-	 indexOrgTableClause
-	| alterOverflowClause
-	| alterMappingTableClauses
-	| COALESCE
-	;
+     indexOrgTableClause
+    | alterOverflowClause
+    | alterMappingTableClauses
+    | COALESCE
+    ;
 
 alterOverflowClause:
-	addOverflowClause
-	| overflowClause
-	;
+    addOverflowClause
+    | overflowClause
+    ;
 
 addOverflowClause:
-	ADD OVERFLOW segmentAttributesClause?
-	partitionSegmentAttributesWithParen?
-	;
+    ADD OVERFLOW segmentAttributesClause?
+    partitionSegmentAttributesWithParen?
+    ;
 
 partitionSegmentAttributesWithParen:
-	LEFT_PAREN 
-    	partitionSegmentAttributes (COMMA partitionSegmentAttributes)*
+    LEFT_PAREN 
+        partitionSegmentAttributes (COMMA partitionSegmentAttributes)*
     RIGHT_PAREN 
     ;
      
 partitionSegmentAttributes:
-	PARTITION segmentAttributesClause?
-	;
+    PARTITION segmentAttributesClause?
+    ;
 
 overflowClause:
-	OVERFLOW
-     ( segmentAttributesClause
+    OVERFLOW
+    (
+     segmentAttributesClause
      | allocateExtentClause
      | shrinkClause
      | deallocateUnusedClause
-     )+
-     ;
-	
+    )+
+    ;
+    
 shrinkClause:
-	SHRINK SPACE COMPACT? CASCADE?
-	;
-	
+    SHRINK SPACE COMPACT? CASCADE?
+    ;
+    
 alterMappingTableClauses:
-	MAPPING TABLE
-	( allocateExtentClause
-	| deallocateUnusedClause
-	)
-	;
-	
+    MAPPING TABLE
+    ( allocateExtentClause
+    | deallocateUnusedClause
+    )
+    ;
+    
 alterXmlschemaClause:
- 	(ALLOW ANYSCHEMA)
- 	| (ALLOW NONSCHEMA)
- 	| (DISALLOW NONSCHEMA)
-  	;
+    (ALLOW ANYSCHEMA)
+    | (ALLOW NONSCHEMA)
+    | (DISALLOW NONSCHEMA)
+    ;
   
 columnClauses:
-	opColumnClause+
-	| renameColumnClause
-	| modifyCollectionRetrieval+
-	| modifyLobStorageClause+
-	| alterVarrayColProperties+
-	;
+    opColumnClause+
+    | renameColumnClause
+    | modifyCollectionRetrieval+
+    | modifyLobStorageClause+
+    | alterVarrayColProperties+
+    ;
 
 opColumnClause:
-	addColumnClause
-	| modifyColumnClauses
-	| dropColumnClause
-	;
-	
+    addColumnClause
+    | modifyColumnClauses
+    | dropColumnClause
+    ;
+    
 addColumnClause:
-	ADD
-   	columnOrVirtualDefinitions 
-   	columnProperties?
-   	outOfLinePartStorages?
-	;
+    ADD
+    columnOrVirtualDefinitions 
+    columnProperties?
+    outOfLinePartStorages?
+    ;
 
 columnOrVirtualDefinitions:
-	columnOrVirtualDefinition
-	(COMMA columnOrVirtualDefinition)*
-	;
-		
+    columnOrVirtualDefinition
+    (COMMA columnOrVirtualDefinition)*
+    ;
+    
 columnOrVirtualDefinition:
-	columnDefinition 
-	| virtualColumnDefinition
-	;
-		
+    columnDefinition 
+    | virtualColumnDefinition
+    ;
+    
 outOfLinePartStorages:
-	outOfLinePartStorage ( COMMA outOfLinePartStorage)*
-	;
-	
+    outOfLinePartStorage ( COMMA outOfLinePartStorage)*
+    ;
+    
 outOfLinePartStorage:
-	PARTITION partitionName
-	outOfLinePartBody+
-	(LEFT_PAREN SUBPARTITION partitionName
-		outOfLinePartBody+
-	  RIGHT_PAREN 
-	)?	
-	;
-	
+    PARTITION partitionName
+    outOfLinePartBody+
+    (LEFT_PAREN 
+    	SUBPARTITION partitionName outOfLinePartBody+
+      RIGHT_PAREN 
+    )?    
+    ;
+    
 outOfLinePartBody:
-	nestedTableColProperties 
-	| lobStorageClause 
-	| varrayColProperties
-	;
-	
+    nestedTableColProperties 
+    | lobStorageClause 
+    | varrayColProperties
+    ;
+    
 modifyColumnClauses:
-	MODIFY 
-	( 
-		(LEFT_PAREN modifyColProperties ( COMMA modifyColProperties)*  RIGHT_PAREN) 
+    MODIFY 
+    ( 
+        LEFT_PAREN modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN
        | modifyColSubstitutable
     )
-	;
-	
+    ;
+    
 modifyColProperties:
-	columnName 
-	( dataType )?
+    columnName 
+    ( dataType )?
     ( DEFAULT expr )?
     ( ( ENCRYPT encryptionSpec ) | DECRYPT )?
     inlineConstraint * 
     ( lobStorageClause )?
     ( alterXmlschemaClause )?
-	;
-	
+    ;
+    
 modifyColSubstitutable:
-	COLUMN columnName
-	( NOT )? SUBSTITUTABLE AT ALL LEVELS
-	( FORCE )?
-	;
-	
+    COLUMN columnName
+    ( NOT )? SUBSTITUTABLE AT ALL LEVELS
+    ( FORCE )?
+    ;
+    
 dropColumnClause:
-	( SET UNUSED columnOrColumnList cascadeOrInvalidate*)
-	| (DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?)
-	| (DROP ( (UNUSED COLUMNS)| (COLUMNS CONTINUE) )checkpointNumber?)
-	;
+    ( SET UNUSED columnOrColumnList cascadeOrInvalidate*)
+    | (DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?)
+    | (DROP ( (UNUSED COLUMNS)| (COLUMNS CONTINUE) )checkpointNumber?)
+    ;
 
 columnOrColumnList:
-	(COLUMN columnName)
+    (COLUMN columnName)
     | (LEFT_PAREN columnName ( COMMA columnName )* RIGHT_PAREN) 
-	;
+    ;
 
 cascadeOrInvalidate:
-	(CASCADE CONSTRAINTS )
-	| INVALIDATE
-	;
+    (CASCADE CONSTRAINTS )
+    | INVALIDATE
+    ;
 
 checkpointNumber:
-	CHECKPOINT NUMBER
-	;
-	
+    CHECKPOINT NUMBER
+    ;
+    
 renameColumnClause:
-	RENAME COLUMN columnName TO 
-	;
-	
+    RENAME COLUMN columnName TO 
+    ;
+    
 modifyCollectionRetrieval:
-	MODIFY NESTED TABLE varrayItemName
-	RETURN AS ( LOCATOR | VALUE )
-	;
-	
+    MODIFY NESTED TABLE varrayItemName
+    RETURN AS ( LOCATOR | VALUE )
+    ;
+    
 modifyLobStorageClause:
-	MODIFY LOB LEFT_PAREN lobItems RIGHT_PAREN 
-   	LEFT_PAREN modifyLobParameters RIGHT_PAREN 
-	;
-	
+    MODIFY LOB LEFT_PAREN lobItems RIGHT_PAREN 
+       LEFT_PAREN modifyLobParameters RIGHT_PAREN 
+    ;
+    
 modifyLobParameters:
-	( storageClause
-	|lobCommonParameter
-	)+
-	;
+    ( storageClause
+    |lobCommonParameter
+    )+
+    ;
 
 alterVarrayColProperties:
-	MODIFY VARRAY varrayItemName
-   	LEFT_PAREN modifyLobParameters RIGHT_PAREN 
-	;
-	
+    MODIFY VARRAY varrayItemName
+    LEFT_PAREN modifyLobParameters RIGHT_PAREN 
+    ;
+    
 constraintClauses:
-	addConstraintClause
-	| modifyConstraintClause
-	| renameConstraintClause
-	| dropConstraintClause+
-	;
-	
+    addConstraintClause
+    | modifyConstraintClause
+    | renameConstraintClause
+    | dropConstraintClause+
+    ;
+    
 addConstraintClause:
-	ADD 
-	( outOfLineConstraint+
+    ADD 
+    ( outOfLineConstraint+
      |outOfLineRefConstraint
     )
     ;
 
 modifyConstraintClause:
-	MODIFY constraintOption constraintState CASCADE?
-	;
+    MODIFY constraintOption constraintState CASCADE?
+    ;
 
 constraintWithName:
-	CONSTRAINT constraintName
-	;	
-	
+    CONSTRAINT constraintName
+    ;    
+    
 constraintOption:
-	 constraintWithName
+     constraintWithName
      | constraintPrimaryOrUnique
      ;
  
- constraintPrimaryOrUnique:
- 	 (PRIMARY KEY)
+constraintPrimaryOrUnique:
+      (PRIMARY KEY)
      | (UNIQUE columnList)
      ;
         
@@ -303,493 +304,491 @@ renameConstraintClause:
    ;
    
 dropConstraintClause:
-	DROP
-   	(
-   	 (constraintPrimaryOrUnique CASCADE? (( KEEP | DROP) INDEX)?)
-   	| (CONSTRAINT constraintName ( CASCADE )?)
-  	) 
-	;
+    DROP
+    (
+        (constraintPrimaryOrUnique CASCADE? (( KEEP | DROP) INDEX)?)
+       | (CONSTRAINT constraintName ( CASCADE )?)
+    ) 
+    ;
 
 alterTablePartitioning:
-	 modifyTableDefaultAttrs
-	| alterIntervalPartitioning
-	| setSubpartitionTemplate
-	| modifyTablePartition
-	| modifyTableSubpartition
-	| moveTablePartition
-	| moveTableSubpartition
-	| addTablePartition
-	| coalesceTablePartition
-	| coalesceTableSubpartition
-	| dropTablePartition
-	| dropTableSubpartition
-	| renamePartitionSubpart
-	| truncatePartitionSubpart
-	| splitTablePartition
-	| splitTableSubpartition
-	| mergeTablePartitions
-	| mergeTableSubpartitions
-	| exchangePartitionSubpart
-	;
-	
+     modifyTableDefaultAttrs
+    | alterIntervalPartitioning
+    | setSubpartitionTemplate
+    | modifyTablePartition
+    | modifyTableSubpartition
+    | moveTablePartition
+    | moveTableSubpartition
+    | addTablePartition
+    | coalesceTablePartition
+    | coalesceTableSubpartition
+    | dropTablePartition
+    | dropTableSubpartition
+    | renamePartitionSubpart
+    | truncatePartitionSubpart
+    | splitTablePartition
+    | splitTableSubpartition
+    | mergeTablePartitions
+    | mergeTableSubpartitions
+    | exchangePartitionSubpart
+    ;
+    
 modifyTableDefaultAttrs:
-	MODIFY DEFAULT ATTRIBUTES
-	(FOR partitionExtendedName)?
-	deferredSegmentCreation?
-	segmentAttributesClause?
-	tableCompression?
-	( PCTTHRESHOLD NUMBER )?
-	( keyCompression )?
-	( alterOverflowClause )?
-	modifyTableLobOrArray*
-	;
+    MODIFY DEFAULT ATTRIBUTES
+    (FOR partitionExtendedName)?
+    deferredSegmentCreation?
+    segmentAttributesClause?
+    tableCompression?
+    ( PCTTHRESHOLD NUMBER )?
+    ( keyCompression )?
+    ( alterOverflowClause )?
+    modifyTableLobOrArray*
+    ;
 
 modifyTableLobOrArray:
-	((LOB lobItemList )| (VARRAY varrayItemName)) LEFT_PAREN lobParameters RIGHT_PAREN
-	;
-		
+    ((LOB lobItemList )| (VARRAY varrayItemName)) LEFT_PAREN lobParameters RIGHT_PAREN
+    ;
+    
 partitionExtendedName:
-	PARTITION 
-	(
-		partitionName
-		|(FOR LEFT_PAREN partitionKeyValue ( COMMA partitionKeyValue)* RIGHT_PAREN)
-	)
-	;
-	
+    PARTITION 
+    (
+        partitionName
+        |(FOR LEFT_PAREN partitionKeyValue ( COMMA partitionKeyValue)* RIGHT_PAREN)
+    )
+    ;
+    
 alterIntervalPartitioning:
-	SET(
-		(INTERVAL LEFT_PAREN (expr)? RIGHT_PAREN)
-		|(STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName)* RIGHT_PAREN )
-	)
-	;
-	
+    SET
+    (
+       INTERVAL LEFT_PAREN (expr)? RIGHT_PAREN
+       |(STORE IN LEFT_PAREN tablespaceName (COMMA tablespaceName)* RIGHT_PAREN )
+    )
+    ;
+    
 setSubpartitionTemplate:
-	SET SUBPARTITION TEMPLATE
-   	(LEFT_PAREN subpartitionDescs? RIGHT_PAREN )
-   	| hashSubpartitionQuantity
-	;
+    SET SUBPARTITION TEMPLATE
+       (LEFT_PAREN subpartitionDescs? RIGHT_PAREN )
+       | hashSubpartitionQuantity
+    ;
 
 subpartitionDescs:
-	rangeSubpartitionDescs
-	|listSubpartitionDescs
-	|individualHashSubpartses
-	;
+    rangeSubpartitionDescs
+    |listSubpartitionDescs
+    |individualHashSubpartses
+    ;
 
 rangeSubpartitionDescs:
-	rangeSubpartitionDesc ( COMMA rangeSubpartitionDesc)*
-	;
+    rangeSubpartitionDesc ( COMMA rangeSubpartitionDesc)*
+    ;
 
 listSubpartitionDescs:
-	listSubpartitionDesc ( COMMA listSubpartitionDesc)*
-	;	
+    listSubpartitionDesc ( COMMA listSubpartitionDesc)*
+    ;    
 
 individualHashSubpartses:
-	individualHashSubparts ( COMMA individualHashSubparts)*
-	;	
+    individualHashSubparts ( COMMA individualHashSubparts)*
+    ;    
 
 hashSubpartitionQuantity:
-	matchNone
-	;
-	
+    matchNone
+    ;
+    
 modifyTablePartition:
-	 modifyRangePartition
-	| modifyHashPartition
-	| modifyListPartition
-	;
-	
+     modifyRangePartition
+    | modifyHashPartition
+    | modifyListPartition
+    ;
+    
 modifyRangePartition:
-	MODIFY partitionExtendedName
-   	(modifyPartitionCommonOp
-   	| alterMappingTableClause
-   	)
-	;
-	
+    MODIFY partitionExtendedName
+       (modifyPartitionCommonOp
+       | alterMappingTableClause
+       )
+    ;
+    
 modifyPartitionCommonOp:
-	partitionAttributes
-   	| addRangeSubpartition
-	| addHashSubpartition
+    partitionAttributes
+    | addRangeSubpartition
+    | addHashSubpartition
     | addListSubpartition
-   	| (COALESCE SUBPARTITION updateIndexClauses? parallelClause?)
-   	| (REBUILD? UNUSABLE LOCAL INDEXES)
-	;
-	
+    | (COALESCE SUBPARTITION updateIndexClauses? parallelClause?)
+    | (REBUILD? UNUSABLE LOCAL INDEXES)
+    ;
+    
 alterMappingTableClause:
-	matchNone
-	;
-		
+    matchNone
+    ;
+    
 partitionAttributes:
-	(commonPartitionAttributes| shrinkClause)*
-	( OVERFLOW commonPartitionAttributes*)?
-	tableCompression?
-	modifyTableLobOrArray*
-	;
+    (commonPartitionAttributes| shrinkClause)*
+    ( OVERFLOW commonPartitionAttributes*)?
+    tableCompression?
+    modifyTableLobOrArray*
+    ;
 
 addRangeSubpartition:
-	ADD rangeSubpartitionDesc dependentTablesClause? ( updateIndexClauses )? 
-	;
+    ADD rangeSubpartitionDesc dependentTablesClause? ( updateIndexClauses )? 
+    ;
 
 commonPartitionAttributes:
-	 physicalAttributesClause
-	| loggingClause
-	| allocateExtentClause
-  	| deallocateUnusedClause
-  	;
-  	
+     physicalAttributesClause
+    | loggingClause
+    | allocateExtentClause
+    | deallocateUnusedClause
+    ;
+      
 dependentTablesClause:
-	DEPENDENT TABLES
- 	LEFT_PAREN 
-     	tableNameAndPartitionSpecs (COMMA tableNameAndPartitionSpecs)*
- 	RIGHT_PAREN 
-	;
-	
+    DEPENDENT TABLES
+    LEFT_PAREN 
+        tableNameAndPartitionSpecs (COMMA tableNameAndPartitionSpecs)*
+    RIGHT_PAREN 
+    ;
+    
 tableNameAndPartitionSpecs:
-	tableName LEFT_PAREN partitionSpecs RIGHT_PAREN
-	;
-	
+    tableName LEFT_PAREN partitionSpecs RIGHT_PAREN
+    ;
+    
 partitionSpecs:
-	partitionSpec (COMMA partitionSpec)*
-	;
-	
+    partitionSpec (COMMA partitionSpec)*
+    ;
+    
 partitionSpec:
-	PARTITION partitionName? tablePartitionDescription
-	;
-	
+    PARTITION partitionName? tablePartitionDescription
+    ;
+    
 tablePartitionDescription:
-	deferredSegmentCreation?
-	segmentAttributesClause?
-	(tableCompression | keyCompression)?
-	( OVERFLOW segmentAttributesClause? )?
-	( lobStorageClause
-	  | varrayColProperties
-	  | nestedTableColProperties
-	 )*
-	;
-	
+    deferredSegmentCreation?
+    segmentAttributesClause?
+    (tableCompression | keyCompression)?
+    ( OVERFLOW segmentAttributesClause? )?
+    ( lobStorageClause
+      | varrayColProperties
+      | nestedTableColProperties
+     )*
+    ;
+    
 updateIndexClauses:
-	updateGlobalIndexClause
-	| updateAllIndexesClause
-	;
-	
+    updateGlobalIndexClause
+    | updateAllIndexesClause
+    ;
+    
 updateGlobalIndexClause:
-	( UPDATE | INVALIDATE ) GLOBAL 
-	;
-	
+    ( UPDATE | INVALIDATE ) GLOBAL 
+    ;
+    
 updateAllIndexesClause:
-	UPDATE INDEXES
-   	( LEFT_PAREN 
+    UPDATE INDEXES
+       ( LEFT_PAREN 
         indexNameWithUpdateIndexPartition ( COMMA indexNameWithUpdateIndexPartition)*
       RIGHT_PAREN 
-   	)?
-	;
+       )?
+    ;
 
 indexNameWithUpdateIndexPartition:
-	indexName 
-	LEFT_PAREN 
-		(
-			updateIndexPartition
-            | updateIndexSubpartition
-        )
+    indexName 
+    LEFT_PAREN
+    ( 
+        updateIndexPartition
+        | updateIndexSubpartition
+    )
     RIGHT_PAREN 
     ;
     
 updateIndexPartition:
-	indexOrSubpartition(COMMA indexOrSubpartition)*
-	;
+    indexOrSubpartition(COMMA indexOrSubpartition)*
+    ;
 
 indexOrSubpartition:
-	indexPartitionDescription indexSubpartitionClause?
-	;
-	
+    indexPartitionDescription indexSubpartitionClause?
+    ;
+    
 indexPartitionDescription:
-	PARTITION
-	(	 partitionName
-   		( (segmentAttributesClause| keyCompression)+
-   		| (PARAMETERS LEFT_PAREN STRING RIGHT_PAREN)
-   		)?
-   		UNUSABLE?
-	)?
-	;
-	
+    PARTITION
+    (     partitionName
+        (segmentAttributesClause| keyCompression)+
+        (PARAMETERS LEFT_PAREN STRING RIGHT_PAREN)
+       ?
+       UNUSABLE?
+    )?
+    ;
+    
 updateIndexSubpartition:
-	subpartionWithTablespace (COMMA subpartionWithTablespace)*
-	;
-	
+    subpartionWithTablespace (COMMA subpartionWithTablespace)*
+    ;
+    
 subpartionWithTablespace:
-	SUBPARTITION partitionName? (TABLESPACE tablespaceName )?
-   	;
-   	
+    SUBPARTITION partitionName? (TABLESPACE tablespaceName )?
+       ;
+       
 addHashSubpartition:
-	ADD 
-	individualHashSubparts
+    ADD 
+    individualHashSubparts
    dependentTablesClause?
    ( updateIndexClauses )?
    ( parallelClause )?
-	;
-	
+    ;
+    
 addListSubpartition:
-	ADD listSubpartitionDesc dependentTablesClause? ( updateIndexClauses )?
-	;
-	
+    ADD listSubpartitionDesc dependentTablesClause? ( updateIndexClauses )?
+    ;
+    
 modifyHashPartition:
-	MODIFY partitionExtendedName
-  	( partitionAttributes
-  	| alterMappingTableClause
-  	| (( REBUILD )? UNUSABLE LOCAL INDEXES)
-  	)
-	;
-	
+    MODIFY partitionExtendedName
+    ( partitionAttributes
+      | alterMappingTableClause
+      | (( REBUILD )? UNUSABLE LOCAL INDEXES)
+    )
+    ;
+    
 modifyListPartition:
-	MODIFY partitionExtendedName
-  	( modifyPartitionCommonOp
-  	| addOrDropPartition
-  	)
-	;
+    MODIFY partitionExtendedName
+    ( modifyPartitionCommonOp
+    | addOrDropPartition
+    )
+    ;
 
 addOrDropPartition:
-	( ADD | DROP ) VALUES LEFT_PAREN simpleExpr( COMMA simpleExpr)* RIGHT_PAREN
-	;
+    ( ADD | DROP ) VALUES LEFT_PAREN simpleExpr( COMMA simpleExpr)* RIGHT_PAREN
+    ;
 
 modifyTableSubpartition:
-	MODIFY subpartitionExtendedName
-	( allocateExtentClause
-	| deallocateUnusedCluse
-	| shrinkClause
-	| ( ( LOB lobItems | VARRAY varrayItemName ) LEFT_PAREN modifyLobParameters RIGHT_PAREN )*
-	| (( REBUILD )? UNUSABLE LOCAL INDEXES)
-	| addOrDropPartition
-	)
-	;
-	
+    MODIFY subpartitionExtendedName
+    ( allocateExtentClause
+    | deallocateUnusedCluse
+    | shrinkClause
+    | ( ( LOB lobItems | VARRAY varrayItemName ) LEFT_PAREN modifyLobParameters RIGHT_PAREN )*
+    | (( REBUILD )? UNUSABLE LOCAL INDEXES)
+    | addOrDropPartition
+    )
+    ;
+    
 subpartitionExtendedName:
-	(SUBPARTITION partitionName	)
-	| (SUBPARTITION FOR LEFT_PAREN partitionKeyValue ( COMMA partitionKeyValue)* RIGHT_PAREN )
-	;
+    (SUBPARTITION partitionName    )
+    | (SUBPARTITION FOR LEFT_PAREN partitionKeyValue ( COMMA partitionKeyValue)* RIGHT_PAREN )
+    ;
 
 deallocateUnusedCluse:
-	matchNone;
-	
+    matchNone;
+    
 moveTablePartition:
-	MOVE partitionExtendedName
-   ( MAPPING TABLE )?
-   tablePartitionDescription
-   ( updateIndexClauses )?
-   ( parallelClause )?
-	;
-	
+    MOVE partitionExtendedName
+    ( MAPPING TABLE )?
+    tablePartitionDescription
+    ( updateIndexClauses )?
+    ( parallelClause )?
+    ;
+    
 moveTableSubpartition:
-MOVE subpartitionExtendedName ( partitioningStorageClause )?
+    MOVE subpartitionExtendedName ( partitioningStorageClause )?
      ( updateIndexClauses )? ( parallelClause )?
-;
+    ;
+    
 addTablePartition:
-	ADD PARTITION partitionName?
-	( addRangePartitionClause
-	| addHashPartitionClause
-	| addListPartitionClause
-	) 
-	dependentTablesClause?
-	;
-	
+    ADD PARTITION partitionName?
+    ( addRangePartitionClause
+    | addHashPartitionClause
+    | addListPartitionClause
+    ) 
+    dependentTablesClause?
+    ;
+    
 addRangePartitionClause:
-	rangeValuesClause
-	tablePartitionDescription
-	subpartsDescsOrByQuantity?
-	( updateIndexClauses )?
-	;
-	
+    rangeValuesClause
+    tablePartitionDescription
+    subpartsDescsOrByQuantity?
+    ( updateIndexClauses )?
+    ;
+    
 subpartsDescsOrByQuantity:
-	(LEFT_PAREN subpartitionDescs RIGHT_PAREN)
-  	| hashSubpartsByQuantity
-  	;
-	
+    (LEFT_PAREN subpartitionDescs RIGHT_PAREN)
+    | hashSubpartsByQuantity
+    ;
+    
 hashSubpartsByQuantity:
-	SUBPARTITIONS NUMBER (STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName)* RIGHT_PAREN )?
-	;
-	
-	
+    SUBPARTITIONS NUMBER (STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName)* RIGHT_PAREN )?
+    ;
+    
 addHashPartitionClause:
-	partitioningStorageClause
-	( updateIndexClauses )?
-	( parallelClause )?
-	;
+    partitioningStorageClause
+    ( updateIndexClauses )?
+    ( parallelClause )?
+    ;
+    
 addListPartitionClause:
-	listValuesClause
-	tablePartitionDescription
-	subpartsDescsOrByQuantity?
-	( updateIndexClauses )?
-	;
+    listValuesClause
+    tablePartitionDescription
+    subpartsDescsOrByQuantity?
+    ( updateIndexClauses )?
+    ;
+    
 coalesceTablePartition:
-	COALESCE PARTITION ( updateIndexClauses )? ( parallelClause )?
-	;
+    COALESCE PARTITION ( updateIndexClauses )? ( parallelClause )?
+    ;
+    
 coalesceTableSubpartition:
-	COALESCE SUBPARTITION partitionName (updateIndexClauses)? (parallelClause)?
-	;
-	
+    COALESCE SUBPARTITION partitionName (updateIndexClauses)? (parallelClause)?
+    ;
+    
 dropTablePartition:
-	DROP partitionExtendedName
-	   ( updateIndexClauses ( parallelClause )? )?
-	;
+    DROP partitionExtendedName
+       ( updateIndexClauses ( parallelClause )? )?
+    ;
+    
 dropTableSubpartition:
-	DROP subpartitionExtendedName
-	   ( updateIndexClauses ( parallelClause )? )?
-	;
-	
+    DROP subpartitionExtendedName
+       ( updateIndexClauses ( parallelClause )? )?
+    ;
+    
 renamePartitionSubpart:
-	RENAME 
-	( 
-		partitionExtendedName
-	    | subpartitionExtendedName
-	) TO 
-	;
-	
+    RENAME ( partitionExtendedName| subpartitionExtendedName) TO
+    ;
+    
 truncatePartitionSubpart:
-	TRUNCATE 
-	( partitionExtendedName
+    TRUNCATE 
+    ( partitionExtendedName
      | subpartitionExtendedName
     )
-   	(((DROP ( ALL )?) | REUSE ) STORAGE )?
-   	(updateIndexClauses ( parallelClause )?)?
-	;
-	
+       (((DROP ( ALL )?) | REUSE ) STORAGE )?
+       (updateIndexClauses ( parallelClause )?)?
+    ;
+    
 splitTablePartition:
-	SPLIT partitionExtendedName
- 	(
-		(
-			AT simpleExprsWithParen ( INTO LEFT_PAREN rangePartitionDescs RIGHT_PAREN )?
-		)
-  		| (VALUES simpleExprsWithParen  ( INTO LEFT_PAREN listPartitionDescs RIGHT_PAREN )?)
-  	) 
-  	( splitNestedTablePart )?
+    SPLIT partitionExtendedName
+     (
+        ( AT simpleExprsWithParen ( INTO LEFT_PAREN rangePartitionDescs RIGHT_PAREN )?)
+    	 |
+       (VALUES simpleExprsWithParen  ( INTO LEFT_PAREN listPartitionDescs RIGHT_PAREN )?)
+      ) 
+      ( splitNestedTablePart )?
     dependentTablesClause?
     ( updateIndexClauses )?
     ( parallelClause )?
-	;
+    ;
 
 partitionWithNames:
-	partitionWithName (COMMA partitionWithName)*
-	;
-	
+    partitionWithName (COMMA partitionWithName)*
+    ;
+    
 partitionWithName:
-	PARTITION partitionName
-	;
-	
+    PARTITION partitionName
+    ;
+    
 rangePartitionDescs:
-	rangePartitionDesc COMMA rangePartitionDesc
-	;
-	
+    rangePartitionDesc COMMA rangePartitionDesc
+    ;
+    
 listPartitionDescs:
-	listPartitionDesc COMMA listPartitionDesc
-	;
-	
+    listPartitionDesc COMMA listPartitionDesc
+    ;
+    
 
 rangePartitionDesc:
-	PARTITION partitionName?
-	rangeValuesClause?
-	tablePartitionDescription
-	subpartsDescsOrByQuantity?
-	;
-	
+    PARTITION partitionName?
+    rangeValuesClause?
+    tablePartitionDescription
+    subpartsDescsOrByQuantity?
+    ;
+    
 listPartitionDesc:
-	PARTITION partitionName?
-	listValuesClause?
-	tablePartitionDescription
- 	subpartsDescsOrByQuantity?
-	;
-	
+    PARTITION partitionName?
+    listValuesClause?
+    tablePartitionDescription
+     subpartsDescsOrByQuantity?
+    ;
+    
 splitNestedTablePart:
-	NESTED TABLE columnName INTO
-  	LEFT_PAREN partitionSegmentAttribute COMMA 
+    NESTED TABLE columnName INTO
+    LEFT_PAREN partitionSegmentAttribute COMMA 
     partitionSegmentAttribute (splitNestedTablePart)?
-  	RIGHT_PAREN 
-  	( splitNestedTablePart )?
-	;
-	
+    RIGHT_PAREN 
+    ( splitNestedTablePart )?
+    ;
+    
 partitionSegmentAttribute:
-	PARTITION partitionName (segmentAttributesClause)?
-	;
-	
+    PARTITION partitionName (segmentAttributesClause)?
+    ;
+    
 splitTableSubpartition:
-	SPLIT subpartitionExtendedName
-  	(
-		(
-			AT simpleExprsWithParen ( INTO LEFT_PAREN (rangeSubpartitionDescs) RIGHT_PAREN )?
-		)
-  		| (VALUES simpleExprsWithParen  ( INTO LEFT_PAREN listSubpartitionDescs RIGHT_PAREN )?)
-  	) 
-  	dependentTablesClause?
+    SPLIT subpartitionExtendedName
+    (    
+       (AT simpleExprsWithParen ( INTO LEFT_PAREN (rangeSubpartitionDescs) RIGHT_PAREN )?)
+       |(VALUES simpleExprsWithParen  ( INTO LEFT_PAREN listSubpartitionDescs RIGHT_PAREN )?)
+     ) 
+    dependentTablesClause?
     ( updateIndexClauses )?
     ( parallelClause )?
-	;
-	
+    ;
+    
 mergeTablePartitions:
-	MERGE PARTITIONS
-	partitionNameOrForKeyValue
+    MERGE PARTITIONS
+    partitionNameOrForKeyValue
     COMMA 
-   	partitionNameOrForKeyValue
-   ( INTO partitionSpec )?
-   dependentTablesClause?
-   ( updateIndexClauses )?
-   ( parallelClause )?
-	;
+    partitionNameOrForKeyValue
+    ( INTO partitionSpec )?
+    dependentTablesClause?
+    ( updateIndexClauses )?
+    ( parallelClause )?
+    ;
 
 partitionNameOrForKeyValue:
-	partitionName 
-	| ( FOR LEFT_PAREN partitionKeyValue ( COMMA partitionKeyValue )* RIGHT_PAREN )
-	;
+    partitionName 
+    | ( FOR LEFT_PAREN partitionKeyValue ( COMMA partitionKeyValue )* RIGHT_PAREN )
+    ;
 
 partitionKeyValue:
-	simpleExpr
-	;
-	
+    simpleExpr
+    ;
+    
 mergeTableSubpartitions:
-	MERGE SUBPARTITIONS
-   partitionNameOrForKeyValue
+    MERGE SUBPARTITIONS
+    partitionNameOrForKeyValue
     COMMA 
-   	partitionNameOrForKeyValue
-   	( INTO 
-   		( rangeSubpartitionDesc 
+    partitionNameOrForKeyValue
+    ( INTO 
+        (rangeSubpartitionDesc 
           | listSubpartitionDesc
-    	)
-   	)?
-   	dependentTablesClause?
-   	( updateIndexClauses )?
-   	( parallelClause )?
-	;
-	
+        )
+     )?
+    dependentTablesClause?
+    ( updateIndexClauses )?
+    ( parallelClause )?
+    ;
+    
 exchangePartitionSubpart:
-	EXCHANGE 
-	(
-		partitionExtendedName
+    EXCHANGE 
+    (
+         partitionExtendedName
         | subpartitionExtendedName
     )
-   	WITH TABLE  tableName
-   	( ( INCLUDING | EXCLUDING ) INDEXES )?
-   	( ( WITH | WITHOUT ) VALIDATION )?
-   	( exceptionsClause )?
-   	( updateIndexClauses ( parallelClause )? )?
-	;
+    WITH TABLE  tableName
+    ( ( INCLUDING | EXCLUDING ) INDEXES )?
+    ( ( WITH | WITHOUT ) VALIDATION )?
+    ( exceptionsClause )?
+    ( updateIndexClauses ( parallelClause )? )?
+    ;
 
 alterExternalTable:
-	( addColumnClause
-	| modifyColumnClauses
-	| dropColumnClause
-	| parallelClause
-	| externalDataProperties
-	| (REJECT LIMIT ( NUMBER | UNLIMITED ))
-	| (PROJECT COLUMN ( ALL | REFERENCED ))
-	)+
-	;
-	
+    ( addColumnClause
+    | modifyColumnClauses
+    | dropColumnClause
+    | parallelClause
+    | externalDataProperties
+    | (REJECT LIMIT ( NUMBER | UNLIMITED ))
+    | (PROJECT COLUMN ( ALL | REFERENCED ))
+    )+
+    ;
+    
 externalDataProperties:
-	matchNone
-	;
-	
+    matchNone
+    ;
+    
 moveTableClause:
-	MOVE ( ONLINE )?
-   	segmentAttributesClause?
-   	tableCompression?
-   	( indexOrgTableClause )?
-   	( lobStorageClause | varrayColProperties )*
-   	( parallelClause )?
-	;
+    MOVE ( ONLINE )?
+    segmentAttributesClause?
+    tableCompression?
+    ( indexOrgTableClause )?
+    ( lobStorageClause | varrayColProperties )*
+    ( parallelClause )?
+    ;
 
 

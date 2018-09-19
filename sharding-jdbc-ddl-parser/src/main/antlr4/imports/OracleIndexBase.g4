@@ -3,181 +3,187 @@ grammar OracleIndexBase;
 import OracleKeyword, DataType, Keyword,OracleBase,BaseRule,Symbol;
 
 createIndex:
-	CREATE ( UNIQUE | BITMAP )? INDEX  indexName
-  	ON ( clusterIndexClause
+    CREATE ( UNIQUE | BITMAP )? INDEX  indexName
+    ON 
+    ( clusterIndexClause
      | tableIndexClause
      | bitmapJoinIndexClause
-     )
-	UNUSABLE? 
-	;
+    )
+    UNUSABLE? 
+    ;
+    
 clusterIndexClause:
-	CLUSTER  clusterName 
-	;
+    CLUSTER  clusterName 
+    ;
+    
 tableIndexClause:
- tableName alias?
- LEFT_PAREN indexExprSort
-  (COMMA indexExprSort)* RIGHT_PAREN 
-  indexProperties?
-;
+    tableName alias?
+    LEFT_PAREN indexExprSort
+    (COMMA indexExprSort)* RIGHT_PAREN 
+    indexProperties?
+    ;
 
 indexExprSort:
-	indexExpr ( ASC | DESC )?
-	;
-	
+    indexExpr ( ASC | DESC )?
+    ;
+    
 indexExpr:
-	columnName 
-	| expr 
-	;
-	
+    columnName 
+    | expr 
+    ;
+    
 indexProperties:
-	(globalPartitionedIndex
+    (globalPartitionedIndex
     | localPartitionedIndex
-  	| indexAttribute)+
-	| (INDEXTYPE IS  domainIndexClause)
-	;
-	
+      | indexAttribute)+
+    | (INDEXTYPE IS  domainIndexClause)
+    ;
+    
 globalPartitionedIndex:
-	GLOBAL PARTITION BY
-	   ( (RANGE columnList 
-	        LEFT_PAREN indexPartitioningClause (COMMA indexPartitioningClause)* RIGHT_PAREN)
-	   | (HASH columnList 
-	        ( individualHashPartitions
-	        | hashPartitionsByQuantity
-	        ))
-	   )
-	;
-	
+    GLOBAL PARTITION BY
+       ( (RANGE columnList 
+            LEFT_PAREN indexPartitioningClause (COMMA indexPartitioningClause)* RIGHT_PAREN)
+       | (HASH columnList 
+            ( individualHashPartitions
+            | hashPartitionsByQuantity
+            ))
+       )
+    ;
+    
 indexPartitioningClause:
-	PARTITION partitionName?
-	   VALUES LESS THAN simpleExprsWithParen 
-	   segmentAttributesClause?
-	;
+    PARTITION partitionName?
+    VALUES LESS THAN simpleExprsWithParen 
+    segmentAttributesClause?
+    ;
 
 individualHashPartitions:
-	LEFT_PAREN partitioningStorageClause
-	  (COMMA partitioningStorageClause)* RIGHT_PAREN 
-	;
-	
+    LEFT_PAREN partitioningStorageClause
+    (COMMA partitioningStorageClause)* RIGHT_PAREN 
+    ;
+    
 partitioningStorageClause:
- 	PARTITION partitionName? partitioningStorage?
-	;
-	
+    PARTITION partitionName? partitioningStorage?
+    ;
+    
 partitioningStorage:
-	(TABLESPACE tablespaceName)
-  	| (OVERFLOW (TABLESPACE tablespaceName)?)
-  	| tableCompression
-  	| keyCompression
-  	| lobPartitioningStorage
-  	| (VARRAY varrayItemName STORE AS (SECUREFILE | BASICFILE)? LOB segName)
-  	;
+    (TABLESPACE tablespaceName)
+    | (OVERFLOW (TABLESPACE tablespaceName)?)
+    | tableCompression
+    | keyCompression
+    | lobPartitioningStorage
+    | (VARRAY varrayItemName STORE AS (SECUREFILE | BASICFILE)? LOB segName)
+    ;
  
 tableCompression:
- 	(COMPRESS(BASIC 
+    (COMPRESS(BASIC 
            | FOR ( OLTP
                  |((QUERY | ARCHIVE) ( LOW | HIGH )?) 
                  )
            )?)
-	| NOCOMPRESS 
-	;
+    | NOCOMPRESS 
+    ;
 
 hashPartitionsByQuantity:
-	PARTITIONS NUMBER
-	( STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName )* RIGHT_PAREN )?
-	( tableCompression | keyCompression )?
-	( OVERFLOW STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName )* RIGHT_PAREN )?
-	;
+    PARTITIONS NUMBER
+    ( STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName )* RIGHT_PAREN )?
+    ( tableCompression | keyCompression )?
+    ( OVERFLOW STORE IN LEFT_PAREN tablespaceName ( COMMA tablespaceName )* RIGHT_PAREN )?
+    ;
 
 keyCompression:
-	(COMPRESS NUMBER?)
-	| NOCOMPRESS
-	;
+    (COMPRESS NUMBER?)
+    | NOCOMPRESS
+    ;
 
 lobPartitioningStorage:
-	LOB LEFT_PAREN lobItems RIGHT_PAREN STORE AS (BASICFILE | SECUREFILE)?
-  	((segName tablespaceClauseWithParen?)
-  	| tablespaceClauseWithParen
-  	)?
-	;
+    LOB LEFT_PAREN lobItems RIGHT_PAREN STORE AS (BASICFILE | SECUREFILE)?
+    ((segName tablespaceClauseWithParen?)
+    | tablespaceClauseWithParen
+    )?
+    ;
 
 segmentAttributesClause:
-	 (physicalAttributesClause
-	| (TABLESPACE tablespaceName)
-	| loggingClause)+
-	;
+     (physicalAttributesClause
+    | (TABLESPACE tablespaceName)
+    | loggingClause)+
+    ;
+    
 tablespaceClauseWithParen:
-	LEFT_PAREN tablespaceClause RIGHT_PAREN
-	;
-		
+    LEFT_PAREN tablespaceClause RIGHT_PAREN
+    ;
+    
 tablespaceClause:
-	TABLESPACE tablespaceName
-	;
-	
+    TABLESPACE tablespaceName
+    ;
+    
 physicalAttributesClause:
-	storageClause
-	|((PCTFREE 
-	  | PCTUSED 
-	  | INITRANS) NUMBER)
-	;
+    storageClause
+    |((PCTFREE 
+      | PCTUSED 
+      | INITRANS) NUMBER)
+    ;
 
 loggingClause:
-	LOGGING 
-	| NOLOGGING 
-	| FILESYSTEM_LIKE_LOGGING
-	;
+    LOGGING 
+    | NOLOGGING 
+    | FILESYSTEM_LIKE_LOGGING
+    ;
 
 storageClause:
-	STORAGE LEFT_PAREN storageOption(COMMA storageOption)* RIGHT_PAREN
-	;
+    STORAGE LEFT_PAREN storageOption(COMMA storageOption)* RIGHT_PAREN
+    ;
 
 storageOption:
-	(INITIAL sizeClause)
- | (NEXT sizeClause)
- | (MINEXTENTS NUMBER)
- | (MAXEXTENTS ( NUMBER | UNLIMITED ))
- | maxsizeClause
- | (PCTINCREASE NUMBER)
- | (FREELISTS NUMBER)
- | (FREELIST GROUPS NUMBER)
- | (OPTIMAL (sizeClause | NULL )?)
- | (BUFFER_POOL ( KEEP | RECYCLE | DEFAULT ))
- | (FLASH_CACHE ( KEEP | NONE | DEFAULT ))
- | ENCRYPT
- ;
+    (INITIAL sizeClause)
+    | (NEXT sizeClause)
+    | (MINEXTENTS NUMBER)
+    | (MAXEXTENTS ( NUMBER | UNLIMITED ))
+    | maxsizeClause
+    | (PCTINCREASE NUMBER)
+    | (FREELISTS NUMBER)
+    | (FREELIST GROUPS NUMBER)
+    | (OPTIMAL (sizeClause | NULL )?)
+    | (BUFFER_POOL ( KEEP | RECYCLE | DEFAULT ))
+    | (FLASH_CACHE ( KEEP | NONE | DEFAULT ))
+    | ENCRYPT
+    ;
  
 sizeClause:
-	NUMBER ID?
-	;
-	
+    NUMBER ID?
+    ;
+    
 maxsizeClause:
-	MAXSIZE ( UNLIMITED | sizeClause )
-	;
+    MAXSIZE ( UNLIMITED | sizeClause )
+    ;
 
 localPartitionedIndex:
-	LOCAL
-	(storeInClause
-	| onCompPartitionedTable
-	| onPartitionedTable
-	)?
-	;
-	
+    LOCAL
+    (storeInClause
+    | onCompPartitionedTable
+    | onPartitionedTable
+    )?
+    ;
+    
 storeInClause:
-	STORE IN LEFT_PAREN tablespaceName( COMMA tablespaceName )* RIGHT_PAREN
-	;
-	
+    STORE IN LEFT_PAREN tablespaceName( COMMA tablespaceName )* RIGHT_PAREN
+    ;
+    
 onPartitionedTable:
-	LEFT_PAREN
-	(
-		onRangePartitionedTable
-		|onHashPartitionedTable
-		|indexSubpartitionClause
-	)
-	RIGHT_PAREN
-;
+    LEFT_PAREN
+    (
+    onRangePartitionedTable
+    |onHashPartitionedTable
+    |indexSubpartitionClause
+    )
+    RIGHT_PAREN
+    ; 
+    
 onRangePartitionedTable:
-	onRangePartitionedItem (COMMA onRangePartitionedItem)*
-	;
+    onRangePartitionedItem (COMMA onRangePartitionedItem)*
+    ;
+    
 onRangePartitionedItem:
-	PARTITION
+    PARTITION
     partitionName?
     ( segmentAttributesClause
       | keyCompression
@@ -186,87 +192,87 @@ onRangePartitionedItem:
     ;
 
 onHashPartitionedTable:
-	onHashPartitionedItem (COMMA onHashPartitionedItem)* 
-	;
+    onHashPartitionedItem (COMMA onHashPartitionedItem)* 
+    ;
 
 onHashPartitionedItem:
-	PARTITION partitionName? ( TABLESPACE tablespaceName )? keyCompression? UNUSABLE?
-	;
-	
+    PARTITION partitionName? ( TABLESPACE tablespaceName )? keyCompression? UNUSABLE?
+    ;
+    
 onCompPartitionedTable:
-	storeInClause?
-	LEFT_PAREN 
-	onCompPartitionedItem (COMMA onCompPartitionedItem)*
-	RIGHT_PAREN 
-	;
-	
+    storeInClause?
+    LEFT_PAREN 
+    onCompPartitionedItem (COMMA onCompPartitionedItem)*
+    RIGHT_PAREN 
+    ;
+    
 onCompPartitionedItem:
-	 PARTITION partitionName?
-	 ( segmentAttributesClause
+    PARTITION partitionName?
+    ( segmentAttributesClause
        | keyCompression
-      )*
-      UNUSABLE? indexSubpartitionClause?
-	;
+    )*
+    UNUSABLE? indexSubpartitionClause?
+    ;
 
 indexSubpartitionClause:
-	storeInClause
-	|(LEFT_PAREN indexSubpartitionItem(COMMA indexSubpartitionItem)* RIGHT_PAREN)
-	;
-	
+    storeInClause
+    |(LEFT_PAREN indexSubpartitionItem(COMMA indexSubpartitionItem)* RIGHT_PAREN)
+    ;
+    
 indexSubpartitionItem:
-	SUBPARTITION partitionName?
+    SUBPARTITION partitionName?
     (TABLESPACE tablespaceName )? ( keyCompression )? UNUSABLE?
     ;
     
 indexAttribute:
-	physicalAttributesClause
- 	| loggingClause
-	| ONLINE
-	| (TABLESPACE ( tablespaceName | DEFAULT))
-	| keyCompression
-	| SORT 
-	| NOSORT
-	| REVERSE
-	| VISIBLE 
-	| INVISIBLE
-	| parallelClause
-	;
+    physicalAttributesClause
+    | loggingClause
+    | ONLINE
+    | (TABLESPACE ( tablespaceName | DEFAULT))
+    | keyCompression
+    | SORT 
+    | NOSORT
+    | REVERSE
+    | VISIBLE 
+    | INVISIBLE
+    | parallelClause
+    ;
 
 parallelClause:
-	NOPARALLEL 
-	| (PARALLEL ( NUMBER )? )
-	;
-	
+    NOPARALLEL 
+    | (PARALLEL ( NUMBER )? )
+    ;
+    
 domainIndexClause:
-	indexTypeName
-   	localDomainIndexClause?
-   	parallelClause?
-   	odciParameter?
-	;
-	
+    indexTypeName
+    localDomainIndexClause?
+    parallelClause?
+    odciParameter?
+    ;
+    
 localDomainIndexClause:
-	LOCAL
-  	( 
-  		LEFT_PAREN 
-	  		partionWithOdciParameter (COMMA  partionWithOdciParameter)*
-    	RIGHT_PAREN 
-  	)?
-	;
+    LOCAL
+    ( 
+      LEFT_PAREN 
+          partionWithOdciParameter (COMMA  partionWithOdciParameter)*
+       RIGHT_PAREN 
+    )?
+    ;
 
 partionWithOdciParameter:
-	PARTITION partitionName odciParameter?
-	;
+    PARTITION partitionName odciParameter?
+    ;
 
 odciParameter:
-	PARAMETERS LEFT_PAREN STRING RIGHT_PAREN 
-	;
+    PARAMETERS LEFT_PAREN STRING RIGHT_PAREN 
+    ;
 
 bitmapJoinIndexClause:
-	tableName
-   	LEFT_PAREN 
-    	columnSortClause( COMMA columnSortClause)*
-   	RIGHT_PAREN 
-   	FROM tableAndAlias (COMMA tableAndAlias)*
-   	WHERE expr
-   	localPartitionedIndex? 
-	;
+    tableName
+    LEFT_PAREN 
+    columnSortClause( COMMA columnSortClause)*
+    RIGHT_PAREN 
+    FROM tableAndAlias (COMMA tableAndAlias)*
+    WHERE expr
+    localPartitionedIndex? 
+    ;

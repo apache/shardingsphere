@@ -3,93 +3,93 @@ grammar DMLBase;
 import DQLBase,BaseRule,DataType,Keyword, Symbol;
 
 execute:
-	select
-	|insert
-	|update
-	|delete
-	;
-	
+    select
+    |insert
+    |update
+    |delete
+    ;
+    
 fromClause: 
-	FROM tableReferences
-	;
-		
+    FROM tableReferences
+    ;
+    
 whereClause: 
-	WHERE expr
-	;
-	
+    WHERE expr
+    ;
+    
 groupByClause: 
-	GROUP BY groupByItem (COMMA groupByItem)* 
-	(WITH ROLLUP)? 
-	havingClause?
-	;
-	
+    GROUP BY groupByItem (COMMA groupByItem)* 
+    (WITH ROLLUP)? 
+    havingClause?
+    ;
+    
 havingClause: 
-	HAVING  expr
-	;
-	
+    HAVING  expr
+    ;
+    
 orderByClause: 
-	ORDER BY groupByItem (COMMA groupByItem)*
-	;
-	
+    ORDER BY groupByItem (COMMA groupByItem)*
+    ;
+    
 groupByItem:
-	(columnName | NUMBER |expr)  (ASC|DESC)?
-	;
-	
+    (columnName | NUMBER |expr)  (ASC|DESC)?
+    ;
+    
 limitClause:
-	LIMIT rangeClause
-	;
+    LIMIT rangeClause
+    ;
 
 //define delete rule template
 delete: 
-	deleteClause 
-	whereClause? 
-	orderByClause? 
-	limitClause?
-	;
-	
+    deleteClause 
+    whereClause? 
+    orderByClause? 
+    limitClause?
+    ;
+    
 partitionClause: 
-	PARTITION idList
-	;
+    PARTITION idList
+    ;
 
 update: 
-	updateClause 
-	setClause 
-	whereClause? 
-	orderByClause? 
-	limitClause?
-	;
+    updateClause 
+    setClause 
+    whereClause? 
+    orderByClause? 
+    limitClause?
+    ;
 
 setClause: 
-	SET assignmentList
-	;
-	
+    SET assignmentList
+    ;
+    
 assignmentList: 
-	assignment (COMMA assignment)*
-	;
-	
+    assignment (COMMA assignment)*
+    ;
+    
 assignment:
-	columnName EQ_OR_ASSIGN value
-	;
+    columnName EQ_OR_ASSIGN value
+    ;
 
 value:
-	DEFAULT|expr;
+    DEFAULT|expr;
 
 valueList:
-	 value (COMMA value)*
-	;
-	
+     value (COMMA value)*
+    ;
+    
 valueListWithParen:
-	LEFT_PAREN valueList RIGHT_PAREN
-	;	
-	
+    LEFT_PAREN valueList RIGHT_PAREN
+    ;    
+    
 insert:
-	;
+    ;
 
 deleteClause:
-	;
-	
+    ;
+    
 updateClause:
-	;
+    ;
 
 updateSpec: 
-	;
+    ;
