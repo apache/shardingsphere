@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -58,18 +59,19 @@ public final class BackendConnection implements AutoCloseable {
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
     /**
-     * Get connection of current thread datasource.
+     * Get connections of current thread datasource.
      *
      * @param dataSourceName data source name
+     * @param connectionSize size of connections to be get
      * @return connection
      * @throws SQLException SQL exception
      */
-    public Connection getConnection(final String dataSourceName) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
         try {
             ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
-            Connection result = ruleRegistry.getBackendDataSource().getConnection(dataSourceName);
-            cachedConnections.add(result);
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.getMetaData().getURL()));
+            List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(dataSourceName, connectionSize);
+            cachedConnections.addAll(result);
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
             finishEvent.setExecuteSuccess();
             ShardingEventBusInstance.getInstance().post(finishEvent);
             return result;

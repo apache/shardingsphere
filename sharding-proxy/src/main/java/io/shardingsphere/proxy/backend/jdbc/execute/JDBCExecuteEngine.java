@@ -61,7 +61,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -109,10 +108,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
-                sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new JDBCExecuteEngine.ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
+                sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                new JDBCExecuteEngine.FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
-                new JDBCExecuteEngine.ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
+                new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
+                new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -177,7 +176,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         @Override
         public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-            return Collections.singletonList(getBackendConnection().getConnection(dataSourceName));
+            return getBackendConnection().getConnections(dataSourceName, connectionSize);
         }
         
         @Override
