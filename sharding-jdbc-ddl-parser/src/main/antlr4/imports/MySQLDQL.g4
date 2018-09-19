@@ -3,51 +3,51 @@ import MySQLKeyword,Keyword,Symbol,DataType, BaseRule, DQLBase;
 
 
 selectSpec: 
-	(ALL | DISTINCT | DISTINCTROW)? 
-	HIGH_PRIORITY? 
-	STRAIGHT_JOIN?
-	SQL_SMALL_RESULT?
-	SQL_BIG_RESULT?
-	SQL_BUFFER_RESULT?
-	(SQL_CACHE | SQL_NO_CACHE)?
-	SQL_CALC_FOUND_ROWS?
-	;
+    (ALL | DISTINCT | DISTINCTROW)? 
+    HIGH_PRIORITY? 
+    STRAIGHT_JOIN?
+    SQL_SMALL_RESULT?
+    SQL_BIG_RESULT?
+    SQL_BUFFER_RESULT?
+    (SQL_CACHE | SQL_NO_CACHE)?
+    SQL_CALC_FOUND_ROWS?
+    ;
 
 caseExpress:
-	caseCond
-	|caseComp
-	;
-	
+    caseCond
+    |caseComp
+    ;
+    
 caseComp:
-	CASE simpleExpr caseWhenComp+ elseResult? END  
-	;
-	
+    CASE simpleExpr caseWhenComp+ elseResult? END  
+    ;
+    
 caseWhenComp:
-	WHEN simpleExpr THEN caseResult
-	;
+    WHEN simpleExpr THEN caseResult
+    ;
 
 caseCond:
-	CASE whenResult+ elseResult? END
-	;
-	
+    CASE whenResult+ elseResult? END
+    ;
+    
 whenResult:
-	WHEN booleanPrimary THEN caseResult
-	;
+    WHEN booleanPrimary THEN caseResult
+    ;
 
 elseResult:
-	ELSE caseResult
-	;
+    ELSE caseResult
+    ;
 
 caseResult:
-	expr
-	;
+    expr
+    ;
 
 
 
 idListWithEmpty:
-	(LEFT_PAREN RIGHT_PAREN)
-	|idList
-	;
+    (LEFT_PAREN RIGHT_PAREN)
+    |idList
+    ;
 
 //https://dev.mysql.com/doc/refman/8.0/en/join.html
 tableReferences:
@@ -55,74 +55,74 @@ tableReferences:
     ;
 
 tableReference:
-	(tableFactor joinTable)+
-  	| tableFactor joinTable+
-  	| tableFactor
- 	;
- 	
+    (tableFactor joinTable)+
+      | tableFactor joinTable+
+      | tableFactor
+     ;
+     
 tableFactor:
     tableName (PARTITION  idList)?
         (AS? alias)? indexHintList? 
-  	| subquery AS? alias
-  	| LEFT_PAREN tableReferences RIGHT_PAREN
-	;
+      | subquery AS? alias
+      | LEFT_PAREN tableReferences RIGHT_PAREN
+    ;
 
 joinTable:
-	(INNER | CROSS)? JOIN tableFactor joinCondition?
-  	| STRAIGHT_JOIN tableFactor
-  	| STRAIGHT_JOIN tableFactor joinCondition
-  	| (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
-  	| NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
-	;
-	
+    (INNER | CROSS)? JOIN tableFactor joinCondition?
+      | STRAIGHT_JOIN tableFactor
+      | STRAIGHT_JOIN tableFactor joinCondition
+      | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
+      | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
+    ;
+    
 joinCondition:
     ON expr
-  	| USING idList
-	;
-	
+      | USING idList
+    ;
+    
 indexHintList:
     indexHint(COMMA  indexHint)*
     ;
 
 indexHint:
-	USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-  	| IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
- 	;
-	
+    USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+      | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+     ;
+    
 
 characterAndCollate:
-	characterSet
+    characterSet
     collateClause
-	;
-	
+    ;
+    
 characterSet:
-	((CHARACTER | CHAR) SET charsetName)
-	|CHARSET EQ_OR_ASSIGN? charsetName
-	;
-	
+    ((CHARACTER | CHAR) SET charsetName)
+    |CHARSET EQ_OR_ASSIGN? charsetName
+    ;
+    
 charsetName:
-	ID
-	|BINARY
-	;
+    ID
+    |BINARY
+    ;
 
 collateClause:
-	COLLATE ID
-	;
+    COLLATE ID
+    ;
 
 characterAndCollateWithEqual:
-	characterSetWithEqual
+    characterSetWithEqual
     collateClauseWithEqual
-	;
-		
+    ;
+    
 characterSetWithEqual:
-	((CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName)
-	|CHARSET EQ_OR_ASSIGN? charsetName
-	;
-			
+    ((CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName)
+    |CHARSET EQ_OR_ASSIGN? charsetName
+    ;
+    
 collateClauseWithEqual:
-	COLLATE EQ_OR_ASSIGN? ID
-	;
+    COLLATE EQ_OR_ASSIGN? ID
+    ;
      
 selectExpr:
-	bitExpr AS? alias?
-	;
+    bitExpr AS? alias?
+    ;
