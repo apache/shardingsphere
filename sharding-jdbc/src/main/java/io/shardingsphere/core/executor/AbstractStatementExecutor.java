@@ -74,7 +74,7 @@ public class AbstractStatementExecutor {
     
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     @Setter
     private SQLType sqlType;
     
