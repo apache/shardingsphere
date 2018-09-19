@@ -120,10 +120,6 @@ public class DDLParserUtils {
                 if (column.isPrimaryKey()) {
                     statement.getPrimaryKeyColumns().add(column.getName());
                 }
-            } else if (each.getClass().getSimpleName().startsWith("constraintDefinition")) {
-                // TODO add primary key
-            } else if (each.getClass().getSimpleName().startsWith("indexDefinition")) {
-                // TODO add index
             }
         }
     }
@@ -379,6 +375,8 @@ public class DDLParserUtils {
                 try {
                     length = Integer.parseInt(lengthNode.getText());
                 } catch (NumberFormatException e) {
+                    // just for checksty
+                    length = null;
                 }
             }
         }
