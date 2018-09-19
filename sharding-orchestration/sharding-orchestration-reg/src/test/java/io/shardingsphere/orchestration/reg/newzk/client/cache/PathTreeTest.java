@@ -105,7 +105,7 @@ public class PathTreeTest extends BaseTest {
     }
     
     @Test
-    public void assertPut() throws KeeperException, InterruptedException {
+    public void assertPut() {
         final String key = "a/b/bb";
         final String value = "bbb11";
         pathTree.put(key, value);
@@ -187,7 +187,7 @@ public class PathTreeTest extends BaseTest {
     }
     
     @Test
-    public void assertStopRefresh() throws KeeperException, InterruptedException {
+    public void assertStopRefresh() {
         try {
             pathTree.refreshPeriodic(1);
             sleep(100);

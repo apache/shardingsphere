@@ -85,13 +85,13 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().setPoolable(true);
             each.getValue().executeQuery(sql);
-            assertPoolable((ShardingStatement) each.getValue(), true, each.getKey());
+            assertPoolable((ShardingStatement) each.getValue(), true);
             each.getValue().setPoolable(false);
-            assertPoolable((ShardingStatement) each.getValue(), false, each.getKey());
+            assertPoolable((ShardingStatement) each.getValue(), false);
         }
     }
     
-    private void assertPoolable(final ShardingStatement actual, final boolean poolable, final DatabaseType type) throws SQLException {
+    private void assertPoolable(final ShardingStatement actual, final boolean poolable) throws SQLException {
         assertThat(actual.isPoolable(), is(poolable));
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {

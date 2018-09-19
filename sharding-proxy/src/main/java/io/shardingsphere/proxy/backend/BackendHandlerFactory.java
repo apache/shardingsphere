@@ -20,9 +20,12 @@ package io.shardingsphere.proxy.backend;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngineFactory;
+import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
+import io.shardingsphere.proxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
+import io.shardingsphere.proxy.backend.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.proxy.backend.netty.NettyBackendHandler;
 import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,6 +36,7 @@ import java.util.List;
  * Backend handler factory.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BackendHandlerFactory {
@@ -52,10 +56,11 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
+        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema());
         return PROXY_CONTEXT.isUseNIO()
-                ? new NettyBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema()), connectionId, sequenceId, sql, databaseType)
+                ? new NettyBackendHandler(frontendHandler, ruleRegistry, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(
-                        frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema()), sql, JDBCExecuteEngineFactory.createTextProtocolInstance(backendConnection));
+                        frontendHandler, ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(ruleRegistry)));
     }
     
     /**
@@ -73,8 +78,9 @@ public final class BackendHandlerFactory {
     public static BackendHandler newBinaryProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection,
             final DatabaseType databaseType, final FrontendHandler frontendHandler) {
-        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema()), connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(frontendHandler, PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema()), sql,
-                JDBCExecuteEngineFactory.createBinaryProtocolInstance(parameters, backendConnection));
+        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema());
+        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(frontendHandler, ruleRegistry, connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(frontendHandler, ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(ruleRegistry, parameters)));
     }
 }
+

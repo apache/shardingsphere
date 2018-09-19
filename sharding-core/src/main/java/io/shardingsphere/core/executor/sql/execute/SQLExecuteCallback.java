@@ -25,7 +25,7 @@ import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.event.executor.SQLExecutionEventFactory;
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
@@ -47,7 +47,7 @@ import java.util.Map;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<SQLExecuteUnit, T>, ShardingGroupExecuteCallback<SQLExecuteUnit, T> {
+public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<StatementExecuteUnit, T>, ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
     
     private final DatabaseType databaseType;
     
@@ -60,38 +60,38 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
     @Override
-    public final T execute(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
-        return execute0(sqlExecuteUnit);
+    public final T execute(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+        return execute0(statementExecuteUnit);
     }
     
     @Override
-    public final Collection<T> execute(final Collection<SQLExecuteUnit> sqlExecuteUnits) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits) throws SQLException {
         Collection<T> result = new LinkedList<>();
-        for (SQLExecuteUnit each : sqlExecuteUnits) {
+        for (StatementExecuteUnit each : statementExecuteUnits) {
             result.add(execute0(each));
         }
         return result;
     }
     
-    private T execute0(final SQLExecuteUnit sqlExecuteUnit) throws SQLException {
+    private T execute0(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        List<List<Object>> parameterSets = sqlExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
-        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, sqlExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
+        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         for (List<Object> each : parameterSets) {
-            shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, sqlExecuteUnit, each, dataSourceMetaData));
+            shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
         }
         try {
-            T result = executeSQL(sqlExecuteUnit);
+            T result = executeSQL(statementExecuteUnit);
             for (List<Object> each : parameterSets) {
-                SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, sqlExecuteUnit, each, dataSourceMetaData);
+                SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteSuccess();
                 shardingEventBus.post(finishEvent);
             }
             return result;
         } catch (final SQLException ex) {
             for (List<Object> each : parameterSets) {
-                SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, sqlExecuteUnit, each, dataSourceMetaData);
+                SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteFailure(ex);
                 shardingEventBus.post(finishEvent);
             }
@@ -100,5 +100,5 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         }
     }
     
-    protected abstract T executeSQL(SQLExecuteUnit sqlExecuteUnit) throws SQLException;
+    protected abstract T executeSQL(StatementExecuteUnit statementExecuteUnit) throws SQLException;
 }

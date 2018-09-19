@@ -18,6 +18,8 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -29,7 +31,6 @@ import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -45,20 +46,23 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Adapter for {@code Connection}.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
     private final DatabaseType databaseType;
     
-    private final Map<String, Connection> cachedConnections = new HashMap<>();
+    private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
     
     private boolean autoCommit = true;
     
@@ -80,31 +84,56 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
+        return getConnections(dataSourceName, 1).get(0);
+    }
+    
+    /**
+     * Get database connections.
+     *
+     * @param dataSourceName data source name
+     * @param connectionSize size of connection list to be get
+     * @return database connections
+     * @throws SQLException SQL exception
+     */
+    public final List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
         ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
-        try {
-            if (cachedConnections.containsKey(dataSourceName)) {
-                GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, cachedConnections.get(dataSourceName).getMetaData().getURL()));
-                finishEvent.setExecuteSuccess();
-                ShardingEventBusInstance.getInstance().post(finishEvent);
-                return cachedConnections.get(dataSourceName);
-            }
-            DataSource dataSource = getDataSourceMap().get(dataSourceName);
-            Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-            Connection result = dataSource.getConnection();
-            cachedConnections.put(dataSourceName, result);
-            replayMethodsInvocation(result);
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, cachedConnections.get(dataSourceName).getMetaData().getURL()));
-            finishEvent.setExecuteSuccess();
-            ShardingEventBusInstance.getInstance().post(finishEvent);
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(null);
-            finishEvent.setExecuteFailure(ex);
-            ShardingEventBusInstance.getInstance().post(finishEvent);
-            throw ex;
+        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+        Collection<Connection> connections = cachedConnections.get(dataSourceName);
+        List<Connection> result;
+        if (connections.size() >= connectionSize) {
+            result = new ArrayList<>(cachedConnections.get(dataSourceName)).subList(0, connectionSize);
+        } else if (!connections.isEmpty()) {
+            result = new ArrayList<>(connectionSize);
+            result.addAll(connections);
+            List<Connection> newConnections = createConnections(dataSource, connectionSize - connections.size());
+            result.addAll(newConnections);
+            cachedConnections.putAll(dataSourceName, newConnections);
+        } else {
+            result = new ArrayList<>(createConnections(dataSource, connectionSize));
+            cachedConnections.putAll(dataSourceName, result);
         }
+        postGetConnectionEvent(result);
+        return result;
+    }
+    
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    private synchronized List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+        List<Connection> result = new ArrayList<>(connectionSize);
+        synchronized (dataSource) {
+            for (int i = 0; i < connectionSize; i++) {
+                Connection connection = dataSource.getConnection();
+                replayMethodsInvocation(connection);
+                result.add(connection);
+            }
+        }
+        return result;
+    }
+    
+    private void postGetConnectionEvent(final List<Connection> connections) throws SQLException {
+        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
+        finishEvent.setExecuteSuccess();
+        ShardingEventBusInstance.getInstance().post(finishEvent);
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -174,7 +203,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
-        forceExecuteTemplateForClose.execute(cachedConnections.entrySet(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
+        forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
             public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
@@ -195,11 +224,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             }
         });
-        RootInvokeEvent finishEvent = new RootInvokeFinishEvent();
+        RootInvokeEvent finishEvent = new RootInvokeEvent();
         finishEvent.setExecuteSuccess();
         ShardingEventBusInstance.getInstance().post(finishEvent);
     }
-    
+                    
     @Override
     public final boolean isClosed() {
         return closed;

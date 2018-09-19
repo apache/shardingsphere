@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 
 import java.io.InputStream;
@@ -26,11 +28,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 public final class MemoryQueryResult implements QueryResult {
     
-    private final Map<String, Integer> columnLabelAndIndexMap;
+    private final Multimap<String, Integer> columnLabelAndIndexMap;
     
     private final Iterator<List<Object>> resultData;
     
@@ -52,8 +52,8 @@ public final class MemoryQueryResult implements QueryResult {
         resultData = getResultData(resultSet);
     }
     
-    private Map<String, Integer> getMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        Map<String, Integer> result = new HashMap<>();
+    private Multimap<String, Integer> getMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
+        Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
@@ -89,7 +89,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(columnLabelAndIndexMap.get(columnLabel));
+        return currentRow.get(getIndexByColumnLabel(columnLabel));
     }
     
     @Override
@@ -99,7 +99,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnLabelAndIndexMap.get(columnLabel));
+        return currentRow.get(getIndexByColumnLabel(columnLabel));
     }
     
     @Override
@@ -109,7 +109,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.get(columnLabelAndIndexMap.get(columnLabel));
+        return (InputStream) currentRow.get(getIndexByColumnLabel(columnLabel));
     }
     
     @Override
@@ -124,11 +124,15 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        for (Entry<String, Integer> entry : columnLabelAndIndexMap.entrySet()) {
+        for (Entry<String, Integer> entry : columnLabelAndIndexMap.entries()) {
             if (columnIndex == entry.getValue()) {
                 return entry.getKey();
             }
         }
         throw new SQLException("Column index out of range", "9999");
+    }
+    
+    private Integer getIndexByColumnLabel(final String columnLabel) {
+        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
     }
 }

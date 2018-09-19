@@ -17,16 +17,15 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.executor.prepared.MemoryStrictlyPreparedStatementExecutor;
-import io.shardingsphere.core.executor.prepared.PreparedStatementExecutor;
-import io.shardingsphere.core.executor.prepared.PreparedStatementExecuteUnit;
-import io.shardingsphere.core.rewrite.SQLBuilder;
+import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.core.routing.SQLUnit;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -38,7 +37,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -54,369 +52,311 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     
     private static final String DML_SQL = "DELETE FROM table_x";
     
-    @SuppressWarnings("unchecked")
+    private PreparedStatementExecutor actual;
+    
+    @Override
+    public void setUp() throws SQLException, ReflectiveOperationException {
+        super.setUp();
+        actual = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
+    }
+    
+    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
+    }
+    
+    private void setExecuteGroups(final List<PreparedStatement> preparedStatements, final SQLType sqlType) throws ReflectiveOperationException {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        for (PreparedStatement each : preparedStatements) {
+            List<List<Object>> parameterSets = new LinkedList<>();
+            String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
+            parameterSets.add(Collections.singletonList((Object) 1));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
+    }
+    
     @Test
     public void assertNoStatement() throws SQLException {
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), Collections.<PreparedStatementExecuteUnit>emptyList());
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         ResultSet resultSet = mock(ResultSet.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+        when(resultSet.getInt(1)).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
-        assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
+        assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
-    @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        ResultSet resultSet1 = mock(ResultSet.class);
-        ResultSet resultSet2 = mock(ResultSet.class);
+    private PreparedStatement getPreparedStatement() throws SQLException {
+        PreparedStatement statement = mock(PreparedStatement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(statement.getConnection()).thenReturn(connection);
+        return statement;
+    }
+    
+    @Test
+    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
+        ResultSet resultSet1 = mock(ResultSet.class);
+        ResultSet resultSet2 = mock(ResultSet.class);
+        when(resultSet1.getInt(1)).thenReturn(1);
+        when(resultSet2.getInt(1)).thenReturn(2);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
-        List<ResultSet> actualResultSets = actual.executeQuery();
-        assertThat(actualResultSets, hasItem(resultSet1));
-        assertThat(actualResultSets, hasItem(resultSet2));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
+        List<QueryResult> result = actual.executeQuery();
+        List<ResultSet> resultSets = Arrays.asList(resultSet1, resultSet2);
+        for (int i = 0; i < result.size(); i++) {
+            assertThat((int) result.get(i).getValue(1, int.class), is(resultSets.get(i).getInt(1)));
+        }
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
-        assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
+        assertThat(actual.executeQuery(), is(Collections.singletonList((QueryResult) null)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller()).verifyException(exp);
     }
     
     @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement1.executeQuery()).thenThrow(exp);
         when(preparedStatement2.executeQuery()).thenThrow(exp);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
-        List<ResultSet> actualResultSets = actual.executeQuery();
-        assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
+        List<QueryResult> actualResultSets = actual.executeQuery();
+        assertThat(actualResultSets, is(Arrays.asList((QueryResult) null, null)));
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
     @Test
-    public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeUpdate()).thenReturn(10);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
         assertThat(actual.executeUpdate(), is(10));
         verify(preparedStatement).executeUpdate();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeUpdate()).thenReturn(10);
         when(preparedStatement2.executeUpdate()).thenReturn(20);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DML);
         assertThat(actual.executeUpdate(), is(30));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteUpdateForSinglePreparedStatementFailure() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteUpdateForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement).executeUpdate();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller()).verifyException(exp);
     }
     
     @Test
-    public void assertExecuteUpdateForMultiplePreparedStatementsFailure() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteUpdateForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement1.executeUpdate()).thenThrow(exp);
         when(preparedStatement2.executeUpdate()).thenThrow(exp);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DML);
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.execute()).thenReturn(false);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatementsSuccessWithDML() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteForMultiplePreparedStatementsSuccessWithDML() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.execute()).thenReturn(false);
         when(preparedStatement2.execute()).thenReturn(false);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementFailureWithDML() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteForSinglePreparedStatementFailureWithDML() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement, "ds_0"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller()).verifyException(exp);
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatementsFailureWithDML() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteForMultiplePreparedStatementsFailureWithDML() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement1.execute()).thenThrow(exp);
         when(preparedStatement2.execute()).thenThrow(exp);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DML, getExecuteTemplate(), createPreparedStatementExecuteUnits(DML_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+        setSQLType(SQLType.DML);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DML);
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DML_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
         verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException {
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.execute()).thenReturn(true);
-        when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement, "ds_0"));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
         assertTrue(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(2)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatements() throws SQLException {
-        PreparedStatement preparedStatement1 = mock(PreparedStatement.class);
-        PreparedStatement preparedStatement2 = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:test_db");
+    public void assertExecuteForMultiplePreparedStatements() throws SQLException, ReflectiveOperationException {
+        PreparedStatement preparedStatement1 = getPreparedStatement();
+        PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.execute()).thenReturn(true);
         when(preparedStatement2.execute()).thenReturn(true);
-        when(preparedStatement1.getConnection()).thenReturn(connection);
-        when(preparedStatement2.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatementExecutor actual = new MemoryStrictlyPreparedStatementExecutor(
-                DatabaseType.H2, SQLType.DQL, getExecuteTemplate(), createPreparedStatementExecuteUnits(DQL_SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1"));
+        setSQLType(SQLType.DQL);
+        setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
         assertTrue(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifySQL(DQL_SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
-    }
-    
-    private Collection<PreparedStatementExecuteUnit> createPreparedStatementExecuteUnits(final String sql, final PreparedStatement preparedStatement, final String dataSource) {
-        Collection<PreparedStatementExecuteUnit> result = new LinkedList<>();
-        SQLBuilder sqlBuilder = new SQLBuilder();
-        sqlBuilder.appendLiterals(sql);
-        result.add(new PreparedStatementExecuteUnit(new RouteUnit(dataSource, sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null)), preparedStatement));
-        return result;
-    }
-    
-    private Collection<PreparedStatementExecuteUnit> createPreparedStatementExecuteUnits(
-            final String sql, final PreparedStatement preparedStatement1, final String dataSource1, final PreparedStatement preparedStatement2, final String dataSource2) {
-        Collection<PreparedStatementExecuteUnit> result = new LinkedList<>();
-        result.addAll(createPreparedStatementExecuteUnits(sql, preparedStatement1, dataSource1));
-        result.addAll(createPreparedStatementExecuteUnits(sql, preparedStatement2, dataSource2));
-        return result;
     }
 }

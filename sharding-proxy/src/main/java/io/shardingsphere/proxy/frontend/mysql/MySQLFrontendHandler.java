@@ -22,6 +22,8 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
@@ -112,6 +114,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         
         @Override
         public void run() {
+            ShardingEventBusInstance.getInstance().post(new RootInvokeEvent());
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection(ProxyContext.getInstance().getRuleRegistry(frontendHandler.getCurrentSchema()))) {
                 setBackendConnection(backendConnection);
@@ -133,6 +136,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 // CHECKSTYLE:ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
             }
+            RootInvokeEvent finishEvent = new RootInvokeEvent();
+            finishEvent.setExecuteSuccess();
+            ShardingEventBusInstance.getInstance().post(finishEvent);
         }
         
         private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {

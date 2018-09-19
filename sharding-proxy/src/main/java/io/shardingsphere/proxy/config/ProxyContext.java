@@ -18,7 +18,6 @@
 package io.shardingsphere.proxy.config;
 
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -69,8 +68,6 @@ public final class ProxyContext {
     
     private int executorSize;
     
-    private ConnectionMode connectionMode;
-    
     private TransactionType transactionType;
     
     private BackendNIOConfiguration backendNIOConfig;
@@ -112,7 +109,6 @@ public final class ProxyContext {
     private void initServerConfiguration(final YamlServerConfiguration serverConfig) {
         Properties properties = serverConfig.getProps();
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
-        connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;

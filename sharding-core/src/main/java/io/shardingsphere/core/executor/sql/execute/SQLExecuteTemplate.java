@@ -19,7 +19,7 @@ package io.shardingsphere.core.executor.sql.execute;
 
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
-import io.shardingsphere.core.executor.sql.SQLExecuteUnit;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
@@ -44,20 +44,20 @@ public final class SQLExecuteTemplate {
     /**
      * Execute.
      *
-     * @param sqlExecuteUnits SQL execute units
+     * @param statementExecuteUnits SQL execute units
      * @param callback SQL execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<? extends SQLExecuteUnit> sqlExecuteUnits, final SQLExecuteCallback<T> callback) throws SQLException {
-        return execute(sqlExecuteUnits, null, callback);
+    public <T> List<T> execute(final Collection<? extends StatementExecuteUnit> statementExecuteUnits, final SQLExecuteCallback<T> callback) throws SQLException {
+        return execute(statementExecuteUnits, null, callback);
     }
     
     /**
      * Execute.
      *
-     * @param sqlExecuteUnits SQL execute units
+     * @param statementExecuteUnits SQL execute units
      * @param firstExecuteCallback first SQL execute callback
      * @param callback SQL execute callback
      * @param <T> class type of return value
@@ -65,15 +65,17 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> execute(final Collection<? extends SQLExecuteUnit> sqlExecuteUnits,
-                               final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(
+            final Collection<? extends StatementExecuteUnit> statementExecuteUnits, final SQLExecuteCallback<T> firstExecuteCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
-            return executeEngine.execute((Collection) sqlExecuteUnits, firstExecuteCallback, callback);
+            return executeEngine.execute((Collection) statementExecuteUnits, firstExecuteCallback, callback);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
     }
+    
+    
     
     /**
      * Execute group.
@@ -84,7 +86,7 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends SQLExecuteUnit>> sqlExecuteGroups, final SQLExecuteCallback<T> callback) throws SQLException {
+    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends StatementExecuteUnit>> sqlExecuteGroups, final SQLExecuteCallback<T> callback) throws SQLException {
         return executeGroup(sqlExecuteGroups, null, callback);
     }
     
@@ -99,7 +101,7 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends SQLExecuteUnit>> sqlExecuteGroups,
+    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends StatementExecuteUnit>> sqlExecuteGroups,
                                     final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
             return executeEngine.groupExecute((Collection) sqlExecuteGroups, firstCallback, callback);
@@ -109,3 +111,4 @@ public final class SQLExecuteTemplate {
         }
     }
 }
+

@@ -19,8 +19,6 @@ package io.shardingsphere.core.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -64,11 +62,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
         this.dataSourceMap = dataSourceMap;
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        this.shardingContext = getShardingContext(dataSourceMap, shardingRule);
+        this.shardingContext = getShardingContext(shardingRule);
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties, final DatabaseType databaseType) {
-        super(databaseType);
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) {
+        super(shardingContext.getDatabaseType());
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
         this.shardingProperties = shardingProperties;
@@ -80,18 +78,16 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
     }
     
-    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
-        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    private ShardingContext getShardingContext(final ShardingRule shardingRule) throws SQLException {
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
-        ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
         int maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, connectionMode, maxConnectionsSizePerQuery, showSQL);
+        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), new ShardingExecuteEngine(executorSize), maxConnectionsSizePerQuery, showSQL);
     }
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(this);
+        return new ShardingConnection(dataSourceMap, shardingContext);
     }
     
     @Override
