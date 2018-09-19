@@ -106,10 +106,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      */
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
-        synchronized (getDataSourceMap()) {
-            for (int i = 0; i < connectionSize; i++) {
-                result.add(getDataSourceMap().get(dataSourceName).getConnection());
-            }
+        for (int i = 0; i < connectionSize; i++) {
+            result.add(getDataSourceMap().get(dataSourceName).getConnection());
         }
         return result;
     }

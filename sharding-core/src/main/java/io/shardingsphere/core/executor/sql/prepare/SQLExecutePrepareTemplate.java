@@ -57,8 +57,10 @@ public final class SQLExecutePrepareTemplate {
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
-        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
+        synchronized (SQLExecutePrepareTemplate.class) {
+            for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
+                result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
+            }
         }
         return result;
     }

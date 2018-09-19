@@ -119,12 +119,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
-        synchronized (getDataSourceMap()) {
-            for (int i = 0; i < connectionSize; i++) {
-                Connection connection = dataSource.getConnection();
-                replayMethodsInvocation(connection);
-                result.add(connection);
-            }
+        for (int i = 0; i < connectionSize; i++) {
+            Connection connection = dataSource.getConnection();
+            replayMethodsInvocation(connection);
+            result.add(connection);
         }
         return result;
     }
