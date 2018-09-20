@@ -52,14 +52,6 @@ import static org.mockito.Mockito.when;
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void assertParseWithoutParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule, null);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithoutParameter(insertStatement);
-    }
-    
-    @Test
     public void assertParseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule, null);
