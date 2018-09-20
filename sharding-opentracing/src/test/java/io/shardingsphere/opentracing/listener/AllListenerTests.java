@@ -22,6 +22,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        GetConnectionEventListenerTest.class, 
         ParsingEventListenerTest.class,
         ExecuteEventListenerTest.class
 })

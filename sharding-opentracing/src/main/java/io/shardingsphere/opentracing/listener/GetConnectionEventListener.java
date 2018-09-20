@@ -50,8 +50,8 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     @Override
     protected void beforeExecute(final GetConnectionEvent event) {
         getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource()).startManual());
     }
     
@@ -61,8 +61,8 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
         Span span = getSpan().get();
         if (null != finishEvent.getDataSourceMetaData()) {
             span = span.setTag(Tags.PEER_HOSTNAME.getKey(), finishEvent.getDataSourceMetaData().getHostName())
-                .setTag(ShardingTags.CONNECTION_COUNT.getKey(), ((GetConnectionFinishEvent) event).getConnectionCount())
-                .setTag(Tags.PEER_PORT.getKey(), finishEvent.getDataSourceMetaData().getPort());
+                    .setTag(Tags.PEER_PORT.getKey(), finishEvent.getDataSourceMetaData().getPort())
+                    .setTag(ShardingTags.CONNECTION_COUNT.getKey(), ((GetConnectionFinishEvent) event).getConnectionCount());
         }
         span.finish();
         getSpan().remove();
