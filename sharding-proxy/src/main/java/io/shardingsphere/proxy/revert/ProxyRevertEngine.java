@@ -17,12 +17,6 @@
 
 package io.shardingsphere.proxy.revert;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.proxy.config.RuleRegistry;
 import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertResult;
 import lombok.RequiredArgsConstructor;
@@ -41,19 +35,11 @@ public final class ProxyRevertEngine implements RevertEngine {
     
     @Override
     public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) throws SQLException {
-        DataSource actualDatasource = RuleRegistry.getInstance().getBackendDataSource().getDataSourceMap().get(datasource);
-        // TODO use new SnapShotEngine to get revert result.
-        DatabaseType databaseType = DatabaseType.MySQL;
-        String logicTable = getLogicTable(databaseType, sql);
-        TableMetaData metaData = RuleRegistry.getInstance().getMetaData().getTable().getTableMetaDataMap().get(logicTable);
         RevertResult result = new RevertResult();
-//        for (List<Object> each : params) {
-//            RevertContext context = new SnapshotEngine(actualDatasource, sql, each.toArray(), 1, metaData).snapshot();
-//            if (context.getRevertParam().size() > 0) {
-//                result.setRevertSQL(context.getRevertSQL());
-//                result.getRevertSQLParams().addAll(context.getRevertParam());
-//            }
-//        }
+        for (List<Object> each : params) {
+            // TODO use new SnapShotEngine to get revert result.
+            result.setRevertSQL("");
+        }
         return result;
     }
     
@@ -62,11 +48,4 @@ public final class ProxyRevertEngine implements RevertEngine {
         return null;
     }
     
-    private String getLogicTable(final DatabaseType dbType, final String sql) {
-        LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
-        lexerEngine.nextToken();
-        lexerEngine.skipAll(DefaultKeyword.values());
-        String physicalTableName = lexerEngine.getCurrentToken().getLiterals();
-        return physicalTableName.substring(0, physicalTableName.lastIndexOf('_'));
-    }
 }
