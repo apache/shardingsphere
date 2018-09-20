@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
@@ -81,12 +82,15 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private int currentSequenceId;
     
+    private String currentSchema;
+    
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
         return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
+        currentSchema = frontendHandler.getCurrentSchema();
         if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
             return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
         }
@@ -122,6 +126,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
         if (mergedResult instanceof ShowDatabasesMergedResult) {
             mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+        } else if (mergedResult instanceof ShowTablesMergedResult) {
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(currentSchema);
+            setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
@@ -139,6 +146,12 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
         return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
+    }
+    
+    private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
+        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+            each.setName("Tables_in_" + currentSchema);
+        }
     }
     
     @Override
