@@ -28,7 +28,6 @@ import io.shardingsphere.opentracing.ShardingTags;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -73,12 +72,6 @@ public final class GetConnectionEventListenerTest extends BaseEventListenerTest 
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
-        assertThat(actualTags.get(Tags.ERROR.getKey()), CoreMatchers.<Object>is(true));
-        List<MockSpan.LogEntry> actualLogEntries = actual.logEntries();
-        assertThat(actualLogEntries.size(), is(1));
-        assertThat(actualLogEntries.get(0).fields().size(), is(3));
-        assertThat(actualLogEntries.get(0).fields().get("event"), CoreMatchers.<Object>is("error"));
-        assertThat(actualLogEntries.get(0).fields().get("error.kind"), CoreMatchers.<Object>is(RuntimeException.class.getName()));
-        assertThat(actualLogEntries.get(0).fields().get("message"), CoreMatchers.<Object>is("test error"));
+        assertSpanError(actual, RuntimeException.class, "test error");
     }
 }

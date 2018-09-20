@@ -20,17 +20,25 @@ package io.shardingsphere.opentracing.listener;
 import com.google.common.collect.HashMultimap;
 import com.google.common.eventbus.EventBus;
 import io.opentracing.NoopTracerFactory;
+import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
+import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
+import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.lang.reflect.Field;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public abstract class BaseEventListenerTest {
     
@@ -63,5 +71,15 @@ public abstract class BaseEventListenerTest {
     @Before
     public void resetTracer() {
         TRACER.reset();
+    }
+    
+    protected final void assertSpanError(final MockSpan actualSpan, final Class<? extends Throwable> expectedException, final String expectedErrorMessage) {
+        assertTrue((Boolean) actualSpan.tags().get(Tags.ERROR.getKey()));
+        List<MockSpan.LogEntry> actualLogEntries = actualSpan.logEntries();
+        assertThat(actualLogEntries.size(), is(1));
+        assertThat(actualLogEntries.get(0).fields().size(), is(3));
+        assertThat(actualLogEntries.get(0).fields().get("event"), CoreMatchers.<Object>is("error"));
+        assertThat(actualLogEntries.get(0).fields().get("error.kind"), CoreMatchers.<Object>is(expectedException.getName()));
+        assertThat(actualLogEntries.get(0).fields().get("message"), CoreMatchers.<Object>is(expectedErrorMessage));
     }
 }
