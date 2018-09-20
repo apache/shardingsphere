@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.manager.base;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.apache.servicecomb.saga.core.SuccessfulSagaResponse;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 import org.junit.Before;

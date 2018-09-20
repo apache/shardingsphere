@@ -20,13 +20,13 @@ package io.shardingsphere.transaction.listener.base;
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.transaction.event.base.SagaSQLExecutionEvent;
-import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.manager.base.servicecomb.SagaDefinitionBuilder;
 import io.shardingsphere.transaction.revert.RevertEngine;
-import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import io.shardingsphere.transaction.revert.RevertResult;
 import org.apache.servicecomb.saga.core.SagaRequest;
 import org.junit.After;
@@ -138,12 +138,12 @@ public class SagaTransactionListenerTest {
     public void assertListenSagaSQLExecutionEvent() throws NoSuchFieldException, IllegalAccessException {
         builderMap.put(id, new SagaDefinitionBuilder());
         revertEngines.put(id, revertEngine);
-        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent("ds", new SQLUnit("", new ArrayList<List<Object>>()), Collections.emptyList(), id);
+        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", new ArrayList<List<Object>>())), id);
         event.setExecuteSuccess();
         eventBus.post(event);
         assertThat(getRequestLength(), is(1));
         assertThat(getParentsLength(), is(0));
-        event = new SagaSQLExecutionEvent("", null, null, id);
+        event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", new ArrayList<List<Object>>())), id);
         eventBus.post(event);
         assertThat(getParentsLength(), is(1));
     }
