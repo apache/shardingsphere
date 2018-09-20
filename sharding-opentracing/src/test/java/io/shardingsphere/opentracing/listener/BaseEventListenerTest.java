@@ -27,6 +27,7 @@ import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.ShardingErrorLogTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
@@ -78,8 +79,8 @@ public abstract class BaseEventListenerTest {
         List<MockSpan.LogEntry> actualLogEntries = actualSpan.logEntries();
         assertThat(actualLogEntries.size(), is(1));
         assertThat(actualLogEntries.get(0).fields().size(), is(3));
-        assertThat(actualLogEntries.get(0).fields().get("event"), CoreMatchers.<Object>is("error"));
-        assertThat(actualLogEntries.get(0).fields().get("error.kind"), CoreMatchers.<Object>is(expectedException.getName()));
-        assertThat(actualLogEntries.get(0).fields().get("message"), CoreMatchers.<Object>is(expectedErrorMessage));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.EVENT), CoreMatchers.<Object>is(ShardingErrorLogTags.EVENT_ERROR_TYPE));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.ERROR_KIND), CoreMatchers.<Object>is(expectedException.getName()));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.MESSAGE), CoreMatchers.<Object>is(expectedErrorMessage));
     }
 }

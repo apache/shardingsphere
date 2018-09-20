@@ -22,6 +22,7 @@ import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.opentracing.ShardingErrorLogTags;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -72,9 +73,9 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     
     private Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
-        result.put("event", "error");
-        result.put("error.kind", cause.getClass().getName());
-        result.put("message", cause.getMessage());
+        result.put(ShardingErrorLogTags.EVENT, ShardingErrorLogTags.EVENT_ERROR_TYPE);
+        result.put(ShardingErrorLogTags.ERROR_KIND, cause.getClass().getName());
+        result.put(ShardingErrorLogTags.MESSAGE, cause.getMessage());
         return result;
     }
 }
