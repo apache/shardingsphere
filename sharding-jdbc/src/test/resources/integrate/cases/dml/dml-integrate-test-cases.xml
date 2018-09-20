@@ -6,7 +6,6 @@
 
     <dml-test-case sql-case-id="insert_without_parameters">
         <assertion expected-data-file="insert_for_order_1.xml" />
-        <assertion expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
     
     <!-- TODO fixme -->
