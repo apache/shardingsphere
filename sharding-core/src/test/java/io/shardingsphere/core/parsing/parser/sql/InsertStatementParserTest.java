@@ -68,15 +68,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 10));
     }
     
-    @Test
-    public void assertParseWithoutColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?, ?)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
