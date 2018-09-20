@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary;
 
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +30,8 @@ public final class BinaryStatementRegistryTest {
     private final String sql = "SELECT * FROM tbl WHERE id=?";
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    @After
+    public void reset() throws ReflectiveOperationException {
         BinaryStatementRegistryUtil.reset();
     }
     

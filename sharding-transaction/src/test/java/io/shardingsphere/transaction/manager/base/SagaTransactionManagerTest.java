@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.manager.base;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import org.junit.Test;
 
 import javax.transaction.Status;

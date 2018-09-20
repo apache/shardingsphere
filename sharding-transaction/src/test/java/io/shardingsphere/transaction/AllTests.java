@@ -25,7 +25,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        TransactionTypeHolderTest.class, 
         AllManagerTests.class, 
         AllListenerTests.class
 })

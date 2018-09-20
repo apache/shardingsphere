@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.exec
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
+import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.execute.protocol.BinaryProtocolValueFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -74,7 +75,10 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     
     private void writeValues(final MySQLPacketPayload payload) {
         for (int i = 0; i < columnsCount; i++) {
-            new BinaryProtocolValue(columnTypes.get(i), payload).write(data.get(i));
+            Object value = data.get(i);
+            if (null != value) {
+                BinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i)).write(payload, value);
+            }
         }
     }
 }

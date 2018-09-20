@@ -22,22 +22,17 @@ import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAl
 import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.jdbc.spring.datasource.SpringMasterSlaveDataSource;
 import io.shardingsphere.jdbc.spring.util.FieldValueUtil;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -65,39 +60,6 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
         MasterSlaveLoadBalanceAlgorithm randomStrategy = this.applicationContext.getBean("randomStrategy", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
         assertTrue(masterSlaveRule.getLoadBalanceAlgorithm() == randomStrategy);
-    }
-    
-    @Test
-    public void assertDefaultShardingDataSource() {
-        Map<String, DataSource> dataSourceMap = getDataSourceMap("defaultShardingDataSource");
-        assertNotNull(dataSourceMap.get("dbtbl_0_master"));
-        assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
-        assertNotNull(dataSourceMap.get("dbtbl_0_slave_1"));
-        assertNotNull(dataSourceMap.get("dbtbl_1_master"));
-        assertNotNull(dataSourceMap.get("dbtbl_1_slave_0"));
-        assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
-        ShardingRule shardingRule = getShardingRule("defaultShardingDataSource");
-        assertThat(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName(), is("randomMasterSlaveDataSource"));
-        assertThat(shardingRule.getTableRules().size(), is(1));
-        assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
-    }
-    
-    @Test
-    public void assertShardingDataSourceType() {
-        assertTrue(this.applicationContext.getBean("defaultMasterSlaveDataSource", MasterSlaveDataSource.class) instanceof SpringMasterSlaveDataSource);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
-        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
-    }
-    
-    private ShardingRule getShardingRule(final String shardingDataSourceName) {
-        ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (ShardingRule) FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {

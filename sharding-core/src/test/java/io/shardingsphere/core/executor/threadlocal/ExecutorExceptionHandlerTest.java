@@ -18,7 +18,7 @@
 package io.shardingsphere.core.executor.threadlocal;
 
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.junit.After;
 import org.junit.Test;
 

@@ -20,7 +20,11 @@ package io.shardingsphere.proxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Frontend handler.
@@ -29,8 +33,15 @@ import io.shardingsphere.proxy.frontend.common.executor.ChannelThreadExecutorGro
  */
 public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
-    private boolean authorized;
+    private volatile boolean authorized;
     
+    @Setter
+    private volatile BackendConnection backendConnection;
+
+    @Getter
+    @Setter
+    private volatile String currentSchema;
+
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
@@ -44,6 +55,9 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         if (!authorized) {
             auth(context, (ByteBuf) message);
             authorized = true;
+            if (null == currentSchema) {
+                currentSchema = ProxyContext.getInstance().getDefaultSchema();
+            }
         } else {
             executeCommand(context, (ByteBuf) message);
         }
@@ -56,6 +70,10 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
+        // TODO :yonglun investigate why null here 
+        if (null != backendConnection) {
+            backendConnection.cancel();
+        }
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }

@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0.M3-SNAPSHOT</version>
+        <version>3.0.0.M4-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy</artifactId>
     <name>${project.artifactId}</name>
@@ -19,12 +19,17 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <artifactId>sharding-orchestration-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-transaction</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -44,7 +49,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -59,7 +63,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -75,6 +78,16 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-opentracing</artifactId>
+            <version>5.0.0-RC2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-collector-core</artifactId>
+            <version>5.0.0-RC2</version>
         </dependency>
     </dependencies>
     
@@ -102,7 +115,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <configuration>
-                    <imageName>shardingsphere/sharding-proxy:3.0.0.M3-SNAPSHOT</imageName>
+                    <imageName>shardingsphere/sharding-proxy:3.0.0.M4-SNAPSHOT</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>

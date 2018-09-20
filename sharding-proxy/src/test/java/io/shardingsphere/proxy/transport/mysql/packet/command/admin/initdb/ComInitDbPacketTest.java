@@ -19,16 +19,23 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,10 +49,22 @@ public final class ComInitDbPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
+    @Mock
+    private FrontendHandler frontendHandler;
+    
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        List<String> schemaNames = new ArrayList<>(1);
+        schemaNames.add(ShardingConstant.LOGIC_SCHEMA_NAME);
+        Field field = ProxyContext.class.getDeclaredField("schemaNames");
+        field.setAccessible(true);
+        field.set(ProxyContext.getInstance(), schemaNames);
+    }
+    
     @Test
     public void assertExecuteWithValidSchemaName() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload).execute();
+        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, frontendHandler).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
@@ -59,7 +78,7 @@ public final class ComInitDbPacketTest {
     public void assertExecuteWithInvalidSchemaName() {
         String invalidSchema = "invalid_schema";
         when(payload.readStringEOF()).thenReturn(invalidSchema);
-        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload).execute();
+        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, frontendHandler).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
@@ -71,7 +90,7 @@ public final class ComInitDbPacketTest {
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        ComInitDbPacket actual = new ComInitDbPacket(1, payload);
+        ComInitDbPacket actual = new ComInitDbPacket(1, payload, frontendHandler);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_INIT_DB.getValue());

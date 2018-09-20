@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command;
 
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
@@ -31,6 +32,8 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.query.C
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.sql.SQLException;
+
 /**
  * Command packet factory.
  *
@@ -43,57 +46,35 @@ public final class CommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param sequenceId sequence id
-     * @param connectionId MySQL connection id
-     * @param payload MySQL packet payload
+     * @param sequenceId        sequence id
+     * @param connectionId      MySQL connection id
+     * @param payload           MySQL packet payload
      * @param backendConnection backend connection
+     * @param frontendHandler   frontend handler
      * @return command packet
+     * @throws SQLException SQL exception
      */
-    public static CommandPacket newInstance(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public static CommandPacket newInstance(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, 
+                                            final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
                 return new ComQuitPacket(sequenceId);
             case COM_INIT_DB:
-                return new ComInitDbPacket(sequenceId, payload);
+                return new ComInitDbPacket(sequenceId, payload, frontendHandler);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection);
+                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection);
+                return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
             case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(sequenceId, payload);
+                return new ComStmtPreparePacket(sequenceId, payload, frontendHandler);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection);
+                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:
                 return new ComPingPacket(sequenceId);
-            case COM_SLEEP:
-            case COM_CREATE_DB:
-            case COM_DROP_DB:
-            case COM_REFRESH:
-            case COM_SHUTDOWN:
-            case COM_STATISTICS:
-            case COM_PROCESS_INFO:
-            case COM_CONNECT:
-            case COM_PROCESS_KILL:
-            case COM_DEBUG:
-            case COM_TIME:
-            case COM_DELAYED_INSERT:
-            case COM_CHANGE_USER:
-            case COM_BINLOG_DUMP:
-            case COM_TABLE_DUMP:
-            case COM_CONNECT_OUT:
-            case COM_REGISTER_SLAVE:
-            case COM_STMT_SEND_LONG_DATA:
-            case COM_STMT_RESET:
-            case COM_SET_OPTION:
-            case COM_STMT_FETCH:
-            case COM_DAEMON:
-            case COM_BINLOG_DUMP_GTID:
-            case COM_RESET_CONNECTION:
-                return new UnsupportedCommandPacket(sequenceId, type);
             default:
                 return new UnsupportedCommandPacket(sequenceId, type);
         }

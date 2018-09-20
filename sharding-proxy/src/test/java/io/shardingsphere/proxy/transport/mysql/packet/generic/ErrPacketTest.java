@@ -28,7 +28,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.when;
 public final class ErrPacketTest {
     
     @Mock
-    private MySQLPacketPayload packetPayload;
+    private MySQLPacketPayload payload;
     
     @Test
     public void assertNewErrPacketWithServerErrorCode() {
@@ -58,30 +57,25 @@ public final class ErrPacketTest {
     
     @Test
     public void assertNewErrPacketWithMySQLPacketPayload() {
-        when(packetPayload.readInt1()).thenReturn(1, ErrPacket.HEADER);
-        when(packetPayload.readInt2()).thenReturn(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode());
-        when(packetPayload.readStringFix(1)).thenReturn("#");
-        when(packetPayload.readStringFix(5)).thenReturn(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState());
-        when(packetPayload.readStringEOF()).thenReturn(String.format(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root"));
-        ErrPacket actual = new ErrPacket(packetPayload);
+        when(payload.readInt1()).thenReturn(1, ErrPacket.HEADER);
+        when(payload.readInt2()).thenReturn(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode());
+        when(payload.readStringFix(1)).thenReturn("#");
+        when(payload.readStringFix(5)).thenReturn(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState());
+        when(payload.readStringEOF()).thenReturn(String.format(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root"));
+        ErrPacket actual = new ErrPacket(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
         assertThat(actual.getSqlState(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
         assertThat(actual.getErrorMessage(), is(String.format(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
-        verify(packetPayload, times(2)).readInt1();
-        verify(packetPayload).readInt2();
-        verify(packetPayload).readStringFix(1);
-        verify(packetPayload).readStringFix(5);
-        verify(packetPayload).readStringEOF();
     }
     
     @Test
     public void assertWrite() {
-        new ErrPacket(1, new SQLException("no reason", "X999", -1)).write(packetPayload);
-        verify(packetPayload).writeInt1(ErrPacket.HEADER);
-        verify(packetPayload).writeInt2(-1);
-        verify(packetPayload).writeStringFix("#");
-        verify(packetPayload).writeStringFix("X999");
-        verify(packetPayload).writeStringEOF("no reason");
+        new ErrPacket(1, new SQLException("no reason", "X999", -1)).write(payload);
+        verify(payload).writeInt1(ErrPacket.HEADER);
+        verify(payload).writeInt2(-1);
+        verify(payload).writeStringFix("#");
+        verify(payload).writeStringFix("X999");
+        verify(payload).writeStringEOF("no reason");
     }
 }

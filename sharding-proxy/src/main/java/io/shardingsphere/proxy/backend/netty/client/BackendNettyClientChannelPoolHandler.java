@@ -34,6 +34,8 @@ public final class BackendNettyClientChannelPoolHandler implements ChannelPoolHa
     
     private final String dataSourceName;
     
+    private final String schemaName;
+    
     @Override
     public void channelReleased(final Channel channel) {
         log.info("channelReleased. Channel ID: {}" + channel.id().asShortText());
@@ -47,6 +49,6 @@ public final class BackendNettyClientChannelPoolHandler implements ChannelPoolHa
     @Override
     public void channelCreated(final Channel channel) {
         log.info("channelCreated. Channel ID: {}" + channel.id().asShortText());
-        channel.pipeline().addLast(new BackendNettyClientChannelInitializer(dataSourceName));
+        channel.pipeline().addLast(new BackendNettyClientChannelInitializer(dataSourceName, schemaName));
     }
 }

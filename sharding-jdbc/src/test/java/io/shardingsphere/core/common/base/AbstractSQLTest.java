@@ -20,7 +20,6 @@ package io.shardingsphere.core.common.base;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.common.env.DatabaseEnvironment;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -31,7 +30,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -132,14 +130,6 @@ public abstract class AbstractSQLTest {
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
-    }
-    
-    private static Map<String, DataSource> getDataSourceMap(final ShardingDataSource shardingDataSource)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = shardingDataSource.getClass().getDeclaredField("shardingContext");
-        field.setAccessible(true);
-        ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);
-        return shardingContext.getDataSourceMap();
     }
     
     protected final void importDataSet() {

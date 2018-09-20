@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.jdbc.adapter.AbstractStatementAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.sql.ResultSet;
@@ -40,6 +41,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     
     private final MasterSlaveConnection connection;
     
+    @Getter(AccessLevel.NONE)
     private final MasterSlaveRouter masterSlaveRouter;
     
     private final int resultSetType;

@@ -34,4 +34,8 @@ public final class SQLParsingUnsupportedException extends ShardingException {
     public SQLParsingUnsupportedException(final TokenType tokenType) {
         super(String.format(MESSAGE, tokenType.toString()));
     }
+
+    public SQLParsingUnsupportedException(final String message) {
+        super(message);
+    }
 }
