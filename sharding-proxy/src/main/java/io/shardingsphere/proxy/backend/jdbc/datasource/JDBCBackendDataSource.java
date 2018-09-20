@@ -104,10 +104,14 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      * @return connections
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
-        for (int i = 0; i < connectionSize; i++) {
-            result.add(getDataSourceMap().get(dataSourceName).getConnection());
+        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        synchronized (dataSource) {
+            for (int i = 0; i < connectionSize; i++) {
+                result.add(dataSource.getConnection());
+            }
         }
         return result;
     }
