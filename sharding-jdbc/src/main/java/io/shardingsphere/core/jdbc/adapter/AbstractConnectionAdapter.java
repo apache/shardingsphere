@@ -31,6 +31,7 @@ import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.event.root.RootInvokeEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -148,7 +149,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
@@ -161,11 +162,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             });
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.BEGIN));
+        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
+            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
         }
     }
     
     @Override
-    public final void commit() throws SQLException {
+    public void commit() throws SQLException {
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
@@ -176,11 +179,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             });
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.COMMIT));
+        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
+            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(TransactionOperationType.COMMIT, null));
         }
     }
     
     @Override
-    public final void rollback() throws SQLException {
+    public void rollback() throws SQLException {
         if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
@@ -191,6 +196,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             });
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
+            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null));
         }
     }
     

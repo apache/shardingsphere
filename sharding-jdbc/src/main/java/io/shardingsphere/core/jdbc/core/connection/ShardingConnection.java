@@ -131,19 +131,19 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public void setAutoCommit(final boolean autoCommit) {
-        RevertEngineHolder.getInstance().setRevertEngine(new JDBCRevertEngine(shardingContext));
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        RevertEngineHolder.getInstance().setRevertEngine(new JDBCRevertEngine(dataSourceMap));
         super.setAutoCommit(autoCommit);
     }
     
     @Override
-    public void commit() {
+    public void commit() throws SQLException {
         super.commit();
         RevertEngineHolder.getInstance().remove();
     }
     
     @Override
-    public void rollback() {
+    public void rollback() throws SQLException {
         super.rollback();
         RevertEngineHolder.getInstance().remove();
     }

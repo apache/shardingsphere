@@ -17,12 +17,7 @@
 
 package io.shardingsphere.core.revert;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.core.ShardingContext;
-import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+
 import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertResult;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ${DESCRIPTION}.
@@ -39,36 +35,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCRevertEngine implements RevertEngine {
     
-    private final ShardingContext shardingContext;
+    private final Map<String, DataSource> dataSourceMap;
     
     @Override
     public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) throws SQLException {
-        DataSource dataSource = shardingContext.getDataSourceMap().get(datasource);
-        // TODO use new SnapShotEngine to get revert result.
-        DatabaseType databaseType = shardingContext.getDatabaseType();
-        String logicTable = getLogicTable(databaseType, sql);
-        TableMetaData tableMetaData = shardingContext.getMetaData().getTable().getTableMetaDataMap().get(logicTable);
+        DataSource dataSource = dataSourceMap.get(datasource);
         RevertResult result = new RevertResult();
-//        for (List<Object> each : params) {
-//            RevertContext context = new SnapshotEngine(dataSource, sql, each.toArray(), 1, tableMetaData).snapshot();
-//            if (context.getRevertParam().size() > 0) {
-//                result.setRevertSQL(context.getRevertSQL());
-//                result.getRevertSQLParams().addAll(context.getRevertParam());
-//            }
-//        }
+        for (List<Object> each : params) {
+            // TODO use new SnapShotEngine to get revert result.
+            result.setRevertSQL("");
+        }
         return result;
     }
     
     @Override
     public RevertResult revert(final String datasource, final String sql, final Object[] params) {
         return null;
-    }
-    
-    private String getLogicTable(final DatabaseType dbType, final String sql) {
-        LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
-        lexerEngine.nextToken();
-        lexerEngine.skipAll(DefaultKeyword.values());
-        String physicalTableName = lexerEngine.getCurrentToken().getLiterals();
-        return physicalTableName.substring(0, physicalTableName.lastIndexOf('_'));
     }
 }
