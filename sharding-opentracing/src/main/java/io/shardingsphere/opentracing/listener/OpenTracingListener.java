@@ -66,7 +66,18 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     
     protected abstract Span beforeExecute(T event);
     
-    protected abstract void tracingFinish(T event);
+    private void tracingFinish(final T event) {
+        beforeTracingFinish(event, span.get());
+        span.get().finish();
+        span.remove();
+        afterTracingFinish(event);
+    }
+    
+    protected void beforeTracingFinish(final T event, final Span span) {
+    }
+    
+    protected void afterTracingFinish(final T event) {
+    }
     
     private Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);

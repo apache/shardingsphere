@@ -70,9 +70,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     }
     
     @Override
-    protected void tracingFinish(final SQLExecutionEvent event) {
-        getSpan().get().finish();
-        getSpan().remove();
+    protected void afterTracingFinish(final SQLExecutionEvent event) {
         if (!isTrunkThread.get()) {
             RootInvokeEventListener.getActiveSpan().get().deactivate();
             RootInvokeEventListener.getActiveSpan().remove();

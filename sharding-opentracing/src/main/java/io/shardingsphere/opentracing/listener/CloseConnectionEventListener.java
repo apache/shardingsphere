@@ -56,10 +56,4 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
                 .withTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
                 .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort()).startManual();
     }
-    
-    @Override
-    protected void tracingFinish(final CloseConnectionEvent event) {
-        getSpan().get().finish();
-        getSpan().remove();
-    }
 }

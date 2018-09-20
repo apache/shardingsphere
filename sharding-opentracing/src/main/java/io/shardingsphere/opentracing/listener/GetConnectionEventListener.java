@@ -56,14 +56,12 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     }
     
     @Override
-    protected void tracingFinish(final GetConnectionEvent event) {
+    protected void beforeTracingFinish(final GetConnectionEvent event, final Span span) {
         GetConnectionFinishEvent finishEvent = (GetConnectionFinishEvent) event;
         if (null != finishEvent.getDataSourceMetaData()) {
-            getSpan().get().setTag(Tags.PEER_HOSTNAME.getKey(), finishEvent.getDataSourceMetaData().getHostName())
+            span.setTag(Tags.PEER_HOSTNAME.getKey(), finishEvent.getDataSourceMetaData().getHostName())
                     .setTag(Tags.PEER_PORT.getKey(), finishEvent.getDataSourceMetaData().getPort())
                     .setTag(ShardingTags.CONNECTION_COUNT.getKey(), ((GetConnectionFinishEvent) event).getConnectionCount());
         }
-        getSpan().get().finish();
-        getSpan().remove();
     }
 }
