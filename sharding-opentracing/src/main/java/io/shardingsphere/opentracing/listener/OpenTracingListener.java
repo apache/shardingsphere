@@ -51,7 +51,7 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     protected final void tracing(final T event) {
         switch (event.getEventType()) {
             case BEFORE_EXECUTE:
-                beforeExecute(event);
+                span.set(beforeExecute(event));
                 break;
             case EXECUTE_SUCCESS:
                 tracingFinish(event);
@@ -65,7 +65,7 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
         }
     }
     
-    protected abstract void beforeExecute(T event);
+    protected abstract Span beforeExecute(T event);
     
     protected abstract void tracingFinish(T event);
     

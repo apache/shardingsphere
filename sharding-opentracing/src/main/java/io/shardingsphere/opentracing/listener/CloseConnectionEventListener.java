@@ -47,14 +47,14 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     }
     
     @Override
-    protected void beforeExecute(final CloseConnectionEvent event) {
+    protected Span beforeExecute(final CloseConnectionEvent event) {
         CloseConnectionStartEvent startEvent = (CloseConnectionStartEvent) event;
-        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME)
+        return ShardingTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource())
                 .withTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
-                .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort()).startManual());
+                .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort()).startManual();
     }
     
     @Override
