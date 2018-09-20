@@ -19,8 +19,9 @@ package io.shardingsphere.core.transaction;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(TransactionTypeHolderTest.class)
+@SuiteClasses(TransactionTypeHolderTest.class)
 public final class AllTransactionTests {
 }

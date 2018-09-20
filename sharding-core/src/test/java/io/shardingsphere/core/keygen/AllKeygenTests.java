@@ -19,9 +19,10 @@ package io.shardingsphere.core.keygen;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         DefaultKeyGeneratorTest.class, 
         KeyGeneratorFactoryTest.class
     })

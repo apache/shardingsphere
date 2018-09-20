@@ -20,9 +20,10 @@ package io.shardingsphere.opentracing;
 import io.shardingsphere.opentracing.listener.AllListenerTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         ShardingTracerTest.class,
         AllListenerTests.class
 })
