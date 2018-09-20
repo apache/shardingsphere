@@ -84,28 +84,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
     }
     
-    private ShardingRule createShardingRuleWithGenerateKeyColumns() {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        try {
-            when(dataSource.getConnection()).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-        final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("TABLE_XXX");
-        tableRuleConfig.setActualDataNodes("ds.table_${0..2}");
-        tableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("field1", new TestComplexKeysShardingAlgorithm()));
-        tableRuleConfig.setKeyGeneratorColumnName("field2");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        shardingRuleConfig.setDefaultKeyGenerator(new IncrementKeyGenerator());
-        return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
-    }
-    
     @Test
     public void parseWithSpecialSyntax() {
 //        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
