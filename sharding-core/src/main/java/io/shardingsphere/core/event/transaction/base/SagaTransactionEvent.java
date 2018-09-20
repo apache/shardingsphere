@@ -15,27 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.event.base;
+package io.shardingsphere.core.event.transaction.base;
 
-import io.shardingsphere.core.executor.sql.event.sql.SQLExecutionEvent;
-import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import java.util.List;
-
+import java.sql.Connection;
 
 /**
- * Saga SQL execution.
+ * Saga transaction event.
  *
  * @author yangyi
  */
-public final class SagaSQLExecutionEvent extends SQLExecutionEvent {
+@RequiredArgsConstructor
+@Getter
+public class SagaTransactionEvent implements ShardingTransactionEvent {
     
-    @Getter
-    private final String transactionId;
+    private final TransactionOperationType operationType;
     
-    public SagaSQLExecutionEvent(final String dataSource, final SQLUnit sqlUnit, final List<Object> parameters, final String transactionId) {
-        super(dataSource, sqlUnit, parameters);
-        this.transactionId = transactionId;
-    }
+    private final Connection connection;
+    
+    @Setter
+    private String sagaJson;
+    
 }
