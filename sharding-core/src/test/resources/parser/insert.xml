@@ -173,7 +173,30 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    
+
+    <parser-result sql-case-id="insert_with_generate_key_column_without_parameters">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <insert-values-token begin-position="83" table-name="t_order_item"/>
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
     <parser-result sql-case-id="insert_without_generate_key_column" parameters="1000, 10">
         <tables>
             <table name="t_order_item" />
