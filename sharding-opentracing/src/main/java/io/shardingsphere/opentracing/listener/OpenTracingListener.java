@@ -22,7 +22,6 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.opentracing.ShardingErrorLogTags;
-import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +33,6 @@ import java.util.Map;
  * 
  * @param <T> type of sharding event
  */
-@Getter
 public abstract class OpenTracingListener<T extends ShardingEvent> {
     
     private final ThreadLocal<Span> span = new ThreadLocal<>();
