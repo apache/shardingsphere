@@ -17,28 +17,32 @@
 
 package io.shardingsphere.core.executor;
 
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.transaction.TransactionTypeHolder;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.manager.base.executor.SagaSQLExeucteCallback;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SQLExeucteCallbackFactoryTest {
@@ -46,48 +50,43 @@ public class SQLExeucteCallbackFactoryTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private final String dsName = "ds";
+    @Mock
+    private Connection connection;
     
-    private final String sql = "SELECT now()";
+    @Mock
+    private DatabaseMetaData metaData;
     
-    private final StatementExecuteUnit unit = new StatementExecuteUnit() {
-        @Override
-        public SQLExecutionUnit getSqlExecutionUnit() {
-            return new SQLExecutionUnit(dsName, new SQLUnit(sql, new ArrayList<List<Object>>()));
-        }
-    
-        @Override
-        public Statement getStatement() {
-            return preparedStatement;
-        }
-    };
+    private StatementExecuteUnit unit;
+    @Before
+    public void setUp() throws SQLException {
+        String dsName = "ds";
+        String sql = "SELECT now()";
+        unit = new StatementExecuteUnit(new RouteUnit(dsName, new SQLUnit(sql, Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(metaData);
+        when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
+    }
     
     @Test
     public void assertGetSagaSQLExecuteCallback() {
         TransactionTypeHolder.set(TransactionType.BASE);
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(SQLType.DML, false, null);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL ,SQLType.DML, false, null);
         assertThat(sqlExecuteCallback instanceof SagaSQLExeucteCallback, is(true));
-        sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(SQLType.DML, false, null);
+        sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, false, null);
         assertThat(sqlExecuteCallback instanceof SagaSQLExeucteCallback, is(true));
+        TransactionTypeHolder.set(TransactionType.LOCAL);
     }
     
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(SQLType.DML, true, null);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, null);
         sqlExecuteCallback.execute(unit);
         verify(preparedStatement).executeUpdate();
     }
     
     @Test
-    public void assertGetPreparedQuerySQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedQuerySQLExecuteCallback(SQLType.DQL, true, null);
-        sqlExecuteCallback.execute(unit);
-        verify(preparedStatement).executeQuery();
-    }
-    
-    @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(SQLType.DQL, true, null);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DQL, true, null);
         sqlExecuteCallback.execute(unit);
         verify(preparedStatement).execute();
     }

@@ -128,13 +128,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public int executeUpdate() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
-            
-            @Override
-            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return ((PreparedStatement) statementExecuteUnit.getStatement()).executeUpdate();
-            }
-        };
+        SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap);
         List<Integer> results = executeCallback(executeCallback);
         return accumulate(results);
     }
@@ -156,13 +150,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public boolean execute() throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
-            
-            @Override
-            protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return ((PreparedStatement) statementExecuteUnit.getStatement()).execute();
-            }
-        };
+        SQLExecuteCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap);
         List<Boolean> result = executeCallback(executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
