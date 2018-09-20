@@ -17,11 +17,6 @@
             <artifactId>sharding-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>parser-antlr</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
         
         <dependency>
             <groupId>com.google.guava</groupId>

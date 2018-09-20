@@ -23,8 +23,6 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.revert.RevertContext;
-import io.shardingsphere.revert.SnapshotEngine;
 import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertResult;
 import lombok.RequiredArgsConstructor;
@@ -49,13 +47,13 @@ public final class ProxyRevertEngine implements RevertEngine {
         String logicTable = getLogicTable(databaseType, sql);
         TableMetaData metaData = RuleRegistry.getInstance().getMetaData().getTable().getTableMetaDataMap().get(logicTable);
         RevertResult result = new RevertResult();
-        for (List<Object> each : params) {
-            RevertContext context = new SnapshotEngine(actualDatasource, sql, each.toArray(), 1, metaData).snapshot();
-            if (context.getRevertParam().size() > 0) {
-                result.setRevertSQL(context.getRevertSQL());
-                result.getRevertSQLParams().addAll(context.getRevertParam());
-            }
-        }
+//        for (List<Object> each : params) {
+//            RevertContext context = new SnapshotEngine(actualDatasource, sql, each.toArray(), 1, metaData).snapshot();
+//            if (context.getRevertParam().size() > 0) {
+//                result.setRevertSQL(context.getRevertSQL());
+//                result.getRevertSQLParams().addAll(context.getRevertParam());
+//            }
+//        }
         return result;
     }
     
