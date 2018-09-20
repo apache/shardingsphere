@@ -15,26 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.core.event.root;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.root.RootInvokeEvent;
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
-public final class TestOverallExecutionEventListener {
-    
-    private final EventCaller eventCaller;
-    
-    /**
-     * Listen event.
-     *
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final RootInvokeEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+/**
+ * Root invoke finish event.
+ *
+ * @author zhangliang
+ */
+public final class RootInvokeFinishEvent {
 }

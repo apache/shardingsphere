@@ -23,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        RootInvokeEventListenerTest.class, 
         GetConnectionEventListenerTest.class,
         CloseConnectionEventListenerTest.class, 
         ParsingEventListenerTest.class,
