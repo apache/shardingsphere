@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.constant.properties;
 
-import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +40,7 @@ public enum ShardingPropertiesConstant {
      * Default: false
      * </p>
      */
-    SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
+    SQL_SHOW("sql.show", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Worker group or user group thread max size.
@@ -66,50 +64,15 @@ public enum ShardingPropertiesConstant {
      */
     EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
     
-    /**
-     * Connection mode of connected to databases.
-     *
-     * <p>
-     * MEMORY_STRICTLY:
-     * Sharding-Sphere holds as many connections as the count of actual tables routed in a database.
-     * The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-     * </p>
-     * 
-     * <p>
-     * CONNECTION_STRICTLY:
-     * Sharding-Sphere will release connections after get the overall rows from the ResultSet.
-     * Meanwhile, the cost of the memory will be increased.
-     * </p>
-     */
-    CONNECTION_MODE("connection.mode", ConnectionMode.MEMORY_STRICTLY.name(), String.class),
+    MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
     
-    PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", Boolean.FALSE.toString(), boolean.class),
+    PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
-    /**
-     * Transaction type of proxy.
-     *
-     * <p>
-     * LOCAL:
-     * Sharding-Sphere will run with LOCAL transaction.
-     * </p>
-     *
-     * <p>
-     * XA:
-     * Sharding-Sphere will run with XA transaction.
-     * </p>
-     *
-     * <p>
-     * BASE:
-     * Sharding-Sphere will run with BASE transaction.
-     * </p>
-     */
-    PROXY_TRANSACTION_TYPE("proxy.transaction.type", TransactionType.LOCAL.name(), String.class),
+    PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", String.valueOf(Boolean.FALSE), boolean.class),
     
-    PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", Boolean.FALSE.toString(), boolean.class),
+    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", String.valueOf(8), int.class),
     
-    PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", 8 + "", int.class),
-    
-    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", 60 + "", int.class);
+    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", String.valueOf(60), int.class);
     
     private final String key;
     

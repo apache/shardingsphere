@@ -20,8 +20,8 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Handshake response above MySQL 4.1 packet protocol.
@@ -31,23 +31,26 @@ import lombok.Getter;
  * @author zhangliang
  * @author wangkai
  */
-@AllArgsConstructor
-@Getter
+@RequiredArgsConstructor
 public final class HandshakeResponse41Packet implements MySQLPacket {
     
+    @Getter
     private final int sequenceId;
     
-    private int capabilityFlags;
+    private final int capabilityFlags;
     
-    private int maxPacketSize;
+    private final int maxPacketSize;
     
-    private int characterSet;
+    private final int characterSet;
     
-    private String username;
+    @Getter
+    private final String username;
     
-    private byte[] authResponse;
+    @Getter
+    private final byte[] authResponse;
     
-    private String database;
+    @Getter
+    private final String database;
     
     public HandshakeResponse41Packet(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
@@ -56,25 +59,23 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
         characterSet = payload.readInt1();
         payload.skipReserved(23);
         username = payload.readStringNul();
-        readAuthResponse(payload);
-        readDatabase(payload);
+        authResponse = readAuthResponse(payload);
+        database = readDatabase(payload);
     }
     
-    private void readAuthResponse(final MySQLPacketPayload payload) {
+    private byte[] readAuthResponse(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
-            authResponse = payload.readStringLenencByBytes();
-        } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
-            int length = payload.readInt1();
-            authResponse = payload.readStringFixByBytes(length);
-        } else {
-            authResponse = payload.readStringNulByBytes();
+            return payload.readStringLenencByBytes();
         }
+        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
+            int length = payload.readInt1();
+            return payload.readStringFixByBytes(length);
+        }
+        return payload.readStringNulByBytes();
     }
     
-    private void readDatabase(final MySQLPacketPayload payload) {
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
-            database = payload.readStringNul();
-        }
+    private String readDatabase(final MySQLPacketPayload payload) {
+        return 0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()) ? payload.readStringNul() : null;
     }
     
     @Override

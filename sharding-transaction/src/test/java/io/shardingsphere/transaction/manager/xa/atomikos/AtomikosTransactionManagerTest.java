@@ -21,8 +21,8 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +68,7 @@ public final class AtomikosTransactionManagerTest {
     
     @Test(expected = SQLException.class)
     public void assertBeginWithException() throws Exception {
-        doThrow(SQLException.class).when(userTransactionManager).begin();
+        doThrow(SystemException.class).when(userTransactionManager).begin();
         new AtomikosTransactionManager().begin(new XATransactionEvent(TransactionOperationType.BEGIN));
     }
     
@@ -80,7 +80,7 @@ public final class AtomikosTransactionManagerTest {
     
     @Test(expected = SQLException.class)
     public void assertCommitWithException() throws Exception {
-        doThrow(SQLException.class).when(userTransactionManager).commit();
+        doThrow(SystemException.class).when(userTransactionManager).commit();
         new AtomikosTransactionManager().commit(new XATransactionEvent(TransactionOperationType.COMMIT));
     }
     
@@ -92,7 +92,7 @@ public final class AtomikosTransactionManagerTest {
     
     @Test(expected = SQLException.class)
     public void assertRollbackWithException() throws Exception {
-        doThrow(SQLException.class).when(userTransactionManager).rollback();
+        doThrow(SystemException.class).when(userTransactionManager).rollback();
         new AtomikosTransactionManager().rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
     }
     

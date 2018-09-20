@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
@@ -65,7 +64,6 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
         when(list.isEmpty()).thenReturn(true);
         getShardingDataSource().recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
         getShardingDataSource().replayMethodsInvocation(list);
-        verify(list).isEmpty();
     }
     
     @Test(expected = ShardingException.class)

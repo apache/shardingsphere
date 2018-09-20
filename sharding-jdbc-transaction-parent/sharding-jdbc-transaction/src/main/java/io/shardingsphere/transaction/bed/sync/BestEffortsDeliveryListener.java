@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.bed.sync;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.executor.sql.event.sql.DMLExecutionEvent;
+import io.shardingsphere.core.event.executor.DMLExecutionEvent;
 import io.shardingsphere.transaction.api.SoftTransactionManager;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.bed.BEDSoftTransaction;
@@ -61,7 +61,7 @@ public final class BestEffortsDeliveryListener {
             case BEFORE_EXECUTE:
                 //TODO for batch SQL need split to 2-level records
                 transactionLogStorage.add(new TransactionLog(event.getId(), bedSoftTransaction.getTransactionId(), bedSoftTransaction.getTransactionType(), 
-                        event.getDataSource(), event.getSqlUnit().getSql(), event.getParameters(), System.currentTimeMillis(), 0));
+                        event.getRouteUnit().getDataSourceName(), event.getRouteUnit().getSqlUnit().getSql(), event.getParameters(), System.currentTimeMillis(), 0));
                 return;
             case EXECUTE_SUCCESS: 
                 transactionLogStorage.remove(event.getId());
@@ -76,13 +76,13 @@ public final class BestEffortsDeliveryListener {
                     Connection conn = null;
                     PreparedStatement preparedStatement = null;
                     try {
-                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
+                        conn = bedSoftTransaction.getConnection().getConnection(event.getRouteUnit().getDataSourceName());
                         if (!isValidConnection(conn)) {
                             bedSoftTransaction.getConnection().release(conn);
-                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
+                            conn = bedSoftTransaction.getConnection().getConnection(event.getRouteUnit().getDataSourceName());
                             isNewConnection = true;
                         }
-                        preparedStatement = conn.prepareStatement(event.getSqlUnit().getSql());
+                        preparedStatement = conn.prepareStatement(event.getRouteUnit().getSqlUnit().getSql());
                         //TODO for batch event need split to 2-level records
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
                             preparedStatement.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));

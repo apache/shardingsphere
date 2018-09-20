@@ -17,17 +17,12 @@
 
 package io.shardingsphere.core.jdbc.core.datasource;
 
-import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.api.ConfigMapContext;
 import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.orche.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.core.event.orche.state.CircuitStateEventBusEvent;
-import io.shardingsphere.core.event.orche.state.DisabledStateEventBusEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.orche.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
@@ -37,7 +32,6 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -51,15 +45,11 @@ import java.util.Properties;
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    private Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap;
     
-    private MasterSlaveRule masterSlaveRule;
+    private final MasterSlaveRule masterSlaveRule;
     
-    private ShardingProperties shardingProperties;
-    
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
-    private boolean isCircuitBreak;
+    private final ShardingProperties shardingProperties;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
@@ -67,13 +57,20 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        init(dataSourceMap, masterSlaveRuleConfig);
-    }
-    
-    private void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+    }
+    
+    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
+                                 final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
+        super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
+        if (!configMap.isEmpty()) {
+            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+        }
+        this.dataSourceMap = dataSourceMap;
+        this.masterSlaveRule = masterSlaveRule;
+        this.shardingProperties = props;
     }
     
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
@@ -99,19 +96,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         return result;
     }
     
-    /**
-     * Renew master-slave data source.
-     *
-     * @param masterSlaveEvent master slave configuration event bus event
-     */
-    @Subscribe
-    public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = masterSlaveEvent.getMasterSlaveRuleConfig();
-        super.renew(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
-        closeOriginalDataSources();
-        init(dataSourceMap, masterSlaveRuleConfig);
-    }
-    
     private void closeOriginalDataSources() {
         for (DataSource each : getDataSourceMap().values()) {
             try {
@@ -128,7 +112,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     }
     
     @Override
-    public void close() {
+    public final void close() {
         closeOriginalDataSources();
     }
     
@@ -139,58 +123,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
      */
     public boolean showSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
-    
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSource> getDataSourceMap() {
-        if (isCircuitBreak) {
-            return getCircuitBreakerDataSourceMap();
-        }
-        
-        if (!getDisabledDataSourceNames().isEmpty()) {
-            return getAvailableDataSourceMap();
-        }
-        return dataSourceMap;
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : getDisabledDataSourceNames()) {
-            result.remove(each);
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> getCircuitBreakerDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : dataSourceMap.keySet()) {
-            result.put(each, new CircuitBreakerDataSource());
-        }
-        return result;
-    }
-    
-    /**
-     * Renew disable dataSource names.
-     *
-     * @param disabledStateEventBusEvent jdbc disabled event bus event
-     */
-    @Subscribe
-    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        disabledDataSourceNames = disabledStateEventBusEvent.getDisabledDataSourceNames();
-    }
-    
-    /**
-     * Renew circuit breaker dataSource names.
-     *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
-     */
-    @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
     }
 }
 

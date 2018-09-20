@@ -18,6 +18,8 @@
 package io.shardingsphere.jdbc.spring;
 
 import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
@@ -105,6 +107,34 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+    }
+    
+    @Test
+    public void assertMasterSlaveShardingDataSourceByDefaultStrategy() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByDefaultStrategy");
+        assertNotNull(dataSourceMap.get("dbtbl_0_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByDefaultStrategy");
+        assertThat(shardingRule.getMasterSlaveRules().iterator().next().getLoadBalanceAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(shardingRule.getTableRules().size(), is(1));
+        assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(shardingRule.getDefaultKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
+    }
+    
+    @Test
+    public void assertMasterSlaveShardingDataSourceByUserStrategy() {
+        Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategy");
+        assertNotNull(dataSourceMap.get("dbtbl_0_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_0_slave_0"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_master"));
+        assertNotNull(dataSourceMap.get("dbtbl_1_slave_1"));
+        ShardingRule shardingRule = getShardingRule("masterSlaveShardingDataSourceByUserStrategy");
+        assertThat(shardingRule.getMasterSlaveRules().iterator().next().getLoadBalanceAlgorithm(), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(shardingRule.getTableRules().size(), is(1));
+        assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(shardingRule.getDefaultKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }
     
     @Test
@@ -216,8 +246,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = this.applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
-        return (Map) FieldValueUtil.getFieldValue(shardingContext, "dataSourceMap");
+        return shardingDataSource.getDataSourceMap();
     }
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {

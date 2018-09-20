@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.AbstractUseParser;
 
@@ -27,8 +28,15 @@ import io.shardingsphere.core.parsing.parser.sql.dal.use.AbstractUseParser;
  */
 public final class MySQLUseParser extends AbstractUseParser {
     
+    private final LexerEngine lexerEngine;
+    
+    public MySQLUseParser(final LexerEngine lexerEngine) {
+        this.lexerEngine = lexerEngine;
+    }
+    
     @Override
     public UseStatement parse() {
-        return new UseStatement();
+        lexerEngine.nextToken();
+        return new UseStatement(lexerEngine.getCurrentToken().getLiterals());
     }
 }

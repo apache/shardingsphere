@@ -31,8 +31,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.proxy.backend.BackendExecutorContext;
-import io.shardingsphere.proxy.backend.netty.client.BackendNettyClient;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.backend.netty.client.BackendNettyClientManager;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
 
 /**
@@ -44,7 +44,7 @@ import io.shardingsphere.proxy.frontend.common.netty.ServerHandlerInitializer;
  */
 public final class ShardingProxy {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
@@ -55,19 +55,19 @@ public final class ShardingProxy {
     private EventLoopGroup userGroup;
     
     public ShardingProxy() {
-        RULE_REGISTRY.initShardingMetaData(backendExecutorContext.getExecuteEngine());
+        PROXY_CONTEXT.initShardingMetaData(backendExecutorContext.getExecuteEngine());
     }
     
     /**
      * Start Sharding-Proxy.
      *
      * @param port port
-     * @throws InterruptedException  interrupted exception
+     * @throws InterruptedException interrupted exception
      */
     public void start(final int port) throws InterruptedException {
         try {
-            if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
-                BackendNettyClient.getInstance().start();
+            if (PROXY_CONTEXT.isUseNIO()) {
+                BackendNettyClientManager.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
@@ -83,8 +83,8 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
-            if (RULE_REGISTRY.getBackendNIOConfig().isUseNIO()) {
-                BackendNettyClient.getInstance().stop();
+            if (PROXY_CONTEXT.isUseNIO()) {
+                BackendNettyClientManager.getInstance().stop();
             }
         }
     }
@@ -98,29 +98,29 @@ public final class ShardingProxy {
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
-        userGroup = new EpollEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
+        workerGroup = new EpollEventLoopGroup();
+        userGroup = new EpollEventLoopGroup(PROXY_CONTEXT.getAcceptorSize());
         bootstrap.group(bossGroup, workerGroup)
-            .channel(EpollServerSocketChannel.class)
-            .option(EpollChannelOption.SO_BACKLOG, 128)
-            .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-            .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(new ServerHandlerInitializer(userGroup));
+                .channel(EpollServerSocketChannel.class)
+                .option(EpollChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
+                .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ServerHandlerInitializer(userGroup));
     }
     
     private void groupsNio(final ServerBootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
-        userGroup = new NioEventLoopGroup(RULE_REGISTRY.getAcceptorSize());
+        workerGroup = new NioEventLoopGroup();
+        userGroup = new NioEventLoopGroup(PROXY_CONTEXT.getAcceptorSize());
         bootstrap.group(bossGroup, workerGroup)
-            .channel(NioServerSocketChannel.class)
-            .option(ChannelOption.SO_BACKLOG, 128)
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
-            .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(new ServerHandlerInitializer(userGroup));
+                .channel(NioServerSocketChannel.class)
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
+                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
+                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ServerHandlerInitializer(userGroup));
     }
 }

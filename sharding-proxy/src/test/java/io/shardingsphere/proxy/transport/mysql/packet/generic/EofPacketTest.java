@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.when;
 public final class EofPacketTest {
     
     @Mock
-    private MySQLPacketPayload packetPayload;
+    private MySQLPacketPayload payload;
     
     @Test
     public void assertNewEofPacketWithSequenceId() {
@@ -46,21 +45,19 @@ public final class EofPacketTest {
     
     @Test
     public void assertNewEofPacketWithMySQLPacketPayload() {
-        when(packetPayload.readInt1()).thenReturn(1, EofPacket.HEADER);
-        when(packetPayload.readInt2()).thenReturn(0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        EofPacket actual = new EofPacket(packetPayload);
+        when(payload.readInt1()).thenReturn(1, EofPacket.HEADER);
+        when(payload.readInt2()).thenReturn(0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        EofPacket actual = new EofPacket(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-        verify(packetPayload, times(2)).readInt1();
-        verify(packetPayload, times(2)).readInt2();
     }
     
     @Test
     public void assertWrite() {
-        new EofPacket(1).write(packetPayload);
-        verify(packetPayload).writeInt1(EofPacket.HEADER);
-        verify(packetPayload).writeInt2(0);
-        verify(packetPayload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        new EofPacket(1).write(payload);
+        verify(payload).writeInt1(EofPacket.HEADER);
+        verify(payload).writeInt2(0);
+        verify(payload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
     }
 }

@@ -22,7 +22,6 @@ import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.core.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.MasterSlaveStatement;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
@@ -36,11 +35,15 @@ import java.util.Map;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
+    
+    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource) {
+        super(masterSlaveDataSource.getDatabaseType());
+        this.masterSlaveDataSource = masterSlaveDataSource;
+    }
     
     @Override
     protected Map<String, DataSource> getDataSourceMap() {

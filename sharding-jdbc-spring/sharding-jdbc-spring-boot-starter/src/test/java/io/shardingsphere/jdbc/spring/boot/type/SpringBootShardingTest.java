@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,11 +52,11 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(dataSource instanceof ShardingDataSource);
+        assertThat(dataSource, instanceOf(ShardingDataSource.class));
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(dataSource);
-        for (DataSource each : shardingContext.getDataSourceMap().values()) {
+        for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
         assertTrue(shardingContext.isShowSQL());

@@ -17,7 +17,8 @@
 
 package io.shardingsphere.transaction.manager;
 
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+
 import java.sql.SQLException;
 
 /**

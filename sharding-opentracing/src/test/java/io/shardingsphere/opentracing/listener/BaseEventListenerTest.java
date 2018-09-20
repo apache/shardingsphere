@@ -24,6 +24,7 @@ import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,13 +36,14 @@ public abstract class BaseEventListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
-    protected static MockTracer getTracer() {
+    static MockTracer getTracer() {
         return TRACER;
     }
     
     @BeforeClass
     public static void initTracer() {
         ShardingTracer.init(TRACER);
+        ExecutorDataMap.getDataMap().remove(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION);
     }
     
     @AfterClass

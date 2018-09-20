@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.jdbc.core.connection;
 
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.root.RootInvokeEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
@@ -25,7 +27,6 @@ import io.shardingsphere.core.revert.JDBCRevertEngine;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,16 +39,24 @@ import java.util.Map;
 
 /**
  * Connection that support sharding.
- * 
+ *
  * @author zhangliang
  * @author caohao
  * @author gaohongtao
  */
-@RequiredArgsConstructor
+@Getter
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
-    @Getter
+    private final Map<String, DataSource> dataSourceMap;
+    
     private final ShardingContext shardingContext;
+    
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
+        super(shardingContext.getDatabaseType());
+        this.dataSourceMap = dataSourceMap;
+        this.shardingContext = shardingContext;
+        ShardingEventBusInstance.getInstance().post(new RootInvokeEvent());
+    }
     
     /**
      * Release connection.
@@ -63,15 +72,10 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    protected Map<String, DataSource> getDataSourceMap() {
-        return shardingContext.getDataSourceMap();
-    }
-    
-    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         Collection<MasterSlaveRule> masterSlaveRules = shardingContext.getShardingRule().getMasterSlaveRules();
         if (masterSlaveRules.isEmpty()) {
-            return getConnection(shardingContext.getDataSourceMap().keySet().iterator().next()).getMetaData();
+            return getConnection(dataSourceMap.keySet().iterator().next()).getMetaData();
         }
         for (MasterSlaveRule each : masterSlaveRules) {
             if (getDataSourceMap().containsKey(each.getMasterDataSourceName())) {

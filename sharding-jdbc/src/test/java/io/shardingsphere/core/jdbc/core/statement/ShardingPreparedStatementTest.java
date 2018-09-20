@@ -17,11 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.statement;
 
-import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.ShardingEventType;
-import io.shardingsphere.core.executor.sql.event.sql.DMLExecutionEvent;
 import io.shardingsphere.core.jdbc.JDBCTestSQL;
 import io.shardingsphere.core.util.SQLPlaceholderUtil;
 import org.junit.Test;
@@ -31,10 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -44,23 +37,10 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertAddBatch() throws SQLException {
-        Object listener = new Object() {
-            
-            private final List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
-            
-            @Subscribe
-            public void subscribe(final DMLExecutionEvent event) {
-                if (ShardingEventType.BEFORE_EXECUTE == event.getEventType()) {
-                    beforeEvents.add(event);
-                } else if (ShardingEventType.EXECUTE_SUCCESS == event.getEventType()) {
-                    assertThat(beforeEvents, hasItem(event));
-                }
-            }
-        };
-        ShardingEventBusInstance.getInstance().register(listener);
+        
         try (
-                Connection connection = getShardingDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
+            Connection connection = getShardingDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);
@@ -86,16 +66,15 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
                 assertThat(rs, is(1));
             }
         }
-        ShardingEventBusInstance.getInstance().unregister(listener);
     }
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
         String sql = SQLPlaceholderUtil.replacePreparedStatement(JDBCTestSQL.INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
         try (
-                Connection connection = getShardingDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                Statement queryStatement = connection.createStatement()) {
+            Connection connection = getShardingDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 11);
             preparedStatement.setInt(2, 11);
             preparedStatement.setString(3, "BATCH");
@@ -148,9 +127,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     @Test
     public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
         try (
-                Connection connection = getShardingDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
-                Statement queryStatement = connection.createStatement()) {
+            Connection connection = getShardingDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
+            Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 1);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);
@@ -208,8 +187,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     public void assertUpdateBatch() throws SQLException {
         String sql = SQLPlaceholderUtil.replacePreparedStatement(JDBCTestSQL.UPDATE_WITHOUT_SHARDING_VALUE_SQL);
         try (
-                Connection connection = getShardingDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            Connection connection = getShardingDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, "batch");
             preparedStatement.setString(2, "init");
             preparedStatement.addBatch();
@@ -219,7 +198,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(1, "init");
             preparedStatement.setString(2, "batch");
             preparedStatement.addBatch();
-    
+            
             int[] result = preparedStatement.executeBatch();
             assertThat(result.length, is(3));
             assertThat(result[0], is(4));
@@ -231,8 +210,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     @Test
     public void assertClearBatch() throws SQLException {
         try (
-                Connection connection = getShardingDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
+            Connection connection = getShardingDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);

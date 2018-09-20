@@ -17,12 +17,8 @@
 
 package io.shardingsphere.proxy.listener;
 
-import io.shardingsphere.proxy.config.RuleRegistry;
-import io.shardingsphere.transaction.listener.base.SagaTransactionListener;
-import io.shardingsphere.transaction.listener.local.LocalTransactionListener;
-import io.shardingsphere.transaction.listener.xa.XATransactionListener;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
+import io.shardingsphere.proxy.config.ProxyContext;
 
 /**
  * Listener register for Proxy.
@@ -30,17 +26,16 @@ import lombok.NoArgsConstructor;
  * @author zhangliang
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyListenerRegister {
+    
+    private final ProxyContext proxyContext = ProxyContext.getInstance();
     
     /**
      * Register all listeners.
-     *
      */
-    public static void register() {
-        new LocalTransactionListener().register();
-        new XATransactionListener().register();
-        new SagaTransactionListener().register();
-        RuleRegistry.getInstance().register();
+    public void register() {
+        ShardingEventListenerRegistrySPILoader.registerListeners();
+        proxyContext.register();
     }
+    
 }

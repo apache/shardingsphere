@@ -17,79 +17,96 @@
 
 package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
-import io.netty.buffer.ByteBuf;
+import io.shardingsphere.proxy.transport.mysql.constant.CapabilityFlag;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyByte;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class HandshakeResponse41PacketTest {
     
-    private HandshakeResponse41Packet handshakeResponse41Packet;
-    
+    @Mock
     private MySQLPacketPayload payload;
     
-    @Before
-    public void setUp() {
-        ByteBuf byteBuf = mock(ByteBuf.class);
-        payload = new MySQLPacketPayload(byteBuf);
-        when(byteBuf.writeByte(anyInt())).thenReturn(byteBuf);
-        when(byteBuf.writeBytes(byteBuf)).thenReturn(byteBuf);
-        byte b = 0;
-        when(byteBuf.readByte()).thenReturn(b);
-        when(byteBuf.readIntLE()).thenReturn(0);
-        when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
-        when(byteBuf.skipBytes(1)).thenReturn(byteBuf);
-        when(byteBuf.readBytes(anyByte())).thenReturn(byteBuf);
-        handshakeResponse41Packet = new HandshakeResponse41Packet(payload);
+    @Test
+    public void assertNewWithPayloadWithDatabase() {
+        when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
+        when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
+        when(payload.readStringNul()).thenReturn("root", "sharding_db");
+        when(payload.readStringNulByBytes()).thenReturn(new byte[] {1});
+        HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        verify(payload).skipReserved(23);
     }
     
     @Test
-    public void testWrite() {
-        handshakeResponse41Packet.write(payload);
-        assertThat(handshakeResponse41Packet.getSequenceId(), is(0));
+    public void assertNewWithPayloadWithClientPluginAuthLenencClientData() {
+        when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
+        when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
+        when(payload.readStringNul()).thenReturn("root");
+        when(payload.readStringLenencByBytes()).thenReturn(new byte[] {1});
+        HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        verify(payload).skipReserved(23);
     }
     
     @Test
-    public void testGetSequenceId() {
-        assertThat(handshakeResponse41Packet.getSequenceId(), is(0));
+    public void assertNewWithPayloadWithClientSecureConnection() {
+        when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET, 1);
+        when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
+        when(payload.readStringNul()).thenReturn("root");
+        when(payload.readStringFixByBytes(1)).thenReturn(new byte[] {1});
+        HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        verify(payload).skipReserved(23);
     }
     
     @Test
-    public void testGetCapabilityFlags() {
-        assertThat(handshakeResponse41Packet.getCapabilityFlags(), is(0));
+    public void assertWriteWithDatabase() {
+        new HandshakeResponse41Packet(1, CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, "sharding_db").write(payload);
+        verify(payload).writeInt4(CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
+        verify(payload).writeInt4(100);
+        verify(payload).writeInt1(ServerInfo.CHARSET);
+        verify(payload).writeReserved(23);
+        verify(payload).writeStringNul("root");
+        verify(payload).writeStringNul(new String(new byte[] {1}));
+        verify(payload).writeStringNul("sharding_db");
     }
     
     @Test
-    public void testGetMaxPacketSize() {
-        assertThat(handshakeResponse41Packet.getMaxPacketSize(), is(0));
+    public void assertWriteWithClientPluginAuthLenencClientData() {
+        new HandshakeResponse41Packet(1, CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, null).write(payload);
+        verify(payload).writeInt4(CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue());
+        verify(payload).writeInt4(100);
+        verify(payload).writeInt1(ServerInfo.CHARSET);
+        verify(payload).writeReserved(23);
+        verify(payload).writeStringNul("root");
+        verify(payload).writeStringLenenc(new String(new byte[] {1}));
     }
     
     @Test
-    public void testGetCharacterSet() {
-        assertThat(handshakeResponse41Packet.getCharacterSet(), is(0));
-    }
-    
-    @Test
-    public void testGetUsername() {
-        assertThat(handshakeResponse41Packet.getUsername(), is(""));
-    }
-    
-    @Test
-    public void testGetAuthResponse() {
-        byte[] expected = {};
-        assertThat(handshakeResponse41Packet.getAuthResponse(), is(expected));
-    }
-    
-    @Test
-    public void testGetDatabase() {
-        assertNull(handshakeResponse41Packet.getDatabase());
+    public void assertWriteWithClientSecureConnection() {
+        new HandshakeResponse41Packet(1, CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, null).write(payload);
+        verify(payload).writeInt4(CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
+        verify(payload).writeInt4(100);
+        verify(payload).writeInt1(ServerInfo.CHARSET);
+        verify(payload).writeReserved(23);
+        verify(payload).writeStringNul("root");
+        verify(payload).writeInt1(1);
+        verify(payload).writeBytes(new byte[] {1});
     }
 }

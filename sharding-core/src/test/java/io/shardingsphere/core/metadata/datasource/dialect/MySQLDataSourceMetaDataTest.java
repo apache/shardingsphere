@@ -27,9 +27,9 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetALLProperties() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getPort(), is(9999));
         assertThat(actual.getSchemeName(), is("ds_0"));
     }
     
@@ -39,6 +39,14 @@ public final class MySQLDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertThat(actual.getSchemeName(), is("ds_0"));
+    }
+    
+    @Test
+    public void assertGetPropertiesWithMinus() {
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://host-0:3306/ds-0?serverTimezone=UTC&useSSL=false");
+        assertThat(actual.getHostName(), is("host-0"));
+        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getSchemeName(), is("ds-0"));
     }
     
     @Test(expected = ShardingException.class)

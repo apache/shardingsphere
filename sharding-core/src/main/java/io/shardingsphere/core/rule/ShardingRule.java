@@ -35,14 +35,13 @@ import io.shardingsphere.core.util.StringUtil;
 import lombok.Getter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
 /**
  * Databases and tables sharding rule configuration.
- * 
+ *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
@@ -93,7 +92,7 @@ public final class ShardingRule {
     
     /**
      * Try to find table rule though logic table name.
-     * 
+     *
      * @param logicTableName logic table name
      * @return table rule
      */
@@ -133,25 +132,18 @@ public final class ShardingRule {
             return tableRule.get();
         }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
-            return createTableRuleWithDefaultDataSource(logicTableName);
+            return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
         }
         throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
     
-    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName) {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable(logicTableName);
-        tableRuleConfig.setActualDataNodes(shardingDataSourceNames.getDefaultDataSourceName() + "." + logicTableName);
-        return new TableRule(tableRuleConfig, new ShardingDataSourceNames(shardingRuleConfig, Collections.singletonList(shardingDataSourceNames.getDefaultDataSourceName())));
-    }
-    
     /**
      * Get database sharding strategy.
-     * 
+     *
      * <p>
      * Use default database sharding strategy if not found.
      * </p>
-     * 
+     *
      * @param tableRule table rule
      * @return database sharding strategy
      */
@@ -161,11 +153,11 @@ public final class ShardingRule {
     
     /**
      * Get table sharding strategy.
-     * 
+     *
      * <p>
      * Use default table sharding strategy if not found.
      * </p>
-     * 
+     *
      * @param tableRule table rule
      * @return table sharding strategy
      */
@@ -258,7 +250,7 @@ public final class ShardingRule {
     
     /**
      * get generated key's column.
-     * 
+     *
      * @param logicTableName logic table name
      * @return generated key's column
      */
@@ -305,7 +297,7 @@ public final class ShardingRule {
     
     /**
      * Find data node by logic table.
-     * 
+     *
      * @param logicTableName logic table name
      * @return data node
      */
@@ -347,9 +339,9 @@ public final class ShardingRule {
     
     /**
      * Find actual default data source name.
-     * 
+     *
      * <p>If use master-slave rule, return master data source name.</p>
-     * 
+     *
      * @return actual default data source name
      */
     public Optional<String> findActualDefaultDataSourceName() {

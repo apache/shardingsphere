@@ -29,8 +29,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class BackendNIOConfiguration {
     
-    private final boolean useNIO;
-    
     private final int maxConnections;
     
     private final int connectionTimeoutSeconds;

@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd 
-                        http://shardingsphere.io/schema/shardingsphere/masterslave  
+                        http://shardingsphere.io/schema/shardingsphere/masterslave
                         http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd 
                         ">
     <import resource="datasource/masterSlaveDataSource.xml" />
@@ -27,12 +24,4 @@
             <entry key="key1" value="value1" />
         </master-slave:config-map>
     </master-slave:data-source>
-    
-    <sharding:data-source id="defaultShardingDataSource">
-        <sharding:sharding-rule data-source-names="randomMasterSlaveDataSource,refMasterSlaveDataSource" default-data-source-name="randomMasterSlaveDataSource">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
 </beans>

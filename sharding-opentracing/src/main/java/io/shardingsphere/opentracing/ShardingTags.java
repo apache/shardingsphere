@@ -29,6 +29,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTags {
     
+    /**
+     * Component of Sharding-Sphere's open tracing tag.
+     */
     public static final String COMPONENT_NAME = "Sharding-Sphere";
     
     /**

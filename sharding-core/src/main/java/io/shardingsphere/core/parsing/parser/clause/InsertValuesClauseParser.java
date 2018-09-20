@@ -30,9 +30,11 @@ import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
@@ -107,6 +109,9 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (shardingRule.isShardingColumn(each)) {
+                    if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLPlaceholderExpression)) {
+                        throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each.getName());
+                    }
                     andCondition.getConditions().add(new Condition(each, sqlExpression));
                 }
                 if (insertStatement.getGenerateKeyColumnIndex() == count) {
