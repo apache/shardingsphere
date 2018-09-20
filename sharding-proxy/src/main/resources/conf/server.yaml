@@ -25,4 +25,9 @@
 #  acceptor.size: 16  # The default value is available processors count * 2.
 #  executor.size: 16  # Infinite by default.
 #  proxy.transaction.enabled: false
+#    # Be vaild when proxy.transaction.enabled is true.
+#    # LOCAL: Proxy will run with LOCAL transaction.
+#    # XA: Proxy will run with XA transaction.
+#    # BASE: Proxy will run with B.A.S.E transaction.
+#    proxy.transaction.type: BASE
 #  sql.show: false
