@@ -22,8 +22,8 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.event.base.SagaSQLExecutionEvent;
-import io.shardingsphere.transaction.event.base.SagaTransactionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.listener.ShardingTransactionListenerAdapter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
@@ -104,14 +104,14 @@ public final class SagaTransactionListener extends ShardingTransactionListenerAd
             case EXECUTE_SUCCESS:
                 //TODO generate revert sql by sql and params in event
                 RevertResult result = revertEngineMap.get(sqlExecutionEvent.getTransactionId()).revert(
-                        sqlExecutionEvent.getDataSource(),
-                        sqlExecutionEvent.getSqlUnit().getSql(),
-                        sqlExecutionEvent.getSqlUnit().getParameterSets());
+                        sqlExecutionEvent.getRouteUnit().getDataSourceName(),
+                        sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(),
+                        sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets());
                 sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).addChildRequest(
                         sqlExecutionEvent.getId(),
-                        sqlExecutionEvent.getDataSource(),
-                        sqlExecutionEvent.getSqlUnit().getSql(),
-                        copyList(sqlExecutionEvent.getSqlUnit().getParameterSets()),
+                        sqlExecutionEvent.getRouteUnit().getDataSourceName(),
+                        sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(),
+                        copyList(sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets()),
                         result.getRevertSQL(),
                         result.getRevertSQLParams());
                 break;

@@ -18,12 +18,13 @@
 package io.shardingsphere.transaction.manager.base.executor;
 
 import com.google.common.eventbus.EventBus;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.sql.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.StatementExecuteUnit;
-import io.shardingsphere.transaction.event.base.SagaSQLExecutionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 
@@ -41,10 +42,10 @@ public abstract class SagaSQLExeucteCallback<T> extends SQLExecuteCallback<T> {
     
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
-    public SagaSQLExeucteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        super(sqlType, isExceptionThrown, dataMap);
+    public SagaSQLExeucteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+        super(databaseType, sqlType, isExceptionThrown, dataMap);
         this.transactionId = ((BASETransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE)).getTransactionId();
-        shardingEventBus.post(new SagaSQLExecutionEvent(null, null, null, transactionId));
+        shardingEventBus.post(new SagaSQLExecutionEvent(null, transactionId));
     }
     
     /**
@@ -56,7 +57,7 @@ public abstract class SagaSQLExeucteCallback<T> extends SQLExecuteCallback<T> {
      */
     @Override
     protected T executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(executeUnit.getSqlExecutionUnit().getDataSource(), executeUnit.getSqlExecutionUnit().getSqlUnit(), null, transactionId);
+        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(executeUnit.getRouteUnit(), transactionId);
         event.setExecuteSuccess();
         shardingEventBus.post(event);
         return executeResult();
