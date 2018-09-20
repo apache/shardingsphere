@@ -71,14 +71,14 @@ public final class BackendConnection implements AutoCloseable {
             ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
             List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(dataSourceName, connectionSize);
             cachedConnections.addAll(result);
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
             finishEvent.setExecuteSuccess();
             ShardingEventBusInstance.getInstance().post(finishEvent);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(null);
+            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(0, null);
             finishEvent.setExecuteFailure(ex);
             ShardingEventBusInstance.getInstance().post(finishEvent);
             throw ex;
