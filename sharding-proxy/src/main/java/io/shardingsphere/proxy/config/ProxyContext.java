@@ -111,7 +111,7 @@ public final class ProxyContext {
         ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
         maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
-        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
+        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? getTransactionType(shardingProperties) : TransactionType.LOCAL;
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
@@ -202,5 +202,9 @@ public final class ProxyContext {
         for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
             entry.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
         }
+    }
+    
+    private TransactionType getTransactionType(final ShardingProperties shardingProperties) {
+        return TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE));
     }
 }
