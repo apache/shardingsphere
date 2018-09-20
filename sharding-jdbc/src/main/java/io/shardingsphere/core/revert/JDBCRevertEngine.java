@@ -46,6 +46,7 @@ public final class JDBCRevertEngine implements RevertEngine {
     @Override
     public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) throws SQLException {
         DataSource dataSource = shardingContext.getDataSourceMap().get(datasource);
+        // TODO use new SnapShotEngine to get revert result.
         DatabaseType databaseType = shardingContext.getDatabaseType();
         String logicTable = getLogicTable(databaseType, sql);
         TableMetaData tableMetaData = shardingContext.getMetaData().getTable().getTableMetaDataMap().get(logicTable);
