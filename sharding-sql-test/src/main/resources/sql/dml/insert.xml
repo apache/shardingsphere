@@ -8,7 +8,8 @@
     <sql-case id="insert_set_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" />
     <sql-case id="insert_with_partial_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, 'insert')" />
     <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL" />
-    <sql-case id="insert_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')" />
+    <sql-case id="insert_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (1000, 10000, 10, 'insert', '2017-08-08')" />
+    <sql-case id="insert_with_generate_key_column_without_parameters" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_set_with_generate_key_column" value="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" />
     <sql-case id="insert_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_without_columns_and_with_generate_key_column" value="INSERT INTO t_order_item values(?, ?, ?, 'insert', '2017-08-08')" />
