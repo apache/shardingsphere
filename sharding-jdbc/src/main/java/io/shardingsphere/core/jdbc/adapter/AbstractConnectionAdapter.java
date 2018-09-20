@@ -131,7 +131,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private void postGetConnectionEvent(final List<Connection> connections) throws SQLException {
-        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
+        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
         finishEvent.setExecuteSuccess();
         ShardingEventBusInstance.getInstance().post(finishEvent);
     }
