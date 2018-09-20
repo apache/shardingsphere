@@ -68,13 +68,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 10));
     }
     
-    private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
-    }
-    
     @Test
     public void parseWithSpecialSyntax() {
 //        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
