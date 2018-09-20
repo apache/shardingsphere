@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source service.
@@ -83,7 +84,7 @@ public final class DataSourceService {
     public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
         Map<String, Map<String, DataSourceParameter>> schemaDatasources = configService.loadProxyDataSources();
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
-        for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
+        for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
                 schemaDatasources.get(each.getKey()).remove(disabledDataSourceName);
             }
@@ -130,8 +131,7 @@ public final class DataSourceService {
     public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
         Map<String, YamlRuleConfiguration> schemaRuleMap = configService.loadProxyConfiguration();
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
-        
-        for (Map.Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
+        for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
                 if (null != schemaRuleMap.get(each.getKey()).getMasterSlaveRule()) {
                     schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);

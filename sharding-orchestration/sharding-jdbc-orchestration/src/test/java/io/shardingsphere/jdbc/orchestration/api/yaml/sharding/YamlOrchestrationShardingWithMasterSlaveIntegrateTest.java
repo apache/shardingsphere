@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -72,7 +73,7 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
                 }
             });
             Map<String, DataSource> result = new HashMap<>();
-            for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
             dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(result, yamlFile);

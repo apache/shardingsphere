@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
 
@@ -50,7 +51,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         }
         
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
+        for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
             orderTableRuleConfig.setLogicTable("t_order");
