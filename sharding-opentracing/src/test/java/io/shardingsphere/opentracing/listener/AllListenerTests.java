@@ -22,8 +22,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ParsingEventListenerTest.class,
-    ExecuteEventListenerTest.class
+        ParsingEventListenerTest.class,
+        ExecuteEventListenerTest.class
 })
 public final class AllListenerTests {
 }
