@@ -118,7 +118,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private synchronized List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         synchronized (dataSource) {
             for (int i = 0; i < connectionSize; i++) {

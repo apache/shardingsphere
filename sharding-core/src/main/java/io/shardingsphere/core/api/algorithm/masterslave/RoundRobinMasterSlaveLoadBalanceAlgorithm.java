@@ -35,6 +35,6 @@ public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSl
         AtomicInteger count = COUNT_MAP.containsKey(name) ? COUNT_MAP.get(name) : new AtomicInteger(0);
         COUNT_MAP.putIfAbsent(name, count);
         count.compareAndSet(slaveDataSourceNames.size(), 0);
-        return slaveDataSourceNames.get(count.getAndIncrement() % slaveDataSourceNames.size());
+        return slaveDataSourceNames.get(Math.abs(count.getAndIncrement()) % slaveDataSourceNames.size());
     }
 }
