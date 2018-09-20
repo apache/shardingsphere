@@ -66,9 +66,4 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
         getSpan().get().finish();
         getSpan().remove();
     }
-    
-    @Override
-    protected Span getFailureSpan() {
-        return getSpan().get();
-    }
 }

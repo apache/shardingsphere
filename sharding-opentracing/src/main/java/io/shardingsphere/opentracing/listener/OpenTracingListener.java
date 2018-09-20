@@ -17,7 +17,6 @@
 
 package io.shardingsphere.opentracing.listener;
 
-import io.opentracing.BaseSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
@@ -57,7 +56,7 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
                 tracingFinish(event);
                 break;
             case EXECUTE_FAILURE:
-                getFailureSpan().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
+                span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
                 tracingFinish(event);
                 break;
             default:
@@ -68,8 +67,6 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     protected abstract Span beforeExecute(T event);
     
     protected abstract void tracingFinish(T event);
-    
-    protected abstract BaseSpan<?> getFailureSpan();
     
     private Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);

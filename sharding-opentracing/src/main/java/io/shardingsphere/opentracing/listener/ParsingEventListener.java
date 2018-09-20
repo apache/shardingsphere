@@ -58,9 +58,4 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
         getSpan().get().finish();
         getSpan().remove();
     }
-    
-    @Override
-    protected Span getFailureSpan() {
-        return getSpan().get();
-    }
 }

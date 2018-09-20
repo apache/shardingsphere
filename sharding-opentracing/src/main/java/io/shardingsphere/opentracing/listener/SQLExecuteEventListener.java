@@ -78,9 +78,4 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
             RootInvokeEventListener.getActiveSpan().remove();
         }
     }
-    
-    @Override
-    protected Span getFailureSpan() {
-        return getSpan().get();
-    }
 }
