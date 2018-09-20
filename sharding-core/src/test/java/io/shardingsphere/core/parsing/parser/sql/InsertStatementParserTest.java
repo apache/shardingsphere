@@ -69,15 +69,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void assertParseWithoutColumnsWithGenerateKeyColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
-    @Test
     public void assertParseWithoutColumnsWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
         ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
