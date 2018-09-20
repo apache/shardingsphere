@@ -48,12 +48,16 @@ public abstract class BaseEventListenerTest {
     
     @AfterClass
     public static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
-        Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
-        tracerField.setAccessible(true);
-        tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
-        Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
-        subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
+        Field field = GlobalTracer.class.getDeclaredField("tracer");
+        field.setAccessible(true);
+        field.set(GlobalTracer.class, NoopTracerFactory.create());
+    }
+    
+    @AfterClass
+    public static void resetShardingEventBus() throws NoSuchFieldException, IllegalAccessException {
+        Field field = EventBus.class.getDeclaredField("subscribersByType");
+        field.setAccessible(true);
+        field.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
     
     @Before
