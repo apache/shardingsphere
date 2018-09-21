@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.hint.ShardingKey;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
@@ -34,7 +33,6 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import javafx.scene.shape.CircleBuilder;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -58,81 +56,38 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private final String logicTableName;
     
     private final ShardingConditions shardingConditions;
-    
+   
     @Override
     public RoutingResult route() {
         TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
-        Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
-        Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
-        Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
-        if (HintManagerHolder.isUseShardingHint()) {
-            List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
-            List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
-            Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
-            for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-                if (each instanceof InsertShardingCondition) {
-                    ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-                }
-            }
-            routedDataNodes.addAll(dataNodes);
+        Collection<DataNode> dataNodes = new LinkedList<>();
+        if (isRoutingUsingHint(tableRule)) {
+            List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint();
+            List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint();
+            dataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
         } else {
             if (shardingConditions.getShardingConditions().isEmpty()) {
-                routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
+                dataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
             } else {
+                ShardingStrategy dataBaseShardingStrategy = shardingRule.getDatabaseShardingStrategy(tableRule);
+                ShardingStrategy tableShardingStrategy = shardingRule.getTableShardingStrategy(tableRule);
                 for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
-                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
-                    Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
-                    routedDataNodes.addAll(dataNodes);
-                    if (each instanceof InsertShardingCondition) {
-                        ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-                    }
+                    List<ShardingValue> databaseShardingValues = isGettingShardingValuesFromHint(dataBaseShardingStrategy) ? getDatabaseShardingValuesFromHint() : getShardingValues(dataBaseShardingStrategy.getShardingColumns(), each);
+                    List<ShardingValue> tableShardingValues = isGettingShardingValuesFromHint(tableShardingStrategy) ? getTableShardingValuesFromHint() : getShardingValues(tableShardingStrategy.getShardingColumns(), each);
+                    dataNodes.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
                 }
             }
         }
-        return generateRoutingResult(routedDataNodes);
+        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+            if (each instanceof InsertShardingCondition) {
+                ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+            }
+        }
+        return generateRoutingResult(dataNodes);
     }
     
-    @Override
-    public RoutingResult route() {
-        TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
-        Collection<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
-        if (isGettingShardingValuesFromHint(tableRule.getDatabaseShardingStrategy())) {
-        
-        }
-        
-        
-        
-        
-        Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
-        Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
-        Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
-        if (HintManagerHolder.isUseShardingHint()) {
-            List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
-            List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
-            Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
-            for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-                if (each instanceof InsertShardingCondition) {
-                    ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-                }
-            }
-            routedDataNodes.addAll(dataNodes);
-        } else {
-            if (shardingConditions.getShardingConditions().isEmpty()) {
-                routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
-            } else {
-                for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
-                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
-                    Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
-                    routedDataNodes.addAll(dataNodes);
-                    if (each instanceof InsertShardingCondition) {
-                        ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-                    }
-                }
-            }
-        }
-        return generateRoutingResult(routedDataNodes);
+    private boolean isRoutingUsingHint(final TableRule tableRule) {
+        return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
     }
     
     private boolean isGettingShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
@@ -151,27 +106,11 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private List<ShardingValue> getDatabaseShardingValuesFromHint() {
         Optional<ShardingValue> shardingValueOptional = HintManagerHolder.getDatabaseShardingValue(logicTableName);
         return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<ShardingValue>emptyList();
-//        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-//        for (String each : shardingColumns) {
-//            Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTableName, each));
-//            if (shardingValue.isPresent()) {
-//                result.add(shardingValue.get());
-//            }
-//        }
-//        return result;
     }
     
-    private List<ShardingValue> getTableShardingValuesFromHint(final Collection<String> shardingColumns) {
+    private List<ShardingValue> getTableShardingValuesFromHint() {
         Optional<ShardingValue> shardingValueOptional = HintManagerHolder.getTableShardingValue(logicTableName);
         return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<ShardingValue>emptyList();
-//        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-//        for (String each : shardingColumns) {
-//            Optional<ShardingValue> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTableName, each));
-//            if (shardingValue.isPresent()) {
-//                result.add(shardingValue.get());
-//            }
-//        }
-//        return result;
     }
     
     private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {
