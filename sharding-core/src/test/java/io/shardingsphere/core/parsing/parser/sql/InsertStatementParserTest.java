@@ -52,17 +52,10 @@ import static org.mockito.Mockito.when;
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void assertParseWithParameter() {
+    public void assertParseWithoutColumnsWithoutParameter() {
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule, null);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
-    @Test
-    public void assertParseWithGenerateKeyColumnsWithoutParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule, null);
+        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10,20)", shardingRule, shardingTableMetaData);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
         assertInsertStatementWithoutParameter(insertStatement);
     }
@@ -73,79 +66,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), CoreMatchers.is(ShardingOperator.EQUAL));
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 10));
-    }
-    
-    @Test
-    public void assertParseWithGenerateKeyColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule, null);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
-    @Test
-    public void assertParseWithoutColumnsWithGenerateKeyColumnsWithoutParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithoutParameter(insertStatement);
-    }
-    
-    @Test
-    public void assertParseWithoutColumnsWithGenerateKeyColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
-    @Test
-    public void assertParseWithoutColumnsWithoutParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10,20)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithoutParameter(insertStatement);
-    }
-    
-    @Test
-    public void assertParseWithoutColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?, ?)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
-    private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
-    }
-    
-    private ShardingRule createShardingRuleWithGenerateKeyColumns() {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        try {
-            when(dataSource.getConnection()).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-        final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("TABLE_XXX");
-        tableRuleConfig.setActualDataNodes("ds.table_${0..2}");
-        tableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("field1", new TestComplexKeysShardingAlgorithm()));
-        tableRuleConfig.setKeyGeneratorColumnName("field2");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        shardingRuleConfig.setDefaultKeyGenerator(new IncrementKeyGenerator());
-        return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
     
     @Test

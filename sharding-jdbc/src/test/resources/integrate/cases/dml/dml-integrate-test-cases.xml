@@ -43,6 +43,10 @@
     <dml-test-case sql-case-id="insert_with_generate_key_column">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </dml-test-case>
+
+    <dml-test-case sql-case-id="insert_with_generate_key_column_without_parameters">
+        <assertion expected-data-file="insert_with_generate_key_column.xml" />
+    </dml-test-case>
     
     <dml-test-case sql-case-id="insert_without_columns_and_with_generate_key_column">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
