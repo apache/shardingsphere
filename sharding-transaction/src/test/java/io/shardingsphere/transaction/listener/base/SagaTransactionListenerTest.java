@@ -98,7 +98,7 @@ public class SagaTransactionListenerTest {
     @Test
     public void assertListenBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.BEGIN, null);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.BEGIN);
         eventBus.post(event);
         verify(sagaTransactionManager).begin(event);
         assertThat(builderMap.size(), is(1));
@@ -107,7 +107,7 @@ public class SagaTransactionListenerTest {
     
     @Test
     public void assertListenCommitWithoutBegin() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, null);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
         eventBus.post(event);
         verify(sagaTransactionManager, never()).commit(event);
     }
@@ -115,10 +115,10 @@ public class SagaTransactionListenerTest {
     @Test
     public void assertListenCommitWithBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        eventBus.post(new SagaTransactionEvent(TransactionOperationType.BEGIN, null));
+        eventBus.post(new SagaTransactionEvent(TransactionOperationType.BEGIN));
         assertThat(builderMap.size(), is(1));
         assertThat(revertEngines.size(), is(1));
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, null);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
         eventBus.post(event);
         verify(sagaTransactionManager).commit(event);
         assertThat(builderMap.size(), is(0));
@@ -127,7 +127,7 @@ public class SagaTransactionListenerTest {
     
     @Test
     public void assertListenRollback() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.ROLLBACK);
         eventBus.post(event);
         verify(sagaTransactionManager).rollback(event);
         assertThat(builderMap.size(), is(0));

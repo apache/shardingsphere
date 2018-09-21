@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.base.servicecomb;
 
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.apache.servicecomb.saga.transports.TransportFactory;
 
@@ -31,9 +32,9 @@ public interface ShardingTransportFactory extends TransportFactory<SQLTransport>
     
     /**
      * cache Transport.
-     * @param connection database connection
+     * @param event saga event
      */
-    void cacheTransport(Connection connection);
+    void cacheTransport(SagaTransactionEvent event);
     
     /**
      * remove cached SQLTransport.

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.base.fixture;
 
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.manager.base.servicecomb.EmptySQLTransport;
 import io.shardingsphere.transaction.manager.base.servicecomb.ShardingTransportFactory;
 import org.apache.servicecomb.saga.transports.SQLTransport;
@@ -24,8 +25,10 @@ import org.apache.servicecomb.saga.transports.SQLTransport;
 import java.sql.Connection;
 
 public class FixtureShardingTransportFactory implements ShardingTransportFactory {
+    
+    
     @Override
-    public void cacheTransport(Connection connection) {
+    public void cacheTransport(SagaTransactionEvent event) {
     
     }
     

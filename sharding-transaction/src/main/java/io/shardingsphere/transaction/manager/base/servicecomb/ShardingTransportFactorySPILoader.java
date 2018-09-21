@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.base.servicecomb;
 
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.servicecomb.saga.transports.SQLTransport;
@@ -48,8 +49,9 @@ public final class ShardingTransportFactorySPILoader {
             log.warn("There are no SQLTransport configured. BASE Saga Transaction cannot be used.");
             return new ShardingTransportFactory() {
     
+    
                 @Override
-                public void cacheTransport(final Connection connection) {
+                public void cacheTransport(final SagaTransactionEvent event) {
         
                 }
     

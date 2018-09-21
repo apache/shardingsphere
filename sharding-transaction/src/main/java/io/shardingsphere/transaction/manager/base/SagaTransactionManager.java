@@ -44,7 +44,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public void begin(final SagaTransactionEvent transactionEvent) {
         TRANSACTION_IDS.set(UUID.randomUUID().toString());
-        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().cacheTransport(transactionEvent.getConnection());
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().cacheTransport(transactionEvent);
     }
     
     @Override
