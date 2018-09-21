@@ -39,6 +39,7 @@ import java.util.Map;
  *
  * @author gaohongtao
  * @author zhangliang
+ * @author panjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
