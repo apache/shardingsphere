@@ -113,7 +113,6 @@ public final class HintManager implements AutoCloseable {
         addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.BETWEEN, minValue, maxValue);
     }
     
-    
     private void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
