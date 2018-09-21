@@ -54,21 +54,21 @@ public final class HintManagerHolder {
     /**
      * Get database sharding value.
      * 
-     * @param shardingKey sharding key
+     * @param logicTable logic table
      * @return database sharding value
      */
-    public static Optional<ShardingValue> getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey));
+    public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
+        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(logicTable));
     }
     
     /**
      * Get table sharding value.
      *
-     * @param shardingKey sharding key
+     * @param logicTable logic table name
      * @return table sharding value
      */
-    public static Optional<ShardingValue> getTableShardingValue(final ShardingKey shardingKey) {
-        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey));
+    public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
+        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(logicTable));
     }
     
     /**
