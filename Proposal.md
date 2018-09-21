@@ -237,11 +237,15 @@ Travis
 
 ### Champion
 
-- Benjamin Hindman
+- Benjamin Hindman (benh at apache dot org)
 
 ### Mentors
 
-- Willem Ning Jiang
+- Willem Ning Jiang (ningjiang at apache dot org)
+
+### Informal Mentors
+
+- Von Gosling (vongosling at apache dot org)
 
 ### Sponsoring Entity
 
