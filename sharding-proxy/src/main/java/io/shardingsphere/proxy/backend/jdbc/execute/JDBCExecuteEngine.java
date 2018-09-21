@@ -108,10 +108,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
-                sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new JDBCExecuteEngine.ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
+                sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                new JDBCExecuteEngine.FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
-                new JDBCExecuteEngine.ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
+                new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
+                new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -175,8 +175,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public Connection getConnection(final String dataSourceName, final int index) throws SQLException {
-            return getBackendConnection().getConnection(dataSourceName);
+        public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
+            return getBackendConnection().getConnections(dataSourceName, connectionSize);
         }
         
         @Override
@@ -189,13 +189,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private final class FirstConnectionStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+    private final class FirstProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
         private boolean hasMetaData;
         
-        private FirstConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+        private FirstProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
             super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
@@ -213,11 +213,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private final class ConnectionStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+    private final class ProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
-        private ConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+        private ProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
             super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }

@@ -23,6 +23,7 @@ import io.shardingsphere.core.routing.RouteUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * SQL execute prepare callback.
@@ -36,11 +37,11 @@ public interface SQLExecutePrepareCallback {
      * Get connection.
      * 
      * @param dataSourceName data source name
-     * @param index index of connection
+     * @param connectionSize connection size
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String dataSourceName, int index) throws SQLException;
+    List<Connection> getConnections(String dataSourceName, int connectionSize) throws SQLException;
     
     /**
      * Create SQL execute unit.

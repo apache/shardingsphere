@@ -15,14 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.antler.sql.ddl;
+package io.shardingsphere.opentracing;
 
-public enum DDLType {
-    CREATETABLE, 
-    ALTERTABLE, 
-    DROPTABLE, 
-    TRUNCATETABLE, 
-    CREATEINDEX, 
-    ALTERINDEX, 
-    DROPINDEX
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+/**
+ * Sharding error log tags.
+ *
+ * @author chenqingyang
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingErrorLogTags {
+    
+    public static final String EVENT = "event";
+    
+    public static final String EVENT_ERROR_TYPE = "error";
+    
+    public static final String ERROR_KIND = "error.kind";
+    
+    public static final String MESSAGE = "message";
 }

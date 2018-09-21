@@ -30,7 +30,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -91,7 +93,27 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getDataSourceMap().get(dataSourceName).getConnection();
+        return getConnections(dataSourceName, 1).get(0);
+    }
+    
+    /**
+     * Get connections.
+     *
+     * @param dataSourceName data source name
+     * @param connectionSize size of connections to be get
+     * @return connections
+     * @throws SQLException SQL exception
+     */
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
+        List<Connection> result = new ArrayList<>(connectionSize);
+        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        synchronized (dataSource) {
+            for (int i = 0; i < connectionSize; i++) {
+                result.add(dataSource.getConnection());
+            }
+        }
+        return result;
     }
     
     private Map<String, DataSource> getDataSourceMap() {

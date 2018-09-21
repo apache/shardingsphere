@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
@@ -36,6 +37,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,8 +75,9 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 return 0;
             }
         };
-        sqlExecuteTemplate.execute(Collections.singleton(new StatementExecuteUnit(new RouteUnit("ds_0", 
-                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)), executeCallback);
+        ShardingExecuteGroup<StatementExecuteUnit> shardingExecuteGroup = new ShardingExecuteGroup<>(Collections.singletonList(new StatementExecuteUnit(new RouteUnit("ds_0",
+                new SQLUnit("insert into ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)));
+        sqlExecuteTemplate.executeGroup((Collection) Collections.singletonList(shardingExecuteGroup), executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(1));
     }
     
@@ -102,7 +105,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 return 0;
             }
         };
-        sqlExecuteTemplate.execute(statementExecuteUnits, executeCallback);
+        ShardingExecuteGroup<StatementExecuteUnit> shardingExecuteGroup = new ShardingExecuteGroup<>(statementExecuteUnits);
+        sqlExecuteTemplate.executeGroup((Collection) Collections.singletonList(shardingExecuteGroup), executeCallback);
         assertThat(getTracer().finishedSpans().size(), is(2));
     }
     
@@ -121,7 +125,8 @@ public final class ExecuteEventListenerTest extends BaseEventListenerTest {
                 throw new SQLException();
             }
         };
-        sqlExecuteTemplate.execute(Collections.singleton(new StatementExecuteUnit(new RouteUnit("ds_0", 
-                new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)), executeCallback);
+        ShardingExecuteGroup<StatementExecuteUnit> shardingExecuteGroup = new ShardingExecuteGroup<>(Collections.singletonList(new StatementExecuteUnit(new RouteUnit("ds_0",
+                new SQLUnit("select ...", Collections.singletonList(Collections.<Object>singletonList(1)))), statement, ConnectionMode.MEMORY_STRICTLY)));
+        sqlExecuteTemplate.executeGroup((Collection) Collections.singletonList(shardingExecuteGroup), executeCallback);
     }
 }
