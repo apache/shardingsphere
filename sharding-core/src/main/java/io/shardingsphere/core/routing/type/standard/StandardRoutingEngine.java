@@ -34,6 +34,7 @@ import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
+import javafx.scene.shape.CircleBuilder;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -95,8 +96,10 @@ public final class StandardRoutingEngine implements RoutingEngine {
     @Override
     public RoutingResult route() {
         TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
+        Collection<ShardingValue> databaseShardingValues = getDatabaseShardingValues(tableRule);
+        if (isGettingShardingValuesFromHint(tableRule.getDatabaseShardingStrategy())) {
         
-        
+        }
         
         
         
@@ -145,26 +148,30 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<ShardingValue> getDatabaseShardingValuesFromHint(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (String each : shardingColumns) {
-            Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTableName, each));
-            if (shardingValue.isPresent()) {
-                result.add(shardingValue.get());
-            }
-        }
-        return result;
+    private List<ShardingValue> getDatabaseShardingValuesFromHint() {
+        Optional<ShardingValue> shardingValueOptional = HintManagerHolder.getDatabaseShardingValue(logicTableName);
+        return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<ShardingValue>emptyList();
+//        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
+//        for (String each : shardingColumns) {
+//            Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTableName, each));
+//            if (shardingValue.isPresent()) {
+//                result.add(shardingValue.get());
+//            }
+//        }
+//        return result;
     }
     
     private List<ShardingValue> getTableShardingValuesFromHint(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (String each : shardingColumns) {
-            Optional<ShardingValue> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTableName, each));
-            if (shardingValue.isPresent()) {
-                result.add(shardingValue.get());
-            }
-        }
-        return result;
+        Optional<ShardingValue> shardingValueOptional = HintManagerHolder.getTableShardingValue(logicTableName);
+        return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<ShardingValue>emptyList();
+//        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
+//        for (String each : shardingColumns) {
+//            Optional<ShardingValue> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTableName, each));
+//            if (shardingValue.isPresent()) {
+//                result.add(shardingValue.get());
+//            }
+//        }
+//        return result;
     }
     
     private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {
