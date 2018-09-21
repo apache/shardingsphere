@@ -51,21 +51,13 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Adjust use sharding hint in current thread.
-     * @return use sharding hint in current thread or not
-     */
-    public static boolean isUseShardingHint() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isShardingHint();
-    }
-    
-    /**
      * Get database sharding value.
      * 
      * @param shardingKey sharding key
      * @return database sharding value
      */
     public static Optional<ShardingValue> getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue>absent();
+        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey));
     }
     
     /**
@@ -75,7 +67,7 @@ public final class HintManagerHolder {
      * @return table sharding value
      */
     public static Optional<ShardingValue> getTableShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue>absent();
+        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey));
     }
     
     /**
