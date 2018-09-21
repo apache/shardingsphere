@@ -25,6 +25,8 @@ import io.shardingsphere.core.hint.ShardingKey;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import io.shardingsphere.core.routing.strategy.ShardingStrategy;
+import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
@@ -88,6 +90,50 @@ public final class StandardRoutingEngine implements RoutingEngine {
             }
         }
         return generateRoutingResult(routedDataNodes);
+    }
+    
+    @Override
+    public RoutingResult route() {
+        TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
+        
+        
+        
+        
+        
+        
+        Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
+        Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
+        Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
+        if (HintManagerHolder.isUseShardingHint()) {
+            List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
+            List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
+            Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
+            for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+                if (each instanceof InsertShardingCondition) {
+                    ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+                }
+            }
+            routedDataNodes.addAll(dataNodes);
+        } else {
+            if (shardingConditions.getShardingConditions().isEmpty()) {
+                routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
+            } else {
+                for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
+                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
+                    Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
+                    routedDataNodes.addAll(dataNodes);
+                    if (each instanceof InsertShardingCondition) {
+                        ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+                    }
+                }
+            }
+        }
+        return generateRoutingResult(routedDataNodes);
+    }
+    
+    private boolean isGetShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
+        return shardingStrategy instanceof HintShardingStrategy;
     }
     
     private Collection<DataNode> route(final TableRule tableRule, final List<ShardingValue> databaseShardingValues, final List<ShardingValue> tableShardingValues) {
