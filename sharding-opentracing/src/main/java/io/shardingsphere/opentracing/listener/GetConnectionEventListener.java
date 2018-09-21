@@ -25,7 +25,6 @@ import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.opentracing.ShardingTags;
-import io.shardingsphere.opentracing.ShardingTracer;
 
 /**
  * Get connection event listener.
@@ -35,6 +34,10 @@ import io.shardingsphere.opentracing.ShardingTracer;
 public final class GetConnectionEventListener extends OpenTracingListener<GetConnectionEvent> {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/getConnection/";
+    
+    public GetConnectionEventListener() {
+        super(OPERATION_NAME);
+    }
     
     /**
      * Listen get connection event.
@@ -48,15 +51,12 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     }
     
     @Override
-    protected Span beforeExecute(final GetConnectionEvent event) {
-        return ShardingTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource()).startManual();
+    protected void initSpan(final GetConnectionEvent event, final Span span) {
+        span.setTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource());
     }
     
     @Override
-    protected void beforeTracingFinish(final GetConnectionEvent event, final Span span) {
+    protected void updateSpan(final GetConnectionEvent event, final Span span) {
         GetConnectionFinishEvent finishEvent = (GetConnectionFinishEvent) event;
         if (null != finishEvent.getDataSourceMetaData()) {
             span.setTag(Tags.PEER_HOSTNAME.getKey(), finishEvent.getDataSourceMetaData().getHostName())

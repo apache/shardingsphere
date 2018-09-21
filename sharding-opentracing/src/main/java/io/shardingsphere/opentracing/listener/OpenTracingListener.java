@@ -22,6 +22,9 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.opentracing.ShardingErrorLogTags;
+import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.opentracing.ShardingTracer;
+import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +36,12 @@ import java.util.Map;
  * 
  * @param <T> type of sharding event
  */
+@RequiredArgsConstructor
 public abstract class OpenTracingListener<T extends ShardingEvent> {
     
-    private final ThreadLocal<Span> span = new ThreadLocal<>();
+    private final ThreadLocal<Span> spanHolder = new ThreadLocal<>();
+    
+    private final String operationName;
     
     /**
      * Register listener.
@@ -48,13 +54,13 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     protected final void tracing(final T event) {
         switch (event.getEventType()) {
             case BEFORE_EXECUTE:
-                span.set(beforeExecute(event));
+                initSpan(event, createSpan());
                 break;
             case EXECUTE_SUCCESS:
                 tracingFinish(event);
                 break;
             case EXECUTE_FAILURE:
-                span.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
+                setErrorInfo(event);
                 tracingFinish(event);
                 break;
             default:
@@ -62,19 +68,30 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
         }
     }
     
-    protected abstract Span beforeExecute(T event);
+    private Span createSpan() {
+        Span result = ShardingTracer.get().buildSpan(operationName)
+                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).startManual();
+        spanHolder.set(result);
+        return result;
+    }
+    
+    protected abstract void initSpan(T event, Span span);
     
     private void tracingFinish(final T event) {
-        beforeTracingFinish(event, span.get());
-        span.get().finish();
-        span.remove();
+        updateSpan(event, spanHolder.get());
+        spanHolder.get().finish();
+        spanHolder.remove();
         afterTracingFinish(event);
     }
     
-    protected void beforeTracingFinish(final T event, final Span span) {
+    protected void updateSpan(final T event, final Span span) {
     }
     
     protected void afterTracingFinish(final T event) {
+    }
+    
+    private void setErrorInfo(final T event) {
+        spanHolder.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
     }
     
     private Map<String, ?> getReason(final Throwable cause) {

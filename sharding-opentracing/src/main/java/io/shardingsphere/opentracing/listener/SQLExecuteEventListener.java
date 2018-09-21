@@ -26,7 +26,6 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTags;
-import io.shardingsphere.opentracing.ShardingTracer;
 
 /**
  * SQL execute event listener.
@@ -41,6 +40,10 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     
     private final ThreadLocal<Boolean> isTrunkThread = new ThreadLocal<>();
     
+    public SQLExecuteEventListener() {
+        super(OPERATION_NAME);
+    }
+    
     /**
      * Listen SQL execution event.
      *
@@ -53,20 +56,17 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     }
     
     @Override
-    protected Span beforeExecute(final SQLExecutionEvent event) {
+    protected void initSpan(final SQLExecutionEvent event, final Span span) {
         isTrunkThread.set(RootInvokeEventListener.isTrunkThread());
         if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !isTrunkThread.get()) {
             RootInvokeEventListener.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
-        return ShardingTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
-                .withTag(Tags.PEER_PORT.getKey(), event.getDataSourceMetaData().getPort())
-                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
-                .withTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName())
-                .withTag(Tags.DB_TYPE.getKey(), "sql")
-                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
-                .withTag(Tags.DB_STATEMENT.getKey(), event.getRouteUnit().getSqlUnit().getSql()).startManual();
+        span.setTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
+                .setTag(Tags.PEER_PORT.getKey(), event.getDataSourceMetaData().getPort())
+                .setTag(Tags.DB_TYPE.getKey(), "sql")
+                .setTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName())
+                .setTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
+                .setTag(Tags.DB_STATEMENT.getKey(), event.getRouteUnit().getSqlUnit().getSql());
     }
     
     @Override

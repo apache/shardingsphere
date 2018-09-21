@@ -24,7 +24,6 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.opentracing.ShardingTags;
-import io.shardingsphere.opentracing.ShardingTracer;
 
 /**
  * Connection close event listener.
@@ -34,6 +33,10 @@ import io.shardingsphere.opentracing.ShardingTracer;
 public final class CloseConnectionEventListener extends OpenTracingListener<CloseConnectionEvent> {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/closeConnection/";
+    
+    public CloseConnectionEventListener() {
+        super(OPERATION_NAME);
+    }
     
     /**
      * Listen close connection event.
@@ -47,13 +50,10 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     }
     
     @Override
-    protected Span beforeExecute(final CloseConnectionEvent event) {
+    protected void initSpan(final CloseConnectionEvent event, final Span span) {
         CloseConnectionStartEvent startEvent = (CloseConnectionStartEvent) event;
-        return ShardingTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource())
-                .withTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
-                .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort()).startManual();
+        span.setTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource())
+                .setTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
+                .setTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort());
     }
 }
