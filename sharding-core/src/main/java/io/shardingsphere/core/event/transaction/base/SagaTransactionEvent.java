@@ -30,7 +30,6 @@ import java.sql.Connection;
  *
  * @author yangyi
  */
-@RequiredArgsConstructor
 @Getter
 public class SagaTransactionEvent implements ShardingTransactionEvent {
     
@@ -38,7 +37,19 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     
     private final Connection connection;
     
-    private String proxySchema;
+    private final String proxySchema;
+    
+    public SagaTransactionEvent(final TransactionOperationType operationType) {
+        this.operationType = operationType;
+        this.connection = null;
+        this.proxySchema = null;
+    }
+    
+    public SagaTransactionEvent(final TransactionOperationType operationType, final Connection connection) {
+        this.operationType = operationType;
+        this.connection = connection;
+        this.proxySchema = null;
+    }
     
     public SagaTransactionEvent(final TransactionOperationType operationType, final String proxySchema) {
         this.operationType = operationType;

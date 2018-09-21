@@ -17,23 +17,22 @@
 
 package io.shardingsphere.core.event.transaction.base;
 
-import io.shardingsphere.core.event.executor.SQLExecutionEvent;
+import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Saga SQL execution.
  *
  * @author yangyi
  */
-public final class SagaSQLExecutionEvent extends SQLExecutionEvent {
+@Getter
+@RequiredArgsConstructor
+public final class SagaSQLExecutionEvent extends ShardingEvent {
     
-    @Getter
+    private final RouteUnit routeUnit;
+    
     private final String transactionId;
     
-    
-    public SagaSQLExecutionEvent(final RouteUnit routeUnit, final String transactionId) {
-        super(routeUnit, null, null);
-        this.transactionId = transactionId;
-    }
 }
