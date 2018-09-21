@@ -18,51 +18,66 @@
 package io.shardingsphere.transaction.manager.base;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import org.apache.servicecomb.saga.core.SuccessfulSagaResponse;
+import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.transaction.Status;
 
+import java.lang.reflect.Field;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class SagaTransactionManagerTest {
+    
+    private final SagaTransactionManager transactionManager = new SagaTransactionManager();
+    
+    @Mock
+    private SagaExecutionComponent coordinator;
+    
+    private final String sagaJson = "{}";
+    
+    @Before
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        when(coordinator.run(sagaJson)).thenReturn(new SuccessfulSagaResponse("{}"));
+        Field field = SagaTransactionManager.class.getDeclaredField("coordinator");
+        field.setAccessible(true);
+        field.set(transactionManager, coordinator);
+    }
     
     @Test
     public void assertBegin() {
-        new SagaTransactionManager().begin(new ShardingTransactionEvent() {
-    
-            @Override
-            public TransactionOperationType getOperationType() {
-                return TransactionOperationType.BEGIN;
-            }
-        });
+        transactionManager.begin(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        assertThat(36 == transactionManager.getTransactionId().length(), is(true));
     }
     
     @Test
     public void assertCommit() {
-        new SagaTransactionManager().commit(new ShardingTransactionEvent() {
-            
-            @Override
-            public TransactionOperationType getOperationType() {
-                return TransactionOperationType.COMMIT;
-            }
-        });
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
+        event.setSagaJson(sagaJson);
+        transactionManager.commit(event);
+        assertThat(null == transactionManager.getTransactionId(), is(true));
     }
     
     @Test
     public void assertRollback() {
-        new SagaTransactionManager().rollback(new ShardingTransactionEvent() {
-            
-            @Override
-            public TransactionOperationType getOperationType() {
-                return TransactionOperationType.ROLLBACK;
-            }
-        });
+        transactionManager.rollback(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+        assertThat( null == transactionManager.getTransactionId(), is(true));
     }
     
     @Test
     public void assertGetStatus() {
-        assertThat(new SagaTransactionManager().getStatus(), is(Status.STATUS_NO_TRANSACTION));
+        transactionManager.begin(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        assertThat(transactionManager.getStatus(), is(Status.STATUS_ACTIVE));
+        transactionManager.rollback(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+        assertThat(transactionManager.getStatus(), is(Status.STATUS_NO_TRANSACTION));
     }
 }

@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -33,23 +33,19 @@ import java.util.Arrays;
 @Getter
 public final class AuthorityHandler {
     
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
     
-    private final AuthPluginData authPluginData;
-    
-    public AuthorityHandler() {
-        authPluginData = new AuthPluginData();
-    }
+    private final AuthPluginData authPluginData = new AuthPluginData();
     
     /**
-     * Login into sharding proxy.
+     * Login.
      *
-     * @param username connection username.
-     * @param authResponse connection auth response.
-     * @return login success or failure.
+     * @param username connection username
+     * @param authResponse connection auth response
+     * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        ProxyAuthority proxyAuthority = RULE_REGISTRY.getProxyAuthority();
+        ProxyAuthority proxyAuthority = PROXY_CONTEXT.getProxyAuthority();
         if (Strings.isNullOrEmpty(proxyAuthority.getPassword())) {
             return proxyAuthority.getUsername().equals(username);
         }

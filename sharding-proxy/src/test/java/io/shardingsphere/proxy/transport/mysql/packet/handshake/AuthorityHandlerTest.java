@@ -19,7 +19,7 @@ package io.shardingsphere.proxy.transport.mysql.packet.handshake;
 
 import com.google.common.primitives.Bytes;
 import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,8 +31,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class AuthorityHandlerTest {
     
-    private final RuleRegistry ruleRegistry = RuleRegistry.getInstance();
-    
     private final AuthorityHandler authorityHandler = new AuthorityHandler();
     
     private final byte[] part1 = {84, 85, 115, 77, 68, 116, 85, 78};
@@ -40,36 +38,36 @@ public final class AuthorityHandlerTest {
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        reviseRuleRegistry();
-        reviseAuthorityHandler();
+    public void setUp() throws ReflectiveOperationException {
+        initProxyAuthorityForProxyContext();
+        initAuthPluginDataForAuthorityHandler();
     }
     
-    private void reviseRuleRegistry() throws NoSuchFieldException, IllegalAccessException {
+    private void initProxyAuthorityForProxyContext() throws ReflectiveOperationException {
         ProxyAuthority proxyAuthority = new ProxyAuthority();
-        proxyAuthority.setUsername("root");
-        proxyAuthority.setPassword("root");
-        Field field = ruleRegistry.getClass().getDeclaredField("proxyAuthority");
+        Field field = ProxyContext.class.getDeclaredField("proxyAuthority");
         field.setAccessible(true);
-        field.set(ruleRegistry, proxyAuthority);
+        field.set(ProxyContext.getInstance(), proxyAuthority);
     }
     
-    private void reviseAuthorityHandler() throws NoSuchFieldException, IllegalAccessException {
+    private void initAuthPluginDataForAuthorityHandler() throws ReflectiveOperationException {
         AuthPluginData authPluginData = new AuthPluginData(part1, part2);
-        Field field = authorityHandler.getClass().getDeclaredField("authPluginData");
+        Field field = AuthorityHandler.class.getDeclaredField("authPluginData");
         field.setAccessible(true);
         field.set(authorityHandler, authPluginData);
     }
     
     @Test
-    public void assertLogin() {
+    public void assertLoginWithPassword() {
+        ProxyContext.getInstance().getProxyAuthority().setUsername("root");
+        ProxyContext.getInstance().getProxyAuthority().setPassword("root");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authorityHandler.login("root", authResponse));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        ruleRegistry.getProxyAuthority().setPassword("");
+        ProxyContext.getInstance().getProxyAuthority().setUsername("root");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authorityHandler.login("root", authResponse));
     }

@@ -19,10 +19,10 @@ package io.shardingsphere.proxy.transport.mysql.packet.command.query.text.fieldl
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacket;
@@ -39,10 +39,9 @@ import java.sql.SQLException;
 /**
  * COM_FIELD_LIST command packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
- * 
  * @author zhangliang
  * @author wangkai
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Slf4j
 public final class ComFieldListPacket implements CommandPacket {
@@ -58,11 +57,15 @@ public final class ComFieldListPacket implements CommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    private final FrontendHandler frontendHandler;
+    
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, ShardingConstant.LOGIC_SCHEMA_NAME), backendConnection, DatabaseType.MySQL);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, frontendHandler.getCurrentSchema()), 
+                backendConnection, DatabaseType.MySQL, frontendHandler);
+        this.frontendHandler = frontendHandler;
     }
     
     @Override
@@ -86,7 +89,7 @@ public final class ComFieldListPacket implements CommandPacket {
         while (backendHandler.next()) {
             String columnName = backendHandler.getResultValue().getData().get(0).toString();
             result.getPackets().add(
-                    new ColumnDefinition41Packet(++currentSequenceId, ShardingConstant.LOGIC_SCHEMA_NAME, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+                    new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getCurrentSchema(), table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.getPackets().add(new EofPacket(++currentSequenceId));
         return result;

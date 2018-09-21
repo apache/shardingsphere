@@ -21,9 +21,10 @@ import io.shardingsphere.core.jdbc.adapter.invocation.JdbcMethodInvocationTest;
 import io.shardingsphere.core.jdbc.adapter.invocation.SetParameterMethodInvocationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         DataSourceAdapterTest.class,
         ConnectionAdapterTest.class,
         StatementAdapterTest.class,

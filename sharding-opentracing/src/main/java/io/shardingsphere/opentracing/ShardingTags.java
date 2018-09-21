@@ -29,10 +29,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTags {
     
+    /**
+     * Component of Sharding-Sphere's open tracing tag.
+     */
     public static final String COMPONENT_NAME = "Sharding-Sphere";
     
     /**
      * Records the bind variables of SQL.
      */
     public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
+    
+    /**
+     * Records the connection count.
+     */
+    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
 }

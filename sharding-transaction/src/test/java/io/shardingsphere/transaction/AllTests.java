@@ -19,15 +19,16 @@ package io.shardingsphere.transaction;
 
 import io.shardingsphere.transaction.listener.AllListenerTests;
 import io.shardingsphere.transaction.manager.AllManagerTests;
+import io.shardingsphere.transaction.revert.AllRevertTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        TransactionTypeHolderTest.class, 
         AllManagerTests.class, 
-        AllListenerTests.class
+        AllListenerTests.class,
+        AllRevertTest.class
 })
 public final class AllTests {
 }

@@ -20,7 +20,8 @@ package io.shardingsphere.core.api.config;
 import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collection;
 
@@ -28,17 +29,25 @@ import java.util.Collection;
  * Master-slave rule configuration.
  * 
  * @author zhangliang
+ * @author panjuan
  */
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class MasterSlaveRuleConfiguration {
     
-    private final String name;
+    private String name;
     
-    private final String masterDataSourceName;
+    private String masterDataSourceName;
     
-    private final Collection<String> slaveDataSourceNames;
+    private Collection<String> slaveDataSourceNames;
     
     private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    
+    public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
+        this.name = name;
+        this.masterDataSourceName = masterDataSourceName;
+        this.slaveDataSourceNames = slaveDataSourceNames;
+    }
 }

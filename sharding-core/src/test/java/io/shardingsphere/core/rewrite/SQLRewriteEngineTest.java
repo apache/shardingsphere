@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -101,7 +102,7 @@ public final class SQLRewriteEngineTest {
     private Map<String, String> getDataSourceURLs(final YamlShardingConfiguration yamlShardingConfig) throws SQLException {
         Map<String, DataSource> dataSources = yamlShardingConfig.getDataSources();
         Map<String, String> result = new LinkedHashMap<>();
-        for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             try (Connection connection = entry.getValue().getConnection()) {
                 result.put(entry.getKey(), connection.getMetaData().getURL());
             }

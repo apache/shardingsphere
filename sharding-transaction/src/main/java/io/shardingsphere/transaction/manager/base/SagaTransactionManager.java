@@ -17,33 +17,60 @@
 
 package io.shardingsphere.transaction.manager.base;
 
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.event.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.transaction.manager.base.servicecomb.SagaExecutionComponentHolder;
+import io.shardingsphere.transaction.manager.base.servicecomb.ShardingTransportFactorySPILoader;
+import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 
 import javax.transaction.Status;
+import java.util.UUID;
 
 /**
  * Saga transaction manager.
  *
  * @author zhaojun
+ * @author yangyi
  */
-public final class SagaTransactionManager implements ShardingTransactionManager {
+public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionEvent> {
     
-    @Override
-    public void begin(final ShardingTransactionEvent transactionEvent) {
+    private static final ThreadLocal<String> TRANSACTION_IDS = new ThreadLocal<String>();
+    
+    private final SagaExecutionComponent coordinator;
+    
+    public SagaTransactionManager() {
+        this.coordinator = SagaExecutionComponentHolder.getInstance().getSagaExecutionComponent();
     }
     
     @Override
-    public void commit(final ShardingTransactionEvent transactionEvent) {
+    public void begin(final SagaTransactionEvent transactionEvent) {
+        TRANSACTION_IDS.set(UUID.randomUUID().toString());
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().cacheTransport(transactionEvent);
     }
     
     @Override
-    public void rollback(final ShardingTransactionEvent transactionEvent) {
+    public void commit(final SagaTransactionEvent transactionEvent) {
+        coordinator.run(transactionEvent.getSagaJson());
+        TRANSACTION_IDS.remove();
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().remove();
+    }
+    
+    @Override
+    public void rollback(final SagaTransactionEvent transactionEvent) {
+        TRANSACTION_IDS.remove();
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().remove();
     }
     
     @Override
     public int getStatus() {
-        // TODO :zhaojun need confirm, return Status.STATUS_NO_TRANSACTION or zero? 
+        // TODO :zhaojun need confirm, return Status.STATUS_NO_TRANSACTION or zero?
+        if (null != getTransactionId()) {
+            return Status.STATUS_ACTIVE;
+        }
         return Status.STATUS_NO_TRANSACTION;
+    }
+    
+    @Override
+    public String getTransactionId() {
+        return TRANSACTION_IDS.get();
     }
 }

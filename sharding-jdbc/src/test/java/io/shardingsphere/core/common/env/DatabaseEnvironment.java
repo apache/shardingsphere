@@ -46,36 +46,51 @@ public final class DatabaseEnvironment {
     }
     
     private void fillData() {
+        fillH2();
+        fillMySQL();
+        fillPostgreSQL();
+        fillSQLServer();
+        fillOracle();
+    }
+    
+    private void fillH2() {
         DRIVER_CLASS_NAME.put(DatabaseType.H2, org.h2.Driver.class.getName());
         URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(DatabaseType.H2, "sa");
         PASSWORD.put(DatabaseType.H2, "");
         SCHEMA.put(DatabaseType.H2, null);
-        
+    }
+    
+    private void fillMySQL() {
         DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class.getName());
         URL.put(DatabaseType.MySQL, "jdbc:mysql://db.mysql:3306/%s?serverTimezone=UTC&useSSL=false");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);
-
+    }
+    
+    private void fillPostgreSQL() {
         DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class.getName());
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://db.psql:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
         SCHEMA.put(DatabaseType.PostgreSQL, null);
-
+    }
+    
+    private void fillSQLServer() {
         DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, com.microsoft.sqlserver.jdbc.SQLServerDriver.class.getName());
         URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
         USERNAME.put(DatabaseType.SQLServer, "sa");
         PASSWORD.put(DatabaseType.SQLServer, "Jdbc1234");
         SCHEMA.put(DatabaseType.SQLServer, null);
-
+    }
+    
+    private void fillOracle() {
         DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
         URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:test");
         USERNAME.put(DatabaseType.Oracle, "jdbc");
         PASSWORD.put(DatabaseType.Oracle, "jdbc");
         SCHEMA.put(DatabaseType.Oracle, "%s");
-    
     }
     
     /**

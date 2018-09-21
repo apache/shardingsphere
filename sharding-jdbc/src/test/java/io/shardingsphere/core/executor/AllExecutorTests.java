@@ -19,12 +19,14 @@ package io.shardingsphere.core.executor;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         StatementExecutorTest.class, 
         PreparedStatementExecutorTest.class,
-        BatchPreparedStatementExecutorTest.class
+        BatchPreparedStatementExecutorTest.class,
+        SQLExeucteCallbackFactoryTest.class
     })
 public final class AllExecutorTests {
 }

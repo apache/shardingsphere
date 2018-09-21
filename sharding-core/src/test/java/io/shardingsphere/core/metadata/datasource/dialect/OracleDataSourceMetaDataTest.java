@@ -27,9 +27,9 @@ public class OracleDataSourceMetaDataTest {
     
     @Test
     public void assertGetALLProperties() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:3306/ds_0");
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getPort(), is(9999));
         assertThat(actual.getSchemeName(), is("ds_0"));
     }
     
@@ -39,6 +39,14 @@ public class OracleDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
         assertThat(actual.getSchemeName(), is("ds_0"));
+    }
+    
+    @Test
+    public void assertGetPropertiesWithMinus() {
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//host-0/ds-0");
+        assertThat(actual.getHostName(), is("host-0"));
+        assertThat(actual.getPort(), is(1521));
+        assertThat(actual.getSchemeName(), is("ds-0"));
     }
     
     @Test(expected = ShardingException.class)

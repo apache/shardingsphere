@@ -19,13 +19,12 @@ package io.shardingsphere.core.parsing.parser.sql;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         SelectStatementTest.class, 
-        InsertStatementParserTest.class,
-        UpdateStatementParserTest.class,
-        DeleteStatementParserTest.class
+        InsertStatementParserTest.class
     })
 public final class AllStatementParserTests {
 }

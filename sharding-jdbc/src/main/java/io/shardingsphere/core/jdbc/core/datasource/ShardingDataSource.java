@@ -17,29 +17,20 @@
 
 package io.shardingsphere.core.jdbc.core.datasource;
 
-import com.google.common.eventbus.Subscribe;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,12 +41,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhaojun
  * @author panjuan
  */
+@Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
-    @Getter
-    private ShardingProperties shardingProperties;
-
-    private ShardingContext shardingContext;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final ShardingContext shardingContext;
+    
+    private final ShardingProperties shardingProperties;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -63,78 +56,52 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap.values());
+        checkDataSourceType(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getShardingConfig().putAll(configMap);
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        shardingContext = getShardingContext(dataSourceMap, shardingRule);
+        this.dataSourceMap = dataSourceMap;
+        this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        this.shardingContext = getShardingContext(shardingRule);
     }
     
-    private ShardingContext getShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
-        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) {
+        super(shardingContext.getDatabaseType());
+        this.dataSourceMap = dataSourceMap;
+        this.shardingContext = shardingContext;
+        this.shardingProperties = shardingProperties;
+    }
+    
+    private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
+        for (DataSource each : dataSourceMap.values()) {
+            Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
+        }
+    }
+    
+    private ShardingContext getShardingContext(final ShardingRule shardingRule) throws SQLException {
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(executorSize);
-        ConnectionMode connectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), executeEngine, connectionMode, showSQL);
-    }
-    
-    /**
-     * Renew sharding data source.
-     *
-     * @param shardingEvent sharding configuration event bus event.
-     */
-    @Subscribe
-    public void renew(final ShardingConfigurationEventBusEvent shardingEvent) {
-        super.renew(shardingEvent.getDataSourceMap().values());
-        shardingProperties = new ShardingProperties(null == shardingEvent.getProps() ? new Properties() : shardingEvent.getProps());
-        int newExecutorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        boolean newShowSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        ShardingExecuteEngine newExecuteEngine = new ShardingExecuteEngine(newExecutorSize);
-        ConnectionMode newConnectionMode = ConnectionMode.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.CONNECTION_MODE));
-        shardingContext.renew(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), getDatabaseType(), newExecuteEngine, newConnectionMode, newShowSQL);
+        int maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), new ShardingExecuteEngine(executorSize), maxConnectionsSizePerQuery, showSQL);
     }
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(shardingContext);
+        return new ShardingConnection(dataSourceMap, shardingContext);
     }
     
     @Override
-    public void close() {
+    public final void close() {
+        closeOriginalDataSources();
         shardingContext.close();
     }
     
-    protected static Map<String, DataSource> getRawDataSourceMap(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        if (null == dataSourceMap) {
-            return result;
-        }
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            String dataSourceName = entry.getKey();
-            DataSource dataSource = entry.getValue();
-            if (dataSource instanceof MasterSlaveDataSource) {
-                result.putAll(((MasterSlaveDataSource) dataSource).getAllDataSources());
-            } else {
-                result.put(dataSourceName, dataSource);
-            }
-        }
-        return result;
-    }
-    
-    protected static ShardingRuleConfiguration getShardingRuleConfiguration(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        if (null == dataSourceMap || !shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
-            return shardingRuleConfig;
-        }
+    private void closeOriginalDataSources() {
         for (DataSource each : dataSourceMap.values()) {
-            if (!(each instanceof MasterSlaveDataSource)) {
-                continue;
+            try {
+                each.getClass().getDeclaredMethod("close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
             }
-            MasterSlaveRule masterSlaveRule = ((MasterSlaveDataSource) each).getMasterSlaveRule();
-            masterSlaveRuleConfigs.add(new MasterSlaveRuleConfiguration(
-                    masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
         }
-        shardingRuleConfig.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
-        return shardingRuleConfig;
     }
 }

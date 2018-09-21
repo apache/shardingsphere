@@ -22,9 +22,10 @@ import io.shardingsphere.transaction.bed.BEDSoftTransactionTest;
 import io.shardingsphere.transaction.integrate.SoftTransactionTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         SoftTransactionManagerTest.class,
         BEDSoftTransactionTest.class,
         SoftTransactionTest.class

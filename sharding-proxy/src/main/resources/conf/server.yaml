@@ -1,0 +1,33 @@
+######################################################################################################
+# 
+# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# 
+######################################################################################################
+
+#orchestration:
+#  name: orchestration_ds
+#  overwrite: true
+#  zookeeper:
+#    namespace: orchestration
+#    serverLists: localhost:2181
+#
+#proxyAuthority:
+#  username: root
+#  password: root
+#
+#props:
+#  # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
+#  #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
+#
+#  # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
+#  #                      Meanwhile, the cost of the memory will be increased.
+#  max.connections.size.per.query: 1
+#  acceptor.size: 16  # The default value is available processors count * 2.
+#  executor.size: 16  # Infinite by default.
+#  proxy.transaction.enabled: false
+#    # Be valid when proxy.transaction.enabled is true.
+#    # LOCAL: Proxy will run with LOCAL transaction.
+#    # XA: Proxy will run with XA transaction.
+#    # BASE: Proxy will run with B.A.S.E transaction.
+#  proxy.transaction.type: BASE
+#  sql.show: false

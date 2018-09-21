@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -82,16 +83,16 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetPoolable() throws SQLException {
-        for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().setPoolable(true);
             each.getValue().executeQuery(sql);
-            assertPoolable((ShardingStatement) each.getValue(), true, each.getKey());
+            assertPoolable((ShardingStatement) each.getValue(), true);
             each.getValue().setPoolable(false);
-            assertPoolable((ShardingStatement) each.getValue(), false, each.getKey());
+            assertPoolable((ShardingStatement) each.getValue(), false);
         }
     }
     
-    private void assertPoolable(final ShardingStatement actual, final boolean poolable, final DatabaseType type) throws SQLException {
+    private void assertPoolable(final ShardingStatement actual, final boolean poolable) throws SQLException {
         assertThat(actual.isPoolable(), is(poolable));
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {
@@ -139,7 +140,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertGetUpdateCount() throws SQLException {
         String sql = "DELETE FROM t_order WHERE status = 'init'";
-        for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
             assertThat(each.getValue().getUpdateCount(), is(4));
         }
@@ -148,7 +149,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     @Test
     public void assertGetUpdateCountNoData() throws SQLException {
         String sql = "DELETE FROM t_order WHERE status = 'none'";
-        for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().execute(sql);
             assertThat(each.getValue().getUpdateCount(), is(0));
         }
@@ -298,7 +299,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetMaxFieldSize() throws SQLException {
-        for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().executeQuery(sql);
             each.getValue().setMaxFieldSize(10);
             assertThat(each.getValue().getMaxFieldSize(), is(DatabaseType.H2 == each.getKey() ? 0 : 10));
@@ -346,7 +347,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Test
     public void assertSetQueryTimeout() throws SQLException {
-        for (Map.Entry<DatabaseType, Statement> each : statements.entrySet()) {
+        for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().executeQuery(sql);
             each.getValue().setQueryTimeout(10);
             assertThat(each.getValue().getQueryTimeout(), is(10));

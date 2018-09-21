@@ -18,6 +18,7 @@
 package io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.prepare;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
@@ -26,7 +27,9 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.proxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
@@ -35,6 +38,7 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.ColumnDefini
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +47,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,23 +64,40 @@ public final class ComStmtPreparePacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
+    @Mock
+    private FrontendHandler frontendHandler;
+    
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setRuleRegistryMetaData();
+        setProxyContextRuleRegistryMap();
+        setFrontendHandlerSchema();
+    }
+    
+    @Before
+    @After
+    public void reset() throws ReflectiveOperationException {
         BinaryStatementRegistryUtil.reset();
     }
     
-    private void setRuleRegistryMetaData() throws ReflectiveOperationException {
-        Field field = RuleRegistry.class.getDeclaredField("metaData");
+    private void setProxyContextRuleRegistryMap() throws ReflectiveOperationException {
+        RuleRegistry ruleRegistry = mock(RuleRegistry.class);
+        ShardingMetaData metaData = mock(ShardingMetaData.class);
+        when(ruleRegistry.getMetaData()).thenReturn(metaData);
+        Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
+        ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
+        Field field = ProxyContext.class.getDeclaredField("ruleRegistryMap");
         field.setAccessible(true);
-        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
-        field.set(RuleRegistry.getInstance(), shardingMetaData);
+        field.set(ProxyContext.getInstance(), ruleRegistryMap);
+    }
+    
+    private void setFrontendHandlerSchema() {
+        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
-        ComStmtPreparePacket actual = new ComStmtPreparePacket(1, payload);
+        ComStmtPreparePacket actual = new ComStmtPreparePacket(1, payload, frontendHandler);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeStringEOF("SELECT id FROM tbl WHERE id=?");
@@ -135,7 +158,7 @@ public final class ComStmtPreparePacketTest {
     
     private ComStmtPreparePacket getComStmtPreparePacketWithMockedSQLParsingEngine(final String sql, final SQLStatement sqlStatement) throws ReflectiveOperationException {
         when(payload.readStringEOF()).thenReturn(sql);
-        ComStmtPreparePacket result = new ComStmtPreparePacket(1, payload);
+        ComStmtPreparePacket result = new ComStmtPreparePacket(1, payload, frontendHandler);
         SQLParsingEngine sqlParsingEngine = mock(SQLParsingEngine.class);
         when(sqlParsingEngine.parse(true)).thenReturn(sqlStatement);
         Field field = ComStmtPreparePacket.class.getDeclaredField("sqlParsingEngine");

@@ -25,9 +25,10 @@ import io.shardingsphere.core.parsing.parser.sql.AllSQLTests;
 import io.shardingsphere.core.parsing.parser.sql.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         AllLexerTests.class, 
         AllStatementParserTests.class, 
         AllSQLTests.class, 

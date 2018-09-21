@@ -32,10 +32,10 @@ import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.config.RuleRegistry;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutionException;
@@ -48,38 +48,36 @@ import java.util.concurrent.TimeoutException;
  * @author wangkai
  * @author linjiaqi
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
 public final class BackendNettyClient {
     
-    private static final BackendNettyClient INSTANCE = new BackendNettyClient();
-    
-    private static final RuleRegistry RULE_REGISTRY = RuleRegistry.getInstance();
-    
     private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
     
-    private static final int MAX_CONNECTIONS = RULE_REGISTRY.getBackendNIOConfig().getMaxConnections();
+    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
     
-    private static final int CONNECTION_TIMEOUT_SECONDS = RULE_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
+    private final RuleRegistry ruleRegistry;
+    
+    private final int maxConnections;
+    
+    private final int connectionTimeoutSeconds;
     
     private EventLoopGroup workerGroup;
     
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    /**
-     * Get instance of backend connection client for netty.
-     *
-     * @return instance of backend connection client for netty
-     */
-    public static BackendNettyClient getInstance() {
-        return INSTANCE;
+    public BackendNettyClient(final RuleRegistry ruleRegistry) {
+        this.ruleRegistry = ruleRegistry;
+        maxConnections = PROXY_CONTEXT.getBackendNIOConfig().getMaxConnections();
+        connectionTimeoutSeconds = PROXY_CONTEXT.getBackendNIOConfig().getConnectionTimeoutSeconds();
+        
     }
     
     /**
      * Start backend connection client for netty.
      *
-     * @throws InterruptedException  interrupted exception
+     * @throws InterruptedException interrupted exception
      */
     public void start() throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
@@ -127,22 +125,23 @@ public final class BackendNettyClient {
             
             @Override
             protected SimpleChannelPool newPool(final String dataSourceName) {
-                DataSourceMetaData dataSourceMetaData = RULE_REGISTRY.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+                DataSourceMetaData dataSourceMetaData = ruleRegistry.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
                 return new FixedChannelPool(
-                        bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), new BackendNettyClientChannelPoolHandler(dataSourceName), MAX_CONNECTIONS);
+                        bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), 
+                        new BackendNettyClientChannelPoolHandler(dataSourceName, ruleRegistry.getSchemaName()), maxConnections);
             }
         };
-        for (String each : RULE_REGISTRY.getDataSourceConfigurationMap().keySet()) {
+        for (String each : ruleRegistry.getDataSources().keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
-            Channel[] channels = new Channel[MAX_CONNECTIONS];
-            for (int i = 0; i < MAX_CONNECTIONS; i++) {
+            Channel[] channels = new Channel[maxConnections];
+            for (int i = 0; i < maxConnections; i++) {
                 try {
-                    channels[i] = pool.acquire().get(CONNECTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                    channels[i] = pool.acquire().get(connectionTimeoutSeconds, TimeUnit.SECONDS);
                 } catch (final ExecutionException | TimeoutException ex) {
                     log.error(ex.getMessage(), ex);
                 }
             }
-            for (int i = 0; i < MAX_CONNECTIONS; i++) {
+            for (int i = 0; i < maxConnections; i++) {
                 pool.release(channels[i]);
             }
         }

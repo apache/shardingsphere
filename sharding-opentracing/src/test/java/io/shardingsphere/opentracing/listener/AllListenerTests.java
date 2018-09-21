@@ -17,17 +17,17 @@
 
 package io.shardingsphere.opentracing.listener;
 
-import io.shardingsphere.opentracing.listener.execution.ExecuteEventListenerTest;
-import io.shardingsphere.opentracing.listener.merger.MergeEventListenerTest;
-import io.shardingsphere.opentracing.listener.routing.RoutingEventListenerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        RoutingEventListenerTest.class,
-        ExecuteEventListenerTest.class,
-        MergeEventListenerTest.class
+@SuiteClasses({
+        RootInvokeEventListenerTest.class, 
+        GetConnectionEventListenerTest.class,
+        CloseConnectionEventListenerTest.class, 
+        ParsingEventListenerTest.class,
+        ExecuteEventListenerTest.class
 })
 public final class AllListenerTests {
 }

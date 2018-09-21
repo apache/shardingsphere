@@ -27,4 +27,31 @@
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
     </parser-result>
+
+    <parser-result sql-case-id="delete_with_special_character_without_sharding_value">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="7" original-literals="`t_order`" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="delete_with_special_comments_return_without_sharding_value">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="33" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="delete_with_special_comments_returning_without_sharding_value">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="34" original-literals="t_order" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>

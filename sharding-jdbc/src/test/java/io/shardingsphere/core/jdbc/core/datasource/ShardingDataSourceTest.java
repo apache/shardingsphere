@@ -23,15 +23,11 @@ import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.event.orche.config.ShardingConfigurationEventBusEvent;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -45,7 +41,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -149,56 +144,6 @@ public final class ShardingDataSourceTest {
         assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
     }
     
-    @Test
-    public void assertRenewWithoutChangeExecutorPoolEngine() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        DataSource originalDataSource = mockDataSource("H2");
-        Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
-        originalDataSourceMap.put("ds", originalDataSource);
-        ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        ShardingProperties originShardingProperties = getShardingProperties(shardingDataSource);
-        DataSource newDataSource = mockDataSource("H2");
-        Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
-        newDataSourceMap.put("ds", newDataSource);
-        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
-                newDataSourceMap.keySet()), new Properties());
-        shardingDataSource.renew(shardingEvent);
-        assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
-    }
-    
-    @Test
-    public void assertRenewWithChangeExecuteEnginePoolSize() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        DataSource originalDataSource = mockDataSource("H2");
-        Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
-        originalDataSourceMap.put("ds", originalDataSource);
-        ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        final ShardingProperties originShardingProperties = getShardingProperties(shardingDataSource);
-        DataSource newDataSource = mockDataSource("H2");
-        Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
-        newDataSourceMap.put("ds", newDataSource);
-        Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.EXECUTOR_SIZE.getKey(), "100");
-        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
-                newDataSourceMap.keySet()), props);
-        shardingDataSource.renew(shardingEvent);
-        assertThat(originShardingProperties, not(getShardingProperties(shardingDataSource)));
-    }
-    
-    // TODO to be discuss
-    // @Test(expected = IllegalStateException.class)
-    @Test
-    public void assertRenewWithDatabaseTypeChanged() throws SQLException {
-        DataSource originalDataSource = mockDataSource("H2");
-        Map<String, DataSource> originalDataSourceMap = new HashMap<>(1, 1);
-        originalDataSourceMap.put("ds", originalDataSource);
-        ShardingDataSource shardingDataSource = createShardingDataSource(originalDataSourceMap);
-        DataSource newDataSource = mockDataSource("MySQL");
-        Map<String, DataSource> newDataSourceMap = new HashMap<>(1, 1);
-        newDataSourceMap.put("ds", newDataSource);
-        ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(newDataSourceMap, new ShardingRule(createShardingRuleConfig(newDataSourceMap),
-                newDataSourceMap.keySet()), new Properties());
-        shardingDataSource.renew(shardingEvent);
-    }
-    
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         return new ShardingDataSource(dataSourceMap, new ShardingRule(createShardingRuleConfig(dataSourceMap), dataSourceMap.keySet()));
     }
@@ -214,11 +159,5 @@ public final class ShardingDataSourceTest {
         tableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
-    }
-    
-    private ShardingProperties getShardingProperties(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
-        Field field = ShardingDataSource.class.getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        return (ShardingProperties) field.get(shardingDataSource);
     }
 }

@@ -22,20 +22,26 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.proxy.backend.BackendHandler;
 import io.shardingsphere.proxy.backend.BackendHandlerFactory;
 import io.shardingsphere.proxy.backend.ResultPacket;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.proxy.frontend.common.FrontendHandler;
+import io.shardingsphere.proxy.revert.ProxyRevertEngine;
 import io.shardingsphere.proxy.transport.common.packet.DatabasePacket;
+import io.shardingsphere.proxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandPacketType;
 import io.shardingsphere.proxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
+import io.shardingsphere.proxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.event.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,11 +51,10 @@ import java.sql.SQLException;
 /**
  * COM_QUERY command packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
- *
  * @author zhangliang
  * @author linjiaqi
  * @author zhaojun
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  */
 @Slf4j
 public final class ComQueryPacket implements QueryCommandPacket {
@@ -61,17 +66,20 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    private final String currentSchema;
+    
+    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
+        currentSchema = frontendHandler.getCurrentSchema();
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         backendHandler = null;
+        currentSchema = null;
     }
     
     @Override
@@ -83,12 +91,23 @@ public final class ComQueryPacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
+        if (ProxyContext.getInstance().isCircuitBreak()) {
+            return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
+        }
         Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == RuleRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
+        if (TransactionType.XA == ProxyContext.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
+        }
+        if (TransactionType.BASE == ProxyContext.getInstance().getTransactionType() && isInBASETransaction(operationType.get())) {
+            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(operationType.get(), currentSchema));
+            if (TransactionOperationType.BEGIN == operationType.get()) {
+                RevertEngineHolder.getInstance().setRevertEngine(new ProxyRevertEngine(ProxyContext.getInstance().getRuleRegistry(currentSchema).getBackendDataSource().getDataSourceMap()));
+            } else {
+                RevertEngineHolder.getInstance().remove();
+            }
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready 
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
@@ -98,6 +117,11 @@ public final class ComQueryPacket implements QueryCommandPacket {
         // TODO zhaojun: research why rollback call twice here
         return TransactionOperationType.ROLLBACK != operationType
                 || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
+    }
+    
+    private boolean isInBASETransaction(final TransactionOperationType operationType) throws SQLException {
+        return TransactionOperationType.BEGIN == operationType
+                || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
     }
     
     @Override

@@ -17,15 +17,15 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.fixture.EventCaller;
 import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.fixture.TestDMLExecutionEventListener;
 import io.shardingsphere.core.executor.fixture.TestDQLExecutionEventListener;
-import io.shardingsphere.core.executor.fixture.TestOverallExecutionEventListener;
-import io.shardingsphere.core.executor.sql.SQLExecuteTemplate;
-import io.shardingsphere.core.executor.sql.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import io.shardingsphere.core.jdbc.core.ShardingContext;
+import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -33,12 +33,21 @@ import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
     private ShardingExecuteEngine executeEngine;
     
-    private SQLExecuteTemplate executeTemplate;
+    private ShardingConnection connection;
     
     @Mock
     private EventCaller eventCaller;
@@ -47,26 +56,38 @@ public abstract class AbstractBaseExecutorTest {
     
     private TestDMLExecutionEventListener dmlExecutionEventListener;
     
-    private TestOverallExecutionEventListener overallExecutionEventListener;
-    
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException, ReflectiveOperationException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
-        executeTemplate = new SQLExecuteTemplate(executeEngine, ConnectionMode.MEMORY_STRICTLY);
-        overallExecutionEventListener = new TestOverallExecutionEventListener(eventCaller);
         dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
         dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
-        ShardingEventBusInstance.getInstance().register(overallExecutionEventListener);
+        setConnection();
+        register();
+    }
+    
+    private void register() {
         ShardingEventBusInstance.getInstance().register(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().register(dmlExecutionEventListener);
+    }
+    
+    private void setConnection() throws SQLException {
+        ShardingContext shardingContext = mock(ShardingContext.class);
+        when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
+        when(shardingContext.getMaxConnectionsSizePerQuery()).thenReturn(1);
+        when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getConnection()).thenReturn(mock(Connection.class));
+        Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
+        dataSourceSourceMap.put("ds_0", dataSource);
+        dataSourceSourceMap.put("ds_1", dataSource);
+        connection = new ShardingConnection(dataSourceSourceMap, shardingContext);
     }
     
     @After
     public void tearDown() throws ReflectiveOperationException {
         ExecutorTestUtil.clear();
-        ShardingEventBusInstance.getInstance().unregister(overallExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);
         executeEngine.close();
