@@ -132,7 +132,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return generateRoutingResult(routedDataNodes);
     }
     
-    private boolean isGetShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
+    private boolean isGettingShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
         return shardingStrategy instanceof HintShardingStrategy;
     }
     
