@@ -47,6 +47,7 @@ import java.util.List;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class StandardRoutingEngine implements RoutingEngine {
@@ -70,12 +71,29 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return generateRoutingResult(dataNodes);
     }
     
-    private void reviseShardingConditions(final Collection<DataNode> dataNodes) {
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-            if (each instanceof InsertShardingCondition) {
-                ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-            }
+    private Collection<DataNode> route(final TableRule tableRule, final List<ShardingValue> databaseShardingValues, final List<ShardingValue> tableShardingValues) {
+        Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
+        Collection<DataNode> result = new LinkedList<>();
+        for (String each : routedDataSources) {
+            result.addAll(routeTables(tableRule, each, tableShardingValues));
         }
+        return result;
+    }
+    
+    private boolean isRoutingByHint(final TableRule tableRule) {
+        return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
+    }
+    
+    private boolean isGettingShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
+        return shardingStrategy instanceof HintShardingStrategy;
+    }
+    
+    private Collection<DataNode> routeByHint(final TableRule tableRule) {
+        Collection<DataNode> result = new LinkedList<>();
+        List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint();
+        List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint();
+        result.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+        return result;
     }
     
     private Collection<DataNode> routeByShardingConditions(final TableRule tableRule) {
@@ -96,29 +114,12 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private Collection<DataNode> routeByHint(final TableRule tableRule) {
-        Collection<DataNode> result = new LinkedList<>();
-        List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint();
-        List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint();
-        result.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
-        return result;
-    }
-    
-    private Collection<DataNode> route(final TableRule tableRule, final List<ShardingValue> databaseShardingValues, final List<ShardingValue> tableShardingValues) {
-        Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingValues);
-        Collection<DataNode> result = new LinkedList<>();
-        for (String each : routedDataSources) {
-            result.addAll(routeTables(tableRule, each, tableShardingValues));
+    private void reviseShardingConditions(final Collection<DataNode> dataNodes) {
+        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+            if (each instanceof InsertShardingCondition) {
+                ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+            }
         }
-        return result;
-    }
-    
-    private boolean isRoutingByHint(final TableRule tableRule) {
-        return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
-    }
-    
-    private boolean isGettingShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
-        return shardingStrategy instanceof HintShardingStrategy;
     }
     
     private List<ShardingValue> getDatabaseShardingValuesFromHint() {
