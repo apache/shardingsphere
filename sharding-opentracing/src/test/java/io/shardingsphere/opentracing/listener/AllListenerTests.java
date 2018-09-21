@@ -19,11 +19,15 @@ package io.shardingsphere.opentracing.listener;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-    ParsingEventListenerTest.class,
-    ExecuteEventListenerTest.class
+@SuiteClasses({
+        RootInvokeEventListenerTest.class, 
+        GetConnectionEventListenerTest.class,
+        CloseConnectionEventListenerTest.class, 
+        ParsingEventListenerTest.class,
+        ExecuteEventListenerTest.class
 })
 public final class AllListenerTests {
 }

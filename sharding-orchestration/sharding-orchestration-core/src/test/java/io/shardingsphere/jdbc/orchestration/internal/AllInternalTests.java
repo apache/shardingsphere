@@ -20,8 +20,9 @@ package io.shardingsphere.jdbc.orchestration.internal;
 import io.shardingsphere.jdbc.orchestration.internal.config.ConfigurationNodeTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(ConfigurationNodeTest.class)
+@SuiteClasses(ConfigurationNodeTest.class)
 public final class AllInternalTests {
 }

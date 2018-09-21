@@ -22,9 +22,10 @@ import io.shardingsphere.jdbc.orchestration.internal.circuit.datasource.CircuitB
 import io.shardingsphere.jdbc.orchestration.internal.circuit.metadata.CircuitBreakerDatabaseMetaDataTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         CircuitBreakerConnectionTest.class,
         CircuitBreakerDataSourceTest.class,
         CircuitBreakerDatabaseMetaDataTest.class

@@ -22,9 +22,10 @@ import io.shardingsphere.jdbc.orchestration.api.yaml.sharding.YamlOrchestrationS
 import io.shardingsphere.jdbc.orchestration.api.yaml.sharding.YamlOrchestrationShardingWithMasterSlaveIntegrateTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         YamlOrchestrationShardingIntegrateTest.class,
         YamlOrchestrationMasterSlaveIntegrateTest.class,
         YamlOrchestrationShardingWithMasterSlaveIntegrateTest.class

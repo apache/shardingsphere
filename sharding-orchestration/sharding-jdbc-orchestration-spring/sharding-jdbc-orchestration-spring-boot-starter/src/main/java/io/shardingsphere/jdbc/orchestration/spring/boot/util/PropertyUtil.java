@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertyUtil {
@@ -73,7 +74,7 @@ public final class PropertyUtil {
             Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
             Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
             Map<String, Object> propertiesWithPlaceholderResolved = new HashMap<>();
-            for (Map.Entry<String, Object> entry : dataSourceProps.entrySet()) {
+            for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
                 if (value instanceof String && ((String) value).contains(

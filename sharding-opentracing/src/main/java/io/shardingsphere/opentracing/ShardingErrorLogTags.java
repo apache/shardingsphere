@@ -15,26 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.fixture;
+package io.shardingsphere.opentracing;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.event.root.RootInvokeEvent;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public final class TestOverallExecutionEventListener {
+/**
+ * Sharding error log tags.
+ *
+ * @author chenqingyang
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingErrorLogTags {
     
-    private final EventCaller eventCaller;
+    public static final String EVENT = "event";
     
-    /**
-     * Listen event.
-     *
-     * @param event execution event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final RootInvokeEvent event) {
-        ExecutorTestUtil.listen(eventCaller, event);
-    }
+    public static final String EVENT_ERROR_TYPE = "error";
+    
+    public static final String ERROR_KIND = "error.kind";
+    
+    public static final String MESSAGE = "message";
 }

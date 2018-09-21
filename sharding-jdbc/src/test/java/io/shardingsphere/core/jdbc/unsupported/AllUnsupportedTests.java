@@ -19,9 +19,10 @@ package io.shardingsphere.core.jdbc.unsupported;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         UnsupportedOperationDataSourceTest.class,
         UnsupportedOperationConnectionTest.class,
         UnsupportedOperationStatementTest.class,
