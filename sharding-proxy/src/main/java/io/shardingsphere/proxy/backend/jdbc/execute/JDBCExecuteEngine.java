@@ -117,9 +117,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 && sqlType == SQLType.DML
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
         SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown, dataMap)
-                : new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+                : new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
         SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
-                : new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+                : new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
                 firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -199,13 +199,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private final class FirstConnectionStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+    private final class FirstProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
         private boolean hasMetaData;
         
-        private FirstConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+        private FirstProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
             super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
@@ -223,11 +223,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private final class ConnectionStrictlySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+    private final class ProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
         
-        private ConnectionStrictlySQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
+        private ProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
             super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }

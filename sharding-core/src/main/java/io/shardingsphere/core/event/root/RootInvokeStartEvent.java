@@ -15,16 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.keygen;
+package io.shardingsphere.core.event.root;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses({
-        DefaultKeyGeneratorTest.class, 
-        KeyGeneratorFactoryTest.class
-    })
-public final class AllKeygenTests {
+/**
+ * Root invoke start event.
+ *
+ * @author zhangliang
+ */
+public final class RootInvokeStartEvent {
 }

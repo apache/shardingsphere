@@ -20,8 +20,9 @@ package io.shardingsphere.jdbc.orchestration.api;
 import io.shardingsphere.jdbc.orchestration.api.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(AllYamlTests.class)
+@SuiteClasses(AllYamlTests.class)
 public final class AllApiTests {
 }

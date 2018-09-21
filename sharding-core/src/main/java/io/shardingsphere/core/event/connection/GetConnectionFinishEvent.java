@@ -30,5 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class GetConnectionFinishEvent extends GetConnectionEvent {
     
+    private final int connectionCount;
+    
     private final DataSourceMetaData dataSourceMetaData;
 }

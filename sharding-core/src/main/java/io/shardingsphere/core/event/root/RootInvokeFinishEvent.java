@@ -17,12 +17,10 @@
 
 package io.shardingsphere.core.event.root;
 
-import io.shardingsphere.core.event.ShardingEvent;
-
 /**
- * Root invoke event.
+ * Root invoke finish event.
  *
- * @author gaohongtao
+ * @author zhangliang
  */
-public class RootInvokeEvent extends ShardingEvent {
+public final class RootInvokeFinishEvent {
 }

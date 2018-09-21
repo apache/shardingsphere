@@ -21,9 +21,10 @@ import io.shardingsphere.transaction.storage.impl.MemoryTransactionLogStorageTes
 import io.shardingsphere.transaction.storage.impl.RdbTransactionLogStorageTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         TransactionLogStorageFactoryTest.class, 
         MemoryTransactionLogStorageTest.class, 
         RdbTransactionLogStorageTest.class
