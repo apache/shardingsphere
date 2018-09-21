@@ -17,57 +17,54 @@
 
 package io.shardingsphere.opentracing.listener;
 
+import com.google.common.eventbus.EventBus;
+import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
-import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
-import io.shardingsphere.opentracing.fixture.ShardingContextBuilder;
+import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.event.parsing.ParsingStartEvent;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.opentracing.ShardingTags;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ParsingEventListenerTest extends BaseEventListenerTest {
     
+    private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
+    
     @Test
-    public void assertPreparedStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
-        ShardingPreparedStatement statement = new ShardingPreparedStatement(
-                new ShardingConnection(Collections.<String, DataSource>emptyMap(), ShardingContextBuilder.build()), "select * from t_order");
-        Method sqlRouteMethod = ShardingPreparedStatement.class.getDeclaredMethod("sqlRoute");
-        sqlRouteMethod.setAccessible(true);
-        sqlRouteMethod.invoke(statement);
+    public void assertExecuteSuccess() {
+        shardingEventBus.post(new ParsingStartEvent("SELECT * FROM XXX;"));
+        ParsingFinishEvent finishEvent = new ParsingFinishEvent();
+        finishEvent.setExecuteSuccess();
+        shardingEventBus.post(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
-        
+        MockSpan actual = getTracer().finishedSpans().get(0);
+        assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
+        Map<String, Object> actualTags = actual.tags();
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
     }
     
     @Test
-    public void assertStatementParsing() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
-        ShardingStatement statement = new ShardingStatement(new ShardingConnection(Collections.<String, DataSource>emptyMap(), ShardingContextBuilder.build()));
-        Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
-        sqlRouteMethod.setAccessible(true);
-        sqlRouteMethod.invoke(statement, "select * from t_order");
+    public void assertExecuteFailure() {
+        shardingEventBus.post(new ParsingStartEvent("SELECT * FROM XXX;"));
+        ParsingFinishEvent finishEvent = new ParsingFinishEvent();
+        finishEvent.setExecuteFailure(new ShardingException("parse SQL error"));
+        shardingEventBus.post(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
-    }
-    
-    @Test
-    public void assertException() {
-        try {
-            ShardingStatement statement = new ShardingStatement(new ShardingConnection(Collections.<String, DataSource>emptyMap(), ShardingContextBuilder.build()));
-            Method sqlRouteMethod = ShardingStatement.class.getDeclaredMethod("sqlRoute", String.class);
-            sqlRouteMethod.setAccessible(true);
-            sqlRouteMethod.invoke(statement, "111");
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-        }
-        assertThat(getTracer().finishedSpans().size(), is(1));
-        assertTrue((Boolean) getTracer().finishedSpans().get(0).tags().get(Tags.ERROR.getKey()));
+        MockSpan actual = getTracer().finishedSpans().get(0);
+        assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
+        Map<String, Object> actualTags = actual.tags();
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
+        assertSpanError(actual, ShardingException.class, "parse SQL error");
     }
 }
