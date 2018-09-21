@@ -97,7 +97,7 @@ public final class HintManager implements AutoCloseable {
      * @param values sharding values
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
-        databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values));
+        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
     }
     
     /**
@@ -105,10 +105,15 @@ public final class HintManager implements AutoCloseable {
      *
      * @param logicTable logic table name
      * @param shardingColumn sharding column name
-     * @param operator sharding operator
-     * @param values sharding value
+     * @param minValue min sharding value
+     * @param maxValue max sharding value
      */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
+    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> minValue, final Comparable<?> maxValue) {
+        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.BETWEEN, minValue, maxValue);
+    }
+    
+    
+    private void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
@@ -134,7 +139,6 @@ public final class HintManager implements AutoCloseable {
      * @param values sharding value
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
     @SuppressWarnings("unchecked")
