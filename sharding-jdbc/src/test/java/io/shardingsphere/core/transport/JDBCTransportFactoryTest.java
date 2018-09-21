@@ -17,13 +17,16 @@
 
 package io.shardingsphere.core.transport;
 
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.junit.Test;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -36,7 +39,7 @@ public class JDBCTransportFactoryTest {
         SQLTransport jdbcSqlTransport = jdbcTransportFactory.getTransport();
         assertNull(jdbcSqlTransport);
         
-        jdbcTransportFactory.cacheTransport(null);
+        jdbcTransportFactory.cacheTransport(new SagaTransactionEvent(null));
         jdbcSqlTransport = jdbcTransportFactory.getTransport();
         assertThat(jdbcSqlTransport, instanceOf(JDBCSqlTransport.class));
         
@@ -46,18 +49,23 @@ public class JDBCTransportFactoryTest {
     }
     
     @Test
-    public void assertGetTransportWithMultiThread() {
+    public void assertGetTransportWithMultiThread() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(5);
+        List<Future<Boolean>> futures = new ArrayList<>(5);
         for (int i = 0; i < 5; i++) {
-            executorService.submit(new Tester());
+            futures.add(executorService.submit(new Tester()));
+        }
+        for (Future<Boolean> future : futures) {
+            assertThat(future.get(), is(true));
         }
         executorService.shutdown();
     }
     
-    private class Tester implements Runnable {
+    private class Tester implements Callable<Boolean> {
         @Override
-        public void run() {
+        public Boolean call() {
             assertGetTransport();
+            return true;
         }
     }
 }
