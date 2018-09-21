@@ -25,7 +25,6 @@ import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.hint.ShardingKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,9 +43,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
-    private final Map<ShardingKey, ShardingValue> databaseShardingValues = new HashMap<>();
+    private final Map<String, ShardingValue> databaseShardingValues = new HashMap<>();
     
-    private final Map<ShardingKey, ShardingValue> tableShardingValues = new HashMap<>();
+    private final Map<String, ShardingValue> tableShardingValues = new HashMap<>();
     
     @Getter
     private boolean masterRouteOnly;
@@ -114,7 +113,7 @@ public final class HintManager implements AutoCloseable {
     }
     
     private void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
+        databaseShardingValues.put(logicTable, getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
     /**
@@ -154,7 +153,7 @@ public final class HintManager implements AutoCloseable {
     }
     
     private void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
+        tableShardingValues.put(logicTable, getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
     @SuppressWarnings("unchecked")
@@ -174,21 +173,21 @@ public final class HintManager implements AutoCloseable {
     /**
      * Get sharding value for database.
      *
-     * @param shardingKey sharding key
+     * @param logicTable logic table name
      * @return sharding value for database
      */
-    public ShardingValue getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return databaseShardingValues.get(shardingKey);
+    public ShardingValue getDatabaseShardingValue(final String logicTable) {
+        return databaseShardingValues.get(logicTable);
     }
     
     /**
      * Get sharding value for table.
      *
-     * @param shardingKey sharding key
+     * @param logicTable logic table name
      * @return sharding value for table
      */
-    public ShardingValue getTableShardingValue(final ShardingKey shardingKey) {
-        return tableShardingValues.get(shardingKey);
+    public ShardingValue getTableShardingValue(final String logicTable) {
+        return tableShardingValues.get(logicTable);
     }
     
     /**
