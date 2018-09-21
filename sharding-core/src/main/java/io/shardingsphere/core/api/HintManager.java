@@ -135,10 +135,15 @@ public final class HintManager implements AutoCloseable {
      *
      * @param logicTable logic table name
      * @param shardingColumn sharding column name
-     * @param operator sharding operator
-     * @param values sharding value
+     * @param values sharding values
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
+    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
+        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
+    }
+    
+    
+    private void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
+        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
     @SuppressWarnings("unchecked")
