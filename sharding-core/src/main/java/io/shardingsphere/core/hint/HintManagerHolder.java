@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
  * <p>Use thread-local to manage hint.</p>
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
