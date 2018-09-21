@@ -22,10 +22,10 @@ createTableHeader:
     ;
 
 createDefinitions:
-   LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
+   LEFT_PAREN (columnDefinition (COMMA columnDefinition)*)? RIGHT_PAREN
    ;
 
-createDefinition:
+columnDefinition:
      (columnName dataType collateClause? columnConstraint*)
     | tableConstraint
     | LIKE tableName likeOption*

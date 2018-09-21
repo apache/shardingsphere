@@ -26,9 +26,13 @@ alterTableProperties:
 alterIotOrXml:
     (
       alterIotOrXmlRepeatHeader+
-      | (RENAME TO tableName)
+      |renameTable
     )*
     alterIotClauses? alterXmlschemaClause?
+    ;
+
+renameTable:
+    RENAME TO tableName
     ;
 
 alterIotOrXmlRepeatHeader:
@@ -224,10 +228,14 @@ modifyColSubstitutable:
     
 dropColumnClause:
     ( SET UNUSED columnOrColumnList cascadeOrInvalidate*)
-    | (DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?)
+    | dropColumn
     | (DROP ( (UNUSED COLUMNS)| (COLUMNS CONTINUE) )checkpointNumber?)
     ;
 
+dropColumn:
+    DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
+	;
+	
 columnOrColumnList:
     (COLUMN columnName)
     | (LEFT_PAREN columnName ( COMMA columnName )* RIGHT_PAREN) 

@@ -42,7 +42,7 @@ createDefinitions:
     ;
     
 createDefinition:
-    (columnNameAndDefinition)
+    columnDefinition
     |(constraintDefinition|indexDefinition| checkExpr)
     ;
  
@@ -113,7 +113,7 @@ alterSpecification:
     ;
 
 changeColumn:
-    changeColumnOp columnName columnName columnDefinition (FIRST|AFTER columnName)?
+    changeColumnOp columnName columnDefinition (FIRST|AFTER columnName)?
     ;
     
 changeColumnOp:
@@ -141,7 +141,7 @@ renameTable:
     ;
 
 modifyColumn:    
-    MODIFY COLUMN? columnNameAndDefinition (FIRST | AFTER columnName)?
+    MODIFY COLUMN? columnDefinition (FIRST | AFTER columnName)?
     ;
     
 algorithmOption:
@@ -165,11 +165,11 @@ indexDefOption:
     ;
     
 singleColumn:
-    columnNameAndDefinition (FIRST | AFTER columnName)?
+    columnDefinition (FIRST | AFTER columnName)?
     ;
     
 multiColumn:
-    LEFT_PAREN columnNameAndDefinition (COMMA columnNameAndDefinition)* RIGHT_PAREN
+    LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
     ;
 
 constraintDefinition:
@@ -219,12 +219,8 @@ tableOption:
     | UNION EQ_OR_ASSIGN? idList
     ; 
 
-columnNameAndDefinition:
-    columnName columnDefinition
-    ;
-
 columnDefinition:
-    dataType (dataTypeOption | dataTypeGenerated)
+    columnName dataType (dataTypeOption | dataTypeGenerated)
     ;
     
 dataType:
