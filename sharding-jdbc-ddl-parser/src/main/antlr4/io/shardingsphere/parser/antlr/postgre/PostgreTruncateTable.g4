@@ -1,7 +1,7 @@
-grammar PostgreTruncate;
+grammar PostgreTruncateTable;
 import PostgreKeyword, DataType, Keyword, PostgreBase,BaseRule,Symbol;
 
-truncate:
+truncateTable:
     TRUNCATE TABLE? ONLY? tableNameParts (RESTART IDENTITY | CONTINUE IDENTITY)? (CASCADE | RESTRICT)?
     ;
 
