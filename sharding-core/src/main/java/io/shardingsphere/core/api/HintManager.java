@@ -135,11 +135,10 @@ public final class HintManager implements AutoCloseable {
      *
      * @param logicTable logic table name
      * @param shardingColumn sharding column name
-     * @param minValue minimal sharding value
-     * @param maxValue maximum sharding value
+     * @param values sharding values
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> minValue, final Comparable<?> maxValue) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.BETWEEN, minValue, maxValue);
+    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
+        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
     }
     
     /**
@@ -147,12 +146,12 @@ public final class HintManager implements AutoCloseable {
      *
      * @param logicTable logic table name
      * @param shardingColumn sharding column name
-     * @param values sharding values
+     * @param minValue minimal sharding value
+     * @param maxValue maximum sharding value
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
+    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> minValue, final Comparable<?> maxValue) {
+        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.BETWEEN, minValue, maxValue);
     }
-    
     
     private void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
