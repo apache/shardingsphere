@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * revert engine for sharding-proxy.
@@ -32,6 +33,8 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class ProxyRevertEngine implements RevertEngine {
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     @Override
     public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) throws SQLException {

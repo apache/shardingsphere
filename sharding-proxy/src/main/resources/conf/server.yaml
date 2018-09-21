@@ -29,5 +29,5 @@
 #    # LOCAL: Proxy will run with LOCAL transaction.
 #    # XA: Proxy will run with XA transaction.
 #    # BASE: Proxy will run with B.A.S.E transaction.
-#    proxy.transaction.type: BASE
+#  proxy.transaction.type: BASE
 #  sql.show: false

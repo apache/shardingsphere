@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.backend.jdbc.execute;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -51,10 +52,13 @@ import io.shardingsphere.proxy.transport.mysql.packet.command.query.FieldCountPa
 import io.shardingsphere.proxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.base.executor.SagaSQLExeucteCallback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -109,9 +113,15 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ConnectionStrictlySQLExecutePrepareCallback(isReturnGeneratedKeys));
+        boolean isBASETransaction = TransactionType.BASE == ProxyContext.getInstance().getTransactionType()
+                && sqlType == SQLType.DML
+                && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown, dataMap)
+                : new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
+                : new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                new FirstConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
-                new ConnectionStrictlySQLExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
+                firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -226,6 +236,18 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
             return executeWithoutMetadata(
                     statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+        }
+    }
+    
+    private final class ProxySagaSQLExecuteCallback extends SagaSQLExeucteCallback<ExecuteResponseUnit> {
+    
+        ProxySagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
+        }
+        
+        @Override
+        protected ExecuteResponseUnit executeResult() {
+            return new ExecuteUpdateResponseUnit(new OKPacket(1));
         }
     }
 }
