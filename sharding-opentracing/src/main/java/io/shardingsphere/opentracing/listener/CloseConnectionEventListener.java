@@ -20,6 +20,7 @@ package io.shardingsphere.opentracing.listener;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
@@ -50,10 +51,10 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     }
     
     @Override
-    protected void initSpan(final CloseConnectionEvent event, final Span span) {
+    protected Span initSpan(final CloseConnectionEvent event, final SpanBuilder span) {
         CloseConnectionStartEvent startEvent = (CloseConnectionStartEvent) event;
-        span.setTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource())
-                .setTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
-                .setTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort());
+        return span.withTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource())
+                .withTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
+                .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort()).startManual();
     }
 }

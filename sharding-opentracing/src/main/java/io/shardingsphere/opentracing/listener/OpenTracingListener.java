@@ -18,6 +18,7 @@
 package io.shardingsphere.opentracing.listener;
 
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
@@ -54,7 +55,7 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
     protected final void tracing(final T event) {
         switch (event.getEventType()) {
             case BEFORE_EXECUTE:
-                initSpan(event, createSpan());
+                spanHolder.set(initSpan(event, createSpanBuilder()));
                 break;
             case EXECUTE_SUCCESS:
                 tracingFinish(event);
@@ -68,14 +69,11 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
         }
     }
     
-    private Span createSpan() {
-        Span result = ShardingTracer.get().buildSpan(operationName)
-                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).startManual();
-        spanHolder.set(result);
-        return result;
+    private SpanBuilder createSpanBuilder() {
+        return ShardingTracer.get().buildSpan(operationName).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
     }
     
-    protected abstract void initSpan(T event, Span span);
+    protected abstract Span initSpan(T event, SpanBuilder spanBuilder);
     
     private void tracingFinish(final T event) {
         updateSpan(event, spanHolder.get());

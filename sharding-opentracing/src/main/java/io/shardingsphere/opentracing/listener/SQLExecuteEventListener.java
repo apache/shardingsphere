@@ -22,6 +22,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
@@ -56,17 +57,17 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     }
     
     @Override
-    protected void initSpan(final SQLExecutionEvent event, final Span span) {
+    protected Span initSpan(final SQLExecutionEvent event, final SpanBuilder span) {
         isTrunkThread.set(RootInvokeEventListener.isTrunkThread());
         if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION) && !isTrunkThread.get()) {
             RootInvokeEventListener.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION)).activate());
         }
-        span.setTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
-                .setTag(Tags.PEER_PORT.getKey(), event.getDataSourceMetaData().getPort())
-                .setTag(Tags.DB_TYPE.getKey(), "sql")
-                .setTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName())
-                .setTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
-                .setTag(Tags.DB_STATEMENT.getKey(), event.getRouteUnit().getSqlUnit().getSql());
+        return span.withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
+                .withTag(Tags.PEER_PORT.getKey(), event.getDataSourceMetaData().getPort())
+                .withTag(Tags.DB_TYPE.getKey(), "sql")
+                .withTag(Tags.DB_INSTANCE.getKey(), event.getRouteUnit().getDataSourceName())
+                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), event.getParameters().isEmpty() ? "" : Joiner.on(",").join(event.getParameters()))
+                .withTag(Tags.DB_STATEMENT.getKey(), event.getRouteUnit().getSqlUnit().getSql()).startManual();
     }
     
     @Override

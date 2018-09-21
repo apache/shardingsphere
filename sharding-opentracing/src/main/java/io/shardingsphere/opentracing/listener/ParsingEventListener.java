@@ -20,6 +20,7 @@ package io.shardingsphere.opentracing.listener;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
@@ -50,7 +51,7 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     }
     
     @Override
-    protected void initSpan(final ParsingEvent event, final Span span) {
-        span.setTag(Tags.DB_STATEMENT.getKey(), ((ParsingStartEvent) event).getSql());
+    protected Span initSpan(final ParsingEvent event, final SpanBuilder span) {
+        return span.withTag(Tags.DB_STATEMENT.getKey(), ((ParsingStartEvent) event).getSql()).startManual();
     }
 }

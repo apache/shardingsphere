@@ -20,6 +20,7 @@ package io.shardingsphere.opentracing.listener;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.GetConnectionEvent;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
@@ -51,8 +52,8 @@ public final class GetConnectionEventListener extends OpenTracingListener<GetCon
     }
     
     @Override
-    protected void initSpan(final GetConnectionEvent event, final Span span) {
-        span.setTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource());
+    protected Span initSpan(final GetConnectionEvent event, final SpanBuilder span) {
+        return span.withTag(Tags.DB_INSTANCE.getKey(), ((GetConnectionStartEvent) event).getDataSource()).startManual();
     }
     
     @Override
