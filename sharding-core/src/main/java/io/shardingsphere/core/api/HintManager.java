@@ -48,9 +48,6 @@ public final class HintManager implements AutoCloseable {
     private final Map<ShardingKey, ShardingValue> tableShardingValues = new HashMap<>();
     
     @Getter
-    private boolean shardingHint;
-    
-    @Getter
     private boolean masterRouteOnly;
     
     @Getter
@@ -76,7 +73,7 @@ public final class HintManager implements AutoCloseable {
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingOnly = true;
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, value);
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
     }
     
     /**
@@ -85,22 +82,20 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param value sharding value
      */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
+    public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
+        addDatabaseShardingValue(logicTable, ShardingOperator.EQUAL, value);
     }
     
     /**
      * Add sharding value for database.
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param operator sharding operator
      * @param values sharding value
      */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
+    public void addDatabaseShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
         shardingHint = true;
         databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
@@ -127,7 +122,6 @@ public final class HintManager implements AutoCloseable {
      * @param values sharding value
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        shardingHint = true;
         tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
