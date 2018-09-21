@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.config;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -152,7 +153,7 @@ public final class ProxyContext {
      * @return rule registry of schema
      */
     public RuleRegistry getRuleRegistry(final String schema) {
-        return ruleRegistryMap.get(schema);
+        return Strings.isNullOrEmpty(schema) ? null : ruleRegistryMap.get(schema);
     }
     
     /**

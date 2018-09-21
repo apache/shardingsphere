@@ -116,7 +116,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         public void run() {
             ShardingEventBusInstance.getInstance().post(new RootInvokeEvent());
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-                 BackendConnection backendConnection = new BackendConnection(ProxyContext.getInstance().getRuleRegistry(frontendHandler.getCurrentSchema()))) {
+                 BackendConnection backendConnection = new BackendConnection()) {
                 setBackendConnection(backendConnection);
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
                 Optional<CommandResponsePackets> responsePackets = commandPacket.execute();

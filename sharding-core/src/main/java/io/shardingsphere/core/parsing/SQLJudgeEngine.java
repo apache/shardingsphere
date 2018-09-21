@@ -162,7 +162,6 @@ public final class SQLJudgeEngine {
         if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             lexerEngine.nextToken();
-            lexerEngine.nextToken();
             result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
         }
         return result;

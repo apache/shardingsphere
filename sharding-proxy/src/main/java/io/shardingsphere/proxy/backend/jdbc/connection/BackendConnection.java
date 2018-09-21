@@ -29,7 +29,8 @@ import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,11 +47,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhaojun
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 public final class BackendConnection implements AutoCloseable {
     
     @Getter
-    private final RuleRegistry ruleRegistry;
+    @Setter
+    private RuleRegistry ruleRegistry;
     
     private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     

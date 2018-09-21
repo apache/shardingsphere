@@ -82,15 +82,14 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private int currentSequenceId;
     
-    private String currentSchema;
-    
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
-        return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+        return ruleRegistry == null 
+                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) 
+                : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
-        currentSchema = frontendHandler.getCurrentSchema();
         if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
             return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
         }
@@ -106,7 +105,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         if (!ruleRegistry.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(), 
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
                     new ProxyTableMetaDataConnectionManager(ruleRegistry.getBackendDataSource()), PROXY_CONTEXT.getMaxConnectionsSizePerQuery());
             ruleRegistry.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleRegistry.getShardingRule()));
         }
@@ -127,7 +126,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         if (mergedResult instanceof ShowDatabasesMergedResult) {
             mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
         } else if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(currentSchema);
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(ruleRegistry.getSchemaName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
@@ -150,7 +149,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            each.setName("Tables_in_" + currentSchema);
+            each.setName("Tables_in_" + ruleRegistry.getSchemaName());
         }
     }
     
