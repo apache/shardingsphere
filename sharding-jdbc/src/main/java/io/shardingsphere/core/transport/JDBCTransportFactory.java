@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.transport;
 
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.transaction.manager.base.servicecomb.ShardingTransportFactory;
 import org.apache.servicecomb.saga.transports.SQLTransport;
@@ -38,8 +39,8 @@ public final class JDBCTransportFactory implements ShardingTransportFactory {
     }
     
     @Override
-    public void cacheTransport(final Connection connection) {
-        transports.set(new JDBCSqlTransport((AbstractConnectionAdapter) connection));
+    public void cacheTransport(final SagaTransactionEvent event) {
+        transports.set(new JDBCSqlTransport((AbstractConnectionAdapter) event.getConnection()));
     }
     
     @Override
