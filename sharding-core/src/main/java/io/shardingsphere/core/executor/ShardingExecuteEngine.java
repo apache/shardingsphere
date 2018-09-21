@@ -22,7 +22,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.exception.ShardingException;
-import lombok.Getter;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -45,7 +44,6 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
-    @Getter
     private final ListeningExecutorService executorService;
     
     public ShardingExecuteEngine(final int executorSize) {

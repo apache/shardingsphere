@@ -18,10 +18,7 @@
 package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ListenableFuture;
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -36,8 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * SQL execute prepare template.
@@ -51,8 +46,6 @@ public final class SQLExecutePrepareTemplate {
     
     private final int maxConnectionsSizePerQuery;
     
-    private final ShardingExecuteEngine executeEngine;
-    
     /**
      * Get execute unit groups.
      * 
@@ -64,30 +57,8 @@ public final class SQLExecutePrepareTemplate {
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
-        // TODO use executeEngine to instead of executeEngine.getExecutorService()
-        Collection<ListenableFuture<List<ShardingExecuteGroup<StatementExecuteUnit>>>> futures = new LinkedList<>();
-        for (final Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            futures.add(executeEngine.getExecutorService().submit(new Callable<List<ShardingExecuteGroup<StatementExecuteUnit>>>() {
-                
-                @Override
-                public List<ShardingExecuteGroup<StatementExecuteUnit>> call() throws SQLException {
-                    try {
-                        return getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback);
-                    } catch (final SQLException ex) {
-                        if (ex.getCause() instanceof SQLException) {
-                            throw (SQLException) ex.getCause();
-                        }
-                        throw new ShardingException(ex);
-                    }
-                }
-            }));
-        }
-        for (ListenableFuture<List<ShardingExecuteGroup<StatementExecuteUnit>>> each : futures) {
-            try {
-                result.addAll(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
-                ex.printStackTrace();
-            }
+        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
+            result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
         }
         return result;
     }
