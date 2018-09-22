@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.parser.sql;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 
@@ -43,11 +42,5 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseMultipleInsertForMySQL() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule, null).parse(false);
-    }
-    
-    @Test(expected = SQLParsingUnsupportedException.class)
-    public void parseInsertFirstForOracle() {
-        ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, null).parse(false);
     }
 }
