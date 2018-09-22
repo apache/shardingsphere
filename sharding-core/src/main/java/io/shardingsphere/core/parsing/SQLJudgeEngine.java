@@ -159,9 +159,8 @@ public final class SQLJudgeEngine {
     
     private DALStatement parseShowTables(final LexerEngine lexerEngine) {
         DALStatement result = new ShowTablesStatement();
-        if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            lexerEngine.nextToken();
             result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
         }
         return result;

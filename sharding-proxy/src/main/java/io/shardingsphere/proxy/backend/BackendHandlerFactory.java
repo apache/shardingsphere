@@ -122,7 +122,7 @@ public final class BackendHandlerFactory {
                     || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement)) {
                 LinkedList<SQLToken> sqlTokens = new LinkedList<>();
                 sqlTokens.addAll(sqlStatement.getSqlTokens());
-                schema = ((SchemaToken) sqlTokens.getLast()).getOriginalLiterals();
+                schema = ((SchemaToken) sqlTokens.getLast()).getSchemaName();
             }
             
             if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowOtherStatement || sqlStatement instanceof UseStatement) {
