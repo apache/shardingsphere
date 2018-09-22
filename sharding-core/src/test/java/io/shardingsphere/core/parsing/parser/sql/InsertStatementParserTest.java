@@ -25,12 +25,6 @@ import org.junit.Test;
 
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
-    @Test
-    public void parseInsertOnDuplicateKeyUpdateWithNoShardingColumn() {
-        ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "INSERT ALL INTO TABLE_XXX (field8) VALUES (field8) ON DUPLICATE KEY UPDATE field8 = VALUES(field8)", shardingRule, null).parse(false);
-    }
-    
     @Test(expected = SQLParsingException.class)
     public void parseInsertOnDuplicateKeyUpdateWithShardingColumn() {
         ShardingRule shardingRule = createShardingRule();
