@@ -51,14 +51,6 @@ import static org.mockito.Mockito.when;
 
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
-    @Test
-    public void assertParseWithGenerateKeyColumnsWithoutParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule, null);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithoutParameter(insertStatement);
-    }
-    
     @SuppressWarnings("unchecked")
     private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
