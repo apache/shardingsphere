@@ -17,46 +17,14 @@
 
 package io.shardingsphere.core.parsing.parser.sql;
 
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
-import io.shardingsphere.core.parsing.parser.context.condition.Column;
-import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
-    @Test
-    public void parseWithSpecialSyntax() {
-//        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
-        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX SET field1=1");
-        // TODO
-//         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
-        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule, shardingTableMetaData).parse(false);
-        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
-        Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 1));
-    }
     
     @Test
     public void parseInsertOnDuplicateKeyUpdateWithNoShardingColumn() {
