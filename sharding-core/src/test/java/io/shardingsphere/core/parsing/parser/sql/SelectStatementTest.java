@@ -29,11 +29,6 @@ import static org.junit.Assert.assertTrue;
 public final class SelectStatementTest {
     
     @Test
-    public void assertIsSameGroupByAndOrderByItemsWhenGroupByAndOrderByAllEmpty() {
-        assertFalse(new SelectStatement().isSameGroupByAndOrderByItems());
-    }
-    
-    @Test
     public void assertIsSameGroupByAndOrderByItemsWhenSame() {
         SelectStatement actual = new SelectStatement();
         actual.getOrderByItems().add(new OrderItem("col", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
