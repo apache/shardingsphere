@@ -17,15 +17,9 @@
 
 package io.shardingsphere.core.parsing.parser.sql;
 
-import com.google.common.collect.Lists;
-import io.shardingsphere.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -37,28 +31,13 @@ import io.shardingsphere.core.rule.ShardingRule;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
-    
-    @Test
-    public void assertParseWithoutColumnsWithGenerateKeyColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
     
     @Test
     public void assertParseWithoutColumnsWithoutParameter() {
@@ -91,28 +70,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
-    }
-    
-    private ShardingRule createShardingRuleWithGenerateKeyColumns() {
-        DataSource dataSource = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        try {
-            when(dataSource.getConnection()).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-        final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("TABLE_XXX");
-        tableRuleConfig.setActualDataNodes("ds.table_${0..2}");
-        tableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("field1", new TestComplexKeysShardingAlgorithm()));
-        tableRuleConfig.setKeyGeneratorColumnName("field2");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        shardingRuleConfig.setDefaultKeyGenerator(new IncrementKeyGenerator());
-        return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
     
     @Test
