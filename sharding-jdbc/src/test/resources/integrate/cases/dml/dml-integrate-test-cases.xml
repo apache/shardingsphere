@@ -7,8 +7,12 @@
     <dml-test-case sql-case-id="insert_without_parameters">
         <assertion expected-data-file="insert_for_order_1.xml" />
     </dml-test-case>
-
+    
     <dml-test-case sql-case-id="insert_with_special_characters">
+        <assertion expected-data-file="insert_for_order_1.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql-case-id="insert_with_special_syntax">
         <assertion expected-data-file="insert_for_order_1.xml" />
     </dml-test-case>
     
