@@ -67,7 +67,6 @@ public final class StandardRoutingEngine implements RoutingEngine {
         } else {
             dataNodes.addAll(routeByShardingConditions(tableRule));
         }
-        reviseShardingConditions(dataNodes);
         return generateRoutingResult(dataNodes);
     }
     
@@ -93,6 +92,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint();
         List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint();
         result.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+        reviseShardingConditions(result);
         return result;
     }
     
@@ -108,7 +108,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
                         ? getDatabaseShardingValuesFromHint() : getShardingValues(dataBaseShardingStrategy.getShardingColumns(), each);
                 List<ShardingValue> tableShardingValues = isGettingShardingValuesFromHint(tableShardingStrategy)
                         ? getTableShardingValuesFromHint() : getShardingValues(tableShardingStrategy.getShardingColumns(), each);
-                result.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
+                Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
+                reviseShardingConditions(each, dataNodes);
+                result.addAll(dataNodes);
             }
         }
         return result;
@@ -116,9 +118,13 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseShardingConditions(final Collection<DataNode> dataNodes) {
         for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-            if (each instanceof InsertShardingCondition) {
-                ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-            }
+            reviseShardingConditions(each, dataNodes);
+        }
+    }
+    
+    private void reviseShardingConditions(final ShardingCondition each, final Collection<DataNode> dataNodes) {
+        if (each instanceof InsertShardingCondition) {
+            ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
         }
     }
     
