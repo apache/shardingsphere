@@ -73,7 +73,7 @@ public final class HintManager implements AutoCloseable {
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingOnly = true;
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, ShardingOperator.EQUAL, value);
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, ShardingOperator.EQUAL, new Comparable<?>[]{value});
     }
     
     /**
