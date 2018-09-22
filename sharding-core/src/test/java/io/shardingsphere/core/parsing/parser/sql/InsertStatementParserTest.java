@@ -46,12 +46,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
-    public void parseInsertAllForOracle() {
-        ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, null).parse(false);
-    }
-    
-    @Test(expected = SQLParsingUnsupportedException.class)
     public void parseInsertFirstForOracle() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.Oracle, "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, null).parse(false);
