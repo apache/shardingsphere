@@ -28,7 +28,6 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -38,23 +37,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
-    
-    @Test
-    public void assertParseWithoutColumnsWithParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (?, ?)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithParameter(insertStatement);
-    }
-    
-    private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.<Object>singletonList(0))).getValues().iterator().next(), is((Comparable) 0));
-    }
-    
     @Test
     public void parseWithSpecialSyntax() {
 //        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
