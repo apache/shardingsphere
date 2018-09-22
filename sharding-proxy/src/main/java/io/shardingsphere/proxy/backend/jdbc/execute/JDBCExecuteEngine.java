@@ -175,8 +175,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         @Override
-        public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-            return getBackendConnection().getConnections(dataSourceName, connectionSize);
+        public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+            return getBackendConnection().getConnections(connectionMode, dataSourceName, connectionSize);
         }
         
         @Override

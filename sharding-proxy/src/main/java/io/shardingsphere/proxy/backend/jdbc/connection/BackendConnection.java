@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.connection;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
@@ -61,15 +62,16 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Get connections of current thread datasource.
      *
+     * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
      * @return connection
      * @throws SQLException SQL exception
      */
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
+    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         try {
             ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
-            List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(dataSourceName, connectionSize);
+            List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
             cachedConnections.addAll(result);
             GetConnectionEvent finishEvent = new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
             finishEvent.setExecuteSuccess();

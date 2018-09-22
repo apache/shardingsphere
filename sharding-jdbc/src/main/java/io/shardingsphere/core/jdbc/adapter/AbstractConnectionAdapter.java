@@ -20,6 +20,7 @@ package io.shardingsphere.core.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -85,18 +86,19 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(dataSourceName, 1).get(0);
+        return getConnections(ConnectionMode.MEMORY_STRICTLY, dataSourceName, 1).get(0);
     }
     
     /**
      * Get database connections.
      *
+     * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connection list to be get
      * @return database connections
      * @throws SQLException SQL exception
      */
-    public final List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
+    public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
@@ -107,11 +109,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
-            List<Connection> newConnections = createConnections(dataSource, connectionSize - connections.size());
+            List<Connection> newConnections = createConnections(connectionMode, dataSource, connectionSize - connections.size());
             result.addAll(newConnections);
             cachedConnections.putAll(dataSourceName, newConnections);
         } else {
-            result = new ArrayList<>(createConnections(dataSource, connectionSize));
+            result = new ArrayList<>(createConnections(connectionMode, dataSource, connectionSize));
             cachedConnections.putAll(dataSourceName, result);
         }
         postGetConnectionEvent(result);
@@ -119,15 +121,22 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
-        List<Connection> result = new ArrayList<>(connectionSize);
+    private List<Connection> createConnections(final ConnectionMode connectionMode, final DataSource dataSource, final int connectionSize) throws SQLException {
         if (1 == connectionSize) {
             return Collections.singletonList(createConnection(dataSource));
         }
+        if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
+            return createConnections(dataSource, connectionSize);
+        }
         synchronized (dataSource) {
-            for (int i = 0; i < connectionSize; i++) {
-                result.add(createConnection(dataSource));
-            }
+            return createConnections(dataSource, connectionSize);
+        }
+    }
+    
+    private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+        List<Connection> result = new ArrayList<>(connectionSize);
+        for (int i = 0; i < connectionSize; i++) {
+            result.add(createConnection(dataSource));
         }
         return result;
     }

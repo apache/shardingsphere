@@ -67,8 +67,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
             
             @Override
-            public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-                return StatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize);
+            public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+                return StatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);
             }
     
             @SuppressWarnings("MagicConstant")

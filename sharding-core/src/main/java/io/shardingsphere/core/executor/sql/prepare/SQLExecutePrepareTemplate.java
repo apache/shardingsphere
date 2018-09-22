@@ -79,18 +79,18 @@ public final class SQLExecutePrepareTemplate {
         List<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
         List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
-        List<Connection> connections = callback.getConnections(dataSourceName, sqlUnitGroups.size());
+        ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+        List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitGroups.size());
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
-            result.add(getSQLExecuteGroup(connections.get(count++), dataSourceName, each, callback));
+            result.add(getSQLExecuteGroup(connectionMode, connections.get(count++), dataSourceName, each, callback));
         }
         return result;
     }
     
-    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(
-            final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
+    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(final ConnectionMode connectionMode, 
+                                                                          final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
-        ConnectionMode connectionMode = 1 == sqlUnitGroup.size() ? ConnectionMode.MEMORY_STRICTLY : ConnectionMode.CONNECTION_STRICTLY;
         for (SQLUnit each : sqlUnitGroup) {
             result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
         }
