@@ -40,23 +40,6 @@ import static org.junit.Assert.assertThat;
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void assertParseWithoutColumnsWithoutParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` VALUES (10,20)", shardingRule, shardingTableMetaData);
-        InsertStatement insertStatement = (InsertStatement) statementParser.parse(false);
-        assertInsertStatementWithoutParameter(insertStatement);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
-        Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
-        assertThat(condition.getOperator(), CoreMatchers.is(ShardingOperator.EQUAL));
-        assertThat(((ListShardingValue<? extends Comparable>) condition.getShardingValue(Collections.emptyList())).getValues().iterator().next(), is((Comparable) 10));
-    }
-    
-    @Test
     public void assertParseWithoutColumnsWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         ShardingTableMetaData shardingTableMetaData = createShardingTableMetaData();
