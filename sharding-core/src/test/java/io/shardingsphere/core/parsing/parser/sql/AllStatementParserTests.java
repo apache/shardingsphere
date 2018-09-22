@@ -23,7 +23,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        SelectStatementTest.class, 
         InsertStatementParserTest.class
     })
 public final class AllStatementParserTests {
