@@ -36,11 +36,4 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) ON DUPLICATE KEY UPDATE field1 = VALUES(field1)", shardingRule, null).parse(false);
     }
-    
-    @Test
-    // TODO assert
-    public void parseMultipleInsertForMySQL() {
-        ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule, null).parse(false);
-    }
 }
