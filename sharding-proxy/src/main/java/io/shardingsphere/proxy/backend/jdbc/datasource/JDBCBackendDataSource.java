@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +109,9 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        if (1 == connectionSize) {
+            return Collections.singletonList(dataSource.getConnection());
+        }
         synchronized (dataSource) {
             for (int i = 0; i < connectionSize; i++) {
                 result.add(dataSource.getConnection());

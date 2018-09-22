@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -120,13 +121,20 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
+        if (1 == connectionSize) {
+            return Collections.singletonList(createConnection(dataSource));
+        }
         synchronized (dataSource) {
             for (int i = 0; i < connectionSize; i++) {
-                Connection connection = dataSource.getConnection();
-                replayMethodsInvocation(connection);
-                result.add(connection);
+                result.add(createConnection(dataSource));
             }
         }
+        return result;
+    }
+    
+    private Connection createConnection(final DataSource dataSource) throws SQLException {
+        Connection result = dataSource.getConnection();
+        replayMethodsInvocation(result);
         return result;
     }
     
