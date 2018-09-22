@@ -58,7 +58,7 @@ public final class HintManagerHolder {
      * @return database sharding value
      */
     public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
-        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(logicTable));
+        return null != HINT_MANAGER_HOLDER.get() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(logicTable)) : Optional.<ShardingValue>absent();
     }
     
     /**
@@ -68,7 +68,7 @@ public final class HintManagerHolder {
      * @return table sharding value
      */
     public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
-        return Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(logicTable));
+        return null != HINT_MANAGER_HOLDER.get() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(logicTable)) : Optional.<ShardingValue>absent();
     }
     
     /**
