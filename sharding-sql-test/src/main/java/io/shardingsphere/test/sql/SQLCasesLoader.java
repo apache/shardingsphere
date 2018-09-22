@@ -52,9 +52,12 @@ public final class SQLCasesLoader {
     
     private final Map<String, SQLCase> unsupportedSQLCaseMap;
     
+    private final Map<String, SQLCase> parseErrorSQLCaseMap;
+    
     private SQLCasesLoader() {
         supportedSQLCaseMap = loadSQLCases("sql");
         unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
+        parseErrorSQLCaseMap = loadSQLCases("parse_error_sql");
     }
     
     /**
@@ -154,6 +157,18 @@ public final class SQLCasesLoader {
         return getSQL(unsupportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
     }
     
+    /**
+     * Get SQLParsingException error's SQL.
+     *
+     * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getSQLParsingErrorSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(parseErrorSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
     private String getSQL(final Map<String, SQLCase> sqlCaseMap, final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
         switch (sqlCaseType) {
             case Literal:
@@ -202,6 +217,17 @@ public final class SQLCasesLoader {
      */
     public Collection<Object[]> getUnsupportedSQLTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
         return getTestParameters(unsupportedSQLCaseMap, allDatabaseTypes, enumType);
+    }
+    
+    /**
+     * Get test parameters for junit parameterized test case for sql parsing error SQL.
+     *
+     * @param allDatabaseTypes all database types
+     * @param enumType enum type
+     * @return test parameters for junit parameterized test case for parsing error SQL
+     */
+    public Collection<Object[]> getSQLParsingErrorTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        return getTestParameters(parseErrorSQLCaseMap, allDatabaseTypes, enumType);
     }
     
     private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
