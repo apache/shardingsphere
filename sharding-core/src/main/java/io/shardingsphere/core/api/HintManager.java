@@ -73,7 +73,7 @@ public final class HintManager implements AutoCloseable {
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingOnly = true;
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, value);
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, ShardingOperator.EQUAL, value);
     }
     
     /**
@@ -86,7 +86,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
+        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, new Comparable<?>[]{value});
     }
     
     /**
@@ -126,7 +126,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
+        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, new Comparable<?>[]{value});
     }
     
     /**
