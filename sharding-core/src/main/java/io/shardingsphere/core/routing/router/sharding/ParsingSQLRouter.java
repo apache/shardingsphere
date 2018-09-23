@@ -19,8 +19,7 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.parsing.ParsingEvent;
+import io.shardingsphere.core.event.parsing.ParsingEventHandlerSPILoader;
 import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
@@ -86,8 +85,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        ShardingEventBusInstance.getInstance().post(new ParsingStartEvent(logicSQL));
-        ParsingEvent finishEvent = new ParsingFinishEvent();
+        ParsingEventHandlerSPILoader.getInstance().handle(new ParsingStartEvent(logicSQL));
+        ParsingFinishEvent finishEvent = new ParsingFinishEvent();
         try {
             SQLStatement sqlStatement = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
             finishEvent.setExecuteSuccess();
@@ -98,7 +97,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             finishEvent.setExecuteFailure(ex);
             throw ex;
         } finally {
-            ShardingEventBusInstance.getInstance().post(finishEvent);
+            ParsingEventHandlerSPILoader.getInstance().handle(finishEvent);
         }
     }
     

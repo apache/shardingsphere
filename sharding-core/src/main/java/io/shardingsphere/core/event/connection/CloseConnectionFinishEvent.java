@@ -17,10 +17,12 @@
 
 package io.shardingsphere.core.event.connection;
 
+import io.shardingsphere.core.event.ShardingFinishEvent;
+
 /**
  * Close connection finish event.
  *
  * @author zhangyonglun
  */
-public final class CloseConnectionFinishEvent extends CloseConnectionEvent {
+public final class CloseConnectionFinishEvent extends ShardingFinishEvent {
 }

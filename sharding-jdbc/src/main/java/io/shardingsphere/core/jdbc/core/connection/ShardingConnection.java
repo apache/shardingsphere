@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.jdbc.core.connection;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.root.RootInvokeEventHandlerSPILoader;
 import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
@@ -53,7 +53,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         super(shardingContext.getDatabaseType());
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
-        ShardingEventBusInstance.getInstance().post(new RootInvokeStartEvent());
+        RootInvokeEventHandlerSPILoader.getInstance().handle(new RootInvokeStartEvent());
     }
     
     /**

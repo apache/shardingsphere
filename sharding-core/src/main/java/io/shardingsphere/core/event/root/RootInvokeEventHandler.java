@@ -15,20 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.parsing;
-
-import io.shardingsphere.core.event.ShardingStartEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.core.event.root;
 
 /**
- * Parsing start event.
+ * Root invoke event handler.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ParsingStartEvent extends ShardingStartEvent {
+public interface RootInvokeEventHandler {
     
-    private final String sql;
+    /**
+     * Handle root invoke start event.
+     *
+     * @param event root invoke start event
+     */
+    void handle(RootInvokeStartEvent event);
+    
+    /**
+     * Handle root invoke finish event.
+     *
+     * @param event root invoke finish event
+     */
+    void handle(RootInvokeFinishEvent event);
 }

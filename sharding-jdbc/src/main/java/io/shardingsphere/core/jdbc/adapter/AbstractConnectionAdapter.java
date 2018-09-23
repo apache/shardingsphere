@@ -25,12 +25,13 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.connection.CloseConnectionEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionEventHandlerSPILoader;
 import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.core.event.connection.GetConnectionEvent;
+import io.shardingsphere.core.event.connection.GetConnectionEventHandlerSPILoader;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
+import io.shardingsphere.core.event.root.RootInvokeEventHandlerSPILoader;
 import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
@@ -100,7 +101,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
+        GetConnectionEventHandlerSPILoader.getInstance().handle(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -124,7 +125,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 cachedConnections.putAll(dataSourceName, result);
             }
         }
-        postGetConnectionEvent(result);
+        handleGetConnectionEvent(result);
         return result;
     }
     
@@ -155,10 +156,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         return result;
     }
     
-    private void postGetConnectionEvent(final List<Connection> connections) throws SQLException {
-        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
+    private void handleGetConnectionEvent(final List<Connection> connections) throws SQLException {
+        GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
         finishEvent.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(finishEvent);
+        GetConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -233,9 +234,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                ShardingEventBusInstance.getInstance().post(
+                CloseConnectionEventHandlerSPILoader.getInstance().handle(
                         new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
-                CloseConnectionEvent finishEvent = new CloseConnectionFinishEvent();
+                CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
                     finishEvent.setExecuteSuccess();
@@ -245,13 +246,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     finishEvent.setExecuteFailure(ex);
                     throw ex;
                 } finally {
-                    ShardingEventBusInstance.getInstance().post(finishEvent);
+                    CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
                 }
             }
         });
-        ShardingEventBusInstance.getInstance().post(new RootInvokeFinishEvent());
+        RootInvokeEventHandlerSPILoader.getInstance().handle(new RootInvokeFinishEvent());
     }
-                    
+    
     @Override
     public final boolean isClosed() {
         return closed;

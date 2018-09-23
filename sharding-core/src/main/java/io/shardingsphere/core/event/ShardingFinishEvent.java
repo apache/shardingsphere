@@ -15,20 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.parsing;
-
-import io.shardingsphere.core.event.ShardingStartEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.core.event;
 
 /**
- * Parsing start event.
+ * Sharding finish event.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class ParsingStartEvent extends ShardingStartEvent {
-    
-    private final String sql;
+public class ShardingFinishEvent extends ShardingEvent {
 }
