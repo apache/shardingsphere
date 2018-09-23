@@ -61,7 +61,7 @@ public final class SQLExecuteEventListener extends OpenTracingListener<SQLExecut
     @Override
     protected Span initSpan(final SQLExecutionEvent event, final SpanBuilder span) {
         isTrunkThread.set(RootInvokeEventListener.isTrunkThread());
-        if (!isTrunkThread.get()) {
+        if (ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.ROOT_SPAN_CONTINUATION) && !isTrunkThread.get()) {
             RootInvokeEventListener.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(RootInvokeEventListener.ROOT_SPAN_CONTINUATION)).activate());
         }
         return span.withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
