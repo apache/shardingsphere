@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.connection;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -25,6 +25,7 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * Connection close event listener.

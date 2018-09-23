@@ -15,13 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.root;
 
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.listener.BaseOpenTracingListenerTest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class RootInvokeEventListenerTest extends BaseEventListenerTest {
+public final class RootInvokeEventListenerTest extends BaseOpenTracingListenerTest {
     
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     

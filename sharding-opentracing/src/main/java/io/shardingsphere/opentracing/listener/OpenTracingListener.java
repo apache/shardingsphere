@@ -51,7 +51,6 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
         ShardingEventBusInstance.getInstance().register(this);
     }
     
-    @SuppressWarnings("unchecked")
     protected final void tracing(final T event) {
         switch (event.getEventType()) {
             case BEFORE_EXECUTE:

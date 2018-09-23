@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.parsing;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -25,6 +25,7 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
 import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * SQL parsing event listener.

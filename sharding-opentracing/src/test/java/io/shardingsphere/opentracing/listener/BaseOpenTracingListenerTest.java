@@ -29,6 +29,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.listener.root.RootInvokeEventListener;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,11 +42,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseEventListenerTest {
+public abstract class BaseOpenTracingListenerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
-    static MockTracer getTracer() {
+    /**
+     * Get tracer.
+     * 
+     * @return tracer
+     */
+    public static MockTracer getTracer() {
         return TRACER;
     }
     

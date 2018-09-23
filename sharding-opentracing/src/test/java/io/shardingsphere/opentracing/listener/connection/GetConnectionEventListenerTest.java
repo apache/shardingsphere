@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.connection;
 
 import com.google.common.eventbus.EventBus;
 import io.opentracing.mock.MockSpan;
@@ -25,6 +25,7 @@ import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.opentracing.listener.BaseOpenTracingListenerTest;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GetConnectionEventListenerTest extends BaseEventListenerTest {
+public final class GetConnectionEventListenerTest extends BaseOpenTracingListenerTest {
     
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
