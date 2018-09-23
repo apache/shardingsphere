@@ -120,7 +120,7 @@ public final class SQLBuilder {
     }
     
     /**
-     * Convert to sql for master slave rule.
+     * Convert to SQL unit.
      * 
      * @param masterSlaveRule master slave rule
      * @param shardingDataSourceMetaData sharding data source meta data

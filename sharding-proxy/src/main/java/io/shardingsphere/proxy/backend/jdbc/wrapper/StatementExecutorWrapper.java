@@ -55,10 +55,10 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        String reWriteSql = new MasterSlaveSQLRewriteEngine(ruleRegistry.getMasterSlaveRule(), sql, sqlStatement, ruleRegistry.getMetaData()).rewrite();
+        String rewriteSQL = new MasterSlaveSQLRewriteEngine(ruleRegistry.getMasterSlaveRule(), sql, sqlStatement, ruleRegistry.getMetaData()).rewrite();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), PROXY_CONTEXT.isShowSQL()).route(reWriteSql)) {
-            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(reWriteSql, Collections.<List<Object>>emptyList())));
+        for (String each : new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), PROXY_CONTEXT.isShowSQL()).route(rewriteSQL)) {
+            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.<List<Object>>emptyList())));
         }
         return result;
     }

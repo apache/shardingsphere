@@ -51,9 +51,8 @@ public final class ShowTablesMergedResult extends LogicTablesMergedResult {
      * @param schema schema 
      */
     public void resetColumnLabel(final String schema) {
-        Map<String, Integer> labelAndIndexMapnew = new HashMap<>(1, 1);
-        labelAndIndexMapnew.put(schema, 1);
-        resetLabelAndIndexMap(labelAndIndexMapnew);
+        Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
+        labelAndIndexMap.put(schema, 1);
+        resetLabelAndIndexMap(labelAndIndexMap);
     }
-    
 }

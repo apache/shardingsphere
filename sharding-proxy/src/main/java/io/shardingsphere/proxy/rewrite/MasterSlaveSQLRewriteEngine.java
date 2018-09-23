@@ -57,8 +57,7 @@ public final class MasterSlaveSQLRewriteEngine {
      * @param sqlStatement sql statement
      * @param metaData meta data
      */
-    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL,
-                                       final SQLStatement sqlStatement, final ShardingMetaData metaData) {
+    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingMetaData metaData) {
         this.masterSlaveRule = masterSlaveRule;
         this.originalSQL = originalSQL;
         this.sqlStatement = sqlStatement;
