@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.antler.utils;
+package io.shardingsphere.core.parsing.antler.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -301,14 +301,14 @@ public class TreeUtils {
      * @param type terminal node type
      * @return match node
      */
-    public static TerminalNode getFirstTerminalByType(final ParseTree node, final int type) {
+    public static TerminalNode getFirstTerminalByType(final ParseTree node, final String name) {
         if (null == node) {
             return null;
         }
 
         if (node instanceof TerminalNode) {
             TerminalNode terminal = (TerminalNode) node;
-            if (terminal.getSymbol().getType() == type) {
+            if (terminal.getSymbol().getText().equals(name)) {
                 return terminal;
             } else {
                 return null;
@@ -326,7 +326,7 @@ public class TreeUtils {
 
             if (child instanceof TerminalNode) {
                 TerminalNode terminal = (TerminalNode) child;
-                if (terminal.getSymbol().getType() == type) {
+                if (terminal.getSymbol().getText().equals(name)) {
                     return terminal;
                 }
             } else {
@@ -335,7 +335,7 @@ public class TreeUtils {
         }
 
         for (final ParseTree nonterminalNode : nonterminalChildNodes) {
-            TerminalNode retNode = getFirstTerminalByType(nonterminalNode, type);
+            TerminalNode retNode = getFirstTerminalByType(nonterminalNode, name);
             if (null != retNode) {
                 return retNode;
             }

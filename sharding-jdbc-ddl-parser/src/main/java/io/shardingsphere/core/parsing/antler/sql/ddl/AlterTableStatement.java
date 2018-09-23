@@ -15,23 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.antler.sql.ddl;
+package io.shardingsphere.core.parsing.antler.sql.ddl;
 
-import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString
-public class ColumnDefinition {
-    private String name;
+@ToString(callSuper = true)
+public class AlterTableStatement extends DDLStatement {
+    private final List<String> dropColumns = new ArrayList<>();
 
-    private String type;
+    private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
 
-    private Integer length;
+    private final List<ColumnDefinition> addColumns = new ArrayList<>();
 
-    private boolean primaryKey;
+    private boolean dropPrimaryKey;
+
+    private String newTableName;
+
 }

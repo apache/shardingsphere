@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.antler.utils;
+package io.shardingsphere.core.parsing.antler.utils;
 
 import java.util.List;
 
@@ -25,24 +25,25 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.google.common.base.Optional;
 
+import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.parser.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.parser.antlr.mysql.MySQLDDLParser;
 
 public class DDLParserUtils {
 
     /**
      * Parse table name from root node.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseTable(final SQLStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext tableNameNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -70,8 +71,10 @@ public class DDLParserUtils {
     /**
      * Parse table name node.
      * 
-     * @param statement statement parse result
-     * @param tableNameNode table name node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param tableNameNode
+     *            table name node of syntax tree
      */
     public static void parseTableNode(final SQLStatement statement, final ParserRuleContext tableNameNode) {
         if (null == tableNameNode) {
@@ -99,27 +102,27 @@ public class DDLParserUtils {
     /**
      * Parse create table column definition node.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
-    public static void parseCreateDefinition(final CreateTableStatement statement, final ParseTree ddlRootNode) {
-        List<ParseTree> createDefinitionNodes = TreeUtils.getAllDescendantByRuleName(ddlRootNode, "createDefinition");
-        if (null == createDefinitionNodes) {
+    public static void parseColumnDefinition(final CreateTableStatement statement, final ParseTree ddlRootNode) {
+        List<ParseTree> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ddlRootNode, "ColumnDefinition");
+        if (null == columnDefinitions) {
             return;
         }
 
-        for (final ParseTree each : createDefinitionNodes) {
-            if (each.getClass().getSimpleName().startsWith("ColumnNameAndDefinition")) {
-                ColumnDefinition column = parseColumnDefinition(each);
-                if (null == column) {
-                    continue;
-                }
+        for (final ParseTree each : columnDefinitions) {
+            ColumnDefinition column = parseColumnDefinition(each);
+            if (null == column) {
+                continue;
+            }
 
-                statement.getColumnNames().add(column.getName());
-                statement.getColumnTypes().add(column.getType());
-                if (column.isPrimaryKey()) {
-                    statement.getPrimaryKeyColumns().add(column.getName());
-                }
+            statement.getColumnNames().add(column.getName());
+            statement.getColumnTypes().add(column.getType());
+            if (column.isPrimaryKey()) {
+                statement.getPrimaryKeyColumns().add(column.getName());
             }
         }
     }
@@ -127,19 +130,13 @@ public class DDLParserUtils {
     /**
      * Parse alter table add column nodes.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseAddColumn(final AlterTableStatement statement, final ParseTree ddlRootNode) {
-        parseSingleColumn(statement, ddlRootNode);
-
-        ParserRuleContext multiColumnNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
-                "multiColumn");
-        if (null == multiColumnNode) {
-            return;
-        }
-
-        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(multiColumnNode, "columnNameAndDefinition");
+        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(ddlRootNode, "columnDefinition");
         if (null == columnNodes) {
             return;
         }
@@ -155,23 +152,13 @@ public class DDLParserUtils {
     /**
      * Parse alter table modify column nodes.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseModifyColumn(final AlterTableStatement statement, final ParseTree ddlRootNode) {
-        ParserRuleContext modifyColumnNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
-                "modifyColumn");
-        if (null == modifyColumnNode) {
-            return;
-        }
-
-        ParseTree secondChild = modifyColumnNode.getChild(1);
-        int start = 1;
-        if (secondChild instanceof TerminalNode) {
-            start = 2;
-        }
-
-        ColumnDefinition column = parseColumnDefinition(modifyColumnNode.getChild(start));
+        ColumnDefinition column = parseColumnDefinition(ddlRootNode);
 
         if (null != column) {
             statement.getUpdateColumns().put(column.getName(), column);
@@ -181,8 +168,10 @@ public class DDLParserUtils {
     /**
      * Parse add index nodes.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseAddIndex(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext indexDefOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -195,8 +184,10 @@ public class DDLParserUtils {
     /**
      * Parse index node.
      * 
-     * @param statement statement parse result
-     * @param ancestorNode ancestor of index node
+     * @param statement
+     *            statement parse result
+     * @param ancestorNode
+     *            ancestor of index node
      * @return indexName node
      */
     public static ParserRuleContext parseTableIndexNode(final SQLStatement statement, final ParseTree ancestorNode) {
@@ -216,8 +207,10 @@ public class DDLParserUtils {
     /**
      * Parse drop index.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseDropIndex(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext dropIndexDefNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -237,8 +230,10 @@ public class DDLParserUtils {
     /**
      * Parse rename index.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseRenameIndex(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext renameIndexNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -257,8 +252,10 @@ public class DDLParserUtils {
     /**
      * Parse rename table.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseRenameTable(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext renameTableNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -271,8 +268,10 @@ public class DDLParserUtils {
     /**
      * Parse add primary key.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseAddPrimaryKey(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext constraintDefinitionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -304,10 +303,13 @@ public class DDLParserUtils {
         }
     }
 
-    /**Parse drop primary key.
+    /**
+     * Parse drop primary key.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseDropPrimaryKey(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext dropPrimaryKeyNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
@@ -317,35 +319,43 @@ public class DDLParserUtils {
         }
     }
 
-    /** Parse drop column.
+    /**
+     * Parse drop column.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseDropColumn(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         List<ParseTree> dropColumnNodes = TreeUtils.getAllDescendantByRuleName(ddlRootNode, "dropColumn");
         if (null != dropColumnNodes) {
             for (final ParseTree each : dropColumnNodes) {
-                String columnName = each.getChild(each.getChildCount() - 1).getText();
-                if (null != columnName) {
-                    statement.getDropColumns().add(columnName);
+                List<ParseTree> columnNameNodes = TreeUtils.getAllDescendantByRuleName(each, "columnName");
+                for (ParseTree columnNameNode : columnNameNodes) {
+                    if (null != columnNameNode) {
+                        statement.getDropColumns().add(columnNameNode.getText());
+                    }
                 }
             }
         }
     }
 
     // TODO parse after | before column
-    /**Parse alter table single column.
+    /**
+     * Parse alter table single column.
      * 
-     * @param statement statement parse result
-     * @param ddlRootNode DDL root node of syntax tree
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
      */
     public static void parseSingleColumn(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext singleColumnNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
                 "singleColumn");
         if (null != singleColumnNode) {
             ParserRuleContext columnNameAndDefinitionNode = (ParserRuleContext) TreeUtils
-                    .getFirstChildByRuleName(singleColumnNode, "columnNameAndDefinition");
+                    .getFirstChildByRuleName(singleColumnNode, "columnDefinition");
             ColumnDefinition column = parseColumnDefinition(columnNameAndDefinitionNode);
             if (null != column) {
                 statement.getAddColumns().add(column);
@@ -353,24 +363,25 @@ public class DDLParserUtils {
         }
     }
 
-    /**Parse column definition.
+    /**
+     * Parse column definition.
      * 
-     * @param columnNameAndDefinitionNode column definition rule
+     * @param columnDefinitionNode
+     *            column definition rule
      * @return column defition
      */
-    public static ColumnDefinition parseColumnDefinition(final ParseTree columnNameAndDefinitionNode) {
-        if (null == columnNameAndDefinitionNode) {
+    public static ColumnDefinition parseColumnDefinition(final ParseTree columnDefinitionNode) {
+        if (null == columnDefinitionNode) {
             return null;
         }
 
-        ParserRuleContext columnNameNode = (ParserRuleContext) columnNameAndDefinitionNode.getChild(0);
-        ParserRuleContext columnDefinitionNode = (ParserRuleContext) columnNameAndDefinitionNode.getChild(1);
-        ParserRuleContext dataTypeRule = (ParserRuleContext) columnDefinitionNode.getChild(0);
-        TerminalNode dateType = (TerminalNode) dataTypeRule.getChild(0);
+        ParserRuleContext columnNameNode = (ParserRuleContext) columnDefinitionNode.getChild(0);
+        ParserRuleContext dataTypeRule = (ParserRuleContext) columnDefinitionNode.getChild(1);
+        String typeName = dataTypeRule.getChild(0).getText();
 
         Integer length = null;
         if (dataTypeRule.getChildCount() > 1) {
-            TerminalNode lengthNode = TreeUtils.getFirstTerminalByType(dataTypeRule.getChild(1), MySQLDDLParser.NUMBER);
+            TerminalNode lengthNode = TreeUtils.getFirstTerminalByType(dataTypeRule, "NUMBER");
             if (null != lengthNode) {
                 try {
                     length = Integer.parseInt(lengthNode.getText());
@@ -381,12 +392,12 @@ public class DDLParserUtils {
             }
         }
 
-        TerminalNode primaryKeyNode = TreeUtils.getFirstTerminalByType(columnDefinitionNode, MySQLDDLParser.PRIMARY);
+        TerminalNode primaryKeyNode = TreeUtils.getFirstTerminalByType(columnDefinitionNode, "PRIMARY");
         boolean primaryKey = false;
         if (null != primaryKeyNode) {
             primaryKey = true;
         }
 
-        return new ColumnDefinition(columnNameNode.getText(), dateType.getText(), length, primaryKey);
+        return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
     }
 }

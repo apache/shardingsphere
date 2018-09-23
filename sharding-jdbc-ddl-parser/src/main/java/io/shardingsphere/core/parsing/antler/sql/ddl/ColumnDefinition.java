@@ -15,14 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.antler.sql.ddl;
+package io.shardingsphere.core.parsing.antler.sql.ddl;
 
-public enum DDLType {
-    CREATETABLE, 
-    ALTERTABLE, 
-    DROPTABLE, 
-    TRUNCATETABLE, 
-    CREATEINDEX, 
-    ALTERINDEX, 
-    DROPINDEX
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class ColumnDefinition {
+    private String name;
+
+    private String type;
+
+    private Integer length;
+
+    private boolean primaryKey;
 }
