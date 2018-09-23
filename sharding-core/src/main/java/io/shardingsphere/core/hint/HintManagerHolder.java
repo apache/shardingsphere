@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
  * <p>Use thread-local to manage hint.</p>
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
@@ -51,31 +52,23 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Adjust use sharding hint in current thread.
-     * @return use sharding hint in current thread or not
-     */
-    public static boolean isUseShardingHint() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isShardingHint();
-    }
-    
-    /**
      * Get database sharding value.
      * 
-     * @param shardingKey sharding key
+     * @param logicTable logic table
      * @return database sharding value
      */
-    public static Optional<ShardingValue> getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue>absent();
+    public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
+        return null != HINT_MANAGER_HOLDER.get() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(logicTable)) : Optional.<ShardingValue>absent();
     }
     
     /**
      * Get table sharding value.
      *
-     * @param shardingKey sharding key
+     * @param logicTable logic table name
      * @return table sharding value
      */
-    public static Optional<ShardingValue> getTableShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue>absent();
+    public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
+        return null != HINT_MANAGER_HOLDER.get() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(logicTable)) : Optional.<ShardingValue>absent();
     }
     
     /**
