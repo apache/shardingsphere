@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.merger.dal.show;
 
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -28,32 +27,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Merged result for show tables.
- *
- * @author zhangliang
- * @author panjuan
+ * Merged result for show index.
+ * 
+ * @author chenqingyang
  */
-public final class ShowTablesMergedResult extends LogicTablesMergedResult {
+public final class ShowIndexMergedResult extends LogicTablesMergedResult {
     
-    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(1, 1);
+    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(13, 1);
     
     static {
-        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1);
+        LABEL_AND_INDEX_MAP.put("Table", 1);
+        LABEL_AND_INDEX_MAP.put("Non_unique", 2);
+        LABEL_AND_INDEX_MAP.put("Key_name", 3);
+        LABEL_AND_INDEX_MAP.put("Seq_in_index", 4);
+        LABEL_AND_INDEX_MAP.put("Column_name", 5);
+        LABEL_AND_INDEX_MAP.put("Collation", 6);
+        LABEL_AND_INDEX_MAP.put("Cardinality", 7);
+        LABEL_AND_INDEX_MAP.put("Sub_part", 8);
+        LABEL_AND_INDEX_MAP.put("Packed", 9);
+        LABEL_AND_INDEX_MAP.put("Null", 10);
+        LABEL_AND_INDEX_MAP.put("Index_type", 11);
+        LABEL_AND_INDEX_MAP.put("Comment", 12);
+        LABEL_AND_INDEX_MAP.put("Index_comment", 13);
     }
     
-    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
+    public ShowIndexMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
         super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, shardingTableMetaData);
     }
-    
-    /**
-     * Reset column label.
-     * 
-     * @param schema schema 
-     */
-    public void resetColumnLabel(final String schema) {
-        Map<String, Integer> labelAndIndexMapnew = new HashMap<>(1, 1);
-        labelAndIndexMapnew.put(schema, 1);
-        resetLabelAndIndexMap(labelAndIndexMapnew);
-    }
-    
 }
