@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -29,6 +29,7 @@ import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.opentracing.listener.BaseOpenTracingListenerTest;
 import org.junit.After;
 import org.junit.Test;
 
@@ -47,7 +48,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExecuteEventListenerTest extends BaseEventListenerTest {
+public final class ExecuteEventListenerTest extends BaseOpenTracingListenerTest {
     
     private static final String HOST_URL = "jdbc:mysql://127.0.0.1:3306/ds_0";
     

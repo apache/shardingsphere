@@ -15,14 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.root;
+package io.shardingsphere.opentracing.constant;
 
-import io.shardingsphere.core.event.ShardingEvent;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Root invoke event.
+ * Sharding error log tags.
  *
- * @author gaohongtao
+ * @author chenqingyang
  */
-public class RootInvokeEvent extends ShardingEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingErrorLogTags {
+    
+    public static final String EVENT = "event";
+    
+    public static final String EVENT_ERROR_TYPE = "error";
+    
+    public static final String ERROR_KIND = "error.kind";
+    
+    public static final String MESSAGE = "message";
 }

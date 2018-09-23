@@ -24,9 +24,10 @@ import io.shardingsphere.core.api.algorithm.sharding.DatabaseShardingStrategyTes
 import io.shardingsphere.core.api.algorithm.table.TableShardingStrategyTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         ShardingStrategyTest.class, 
         DatabaseShardingStrategyTest.class, 
         TableShardingStrategyTest.class, 

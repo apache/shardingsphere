@@ -21,9 +21,10 @@ import io.shardingsphere.core.parsing.integrate.engine.IntegrateSupportedSQLPars
 import io.shardingsphere.core.parsing.integrate.engine.IntegrateUnsupportedSQLParsingTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         IntegrateSupportedSQLParsingTest.class,
         IntegrateUnsupportedSQLParsingTest.class
     })

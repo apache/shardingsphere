@@ -17,13 +17,22 @@
 
 package io.shardingsphere.opentracing.listener;
 
+import io.shardingsphere.opentracing.listener.connection.CloseConnectionEventListenerTest;
+import io.shardingsphere.opentracing.listener.connection.GetConnectionEventListenerTest;
+import io.shardingsphere.opentracing.listener.executor.ExecuteEventListenerTest;
+import io.shardingsphere.opentracing.listener.parsing.ParsingEventListenerTest;
+import io.shardingsphere.opentracing.listener.root.RootInvokeEventListenerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-    ParsingEventListenerTest.class,
-    ExecuteEventListenerTest.class
+@SuiteClasses({
+        RootInvokeEventListenerTest.class, 
+        GetConnectionEventListenerTest.class,
+        CloseConnectionEventListenerTest.class, 
+        ParsingEventListenerTest.class,
+        ExecuteEventListenerTest.class
 })
 public final class AllListenerTests {
 }

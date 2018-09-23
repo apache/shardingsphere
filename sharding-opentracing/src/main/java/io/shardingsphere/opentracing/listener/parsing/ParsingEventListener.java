@@ -15,16 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.parsing;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
-import io.shardingsphere.opentracing.ShardingTags;
-import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * SQL parsing event listener.
@@ -34,6 +35,10 @@ import io.shardingsphere.opentracing.ShardingTracer;
 public final class ParsingEventListener extends OpenTracingListener<ParsingEvent> {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/parseSQL/";
+    
+    public ParsingEventListener() {
+        super(OPERATION_NAME);
+    }
     
     /**
      * Listen parsing event.
@@ -47,19 +52,7 @@ public final class ParsingEventListener extends OpenTracingListener<ParsingEvent
     }
     
     @Override
-    protected void beforeExecute(final ParsingEvent event) {
-        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME)
-            .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.DB_STATEMENT.getKey(), ((ParsingStartEvent) event).getSql()).startManual());
-    }
-    
-    @Override
-    protected void tracingFinish(final ParsingEvent event) {
-        getSpan().get().finish();
-        getSpan().remove();
-    }
-    
-    @Override
-    protected Span getFailureSpan() {
-        return getSpan().get();
+    protected Span initSpan(final ParsingEvent event, final SpanBuilder span) {
+        return span.withTag(Tags.DB_STATEMENT.getKey(), ((ParsingStartEvent) event).getSql()).startManual();
     }
 }

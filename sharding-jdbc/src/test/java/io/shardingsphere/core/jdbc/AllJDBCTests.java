@@ -22,9 +22,10 @@ import io.shardingsphere.core.jdbc.core.AllCoreTests;
 import io.shardingsphere.core.jdbc.unsupported.AllUnsupportedTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         AllUnsupportedTests.class,
         AllAdapterTests.class,
         AllCoreTests.class

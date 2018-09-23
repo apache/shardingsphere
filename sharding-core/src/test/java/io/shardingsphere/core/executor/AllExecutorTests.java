@@ -20,8 +20,9 @@ package io.shardingsphere.core.executor;
 import io.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(ExecutorExceptionHandlerTest.class)
+@SuiteClasses(ExecutorExceptionHandlerTest.class)
 public final class AllExecutorTests {
 }

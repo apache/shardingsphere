@@ -28,9 +28,10 @@ import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatementTest;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatementTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         ShardingDataSourceTest.class, 
         MasterSlaveDataSourceTest.class, 
         ShardingConnectionTest.class, 

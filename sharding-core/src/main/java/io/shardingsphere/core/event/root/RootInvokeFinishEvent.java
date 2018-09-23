@@ -15,15 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql;
+package io.shardingsphere.core.event.root;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        SelectStatementTest.class, 
-        InsertStatementParserTest.class
-    })
-public final class AllStatementParserTests {
+/**
+ * Root invoke finish event.
+ *
+ * @author zhangliang
+ */
+public final class RootInvokeFinishEvent {
 }

@@ -15,16 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.listener.connection;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.opentracing.ShardingTags;
-import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.opentracing.listener.OpenTracingListener;
 
 /**
  * Connection close event listener.
@@ -34,6 +35,10 @@ import io.shardingsphere.opentracing.ShardingTracer;
 public final class CloseConnectionEventListener extends OpenTracingListener<CloseConnectionEvent> {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/closeConnection/";
+    
+    public CloseConnectionEventListener() {
+        super(OPERATION_NAME);
+    }
     
     /**
      * Listen close connection event.
@@ -47,24 +52,10 @@ public final class CloseConnectionEventListener extends OpenTracingListener<Clos
     }
     
     @Override
-    protected void beforeExecute(final CloseConnectionEvent event) {
+    protected Span initSpan(final CloseConnectionEvent event, final SpanBuilder span) {
         CloseConnectionStartEvent startEvent = (CloseConnectionStartEvent) event;
-        getSpan().set(ShardingTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+        return span.withTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource())
                 .withTag(Tags.PEER_HOSTNAME.getKey(), startEvent.getDataSourceMetaData().getHostName())
-                .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort())
-                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
-                .withTag(Tags.DB_INSTANCE.getKey(), startEvent.getDataSource()).startManual());
-    }
-    
-    @Override
-    protected void tracingFinish(final CloseConnectionEvent event) {
-        getSpan().get().finish();
-        getSpan().remove();
-    }
-    
-    @Override
-    protected Span getFailureSpan() {
-        return getSpan().get();
+                .withTag(Tags.PEER_PORT.getKey(), startEvent.getDataSourceMetaData().getPort()).startManual();
     }
 }

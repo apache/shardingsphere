@@ -17,6 +17,7 @@
 
 package io.shardingsphere.proxy.backend.jdbc.datasource;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -31,6 +32,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,40 +95,48 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(dataSourceName, 1).get(0);
+        return getConnections(ConnectionMode.MEMORY_STRICTLY, dataSourceName, 1).get(0);
     }
     
     /**
      * Get connections.
      *
+     * @param connectionMode connection mode 
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
      * @return connections
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-        List<Connection> result = new ArrayList<>(connectionSize);
+    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
-        synchronized (dataSource) {
-            for (int i = 0; i < connectionSize; i++) {
-                result.add(dataSource.getConnection());
-            }
+        if (1 == connectionSize) {
+            return Collections.singletonList(dataSource.getConnection());
         }
-        return result;
+        if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
+            return createConnections(dataSource, connectionSize);
+        }
+        synchronized (dataSource) {
+            return createConnections(dataSource, connectionSize);
+        }
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        if (!ruleRegistry.getDisabledDataSourceNames().isEmpty()) {
-            return getAvailableDataSourceMap();
-        }
-        return dataSourceMap;
+        return ruleRegistry.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
     }
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (String each : ruleRegistry.getDisabledDataSourceNames()) {
             result.remove(each);
+        }
+        return result;
+    }
+    
+    private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+        List<Connection> result = new ArrayList<>(connectionSize);
+        for (int i = 0; i < connectionSize; i++) {
+            result.add(dataSource.getConnection());
         }
         return result;
     }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.constant;
 
 import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;
@@ -38,4 +38,9 @@ public final class ShardingTags {
      * Records the bind variables of SQL.
      */
     public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
+    
+    /**
+     * Records the connection count.
+     */
+    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
 }

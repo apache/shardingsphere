@@ -86,14 +86,13 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         }), new SQLExecutePrepareCallback() {
             
             @Override
-            public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-                return BatchPreparedStatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize);
+            public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+                return BatchPreparedStatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);
             }
             
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
+                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }
