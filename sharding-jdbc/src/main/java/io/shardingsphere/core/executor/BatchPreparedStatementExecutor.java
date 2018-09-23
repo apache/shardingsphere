@@ -92,8 +92,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
+                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }

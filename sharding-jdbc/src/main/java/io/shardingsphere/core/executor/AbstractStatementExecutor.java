@@ -17,12 +17,16 @@
 
 package io.shardingsphere.core.executor;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,8 +88,28 @@ public class AbstractStatementExecutor {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(connection.getShardingContext().getMaxConnectionsSizePerQuery());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(
+                connection.getShardingContext().getMaxConnectionsSizePerQuery(), TransactionType.XA == TransactionTypeHolder.get(), connection.getShardingContext().getExecuteEngine());
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine());
+    }
+    
+    protected void cacheStatements() {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
+            statements.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
+                
+                @Override
+                public Statement apply(final StatementExecuteUnit input) {
+                    return input.getStatement();
+                }
+            }));
+            parameterSets.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, List<Object>>() {
+                
+                @Override
+                public List<Object> apply(final StatementExecuteUnit input) {
+                    return input.getRouteUnit().getSqlUnit().getParameterSets().get(0);
+                }
+            }));
+        }
     }
     
     @SuppressWarnings("unchecked")

@@ -19,6 +19,8 @@ package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.executor.ShardingExecuteCallback;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -46,19 +48,46 @@ public final class SQLExecutePrepareTemplate {
     
     private final int maxConnectionsSizePerQuery;
     
+    private final boolean synchronizedExecute;
+    
+    private final ShardingExecuteEngine shardingExecuteEngine;
+    
     /**
      * Get execute unit groups.
-     * 
+     *
      * @param routeUnits route units
      * @param callback SQL execute prepare callback
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        return synchronizedExecute ? getSynchronizedExecuteUnitGroups(routeUnits, callback) : getAsynchronizedExecuteUnitGroups(routeUnits, callback);
+    }
+    
+    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
+            final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
+        }
+        return result;
+    }
+    
+    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getAsynchronizedExecuteUnitGroups(
+            final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
+        List<Collection<ShardingExecuteGroup<StatementExecuteUnit>>> results = shardingExecuteEngine.execute(sqlUnitGroups.entrySet(),
+                new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
+                
+                    @Override
+                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input) throws SQLException {
+                        return getSQLExecuteGroups(input.getKey(), input.getValue(), callback);
+                    }
+                });
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
+        for (Collection<ShardingExecuteGroup<StatementExecuteUnit>> each : results) {
+            result.addAll(each);
         }
         return result;
     }
@@ -88,8 +117,8 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(final ConnectionMode connectionMode, 
-                                                                          final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
+    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(final ConnectionMode connectionMode, final Connection connection, 
+                                                                          final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));

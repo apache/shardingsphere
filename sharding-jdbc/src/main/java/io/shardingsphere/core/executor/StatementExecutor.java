@@ -61,6 +61,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlType(routeResult.getSqlStatement().getType());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        cacheStatements();
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
@@ -74,10 +75,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             @SuppressWarnings("MagicConstant")
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                Statement statement = connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-                getStatements().add(statement);
-                getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
-                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+                return new StatementExecuteUnit(routeUnit, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
             }
         });
     }

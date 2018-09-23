@@ -20,6 +20,7 @@ package io.shardingsphere.proxy.backend.jdbc.execute;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -96,7 +97,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery());
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery(), 
+                TransactionType.XA == ProxyContext.getInstance().getTransactionType(), BackendExecutorContext.getInstance().getExecuteEngine());
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     

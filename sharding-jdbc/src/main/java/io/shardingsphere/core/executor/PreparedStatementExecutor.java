@@ -67,6 +67,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlType(routeResult.getSqlStatement().getType());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        cacheStatements();
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
@@ -79,10 +80,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                getStatements().add(preparedStatement);
-                getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
-                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
+                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }
