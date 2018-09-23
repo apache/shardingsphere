@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Adapter for {@code Connection}.
@@ -102,19 +103,26 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-        Collection<Connection> connections = cachedConnections.get(dataSourceName);
+        Collection<Connection> connections;
+        synchronized (cachedConnections) {
+            connections = cachedConnections.get(dataSourceName);
+        }
         List<Connection> result;
         if (connections.size() >= connectionSize) {
-            result = new ArrayList<>(cachedConnections.get(dataSourceName)).subList(0, connectionSize);
+            result = new ArrayList<>(connections).subList(0, connectionSize);
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
             List<Connection> newConnections = createConnections(connectionMode, dataSource, connectionSize - connections.size());
             result.addAll(newConnections);
-            cachedConnections.putAll(dataSourceName, newConnections);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, newConnections);
+            }
         } else {
             result = new ArrayList<>(createConnections(connectionMode, dataSource, connectionSize));
-            cachedConnections.putAll(dataSourceName, result);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, result);
+            }
         }
         postGetConnectionEvent(result);
         return result;
@@ -223,7 +231,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
-            public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
+            public void execute(final Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
                 ShardingEventBusInstance.getInstance().post(
                         new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
