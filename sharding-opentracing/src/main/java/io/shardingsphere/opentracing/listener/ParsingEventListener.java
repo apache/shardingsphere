@@ -24,7 +24,7 @@ import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.parsing.ParsingEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
-import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
  * SQL parsing event listener.

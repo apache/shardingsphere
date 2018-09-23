@@ -24,7 +24,7 @@ import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.connection.CloseConnectionEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
  * Connection close event listener.

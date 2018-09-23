@@ -24,7 +24,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.opentracing.constant.ShardingTags;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

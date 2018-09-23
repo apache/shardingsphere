@@ -15,24 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.constant;
 
+import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding error log tags.
+ * Sharding tags.
  *
  * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingErrorLogTags {
+public final class ShardingTags {
     
-    public static final String EVENT = "event";
+    /**
+     * Component of Sharding-Sphere's open tracing tag.
+     */
+    public static final String COMPONENT_NAME = "Sharding-Sphere";
     
-    public static final String EVENT_ERROR_TYPE = "error";
+    /**
+     * Records the bind variables of SQL.
+     */
+    public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
     
-    public static final String ERROR_KIND = "error.kind";
-    
-    public static final String MESSAGE = "message";
+    /**
+     * Records the connection count.
+     */
+    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
 }

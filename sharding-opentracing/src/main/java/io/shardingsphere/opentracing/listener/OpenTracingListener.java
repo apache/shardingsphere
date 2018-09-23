@@ -22,8 +22,8 @@ import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.ShardingEvent;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.opentracing.ShardingErrorLogTags;
-import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
+import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
 import lombok.RequiredArgsConstructor;
 
