@@ -61,23 +61,21 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlType(routeResult.getSqlStatement().getType());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        cacheStatements();
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
             
             @Override
-            public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-                return StatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize);
+            public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+                return StatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);
             }
     
             @SuppressWarnings("MagicConstant")
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                Statement statement = connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-                getStatements().add(statement);
-                getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
-                return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+                return new StatementExecuteUnit(routeUnit, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
             }
         });
     }
