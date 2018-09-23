@@ -97,8 +97,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery(), 
-                TransactionType.XA == ProxyContext.getInstance().getTransactionType(), BackendExecutorContext.getInstance().getExecuteEngine());
+        sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType() ? new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery())
+                : new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery(), BackendExecutorContext.getInstance().getExecuteEngine());
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     

@@ -88,8 +88,8 @@ public class AbstractStatementExecutor {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(
-                connection.getShardingContext().getMaxConnectionsSizePerQuery(), TransactionType.XA == TransactionTypeHolder.get(), connection.getShardingContext().getExecuteEngine());
+        sqlExecutePrepareTemplate = TransactionType.XA == TransactionTypeHolder.get() ? new SQLExecutePrepareTemplate(connection.getShardingContext().getMaxConnectionsSizePerQuery())
+                : new SQLExecutePrepareTemplate(connection.getShardingContext().getMaxConnectionsSizePerQuery(), connection.getShardingContext().getExecuteEngine());
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine());
     }
     

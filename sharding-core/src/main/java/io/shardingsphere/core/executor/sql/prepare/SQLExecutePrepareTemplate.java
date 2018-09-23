@@ -25,6 +25,7 @@ import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -44,13 +45,12 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@AllArgsConstructor
 public final class SQLExecutePrepareTemplate {
     
     private final int maxConnectionsSizePerQuery;
     
-    private final boolean synchronizedExecute;
-    
-    private final ShardingExecuteEngine shardingExecuteEngine;
+    private ShardingExecuteEngine shardingExecuteEngine;
     
     /**
      * Get execute unit groups.
@@ -61,7 +61,7 @@ public final class SQLExecutePrepareTemplate {
      * @throws SQLException SQL exception
      */
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        return synchronizedExecute ? getSynchronizedExecuteUnitGroups(routeUnits, callback) : getAsynchronizedExecuteUnitGroups(routeUnits, callback);
+        return null == shardingExecuteEngine ? getSynchronizedExecuteUnitGroups(routeUnits, callback) : getAsynchronizedExecuteUnitGroups(routeUnits, callback);
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
