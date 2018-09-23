@@ -37,7 +37,7 @@ import io.shardingsphere.opentracing.ShardingTracer;
  */
 public final class RootInvokeEventListener {
     
-    public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
+    public static final String ROOT_SPAN_CONTINUATION = "ROOT_SPAN_CONTINUATION";
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
@@ -60,7 +60,7 @@ public final class RootInvokeEventListener {
     public void listen(final RootInvokeStartEvent event) {
         ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         ACTIVE_SPAN.set(span);
-        ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());
+        ExecutorDataMap.getDataMap().put(ROOT_SPAN_CONTINUATION, span.capture());
     }
     
     /**

@@ -39,7 +39,7 @@ public final class RootInvokeEventListenerTest extends BaseOpenTracingListenerTe
         shardingEventBus.post(new RootInvokeStartEvent());
         assertTrue(RootInvokeEventListener.isTrunkThread());
         assertNotNull(RootInvokeEventListener.getActiveSpan().get());
-        assertTrue(ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION));
+        assertTrue(ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.ROOT_SPAN_CONTINUATION));
         shardingEventBus.post(new RootInvokeFinishEvent());
         assertFalse(RootInvokeEventListener.isTrunkThread());
         assertNull(RootInvokeEventListener.getActiveSpan().get());

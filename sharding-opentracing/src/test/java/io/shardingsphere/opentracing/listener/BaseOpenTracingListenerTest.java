@@ -58,7 +58,7 @@ public abstract class BaseOpenTracingListenerTest {
     @BeforeClass
     public static void initTracer() {
         ShardingTracer.init(TRACER);
-        ExecutorDataMap.getDataMap().remove(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION);
+        ExecutorDataMap.getDataMap().remove(RootInvokeEventListener.ROOT_SPAN_CONTINUATION);
     }
     
     @AfterClass
