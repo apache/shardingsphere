@@ -89,40 +89,6 @@ indexHint:
       | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
      ;
     
-
-characterAndCollate:
-    characterSet
-    collateClause
-    ;
-    
-characterSet:
-    ((CHARACTER | CHAR) SET charsetName)
-    |CHARSET EQ_OR_ASSIGN? charsetName
-    ;
-    
-charsetName:
-    ID
-    |BINARY
-    ;
-
-collateClause:
-    COLLATE ID
-    ;
-
-characterAndCollateWithEqual:
-    characterSetWithEqual
-    collateClauseWithEqual
-    ;
-    
-characterSetWithEqual:
-    ((CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName)
-    |CHARSET EQ_OR_ASSIGN? charsetName
-    ;
-    
-collateClauseWithEqual:
-    COLLATE EQ_OR_ASSIGN? ID
-    ;
-     
 selectExpr:
     bitExpr AS? alias?
     ;
