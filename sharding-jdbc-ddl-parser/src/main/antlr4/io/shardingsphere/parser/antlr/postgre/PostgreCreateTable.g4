@@ -22,15 +22,19 @@ createTableHeader:
     ;
 
 createDefinitions:
-   LEFT_PAREN (columnDefinition (COMMA columnDefinition)*)? RIGHT_PAREN
+   LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
    ;
 
-columnDefinition:
-     (columnName dataType collateClause? columnConstraint*)
+createDefinition:
+     columnDefinition
     | tableConstraint
     | LIKE tableName likeOption*
      ;
-
+     
+columnDefinition:
+	(columnName dataType collateClause? columnConstraint*)
+	;
+	
 likeOption:
     (INCLUDING | EXCLUDING )
     (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
