@@ -19,9 +19,9 @@ package io.shardingsphere.opentracing.handler.connection;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.connection.get.GetConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.spi.connection.get.GetConnectionFinishEvent;
-import io.shardingsphere.core.spi.connection.get.GetConnectionStartEvent;
+import io.shardingsphere.core.spi.event.connection.get.GetConnectionEventHandlerLoader;
+import io.shardingsphere.core.spi.event.connection.get.GetConnectionFinishEvent;
+import io.shardingsphere.core.spi.event.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 public final class OpenTracingGetConnectionEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final GetConnectionEventHandlerSPILoader loader = GetConnectionEventHandlerSPILoader.getInstance();
+    private final GetConnectionEventHandlerLoader loader = GetConnectionEventHandlerLoader.getInstance();
     
     @Test
     public void assertExecuteSuccess() {

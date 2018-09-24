@@ -15,20 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.get;
+package io.shardingsphere.core.spi.event.connection.close;
 
-import io.shardingsphere.core.spi.ShardingStartEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.spi.event.ShardingFinishEvent;
 
 /**
- * Get connection start event.
+ * Close connection finish event.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class GetConnectionStartEvent extends ShardingStartEvent {
-    
-    private final String dataSource;
+public final class CloseConnectionFinishEvent extends ShardingFinishEvent {
 }

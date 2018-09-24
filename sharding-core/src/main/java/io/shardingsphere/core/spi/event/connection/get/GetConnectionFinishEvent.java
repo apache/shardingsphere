@@ -15,14 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.parsing;
+package io.shardingsphere.core.spi.event.connection.get;
 
-import io.shardingsphere.core.spi.ShardingEventHandler;
+import io.shardingsphere.core.spi.event.ShardingFinishEvent;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Parsing event handler.
+ * Get connection finish event.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public interface ParsingEventHandler extends ShardingEventHandler<ParsingStartEvent, ParsingFinishEvent> {
+@RequiredArgsConstructor
+@Getter
+public final class GetConnectionFinishEvent extends ShardingFinishEvent {
+    
+    private final int connectionCount;
+    
+    private final DataSourceMetaData dataSourceMetaData;
 }

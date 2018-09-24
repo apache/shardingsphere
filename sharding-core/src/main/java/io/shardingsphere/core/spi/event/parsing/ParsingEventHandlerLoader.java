@@ -15,23 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.executor;
+package io.shardingsphere.core.spi.event.parsing;
 
 import java.util.ServiceLoader;
 
 /**
- * SQL Execution event handler SPI loader.
+ * Parsing event handler loader.
  *
  * @author zhangliang
  */
-public final class SQLExecutionEventHandlerSPILoader {
+public final class ParsingEventHandlerLoader {
     
-    private static final SQLExecutionEventHandlerSPILoader INSTANCE = new SQLExecutionEventHandlerSPILoader();
+    private static final ParsingEventHandlerLoader INSTANCE = new ParsingEventHandlerLoader();
     
-    private final ServiceLoader<SQLExecutionEventHandler> serviceLoader;
+    private final ServiceLoader<ParsingEventHandler> serviceLoader;
     
-    private SQLExecutionEventHandlerSPILoader() {
-        serviceLoader = ServiceLoader.load(SQLExecutionEventHandler.class);
+    private ParsingEventHandlerLoader() {
+        serviceLoader = ServiceLoader.load(ParsingEventHandler.class);
     }
     
     /**
@@ -39,28 +39,28 @@ public final class SQLExecutionEventHandlerSPILoader {
      * 
      * @return instance
      */
-    public static SQLExecutionEventHandlerSPILoader getInstance() {
+    public static ParsingEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Handle SQL execution start event.
+     * Handle parsing start event.
      *
-     * @param event SQL execution start event
+     * @param event parsing start event
      */
-    public void handle(final SQLExecutionStartEvent event) {
-        for (SQLExecutionEventHandler each : serviceLoader) {
+    public void handle(final ParsingStartEvent event) {
+        for (ParsingEventHandler each : serviceLoader) {
             each.handle(event);
         }
     }
     
     /**
-     * Handle SQL execution finish event.
+     * Handle parsing finish event.
      *
-     * @param event SQL execution finish event
+     * @param event parsing finish event
      */
-    public void handle(final SQLExecutionFinishEvent event) {
-        for (SQLExecutionEventHandler each : serviceLoader) {
+    public void handle(final ParsingFinishEvent event) {
+        for (ParsingEventHandler each : serviceLoader) {
             each.handle(event);
         }
     }

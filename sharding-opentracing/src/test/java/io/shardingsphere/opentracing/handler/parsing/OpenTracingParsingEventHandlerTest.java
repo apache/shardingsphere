@@ -19,9 +19,9 @@ package io.shardingsphere.opentracing.handler.parsing;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.parsing.ParsingEventHandlerSPILoader;
-import io.shardingsphere.core.spi.parsing.ParsingFinishEvent;
-import io.shardingsphere.core.spi.parsing.ParsingStartEvent;
+import io.shardingsphere.core.spi.event.parsing.ParsingEventHandlerLoader;
+import io.shardingsphere.core.spi.event.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.spi.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 
 public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final ParsingEventHandlerSPILoader loader = ParsingEventHandlerSPILoader.getInstance();
+    private final ParsingEventHandlerLoader loader = ParsingEventHandlerLoader.getInstance();
     
     @Test
     public void assertExecuteSuccess() {

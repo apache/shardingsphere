@@ -20,17 +20,17 @@ package io.shardingsphere.core.spi.root;
 import java.util.ServiceLoader;
 
 /**
- * Root invoke handler SPI loader.
+ * Root invoke handler loader.
  *
  * @author zhangliang
  */
-public final class RootInvokeHandlerSPILoader {
+public final class RootInvokeHandlerLoader {
     
-    private static final RootInvokeHandlerSPILoader INSTANCE = new RootInvokeHandlerSPILoader();
+    private static final RootInvokeHandlerLoader INSTANCE = new RootInvokeHandlerLoader();
     
     private final ServiceLoader<RootInvokeHandler> serviceLoader;
     
-    private RootInvokeHandlerSPILoader() {
+    private RootInvokeHandlerLoader() {
         serviceLoader = ServiceLoader.load(RootInvokeHandler.class);
     }
     
@@ -39,14 +39,14 @@ public final class RootInvokeHandlerSPILoader {
      * 
      * @return instance
      */
-    public static RootInvokeHandlerSPILoader getInstance() {
+    public static RootInvokeHandlerLoader getInstance() {
         return INSTANCE;
     }
     
     /**
      * Start invoke.
      */
-    public void srart() {
+    public void start() {
         for (RootInvokeHandler each : serviceLoader) {
             each.start();
         }

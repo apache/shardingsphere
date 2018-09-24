@@ -15,22 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.close;
+package io.shardingsphere.core.spi.event.connection.close;
 
 import java.util.ServiceLoader;
 
 /**
- * Connection event handler SPI loader.
+ * Connection event handler loader.
  *
  * @author zhangliang
  */
-public final class CloseConnectionEventHandlerSPILoader {
+public final class CloseConnectionEventHandlerLoader {
     
-    private static final CloseConnectionEventHandlerSPILoader INSTANCE = new CloseConnectionEventHandlerSPILoader();
+    private static final CloseConnectionEventHandlerLoader INSTANCE = new CloseConnectionEventHandlerLoader();
     
     private final ServiceLoader<CloseConnectionEventHandler> serviceLoader;
     
-    private CloseConnectionEventHandlerSPILoader() {
+    private CloseConnectionEventHandlerLoader() {
         serviceLoader = ServiceLoader.load(CloseConnectionEventHandler.class);
     }
     
@@ -39,7 +39,7 @@ public final class CloseConnectionEventHandlerSPILoader {
      *
      * @return instance
      */
-    public static CloseConnectionEventHandlerSPILoader getInstance() {
+    public static CloseConnectionEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     

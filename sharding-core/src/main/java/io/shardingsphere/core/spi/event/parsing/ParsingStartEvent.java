@@ -15,14 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.executor;
+package io.shardingsphere.core.spi.event.parsing;
 
-import io.shardingsphere.core.spi.ShardingFinishEvent;
+import io.shardingsphere.core.spi.event.ShardingStartEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL execution finish event.
+ * Parsing start event.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public final class SQLExecutionFinishEvent extends ShardingFinishEvent {
+@RequiredArgsConstructor
+@Getter
+public final class ParsingStartEvent extends ShardingStartEvent {
+    
+    private final String sql;
 }

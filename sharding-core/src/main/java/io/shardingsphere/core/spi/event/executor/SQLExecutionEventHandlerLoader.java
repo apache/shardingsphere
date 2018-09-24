@@ -15,23 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.get;
+package io.shardingsphere.core.spi.event.executor;
 
 import java.util.ServiceLoader;
 
 /**
- * Connection event handler SPI loader.
+ * SQL Execution event handler loader.
  *
  * @author zhangliang
  */
-public final class GetConnectionEventHandlerSPILoader {
+public final class SQLExecutionEventHandlerLoader {
     
-    private static final GetConnectionEventHandlerSPILoader INSTANCE = new GetConnectionEventHandlerSPILoader();
+    private static final SQLExecutionEventHandlerLoader INSTANCE = new SQLExecutionEventHandlerLoader();
     
-    private final ServiceLoader<GetConnectionEventHandler> serviceLoader;
+    private final ServiceLoader<SQLExecutionEventHandler> serviceLoader;
     
-    private GetConnectionEventHandlerSPILoader() {
-        serviceLoader = ServiceLoader.load(GetConnectionEventHandler.class);
+    private SQLExecutionEventHandlerLoader() {
+        serviceLoader = ServiceLoader.load(SQLExecutionEventHandler.class);
     }
     
     /**
@@ -39,28 +39,28 @@ public final class GetConnectionEventHandlerSPILoader {
      * 
      * @return instance
      */
-    public static GetConnectionEventHandlerSPILoader getInstance() {
+    public static SQLExecutionEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Handle get connection start event.
+     * Handle SQL execution start event.
      *
-     * @param event get connection start event
+     * @param event SQL execution start event
      */
-    public void handle(final GetConnectionStartEvent event) {
-        for (GetConnectionEventHandler each : serviceLoader) {
+    public void handle(final SQLExecutionStartEvent event) {
+        for (SQLExecutionEventHandler each : serviceLoader) {
             each.handle(event);
         }
     }
     
     /**
-     * Handle get connection finish event.
+     * Handle SQL execution finish event.
      *
-     * @param event get connection finish event
+     * @param event SQL execution finish event
      */
-    public void handle(final GetConnectionFinishEvent event) {
-        for (GetConnectionEventHandler each : serviceLoader) {
+    public void handle(final SQLExecutionFinishEvent event) {
+        for (SQLExecutionEventHandler each : serviceLoader) {
             each.handle(event);
         }
     }

@@ -21,9 +21,9 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.executor.SQLExecutionEventHandlerSPILoader;
-import io.shardingsphere.core.spi.executor.SQLExecutionFinishEvent;
-import io.shardingsphere.core.spi.executor.SQLExecutionStartEvent;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionEventHandlerLoader;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionFinishEvent;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final SQLExecutionEventHandlerSPILoader loader = SQLExecutionEventHandlerSPILoader.getInstance();
+    private final SQLExecutionEventHandlerLoader loader = SQLExecutionEventHandlerLoader.getInstance();
     
     @Test
     public void assertExecuteSuccessForTrunkThread() {

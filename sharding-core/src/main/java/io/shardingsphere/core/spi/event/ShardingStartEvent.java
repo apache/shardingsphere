@@ -15,19 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi;
-
-import lombok.Getter;
-import lombok.Setter;
+package io.shardingsphere.core.spi.event;
 
 /**
- * Sharding finish event.
+ * Sharding start event.
  *
  * @author zhangyonglun
  */
-@Getter
-@Setter
-public class ShardingFinishEvent {
-    
-    private Exception exception;
+public class ShardingStartEvent {
 }

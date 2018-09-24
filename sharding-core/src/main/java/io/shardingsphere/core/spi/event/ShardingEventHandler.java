@@ -15,14 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.executor;
-
-import io.shardingsphere.core.spi.ShardingEventHandler;
+package io.shardingsphere.core.spi.event;
 
 /**
- * SQL Execution event handler.
+ * Sharding event handler.
  *
  * @author zhangliang
+ * @param <S> type of sharding start event
+ * @param <F> type of sharding finish event
  */
-public interface SQLExecutionEventHandler extends ShardingEventHandler<SQLExecutionStartEvent, SQLExecutionFinishEvent> {
+public interface ShardingEventHandler<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
+    
+    /**
+     * Handle sharding start event.
+     *
+     * @param event sharding start event
+     */
+    void handle(S event);
+    
+    /**
+     * Handle sharding finish event.
+     *
+     * @param event sharding finish event
+     */
+    void handle(F event);
 }

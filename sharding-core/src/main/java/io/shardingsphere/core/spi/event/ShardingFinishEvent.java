@@ -15,23 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.get;
+package io.shardingsphere.core.spi.event;
 
-import io.shardingsphere.core.spi.ShardingFinishEvent;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Get connection finish event.
+ * Sharding finish event.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
 @Getter
-public final class GetConnectionFinishEvent extends ShardingFinishEvent {
+@Setter
+public class ShardingFinishEvent {
     
-    private final int connectionCount;
-    
-    private final DataSourceMetaData dataSourceMetaData;
+    private Exception exception;
 }
