@@ -18,25 +18,25 @@
 package io.shardingsphere.core.spi.event;
 
 /**
- * Sharding event handler.
+ * Sharding event handler loader.
  *
  * @author zhangliang
  * @param <S> type of start event
  * @param <F> type of finish event
  */
-public interface ShardingEventHandler<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
+public interface ShardingEventHandlerLoader<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
     
     /**
-     * Handle sharding start event.
+     * Handle start event.
      *
-     * @param event sharding start event
+     * @param event start event
      */
     void start(S event);
     
     /**
-     * Handle sharding finish event.
+     * Handle finish event.
      *
-     * @param event sharding finish event
+     * @param event finish event
      */
     void finish(F event);
 }

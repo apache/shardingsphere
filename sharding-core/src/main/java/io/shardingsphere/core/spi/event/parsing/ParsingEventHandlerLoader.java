@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.spi.event.parsing;
 
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
+
 import java.util.ServiceLoader;
 
 /**
@@ -24,7 +26,7 @@ import java.util.ServiceLoader;
  *
  * @author zhangliang
  */
-public final class ParsingEventHandlerLoader {
+public final class ParsingEventHandlerLoader implements ShardingEventHandlerLoader<ParsingStartEvent, ParsingFinishEvent> {
     
     private static final ParsingEventHandlerLoader INSTANCE = new ParsingEventHandlerLoader();
     
@@ -43,22 +45,14 @@ public final class ParsingEventHandlerLoader {
         return INSTANCE;
     }
     
-    /**
-     * Handle parsing start event.
-     *
-     * @param event parsing start event
-     */
+    @Override
     public void start(final ParsingStartEvent event) {
         for (ParsingEventHandler each : serviceLoader) {
             each.start(event);
         }
     }
     
-    /**
-     * Handle parsing finish event.
-     *
-     * @param event parsing finish event
-     */
+    @Override
     public void finish(final ParsingFinishEvent event) {
         for (ParsingEventHandler each : serviceLoader) {
             each.finish(event);

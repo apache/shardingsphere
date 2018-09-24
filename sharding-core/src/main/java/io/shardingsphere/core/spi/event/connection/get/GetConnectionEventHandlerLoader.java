@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.spi.event.connection.get;
 
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
+
 import java.util.ServiceLoader;
 
 /**
@@ -24,7 +26,7 @@ import java.util.ServiceLoader;
  *
  * @author zhangliang
  */
-public final class GetConnectionEventHandlerLoader {
+public final class GetConnectionEventHandlerLoader implements ShardingEventHandlerLoader<GetConnectionStartEvent, GetConnectionFinishEvent> {
     
     private static final GetConnectionEventHandlerLoader INSTANCE = new GetConnectionEventHandlerLoader();
     
@@ -43,22 +45,14 @@ public final class GetConnectionEventHandlerLoader {
         return INSTANCE;
     }
     
-    /**
-     * Handle get connection start event.
-     *
-     * @param event get connection start event
-     */
+    @Override
     public void start(final GetConnectionStartEvent event) {
         for (GetConnectionEventHandler each : serviceLoader) {
             each.start(event);
         }
     }
     
-    /**
-     * Handle get connection finish event.
-     *
-     * @param event get connection finish event
-     */
+    @Override
     public void finish(final GetConnectionFinishEvent event) {
         for (GetConnectionEventHandler each : serviceLoader) {
             each.finish(event);

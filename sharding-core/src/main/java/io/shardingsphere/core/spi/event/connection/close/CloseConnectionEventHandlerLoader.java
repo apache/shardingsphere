@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.spi.event.connection.close;
 
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
+
 import java.util.ServiceLoader;
 
 /**
@@ -24,7 +26,7 @@ import java.util.ServiceLoader;
  *
  * @author zhangliang
  */
-public final class CloseConnectionEventHandlerLoader {
+public final class CloseConnectionEventHandlerLoader implements ShardingEventHandlerLoader<CloseConnectionStartEvent, CloseConnectionFinishEvent> {
     
     private static final CloseConnectionEventHandlerLoader INSTANCE = new CloseConnectionEventHandlerLoader();
     
@@ -43,22 +45,14 @@ public final class CloseConnectionEventHandlerLoader {
         return INSTANCE;
     }
     
-    /**
-     * Handle close connection start event.
-     *
-     * @param event get connection start event
-     */
+    @Override
     public void start(final CloseConnectionStartEvent event) {
         for (CloseConnectionEventHandler each : serviceLoader) {
             each.start(event);
         }
     }
     
-    /**
-     * Handle close connection finish event.
-     *
-     * @param event get connection finish event
-     */
+    @Override
     public void finish(final CloseConnectionFinishEvent event) {
         for (CloseConnectionEventHandler each : serviceLoader) {
             each.finish(event);

@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.spi.event.executor;
 
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
+
 import java.util.ServiceLoader;
 
 /**
@@ -24,7 +26,7 @@ import java.util.ServiceLoader;
  *
  * @author zhangliang
  */
-public final class SQLExecutionEventHandlerLoader {
+public final class SQLExecutionEventHandlerLoader implements ShardingEventHandlerLoader<SQLExecutionStartEvent, SQLExecutionFinishEvent> {
     
     private static final SQLExecutionEventHandlerLoader INSTANCE = new SQLExecutionEventHandlerLoader();
     
@@ -43,22 +45,14 @@ public final class SQLExecutionEventHandlerLoader {
         return INSTANCE;
     }
     
-    /**
-     * Handle SQL execution start event.
-     *
-     * @param event SQL execution start event
-     */
+    @Override
     public void start(final SQLExecutionStartEvent event) {
         for (SQLExecutionEventHandler each : serviceLoader) {
             each.start(event);
         }
     }
     
-    /**
-     * Handle SQL execution finish event.
-     *
-     * @param event SQL execution finish event
-     */
+    @Override
     public void finish(final SQLExecutionFinishEvent event) {
         for (SQLExecutionEventHandler each : serviceLoader) {
             each.finish(event);
