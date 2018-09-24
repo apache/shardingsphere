@@ -34,8 +34,8 @@ public final class ShardingEventListenerRegistrySPILoader {
      * Register event listeners.
      */
     public static void registerListeners() {
-        for (ShardingEventListenerRegistry listenerRegistry : ServiceLoader.load(ShardingEventListenerRegistry.class)) {
-            listenerRegistry.register();
+        for (ShardingEventListenerRegistry each : ServiceLoader.load(ShardingEventListenerRegistry.class)) {
+            each.register();
         }
     }
 }

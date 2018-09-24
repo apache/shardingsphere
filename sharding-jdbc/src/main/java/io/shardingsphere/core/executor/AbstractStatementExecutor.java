@@ -93,7 +93,7 @@ public class AbstractStatementExecutor {
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getShardingContext().getExecuteEngine());
     }
     
-    protected void cacheStatements() {
+    protected final void cacheStatements() {
         for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
             statements.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 

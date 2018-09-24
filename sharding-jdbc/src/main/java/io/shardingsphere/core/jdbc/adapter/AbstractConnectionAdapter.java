@@ -25,13 +25,12 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.connection.CloseConnectionEvent;
-import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.core.event.connection.GetConnectionEvent;
-import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.get.GetConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.get.GetConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -39,6 +38,7 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerSPILoader;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.RequiredArgsConstructor;
 
@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Adapter for {@code Connection}.
@@ -99,24 +100,32 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
+        GetConnectionEventHandlerSPILoader.getInstance().handle(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-        Collection<Connection> connections = cachedConnections.get(dataSourceName);
+        Collection<Connection> connections;
+        synchronized (cachedConnections) {
+            connections = cachedConnections.get(dataSourceName);
+        }
         List<Connection> result;
         if (connections.size() >= connectionSize) {
-            result = new ArrayList<>(cachedConnections.get(dataSourceName)).subList(0, connectionSize);
+            result = new ArrayList<>(connections).subList(0, connectionSize);
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
             List<Connection> newConnections = createConnections(connectionMode, dataSource, connectionSize - connections.size());
             result.addAll(newConnections);
-            cachedConnections.putAll(dataSourceName, newConnections);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, newConnections);
+            }
         } else {
             result = new ArrayList<>(createConnections(connectionMode, dataSource, connectionSize));
-            cachedConnections.putAll(dataSourceName, result);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, result);
+            }
         }
-        postGetConnectionEvent(result);
+        GetConnectionEventHandlerSPILoader.getInstance().handle(
+                new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, result.get(0).getMetaData().getURL())));
         return result;
     }
     
@@ -145,12 +154,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         Connection result = dataSource.getConnection();
         replayMethodsInvocation(result);
         return result;
-    }
-    
-    private void postGetConnectionEvent(final List<Connection> connections) throws SQLException {
-        GetConnectionEvent finishEvent = new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
-        finishEvent.setExecuteSuccess();
-        ShardingEventBusInstance.getInstance().post(finishEvent);
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -223,27 +226,26 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
-            public void execute(final Map.Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
+            public void execute(final Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
                 Connection connection = cachedConnectionsEntrySet.getValue();
-                ShardingEventBusInstance.getInstance().post(
+                CloseConnectionEventHandlerSPILoader.getInstance().handle(
                         new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
-                CloseConnectionEvent finishEvent = new CloseConnectionFinishEvent();
+                CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
-                    finishEvent.setExecuteSuccess();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    finishEvent.setExecuteFailure(ex);
+                    finishEvent.setException(ex);
                     throw ex;
                 } finally {
-                    ShardingEventBusInstance.getInstance().post(finishEvent);
+                    CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
                 }
             }
         });
-        ShardingEventBusInstance.getInstance().post(new RootInvokeFinishEvent());
+        RootInvokeHandlerSPILoader.getInstance().finish();
     }
-                    
+    
     @Override
     public final boolean isClosed() {
         return closed;

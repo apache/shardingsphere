@@ -17,10 +17,12 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.clause.TableReferencesClauseParser;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -32,7 +34,9 @@ import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.AbstractShowParser;
 import io.shardingsphere.core.parsing.parser.token.RemoveToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -82,7 +86,21 @@ public final class MySQLShowParser extends AbstractShowParser {
     }
     
     private DALStatement parseShowTableStatus() {
-        return new ShowTableStatusStatement();
+        DALStatement result = new ShowTableStatusStatement();
+        lexerEngine.nextToken();
+        if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            lexerEngine.nextToken();
+            result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+        }
+        lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.LIKE)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
+            String literals = lexerEngine.getCurrentToken().getLiterals();
+            result.getSqlTokens().add(new TableToken(beginPosition, 0, literals));
+            result.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
+        }
+        return result;
     }
     
     private DALStatement parseShowTables() {

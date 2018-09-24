@@ -22,7 +22,6 @@ import io.shardingsphere.core.parsing.lexer.AllLexerTests;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumnTest;
 import io.shardingsphere.core.parsing.parser.context.OrderItemTest;
 import io.shardingsphere.core.parsing.parser.sql.AllSQLTests;
-import io.shardingsphere.core.parsing.parser.sql.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -30,7 +29,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllLexerTests.class, 
-        AllStatementParserTests.class, 
         AllSQLTests.class, 
         SQLJudgeEngineTest.class, 
         OrderItemTest.class,

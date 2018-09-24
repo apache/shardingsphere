@@ -23,6 +23,7 @@ import io.shardingsphere.proxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.proxy.transport.mysql.packet.MySQLPacketPayload;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -54,7 +55,8 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
     private final String orgTable;
     
     @Getter
-    private final String name;
+    @Setter
+    private String name;
     
     private final String orgName;
     
