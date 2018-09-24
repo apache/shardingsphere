@@ -119,16 +119,24 @@ public final class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillSQLMap(sqlStatementMap, new FileInputStream(each));
+                fillSQLMap(sqlStatementMap, new FileInputStream(each), file.getName());
             }
         } else {
             fillSQLMap(sqlStatementMap, new FileInputStream(file));
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws FileNotFoundException, JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
+            sqlCaseMap.put(each.getId(), each);
+        }
+    }
+    
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream, final String sqlType) throws FileNotFoundException, JAXBException {
+        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase each : sqlCases.getSqlCases()) {
+            each.setSqlType(sqlType);
             sqlCaseMap.put(each.getId(), each);
         }
     }
@@ -241,6 +249,9 @@ public final class SQLCasesLoader {
     private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
+            if (each == SQLCaseType.Placeholder && !Strings.isNullOrEmpty(sqlCase.getSqlType()) && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
+                continue;
+            }
             result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
         }
         return result;
