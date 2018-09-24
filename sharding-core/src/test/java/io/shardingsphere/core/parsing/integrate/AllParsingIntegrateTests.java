@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate;
 
+import io.shardingsphere.core.parsing.integrate.engine.IntegrateSQLParsingExceptionTest;
 import io.shardingsphere.core.parsing.integrate.engine.IntegrateSupportedSQLParsingTest;
 import io.shardingsphere.core.parsing.integrate.engine.IntegrateUnsupportedSQLParsingTest;
 import org.junit.runner.RunWith;
@@ -26,7 +27,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         IntegrateSupportedSQLParsingTest.class,
-        IntegrateUnsupportedSQLParsingTest.class
+        IntegrateUnsupportedSQLParsingTest.class,
+        IntegrateSQLParsingExceptionTest.class
     })
 public final class AllParsingIntegrateTests {
 }
