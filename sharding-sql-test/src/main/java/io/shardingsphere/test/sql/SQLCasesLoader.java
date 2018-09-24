@@ -119,16 +119,25 @@ public final class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillSQLMap(sqlStatementMap, new FileInputStream(each));
+                fillSQLMap(sqlStatementMap, each);
             }
         } else {
-            fillSQLMap(sqlStatementMap, new FileInputStream(file));
+            fillSQLMap(sqlStatementMap, file);
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws FileNotFoundException, JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
+            sqlCaseMap.put(each.getId(), each);
+        }
+    }
+    
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final File file) throws FileNotFoundException, JAXBException {
+        InputStream inputStream = new FileInputStream(file);
+        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase each : sqlCases.getSqlCases()) {
+            each.setSqlType(file.getName());
             sqlCaseMap.put(each.getId(), each);
         }
     }
@@ -241,6 +250,10 @@ public final class SQLCasesLoader {
     private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
+            System.out.println(sqlCase.getSqlType());
+            if (each == SQLCaseType.Placeholder && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
+                continue;
+            }
             result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
         }
         return result;
