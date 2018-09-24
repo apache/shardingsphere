@@ -119,10 +119,10 @@ public final class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillSQLMap(sqlStatementMap, each);
+                fillSQLMap(sqlStatementMap, new FileInputStream(each), file.getName());
             }
         } else {
-            fillSQLMap(sqlStatementMap, file);
+            fillSQLMap(sqlStatementMap, new FileInputStream(file));
         }
     }
     
@@ -133,11 +133,10 @@ public final class SQLCasesLoader {
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final File file) throws FileNotFoundException, JAXBException {
-        InputStream inputStream = new FileInputStream(file);
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream, final String sqlType) throws FileNotFoundException, JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
-            each.setSqlType(file.getName());
+            each.setSqlType(sqlType);
             sqlCaseMap.put(each.getId(), each);
         }
     }
@@ -250,8 +249,7 @@ public final class SQLCasesLoader {
     private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
-            System.out.println(sqlCase.getSqlType());
-            if (each == SQLCaseType.Placeholder && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
+            if (each == SQLCaseType.Placeholder && !Strings.isNullOrEmpty(sqlCase.getSqlType()) && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
                 continue;
             }
             result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
