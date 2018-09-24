@@ -31,8 +31,6 @@ import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
 import io.shardingsphere.core.event.connection.GetConnectionEventHandlerSPILoader;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
-import io.shardingsphere.core.event.root.RootInvokeEventHandlerSPILoader;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -40,6 +38,7 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.spi.RootInvokeHandlerSPILoader;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.RequiredArgsConstructor;
 
@@ -250,7 +249,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             }
         });
-        RootInvokeEventHandlerSPILoader.getInstance().handle(new RootInvokeFinishEvent());
+        RootInvokeHandlerSPILoader.getInstance().finish();
     }
     
     @Override

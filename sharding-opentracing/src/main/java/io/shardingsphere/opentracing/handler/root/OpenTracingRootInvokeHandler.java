@@ -19,19 +19,17 @@ package io.shardingsphere.opentracing.handler.root;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.root.RootInvokeEventHandler;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.spi.RootInvokeHandler;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
- * Open tracing root invoke event handler.
+ * Open tracing root invoke handler.
  *
  * @author zhangliang
  */
-public final class OpenTracingRootInvokeEventHandler implements RootInvokeEventHandler {
+public final class OpenTracingRootInvokeHandler implements RootInvokeHandler {
     
     public static final String ROOT_SPAN_CONTINUATION = "ROOT_SPAN_CONTINUATION";
     
@@ -40,14 +38,13 @@ public final class OpenTracingRootInvokeEventHandler implements RootInvokeEventH
     private static final ThreadLocal<ActiveSpan> ACTIVE_SPAN = new ThreadLocal<>();
     
     @Override
-    public void handle(final RootInvokeStartEvent event) {
-        ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        ACTIVE_SPAN.set(span);
-        ExecutorDataMap.getDataMap().put(ROOT_SPAN_CONTINUATION, span.capture());
+    public void start() {
+        ACTIVE_SPAN.set(ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive());
+        ExecutorDataMap.getDataMap().put(ROOT_SPAN_CONTINUATION, ACTIVE_SPAN.get().capture());
     }
     
     @Override
-    public void handle(final RootInvokeFinishEvent event) {
+    public void finish() {
         ACTIVE_SPAN.get().deactivate();
         ACTIVE_SPAN.remove();
     }

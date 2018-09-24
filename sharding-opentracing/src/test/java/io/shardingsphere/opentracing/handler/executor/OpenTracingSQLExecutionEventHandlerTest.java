@@ -24,15 +24,13 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.event.executor.SQLExecutionEventHandlerSPILoader;
 import io.shardingsphere.core.event.executor.SQLExecutionFinishEvent;
 import io.shardingsphere.core.event.executor.SQLExecutionStartEvent;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
-import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeEventHandler;
+import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandler;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -55,7 +53,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
     
     @Test
     public void assertExecuteSuccessForTrunkThread() {
-        new OpenTracingRootInvokeEventHandler().handle(new RootInvokeStartEvent());
+        new OpenTracingRootInvokeHandler().start();
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
@@ -74,7 +72,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("ds_test"));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("1,2"));
-        new OpenTracingRootInvokeEventHandler().handle(new RootInvokeFinishEvent());
+        new OpenTracingRootInvokeHandler().finish();
     }
     
     @Test
@@ -82,13 +80,13 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         Continuation activeSpanContinuation = mock(Continuation.class);
         ActiveSpan activeSpan = mock(ActiveSpan.class);
         when(activeSpanContinuation.activate()).thenReturn(activeSpan);
-        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeEventHandler.ROOT_SPAN_CONTINUATION, activeSpanContinuation);
+        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION, activeSpanContinuation);
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
         loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
-        assertNotNull(OpenTracingRootInvokeEventHandler.getActiveSpan().get());
+        assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
         loader.handle(new SQLExecutionFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
@@ -103,12 +101,12 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("1,2"));
         verify(activeSpan).deactivate();
-        assertNull(OpenTracingRootInvokeEventHandler.getActiveSpan().get());
+        assertNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
     }
     
     @Test
     public void assertExecuteFailure() {
-        new OpenTracingRootInvokeEventHandler().handle(new RootInvokeStartEvent());
+        new OpenTracingRootInvokeHandler().start();
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
@@ -130,6 +128,6 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is(""));
         assertSpanError(actual, RuntimeException.class, "SQL execution error");
-        new OpenTracingRootInvokeEventHandler().handle(new RootInvokeFinishEvent());
+        new OpenTracingRootInvokeHandler().finish();
     }
 }

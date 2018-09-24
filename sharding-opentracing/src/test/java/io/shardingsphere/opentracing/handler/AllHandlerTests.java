@@ -21,14 +21,14 @@ import io.shardingsphere.opentracing.handler.connection.OpenTracingCloseConnecti
 import io.shardingsphere.opentracing.handler.connection.OpenTracingGetConnectionEventHandlerTest;
 import io.shardingsphere.opentracing.handler.executor.OpenTracingSQLExecutionEventHandlerTest;
 import io.shardingsphere.opentracing.handler.parsing.OpenTracingParsingEventHandlerTest;
-import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeEventHandlerTest;
+import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        OpenTracingRootInvokeEventHandlerTest.class, 
+        OpenTracingRootInvokeHandlerTest.class, 
         OpenTracingGetConnectionEventHandlerTest.class,
         OpenTracingCloseConnectionEventHandlerTest.class, 
         OpenTracingParsingEventHandlerTest.class,

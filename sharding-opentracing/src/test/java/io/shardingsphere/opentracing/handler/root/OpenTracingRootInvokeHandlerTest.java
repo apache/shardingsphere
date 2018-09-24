@@ -17,10 +17,8 @@
 
 package io.shardingsphere.opentracing.handler.root;
 
-import io.shardingsphere.core.event.root.RootInvokeEventHandlerSPILoader;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.spi.RootInvokeHandlerSPILoader;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.junit.Test;
 
@@ -29,18 +27,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class OpenTracingRootInvokeEventHandlerTest extends BaseOpenTracingHandlerTest {
+public final class OpenTracingRootInvokeHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final RootInvokeEventHandlerSPILoader loader = RootInvokeEventHandlerSPILoader.getInstance();
+    private final RootInvokeHandlerSPILoader loader = RootInvokeHandlerSPILoader.getInstance();
     
     @Test
     public void assertRootInvoke() {
-        loader.handle(new RootInvokeStartEvent());
-        assertTrue(OpenTracingRootInvokeEventHandler.isTrunkThread());
-        assertNotNull(OpenTracingRootInvokeEventHandler.getActiveSpan().get());
-        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeEventHandler.ROOT_SPAN_CONTINUATION));
-        loader.handle(new RootInvokeFinishEvent());
-        assertFalse(OpenTracingRootInvokeEventHandler.isTrunkThread());
-        assertNull(OpenTracingRootInvokeEventHandler.getActiveSpan().get());
+        loader.srart();
+        assertTrue(OpenTracingRootInvokeHandler.isTrunkThread());
+        assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
+        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION));
+        loader.finish();
+        assertFalse(OpenTracingRootInvokeHandler.isTrunkThread());
+        assertNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
     }
 }

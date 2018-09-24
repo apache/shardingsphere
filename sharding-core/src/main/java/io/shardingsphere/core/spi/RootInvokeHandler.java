@@ -15,12 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.root;
+package io.shardingsphere.core.spi;
 
 /**
- * Root invoke finish event.
+ * Root invoke handler.
  *
  * @author zhangliang
  */
-public final class RootInvokeFinishEvent {
+public interface RootInvokeHandler {
+    
+    /**
+     * Start invoke.
+     */
+    void start();
+    
+    /**
+     * Finish invoke.
+     */
+    void finish();
 }

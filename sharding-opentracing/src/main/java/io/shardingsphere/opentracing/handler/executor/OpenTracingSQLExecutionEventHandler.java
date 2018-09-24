@@ -28,7 +28,7 @@ import io.shardingsphere.core.event.executor.SQLExecutionStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.OpenTracingHandler;
-import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeEventHandler;
+import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandler;
 
 /**
  * Open tracing SQL execution event handler.
@@ -47,9 +47,9 @@ public final class OpenTracingSQLExecutionEventHandler extends OpenTracingHandle
     
     @Override
     protected Span initSpan(final SQLExecutionStartEvent event, final SpanBuilder spanBuilder) {
-        isTrunkThread.set(OpenTracingRootInvokeEventHandler.isTrunkThread());
-        if (ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeEventHandler.ROOT_SPAN_CONTINUATION) && !isTrunkThread.get()) {
-            OpenTracingRootInvokeEventHandler.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeEventHandler.ROOT_SPAN_CONTINUATION)).activate());
+        isTrunkThread.set(OpenTracingRootInvokeHandler.isTrunkThread());
+        if (ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION) && !isTrunkThread.get()) {
+            OpenTracingRootInvokeHandler.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION)).activate());
         }
         return spanBuilder.withTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
                 .withTag(Tags.PEER_PORT.getKey(), event.getDataSourceMetaData().getPort())
@@ -62,8 +62,8 @@ public final class OpenTracingSQLExecutionEventHandler extends OpenTracingHandle
     @Override
     protected void afterTracingFinish(final SQLExecutionFinishEvent event) {
         if (!isTrunkThread.get()) {
-            OpenTracingRootInvokeEventHandler.getActiveSpan().get().deactivate();
-            OpenTracingRootInvokeEventHandler.getActiveSpan().remove();
+            OpenTracingRootInvokeHandler.getActiveSpan().get().deactivate();
+            OpenTracingRootInvokeHandler.getActiveSpan().remove();
         }
     }
 }
