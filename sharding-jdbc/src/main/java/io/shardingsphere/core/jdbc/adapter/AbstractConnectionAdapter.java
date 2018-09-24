@@ -100,7 +100,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        GetConnectionEventHandlerLoader.getInstance().handle(new GetConnectionStartEvent(dataSourceName));
+        GetConnectionEventHandlerLoader.getInstance().start(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -124,7 +124,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 cachedConnections.putAll(dataSourceName, result);
             }
         }
-        GetConnectionEventHandlerLoader.getInstance().handle(
+        GetConnectionEventHandlerLoader.getInstance().finish(
                 new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, result.get(0).getMetaData().getURL())));
         return result;
     }
@@ -226,10 +226,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
-            public void execute(final Entry<String, Connection> cachedConnectionsEntrySet) throws SQLException {
-                Connection connection = cachedConnectionsEntrySet.getValue();
-                CloseConnectionEventHandlerLoader.getInstance().handle(
-                        new CloseConnectionStartEvent(cachedConnectionsEntrySet.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
+            public void execute(final Entry<String, Connection> cachedConnections) throws SQLException {
+                Connection connection = cachedConnections.getValue();
+                CloseConnectionEventHandlerLoader.getInstance().start(
+                        new CloseConnectionStartEvent(cachedConnections.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
                 CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
@@ -239,7 +239,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     finishEvent.setException(ex);
                     throw ex;
                 } finally {
-                    CloseConnectionEventHandlerLoader.getInstance().handle(finishEvent);
+                    CloseConnectionEventHandlerLoader.getInstance().finish(finishEvent);
                 }
             }
         });

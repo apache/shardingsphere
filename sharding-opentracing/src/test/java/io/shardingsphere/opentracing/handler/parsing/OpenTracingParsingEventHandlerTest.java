@@ -39,8 +39,8 @@ public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHan
     
     @Test
     public void assertExecuteSuccess() {
-        loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
-        loader.handle(new ParsingFinishEvent());
+        loader.start(new ParsingStartEvent("SELECT * FROM XXX;"));
+        loader.finish(new ParsingFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
@@ -52,10 +52,10 @@ public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHan
     
     @Test
     public void assertExecuteFailure() {
-        loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
+        loader.start(new ParsingStartEvent("SELECT * FROM XXX;"));
         ParsingFinishEvent finishEvent = new ParsingFinishEvent();
         finishEvent.setException(new ShardingException("parse SQL error"));
-        loader.handle(finishEvent);
+        loader.finish(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));

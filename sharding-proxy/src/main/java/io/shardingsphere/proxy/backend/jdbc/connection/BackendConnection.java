@@ -71,10 +71,10 @@ public final class BackendConnection implements AutoCloseable {
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         try {
-            GetConnectionEventHandlerLoader.getInstance().handle(new GetConnectionStartEvent(dataSourceName));
+            GetConnectionEventHandlerLoader.getInstance().start(new GetConnectionStartEvent(dataSourceName));
             List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
             cachedConnections.addAll(result);
-            GetConnectionEventHandlerLoader.getInstance().handle(
+            GetConnectionEventHandlerLoader.getInstance().finish(
                     new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL())));
             return result;
             // CHECKSTYLE:OFF
@@ -82,7 +82,7 @@ public final class BackendConnection implements AutoCloseable {
             // CHECKSTYLE:ON
             GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(0, null);
             finishEvent.setException(ex);
-            GetConnectionEventHandlerLoader.getInstance().handle(finishEvent);
+            GetConnectionEventHandlerLoader.getInstance().finish(finishEvent);
             throw ex;
         }
     }
@@ -156,14 +156,14 @@ public final class BackendConnection implements AutoCloseable {
         for (Connection each : cachedConnections) {
             CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
             try {
-                CloseConnectionEventHandlerLoader.getInstance().handle(
+                CloseConnectionEventHandlerLoader.getInstance().start(
                         new CloseConnectionStartEvent(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL())));
                 each.close();
             } catch (SQLException ex) {
                 finishEvent.setException(ex);
                 result.add(ex);
             } finally {
-                CloseConnectionEventHandlerLoader.getInstance().handle(finishEvent);
+                CloseConnectionEventHandlerLoader.getInstance().finish(finishEvent);
             }
         }
         return result;

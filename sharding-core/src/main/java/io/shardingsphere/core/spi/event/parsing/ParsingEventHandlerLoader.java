@@ -48,9 +48,9 @@ public final class ParsingEventHandlerLoader {
      *
      * @param event parsing start event
      */
-    public void handle(final ParsingStartEvent event) {
+    public void start(final ParsingStartEvent event) {
         for (ParsingEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
@@ -59,9 +59,9 @@ public final class ParsingEventHandlerLoader {
      *
      * @param event parsing finish event
      */
-    public void handle(final ParsingFinishEvent event) {
+    public void finish(final ParsingFinishEvent event) {
         for (ParsingEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

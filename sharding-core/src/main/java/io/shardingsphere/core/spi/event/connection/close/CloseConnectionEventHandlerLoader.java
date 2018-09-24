@@ -48,9 +48,9 @@ public final class CloseConnectionEventHandlerLoader {
      *
      * @param event get connection start event
      */
-    public void handle(final CloseConnectionStartEvent event) {
+    public void start(final CloseConnectionStartEvent event) {
         for (CloseConnectionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
@@ -59,9 +59,9 @@ public final class CloseConnectionEventHandlerLoader {
      *
      * @param event get connection finish event
      */
-    public void handle(final CloseConnectionFinishEvent event) {
+    public void finish(final CloseConnectionFinishEvent event) {
         for (CloseConnectionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

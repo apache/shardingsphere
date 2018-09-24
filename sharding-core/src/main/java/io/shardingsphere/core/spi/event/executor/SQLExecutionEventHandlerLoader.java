@@ -48,9 +48,9 @@ public final class SQLExecutionEventHandlerLoader {
      *
      * @param event SQL execution start event
      */
-    public void handle(final SQLExecutionStartEvent event) {
+    public void start(final SQLExecutionStartEvent event) {
         for (SQLExecutionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
@@ -59,9 +59,9 @@ public final class SQLExecutionEventHandlerLoader {
      *
      * @param event SQL execution finish event
      */
-    public void handle(final SQLExecutionFinishEvent event) {
+    public void finish(final SQLExecutionFinishEvent event) {
         for (SQLExecutionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

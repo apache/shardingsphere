@@ -47,12 +47,12 @@ public abstract class OpenTracingHandler<S extends ShardingStartEvent, F extends
     private final String operationName;
     
     @Override
-    public final void handle(final S event) {
+    public final void start(final S event) {
         spanHolder.set(initSpan(event, createSpanBuilder()));
     }
     
     @Override
-    public final void handle(final F event) {
+    public final void finish(final F event) {
         if (null != event.getException()) {
             setErrorInfo(event);
         }

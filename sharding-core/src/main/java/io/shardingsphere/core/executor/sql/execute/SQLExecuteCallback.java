@@ -82,7 +82,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
         DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         for (List<Object> each : parameterSets) {
-            SQLExecutionEventHandlerLoader.getInstance().handle(new SQLExecutionStartEvent(statementExecuteUnit.getRouteUnit(), each, dataSourceMetaData));
+            SQLExecutionEventHandlerLoader.getInstance().start(new SQLExecutionStartEvent(statementExecuteUnit.getRouteUnit(), each, dataSourceMetaData));
             // TODO remove after BED removed
             shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
         }
@@ -91,7 +91,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             for (List<Object> each : parameterSets) {
                 SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteSuccess();
-                SQLExecutionEventHandlerLoader.getInstance().handle(new SQLExecutionFinishEvent());
+                SQLExecutionEventHandlerLoader.getInstance().finish(new SQLExecutionFinishEvent());
                 // TODO remove after BED removed
                 shardingEventBus.post(finishEvent);
             }
@@ -100,7 +100,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             for (List<Object> each : parameterSets) {
                 SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteFailure(ex);
-                SQLExecutionEventHandlerLoader.getInstance().handle(new SQLExecutionFinishEvent());
+                SQLExecutionEventHandlerLoader.getInstance().finish(new SQLExecutionFinishEvent());
                 // TODO remove after BED removed
                 shardingEventBus.post(finishEvent);
             }

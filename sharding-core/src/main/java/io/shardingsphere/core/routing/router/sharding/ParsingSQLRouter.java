@@ -85,18 +85,17 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        ParsingEventHandlerLoader.getInstance().handle(new ParsingStartEvent(logicSQL));
+        ParsingEventHandlerLoader.getInstance().start(new ParsingStartEvent(logicSQL));
         ParsingFinishEvent finishEvent = new ParsingFinishEvent();
         try {
-            SQLStatement sqlStatement = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
-            return sqlStatement;
+            return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             finishEvent.setException(ex);
             throw ex;
         } finally {
-            ParsingEventHandlerLoader.getInstance().handle(finishEvent);
+            ParsingEventHandlerLoader.getInstance().finish(finishEvent);
         }
     }
     

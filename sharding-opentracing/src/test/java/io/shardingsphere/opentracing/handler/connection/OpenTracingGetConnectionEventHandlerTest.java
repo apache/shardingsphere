@@ -41,11 +41,11 @@ public final class OpenTracingGetConnectionEventHandlerTest extends BaseOpenTrac
     
     @Test
     public void assertExecuteSuccess() {
-        loader.handle(new GetConnectionStartEvent("test_ds_name"));
+        loader.start(new GetConnectionStartEvent("test_ds_name"));
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        loader.handle(new GetConnectionFinishEvent(3, dataSourceMetaData));
+        loader.finish(new GetConnectionFinishEvent(3, dataSourceMetaData));
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/getConnection/"));
@@ -60,10 +60,10 @@ public final class OpenTracingGetConnectionEventHandlerTest extends BaseOpenTrac
     
     @Test
     public void assertExecuteFailure() {
-        loader.handle(new GetConnectionStartEvent("test_ds_name"));
+        loader.start(new GetConnectionStartEvent("test_ds_name"));
         GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(3, null);
         finishEvent.setException(new RuntimeException("get connection error"));
-        loader.handle(finishEvent);
+        loader.finish(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/getConnection/"));

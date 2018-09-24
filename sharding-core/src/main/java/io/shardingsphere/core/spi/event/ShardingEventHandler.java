@@ -31,12 +31,12 @@ public interface ShardingEventHandler<S extends ShardingStartEvent, F extends Sh
      *
      * @param event sharding start event
      */
-    void handle(S event);
+    void start(S event);
     
     /**
      * Handle sharding finish event.
      *
      * @param event sharding finish event
      */
-    void handle(F event);
+    void finish(F event);
 }

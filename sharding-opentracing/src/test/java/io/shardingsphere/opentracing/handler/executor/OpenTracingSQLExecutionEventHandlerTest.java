@@ -58,8 +58,8 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
-        loader.handle(new SQLExecutionFinishEvent());
+        loader.start(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
+        loader.finish(new SQLExecutionFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
@@ -85,9 +85,9 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
+        loader.start(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
         assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
-        loader.handle(new SQLExecutionFinishEvent());
+        loader.finish(new SQLExecutionFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
@@ -111,10 +111,10 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Collections.emptyList(), dataSourceMetaData));
+        loader.start(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Collections.emptyList(), dataSourceMetaData));
         SQLExecutionFinishEvent finishEvent = new SQLExecutionFinishEvent();
         finishEvent.setException(new RuntimeException("SQL execution error"));
-        loader.handle(finishEvent);
+        loader.finish(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
