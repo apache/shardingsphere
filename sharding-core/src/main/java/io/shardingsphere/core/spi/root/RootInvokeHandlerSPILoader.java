@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi;
+package io.shardingsphere.core.spi.root;
 
 import java.util.ServiceLoader;
 

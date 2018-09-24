@@ -20,9 +20,9 @@ package io.shardingsphere.opentracing.handler.connection;
 import io.opentracing.Span;
 import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.connection.CloseConnectionEventHandler;
-import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionEventHandler;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionStartEvent;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.OpenTracingHandler;
 

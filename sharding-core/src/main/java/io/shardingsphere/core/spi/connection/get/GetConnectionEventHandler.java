@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
+package io.shardingsphere.core.spi.connection.get;
 
-import io.shardingsphere.core.event.ShardingEventHandler;
+import io.shardingsphere.core.spi.ShardingEventHandler;
 
 /**
  * Connection event handler.

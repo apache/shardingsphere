@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.parsing;
+package io.shardingsphere.core.spi.parsing;
 
-import io.shardingsphere.core.event.ShardingFinishEvent;
+import io.shardingsphere.core.spi.ShardingFinishEvent;
 
 /**
  * Parsing finish event.

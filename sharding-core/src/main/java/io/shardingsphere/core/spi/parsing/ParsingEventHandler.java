@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor;
+package io.shardingsphere.core.spi.parsing;
 
-import io.shardingsphere.core.event.ShardingEventHandler;
+import io.shardingsphere.core.spi.ShardingEventHandler;
 
 /**
- * SQL Execution event handler.
+ * Parsing event handler.
  *
  * @author zhangliang
  */
-public interface SQLExecutionEventHandler extends ShardingEventHandler<SQLExecutionStartEvent, SQLExecutionFinishEvent> {
+public interface ParsingEventHandler extends ShardingEventHandler<ParsingStartEvent, ParsingFinishEvent> {
 }

@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.executor;
+package io.shardingsphere.core.spi.connection.close;
 
-import io.shardingsphere.core.event.ShardingFinishEvent;
+import io.shardingsphere.core.spi.ShardingEventHandler;
 
 /**
- * SQL execution finish event.
+ * Connection event handler.
  *
  * @author zhangliang
  */
-public final class SQLExecutionFinishEvent extends ShardingFinishEvent {
+public interface CloseConnectionEventHandler extends ShardingEventHandler<CloseConnectionStartEvent, CloseConnectionFinishEvent> {
 }

@@ -25,12 +25,12 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.connection.CloseConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.core.event.connection.GetConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.get.GetConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.get.GetConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -38,7 +38,7 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.spi.RootInvokeHandlerSPILoader;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerSPILoader;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.RequiredArgsConstructor;
 
@@ -124,7 +124,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 cachedConnections.putAll(dataSourceName, result);
             }
         }
-        handleGetConnectionEvent(result);
+        GetConnectionEventHandlerSPILoader.getInstance().handle(
+                new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, result.get(0).getMetaData().getURL())));
         return result;
     }
     
@@ -153,12 +154,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         Connection result = dataSource.getConnection();
         replayMethodsInvocation(result);
         return result;
-    }
-    
-    private void handleGetConnectionEvent(final List<Connection> connections) throws SQLException {
-        GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()));
-        finishEvent.setExecuteSuccess();
-        GetConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -238,11 +233,10 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
                 try {
                     connection.close();
-                    finishEvent.setExecuteSuccess();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    finishEvent.setExecuteFailure(ex);
+                    finishEvent.setException(ex);
                     throw ex;
                 } finally {
                     CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);

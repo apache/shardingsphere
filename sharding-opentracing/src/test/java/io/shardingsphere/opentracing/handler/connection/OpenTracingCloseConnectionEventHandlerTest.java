@@ -19,9 +19,9 @@ package io.shardingsphere.opentracing.handler.connection;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.connection.CloseConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
@@ -64,7 +64,7 @@ public final class OpenTracingCloseConnectionEventHandlerTest extends BaseOpenTr
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         loader.handle(new CloseConnectionStartEvent("test_ds_name", dataSourceMetaData));
         CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
-        finishEvent.setExecuteFailure(new RuntimeException("close connection error"));
+        finishEvent.setException(new RuntimeException("close connection error"));
         loader.handle(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);

@@ -20,9 +20,9 @@ package io.shardingsphere.opentracing.handler.parsing;
 import io.opentracing.Span;
 import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.parsing.ParsingEventHandler;
-import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
-import io.shardingsphere.core.event.parsing.ParsingStartEvent;
+import io.shardingsphere.core.spi.parsing.ParsingEventHandler;
+import io.shardingsphere.core.spi.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.spi.parsing.ParsingStartEvent;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.OpenTracingHandler;
 

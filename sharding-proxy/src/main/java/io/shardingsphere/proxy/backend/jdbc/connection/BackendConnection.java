@@ -19,12 +19,12 @@ package io.shardingsphere.proxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.event.connection.CloseConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.core.event.connection.GetConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
-import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionStartEvent;
+import io.shardingsphere.core.spi.connection.get.GetConnectionEventHandlerSPILoader;
+import io.shardingsphere.core.spi.connection.get.GetConnectionFinishEvent;
+import io.shardingsphere.core.spi.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
@@ -74,15 +74,14 @@ public final class BackendConnection implements AutoCloseable {
             GetConnectionEventHandlerSPILoader.getInstance().handle(new GetConnectionStartEvent(dataSourceName));
             List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
             cachedConnections.addAll(result);
-            GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
-            finishEvent.setExecuteSuccess();
-            GetConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
+            GetConnectionEventHandlerSPILoader.getInstance().handle(
+                    new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL())));
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(0, null);
-            finishEvent.setExecuteFailure(ex);
+            finishEvent.setException(ex);
             GetConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             throw ex;
         }
@@ -154,17 +153,16 @@ public final class BackendConnection implements AutoCloseable {
     
     private Collection<SQLException> closeConnections() {
         Collection<SQLException> result = new LinkedList<>();
-        CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
         for (Connection each : cachedConnections) {
+            CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
             try {
                 CloseConnectionEventHandlerSPILoader.getInstance().handle(
                         new CloseConnectionStartEvent(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL())));
                 each.close();
-                finishEvent.setExecuteSuccess();
-                CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             } catch (SQLException ex) {
-                finishEvent.setExecuteFailure(ex);
+                finishEvent.setException(ex);
                 result.add(ex);
+            } finally {
                 CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             }
         }

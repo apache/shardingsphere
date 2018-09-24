@@ -19,9 +19,9 @@ package io.shardingsphere.opentracing.handler.parsing;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.parsing.ParsingEventHandlerSPILoader;
-import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
-import io.shardingsphere.core.event.parsing.ParsingStartEvent;
+import io.shardingsphere.core.spi.parsing.ParsingEventHandlerSPILoader;
+import io.shardingsphere.core.spi.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.spi.parsing.ParsingStartEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
@@ -54,7 +54,7 @@ public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHan
     public void assertExecuteFailure() {
         loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
         ParsingFinishEvent finishEvent = new ParsingFinishEvent();
-        finishEvent.setExecuteFailure(new ShardingException("parse SQL error"));
+        finishEvent.setException(new ShardingException("parse SQL error"));
         loader.handle(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);

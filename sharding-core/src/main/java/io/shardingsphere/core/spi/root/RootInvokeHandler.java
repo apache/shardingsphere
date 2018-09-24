@@ -15,14 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
-
-import io.shardingsphere.core.event.ShardingEventHandler;
+package io.shardingsphere.core.spi.root;
 
 /**
- * Connection event handler.
+ * Root invoke handler.
  *
  * @author zhangliang
  */
-public interface CloseConnectionEventHandler extends ShardingEventHandler<CloseConnectionStartEvent, CloseConnectionFinishEvent> {
+public interface RootInvokeHandler {
+    
+    /**
+     * Start invoke.
+     */
+    void start();
+    
+    /**
+     * Finish invoke.
+     */
+    void finish();
 }

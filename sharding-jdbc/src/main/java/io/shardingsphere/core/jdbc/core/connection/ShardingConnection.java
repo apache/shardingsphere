@@ -22,7 +22,7 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.spi.RootInvokeHandlerSPILoader;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerSPILoader;
 import lombok.Getter;
 
 import javax.sql.DataSource;

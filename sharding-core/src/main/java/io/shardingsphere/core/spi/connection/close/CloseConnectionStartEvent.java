@@ -15,28 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.event;
+package io.shardingsphere.core.spi.connection.close;
+
+import io.shardingsphere.core.spi.ShardingStartEvent;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Sharding event handler.
+ * Close connection start event.
  *
- * @author zhangliang
- * @param <S> type of sharding start event
- * @param <F> type of sharding finish event
+ * @author zhangyonglun
  */
-public interface ShardingEventHandler<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
+@RequiredArgsConstructor
+@Getter
+public final class CloseConnectionStartEvent extends ShardingStartEvent {
     
-    /**
-     * Handle sharding start event.
-     *
-     * @param event sharding start event
-     */
-    void handle(S event);
+    private final String dataSource;
     
-    /**
-     * Handle sharding finish event.
-     *
-     * @param event sharding finish event
-     */
-    void handle(F event);
+    private final DataSourceMetaData dataSourceMetaData;
 }

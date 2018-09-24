@@ -15,23 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
+package io.shardingsphere.core.spi.executor;
 
-import io.shardingsphere.core.event.ShardingStartEvent;
+import io.shardingsphere.core.spi.ShardingStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 /**
- * Close connection start event.
+ * SQL execution start event.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class CloseConnectionStartEvent extends ShardingStartEvent {
+public final class SQLExecutionStartEvent extends ShardingStartEvent {
     
-    private final String dataSource;
+    private final RouteUnit routeUnit;
+    
+    private final List<Object> parameters;
     
     private final DataSourceMetaData dataSourceMetaData;
 }

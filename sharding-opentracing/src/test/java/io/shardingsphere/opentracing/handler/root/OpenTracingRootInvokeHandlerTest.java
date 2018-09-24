@@ -18,7 +18,7 @@
 package io.shardingsphere.opentracing.handler.root;
 
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.spi.RootInvokeHandlerSPILoader;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerSPILoader;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.junit.Test;
 

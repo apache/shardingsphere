@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
+package io.shardingsphere.core.spi.connection.close;
 
 import java.util.ServiceLoader;
 

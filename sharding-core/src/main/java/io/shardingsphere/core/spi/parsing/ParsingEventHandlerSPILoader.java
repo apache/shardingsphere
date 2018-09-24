@@ -15,23 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.connection;
+package io.shardingsphere.core.spi.parsing;
 
 import java.util.ServiceLoader;
 
 /**
- * Connection event handler SPI loader.
+ * Parsing event handler SPI loader.
  *
  * @author zhangliang
  */
-public final class GetConnectionEventHandlerSPILoader {
+public final class ParsingEventHandlerSPILoader {
     
-    private static final GetConnectionEventHandlerSPILoader INSTANCE = new GetConnectionEventHandlerSPILoader();
+    private static final ParsingEventHandlerSPILoader INSTANCE = new ParsingEventHandlerSPILoader();
     
-    private final ServiceLoader<GetConnectionEventHandler> serviceLoader;
+    private final ServiceLoader<ParsingEventHandler> serviceLoader;
     
-    private GetConnectionEventHandlerSPILoader() {
-        serviceLoader = ServiceLoader.load(GetConnectionEventHandler.class);
+    private ParsingEventHandlerSPILoader() {
+        serviceLoader = ServiceLoader.load(ParsingEventHandler.class);
     }
     
     /**
@@ -39,28 +39,28 @@ public final class GetConnectionEventHandlerSPILoader {
      * 
      * @return instance
      */
-    public static GetConnectionEventHandlerSPILoader getInstance() {
+    public static ParsingEventHandlerSPILoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Handle get connection start event.
+     * Handle parsing start event.
      *
-     * @param event get connection start event
+     * @param event parsing start event
      */
-    public void handle(final GetConnectionStartEvent event) {
-        for (GetConnectionEventHandler each : serviceLoader) {
+    public void handle(final ParsingStartEvent event) {
+        for (ParsingEventHandler each : serviceLoader) {
             each.handle(event);
         }
     }
     
     /**
-     * Handle get connection finish event.
+     * Handle parsing finish event.
      *
-     * @param event get connection finish event
+     * @param event parsing finish event
      */
-    public void handle(final GetConnectionFinishEvent event) {
-        for (GetConnectionEventHandler each : serviceLoader) {
+    public void handle(final ParsingFinishEvent event) {
+        for (ParsingEventHandler each : serviceLoader) {
             each.handle(event);
         }
     }

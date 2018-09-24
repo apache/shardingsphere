@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.core.spi.RootInvokeHandlerSPILoader;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerSPILoader;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
