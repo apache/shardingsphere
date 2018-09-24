@@ -15,20 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.handler;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.eventbus.EventBus;
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
-import io.shardingsphere.opentracing.ShardingErrorLogTags;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
+import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeEventHandler;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,18 +39,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseEventListenerTest {
+public abstract class BaseOpenTracingHandlerTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
-    static MockTracer getTracer() {
+    /**
+     * Get tracer.
+     * 
+     * @return tracer
+     */
+    public static MockTracer getTracer() {
         return TRACER;
     }
     
     @BeforeClass
     public static void initTracer() {
         ShardingTracer.init(TRACER);
-        ExecutorDataMap.getDataMap().remove(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION);
+        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeEventHandler.ROOT_SPAN_CONTINUATION);
     }
     
     @AfterClass
@@ -60,13 +63,6 @@ public abstract class BaseEventListenerTest {
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);
         field.set(GlobalTracer.class, NoopTracerFactory.create());
-    }
-    
-    @AfterClass
-    public static void resetShardingEventBus() throws NoSuchFieldException, IllegalAccessException {
-        Field field = EventBus.class.getDeclaredField("subscribersByType");
-        field.setAccessible(true);
-        field.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
     
     @Before

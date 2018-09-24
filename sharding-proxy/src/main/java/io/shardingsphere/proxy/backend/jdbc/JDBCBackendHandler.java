@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
@@ -83,7 +84,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
-        return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+        return ruleRegistry == null 
+                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) 
+                : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
@@ -102,7 +105,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         if (!ruleRegistry.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(), 
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
                     new ProxyTableMetaDataConnectionManager(ruleRegistry.getBackendDataSource()), PROXY_CONTEXT.getMaxConnectionsSizePerQuery());
             ruleRegistry.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleRegistry.getShardingRule()));
         }
@@ -122,6 +125,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
         if (mergedResult instanceof ShowDatabasesMergedResult) {
             mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+        } else if (mergedResult instanceof ShowTablesMergedResult) {
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(ruleRegistry.getSchemaName());
+            setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
@@ -139,6 +145,12 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
         return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
+    }
+    
+    private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
+        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+            each.setName("Tables_in_" + ruleRegistry.getSchemaName());
+        }
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.event.connection;
 
+import io.shardingsphere.core.event.ShardingStartEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class GetConnectionStartEvent extends GetConnectionEvent {
+public final class GetConnectionStartEvent extends ShardingStartEvent {
     
     private final String dataSource;
 }

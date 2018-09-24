@@ -17,19 +17,20 @@
 
 package io.shardingsphere.proxy.backend.jdbc.connection;
 
+import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.connection.CloseConnectionEvent;
+import io.shardingsphere.core.event.connection.CloseConnectionEventHandlerSPILoader;
 import io.shardingsphere.core.event.connection.CloseConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.CloseConnectionStartEvent;
-import io.shardingsphere.core.event.connection.GetConnectionEvent;
+import io.shardingsphere.core.event.connection.GetConnectionEventHandlerSPILoader;
 import io.shardingsphere.core.event.connection.GetConnectionFinishEvent;
 import io.shardingsphere.core.event.connection.GetConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,11 +47,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhaojun
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 public final class BackendConnection implements AutoCloseable {
     
     @Getter
-    private final RuleRegistry ruleRegistry;
+    @Setter
+    private RuleRegistry ruleRegistry;
     
     private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
@@ -61,26 +63,27 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Get connections of current thread datasource.
      *
+     * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
      * @return connection
      * @throws SQLException SQL exception
      */
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
+    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         try {
-            ShardingEventBusInstance.getInstance().post(new GetConnectionStartEvent(dataSourceName));
-            List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(dataSourceName, connectionSize);
+            GetConnectionEventHandlerSPILoader.getInstance().handle(new GetConnectionStartEvent(dataSourceName));
+            List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
             cachedConnections.addAll(result);
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
+            GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL()));
             finishEvent.setExecuteSuccess();
-            ShardingEventBusInstance.getInstance().post(finishEvent);
+            GetConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            GetConnectionEvent finishEvent = new GetConnectionFinishEvent(0, null);
+            GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(0, null);
             finishEvent.setExecuteFailure(ex);
-            ShardingEventBusInstance.getInstance().post(finishEvent);
+            GetConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             throw ex;
         }
     }
@@ -151,17 +154,18 @@ public final class BackendConnection implements AutoCloseable {
     
     private Collection<SQLException> closeConnections() {
         Collection<SQLException> result = new LinkedList<>();
-        CloseConnectionEvent finishEvent = new CloseConnectionFinishEvent();
+        CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
         for (Connection each : cachedConnections) {
             try {
-                ShardingEventBusInstance.getInstance().post(new CloseConnectionStartEvent(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL())));
+                CloseConnectionEventHandlerSPILoader.getInstance().handle(
+                        new CloseConnectionStartEvent(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL())));
                 each.close();
                 finishEvent.setExecuteSuccess();
-                ShardingEventBusInstance.getInstance().post(finishEvent);
+                CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             } catch (SQLException ex) {
                 finishEvent.setExecuteFailure(ex);
                 result.add(ex);
-                ShardingEventBusInstance.getInstance().post(finishEvent);
+                CloseConnectionEventHandlerSPILoader.getInstance().handle(finishEvent);
             }
         }
         return result;

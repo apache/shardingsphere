@@ -15,16 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.handler.parsing;
 
-import com.google.common.eventbus.EventBus;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.parsing.ParsingEventHandlerSPILoader;
 import io.shardingsphere.core.event.parsing.ParsingFinishEvent;
 import io.shardingsphere.core.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -33,16 +33,14 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ParsingEventListenerTest extends BaseEventListenerTest {
+public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
+    private final ParsingEventHandlerSPILoader loader = ParsingEventHandlerSPILoader.getInstance();
     
     @Test
     public void assertExecuteSuccess() {
-        shardingEventBus.post(new ParsingStartEvent("SELECT * FROM XXX;"));
-        ParsingFinishEvent finishEvent = new ParsingFinishEvent();
-        finishEvent.setExecuteSuccess();
-        shardingEventBus.post(finishEvent);
+        loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
+        loader.handle(new ParsingFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
@@ -54,10 +52,10 @@ public final class ParsingEventListenerTest extends BaseEventListenerTest {
     
     @Test
     public void assertExecuteFailure() {
-        shardingEventBus.post(new ParsingStartEvent("SELECT * FROM XXX;"));
+        loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
         ParsingFinishEvent finishEvent = new ParsingFinishEvent();
         finishEvent.setExecuteFailure(new ShardingException("parse SQL error"));
-        shardingEventBus.post(finishEvent);
+        loader.handle(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));

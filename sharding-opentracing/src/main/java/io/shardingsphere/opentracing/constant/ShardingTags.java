@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing;
+package io.shardingsphere.opentracing.constant;
 
 import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;

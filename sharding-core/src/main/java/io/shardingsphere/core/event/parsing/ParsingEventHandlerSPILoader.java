@@ -1,0 +1,67 @@
+/*
+ * Copyright 2016-2018 shardingsphere.io.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
+package io.shardingsphere.core.event.parsing;
+
+import java.util.ServiceLoader;
+
+/**
+ * Parsing event handler SPI loader.
+ *
+ * @author zhangliang
+ */
+public final class ParsingEventHandlerSPILoader {
+    
+    private static final ParsingEventHandlerSPILoader INSTANCE = new ParsingEventHandlerSPILoader();
+    
+    private final ServiceLoader<ParsingEventHandler> serviceLoader;
+    
+    private ParsingEventHandlerSPILoader() {
+        serviceLoader = ServiceLoader.load(ParsingEventHandler.class);
+    }
+    
+    /**
+     * Get instance.
+     * 
+     * @return instance
+     */
+    public static ParsingEventHandlerSPILoader getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Handle parsing start event.
+     *
+     * @param event parsing start event
+     */
+    public void handle(final ParsingStartEvent event) {
+        for (ParsingEventHandler each : serviceLoader) {
+            each.handle(event);
+        }
+    }
+    
+    /**
+     * Handle parsing finish event.
+     *
+     * @param event parsing finish event
+     */
+    public void handle(final ParsingFinishEvent event) {
+        for (ParsingEventHandler each : serviceLoader) {
+            each.handle(event);
+        }
+    }
+}

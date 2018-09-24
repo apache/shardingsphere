@@ -17,10 +17,12 @@
 
 package io.shardingsphere.core.event.parsing;
 
+import io.shardingsphere.core.event.ShardingFinishEvent;
+
 /**
  * Parsing finish event.
  *
  * @author zhangyonglun
  */
-public final class ParsingFinishEvent extends ParsingEvent {
+public final class ParsingFinishEvent extends ShardingFinishEvent {
 }

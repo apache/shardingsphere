@@ -21,11 +21,6 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.opentracing.listener.CloseConnectionEventListener;
-import io.shardingsphere.opentracing.listener.GetConnectionEventListener;
-import io.shardingsphere.opentracing.listener.SQLExecuteEventListener;
-import io.shardingsphere.opentracing.listener.RootInvokeEventListener;
-import io.shardingsphere.opentracing.listener.ParsingEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -61,16 +56,7 @@ public final class ShardingTracer {
     public static void init(final Tracer tracer) {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(tracer);
-            registerListeners();
         }
-    }
-    
-    private static void registerListeners() {
-        new RootInvokeEventListener().register();
-        new ParsingEventListener().register();
-        new GetConnectionEventListener().register();
-        new SQLExecuteEventListener().register();
-        new CloseConnectionEventListener().register();
     }
     
     /**

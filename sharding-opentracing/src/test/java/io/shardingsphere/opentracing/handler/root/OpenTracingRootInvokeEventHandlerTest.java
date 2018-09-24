@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.handler.root;
 
-import com.google.common.eventbus.EventBus;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.root.RootInvokeEventHandlerSPILoader;
 import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -29,18 +29,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class RootInvokeEventListenerTest extends BaseEventListenerTest {
+public final class OpenTracingRootInvokeEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
+    private final RootInvokeEventHandlerSPILoader loader = RootInvokeEventHandlerSPILoader.getInstance();
     
     @Test
     public void assertRootInvoke() {
-        shardingEventBus.post(new RootInvokeStartEvent());
-        assertTrue(RootInvokeEventListener.isTrunkThread());
-        assertNotNull(RootInvokeEventListener.getActiveSpan().get());
-        assertTrue(ExecutorDataMap.getDataMap().containsKey(RootInvokeEventListener.OVERALL_SPAN_CONTINUATION));
-        shardingEventBus.post(new RootInvokeFinishEvent());
-        assertFalse(RootInvokeEventListener.isTrunkThread());
-        assertNull(RootInvokeEventListener.getActiveSpan().get());
+        loader.handle(new RootInvokeStartEvent());
+        assertTrue(OpenTracingRootInvokeEventHandler.isTrunkThread());
+        assertNotNull(OpenTracingRootInvokeEventHandler.getActiveSpan().get());
+        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeEventHandler.ROOT_SPAN_CONTINUATION));
+        loader.handle(new RootInvokeFinishEvent());
+        assertFalse(OpenTracingRootInvokeEventHandler.isTrunkThread());
+        assertNull(OpenTracingRootInvokeEventHandler.getActiveSpan().get());
     }
 }

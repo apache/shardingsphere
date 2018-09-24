@@ -44,4 +44,15 @@ public final class ShowTablesMergedResult extends LogicTablesMergedResult {
     public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
         super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, shardingTableMetaData);
     }
+    
+    /**
+     * Reset column label.
+     * 
+     * @param schema schema 
+     */
+    public void resetColumnLabel(final String schema) {
+        Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
+        labelAndIndexMap.put(schema, 1);
+        resetLabelAndIndexMap(labelAndIndexMap);
+    }
 }

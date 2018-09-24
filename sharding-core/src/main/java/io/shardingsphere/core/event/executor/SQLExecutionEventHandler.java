@@ -15,19 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.core.event.executor;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.event.ShardingEventHandler;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        RootInvokeEventListenerTest.class, 
-        GetConnectionEventListenerTest.class,
-        CloseConnectionEventListenerTest.class, 
-        ParsingEventListenerTest.class,
-        ExecuteEventListenerTest.class
-})
-public final class AllListenerTests {
+/**
+ * SQL Execution event handler.
+ *
+ * @author zhangliang
+ */
+public interface SQLExecutionEventHandler extends ShardingEventHandler<SQLExecutionStartEvent, SQLExecutionFinishEvent> {
 }

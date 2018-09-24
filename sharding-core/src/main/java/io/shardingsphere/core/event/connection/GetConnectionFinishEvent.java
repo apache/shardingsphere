@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.event.connection;
 
+import io.shardingsphere.core.event.ShardingFinishEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class GetConnectionFinishEvent extends GetConnectionEvent {
+public final class GetConnectionFinishEvent extends ShardingFinishEvent {
     
     private final int connectionCount;
     

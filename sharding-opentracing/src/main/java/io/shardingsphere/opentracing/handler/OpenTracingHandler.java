@@ -15,16 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.handler;
 
 import io.opentracing.Span;
 import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.ShardingEvent;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.opentracing.ShardingErrorLogTags;
-import io.shardingsphere.opentracing.ShardingTags;
+import io.shardingsphere.core.event.ShardingEventHandler;
+import io.shardingsphere.core.event.ShardingFinishEvent;
+import io.shardingsphere.core.event.ShardingStartEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
+import io.shardingsphere.opentracing.constant.ShardingTags;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
@@ -35,60 +36,43 @@ import java.util.Map;
  *
  * @author zhangliang
  * 
- * @param <T> type of sharding event
+ * @param <S> type of sharding start event
+ * @param <F> type of sharding finish event
  */
 @RequiredArgsConstructor
-public abstract class OpenTracingListener<T extends ShardingEvent> {
+public abstract class OpenTracingHandler<S extends ShardingStartEvent, F extends ShardingFinishEvent> implements ShardingEventHandler<S, F> {
     
     private final ThreadLocal<Span> spanHolder = new ThreadLocal<>();
     
     private final String operationName;
     
-    /**
-     * Register listener.
-     */
-    public final void register() {
-        ShardingEventBusInstance.getInstance().register(this);
+    @Override
+    public final void handle(final S event) {
+        spanHolder.set(initSpan(event, createSpanBuilder()));
     }
     
-    @SuppressWarnings("unchecked")
-    protected final void tracing(final T event) {
-        switch (event.getEventType()) {
-            case BEFORE_EXECUTE:
-                spanHolder.set(initSpan(event, createSpanBuilder()));
-                break;
-            case EXECUTE_SUCCESS:
-                tracingFinish(event);
-                break;
-            case EXECUTE_FAILURE:
-                setErrorInfo(event);
-                tracingFinish(event);
-                break;
-            default:
-                throw new UnsupportedOperationException(event.getEventType().name());
+    @Override
+    public final void handle(final F event) {
+        if (null != event.getException()) {
+            setErrorInfo(event);
         }
+        tracingFinish(event);
     }
     
     private SpanBuilder createSpanBuilder() {
         return ShardingTracer.get().buildSpan(operationName).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
     }
     
-    protected abstract Span initSpan(T event, SpanBuilder spanBuilder);
-    
-    private void tracingFinish(final T event) {
+    protected abstract Span initSpan(S event, SpanBuilder spanBuilder);
+
+    private void tracingFinish(final F event) {
         updateSpan(event, spanHolder.get());
         spanHolder.get().finish();
         spanHolder.remove();
         afterTracingFinish(event);
     }
     
-    protected void updateSpan(final T event, final Span span) {
-    }
-    
-    protected void afterTracingFinish(final T event) {
-    }
-    
-    private void setErrorInfo(final T event) {
+    private void setErrorInfo(final F event) {
         spanHolder.get().setTag(Tags.ERROR.getKey(), true).log(System.currentTimeMillis(), getReason(event.getException()));
     }
     
@@ -98,5 +82,11 @@ public abstract class OpenTracingListener<T extends ShardingEvent> {
         result.put(ShardingErrorLogTags.ERROR_KIND, cause.getClass().getName());
         result.put(ShardingErrorLogTags.MESSAGE, cause.getMessage());
         return result;
+    }
+    
+    protected void updateSpan(final F event, final Span span) {
+    }
+    
+    protected void afterTracingFinish(final F event) {
     }
 }

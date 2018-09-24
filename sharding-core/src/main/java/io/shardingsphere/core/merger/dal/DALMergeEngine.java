@@ -22,12 +22,14 @@ import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import io.shardingsphere.core.merger.dal.show.ShowIndexMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowOtherMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowTableStatusMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
@@ -67,6 +69,9 @@ public final class DALMergeEngine implements MergeEngine {
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
             return new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
+        }
+        if (dalStatement instanceof ShowIndexStatement) {
+            return new ShowIndexMergedResult(shardingRule, queryResults, shardingTableMetaData);
         }
         return new ShowOtherMergedResult(queryResults.get(0));
     }

@@ -17,7 +17,21 @@
 
 package io.shardingsphere.proxy.backend;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.SQLJudgeEngine;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.SQLToken;
+import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.proxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.backend.jdbc.execute.JDBCExecuteEngine;
@@ -30,6 +44,7 @@ import io.shardingsphere.proxy.frontend.common.FrontendHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -56,11 +71,12 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
-        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema());
+        Optional<String> schema = getSchema(sql);
+        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema.isPresent() ? schema.get() : frontendHandler.getCurrentSchema());
+        backendConnection.setRuleRegistry(ruleRegistry);
         return PROXY_CONTEXT.isUseNIO()
                 ? new NettyBackendHandler(frontendHandler, ruleRegistry, connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(
-                        frontendHandler, ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(ruleRegistry)));
+                : new JDBCBackendHandler(frontendHandler, ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(ruleRegistry)));
     }
     
     /**
@@ -75,12 +91,29 @@ public final class BackendHandlerFactory {
      * @param frontendHandler frontend handler
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newBinaryProtocolInstance(
-            final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection,
-            final DatabaseType databaseType, final FrontendHandler frontendHandler) {
-        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(frontendHandler.getCurrentSchema());
+    public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, 
+                                                           final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
+        Optional<String> schema = getSchema(sql);
+        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema.isPresent() ? schema.get() : frontendHandler.getCurrentSchema());
+        backendConnection.setRuleRegistry(ruleRegistry);
         return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(frontendHandler, ruleRegistry, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(frontendHandler, ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(ruleRegistry, parameters)));
     }
+    
+    private static Optional<String> getSchema(final String sql) {
+        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement 
+                || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowOtherStatement || sqlStatement instanceof UseStatement) {
+            // TODO dcl and set syntax need instance broadcast
+            return Optional.of(PROXY_CONTEXT.getDefaultSchema());
+        }
+        if (!sqlStatement.getSqlTokens().isEmpty()
+                && (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowColumnsStatement
+                || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement)) {
+            LinkedList<SQLToken> sqlTokens = new LinkedList<>();
+            sqlTokens.addAll(sqlStatement.getSqlTokens());
+            return Optional.of(((SchemaToken) sqlTokens.getLast()).getSchemaName());
+        }
+        return Optional.absent();
+    }
 }
-

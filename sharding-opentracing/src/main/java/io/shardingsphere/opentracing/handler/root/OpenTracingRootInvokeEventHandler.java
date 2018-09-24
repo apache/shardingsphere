@@ -15,62 +15,39 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.listener;
+package io.shardingsphere.opentracing.handler.root;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.root.RootInvokeEventHandler;
 import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
 import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
-import io.shardingsphere.opentracing.ShardingTags;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
- * Root invoke event listener.
+ * Open tracing root invoke event handler.
  *
- * @author gaohongtao
- * @author wangkai
- * @author maxiaoguang
+ * @author zhangliang
  */
-public final class RootInvokeEventListener {
+public final class OpenTracingRootInvokeEventHandler implements RootInvokeEventHandler {
     
-    public static final String OVERALL_SPAN_CONTINUATION = "OVERALL_SPAN_CONTINUATION";
+    public static final String ROOT_SPAN_CONTINUATION = "ROOT_SPAN_CONTINUATION";
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
     private static final ThreadLocal<ActiveSpan> ACTIVE_SPAN = new ThreadLocal<>();
     
-    /**
-     * Register listener.
-     */
-    public void register() {
-        ShardingEventBusInstance.getInstance().register(this);
-    }
-    
-    /**
-     * Listen root invoke start event.
-     *
-     * @param event root invoke start event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final RootInvokeStartEvent event) {
+    @Override
+    public void handle(final RootInvokeStartEvent event) {
         ActiveSpan span = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
         ACTIVE_SPAN.set(span);
-        ExecutorDataMap.getDataMap().put(OVERALL_SPAN_CONTINUATION, span.capture());
+        ExecutorDataMap.getDataMap().put(ROOT_SPAN_CONTINUATION, span.capture());
     }
     
-    /**
-     * Listen root invoke finish event.
-     *
-     * @param event root invoke finish event
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void listen(final RootInvokeFinishEvent event) {
+    @Override
+    public void handle(final RootInvokeFinishEvent event) {
         ACTIVE_SPAN.get().deactivate();
         ACTIVE_SPAN.remove();
     }
@@ -86,7 +63,7 @@ public final class RootInvokeEventListener {
     
     /**
      * Get active span.
-     * 
+     *
      * @return active span
      */
     public static ThreadLocal<ActiveSpan> getActiveSpan() {
