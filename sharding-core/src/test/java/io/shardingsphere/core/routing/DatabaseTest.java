@@ -58,12 +58,12 @@ public class DatabaseTest {
     @Test
     public void assertHintSQL() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue(1);
+            hintManager.setDatabaseShardingValue(1);
             assertTarget("select * from tesT", "ds_1");
             assertTarget("insert into test values (1,2)", "ds_1");
             assertTarget("update test set a = 1", "ds_1");
             assertTarget("delete from test where id = 2", "ds_1");
-            hintManager.addDatabaseShardingValue(2);
+            hintManager.setDatabaseShardingValue(2);
             assertTarget("select * from tesT", "ds_0");
             hintManager.close();
         }

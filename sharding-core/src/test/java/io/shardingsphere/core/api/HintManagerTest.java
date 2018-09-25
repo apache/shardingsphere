@@ -71,7 +71,7 @@ public final class HintManagerTest {
     @Test
     public void assertAddDatabaseShardingOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("1");
+            hintManager.setDatabaseShardingValue("1");
             assertTrue(hintManager.isDatabaseShardingOnly());
             assertThat((String) ((ListShardingValue) 
                     hintManager.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME)).getValues().iterator().next(), is("1"));
