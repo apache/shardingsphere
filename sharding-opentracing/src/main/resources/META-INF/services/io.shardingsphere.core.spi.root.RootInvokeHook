@@ -1,1 +1,1 @@
-io.shardingsphere.opentracing.handler.OpenTracingRootInvokeHandler
+io.shardingsphere.opentracing.hook.OpenTracingRootInvokeHandler

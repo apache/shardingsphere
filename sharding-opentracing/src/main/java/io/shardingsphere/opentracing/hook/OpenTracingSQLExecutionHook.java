@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler;
+package io.shardingsphere.opentracing.hook;
 
 import com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;

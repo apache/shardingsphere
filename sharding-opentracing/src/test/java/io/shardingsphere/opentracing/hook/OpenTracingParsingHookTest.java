@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler;
+package io.shardingsphere.opentracing.hook;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
@@ -31,7 +31,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHandlerTest {
+public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
     private final ParsingHook parsingHook = new SPIParsingHook();
     

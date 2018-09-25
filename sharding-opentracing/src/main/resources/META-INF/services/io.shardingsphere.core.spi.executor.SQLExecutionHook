@@ -1,1 +1,1 @@
-io.shardingsphere.opentracing.handler.OpenTracingSQLExecutionHook
+io.shardingsphere.opentracing.hook.OpenTracingSQLExecutionHook

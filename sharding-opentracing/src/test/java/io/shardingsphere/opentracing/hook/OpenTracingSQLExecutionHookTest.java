@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler;
+package io.shardingsphere.opentracing.hook;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTracingHandlerTest {
+public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTest {
     
     private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     

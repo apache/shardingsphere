@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler;
+package io.shardingsphere.opentracing.hook;
 
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.spi.root.RootInvokeHook;
@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class OpenTracingRootInvokeHandlerTest extends BaseOpenTracingHandlerTest {
+public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest {
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     

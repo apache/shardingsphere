@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler;
+package io.shardingsphere.opentracing.hook;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -23,9 +23,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        OpenTracingRootInvokeHandlerTest.class, 
-        OpenTracingParsingEventHandlerTest.class, 
-        OpenTracingSQLExecutionEventHandlerTest.class 
+        OpenTracingRootInvokeHookTest.class, 
+        OpenTracingParsingHookTest.class, 
+        OpenTracingSQLExecutionHookTest.class 
 })
-public final class AllHandlerTests {
+public final class AllHookTests {
 }
