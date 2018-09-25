@@ -83,8 +83,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         try {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread);
             T result = executeSQL(statementExecuteUnit);
+            sqlExecutionHook.finishSuccess();
             for (List<Object> each : parameterSets) {
-                sqlExecutionHook.finishSuccess();
                 // TODO remove after BED removed
                 SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteSuccess();

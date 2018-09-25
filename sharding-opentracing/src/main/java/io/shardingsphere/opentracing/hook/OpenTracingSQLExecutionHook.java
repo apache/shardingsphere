@@ -75,9 +75,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     
     @Override
     public void finishSuccess() {
-        if (null != span) {
-            span.finish();
-        }
+        span.finish();
         if (null != activeSpan) {
             activeSpan.deactivate();
         }
@@ -85,10 +83,8 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     
     @Override
     public void finishFailure(final Exception cause) {
-        if (null != span) {
-            ShardingErrorSpan.setError(span, cause);
-            span.finish();
-        }
+        ShardingErrorSpan.setError(span, cause);
+        span.finish();
         if (null != activeSpan) {
             activeSpan.deactivate();
         }
