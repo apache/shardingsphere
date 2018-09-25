@@ -47,9 +47,6 @@ public final class HintManager implements AutoCloseable {
     
     private final Map<String, ShardingValue> tableShardingValues = new HashMap<>();
     
-    @Getter
-    private boolean databaseShardingOnly;
-    
     /**
      * Get a new instance for {@code HintManager}.
      *
