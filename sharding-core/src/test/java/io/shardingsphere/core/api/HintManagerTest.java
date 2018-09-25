@@ -18,7 +18,6 @@
 package io.shardingsphere.core.api;
 
 import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import org.junit.Test;
 
@@ -31,9 +30,9 @@ public final class HintManagerTest {
     @Test
     public void assertAddDatabaseShardingValueForEquals() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
+            hintManager.addDatabaseShardingValue("logicTable", 1);
             assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue<? extends Comparable>) hintManager.getDatabaseShardingValue("logicTable")).getValues().iterator().next(), is((Comparable) 1));
         }
     }
@@ -41,21 +40,10 @@ public final class HintManagerTest {
     @Test
     public void assertAddDatabaseShardingValueForIn() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1, 3, 5);
+            hintManager.addDatabaseShardingValue("logicTable", 1, 3, 5);
             assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue) hintManager.getDatabaseShardingValue("logicTable")).getValues().size(), is(3));
-        }
-    }
-    
-    @Test
-    public void assertAddDatabaseShardingValueForBetween() {
-        try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1, 10);
-            assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is("shardingColumn"));
-            assertThat(((RangeShardingValue) hintManager.getDatabaseShardingValue("logicTable")).getValueRange().lowerEndpoint(), is((Comparable) 1));
-            assertThat(((RangeShardingValue) hintManager.getDatabaseShardingValue("logicTable")).getValueRange().upperEndpoint(), is((Comparable) 10));
         }
     }
     
@@ -63,9 +51,9 @@ public final class HintManagerTest {
     @Test
     public void assertAddTableShardingValueForEquals() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addTableShardingValue("logicTable", "shardingColumn", 1);
+            hintManager.addTableShardingValue("logicTable", 1);
             assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue<? extends Comparable>) hintManager.getTableShardingValue("logicTable")).getValues().iterator().next(), is((Comparable) 1));
         }
     }
@@ -73,21 +61,10 @@ public final class HintManagerTest {
     @Test
     public void assertAddTableShardingValueForIn() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addTableShardingValue("logicTable", "shardingColumn",  1, 3, 5);
+            hintManager.addTableShardingValue("logicTable", 1, 3, 5);
             assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue) hintManager.getTableShardingValue("logicTable")).getValues().size(), is(3));
-        }
-    }
-    
-    @Test
-    public void assertAddTableShardingValueForBetween() {
-        try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addTableShardingValue("logicTable", "shardingColumn", 1, 10);
-            assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is("shardingColumn"));
-            assertThat(((RangeShardingValue) hintManager.getTableShardingValue("logicTable")).getValueRange().lowerEndpoint(), is((Comparable) 1));
-            assertThat(((RangeShardingValue) hintManager.getTableShardingValue("logicTable")).getValueRange().upperEndpoint(), is((Comparable) 10));
         }
     }
     
@@ -95,7 +72,7 @@ public final class HintManagerTest {
     public void assertAddDatabaseShardingOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDatabaseShardingValue("1");
-            assertTrue(hintManager.isDatabaseShardingOnly());
+            assertTrue(HintManagerHolder.isDatabaseShardingOnly());
             assertThat((String) ((ListShardingValue) 
                     hintManager.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME)).getValues().iterator().next(), is("1"));
         }
