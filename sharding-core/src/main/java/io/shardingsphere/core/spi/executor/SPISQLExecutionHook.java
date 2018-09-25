@@ -30,11 +30,7 @@ import java.util.ServiceLoader;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private static final ServiceLoader<SQLExecutionHook> SERVICE_LOADER;
-    
-    static {
-        SERVICE_LOADER = ServiceLoader.load(SQLExecutionHook.class);
-    }
+    private static final ServiceLoader<SQLExecutionHook> SERVICE_LOADER = ServiceLoader.load(SQLExecutionHook.class);
     
     @Override
     public void start(final RouteUnit routeUnit, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData) {

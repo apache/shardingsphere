@@ -28,11 +28,7 @@ import java.util.ServiceLoader;
  */
 public final class SPICloseConnectionHook implements CloseConnectionHook {
     
-    private static final ServiceLoader<CloseConnectionHook> SERVICE_LOADER;
-    
-    static {
-        SERVICE_LOADER = ServiceLoader.load(CloseConnectionHook.class);
-    }
+    private static final ServiceLoader<CloseConnectionHook> SERVICE_LOADER = ServiceLoader.load(CloseConnectionHook.class);
     
     @Override
     public void start(final String dataSourceName, final DataSourceMetaData dataSourceMetaData) {

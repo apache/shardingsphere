@@ -26,11 +26,7 @@ import java.util.ServiceLoader;
  */
 public final class SPIParsingHook implements ParsingHook {
     
-    private static final ServiceLoader<ParsingHook> SERVICE_LOADER;
-    
-    static {
-        SERVICE_LOADER = ServiceLoader.load(ParsingHook.class);
-    }
+    private static final ServiceLoader<ParsingHook> SERVICE_LOADER = ServiceLoader.load(ParsingHook.class);
     
     @Override
     public void start(final String sql) {

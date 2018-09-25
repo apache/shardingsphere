@@ -26,11 +26,7 @@ import java.util.ServiceLoader;
  */
 public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private static final ServiceLoader<RootInvokeHook> SERVICE_LOADER;
-    
-    static {
-        SERVICE_LOADER = ServiceLoader.load(RootInvokeHook.class);
-    }
+    private static final ServiceLoader<RootInvokeHook> SERVICE_LOADER = ServiceLoader.load(RootInvokeHook.class);
     
     @Override
     public void start() {

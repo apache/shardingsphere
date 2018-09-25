@@ -18,6 +18,11 @@
 package io.shardingsphere.core.bootstrap;
 
 import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
+import io.shardingsphere.core.spi.connection.close.SPICloseConnectionHook;
+import io.shardingsphere.core.spi.connection.get.SPIGetConnectionHook;
+import io.shardingsphere.core.spi.executor.SPISQLExecutionHook;
+import io.shardingsphere.core.spi.parsing.SPIParsingHook;
+import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,5 +39,10 @@ public final class ShardingBootstrap {
      */
     public static void init() {
         ShardingEventListenerRegistrySPILoader.registerListeners();
+        new SPIRootInvokeHook();
+        new SPIParsingHook();
+        new SPIGetConnectionHook();
+        new SPISQLExecutionHook();
+        new SPICloseConnectionHook();
     }
 }

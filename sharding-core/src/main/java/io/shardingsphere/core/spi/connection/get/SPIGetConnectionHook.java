@@ -28,11 +28,7 @@ import java.util.ServiceLoader;
  */
 public final class SPIGetConnectionHook implements GetConnectionHook {
     
-    private static final ServiceLoader<GetConnectionHook> SERVICE_LOADER;
-    
-    static {
-        SERVICE_LOADER = ServiceLoader.load(GetConnectionHook.class);
-    }
+    private static final ServiceLoader<GetConnectionHook> SERVICE_LOADER = ServiceLoader.load(GetConnectionHook.class);
     
     @Override
     public void start(final String dataSourceName) {
