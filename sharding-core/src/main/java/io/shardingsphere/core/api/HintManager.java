@@ -62,6 +62,15 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
+     * Judge whether it is only database sharding.
+     *
+     * @return Only database sharding or not
+     */
+    public boolean isDatabaseShardingOnly() {
+        return databaseShardingValues.containsKey(HintManagerHolder.DB_TABLE_NAME) && tableShardingValues.isEmpty();
+    }
+    
+    /**
      * Add sharding value for database sharding only.
      *
      * <p>The sharding operator is {@code =}</p>
@@ -71,15 +80,6 @@ public final class HintManager implements AutoCloseable {
      */
     public void addDatabaseShardingValue(final Comparable<?> value) {
         addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, ShardingOperator.EQUAL, value);
-    }
-    
-    /**
-     * Judge whether it is only database sharding.
-     *
-     * @return Only database sharding or not
-     */
-    public boolean isDatabaseShardingOnly() {
-        return databaseShardingValues.containsKey(HintManagerHolder.DB_TABLE_NAME) && tableShardingValues.isEmpty();
     }
     
     /**
