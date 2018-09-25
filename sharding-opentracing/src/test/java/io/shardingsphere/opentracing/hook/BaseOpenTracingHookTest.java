@@ -23,7 +23,7 @@ import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
 import org.hamcrest.CoreMatchers;
@@ -54,7 +54,7 @@ public abstract class BaseOpenTracingHookTest {
     @BeforeClass
     public static void initTracer() {
         ShardingTracer.init(TRACER);
-        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
+        ShardingExecuteDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
     }
     
     @AfterClass

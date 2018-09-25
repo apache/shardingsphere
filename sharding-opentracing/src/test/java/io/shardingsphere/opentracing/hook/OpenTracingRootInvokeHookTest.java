@@ -17,7 +17,7 @@
 
 package io.shardingsphere.opentracing.hook;
 
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.core.spi.root.RootInvokeHook;
 import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest
     @Test
     public void assertRootInvoke() {
         rootInvokeHook.start();
-        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION));
+        assertTrue(ShardingExecuteDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION));
         rootInvokeHook.finish(1);
     }
 }

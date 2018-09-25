@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.execute.threadlocal;
+package io.shardingsphere.core.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,12 +24,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Executor runtime data map.
+ * Sharding execute data map for threadlocal even cross multiple threads.
  *
  * @author caohao
+ * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorDataMap {
+public final class ShardingExecuteDataMap {
     
     private static ThreadLocal<Map<String, Object>> dataMap = new ThreadLocal<Map<String, Object>>() {
         
@@ -45,7 +46,7 @@ public final class ExecutorDataMap {
      * @param dataMap data map
      */
     public static void setDataMap(final Map<String, Object> dataMap) {
-        ExecutorDataMap.dataMap.set(dataMap);
+        ShardingExecuteDataMap.dataMap.set(dataMap);
     }
     
     /**
