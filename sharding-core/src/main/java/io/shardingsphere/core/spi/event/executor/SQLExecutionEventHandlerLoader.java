@@ -15,22 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.executor;
+package io.shardingsphere.core.spi.event.executor;
+
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
 
 import java.util.ServiceLoader;
 
 /**
- * SQL Execution event handler SPI loader.
+ * SQL Execution event handler loader.
  *
  * @author zhangliang
  */
-public final class SQLExecutionEventHandlerSPILoader {
+public final class SQLExecutionEventHandlerLoader implements ShardingEventHandlerLoader<SQLExecutionStartEvent, SQLExecutionFinishEvent> {
     
-    private static final SQLExecutionEventHandlerSPILoader INSTANCE = new SQLExecutionEventHandlerSPILoader();
+    private static final SQLExecutionEventHandlerLoader INSTANCE = new SQLExecutionEventHandlerLoader();
     
     private final ServiceLoader<SQLExecutionEventHandler> serviceLoader;
     
-    private SQLExecutionEventHandlerSPILoader() {
+    private SQLExecutionEventHandlerLoader() {
         serviceLoader = ServiceLoader.load(SQLExecutionEventHandler.class);
     }
     
@@ -39,29 +41,21 @@ public final class SQLExecutionEventHandlerSPILoader {
      * 
      * @return instance
      */
-    public static SQLExecutionEventHandlerSPILoader getInstance() {
+    public static SQLExecutionEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     
-    /**
-     * Handle SQL execution start event.
-     *
-     * @param event SQL execution start event
-     */
-    public void handle(final SQLExecutionStartEvent event) {
+    @Override
+    public void start(final SQLExecutionStartEvent event) {
         for (SQLExecutionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
-    /**
-     * Handle SQL execution finish event.
-     *
-     * @param event SQL execution finish event
-     */
-    public void handle(final SQLExecutionFinishEvent event) {
+    @Override
+    public void finish(final SQLExecutionFinishEvent event) {
         for (SQLExecutionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

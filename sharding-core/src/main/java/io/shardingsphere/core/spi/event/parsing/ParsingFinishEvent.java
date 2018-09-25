@@ -15,23 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.close;
+package io.shardingsphere.core.spi.event.parsing;
 
-import io.shardingsphere.core.spi.ShardingStartEvent;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.spi.event.ShardingFinishEvent;
 
 /**
- * Close connection start event.
+ * Parsing finish event.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class CloseConnectionStartEvent extends ShardingStartEvent {
-    
-    private final String dataSource;
-    
-    private final DataSourceMetaData dataSourceMetaData;
+public final class ParsingFinishEvent extends ShardingFinishEvent {
 }

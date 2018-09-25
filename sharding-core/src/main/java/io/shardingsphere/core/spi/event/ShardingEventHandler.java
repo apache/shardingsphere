@@ -15,19 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi;
-
-import lombok.Getter;
-import lombok.Setter;
+package io.shardingsphere.core.spi.event;
 
 /**
- * Sharding finish event.
+ * Sharding event handler.
  *
- * @author zhangyonglun
+ * @author zhangliang
+ * @param <S> type of start event
+ * @param <F> type of finish event
  */
-@Getter
-@Setter
-public class ShardingFinishEvent {
+public interface ShardingEventHandler<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
     
-    private Exception exception;
+    /**
+     * Handle sharding start event.
+     *
+     * @param event sharding start event
+     */
+    void start(S event);
+    
+    /**
+     * Handle sharding finish event.
+     *
+     * @param event sharding finish event
+     */
+    void finish(F event);
 }

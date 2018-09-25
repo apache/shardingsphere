@@ -21,9 +21,9 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.executor.SQLExecutionEventHandlerSPILoader;
-import io.shardingsphere.core.spi.executor.SQLExecutionFinishEvent;
-import io.shardingsphere.core.spi.executor.SQLExecutionStartEvent;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionEventHandlerLoader;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionFinishEvent;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionStartEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final SQLExecutionEventHandlerSPILoader loader = SQLExecutionEventHandlerSPILoader.getInstance();
+    private final SQLExecutionEventHandlerLoader loader = SQLExecutionEventHandlerLoader.getInstance();
     
     @Test
     public void assertExecuteSuccessForTrunkThread() {
@@ -58,8 +58,8 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
-        loader.handle(new SQLExecutionFinishEvent());
+        loader.start(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
+        loader.finish(new SQLExecutionFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
@@ -85,9 +85,9 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
+        loader.start(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData));
         assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
-        loader.handle(new SQLExecutionFinishEvent());
+        loader.finish(new SQLExecutionFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
@@ -111,10 +111,10 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        loader.handle(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Collections.emptyList(), dataSourceMetaData));
+        loader.start(new SQLExecutionStartEvent(new RouteUnit("ds_test", sqlUnit), Collections.emptyList(), dataSourceMetaData));
         SQLExecutionFinishEvent finishEvent = new SQLExecutionFinishEvent();
         finishEvent.setException(new RuntimeException("SQL execution error"));
-        loader.handle(finishEvent);
+        loader.finish(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));

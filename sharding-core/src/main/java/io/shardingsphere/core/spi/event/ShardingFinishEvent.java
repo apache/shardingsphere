@@ -15,14 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.parsing;
+package io.shardingsphere.core.spi.event;
 
-import io.shardingsphere.core.spi.ShardingFinishEvent;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Parsing finish event.
+ * Sharding finish event.
  *
  * @author zhangyonglun
  */
-public final class ParsingFinishEvent extends ShardingFinishEvent {
+@Getter
+@Setter
+public class ShardingFinishEvent {
+    
+    private Exception exception;
 }

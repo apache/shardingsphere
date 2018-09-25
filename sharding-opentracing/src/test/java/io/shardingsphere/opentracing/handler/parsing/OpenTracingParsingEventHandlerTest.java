@@ -19,9 +19,9 @@ package io.shardingsphere.opentracing.handler.parsing;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.parsing.ParsingEventHandlerSPILoader;
-import io.shardingsphere.core.spi.parsing.ParsingFinishEvent;
-import io.shardingsphere.core.spi.parsing.ParsingStartEvent;
+import io.shardingsphere.core.spi.event.parsing.ParsingEventHandlerLoader;
+import io.shardingsphere.core.spi.event.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.spi.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
@@ -35,12 +35,12 @@ import static org.junit.Assert.assertThat;
 
 public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final ParsingEventHandlerSPILoader loader = ParsingEventHandlerSPILoader.getInstance();
+    private final ParsingEventHandlerLoader loader = ParsingEventHandlerLoader.getInstance();
     
     @Test
     public void assertExecuteSuccess() {
-        loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
-        loader.handle(new ParsingFinishEvent());
+        loader.start(new ParsingStartEvent("SELECT * FROM XXX;"));
+        loader.finish(new ParsingFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
@@ -52,10 +52,10 @@ public final class OpenTracingParsingEventHandlerTest extends BaseOpenTracingHan
     
     @Test
     public void assertExecuteFailure() {
-        loader.handle(new ParsingStartEvent("SELECT * FROM XXX;"));
+        loader.start(new ParsingStartEvent("SELECT * FROM XXX;"));
         ParsingFinishEvent finishEvent = new ParsingFinishEvent();
         finishEvent.setException(new ShardingException("parse SQL error"));
-        loader.handle(finishEvent);
+        loader.finish(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));

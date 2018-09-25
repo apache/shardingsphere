@@ -15,22 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.get;
+package io.shardingsphere.core.spi.event.connection.get;
+
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
 
 import java.util.ServiceLoader;
 
 /**
- * Connection event handler SPI loader.
+ * Connection event handler loader.
  *
  * @author zhangliang
  */
-public final class GetConnectionEventHandlerSPILoader {
+public final class GetConnectionEventHandlerLoader implements ShardingEventHandlerLoader<GetConnectionStartEvent, GetConnectionFinishEvent> {
     
-    private static final GetConnectionEventHandlerSPILoader INSTANCE = new GetConnectionEventHandlerSPILoader();
+    private static final GetConnectionEventHandlerLoader INSTANCE = new GetConnectionEventHandlerLoader();
     
     private final ServiceLoader<GetConnectionEventHandler> serviceLoader;
     
-    private GetConnectionEventHandlerSPILoader() {
+    private GetConnectionEventHandlerLoader() {
         serviceLoader = ServiceLoader.load(GetConnectionEventHandler.class);
     }
     
@@ -39,29 +41,21 @@ public final class GetConnectionEventHandlerSPILoader {
      * 
      * @return instance
      */
-    public static GetConnectionEventHandlerSPILoader getInstance() {
+    public static GetConnectionEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     
-    /**
-     * Handle get connection start event.
-     *
-     * @param event get connection start event
-     */
-    public void handle(final GetConnectionStartEvent event) {
+    @Override
+    public void start(final GetConnectionStartEvent event) {
         for (GetConnectionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
-    /**
-     * Handle get connection finish event.
-     *
-     * @param event get connection finish event
-     */
-    public void handle(final GetConnectionFinishEvent event) {
+    @Override
+    public void finish(final GetConnectionFinishEvent event) {
         for (GetConnectionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

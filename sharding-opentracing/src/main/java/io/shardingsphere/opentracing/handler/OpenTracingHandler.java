@@ -20,9 +20,9 @@ package io.shardingsphere.opentracing.handler;
 import io.opentracing.Span;
 import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.ShardingEventHandler;
-import io.shardingsphere.core.spi.ShardingFinishEvent;
-import io.shardingsphere.core.spi.ShardingStartEvent;
+import io.shardingsphere.core.spi.event.ShardingEventHandler;
+import io.shardingsphere.core.spi.event.ShardingFinishEvent;
+import io.shardingsphere.core.spi.event.ShardingStartEvent;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
 import io.shardingsphere.opentracing.constant.ShardingTags;
@@ -47,12 +47,12 @@ public abstract class OpenTracingHandler<S extends ShardingStartEvent, F extends
     private final String operationName;
     
     @Override
-    public final void handle(final S event) {
+    public final void start(final S event) {
         spanHolder.set(initSpan(event, createSpanBuilder()));
     }
     
     @Override
-    public final void handle(final F event) {
+    public final void finish(final F event) {
         if (null != event.getException()) {
             setErrorInfo(event);
         }

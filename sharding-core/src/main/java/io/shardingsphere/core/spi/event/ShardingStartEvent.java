@@ -15,14 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.get;
-
-import io.shardingsphere.core.spi.ShardingEventHandler;
+package io.shardingsphere.core.spi.event;
 
 /**
- * Connection event handler.
+ * Sharding start event.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public interface GetConnectionEventHandler extends ShardingEventHandler<GetConnectionStartEvent, GetConnectionFinishEvent> {
+public class ShardingStartEvent {
 }

@@ -15,22 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.parsing;
+package io.shardingsphere.core.spi.event.parsing;
+
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
 
 import java.util.ServiceLoader;
 
 /**
- * Parsing event handler SPI loader.
+ * Parsing event handler loader.
  *
  * @author zhangliang
  */
-public final class ParsingEventHandlerSPILoader {
+public final class ParsingEventHandlerLoader implements ShardingEventHandlerLoader<ParsingStartEvent, ParsingFinishEvent> {
     
-    private static final ParsingEventHandlerSPILoader INSTANCE = new ParsingEventHandlerSPILoader();
+    private static final ParsingEventHandlerLoader INSTANCE = new ParsingEventHandlerLoader();
     
     private final ServiceLoader<ParsingEventHandler> serviceLoader;
     
-    private ParsingEventHandlerSPILoader() {
+    private ParsingEventHandlerLoader() {
         serviceLoader = ServiceLoader.load(ParsingEventHandler.class);
     }
     
@@ -39,29 +41,21 @@ public final class ParsingEventHandlerSPILoader {
      * 
      * @return instance
      */
-    public static ParsingEventHandlerSPILoader getInstance() {
+    public static ParsingEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     
-    /**
-     * Handle parsing start event.
-     *
-     * @param event parsing start event
-     */
-    public void handle(final ParsingStartEvent event) {
+    @Override
+    public void start(final ParsingStartEvent event) {
         for (ParsingEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
-    /**
-     * Handle parsing finish event.
-     *
-     * @param event parsing finish event
-     */
-    public void handle(final ParsingFinishEvent event) {
+    @Override
+    public void finish(final ParsingFinishEvent event) {
         for (ParsingEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

@@ -19,9 +19,9 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.spi.parsing.ParsingEventHandlerSPILoader;
-import io.shardingsphere.core.spi.parsing.ParsingFinishEvent;
-import io.shardingsphere.core.spi.parsing.ParsingStartEvent;
+import io.shardingsphere.core.spi.event.parsing.ParsingEventHandlerLoader;
+import io.shardingsphere.core.spi.event.parsing.ParsingFinishEvent;
+import io.shardingsphere.core.spi.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
@@ -85,18 +85,17 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        ParsingEventHandlerSPILoader.getInstance().handle(new ParsingStartEvent(logicSQL));
+        ParsingEventHandlerLoader.getInstance().start(new ParsingStartEvent(logicSQL));
         ParsingFinishEvent finishEvent = new ParsingFinishEvent();
         try {
-            SQLStatement sqlStatement = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
-            return sqlStatement;
+            return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             finishEvent.setException(ex);
             throw ex;
         } finally {
-            ParsingEventHandlerSPILoader.getInstance().handle(finishEvent);
+            ParsingEventHandlerLoader.getInstance().finish(finishEvent);
         }
     }
     

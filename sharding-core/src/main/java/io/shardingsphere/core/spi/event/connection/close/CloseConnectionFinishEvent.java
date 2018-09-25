@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.close;
+package io.shardingsphere.core.spi.event.connection.close;
 
-import io.shardingsphere.core.spi.ShardingEventHandler;
+import io.shardingsphere.core.spi.event.ShardingFinishEvent;
 
 /**
- * Connection event handler.
+ * Close connection finish event.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public interface CloseConnectionEventHandler extends ShardingEventHandler<CloseConnectionStartEvent, CloseConnectionFinishEvent> {
+public final class CloseConnectionFinishEvent extends ShardingFinishEvent {
 }

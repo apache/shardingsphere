@@ -15,22 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.connection.close;
+package io.shardingsphere.core.spi.event.connection.close;
+
+import io.shardingsphere.core.spi.event.ShardingEventHandlerLoader;
 
 import java.util.ServiceLoader;
 
 /**
- * Connection event handler SPI loader.
+ * Connection event handler loader.
  *
  * @author zhangliang
  */
-public final class CloseConnectionEventHandlerSPILoader {
+public final class CloseConnectionEventHandlerLoader implements ShardingEventHandlerLoader<CloseConnectionStartEvent, CloseConnectionFinishEvent> {
     
-    private static final CloseConnectionEventHandlerSPILoader INSTANCE = new CloseConnectionEventHandlerSPILoader();
+    private static final CloseConnectionEventHandlerLoader INSTANCE = new CloseConnectionEventHandlerLoader();
     
     private final ServiceLoader<CloseConnectionEventHandler> serviceLoader;
     
-    private CloseConnectionEventHandlerSPILoader() {
+    private CloseConnectionEventHandlerLoader() {
         serviceLoader = ServiceLoader.load(CloseConnectionEventHandler.class);
     }
     
@@ -39,29 +41,21 @@ public final class CloseConnectionEventHandlerSPILoader {
      *
      * @return instance
      */
-    public static CloseConnectionEventHandlerSPILoader getInstance() {
+    public static CloseConnectionEventHandlerLoader getInstance() {
         return INSTANCE;
     }
     
-    /**
-     * Handle close connection start event.
-     *
-     * @param event get connection start event
-     */
-    public void handle(final CloseConnectionStartEvent event) {
+    @Override
+    public void start(final CloseConnectionStartEvent event) {
         for (CloseConnectionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.start(event);
         }
     }
     
-    /**
-     * Handle close connection finish event.
-     *
-     * @param event get connection finish event
-     */
-    public void handle(final CloseConnectionFinishEvent event) {
+    @Override
+    public void finish(final CloseConnectionFinishEvent event) {
         for (CloseConnectionEventHandler each : serviceLoader) {
-            each.handle(event);
+            each.finish(event);
         }
     }
 }

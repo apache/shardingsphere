@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.executor;
+package io.shardingsphere.core.spi.event.executor;
 
-import io.shardingsphere.core.spi.ShardingEventHandler;
+import io.shardingsphere.core.spi.event.ShardingEventHandler;
 
 /**
  * SQL Execution event handler.

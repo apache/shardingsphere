@@ -19,9 +19,9 @@ package io.shardingsphere.opentracing.handler.connection;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.connection.close.CloseConnectionEventHandlerSPILoader;
-import io.shardingsphere.core.spi.connection.close.CloseConnectionFinishEvent;
-import io.shardingsphere.core.spi.connection.close.CloseConnectionStartEvent;
+import io.shardingsphere.core.spi.event.connection.close.CloseConnectionEventHandlerLoader;
+import io.shardingsphere.core.spi.event.connection.close.CloseConnectionFinishEvent;
+import io.shardingsphere.core.spi.event.connection.close.CloseConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
@@ -37,15 +37,15 @@ import static org.mockito.Mockito.when;
 
 public final class OpenTracingCloseConnectionEventHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final CloseConnectionEventHandlerSPILoader loader = CloseConnectionEventHandlerSPILoader.getInstance();
+    private final CloseConnectionEventHandlerLoader loader = CloseConnectionEventHandlerLoader.getInstance();
     
     @Test
     public void assertExecuteSuccess() {
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        loader.handle(new CloseConnectionStartEvent("test_ds_name", dataSourceMetaData));
-        loader.handle(new CloseConnectionFinishEvent());
+        loader.start(new CloseConnectionStartEvent("test_ds_name", dataSourceMetaData));
+        loader.finish(new CloseConnectionFinishEvent());
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/closeConnection/"));
@@ -62,10 +62,10 @@ public final class OpenTracingCloseConnectionEventHandlerTest extends BaseOpenTr
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        loader.handle(new CloseConnectionStartEvent("test_ds_name", dataSourceMetaData));
+        loader.start(new CloseConnectionStartEvent("test_ds_name", dataSourceMetaData));
         CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
         finishEvent.setException(new RuntimeException("close connection error"));
-        loader.handle(finishEvent);
+        loader.finish(finishEvent);
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
         assertThat(actual.operationName(), is("/Sharding-Sphere/closeConnection/"));
