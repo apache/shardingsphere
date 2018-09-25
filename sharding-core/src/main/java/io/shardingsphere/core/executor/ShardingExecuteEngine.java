@@ -22,6 +22,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -90,11 +92,13 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     private <I, O> Collection<ListenableFuture<O>> asyncExecute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> callback) {
         Collection<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         for (final I each : inputs) {
             result.add(executorService.submit(new Callable<O>() {
                 
                 @Override
                 public O call() throws SQLException {
+                    ExecutorDataMap.setDataMap(dataMap);
                     return callback.execute(each, false);
                 }
             }));
@@ -164,10 +168,12 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     private <I, O> ListenableFuture<Collection<O>> asyncGroupExecute(final ShardingExecuteGroup<I> inputGroup, final ShardingGroupExecuteCallback<I, O> callback) {
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         return executorService.submit(new Callable<Collection<O>>() {
             
             @Override
             public Collection<O> call() throws SQLException {
+                ExecutorDataMap.setDataMap(dataMap);
                 return callback.execute(inputGroup.getInputs(), false);
             }
         });

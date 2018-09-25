@@ -28,7 +28,6 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
@@ -65,7 +64,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL Execute engine for JDBC.
@@ -111,12 +109,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
-                new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
+                new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys),
+                new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -200,8 +197,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         private boolean hasMetaData;
         
-        private FirstProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
+        private FirstProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
@@ -222,8 +219,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         private final boolean isReturnGeneratedKeys;
         
-        private ProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
+        private ProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         

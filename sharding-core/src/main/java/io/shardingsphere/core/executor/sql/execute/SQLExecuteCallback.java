@@ -26,7 +26,6 @@ import io.shardingsphere.core.event.executor.SQLExecutionEventFactory;
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
@@ -38,7 +37,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Statement execute callback interface.
@@ -57,11 +55,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     
     private final boolean isExceptionThrown;
     
-    private final Map<String, Object> dataMap;
-    
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
-    
-    private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     
     @Override
     public final T execute(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
@@ -79,9 +73,9 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
         List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
         DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         for (List<Object> each : parameterSets) {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit().getDataSourceName(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), each, dataSourceMetaData, isTrunkThread);
             // TODO remove after BED removed
