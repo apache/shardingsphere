@@ -30,9 +30,9 @@ public interface RootInvokeHook {
     void start();
     
     /**
-     * Handle when root invoke finished success.
+     * Handle when root invoke finished.
      * 
      * @param connectionCount connection count
      */
-    void finishSuccess(int connectionCount);
+    void finish(int connectionCount);
 }

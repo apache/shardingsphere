@@ -140,7 +140,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 // CHECKSTYLE:ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
             } finally {
-                rootInvokeHook.finishSuccess(connectionSize);
+                rootInvokeHook.finish(connectionSize);
             }
         }
         

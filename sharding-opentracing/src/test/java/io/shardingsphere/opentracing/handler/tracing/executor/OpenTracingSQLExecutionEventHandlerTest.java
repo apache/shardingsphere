@@ -71,7 +71,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("ds_test"));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("1,2"));
-        new OpenTracingRootInvokeHandler().finishSuccess(2);
+        new OpenTracingRootInvokeHandler().finish(2);
     }
     
     @Test
@@ -125,6 +125,6 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is(""));
         assertSpanError(actual, RuntimeException.class, "SQL execution error");
-        new OpenTracingRootInvokeHandler().finishSuccess(2);
+        new OpenTracingRootInvokeHandler().finish(2);
     }
 }

@@ -44,7 +44,7 @@ public final class OpenTracingRootInvokeHandler implements RootInvokeHook {
     }
     
     @Override
-    public void finishSuccess(final int connectionCount) {
+    public void finish(final int connectionCount) {
         ACTIVE_SPAN.get().setTag(ShardingTags.CONNECTION_COUNT.getKey(), connectionCount).deactivate();
         ACTIVE_SPAN.remove();
     }

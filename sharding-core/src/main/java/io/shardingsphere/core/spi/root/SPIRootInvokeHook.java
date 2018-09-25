@@ -36,9 +36,9 @@ public final class SPIRootInvokeHook implements RootInvokeHook {
     }
     
     @Override
-    public void finishSuccess(final int connectionCount) {
+    public void finish(final int connectionCount) {
         for (RootInvokeHook each : SERVICE_LOADER) {
-            each.finishSuccess(connectionCount);
+            each.finish(connectionCount);
         }
     }
 }

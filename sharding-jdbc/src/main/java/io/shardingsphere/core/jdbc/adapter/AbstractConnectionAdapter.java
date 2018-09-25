@@ -239,7 +239,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             }
         });
-        rootInvokeHook.finishSuccess(connectionSize);
+        rootInvokeHook.finish(connectionSize);
     }
     
     @Override
