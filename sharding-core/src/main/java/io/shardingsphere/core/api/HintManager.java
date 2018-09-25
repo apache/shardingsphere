@@ -106,26 +106,24 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param value sharding value
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
+    public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
+        addTableShardingValue(logicTable, ShardingOperator.EQUAL, value);
     }
     
     /**
      * Add sharding value for table.
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param values sharding values
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
+    public void addTableShardingValue(final String logicTable, final Comparable<?>... values) {
+        addTableShardingValue(logicTable, ShardingOperator.IN, values);
     }
     
-    private void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        tableShardingValues.put(logicTable, getShardingValue(logicTable, shardingColumn, operator, values));
+    private void addTableShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
+        tableShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
     }
     
     @SuppressWarnings("unchecked")
