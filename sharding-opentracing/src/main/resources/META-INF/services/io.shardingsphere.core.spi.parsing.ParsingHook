@@ -1,1 +1,1 @@
-io.shardingsphere.opentracing.handler.tracing.parsing.OpenTracingParsingHook
+io.shardingsphere.opentracing.handler.OpenTracingParsingHook

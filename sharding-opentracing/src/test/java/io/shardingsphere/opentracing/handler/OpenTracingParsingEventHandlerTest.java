@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler.tracing.parsing;
+package io.shardingsphere.opentracing.handler;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
@@ -23,7 +23,6 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.spi.parsing.ParsingHook;
 import io.shardingsphere.core.spi.parsing.SPIParsingHook;
 import io.shardingsphere.opentracing.constant.ShardingTags;
-import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

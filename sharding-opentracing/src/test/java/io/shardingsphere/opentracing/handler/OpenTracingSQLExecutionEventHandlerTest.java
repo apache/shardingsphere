@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler.tracing.executor;
+package io.shardingsphere.opentracing.handler;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
@@ -23,19 +23,14 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.routing.RouteUnit;
-import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.spi.executor.SPISQLExecutionHook;
 import io.shardingsphere.core.spi.executor.SQLExecutionHook;
 import io.shardingsphere.opentracing.constant.ShardingTags;
-import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
-import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandler;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,8 +51,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        sqlExecutionHook.start(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData);
+        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData);
         sqlExecutionHook.finishSuccess();
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
@@ -83,8 +77,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        sqlExecutionHook.start(new RouteUnit("ds_test", sqlUnit), Arrays.<Object>asList("1", 2), dataSourceMetaData);
+        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData);
         assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
         sqlExecutionHook.finishSuccess();
         assertThat(getTracer().finishedSpans().size(), is(1));
@@ -109,8 +102,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        SQLUnit sqlUnit = new SQLUnit("SELECT * FROM XXX;", Collections.<List<Object>>emptyList());
-        sqlExecutionHook.start(new RouteUnit("ds_test", sqlUnit), Collections.emptyList(), dataSourceMetaData);
+        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Collections.emptyList(), dataSourceMetaData);
         sqlExecutionHook.finishFailure(new RuntimeException("SQL execution error"));
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);

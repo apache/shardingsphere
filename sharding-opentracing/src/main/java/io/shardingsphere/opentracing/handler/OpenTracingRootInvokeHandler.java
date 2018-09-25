@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler.root;
+package io.shardingsphere.opentracing.handler;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;

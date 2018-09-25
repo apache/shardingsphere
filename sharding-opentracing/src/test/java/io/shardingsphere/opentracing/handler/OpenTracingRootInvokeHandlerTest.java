@@ -15,12 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler.root;
+package io.shardingsphere.opentracing.handler;
 
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.spi.root.RootInvokeHook;
 import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

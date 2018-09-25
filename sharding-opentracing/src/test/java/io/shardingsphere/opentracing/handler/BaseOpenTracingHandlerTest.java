@@ -26,7 +26,6 @@ import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
-import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandler;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Before;

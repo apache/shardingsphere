@@ -17,9 +17,6 @@
 
 package io.shardingsphere.opentracing.handler;
 
-import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandlerTest;
-import io.shardingsphere.opentracing.handler.tracing.executor.OpenTracingSQLExecutionEventHandlerTest;
-import io.shardingsphere.opentracing.handler.tracing.parsing.OpenTracingParsingEventHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

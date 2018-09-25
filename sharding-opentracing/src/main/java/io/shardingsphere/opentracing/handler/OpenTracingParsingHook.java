@@ -15,16 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.opentracing.handler.tracing.parsing;
+package io.shardingsphere.opentracing.handler;
 
 import io.opentracing.Span;
-import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.spi.parsing.ParsingHook;
+import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
-import io.shardingsphere.opentracing.handler.tracing.OpenTracingHandlerTemplate;
-import io.shardingsphere.opentracing.handler.tracing.OpenTracingSpanFinishCallbackAdapter;
-import io.shardingsphere.opentracing.handler.tracing.OpenTracingSpanStartCallback;
 
 /**
  * Open tracing parsing hook.
@@ -35,26 +32,24 @@ public final class OpenTracingParsingHook implements ParsingHook {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/parseSQL/";
     
-    private final OpenTracingHandlerTemplate handlerTemplate = new OpenTracingHandlerTemplate(OPERATION_NAME);
+    private Span span;
     
     @Override
     public void start(final String sql) {
-        handlerTemplate.start(new OpenTracingSpanStartCallback() {
-            
-            @Override
-            public Span initSpan(final SpanBuilder spanBuilder) {
-                return spanBuilder.withTag(Tags.DB_STATEMENT.getKey(), sql).startManual();
-            }
-        });
+        span = ShardingTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                .withTag(Tags.DB_STATEMENT.getKey(), sql).startManual();
     }
     
     @Override
     public void finishSuccess() {
-        handlerTemplate.finishSuccess(new OpenTracingSpanFinishCallbackAdapter());
+        span.finish();
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        handlerTemplate.finishFailure(cause, new OpenTracingSpanFinishCallbackAdapter());
+        ShardingErrorSpan.setError(span, cause);
+        span.finish();
     }
 }
