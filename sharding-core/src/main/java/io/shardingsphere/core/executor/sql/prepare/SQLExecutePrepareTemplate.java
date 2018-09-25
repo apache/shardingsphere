@@ -81,7 +81,7 @@ public final class SQLExecutePrepareTemplate {
                 new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
                     
                     @Override
-                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input) throws SQLException {
+                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input, final boolean isTrunkThread) throws SQLException {
                         return getSQLExecuteGroups(input.getKey(), input.getValue(), callback);
                     }
                 });

@@ -34,8 +34,9 @@ public interface ShardingGroupExecuteCallback<I, O> {
      * Execute callback.
      * 
      * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
      * @return execute result
      * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(Collection<I> inputs) throws SQLException;
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
 }

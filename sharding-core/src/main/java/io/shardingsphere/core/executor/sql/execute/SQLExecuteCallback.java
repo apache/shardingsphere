@@ -64,26 +64,26 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     
     @Override
-    public final T execute(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-        return execute0(statementExecuteUnit);
+    public final T execute(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
+        return execute0(statementExecuteUnit, isTrunkThread);
     }
     
     @Override
-    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : statementExecuteUnits) {
-            result.add(execute0(each));
+            result.add(execute0(each, isTrunkThread));
         }
         return result;
     }
     
-    private T execute0(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+    private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
         DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         for (List<Object> each : parameterSets) {
-            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit().getDataSourceName(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), each, dataSourceMetaData);
+            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit().getDataSourceName(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), each, dataSourceMetaData, isTrunkThread);
             // TODO remove after BED removed
             shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
         }

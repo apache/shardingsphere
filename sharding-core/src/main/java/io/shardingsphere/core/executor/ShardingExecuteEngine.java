@@ -95,7 +95,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
                 
                 @Override
                 public O call() throws SQLException {
-                    return callback.execute(each);
+                    return callback.execute(each, false);
                 }
             }));
         }
@@ -103,7 +103,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     private <I, O> O syncExecute(final I input, final ShardingExecuteCallback<I, O> callback) throws SQLException {
-        return callback.execute(input);
+        return callback.execute(input, true);
     }
     
     private <O> List<O> getResults(final O firstResult, final Collection<ListenableFuture<O>> restFutures) throws SQLException {
@@ -168,13 +168,13 @@ public final class ShardingExecuteEngine implements AutoCloseable {
             
             @Override
             public Collection<O> call() throws SQLException {
-                return callback.execute(inputGroup.getInputs());
+                return callback.execute(inputGroup.getInputs(), false);
             }
         });
     }
     
     private <I, O> Collection<O> syncGroupExecute(final ShardingExecuteGroup<I> executeGroup, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
-        return callback.execute(executeGroup.getInputs());
+        return callback.execute(executeGroup.getInputs(), true);
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {

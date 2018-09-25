@@ -38,14 +38,14 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/executeSQL/";
     
-    private final ThreadLocal<Boolean> isTrunkThread = new ThreadLocal<>();
+    private boolean isTrunkThread;
     
     private Span span;
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData) {
-        isTrunkThread.set(OpenTracingRootInvokeHandler.isTrunkThread());
-        if (ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION) && !isTrunkThread.get()) {
+    public void start(final String dataSourceName, final String sql, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+        this.isTrunkThread = isTrunkThread;
+        if (ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION) && !isTrunkThread) {
             OpenTracingRootInvokeHandler.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION)).activate());
         }
         span = ShardingTracer.get().buildSpan(OPERATION_NAME)
@@ -74,7 +74,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     }
     
     private void deactivateSpan() {
-        if (!isTrunkThread.get()) {
+        if (!isTrunkThread) {
             OpenTracingRootInvokeHandler.getActiveSpan().get().deactivate();
             OpenTracingRootInvokeHandler.getActiveSpan().remove();
         }

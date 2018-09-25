@@ -35,8 +35,9 @@ public interface SQLExecutionHook {
      * @param sql SQL to be executed
      * @param parameters parameters of SQL
      * @param dataSourceMetaData data source meta data
+     * @param isTrunkThread is execution in trunk thread
      */
-    void start(String dataSourceName, String sql, List<Object> parameters, DataSourceMetaData dataSourceMetaData);
+    void start(String dataSourceName, String sql, List<Object> parameters, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
     
     /**
      * Handle when SQL execution finished success.

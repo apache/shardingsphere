@@ -23,9 +23,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        OpenTracingRootInvokeHandlerTest.class,
-        OpenTracingParsingEventHandlerTest.class,
-        OpenTracingSQLExecutionEventHandlerTest.class
+        OpenTracingRootInvokeHandlerTest.class, 
+        OpenTracingParsingEventHandlerTest.class, 
+        OpenTracingSQLExecutionEventHandlerTest.class 
 })
 public final class AllHandlerTests {
 }

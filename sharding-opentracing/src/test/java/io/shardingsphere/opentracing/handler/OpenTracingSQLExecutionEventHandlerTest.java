@@ -51,7 +51,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData);
+        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData, true);
         sqlExecutionHook.finishSuccess();
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
@@ -77,7 +77,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData);
+        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData, false);
         assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
         sqlExecutionHook.finishSuccess();
         assertThat(getTracer().finishedSpans().size(), is(1));
@@ -102,7 +102,7 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Collections.emptyList(), dataSourceMetaData);
+        sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Collections.emptyList(), dataSourceMetaData, true);
         sqlExecutionHook.finishFailure(new RuntimeException("SQL execution error"));
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
