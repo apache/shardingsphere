@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -41,7 +40,6 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
-    @Getter
     @Setter
     private static boolean databaseShardingOnly;
     
@@ -55,6 +53,15 @@ public final class HintManagerHolder {
     public static void setHintManager(final HintManager hintManager) {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "HintManagerHolder has previous value, please clear first.");
         HINT_MANAGER_HOLDER.set(hintManager);
+    }
+    
+    /**
+     * Judge whether only database is sharding.
+     *
+     * @return database sharding or not
+     */
+    static public boolean isDatabaseShardingOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
     }
     
     /**
