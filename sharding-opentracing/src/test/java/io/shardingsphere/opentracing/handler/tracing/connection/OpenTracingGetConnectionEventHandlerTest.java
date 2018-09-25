@@ -63,7 +63,7 @@ public final class OpenTracingGetConnectionEventHandlerTest extends BaseOpenTrac
         assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), CoreMatchers.<Object>is("localhost"));
         assertThat(actualTags.get(Tags.PEER_PORT.getKey()), CoreMatchers.<Object>is(8888));
         assertThat(actualTags.get(ShardingTags.CONNECTION_COUNT.getKey()), CoreMatchers.<Object>is(3));
-        new OpenTracingRootInvokeHandler().finishSuccess();
+        new OpenTracingRootInvokeHandler().finishSuccess(2);
     }
     
     @Test
@@ -104,6 +104,6 @@ public final class OpenTracingGetConnectionEventHandlerTest extends BaseOpenTrac
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
         assertSpanError(actual, RuntimeException.class, "get connection error");
-        new OpenTracingRootInvokeHandler().finishSuccess();
+        new OpenTracingRootInvokeHandler().finishSuccess(2);
     }
 }

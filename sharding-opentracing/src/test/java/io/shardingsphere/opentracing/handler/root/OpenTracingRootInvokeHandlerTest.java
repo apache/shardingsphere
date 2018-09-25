@@ -38,7 +38,7 @@ public final class OpenTracingRootInvokeHandlerTest extends BaseOpenTracingHandl
         assertTrue(OpenTracingRootInvokeHandler.isTrunkThread());
         assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
         assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION));
-        rootInvokeHook.finishSuccess();
+        rootInvokeHook.finishSuccess(1);
         assertFalse(OpenTracingRootInvokeHandler.isTrunkThread());
         assertNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
     }

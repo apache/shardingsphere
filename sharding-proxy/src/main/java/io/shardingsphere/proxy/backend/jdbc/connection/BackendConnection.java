@@ -59,6 +59,15 @@ public final class BackendConnection implements AutoCloseable {
     private final CloseConnectionHook closeConnectionHook = new SPICloseConnectionHook();
     
     /**
+     * Get connection size.
+     * 
+     * @return connection size
+     */
+    public int getConnectionSize() {
+        return cachedConnections.size();
+    }
+    
+    /**
      * Get connections of current thread datasource.
      *
      * @param connectionMode connection mode

@@ -117,6 +117,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         @Override
         public void run() {
             rootInvokeHook.start();
+            int connectionSize = 0;
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection()) {
                 setBackendConnection(backendConnection);
@@ -131,14 +132,16 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
                     writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
                 }
+                connectionSize = backendConnection.getConnectionSize();
             } catch (final SQLException ex) {
                 context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            } finally {
+                rootInvokeHook.finishSuccess(connectionSize);
             }
-            rootInvokeHook.finishSuccess();
         }
         
         private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {

@@ -221,6 +221,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
+        int connectionSize = cachedConnections.size();
         forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
             
             @Override
@@ -238,7 +239,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             }
         });
-        rootInvokeHook.finishSuccess();
+        rootInvokeHook.finishSuccess(connectionSize);
     }
     
     @Override
