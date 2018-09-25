@@ -40,6 +40,9 @@ partitionName: ID;
 rewriteRuleName: ID;
 ownerName: ID;
 
+dataTypeLength:
+    LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
+    ;
 
 matchNone:
     'Default does not match anything'

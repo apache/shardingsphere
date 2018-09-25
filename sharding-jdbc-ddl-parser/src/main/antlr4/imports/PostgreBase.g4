@@ -2,8 +2,12 @@ grammar PostgreBase;
 
 import PostgreKeyword, DataType, Keyword, Symbol, BaseRule;
 
+columnDefinition:
+	columnName dataType collateClause? columnConstraint*
+	;
+	
 dataType:
-    typeName intervalFields? numericPrecision? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LEFT_BRACKET RIGHT_BRACKET)*
+    typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LEFT_BRACKET RIGHT_BRACKET)*
     ;
 
 typeName:
@@ -12,10 +16,6 @@ typeName:
 	|DOUBLE PRECISION
 	|ID
 	;
-
-numericPrecision:
-    LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
-    ;
 
 intervalFields:
     intervalField (TO intervalField)?

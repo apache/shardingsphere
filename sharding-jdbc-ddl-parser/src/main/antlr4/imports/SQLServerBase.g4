@@ -11,13 +11,9 @@ ID:
 dataType: 
     typeName   
     (
-        LEFT_PAREN  
-        (
-            NUMBER ( COMMA NUMBER )?
-            |MAX 
-            |((CONTENT | DOCUMENT)? xmlSchemaCollection) 
-        )
-        RIGHT_PAREN 
+          dataTypeLength
+        | LEFT_PAREN MAX RIGHT_PAREN
+        | LEFT_PAREN (CONTENT | DOCUMENT)? xmlSchemaCollection RIGHT_PAREN
     )?   
     ;
     

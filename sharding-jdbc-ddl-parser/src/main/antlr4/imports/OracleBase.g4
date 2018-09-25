@@ -35,23 +35,28 @@ lobItemList:
     ;
 
 dataType: 
-    (typeName(LEFT_PAREN NUMBER ( COMMA NUMBER )? RIGHT_PAREN)?) 
-    |specialDatatype
-    |datetimeDatatype
+    typeName dataTypeLength?
+    | specialDatatype
+    | typeName dataTypeLength? datetimeTypeSuffix
     ;
-
+    
+typeName:
+	  DOUBLE PRECISION
+	| INTERVAL YEAR
+	| INTERVAL DAY
+	| ID
+	;
+	
 specialDatatype:
-    (typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN))
-    | (DOUBLE PRECISION)
-    | (NATIONAL typeName (VARYING)? LEFT_PAREN NUMBER RIGHT_PAREN) 
-    |(REF LEFT_PAREN? columnName  RIGHT_PAREN?)
+    typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN)
+    | NATIONAL typeName (VARYING)? LEFT_PAREN NUMBER RIGHT_PAREN 
+    | typeName LEFT_PAREN? columnName  RIGHT_PAREN?
     ;
 
-datetimeDatatype:
-    DATE
-    | (TIMESTAMP ( LEFT_PAREN NUMBER RIGHT_PAREN )? ( WITH ( LOCAL )? TIME ZONE )?)
-    | (INTERVAL YEAR ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO MONTH)
-    | (INTERVAL DAY ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?)
+datetimeTypeSuffix:
+      ( WITH LOCAL? TIME ZONE )?
+    | TO MONTH
+    | TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?
     ;
 
 columnSortClause:
