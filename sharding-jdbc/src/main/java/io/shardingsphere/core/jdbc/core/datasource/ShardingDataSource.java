@@ -65,8 +65,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         this.shardingContext = getShardingContext(shardingRule);
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) {
-        super(shardingContext.getDatabaseType());
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) throws SQLException {
+        super(dataSourceMap.values());
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
         this.shardingProperties = shardingProperties;
