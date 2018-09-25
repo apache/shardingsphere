@@ -27,6 +27,8 @@ import io.shardingsphere.core.spi.executor.SPISQLExecutionHook;
 import io.shardingsphere.core.spi.executor.SQLExecutionHook;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,10 +36,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,9 +46,28 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
     
     private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     
+    private ActiveSpan activeSpan;
+    
+    @Before
+    public void setUp() {
+        activeSpan = mockActiveSpan();
+    }
+    
+    private ActiveSpan mockActiveSpan() {
+        Continuation continuation = mock(Continuation.class);
+        ActiveSpan result = mock(ActiveSpan.class);
+        when(continuation.activate()).thenReturn(result);
+        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION, continuation);
+        return result;
+    }
+    
+    @After
+    public void tearDown() {
+        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION);
+    }
+    
     @Test
     public void assertExecuteSuccessForTrunkThread() {
-        new OpenTracingRootInvokeHandler().start();
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
@@ -65,20 +85,15 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("ds_test"));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("1,2"));
-        new OpenTracingRootInvokeHandler().finish(2);
+        verify(activeSpan, times(0)).deactivate();
     }
     
     @Test
     public void assertExecuteSuccessForBranchThread() {
-        Continuation activeSpanContinuation = mock(Continuation.class);
-        ActiveSpan activeSpan = mock(ActiveSpan.class);
-        when(activeSpanContinuation.activate()).thenReturn(activeSpan);
-        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION, activeSpanContinuation);
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
         sqlExecutionHook.start("ds_test", "SELECT * FROM XXX;", Arrays.<Object>asList("1", 2), dataSourceMetaData, false);
-        assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
         sqlExecutionHook.finishSuccess();
         assertThat(getTracer().finishedSpans().size(), is(1));
         MockSpan actual = getTracer().finishedSpans().get(0);
@@ -93,12 +108,10 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("1,2"));
         verify(activeSpan).deactivate();
-        assertNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
     }
     
     @Test
     public void assertExecuteFailure() {
-        new OpenTracingRootInvokeHandler().start();
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
@@ -117,6 +130,6 @@ public final class OpenTracingSQLExecutionEventHandlerTest extends BaseOpenTraci
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is(""));
         assertSpanError(actual, RuntimeException.class, "SQL execution error");
-        new OpenTracingRootInvokeHandler().finish(2);
+        verify(activeSpan, times(0)).deactivate();
     }
 }
