@@ -15,28 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.event;
+package io.shardingsphere.core.spi.connection.get;
+
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 
 /**
- * Sharding event handler.
+ * Connection hook.
  *
  * @author zhangliang
- * @param <S> type of start event
- * @param <F> type of finishSuccess event
  */
-public interface ShardingEventHandler<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
+public interface GetConnectionHook {
     
     /**
-     * Handle sharding start event.
+     * Handle when get connection started.
      *
-     * @param event sharding start event
+     * @param dataSourceName data source name
      */
-    void start(S event);
+    void start(String dataSourceName);
     
     /**
-     * Handle sharding finishSuccess event.
-     *
-     * @param event sharding finishSuccess event
+     * Handle when get connection finished success.
+     * 
+     * @param dataSourceMetaData data source meta data
+     * @param connectionCount connection count
      */
-    void finish(F event);
+    void finishSuccess(DataSourceMetaData dataSourceMetaData, int connectionCount);
+    
+    /**
+     * Handle when get connection finished failure.
+     *
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

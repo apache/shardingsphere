@@ -15,24 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
-
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package io.shardingsphere.core.spi.root;
 
 /**
- * Sharding bootstrap.
+ * Root invoke hook.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface RootInvokeHook {
     
     /**
-     * Initialize sharding bootstrap.
+     * Handle when root invoke started.
      */
-    public static void init() {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-    }
+    void start();
+    
+    /**
+     * Handle when root invoke finished success.
+     */
+    void finishSuccess();
 }

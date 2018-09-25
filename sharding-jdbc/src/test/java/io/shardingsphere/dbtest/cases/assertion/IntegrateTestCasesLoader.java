@@ -163,7 +163,7 @@ public final class IntegrateTestCasesLoader {
 //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished
         if (!dqlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finish case `{}`", sqlCaseId);
+            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
         }
         return (DQLIntegrateTestCase) dqlIntegrateTestCaseMap.get(sqlCaseId);
     }
@@ -179,7 +179,7 @@ public final class IntegrateTestCasesLoader {
         //        Preconditions.checkState(dmlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished
         if (!dmlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finish case `{}`", sqlCaseId);
+            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
         }
         return (DMLIntegrateTestCase) dmlIntegrateTestCaseMap.get(sqlCaseId);
     }
@@ -195,7 +195,7 @@ public final class IntegrateTestCasesLoader {
         //        Preconditions.checkState(ddlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished
         if (!ddlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finish case `{}`", sqlCaseId);
+            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
         }
         return (DDLIntegrateTestCase) ddlIntegrateTestCaseMap.get(sqlCaseId);
     }
@@ -211,7 +211,7 @@ public final class IntegrateTestCasesLoader {
         //        Preconditions.checkState(ddlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         // TODO remove when transfer finished
         if (!dclIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finish case `{}`", sqlCaseId);
+            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
         }
         return (DCLIntegrateTestCase) dclIntegrateTestCaseMap.get(sqlCaseId);
     }

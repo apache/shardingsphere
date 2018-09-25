@@ -20,7 +20,7 @@ package io.shardingsphere.opentracing.handler.root;
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.spi.root.RootInvokeHandler;
+import io.shardingsphere.core.spi.root.RootInvokeHook;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 
@@ -29,7 +29,7 @@ import io.shardingsphere.opentracing.constant.ShardingTags;
  *
  * @author zhangliang
  */
-public final class OpenTracingRootInvokeHandler implements RootInvokeHandler {
+public final class OpenTracingRootInvokeHandler implements RootInvokeHook {
     
     public static final String ROOT_SPAN_CONTINUATION = "ROOT_SPAN_CONTINUATION";
     
@@ -44,7 +44,7 @@ public final class OpenTracingRootInvokeHandler implements RootInvokeHandler {
     }
     
     @Override
-    public void finish() {
+    public void finishSuccess() {
         ACTIVE_SPAN.get().deactivate();
         ACTIVE_SPAN.remove();
     }

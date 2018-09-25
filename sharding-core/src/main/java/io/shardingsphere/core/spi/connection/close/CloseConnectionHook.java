@@ -15,24 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.core.spi.connection.close;
 
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 
 /**
- * Sharding bootstrap.
+ * Connection hook.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface CloseConnectionHook {
     
     /**
-     * Initialize sharding bootstrap.
+     * Handle when close connection started.
+     * 
+     * @param dataSourceName data source name
+     * @param dataSourceMetaData data source meta data
      */
-    public static void init() {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-    }
+    void start(String dataSourceName, DataSourceMetaData dataSourceMetaData);
+    
+    /**
+     * Handle when close connection finished success.
+     */
+    void finishSuccess();
+    
+    /**
+     * Handle when close connection finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

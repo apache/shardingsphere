@@ -15,24 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
-
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package io.shardingsphere.core.spi.parsing;
 
 /**
- * Sharding bootstrap.
+ * Parsing hook.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface ParsingHook {
     
     /**
-     * Initialize sharding bootstrap.
+     * Handle when parse started.
+     *
+     * @param sql SQL to be parsed
      */
-    public static void init() {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-    }
+    void start(String sql);
+    
+    /**
+     * Handle when parse finished success.
+     */
+    void finishSuccess();
+    
+    /**
+     * Handle when parse finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

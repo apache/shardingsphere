@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -97,9 +98,12 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType() ? new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery())
-                : new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery(), BackendExecutorContext.getInstance().getExecuteEngine());
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
+        DatabaseType databaseType = DatabaseType.MySQL;
+        int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMaxConnectionsSizePerQuery();
+        ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
+        sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType()
+                ? new SQLExecutePrepareTemplate(databaseType, maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(databaseType, maxConnectionsSizePerQuery, executeEngine);
+        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     }
     
     @SuppressWarnings("unchecked")

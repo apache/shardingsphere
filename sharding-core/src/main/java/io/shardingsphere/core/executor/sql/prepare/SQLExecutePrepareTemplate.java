@@ -19,13 +19,17 @@ package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.spi.connection.get.GetConnectionHook;
+import io.shardingsphere.core.spi.connection.get.SPIGetConnectionHook;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
@@ -49,9 +53,13 @@ import java.util.Map.Entry;
 @AllArgsConstructor
 public final class SQLExecutePrepareTemplate {
     
+    private final DatabaseType databaseType;
+    
     private final int maxConnectionsSizePerQuery;
     
     private ShardingExecuteEngine shardingExecuteEngine;
+    
+    private final GetConnectionHook getConnectionHook = new SPIGetConnectionHook();
     
     /**
      * Get execute unit groups.
@@ -81,7 +89,7 @@ public final class SQLExecutePrepareTemplate {
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<Collection<ShardingExecuteGroup<StatementExecuteUnit>>> results = shardingExecuteEngine.execute(sqlUnitGroups.entrySet(),
                 new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
-                
+                    
                     @Override
                     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input) throws SQLException {
                         ExecutorDataMap.setDataMap(dataMap);
@@ -112,7 +120,15 @@ public final class SQLExecutePrepareTemplate {
         int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
         List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitGroups.size());
+        getConnectionHook.start(dataSourceName);
+        List<Connection> connections;
+        try {
+            connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitGroups.size());
+        } catch (final SQLException ex) {
+            getConnectionHook.finishFailure(ex);
+            throw ex;
+        }
+        getConnectionHook.finishSuccess(DataSourceMetaDataFactory.newInstance(databaseType, connections.get(0).getMetaData().getURL()), connections.size());
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
             result.add(getSQLExecuteGroup(connectionMode, connections.get(count++), dataSourceName, each, callback));

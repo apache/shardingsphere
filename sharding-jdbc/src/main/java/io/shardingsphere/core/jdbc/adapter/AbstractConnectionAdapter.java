@@ -25,12 +25,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.spi.event.connection.close.CloseConnectionEventHandlerLoader;
-import io.shardingsphere.core.spi.event.connection.close.CloseConnectionFinishEvent;
-import io.shardingsphere.core.spi.event.connection.close.CloseConnectionStartEvent;
-import io.shardingsphere.core.spi.event.connection.get.GetConnectionEventHandlerLoader;
-import io.shardingsphere.core.spi.event.connection.get.GetConnectionFinishEvent;
-import io.shardingsphere.core.spi.event.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
@@ -38,7 +32,10 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.spi.root.RootInvokeHandlerLoader;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionHook;
+import io.shardingsphere.core.spi.connection.close.SPICloseConnectionHook;
+import io.shardingsphere.core.spi.root.RootInvokeHook;
+import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.RequiredArgsConstructor;
 
@@ -77,7 +74,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    private final ForceExecuteTemplate<Map.Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
+    private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
+    
+    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+    
+    private final CloseConnectionHook closeConnectionHook = new SPICloseConnectionHook();
     
     /**
      * Get database connection.
@@ -100,7 +101,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        GetConnectionEventHandlerLoader.getInstance().start(new GetConnectionStartEvent(dataSourceName));
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -124,8 +124,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 cachedConnections.putAll(dataSourceName, result);
             }
         }
-        GetConnectionEventHandlerLoader.getInstance().finish(
-                new GetConnectionFinishEvent(connections.size(), DataSourceMetaDataFactory.newInstance(databaseType, result.get(0).getMetaData().getURL())));
         return result;
     }
     
@@ -228,22 +226,19 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             @Override
             public void execute(final Entry<String, Connection> cachedConnections) throws SQLException {
                 Connection connection = cachedConnections.getValue();
-                CloseConnectionEventHandlerLoader.getInstance().start(
-                        new CloseConnectionStartEvent(cachedConnections.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL())));
-                CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
+                closeConnectionHook.start(cachedConnections.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL()));
                 try {
                     connection.close();
+                    closeConnectionHook.finishSuccess();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    finishEvent.setException(ex);
+                    closeConnectionHook.finishFailure(ex);
                     throw ex;
-                } finally {
-                    CloseConnectionEventHandlerLoader.getInstance().finish(finishEvent);
                 }
             }
         });
-        RootInvokeHandlerLoader.getInstance().finish();
+        rootInvokeHook.finishSuccess();
     }
     
     @Override

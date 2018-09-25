@@ -15,24 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.opentracing.handler.tracing;
 
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.opentracing.Span;
+import io.opentracing.Tracer.SpanBuilder;
 
 /**
- * Sharding bootstrap.
+ * Open tracing span start callback.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface OpenTracingSpanStartCallback {
     
     /**
-     * Initialize sharding bootstrap.
+     * Initialize span.
+     * 
+     * @param spanBuilder span builder
+     * @return span to be initialized
      */
-    public static void init() {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-    }
+    Span initSpan(SpanBuilder spanBuilder);
 }

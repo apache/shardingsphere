@@ -19,14 +19,10 @@ package io.shardingsphere.proxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.spi.event.connection.close.CloseConnectionEventHandlerLoader;
-import io.shardingsphere.core.spi.event.connection.close.CloseConnectionFinishEvent;
-import io.shardingsphere.core.spi.event.connection.close.CloseConnectionStartEvent;
-import io.shardingsphere.core.spi.event.connection.get.GetConnectionEventHandlerLoader;
-import io.shardingsphere.core.spi.event.connection.get.GetConnectionFinishEvent;
-import io.shardingsphere.core.spi.event.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.spi.connection.close.CloseConnectionHook;
+import io.shardingsphere.core.spi.connection.close.SPICloseConnectionHook;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,6 +56,8 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
+    private final CloseConnectionHook closeConnectionHook = new SPICloseConnectionHook();
+    
     /**
      * Get connections of current thread datasource.
      *
@@ -70,21 +68,9 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        try {
-            GetConnectionEventHandlerLoader.getInstance().start(new GetConnectionStartEvent(dataSourceName));
-            List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
-            cachedConnections.addAll(result);
-            GetConnectionEventHandlerLoader.getInstance().finish(
-                    new GetConnectionFinishEvent(result.size(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, result.get(0).getMetaData().getURL())));
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            GetConnectionFinishEvent finishEvent = new GetConnectionFinishEvent(0, null);
-            finishEvent.setException(ex);
-            GetConnectionEventHandlerLoader.getInstance().finish(finishEvent);
-            throw ex;
-        }
+        List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
+        cachedConnections.addAll(result);
+        return result;
     }
     
     /**
@@ -154,16 +140,13 @@ public final class BackendConnection implements AutoCloseable {
     private Collection<SQLException> closeConnections() {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections) {
-            CloseConnectionFinishEvent finishEvent = new CloseConnectionFinishEvent();
             try {
-                CloseConnectionEventHandlerLoader.getInstance().start(
-                        new CloseConnectionStartEvent(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL())));
+                closeConnectionHook.start(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL()));
                 each.close();
+                closeConnectionHook.finishSuccess();
             } catch (SQLException ex) {
-                finishEvent.setException(ex);
+                closeConnectionHook.finishFailure(ex);
                 result.add(ex);
-            } finally {
-                CloseConnectionEventHandlerLoader.getInstance().finish(finishEvent);
             }
         }
         return result;

@@ -17,10 +17,10 @@
 
 package io.shardingsphere.opentracing.handler;
 
-import io.shardingsphere.opentracing.handler.connection.OpenTracingCloseConnectionEventHandlerTest;
-import io.shardingsphere.opentracing.handler.connection.OpenTracingGetConnectionEventHandlerTest;
-import io.shardingsphere.opentracing.handler.executor.OpenTracingSQLExecutionEventHandlerTest;
-import io.shardingsphere.opentracing.handler.parsing.OpenTracingParsingEventHandlerTest;
+import io.shardingsphere.opentracing.handler.tracing.connection.OpenTracingCloseConnectionEventHandlerTest;
+import io.shardingsphere.opentracing.handler.tracing.connection.OpenTracingGetConnectionEventHandlerTest;
+import io.shardingsphere.opentracing.handler.tracing.executor.OpenTracingSQLExecutionEventHandlerTest;
+import io.shardingsphere.opentracing.handler.tracing.parsing.OpenTracingParsingEventHandlerTest;
 import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

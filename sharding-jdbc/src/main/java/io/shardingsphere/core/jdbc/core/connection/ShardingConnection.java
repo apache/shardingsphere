@@ -22,7 +22,8 @@ import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.spi.root.RootInvokeHandlerLoader;
+import io.shardingsphere.core.spi.root.RootInvokeHook;
+import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -48,11 +49,13 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final ShardingContext shardingContext;
     
+    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+    
     public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
         super(shardingContext.getDatabaseType());
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
-        RootInvokeHandlerLoader.getInstance().start();
+        rootInvokeHook.start();
     }
     
     /**

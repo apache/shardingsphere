@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Sharding finish event.
+ * Sharding finishSuccess event.
  *
  * @author zhangyonglun
  */

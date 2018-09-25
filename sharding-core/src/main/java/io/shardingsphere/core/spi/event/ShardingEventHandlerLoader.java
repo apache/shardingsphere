@@ -22,7 +22,7 @@ package io.shardingsphere.core.spi.event;
  *
  * @author zhangliang
  * @param <S> type of start event
- * @param <F> type of finish event
+ * @param <F> type of finishSuccess event
  */
 public interface ShardingEventHandlerLoader<S extends ShardingStartEvent, F extends ShardingFinishEvent> {
     
@@ -34,9 +34,9 @@ public interface ShardingEventHandlerLoader<S extends ShardingStartEvent, F exte
     void start(S event);
     
     /**
-     * Handle finish event.
+     * Handle finishSuccess event.
      *
-     * @param event finish event
+     * @param event finishSuccess event
      */
     void finish(F event);
 }

@@ -18,7 +18,8 @@
 package io.shardingsphere.opentracing.handler.root;
 
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
-import io.shardingsphere.core.spi.root.RootInvokeHandlerLoader;
+import io.shardingsphere.core.spi.root.RootInvokeHook;
+import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.opentracing.handler.BaseOpenTracingHandlerTest;
 import org.junit.Test;
 
@@ -29,15 +30,15 @@ import static org.junit.Assert.assertTrue;
 
 public final class OpenTracingRootInvokeHandlerTest extends BaseOpenTracingHandlerTest {
     
-    private final RootInvokeHandlerLoader loader = RootInvokeHandlerLoader.getInstance();
+    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     @Test
     public void assertRootInvoke() {
-        loader.start();
+        rootInvokeHook.start();
         assertTrue(OpenTracingRootInvokeHandler.isTrunkThread());
         assertNotNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
         assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION));
-        loader.finish();
+        rootInvokeHook.finishSuccess();
         assertFalse(OpenTracingRootInvokeHandler.isTrunkThread());
         assertNull(OpenTracingRootInvokeHandler.getActiveSpan().get());
     }
