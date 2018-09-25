@@ -5,7 +5,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import io.shardingsphere.core.parsing.antler.utils.DDLParserUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
@@ -22,7 +22,7 @@ public class OnlyTableVisitor extends AbstractSQLVisitor {
         List<ParseTree> tableNameNodes = TreeUtils.getAllDescendantByRuleName(rootNode, "tableName");
         if (null != tableNameNodes) {
             for (ParseTree each : tableNameNodes) {
-                DDLParserUtils.parseTableNode(statement, (ParserRuleContext) each);
+                VisitorUtils.parseTableNode(statement, (ParserRuleContext) each);
             }
         }
     }

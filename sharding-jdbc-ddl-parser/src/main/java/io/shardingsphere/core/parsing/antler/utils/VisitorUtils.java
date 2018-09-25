@@ -35,7 +35,7 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
 
-public class DDLParserUtils {
+public class VisitorUtils {
 
     /**
      * Parse table name from root node.
@@ -257,12 +257,15 @@ public class DDLParserUtils {
      * @param ddlRootNode
      *            DDL root node of syntax tree
      */
-    public static void parseRenameTable(final AlterTableStatement statement, final ParseTree ddlRootNode) {
+    public static boolean parseRenameTable(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext renameTableNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
                 "renameTable");
         if (null != renameTableNode) {
             statement.setNewTableName(renameTableNode.getChild(renameTableNode.getChildCount() - 1).getText());
+            return true;
         }
+        
+        return false;
     }
 
     /**
