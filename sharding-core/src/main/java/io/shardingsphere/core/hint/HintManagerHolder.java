@@ -60,7 +60,7 @@ public final class HintManagerHolder {
      *
      * @return database sharding or not
      */
-    static public boolean isDatabaseShardingOnly() {
+    public static boolean isDatabaseShardingOnly() {
         return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
     }
     
