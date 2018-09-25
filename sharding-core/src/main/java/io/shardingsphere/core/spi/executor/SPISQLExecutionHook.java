@@ -18,8 +18,8 @@
 package io.shardingsphere.core.spi.executor;
 
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.routing.RouteUnit;
 
-import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -32,9 +32,9 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     private static final ServiceLoader<SQLExecutionHook> SERVICE_LOADER = ServiceLoader.load(SQLExecutionHook.class);
     
     @Override
-    public synchronized void start(final String dataSourceName, final String sql, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+    public synchronized void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
         for (SQLExecutionHook each : SERVICE_LOADER) {
-            each.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread);
+            each.start(routeUnit, dataSourceMetaData, isTrunkThread);
         }
     }
     

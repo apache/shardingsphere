@@ -23,10 +23,12 @@ import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.spi.executor.SQLExecutionHook;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,7 +45,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     private Span span;
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
         if (!isTrunkThread) {
             activeSpan = ((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION)).activate();
         }
@@ -53,10 +55,22 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
                 .withTag(Tags.PEER_HOSTNAME.getKey(), dataSourceMetaData.getHostName())
                 .withTag(Tags.PEER_PORT.getKey(), dataSourceMetaData.getPort())
                 .withTag(Tags.DB_TYPE.getKey(), "sql")
-                .withTag(Tags.DB_INSTANCE.getKey(), dataSourceName)
-                .withTag(Tags.DB_STATEMENT.getKey(), sql)
-                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), parameters.isEmpty() ? "" : Joiner.on(",").join(parameters)).startManual();
+                .withTag(Tags.DB_INSTANCE.getKey(), routeUnit.getDataSourceName())
+                .withTag(Tags.DB_STATEMENT.getKey(), routeUnit.getSqlUnit().getSql())
+                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(routeUnit.getSqlUnit().getParameterSets())).startManual();
         
+    }
+    
+    private String toString(final List<List<Object>> parameterSets) {
+        return parameterSets.isEmpty() ? "" : Joiner.on(", ").join(toStringList(parameterSets));
+    }
+    
+    private List<String> toStringList(final List<List<Object>> parameterSets) {
+        List<String> parameterString = new LinkedList<>();
+        for (List<Object> each : parameterSets) {
+            parameterString.add(String.format("[%s]", Joiner.on(", ").join(each)));
+        }
+        return parameterString;
     }
     
     @Override

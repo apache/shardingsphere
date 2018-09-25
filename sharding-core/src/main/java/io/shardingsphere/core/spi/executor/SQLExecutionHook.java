@@ -18,8 +18,7 @@
 package io.shardingsphere.core.spi.executor;
 
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-
-import java.util.List;
+import io.shardingsphere.core.routing.RouteUnit;
 
 /**
  * SQL Execution hook.
@@ -31,13 +30,11 @@ public interface SQLExecutionHook {
     /**
      * Handle when SQL execution started.
      * 
-     * @param dataSourceName data source name
-     * @param sql SQL to be executed
-     * @param parameters parameters of SQL
+     * @param routeUnit route unit to be executed
      * @param dataSourceMetaData data source meta data
      * @param isTrunkThread is execution in trunk thread
      */
-    void start(String dataSourceName, String sql, List<Object> parameters, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
+    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
     
     /**
      * Handle when SQL execution finished success.

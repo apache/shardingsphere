@@ -77,11 +77,11 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         for (List<Object> each : parameterSets) {
-            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit().getDataSourceName(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), each, dataSourceMetaData, isTrunkThread);
             // TODO remove after BED removed
             shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
         }
         try {
+            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread);
             T result = executeSQL(statementExecuteUnit);
             for (List<Object> each : parameterSets) {
                 sqlExecutionHook.finishSuccess();
@@ -92,8 +92,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             }
             return result;
         } catch (final SQLException ex) {
+            sqlExecutionHook.finishFailure(ex);
             for (List<Object> each : parameterSets) {
-                sqlExecutionHook.finishFailure(ex);
                 // TODO remove after BED removed
                 SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteFailure(ex);
