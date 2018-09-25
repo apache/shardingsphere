@@ -32,7 +32,7 @@ public final class HintManagerTest {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addDatabaseShardingValue("logicTable", 1);
             assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue<? extends Comparable>) hintManager.getDatabaseShardingValue("logicTable")).getValues().iterator().next(), is((Comparable) 1));
         }
     }
@@ -42,7 +42,7 @@ public final class HintManagerTest {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addDatabaseShardingValue("logicTable", 1, 3, 5);
             assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getDatabaseShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue) hintManager.getDatabaseShardingValue("logicTable")).getValues().size(), is(3));
         }
     }
@@ -53,7 +53,7 @@ public final class HintManagerTest {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addTableShardingValue("logicTable", 1);
             assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue<? extends Comparable>) hintManager.getTableShardingValue("logicTable")).getValues().iterator().next(), is((Comparable) 1));
         }
     }
@@ -63,7 +63,7 @@ public final class HintManagerTest {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addTableShardingValue("logicTable", 1, 3, 5);
             assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
-            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is("shardingColumn"));
+            assertThat(hintManager.getTableShardingValue("logicTable").getColumnName(), is(HintManagerHolder.DB_COLUMN_NAME));
             assertThat(((ListShardingValue) hintManager.getTableShardingValue("logicTable")).getValues().size(), is(3));
         }
     }
