@@ -98,11 +98,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        DatabaseType databaseType = DatabaseType.MySQL;
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMaxConnectionsSizePerQuery();
         ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
         sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType()
-                ? new SQLExecutePrepareTemplate(databaseType, maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(databaseType, maxConnectionsSizePerQuery, executeEngine);
+                ? new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery, executeEngine);
         sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     }
     

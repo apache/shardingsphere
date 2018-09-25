@@ -30,10 +30,7 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.spi.connection.close.CloseConnectionHook;
-import io.shardingsphere.core.spi.connection.close.SPICloseConnectionHook;
 import io.shardingsphere.core.spi.root.RootInvokeHook;
 import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
@@ -77,8 +74,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
-    
-    private final CloseConnectionHook closeConnectionHook = new SPICloseConnectionHook();
     
     /**
      * Get database connection.
@@ -226,17 +221,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             
             @Override
             public void execute(final Entry<String, Connection> cachedConnections) throws SQLException {
-                Connection connection = cachedConnections.getValue();
-                closeConnectionHook.start(cachedConnections.getKey(), DataSourceMetaDataFactory.newInstance(databaseType, connection.getMetaData().getURL()));
-                try {
-                    connection.close();
-                    closeConnectionHook.finishSuccess();
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
-                    closeConnectionHook.finishFailure(ex);
-                    throw ex;
-                }
+                cachedConnections.getValue().close();
             }
         });
         rootInvokeHook.finish(connectionSize);

@@ -18,11 +18,7 @@
 package io.shardingsphere.proxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.spi.connection.close.CloseConnectionHook;
-import io.shardingsphere.core.spi.connection.close.SPICloseConnectionHook;
 import io.shardingsphere.proxy.config.RuleRegistry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,8 +51,6 @@ public final class BackendConnection implements AutoCloseable {
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
-    
-    private final CloseConnectionHook closeConnectionHook = new SPICloseConnectionHook();
     
     /**
      * Get connection size.
@@ -150,11 +144,8 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections) {
             try {
-                closeConnectionHook.start(each.getCatalog(), DataSourceMetaDataFactory.newInstance(DatabaseType.MySQL, each.getMetaData().getURL()));
                 each.close();
-                closeConnectionHook.finishSuccess();
             } catch (SQLException ex) {
-                closeConnectionHook.finishFailure(ex);
                 result.add(ex);
             }
         }
