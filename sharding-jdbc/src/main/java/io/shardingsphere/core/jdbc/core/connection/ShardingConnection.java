@@ -17,14 +17,13 @@
 
 package io.shardingsphere.core.jdbc.core.connection;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
 import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.core.jdbc.core.ShardingContext;
 import io.shardingsphere.core.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.core.jdbc.core.statement.ShardingStatement;
 import io.shardingsphere.core.revert.JDBCRevertEngine;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerLoader;
 import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
 
@@ -55,7 +54,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         super(shardingContext.getDatabaseType());
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
-        ShardingEventBusInstance.getInstance().post(new RootInvokeStartEvent());
+        RootInvokeHandlerLoader.getInstance().start();
     }
     
     /**

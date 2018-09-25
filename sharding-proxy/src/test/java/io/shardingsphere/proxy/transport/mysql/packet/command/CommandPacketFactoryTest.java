@@ -105,6 +105,7 @@ public final class CommandPacketFactoryTest {
     @Test
     public void assertNewInstanceWithComQueryPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_QUERY.getValue());
+        when(payload.readStringEOF()).thenReturn("SHOW TABLES");
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComQueryPacket.class));
     }
     
@@ -119,7 +120,7 @@ public final class CommandPacketFactoryTest {
     public void assertNewInstanceWithComStmtExecutePacket() throws SQLException {
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_EXECUTE.getValue(), NewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
         when(payload.readInt4()).thenReturn(1);
-        BinaryStatementRegistry.getInstance().register("", 1);
+        BinaryStatementRegistry.getInstance().register("SELECT * FROM t_order", 1);
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComStmtExecutePacket.class));
     }
     

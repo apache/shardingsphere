@@ -67,22 +67,20 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlType(routeResult.getSqlStatement().getType());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        cacheStatements();
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
             
             @Override
-            public List<Connection> getConnections(final String dataSourceName, final int connectionSize) throws SQLException {
-                return PreparedStatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize);
+            public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+                return PreparedStatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);
             }
             
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                PreparedStatement preparedStatement = createPreparedStatement(connection, routeUnit.getSqlUnit().getSql());
-                getStatements().add(preparedStatement);
-                getParameterSets().add(routeUnit.getSqlUnit().getParameterSets().get(0));
-                return new StatementExecuteUnit(routeUnit, preparedStatement, connectionMode);
+                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }

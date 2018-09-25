@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.hint.ShardingKey;
 import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
@@ -49,7 +48,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
+        Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME);
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceNames, shardingValue.get());
         Collection<String> routingDataSources;

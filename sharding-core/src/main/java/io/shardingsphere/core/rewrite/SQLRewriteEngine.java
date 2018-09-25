@@ -33,6 +33,7 @@ import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
+import io.shardingsphere.core.parsing.parser.token.RemoveToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
@@ -138,6 +139,8 @@ public final class SQLRewriteEngine {
                 appendOrderByToken(result, count, sqlTokens);
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count, sqlTokens);
+            } else if (each instanceof RemoveToken) {
+                appendRest(result, count, sqlTokens, ((RemoveToken) each).getEndPosition());
             }
             count++;
         }

@@ -22,9 +22,7 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.root.RootInvokeFinishEvent;
-import io.shardingsphere.core.event.root.RootInvokeStartEvent;
+import io.shardingsphere.core.spi.root.RootInvokeHandlerLoader;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
@@ -115,9 +113,9 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         
         @Override
         public void run() {
-            ShardingEventBusInstance.getInstance().post(new RootInvokeStartEvent());
+            RootInvokeHandlerLoader.getInstance().start();
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-                 BackendConnection backendConnection = new BackendConnection(ProxyContext.getInstance().getRuleRegistry(frontendHandler.getCurrentSchema()))) {
+                 BackendConnection backendConnection = new BackendConnection()) {
                 setBackendConnection(backendConnection);
                 CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
                 Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
@@ -137,7 +135,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 // CHECKSTYLE:ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
             }
-            ShardingEventBusInstance.getInstance().post(new RootInvokeFinishEvent());
+            RootInvokeHandlerLoader.getInstance().finish();
         }
         
         private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {

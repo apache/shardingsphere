@@ -33,7 +33,7 @@ import java.util.Collection;
  * @author zhangliang
  */
 @ToString(callSuper = true)
-public final class TCLStatement extends AbstractSQLStatement {
+public class TCLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(
             DefaultKeyword.SET, DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);

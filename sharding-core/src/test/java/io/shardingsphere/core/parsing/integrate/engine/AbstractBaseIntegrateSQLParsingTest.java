@@ -59,7 +59,6 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     }
     
     private static ShardingTableMetaData buildShardingTableMetaData() {
-    
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false))));
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false), 
