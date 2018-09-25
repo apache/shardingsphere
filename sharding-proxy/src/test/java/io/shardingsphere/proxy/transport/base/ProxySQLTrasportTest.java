@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.transport;
+package io.shardingsphere.proxy.transport.base;
 
-import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
+import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.servicecomb.saga.core.TransportFailedException;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,16 +35,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JDBCSqlTransportTest {
-    
-    private final JDBCSqlTransport sqlTransport = new JDBCSqlTransport();
+public class ProxySQLTrasportTest {
     
     private final String dsName = "ds";
     
     private final String sql = "SELECT now()";
     
     @Mock
-    private AbstractConnectionAdapter connection1;
+    private JDBCBackendDataSource jdbcBackendDataSource;
     
     @Mock
     private Connection actualConnect;
@@ -55,32 +53,33 @@ public class JDBCSqlTransportTest {
     @Before
     public void setUp() throws SQLException {
         when(actualConnect.prepareStatement(sql)).thenReturn(preparedStatement);
-        when(connection1.getConnection(dsName)).thenReturn(actualConnect);
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        sqlTransport.setShardingConnection(connection1);
-        sqlTransport.with(dsName, sql, new ArrayList<List<String>>());
-        verify(connection1).getConnection(dsName);
+        ProxySQLTransport proxySQLTransport = new ProxySQLTransport(jdbcBackendDataSource);
+        when(jdbcBackendDataSource.getConnection(dsName)).thenReturn(actualConnect);
+        proxySQLTransport.with(dsName, sql, new ArrayList<List<String>>());
+        verify(jdbcBackendDataSource).getConnection(dsName);
     }
     
     @Test(expected = TransportFailedException.class)
     public void assertGetConnectionFail() throws SQLException {
-        when(connection1.getConnection(dsName)).thenThrow(new SQLException("test"));
-        sqlTransport.setShardingConnection(connection1);
-        sqlTransport.with(dsName, sql, new ArrayList<List<String>>());
+        ProxySQLTransport proxySQLTransport = new ProxySQLTransport(jdbcBackendDataSource);
+        when(jdbcBackendDataSource.getConnection(dsName)).thenThrow(new SQLException("test"));
+        proxySQLTransport.with(dsName, sql, new ArrayList<List<String>>());
     }
     
     @Test
     public void assertSetSqlParams() throws SQLException {
-        sqlTransport.setShardingConnection(connection1);
+        when(jdbcBackendDataSource.getConnection(dsName)).thenReturn(actualConnect);
+        ProxySQLTransport proxySQLTransport = new ProxySQLTransport(jdbcBackendDataSource);
         final List<String> list = new ArrayList<>();
         final String param1 = "1";
         final String param2 = "xxx";
         list.add(param1);
         list.add(param2);
-        sqlTransport.with(dsName, sql, new ArrayList<List<String>>() {{add(list);}});
+        proxySQLTransport.with(dsName, sql, new ArrayList<List<String>>() {{add(list);}});
         verify(preparedStatement).setObject(1, param1);
         verify(preparedStatement).setObject(2, param2);
     }

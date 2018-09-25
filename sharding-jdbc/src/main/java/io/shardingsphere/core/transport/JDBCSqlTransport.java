@@ -51,15 +51,4 @@ public final class JDBCSqlTransport extends AbstractSQLTransport {
             throw new TransportFailedException("get connection of [" + datasource + "] occur exception ", e);
         }
     }
-    
-    /**
-     * Renew sharding connection.
-     *
-     * @param shardingConnection new sharding connection.
-     * @throws SQLException sql exception
-     */
-    public void renew(final AbstractConnectionAdapter shardingConnection) throws SQLException {
-        this.shardingConnection.close();
-        this.shardingConnection = shardingConnection;
-    }
 }
