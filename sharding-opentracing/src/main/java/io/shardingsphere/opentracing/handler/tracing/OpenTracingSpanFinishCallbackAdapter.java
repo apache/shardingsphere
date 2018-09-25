@@ -17,18 +17,12 @@
 
 package io.shardingsphere.opentracing.handler.tracing;
 
-import io.opentracing.Span;
-
 /**
  * Open tracing span finish callback adapter.
  *
  * @author zhangliang
  */
 public class OpenTracingSpanFinishCallbackAdapter implements OpenTracingSpanFinishCallback {
-    
-    @Override
-    public void updateSpan(final Span span) {
-    }
     
     @Override
     public void afterTracingFinish() {

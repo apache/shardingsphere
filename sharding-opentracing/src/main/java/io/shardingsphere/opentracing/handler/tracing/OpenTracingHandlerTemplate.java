@@ -63,7 +63,6 @@ public final class OpenTracingHandlerTemplate {
     }
     
     private void tracingFinish(final OpenTracingSpanFinishCallback spanFinishCallback) {
-        spanFinishCallback.updateSpan(spanHolder.get());
         spanHolder.get().finish();
         spanHolder.remove();
         spanFinishCallback.afterTracingFinish();

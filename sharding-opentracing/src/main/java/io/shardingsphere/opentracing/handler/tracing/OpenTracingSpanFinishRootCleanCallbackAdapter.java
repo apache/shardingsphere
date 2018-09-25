@@ -17,7 +17,6 @@
 
 package io.shardingsphere.opentracing.handler.tracing;
 
-import io.opentracing.Span;
 import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandler;
 import lombok.RequiredArgsConstructor;
 
@@ -30,10 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class OpenTracingSpanFinishRootCleanCallbackAdapter implements OpenTracingSpanFinishCallback {
     
     private final boolean isTrunkThread;
-    
-    @Override
-    public void updateSpan(final Span span) {
-    }
     
     @Override
     public final void afterTracingFinish() {
