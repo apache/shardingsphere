@@ -47,6 +47,9 @@ public final class HintManager implements AutoCloseable {
     
     private final Map<String, ShardingValue> tableShardingValues = new HashMap<>();
     
+    @Getter
+    private boolean masterRouteOnly;
+    
     /**
      * Get a new instance for {@code HintManager}.
      *
@@ -70,8 +73,13 @@ public final class HintManager implements AutoCloseable {
         addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, ShardingOperator.EQUAL, value);
     }
     
-    public boolean isMasterRouteOnly() {
-    
+    /**
+     * Judge whether it is only database sharding.
+     *
+     * @return Only database sharding or not
+     */
+    public boolean isDatabaseShardingOnly() {
+        return databaseShardingValues.containsKey(HintManagerHolder.DB_TABLE_NAME) && tableShardingValues.isEmpty();
     }
     
     /**
