@@ -22,9 +22,6 @@ import io.shardingsphere.core.spi.root.RootInvokeHook;
 import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest {
@@ -34,11 +31,7 @@ public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest
     @Test
     public void assertRootInvoke() {
         rootInvokeHook.start();
-        assertTrue(OpenTracingRootInvokeHook.isTrunkThread());
-        assertNotNull(OpenTracingRootInvokeHook.getActiveSpan().get());
-        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ROOT_SPAN_CONTINUATION));
+        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION));
         rootInvokeHook.finish(1);
-        assertFalse(OpenTracingRootInvokeHook.isTrunkThread());
-        assertNull(OpenTracingRootInvokeHook.getActiveSpan().get());
     }
 }

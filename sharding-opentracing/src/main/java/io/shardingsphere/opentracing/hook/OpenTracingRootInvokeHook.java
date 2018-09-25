@@ -25,45 +25,26 @@ import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
- * Open tracing root invoke handler.
+ * Open tracing root invoke hook.
  *
  * @author zhangliang
  */
 public final class OpenTracingRootInvokeHook implements RootInvokeHook {
     
-    public static final String ROOT_SPAN_CONTINUATION = "ROOT_SPAN_CONTINUATION";
+    public static final String ACTIVE_SPAN_CONTINUATION = "ACTIVE_SPAN_CONTINUATION";
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/rootInvoke/";
     
-    private static final ThreadLocal<ActiveSpan> ACTIVE_SPAN = new ThreadLocal<>();
+    private ActiveSpan activeSpan;
     
     @Override
     public void start() {
-        ACTIVE_SPAN.set(ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive());
-        ExecutorDataMap.getDataMap().put(ROOT_SPAN_CONTINUATION, ACTIVE_SPAN.get().capture());
+        activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
+        ExecutorDataMap.getDataMap().put(ACTIVE_SPAN_CONTINUATION, activeSpan.capture());
     }
     
     @Override
     public void finish(final int connectionCount) {
-        ACTIVE_SPAN.get().setTag(ShardingTags.CONNECTION_COUNT.getKey(), connectionCount).deactivate();
-        ACTIVE_SPAN.remove();
-    }
-    
-    /**
-     * Tests if sql execute event in this overall event thread.
-     *
-     * @return sql execute event in this overall event thread or not.
-     */
-    public static boolean isTrunkThread() {
-        return null != ACTIVE_SPAN.get();
-    }
-    
-    /**
-     * Get active span.
-     *
-     * @return active span
-     */
-    public static ThreadLocal<ActiveSpan> getActiveSpan() {
-        return ACTIVE_SPAN;
+        activeSpan.setTag(ShardingTags.CONNECTION_COUNT.getKey(), connectionCount).deactivate();
     }
 }

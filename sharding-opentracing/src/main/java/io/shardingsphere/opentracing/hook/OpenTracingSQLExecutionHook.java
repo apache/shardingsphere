@@ -45,7 +45,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
         if (!isTrunkThread) {
-            activeSpan = ((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeHook.ROOT_SPAN_CONTINUATION)).activate();
+            activeSpan = ((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION)).activate();
         }
         span = ShardingTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME)
