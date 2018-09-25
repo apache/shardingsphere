@@ -78,13 +78,11 @@ public final class SQLExecutePrepareTemplate {
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getAsynchronizedExecuteUnitGroups(
             final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<Collection<ShardingExecuteGroup<StatementExecuteUnit>>> results = shardingExecuteEngine.execute(sqlUnitGroups.entrySet(),
                 new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
                     
                     @Override
                     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input) throws SQLException {
-                        ExecutorDataMap.setDataMap(dataMap);
                         return getSQLExecuteGroups(input.getKey(), input.getValue(), callback);
                     }
                 });
