@@ -33,21 +33,21 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     private static final ServiceLoader<SQLExecutionHook> SERVICE_LOADER = ServiceLoader.load(SQLExecutionHook.class);
     
     @Override
-    public void start(final RouteUnit routeUnit, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData) {
+    public synchronized void start(final RouteUnit routeUnit, final List<Object> parameters, final DataSourceMetaData dataSourceMetaData) {
         for (SQLExecutionHook each : SERVICE_LOADER) {
             each.start(routeUnit, parameters, dataSourceMetaData);
         }
     }
     
     @Override
-    public void finishSuccess() {
+    public synchronized void finishSuccess() {
         for (SQLExecutionHook each : SERVICE_LOADER) {
             each.finishSuccess();
         }
     }
     
     @Override
-    public void finishFailure(final Exception cause) {
+    public synchronized void finishFailure(final Exception cause) {
         for (SQLExecutionHook each : SERVICE_LOADER) {
             each.finishFailure(cause);
         }
