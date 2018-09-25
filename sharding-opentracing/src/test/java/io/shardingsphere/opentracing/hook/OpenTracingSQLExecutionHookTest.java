@@ -57,13 +57,13 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         Continuation continuation = mock(Continuation.class);
         ActiveSpan result = mock(ActiveSpan.class);
         when(continuation.activate()).thenReturn(result);
-        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION, continuation);
+        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeHook.ROOT_SPAN_CONTINUATION, continuation);
         return result;
     }
     
     @After
     public void tearDown() {
-        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION);
+        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ROOT_SPAN_CONTINUATION);
     }
     
     @Test

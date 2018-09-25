@@ -54,7 +54,7 @@ public abstract class BaseOpenTracingHookTest {
     @BeforeClass
     public static void initTracer() {
         ShardingTracer.init(TRACER);
-        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION);
+        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ROOT_SPAN_CONTINUATION);
     }
     
     @AfterClass

@@ -29,7 +29,7 @@ import io.shardingsphere.opentracing.constant.ShardingTags;
  *
  * @author zhangliang
  */
-public final class OpenTracingRootInvokeHandler implements RootInvokeHook {
+public final class OpenTracingRootInvokeHook implements RootInvokeHook {
     
     public static final String ROOT_SPAN_CONTINUATION = "ROOT_SPAN_CONTINUATION";
     
