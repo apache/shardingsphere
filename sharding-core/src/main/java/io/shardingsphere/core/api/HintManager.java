@@ -50,9 +50,6 @@ public final class HintManager implements AutoCloseable {
     @Getter
     private boolean masterRouteOnly;
     
-    @Getter
-    private boolean databaseShardingOnly;
-    
     /**
      * Get a new instance for {@code HintManager}.
      *
@@ -65,15 +62,16 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * Set sharding value for database sharding only.
+     * Add sharding value for database sharding only.
      *
      * <p>The sharding operator is {@code =}</p>
+     * When you only need to sharding database, use this method to add database sharding value.
      *
      * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
-        databaseShardingOnly = true;
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, ShardingOperator.EQUAL, new Comparable<?>[]{value});
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
+        HintManagerHolder.setDatabaseShardingOnly(true);
     }
     
     /**
@@ -82,38 +80,25 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param value sharding value
      */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, new Comparable<?>[]{value});
+    public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
+        addDatabaseShardingValue(logicTable, ShardingOperator.EQUAL, value);
     }
     
     /**
      * Add sharding value for database.
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param values sharding values
      */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
-        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
+    public void addDatabaseShardingValue(final String logicTable, final Comparable<?>... values) {
+        addDatabaseShardingValue(logicTable, ShardingOperator.IN, values);
     }
     
-    /**
-     * Add sharding value for database.
-     *
-     * @param logicTable logic table name
-     * @param shardingColumn sharding column name
-     * @param minValue minimal sharding value
-     * @param maxValue maximum sharding value
-     */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> minValue, final Comparable<?> maxValue) {
-        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.BETWEEN, minValue, maxValue);
-    }
-    
-    private void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        databaseShardingValues.put(logicTable, getShardingValue(logicTable, shardingColumn, operator, values));
+    private void addDatabaseShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
+        HintManagerHolder.setDatabaseShardingOnly(false);
+        databaseShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
     }
     
     /**
@@ -122,38 +107,25 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param value sharding value
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, new Comparable<?>[]{value});
+    public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
+        addTableShardingValue(logicTable, ShardingOperator.EQUAL, value);
     }
     
     /**
      * Add sharding value for table.
      *
      * @param logicTable logic table name
-     * @param shardingColumn sharding column name
      * @param values sharding values
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>... values) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.IN, values);
+    public void addTableShardingValue(final String logicTable, final Comparable<?>... values) {
+        addTableShardingValue(logicTable, ShardingOperator.IN, values);
     }
     
-    /**
-     * Add sharding value for table.
-     *
-     * @param logicTable logic table name
-     * @param shardingColumn sharding column name
-     * @param minValue minimal sharding value
-     * @param maxValue maximum sharding value
-     */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> minValue, final Comparable<?> maxValue) {
-        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.BETWEEN, minValue, maxValue);
-    }
-    
-    private void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
-        tableShardingValues.put(logicTable, getShardingValue(logicTable, shardingColumn, operator, values));
+    private void addTableShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
+        HintManagerHolder.setDatabaseShardingOnly(false);
+        tableShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
     }
     
     @SuppressWarnings("unchecked")
