@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -40,8 +41,9 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
+    @Getter
     @Setter
-    public static boolean databaseShardingOnly;
+    private static boolean databaseShardingOnly;
     
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
@@ -82,15 +84,6 @@ public final class HintManagerHolder {
      */
     public static boolean isMasterRouteOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
-    }
-    
-    /**
-     * Adjust database sharding only.
-     * 
-     * @return database sharding only or not
-     */
-    public static boolean isDatabaseShardingOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
     }
     
     /**
