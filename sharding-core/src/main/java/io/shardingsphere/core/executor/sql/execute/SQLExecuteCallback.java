@@ -23,6 +23,9 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.event.executor.SQLExecutionEventFactory;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionEventHandlerLoader;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionFinishEvent;
+import io.shardingsphere.core.spi.event.executor.SQLExecutionStartEvent;
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
@@ -79,6 +82,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
         List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
         DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
         for (List<Object> each : parameterSets) {
+            SQLExecutionEventHandlerLoader.getInstance().start(new SQLExecutionStartEvent(statementExecuteUnit.getRouteUnit(), each, dataSourceMetaData));
+            // TODO remove after BED removed
             shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
         }
         try {
@@ -86,6 +91,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             for (List<Object> each : parameterSets) {
                 SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteSuccess();
+                SQLExecutionEventHandlerLoader.getInstance().finish(new SQLExecutionFinishEvent());
+                // TODO remove after BED removed
                 shardingEventBus.post(finishEvent);
             }
             return result;
@@ -93,6 +100,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
             for (List<Object> each : parameterSets) {
                 SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
                 finishEvent.setExecuteFailure(ex);
+                SQLExecutionEventHandlerLoader.getInstance().finish(new SQLExecutionFinishEvent());
+                // TODO remove after BED removed
                 shardingEventBus.post(finishEvent);
             }
             ExecutorExceptionHandler.handleException(ex);

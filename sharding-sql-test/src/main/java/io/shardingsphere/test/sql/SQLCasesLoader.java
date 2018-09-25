@@ -52,9 +52,12 @@ public final class SQLCasesLoader {
     
     private final Map<String, SQLCase> unsupportedSQLCaseMap;
     
+    private final Map<String, SQLCase> parseErrorSQLCaseMap;
+    
     private SQLCasesLoader() {
         supportedSQLCaseMap = loadSQLCases("sql");
         unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
+        parseErrorSQLCaseMap = loadSQLCases("parse_error_sql");
     }
     
     /**
@@ -116,16 +119,24 @@ public final class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillSQLMap(sqlStatementMap, new FileInputStream(each));
+                fillSQLMap(sqlStatementMap, new FileInputStream(each), file.getName());
             }
         } else {
             fillSQLMap(sqlStatementMap, new FileInputStream(file));
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws FileNotFoundException, JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
+            sqlCaseMap.put(each.getId(), each);
+        }
+    }
+    
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream, final String sqlType) throws FileNotFoundException, JAXBException {
+        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase each : sqlCases.getSqlCases()) {
+            each.setSqlType(sqlType);
             sqlCaseMap.put(each.getId(), each);
         }
     }
@@ -152,6 +163,18 @@ public final class SQLCasesLoader {
      */
     public String getUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
         return getSQL(unsupportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
+    /**
+     * Get SQLParsingException error's SQL.
+     *
+     * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getSQLParsingErrorSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(parseErrorSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
     }
     
     private String getSQL(final Map<String, SQLCase> sqlCaseMap, final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
@@ -204,6 +227,17 @@ public final class SQLCasesLoader {
         return getTestParameters(unsupportedSQLCaseMap, allDatabaseTypes, enumType);
     }
     
+    /**
+     * Get test parameters for junit parameterized test case for sql parsing error SQL.
+     *
+     * @param allDatabaseTypes all database types
+     * @param enumType enum type
+     * @return test parameters for junit parameterized test case for parsing error SQL
+     */
+    public Collection<Object[]> getSQLParsingErrorTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        return getTestParameters(parseErrorSQLCaseMap, allDatabaseTypes, enumType);
+    }
+    
     private Collection<Object[]> getTestParameters(final Map<String, SQLCase> sqlCaseMap, final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCase each : sqlCaseMap.values()) {
@@ -215,6 +249,9 @@ public final class SQLCasesLoader {
     private Collection<Object[]> getTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
+            if (each == SQLCaseType.Placeholder && !Strings.isNullOrEmpty(sqlCase.getSqlType()) && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
+                continue;
+            }
             result.addAll(getTestParameters(sqlCase, allDatabaseTypes, enumType, each));
         }
         return result;
