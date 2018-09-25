@@ -18,10 +18,9 @@
 package io.shardingsphere.core.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.core.spi.ShardingSPILoader;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,8 +42,7 @@ import java.util.logging.Logger;
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     static {
-        ShardingEventListenerRegistrySPILoader.registerListeners();
-        ShardingSPILoader.loadAllShardingSPI();
+        ShardingBootstrap.init();
     }
     
     private final DatabaseType databaseType;

@@ -17,14 +17,17 @@
 
 package io.shardingsphere.opentracing.handler.connection;
 
+import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.Tracer.SpanBuilder;
 import io.opentracing.tag.Tags;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.spi.event.connection.get.GetConnectionEventHandler;
 import io.shardingsphere.core.spi.event.connection.get.GetConnectionFinishEvent;
 import io.shardingsphere.core.spi.event.connection.get.GetConnectionStartEvent;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import io.shardingsphere.opentracing.handler.OpenTracingHandler;
+import io.shardingsphere.opentracing.handler.root.OpenTracingRootInvokeHandler;
 
 /**
  * Open tracing get connection event handler.
@@ -35,12 +38,18 @@ public final class OpenTracingGetConnectionEventHandler extends OpenTracingHandl
     
     private static final String OPERATION_NAME = "/" + ShardingTags.COMPONENT_NAME + "/getConnection/";
     
+    private final ThreadLocal<Boolean> isTrunkThread = new ThreadLocal<>();
+    
     public OpenTracingGetConnectionEventHandler() {
         super(OPERATION_NAME);
     }
     
     @Override
     protected Span initSpan(final GetConnectionStartEvent event, final SpanBuilder spanBuilder) {
+        isTrunkThread.set(OpenTracingRootInvokeHandler.isTrunkThread());
+        if (ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION) && !isTrunkThread.get()) {
+            OpenTracingRootInvokeHandler.getActiveSpan().set(((ActiveSpan.Continuation) ExecutorDataMap.getDataMap().get(OpenTracingRootInvokeHandler.ROOT_SPAN_CONTINUATION)).activate());
+        }
         return spanBuilder.withTag(Tags.DB_INSTANCE.getKey(), event.getDataSource()).startManual();
     }
     
@@ -50,6 +59,14 @@ public final class OpenTracingGetConnectionEventHandler extends OpenTracingHandl
             span.setTag(Tags.PEER_HOSTNAME.getKey(), event.getDataSourceMetaData().getHostName())
                     .setTag(Tags.PEER_PORT.getKey(), event.getDataSourceMetaData().getPort())
                     .setTag(ShardingTags.CONNECTION_COUNT.getKey(), event.getConnectionCount());
+        }
+    }
+    
+    @Override
+    protected void afterTracingFinish(final GetConnectionFinishEvent event) {
+        if (!isTrunkThread.get()) {
+            OpenTracingRootInvokeHandler.getActiveSpan().get().deactivate();
+            OpenTracingRootInvokeHandler.getActiveSpan().remove();
         }
     }
 }

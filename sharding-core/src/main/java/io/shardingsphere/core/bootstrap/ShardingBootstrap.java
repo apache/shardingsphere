@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.listener;
+package io.shardingsphere.core.bootstrap;
 
-import io.shardingsphere.core.bootstrap.ShardingBootstrap;
-import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
+import io.shardingsphere.core.spi.ShardingSPILoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Listener register for Proxy.
+ * Sharding bootstrap.
  *
  * @author zhangliang
- * @author panjuan
  */
-public final class ProxyListenerRegister {
-    
-    private final ProxyContext proxyContext = ProxyContext.getInstance();
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingBootstrap {
     
     /**
-     * Register all listeners.
+     * Initialize sharding bootstrap.
      */
-    public void register() {
-        ShardingBootstrap.init();
-        proxyContext.register();
+    public static void init() {
+        ShardingSPILoader.loadAllShardingSPI();
+        ShardingEventListenerRegistrySPILoader.registerListeners();
     }
 }
