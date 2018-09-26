@@ -18,7 +18,7 @@
 package io.shardingsphere.proxy.config.yaml;
 
 import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.jdbc.orchestration.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-orchestration-core</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
@@ -18,4 +18,3 @@
         </dependency>
     </dependencies>
 </project>
-
