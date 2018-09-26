@@ -154,19 +154,19 @@ alterXmlschemaClause:
   
 columnClauses:
     opColumnClause+
-    | renameColumnClause
+    | renameColumn
     | modifyCollectionRetrieval+
     | modifyLobStorageClause+
     | alterVarrayColProperties+
     ;
 
 opColumnClause:
-    addColumnClause
-    | modifyColumnClauses
+    addColumn
+    | modifyColumn
     | dropColumnClause
     ;
     
-addColumnClause:
+addColumn:
     ADD
     columnOrVirtualDefinitions 
     columnProperties?
@@ -174,8 +174,11 @@ addColumnClause:
     ;
 
 columnOrVirtualDefinitions:
-    columnOrVirtualDefinition
-    (COMMA columnOrVirtualDefinition)*
+    LEFT_PAREN 
+        columnOrVirtualDefinition
+        (COMMA columnOrVirtualDefinition)* 
+    RIGHT_PAREN
+    |columnOrVirtualDefinition
     ;
     
 columnOrVirtualDefinition:
@@ -202,7 +205,7 @@ outOfLinePartBody:
     | varrayColProperties
     ;
     
-modifyColumnClauses:
+modifyColumn:
     MODIFY 
     ( 
         LEFT_PAREN modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN
@@ -250,8 +253,8 @@ checkpointNumber:
     CHECKPOINT NUMBER
     ;
     
-renameColumnClause:
-    RENAME COLUMN columnName TO 
+renameColumn:
+    RENAME COLUMN columnName TO columnName
     ;
     
 modifyCollectionRetrieval:
@@ -303,7 +306,7 @@ constraintOption:
      ;
  
 constraintPrimaryOrUnique:
-      (PRIMARY KEY)
+      primaryKey
      | (UNIQUE columnList)
      ;
         
@@ -776,9 +779,9 @@ exchangePartitionSubpart:
     ;
 
 alterExternalTable:
-    ( addColumnClause
-    | modifyColumnClauses
-    | dropColumnClause
+    ( addColumn
+    | modifyColumn
+    | dropColumn
     | parallelClause
     | externalDataProperties
     | (REJECT LIMIT ( NUMBER | UNLIMITED ))
