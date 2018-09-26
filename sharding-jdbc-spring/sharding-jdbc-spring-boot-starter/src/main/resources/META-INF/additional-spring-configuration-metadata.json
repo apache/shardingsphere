@@ -2,7 +2,7 @@
   "groups": [
     {
       "name": "sharding.jdbc.datasource",
-      "type": "io.shardingsphere.jdbc.spring.boot.SpringBootConfiguration"
+      "type": "io.shardingsphere.shardingjdbc.spring.boot.SpringBootConfiguration"
     },
     {
       "sourceType": "io.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfiguration",
@@ -59,7 +59,7 @@
     {
       "name": "sharding.jdbc.datasource.names",
       "type": "java.lang.String",
-      "sourceType": "io.shardingsphere.jdbc.spring.boot.SpringBootConfiguration"
+      "sourceType": "io.shardingsphere.shardingjdbc.spring.boot.SpringBootConfiguration"
     },
     {
       "name": "sharding.jdbc.datasource",
