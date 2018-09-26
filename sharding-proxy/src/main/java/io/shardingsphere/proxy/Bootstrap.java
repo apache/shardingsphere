@@ -57,7 +57,6 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        ShardingTracer.init();
         ProxyConfiguration proxyConfig = new ProxyYamlConfigurationLoader().load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
@@ -65,6 +64,9 @@ public final class Bootstrap {
             startWithoutRegistryCenter(proxyConfig.getServerConfiguration(), proxyConfig.getRuleConfigurationMap(), port);
         } else {
             startWithRegistryCenter(proxyConfig.getServerConfiguration(), proxyConfig.getRuleConfigurationMap(), port);
+        }
+        if (ProxyContext.getInstance().isSkyWalkingEnable()) {
+            ShardingTracer.init();
         }
     }
     
