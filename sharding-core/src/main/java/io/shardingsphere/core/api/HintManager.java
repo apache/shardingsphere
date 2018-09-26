@@ -26,7 +26,6 @@ import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
@@ -46,9 +45,6 @@ public final class HintManager implements AutoCloseable {
     private final Map<String, ShardingValue> databaseShardingValues = new HashMap<>();
     
     private final Map<String, ShardingValue> tableShardingValues = new HashMap<>();
-    
-    @Getter
-    private boolean masterRouteOnly;
     
     /**
      * Get a new instance for {@code HintManager}.
