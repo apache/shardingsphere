@@ -46,18 +46,18 @@ public final class HintManagerHolderTest {
     
     @Test
     public void assertsUseShardingHintWithAddShardingColumns() {
-        hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
+        hintManager.addDatabaseShardingValue("logicTable", 1);
     }
     
     @Test
     public void assertGetDatabaseShardingValue() {
-        hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
+        hintManager.addDatabaseShardingValue("logicTable", 1);
         assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
     }
     
     @Test
     public void assertGetTableShardingValue() {
-        hintManager.addTableShardingValue("logicTable", "shardingColumn", 1);
+        hintManager.addTableShardingValue("logicTable", 1);
         assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
     }
     
@@ -81,7 +81,7 @@ public final class HintManagerHolderTest {
     
     @Test
     public void assertClear() {
-        hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
+        hintManager.addDatabaseShardingValue("logicTable", 1);
         hintManager.close();
         assertFalse(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
     }
