@@ -68,4 +68,3 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         return new OrchestrationMasterSlaveDataSource(orchestrationConfig);
     }
 }
-
