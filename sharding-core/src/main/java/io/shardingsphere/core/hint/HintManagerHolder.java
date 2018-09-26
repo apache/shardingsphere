@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Hint manager holder.
@@ -119,29 +120,9 @@ public final class HintManagerHolder {
     
     
     @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final Comparable<?>[] values) {
+    private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
         Preconditions.checkArgument(null != values && values.length > 0);
         return new ListShardingValue(logicTable, DB_COLUMN_NAME, Arrays.asList(values));
-    }
-    
-    /**
-     * Get sharding value for database.
-     *
-     * @param logicTable logic table name
-     * @return sharding value for database
-     */
-    public ShardingValue getDatabaseShardingValue(final String logicTable) {
-        return databaseShardingValues.get(logicTable);
-    }
-    
-    /**
-     * Get sharding value for table.
-     *
-     * @param logicTable logic table name
-     * @return sharding value for table
-     */
-    public ShardingValue getTableShardingValue(final String logicTable) {
-        return tableShardingValues.get(logicTable);
     }
     
     /**
@@ -151,7 +132,10 @@ public final class HintManagerHolder {
      * @return database sharding value
      */
     public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
-        return null != HINT_MANAGER_HOLDER.get() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(logicTable)) : Optional.<ShardingValue>absent();
+        if (null == HINT_MANAGER_HOLDER.get() || !DATABASE_SHARDING_VALUES.containsKey(logicTable)) {
+            return Optional.<ShardingValue>absent();
+        }
+        return Optional.of(getShardingValue(logicTable, DATABASE_SHARDING_VALUES.get(logicTable)));
     }
     
     /**
