@@ -24,6 +24,7 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -42,17 +43,19 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
+    @Getter
     private static final Multimap<String, Comparable<?>> DATABASE_SHARDING_VALUES = HashMultimap.create();
     
+    @Getter
     private static final Multimap<String, Comparable<?>> TABLE_SHARDING_VALUES = HashMultimap.create();
+    
+    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     @Setter
     private static boolean databaseShardingOnly;
     
     @Setter
     private static boolean isMasterRouteOnly;
-    
-    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
      * Set hint manager.
