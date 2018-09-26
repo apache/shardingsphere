@@ -18,7 +18,7 @@
 1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) 支持XA事务
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) 支持登录认证
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) 支持注册中心进行治理
-
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) 主持多Schema
 
 ### 功能提升
 
@@ -30,6 +30,7 @@
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) 支持不包含列名的INSERT语句的分片与自增主键
 1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) 取代`JSON`格式，而将`YAML`格式的配置文件存储在注册中心
 1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) props属性可在分片和读写分离规则配置时独立使用
+1. [ISSUE #1205](https://github.com/sharding-sphere/sharding-sphere/issues/1205) 执行引擎提升
 
 #### Sharding-JDBC
 
@@ -38,10 +39,16 @@
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) 支持Spring bean的方式在命名空间中注入自增序列生成器对象
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) 支持Spring bean的方式在命名空间中注入分片算法对象
 
+#### Sharding-Opentracing
+
+1. [ISSUE #1172](https://github.com/sharding-sphere/sharding-sphere/issues/1172) Opentracing提升
+
 ### API调整
 
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) 调整Orchestration模块Maven坐标
 1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) 修改Sharding + Master-slave配置的Spring namespace xsd
+1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) 调整Hint API
+1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) 精炼整体包结构
 
 
 ### 缺陷修正

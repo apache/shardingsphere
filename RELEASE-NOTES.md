@@ -18,6 +18,7 @@
 1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) Support XA transaction
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support registry center
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) Support multiple database schema
 
 ### Enhancements
 
@@ -29,6 +30,7 @@
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement key of INSERT without column names
 1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Use `YAML` instead of `JSON` to store configurations in registry center
 1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Properties can configure for Sharding and Master-slave independent
+1. [ISSUE #1205](https://github.com/sharding-sphere/sharding-sphere/issues/1205) Execute engine enhancement
 
 #### Sharding-JDBC
 
@@ -37,10 +39,16 @@
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support inject key generator objects by spring namespace
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
 
+#### Sharding-Opentracing
+
+1. [ISSUE #1172](https://github.com/sharding-sphere/sharding-sphere/issues/1172) Opentracing enhancement
+
 ### API changes
 
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Adjust the maven artifactId for Orchestration module
 1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) Change Spring namespace xsd for Sharding + Master-slave configuration
+1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) Adjust Hint API
+1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) Refine package structure
 
 ### Bug Fixes
 
