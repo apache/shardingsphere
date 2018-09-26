@@ -121,8 +121,8 @@ public final class HintManagerHolder {
     
     @SuppressWarnings("unchecked")
     private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
-        Preconditions.checkArgument(null != values && values.length > 0);
-        return new ListShardingValue(logicTable, DB_COLUMN_NAME, Arrays.asList(values));
+        Preconditions.checkArgument(null != values && !values.isEmpty());
+        return new ListShardingValue(logicTable, DB_COLUMN_NAME, values);
     }
     
     /**
