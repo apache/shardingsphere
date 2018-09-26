@@ -126,12 +126,6 @@ public final class HintManagerHolder {
         return null != HINT_MANAGER_HOLDER.get() && isMasterRouteOnly;
     }
     
-    @SuppressWarnings("unchecked")
-    private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
-        Preconditions.checkArgument(null != values && !values.isEmpty());
-        return new ListShardingValue(logicTable, DB_COLUMN_NAME, values);
-    }
-    
     /**
      * Get database sharding value.
      * 
@@ -156,6 +150,12 @@ public final class HintManagerHolder {
             return Optional.<ShardingValue>absent();
         }
         return Optional.of(getShardingValue(logicTable, TABLE_SHARDING_VALUES.get(logicTable)));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
+        Preconditions.checkArgument(null != values && !values.isEmpty());
+        return new ListShardingValue(logicTable, DB_COLUMN_NAME, values);
     }
     
     /**
