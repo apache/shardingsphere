@@ -26,25 +26,25 @@ import java.util.ServiceLoader;
  */
 public final class SPIParsingHook implements ParsingHook {
     
-    private static final ServiceLoader<ParsingHook> SERVICE_LOADER = ServiceLoader.load(ParsingHook.class);
+    private final ServiceLoader<ParsingHook> serviceLoader = ServiceLoader.load(ParsingHook.class);
     
     @Override
     public void start(final String sql) {
-        for (ParsingHook each : SERVICE_LOADER) {
+        for (ParsingHook each : serviceLoader) {
             each.start(sql);
         }
     }
     
     @Override
     public void finishSuccess() {
-        for (ParsingHook each : SERVICE_LOADER) {
+        for (ParsingHook each : serviceLoader) {
             each.finishSuccess();
         }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (ParsingHook each : SERVICE_LOADER) {
+        for (ParsingHook each : serviceLoader) {
             each.finishFailure(cause);
         }
     }

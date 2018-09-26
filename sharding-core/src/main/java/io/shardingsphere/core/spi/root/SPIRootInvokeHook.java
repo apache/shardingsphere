@@ -26,18 +26,18 @@ import java.util.ServiceLoader;
  */
 public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private static final ServiceLoader<RootInvokeHook> SERVICE_LOADER = ServiceLoader.load(RootInvokeHook.class);
+    private final ServiceLoader<RootInvokeHook> serviceLoader = ServiceLoader.load(RootInvokeHook.class);
     
     @Override
     public void start() {
-        for (RootInvokeHook each : SERVICE_LOADER) {
+        for (RootInvokeHook each : serviceLoader) {
             each.start();
         }
     }
     
     @Override
     public void finish(final int connectionCount) {
-        for (RootInvokeHook each : SERVICE_LOADER) {
+        for (RootInvokeHook each : serviceLoader) {
             each.finish(connectionCount);
         }
     }

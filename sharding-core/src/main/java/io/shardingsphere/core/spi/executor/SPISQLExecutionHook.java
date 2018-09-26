@@ -29,25 +29,25 @@ import java.util.ServiceLoader;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private static final ServiceLoader<SQLExecutionHook> SERVICE_LOADER = ServiceLoader.load(SQLExecutionHook.class);
+    private final ServiceLoader<SQLExecutionHook> serviceLoader = ServiceLoader.load(SQLExecutionHook.class);
     
     @Override
-    public synchronized void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
-        for (SQLExecutionHook each : SERVICE_LOADER) {
+    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+        for (SQLExecutionHook each : serviceLoader) {
             each.start(routeUnit, dataSourceMetaData, isTrunkThread);
         }
     }
     
     @Override
-    public synchronized void finishSuccess() {
-        for (SQLExecutionHook each : SERVICE_LOADER) {
+    public void finishSuccess() {
+        for (SQLExecutionHook each : serviceLoader) {
             each.finishSuccess();
         }
     }
     
     @Override
-    public synchronized void finishFailure(final Exception cause) {
-        for (SQLExecutionHook each : SERVICE_LOADER) {
+    public void finishFailure(final Exception cause) {
+        for (SQLExecutionHook each : serviceLoader) {
             each.finishFailure(cause);
         }
     }

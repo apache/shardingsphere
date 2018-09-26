@@ -66,11 +66,11 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     }
     
     private List<String> toStringList(final List<List<Object>> parameterSets) {
-        List<String> parameterString = new LinkedList<>();
+        List<String> result = new LinkedList<>();
         for (List<Object> each : parameterSets) {
-            parameterString.add(String.format("[%s]", Joiner.on(", ").join(each)));
+            result.add(String.format("[%s]", Joiner.on(", ").join(each)));
         }
-        return parameterString;
+        return result;
     }
     
     @Override
