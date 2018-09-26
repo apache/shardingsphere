@@ -24,7 +24,6 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -43,10 +42,8 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
-    @Getter
     private static final Multimap<String, Comparable<?>> DATABASE_SHARDING_VALUES = HashMultimap.create();
     
-    @Getter
     private static final Multimap<String, Comparable<?>> TABLE_SHARDING_VALUES = HashMultimap.create();
     
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
@@ -68,12 +65,38 @@ public final class HintManagerHolder {
     }
     
     /**
+     * Add sharding value for database sharding only.
+     *
+     * <p>The sharding operator is {@code =}</p>
+     * When you only need to sharding database, use this method to add database sharding value.
+     *
+     * @param value sharding value
+     */
+    public void setDatabaseShardingValue(final Comparable<?> value) {
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
+        databaseShardingOnly = true;
+    }
+    
+    /**
      * Judge whether only database is sharding.
      *
      * @return database sharding or not
      */
     public static boolean isDatabaseShardingOnly() {
         return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
+    }
+    
+    /**
+     * Add sharding value for database.
+     *
+     * <p>The sharding operator is {@code =}</p>
+     *
+     * @param logicTable logic table name
+     * @param value sharding value
+     */
+    public static void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
+        DATABASE_SHARDING_VALUES.put(logicTable, value);
+        databaseShardingOnly = false;
     }
     
     /**
