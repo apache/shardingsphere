@@ -76,7 +76,7 @@ public final class HintManagerHolder {
      * @param value sharding value
      */
     public static void setDatabaseShardingValue(final Comparable<?> value) {
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
+        addDatabaseShardingValue(DB_TABLE_NAME, value);
         databaseShardingOnly = true;
     }
     
@@ -119,9 +119,9 @@ public final class HintManagerHolder {
     
     
     @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>[] values) {
+    private ShardingValue getShardingValue(final String logicTable, final Comparable<?>[] values) {
         Preconditions.checkArgument(null != values && values.length > 0);
-        return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
+        return new ListShardingValue(logicTable, DB_COLUMN_NAME, Arrays.asList(values));
     }
     
     /**
