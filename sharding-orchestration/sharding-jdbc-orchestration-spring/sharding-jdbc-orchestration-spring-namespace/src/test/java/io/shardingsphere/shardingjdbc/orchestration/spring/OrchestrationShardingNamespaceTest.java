@@ -17,20 +17,20 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.spring;
 
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import io.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

@@ -19,16 +19,16 @@ package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

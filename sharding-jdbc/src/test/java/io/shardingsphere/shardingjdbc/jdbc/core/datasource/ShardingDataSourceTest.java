@@ -18,14 +18,12 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 

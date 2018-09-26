@@ -17,18 +17,18 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.spring;
 
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.BeforeClass;
 import org.junit.Test;

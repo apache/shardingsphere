@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.state.datasource;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.yaml.converter;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
 import io.shardingsphere.orchestration.internal.yaml.representer.ShardingConfigurationRepresenter;

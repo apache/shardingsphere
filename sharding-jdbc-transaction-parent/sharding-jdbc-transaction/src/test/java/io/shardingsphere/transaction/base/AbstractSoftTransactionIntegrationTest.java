@@ -17,10 +17,10 @@
 
 package io.shardingsphere.transaction.base;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;

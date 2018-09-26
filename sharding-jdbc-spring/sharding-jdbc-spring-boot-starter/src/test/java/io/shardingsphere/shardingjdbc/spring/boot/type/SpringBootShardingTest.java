@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.spring.boot.type;
 
-import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;

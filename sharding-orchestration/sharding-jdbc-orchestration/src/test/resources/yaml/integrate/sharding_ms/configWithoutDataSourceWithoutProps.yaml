@@ -41,7 +41,7 @@ shardingRule:
       masterDataSourceName: db0_master
       slaveDataSourceNames:
         - db0_slave
-      loadBalanceAlgorithmClassName: io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
+      loadBalanceAlgorithmClassName: io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
     db_ms_1:
       masterDataSourceName: db1_master
       slaveDataSourceNames:

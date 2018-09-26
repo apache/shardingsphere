@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
-import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;

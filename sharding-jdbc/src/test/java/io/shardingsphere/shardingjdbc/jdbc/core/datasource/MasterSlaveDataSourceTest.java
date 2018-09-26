@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;

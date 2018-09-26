@@ -11,7 +11,7 @@
 
     <bean id="keyGenerator" class="io.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
 
-    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
     <bean id="rangeModuloTableShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />

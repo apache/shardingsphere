@@ -17,10 +17,10 @@
 
 package io.shardingsphere.shardingjdbc.spring;
 
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;

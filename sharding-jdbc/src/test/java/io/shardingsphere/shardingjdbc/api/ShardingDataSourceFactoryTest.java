@@ -17,12 +17,11 @@
 
 package io.shardingsphere.shardingjdbc.api;
 
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;

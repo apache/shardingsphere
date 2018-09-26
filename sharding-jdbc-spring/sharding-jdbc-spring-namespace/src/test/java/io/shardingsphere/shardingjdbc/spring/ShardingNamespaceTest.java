@@ -17,14 +17,14 @@
 
 package io.shardingsphere.shardingjdbc.spring;
 
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.BindingTableRule;

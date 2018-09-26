@@ -18,14 +18,14 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.ConfigMapContext;
+import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;

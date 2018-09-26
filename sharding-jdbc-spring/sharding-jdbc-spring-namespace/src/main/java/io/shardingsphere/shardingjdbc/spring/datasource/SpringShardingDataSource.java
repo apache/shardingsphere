@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.spring.datasource;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

@@ -18,8 +18,8 @@
 package io.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

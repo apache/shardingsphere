@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.hint;
 
-import io.shardingsphere.core.api.HintManager;
+import io.shardingsphere.api.HintManager;
 import org.junit.After;
 import org.junit.Test;
 

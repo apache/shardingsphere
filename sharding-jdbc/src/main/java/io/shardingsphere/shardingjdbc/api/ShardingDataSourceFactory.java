@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.api;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

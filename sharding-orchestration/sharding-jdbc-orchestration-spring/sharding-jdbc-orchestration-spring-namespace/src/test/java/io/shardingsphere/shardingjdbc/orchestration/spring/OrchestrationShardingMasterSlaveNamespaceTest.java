@@ -17,13 +17,13 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.spring;
 
-import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import io.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import io.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

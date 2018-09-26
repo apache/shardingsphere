@@ -18,9 +18,9 @@
 package io.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.fixture.IncrementKeyGenerator;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.yaml.converter;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
 import io.shardingsphere.orchestration.internal.yaml.representer.MasterSlaveConfigurationRepresenter;

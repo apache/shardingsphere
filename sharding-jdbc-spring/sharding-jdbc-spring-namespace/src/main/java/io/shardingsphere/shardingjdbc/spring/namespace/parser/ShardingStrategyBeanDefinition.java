@@ -18,11 +18,11 @@
 package io.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import lombok.AccessLevel;

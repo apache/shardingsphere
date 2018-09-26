@@ -17,13 +17,13 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
-import io.shardingsphere.core.api.ConfigMapContext;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.Getter;
 
 import javax.sql.DataSource;

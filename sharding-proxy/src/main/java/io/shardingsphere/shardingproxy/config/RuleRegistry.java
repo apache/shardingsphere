@@ -17,14 +17,14 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
 import lombok.Setter;
