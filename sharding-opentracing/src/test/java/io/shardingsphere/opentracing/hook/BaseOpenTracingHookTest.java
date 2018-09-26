@@ -23,7 +23,6 @@ import io.opentracing.mock.MockTracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
-import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
 import org.hamcrest.CoreMatchers;
@@ -42,19 +41,9 @@ public abstract class BaseOpenTracingHookTest {
     
     private static final MockTracer TRACER = new MockTracer(new ThreadLocalActiveSpanSource(), MockTracer.Propagator.TEXT_MAP);
     
-    /**
-     * Get tracer.
-     * 
-     * @return tracer
-     */
-    public static MockTracer getTracer() {
-        return TRACER;
-    }
-    
     @BeforeClass
     public static void initTracer() {
         ShardingTracer.init(TRACER);
-        ShardingExecuteDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
     }
     
     @AfterClass
@@ -69,9 +58,16 @@ public abstract class BaseOpenTracingHookTest {
         TRACER.reset();
     }
     
-    protected final void assertSpanError(final MockSpan actualSpan, final Class<? extends Throwable> expectedException, final String expectedErrorMessage) {
-        assertTrue((Boolean) actualSpan.tags().get(Tags.ERROR.getKey()));
-        List<MockSpan.LogEntry> actualLogEntries = actualSpan.logEntries();
+    protected final MockSpan getActualSpan() {
+        List<MockSpan> finishedSpans = TRACER.finishedSpans();
+        assertThat(finishedSpans.size(), is(1));
+        return finishedSpans.get(0);
+    }
+    
+    protected final void assertSpanError(final Class<? extends Throwable> expectedException, final String expectedErrorMessage) {
+        final MockSpan actual = getActualSpan();
+        assertTrue((Boolean) actual.tags().get(Tags.ERROR.getKey()));
+        List<MockSpan.LogEntry> actualLogEntries = actual.logEntries();
         assertThat(actualLogEntries.size(), is(1));
         assertThat(actualLogEntries.get(0).fields().size(), is(3));
         assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.EVENT), CoreMatchers.<Object>is(ShardingErrorLogTags.EVENT_ERROR_TYPE));
