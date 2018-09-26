@@ -76,6 +76,7 @@ public final class HintManagerHolder {
      * @param values sharding value
      */
     public static void setDatabaseShardingValue(final Comparable<?>... values) {
+        DATABASE_SHARDING_VALUES.clear();
         for (Comparable<?> each : values) {
             addDatabaseShardingValue(DB_TABLE_NAME, each);
         }
