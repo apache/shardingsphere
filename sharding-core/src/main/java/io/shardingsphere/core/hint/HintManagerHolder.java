@@ -42,9 +42,9 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
-    private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
+    private static final Multimap<String, Comparable<?>> DATABASE_SHARDING_VALUES = HashMultimap.create();
     
-    private final Multimap<String, Comparable<?>> tableShardingValues = HashMultimap.create();
+    private static final Multimap<String, Comparable<?>> TABLE_SHARDING_VALUES = HashMultimap.create();
     
     @Setter
     private static boolean databaseShardingOnly;
@@ -107,6 +107,10 @@ public final class HintManagerHolder {
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();
+        DATABASE_SHARDING_VALUES.clear();
+        TABLE_SHARDING_VALUES.clear();
+        databaseShardingOnly = false;
+        isMasterRouteOnly = false;
     }
     
     /**
