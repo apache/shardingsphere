@@ -44,10 +44,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
-    private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
-    
-    private final Multimap<String, Comparable<?>> tableShardingValues = HashMultimap.create();
-    
     /**
      * Get a new instance for {@code HintManager}.
      *
@@ -68,8 +64,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
-        HintManagerHolder.setDatabaseShardingOnly(true);
+        HintManagerHolder.setDatabaseShardingValue(value);
     }
     
     /**
@@ -81,8 +76,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
-        databaseShardingValues.put(logicTable, value);
-        HintManagerHolder.setDatabaseShardingOnly(false);
+        HintManagerHolder.addDatabaseShardingValue(logicTable, value);
     }
     
     /**
@@ -96,20 +90,6 @@ public final class HintManager implements AutoCloseable {
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
         tableShardingValues.put(logicTable, value);
         HintManagerHolder.setDatabaseShardingOnly(false);
-    }
-    
-    /**
-     * Add sharding value for table.
-     *
-     * @param logicTable logic table name
-     * @param values sharding values
-     */
-    public void addTableShardingValue(final String logicTable, final Comparable<?>... values) {
-        addTableShardingValue(logicTable, ShardingOperator.IN, values);
-    }
-    
-    private void addTableShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
-    
     }
     
     @SuppressWarnings("unchecked")
