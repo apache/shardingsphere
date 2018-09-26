@@ -31,7 +31,6 @@ import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        ShardingTracer.init(new SkywalkingTracer());
+        ShardingTracer.init();
         ProxyConfiguration proxyConfig = new ProxyYamlConfigurationLoader().load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
