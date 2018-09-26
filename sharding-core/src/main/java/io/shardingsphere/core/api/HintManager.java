@@ -17,22 +17,9 @@
 
 package io.shardingsphere.core.api;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -88,34 +75,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
-        tableShardingValues.put(logicTable, value);
-        HintManagerHolder.setDatabaseShardingOnly(false);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>[] values) {
-        Preconditions.checkArgument(null != values && values.length > 0);
-        return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
-    }
-    
-    /**
-     * Get sharding value for database.
-     *
-     * @param logicTable logic table name
-     * @return sharding value for database
-     */
-    public ShardingValue getDatabaseShardingValue(final String logicTable) {
-        return databaseShardingValues.get(logicTable);
-    }
-    
-    /**
-     * Get sharding value for table.
-     *
-     * @param logicTable logic table name
-     * @return sharding value for table
-     */
-    public ShardingValue getTableShardingValue(final String logicTable) {
-        return tableShardingValues.get(logicTable);
+        HintManagerHolder.addTableShardingValue(logicTable, value);
     }
     
     /**
