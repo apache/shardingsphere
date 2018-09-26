@@ -191,7 +191,7 @@ objectTableSubstitution:
     
 oidClause:
     OBJECT IDENTIFIER IS
-    ( SYSTEM GENERATED | PRIMARY KEY )
+    ( SYSTEM GENERATED | primaryKey )
     ;
     
 oidIndexClause:
