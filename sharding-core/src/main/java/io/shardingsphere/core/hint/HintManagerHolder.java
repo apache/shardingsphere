@@ -133,7 +133,7 @@ public final class HintManagerHolder {
      */
     public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
         if (null == HINT_MANAGER_HOLDER.get() || !DATABASE_SHARDING_VALUES.containsKey(logicTable)) {
-            return Optional.<ShardingValue>absent();
+            return Optional.absent();
         }
         return Optional.of(getShardingValue(logicTable, DATABASE_SHARDING_VALUES.get(logicTable)));
     }
@@ -146,7 +146,7 @@ public final class HintManagerHolder {
      */
     public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
         if (null == HINT_MANAGER_HOLDER.get() || !TABLE_SHARDING_VALUES.containsKey(logicTable)) {
-            return Optional.<ShardingValue>absent();
+            return Optional.absent();
         }
         return Optional.of(getShardingValue(logicTable, TABLE_SHARDING_VALUES.get(logicTable)));
     }
