@@ -43,10 +43,10 @@ public final class HintManagerHolder {
     @Setter
     private static boolean databaseShardingOnly;
     
-    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
-    
     @Setter
     private static boolean isMasterRouteOnly;
+    
+    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
      * Set hint manager.
