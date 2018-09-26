@@ -73,13 +73,11 @@ public final class HintManagerHolder {
      * <p>The sharding operator is {@code =}</p>
      * When you need to assign the values to one certain sharding database, use this method to add sharding value for this database.
      *
-     * @param values sharding value
+     * @param value sharding value
      */
-    public static void setDatabaseShardingValue(final Comparable<?>... values) {
+    public static void setDatabaseShardingValue(final Comparable<?> value) {
         DATABASE_SHARDING_VALUES.clear();
-        for (Comparable<?> each : values) {
-            addDatabaseShardingValue(DB_TABLE_NAME, each);
-        }
+        addDatabaseShardingValue(DB_TABLE_NAME, value);
         databaseShardingOnly = true;
     }
     
