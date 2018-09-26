@@ -17,21 +17,9 @@
 
 package io.shardingsphere.core.api;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -42,13 +30,6 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
-    
-    private final Map<String, ShardingValue> databaseShardingValues = new HashMap<>();
-    
-    private final Map<String, ShardingValue> tableShardingValues = new HashMap<>();
-    
-    @Getter
-    private boolean masterRouteOnly;
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -70,8 +51,14 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
-        HintManagerHolder.setDatabaseShardingOnly(true);
+        HintManagerHolder.setDatabaseShardingValue(value);
+    }
+    
+    /**
+     * Set CRUD operation force route to master database only.
+     */
+    public void setMasterRouteOnly() {
+        HintManagerHolder.setMasterRouteOnly(true);
     }
     
     /**
@@ -83,22 +70,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
-        addDatabaseShardingValue(logicTable, ShardingOperator.EQUAL, value);
-    }
-    
-    /**
-     * Add sharding value for database.
-     *
-     * @param logicTable logic table name
-     * @param values sharding values
-     */
-    public void addDatabaseShardingValue(final String logicTable, final Comparable<?>... values) {
-        addDatabaseShardingValue(logicTable, ShardingOperator.IN, values);
-    }
-    
-    private void addDatabaseShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
-        HintManagerHolder.setDatabaseShardingOnly(false);
-        databaseShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
+        HintManagerHolder.addDatabaseShardingValue(logicTable, value);
     }
     
     /**
@@ -110,63 +82,7 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
-        addTableShardingValue(logicTable, ShardingOperator.EQUAL, value);
-    }
-    
-    /**
-     * Add sharding value for table.
-     *
-     * @param logicTable logic table name
-     * @param values sharding values
-     */
-    public void addTableShardingValue(final String logicTable, final Comparable<?>... values) {
-        addTableShardingValue(logicTable, ShardingOperator.IN, values);
-    }
-    
-    private void addTableShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
-        HintManagerHolder.setDatabaseShardingOnly(false);
-        tableShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>[] values) {
-        Preconditions.checkArgument(null != values && values.length > 0);
-        switch (operator) {
-            case EQUAL:
-            case IN:
-                return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
-            case BETWEEN:
-                return new RangeShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
-            default:
-                throw new UnsupportedOperationException(operator.getExpression());
-        }
-    }
-    
-    /**
-     * Get sharding value for database.
-     *
-     * @param logicTable logic table name
-     * @return sharding value for database
-     */
-    public ShardingValue getDatabaseShardingValue(final String logicTable) {
-        return databaseShardingValues.get(logicTable);
-    }
-    
-    /**
-     * Get sharding value for table.
-     *
-     * @param logicTable logic table name
-     * @return sharding value for table
-     */
-    public ShardingValue getTableShardingValue(final String logicTable) {
-        return tableShardingValues.get(logicTable);
-    }
-    
-    /**
-     * Set CRUD operation force route to master database only.
-     */
-    public void setMasterRouteOnly() {
-        masterRouteOnly = true;
+        HintManagerHolder.addTableShardingValue(logicTable, value);
     }
     
     @Override
