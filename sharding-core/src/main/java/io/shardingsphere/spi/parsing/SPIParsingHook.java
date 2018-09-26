@@ -15,39 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.executor;
-
-import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.routing.RouteUnit;
+package io.shardingsphere.spi.parsing;
 
 import java.util.ServiceLoader;
 
 /**
- * SQL Execution hook for SPI.
+ * Parsing hook for SPI.
  *
  * @author zhangliang
  */
-public final class SPISQLExecutionHook implements SQLExecutionHook {
+public final class SPIParsingHook implements ParsingHook {
     
-    private final ServiceLoader<SQLExecutionHook> serviceLoader = ServiceLoader.load(SQLExecutionHook.class);
+    private final ServiceLoader<ParsingHook> serviceLoader = ServiceLoader.load(ParsingHook.class);
     
     @Override
-    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
-        for (SQLExecutionHook each : serviceLoader) {
-            each.start(routeUnit, dataSourceMetaData, isTrunkThread);
+    public void start(final String sql) {
+        for (ParsingHook each : serviceLoader) {
+            each.start(sql);
         }
     }
     
     @Override
     public void finishSuccess() {
-        for (SQLExecutionHook each : serviceLoader) {
+        for (ParsingHook each : serviceLoader) {
             each.finishSuccess();
         }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (SQLExecutionHook each : serviceLoader) {
+        for (ParsingHook each : serviceLoader) {
             each.finishFailure(cause);
         }
     }

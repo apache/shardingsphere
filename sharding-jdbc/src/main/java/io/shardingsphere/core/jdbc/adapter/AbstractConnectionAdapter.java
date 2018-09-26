@@ -30,8 +30,8 @@ import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.core.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.spi.root.RootInvokeHook;
-import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
+import io.shardingsphere.spi.root.RootInvokeHook;
+import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;

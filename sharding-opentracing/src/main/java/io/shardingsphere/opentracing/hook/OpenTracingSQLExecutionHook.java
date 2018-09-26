@@ -24,7 +24,7 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
-import io.shardingsphere.core.spi.executor.SQLExecutionHook;
+import io.shardingsphere.spi.executor.SQLExecutionHook;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 

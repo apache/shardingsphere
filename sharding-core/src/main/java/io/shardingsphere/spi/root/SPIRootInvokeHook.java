@@ -15,37 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.parsing;
+package io.shardingsphere.spi.root;
 
 import java.util.ServiceLoader;
 
 /**
- * Parsing hook for SPI.
+ * Root invoke hook for SPI.
  *
  * @author zhangliang
  */
-public final class SPIParsingHook implements ParsingHook {
+public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private final ServiceLoader<ParsingHook> serviceLoader = ServiceLoader.load(ParsingHook.class);
+    private final ServiceLoader<RootInvokeHook> serviceLoader = ServiceLoader.load(RootInvokeHook.class);
     
     @Override
-    public void start(final String sql) {
-        for (ParsingHook each : serviceLoader) {
-            each.start(sql);
+    public void start() {
+        for (RootInvokeHook each : serviceLoader) {
+            each.start();
         }
     }
     
     @Override
-    public void finishSuccess() {
-        for (ParsingHook each : serviceLoader) {
-            each.finishSuccess();
-        }
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-        for (ParsingHook each : serviceLoader) {
-            each.finishFailure(cause);
+    public void finish(final int connectionCount) {
+        for (RootInvokeHook each : serviceLoader) {
+            each.finish(connectionCount);
         }
     }
 }
