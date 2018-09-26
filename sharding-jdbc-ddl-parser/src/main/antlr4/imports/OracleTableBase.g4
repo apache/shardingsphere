@@ -22,7 +22,7 @@ inlineConstraint:
     ( CONSTRAINT constraintName )?
     ( (NOT? NULL)
     | UNIQUE
-    | (PRIMARY KEY)
+    | primaryKey
     | referencesClause
     | (CHECK LEFT_PAREN expr RIGHT_PAREN)
     )
@@ -158,7 +158,7 @@ inlineRefConstraint:
 outOfLineConstraint:
       (CONSTRAINT constraintName )?
     ( (UNIQUE columnList )
-    | (PRIMARY KEY columnList) 
+    | (primaryKey columnList) 
     | (FOREIGN KEY columnList referencesClause)
     | (CHECK LEFT_PAREN expr RIGHT_PAREN )
     ) 
@@ -190,11 +190,14 @@ supplementalLogGrpClause:
 
 supplementalIdKeyClause:
     DATA
-     LEFT_PAREN ( ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY )
-        ( COMMA ( ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY ) )*
+     LEFT_PAREN supplementalIdKey
+        (COMMA supplementalIdKey)*
      RIGHT_PAREN 
     ;
-    
+ 
+supplementalIdKey:
+    ALL | primaryKey | UNIQUE | FOREIGN KEY
+    ;
 
 physicalProperties:
     ( (deferredSegmentCreation? segmentAttributesClause tableCompression?)
@@ -530,7 +533,7 @@ enableDisableClause:
     ( ENABLE | DISABLE )
     ( VALIDATE | NOVALIDATE )?
     ( UNIQUE columnList 
-    | PRIMARY KEY
+    | primaryKey
     | CONSTRAINT constraintName
     )
     ( usingIndexClause )?

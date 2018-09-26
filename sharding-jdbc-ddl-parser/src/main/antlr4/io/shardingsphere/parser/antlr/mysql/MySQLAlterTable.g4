@@ -66,7 +66,7 @@ dropIndexDef:
     ;
     
 dropPrimaryKey:
-    DROP PRIMARY KEY
+    DROP primaryKey
     ;
     
 renameIndex:

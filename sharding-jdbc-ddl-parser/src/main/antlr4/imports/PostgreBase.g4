@@ -75,7 +75,7 @@ columnConstraintOption:
     |(DEFAULT defaultExpr)
     |(GENERATED ( ALWAYS | BY DEFAULT ) AS IDENTITY ( LEFT_PAREN sequenceOptions RIGHT_PAREN )?)
     |(UNIQUE indexParameters)
-    |(PRIMARY KEY indexParameters)
+    |(primaryKey indexParameters)
     |(REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? (ON UPDATE action)?)
     ;
 
@@ -126,7 +126,7 @@ tableConstraint:
 tableConstraintOption:
     checkOption
     |(UNIQUE columnList indexParameters)
-    |(PRIMARY KEY columnList indexParameters)
+    |(primaryKey columnList indexParameters)
     |(EXCLUDE (usingIndexType)? LEFT_PAREN excludeParam (COMMA excludeParam)* RIGHT_PAREN  indexParameters (WHERE ( predicate ))?)
     |(FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON DELETE action )? (ON UPDATE action)?)
     ;

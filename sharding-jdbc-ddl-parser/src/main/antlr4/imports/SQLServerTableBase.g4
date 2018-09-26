@@ -147,10 +147,6 @@ primaryKeyUnique:
     | UNIQUE
     ;
     
-primaryKey:
-	PRIMARY KEY
-	;
-	
 diskTablePrimaryConstraintOption:     
     ( CLUSTERED | NONCLUSTERED )?   
     columnNameWithSortsWithParen

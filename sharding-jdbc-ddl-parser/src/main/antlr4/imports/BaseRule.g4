@@ -40,6 +40,10 @@ partitionName: ID;
 rewriteRuleName: ID;
 ownerName: ID;
 
+primaryKey:
+	PRIMARY KEY
+	;
+
 dataTypeLength:
     LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
     ;

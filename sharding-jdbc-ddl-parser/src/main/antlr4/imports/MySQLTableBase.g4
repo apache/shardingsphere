@@ -178,7 +178,7 @@ constraintDefinition:
     ;
     
 primaryKeyOption:    
-    PRIMARY KEY indexType? keyParts indexOption?
+    primaryKey indexType? keyParts indexOption?
     ;
     
 uniqueOption:    
