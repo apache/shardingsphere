@@ -44,9 +44,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
-    private final Multimap<String, ShardingValue> databaseShardingValues = HashMultimap.create();
+    private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
     
-    private final Multimap<String, ShardingValue> tableShardingValues = HashMultimap.create();
+    private final Multimap<String, Comparable<?>> tableShardingValues = HashMultimap.create();
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -81,22 +81,8 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
-        addDatabaseShardingValue(logicTable, ShardingOperator.EQUAL, value);
-    }
-    
-    /**
-     * Add sharding value for database.
-     *
-     * @param logicTable logic table name
-     * @param values sharding values
-     */
-    public void addDatabaseShardingValue(final String logicTable, final Comparable<?>... values) {
-        addDatabaseShardingValue(logicTable, ShardingOperator.IN, values);
-    }
-    
-    private void addDatabaseShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
+        databaseShardingValues.put(logicTable, value);
         HintManagerHolder.setDatabaseShardingOnly(false);
-        databaseShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
     }
     
     /**
@@ -127,17 +113,9 @@ public final class HintManager implements AutoCloseable {
     }
     
     @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>[] values) {
+    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>[] values) {
         Preconditions.checkArgument(null != values && values.length > 0);
-        switch (operator) {
-            case EQUAL:
-            case IN:
-                return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
-            case BETWEEN:
-                return new RangeShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
-            default:
-                throw new UnsupportedOperationException(operator.getExpression());
-        }
+        return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
     }
     
     /**
