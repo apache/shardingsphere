@@ -115,7 +115,7 @@ public final class ProxyContext {
         maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
-        skyWalkingEnable = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_SKYWALKING_ENABLED);
+        skyWalkingEnable = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPEN_TRACING_ENABLED);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
