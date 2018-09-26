@@ -78,15 +78,6 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Judge whether only database is sharding.
-     *
-     * @return database sharding or not
-     */
-    public static boolean isDatabaseShardingOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
-    }
-    
-    /**
      * Add sharding value for database.
      *
      * <p>The sharding operator is {@code =}</p>
@@ -97,6 +88,28 @@ public final class HintManagerHolder {
     public static void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
         DATABASE_SHARDING_VALUES.put(logicTable, value);
         databaseShardingOnly = false;
+    }
+    
+    /**
+     * Add sharding value for table.
+     *
+     * <p>The sharding operator is {@code =}</p>
+     *
+     * @param logicTable logic table name
+     * @param value sharding value
+     */
+    public static void addTableShardingValue(final String logicTable, final Comparable<?> value) {
+        TABLE_SHARDING_VALUES.put(logicTable, value);
+        databaseShardingOnly = false;
+    }
+    
+    /**
+     * Judge whether only database is sharding.
+     *
+     * @return database sharding or not
+     */
+    public static boolean isDatabaseShardingOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
     }
     
     /**
