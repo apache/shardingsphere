@@ -28,7 +28,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -116,9 +115,6 @@ public final class HintManagerHolder {
         return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
     }
     
-    
-    
-    
     @SuppressWarnings("unchecked")
     private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
         Preconditions.checkArgument(null != values && !values.isEmpty());
@@ -145,7 +141,10 @@ public final class HintManagerHolder {
      * @return table sharding value
      */
     public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
-        return null != HINT_MANAGER_HOLDER.get() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(logicTable)) : Optional.<ShardingValue>absent();
+        if (null == HINT_MANAGER_HOLDER.get() || !TABLE_SHARDING_VALUES.containsKey(logicTable)) {
+            return Optional.<ShardingValue>absent();
+        }
+        return Optional.of(getShardingValue(logicTable, TABLE_SHARDING_VALUES.get(logicTable)));
     }
     
     /**
