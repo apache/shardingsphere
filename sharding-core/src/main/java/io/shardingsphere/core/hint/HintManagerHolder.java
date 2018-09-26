@@ -45,11 +45,11 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
+    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
+    
     private static final Multimap<String, Comparable<?>> DATABASE_SHARDING_VALUES = HashMultimap.create();
     
     private static final Multimap<String, Comparable<?>> TABLE_SHARDING_VALUES = HashMultimap.create();
-    
-    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     @Setter
     private static boolean databaseShardingOnly;
