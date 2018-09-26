@@ -162,7 +162,7 @@ public final class HintManager implements AutoCloseable {
      * Set CRUD operation force route to master database only.
      */
     public void setMasterRouteOnly() {
-        masterRouteOnly = true;
+        HintManagerHolder.setMasterRouteOnly(true);
     }
     
     @Override
