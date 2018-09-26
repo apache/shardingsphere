@@ -72,7 +72,7 @@ public final class HintManagerHolder {
      *
      * @param value sharding value
      */
-    public void setDatabaseShardingValue(final Comparable<?> value) {
+    public static void setDatabaseShardingValue(final Comparable<?> value) {
         addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
         databaseShardingOnly = true;
     }
