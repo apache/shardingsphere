@@ -31,7 +31,6 @@ import io.shardingsphere.proxy.frontend.ShardingProxy;
 import io.shardingsphere.proxy.listener.ProxyListenerRegister;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -58,7 +57,6 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        ShardingTracer.init(new SkywalkingTracer());
         ProxyConfiguration proxyConfig = new ProxyYamlConfigurationLoader().load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
@@ -83,6 +81,7 @@ public final class Bootstrap {
     private static void startWithoutRegistryCenter(
             final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         ProxyContext.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
+        initOpenTracing();
         new ShardingProxy().start(port);
     }
     
@@ -94,7 +93,14 @@ public final class Bootstrap {
             }
             ProxyContext.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
+            initOpenTracing();
             new ShardingProxy().start(port);
+        }
+    }
+    
+    private static void initOpenTracing() {
+        if (ProxyContext.getInstance().isOpenTracingEnable()) {
+            ShardingTracer.init();
         }
     }
     

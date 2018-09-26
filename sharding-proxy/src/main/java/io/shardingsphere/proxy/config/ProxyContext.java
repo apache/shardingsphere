@@ -71,6 +71,8 @@ public final class ProxyContext {
     
     private TransactionType transactionType;
     
+    private boolean openTracingEnable;
+    
     private BackendNIOConfiguration backendNIOConfig;
     
     private boolean isCircuitBreak;
@@ -113,6 +115,7 @@ public final class ProxyContext {
         maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
+        openTracingEnable = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
         showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
