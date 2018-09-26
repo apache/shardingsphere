@@ -18,8 +18,8 @@
 package io.shardingsphere.opentracing.hook;
 
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
-import io.shardingsphere.core.spi.root.RootInvokeHook;
-import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
+import io.shardingsphere.spi.root.RootInvokeHook;
+import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

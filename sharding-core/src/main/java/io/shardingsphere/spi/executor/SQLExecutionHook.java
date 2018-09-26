@@ -15,30 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.parsing;
+package io.shardingsphere.spi.executor;
+
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.routing.RouteUnit;
 
 /**
- * Parsing hook.
+ * SQL Execution hook.
  *
  * @author zhangliang
  */
-public interface ParsingHook {
+public interface SQLExecutionHook {
     
     /**
-     * Handle when parse started.
-     *
-     * @param sql SQL to be parsed
+     * Handle when SQL execution started.
+     * 
+     * @param routeUnit route unit to be executed
+     * @param dataSourceMetaData data source meta data
+     * @param isTrunkThread is execution in trunk thread
      */
-    void start(String sql);
+    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
     
     /**
-     * Handle when parse finished success.
+     * Handle when SQL execution finished success.
      */
     void finishSuccess();
     
     /**
-     * Handle when parse finished failure.
-     * 
+     * Handle when SQL execution finished failure.
+     *
      * @param cause failure cause
      */
     void finishFailure(Exception cause);

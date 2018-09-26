@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.spi.root;
+package io.shardingsphere.spi.root;
 
 /**
  * Root invoke hook.

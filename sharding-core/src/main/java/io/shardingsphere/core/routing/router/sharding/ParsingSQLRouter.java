@@ -51,8 +51,8 @@ import io.shardingsphere.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
-import io.shardingsphere.core.spi.parsing.ParsingHook;
-import io.shardingsphere.core.spi.parsing.SPIParsingHook;
+import io.shardingsphere.spi.parsing.ParsingHook;
+import io.shardingsphere.spi.parsing.SPIParsingHook;
 import io.shardingsphere.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
