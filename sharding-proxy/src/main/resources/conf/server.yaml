@@ -20,5 +20,5 @@
 #  acceptor.size: 16  # The default value is available processors count * 2.
 #  executor.size: 16  # Infinite by default.
 #  proxy.transaction.enabled: false
-#  proxy.open.tracing.enabled: false
+#  proxy.opentracing.enabled: false
 #  sql.show: false

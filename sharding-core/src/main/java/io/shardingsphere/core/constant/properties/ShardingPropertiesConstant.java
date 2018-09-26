@@ -68,7 +68,7 @@ public enum ShardingPropertiesConstant {
     
     PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
-    PROXY_OPEN_TRACING_ENABLED("proxy.open.tracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     PROXY_BACKEND_USE_NIO("proxy.backend.use.nio", String.valueOf(Boolean.FALSE), boolean.class),
     
