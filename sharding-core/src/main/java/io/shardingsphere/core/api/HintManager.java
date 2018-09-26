@@ -48,10 +48,10 @@ public final class HintManager implements AutoCloseable {
      * <p>The sharding operator is {@code =}</p>
      * When you only need to sharding database, use this method to add database sharding value.
      *
-     * @param values sharding value
+     * @param value sharding value
      */
-    public void setDatabaseShardingValue(final Comparable<?>... values) {
-        HintManagerHolder.setDatabaseShardingValue(values);
+    public void setDatabaseShardingValue(final Comparable<?> value) {
+        HintManagerHolder.setDatabaseShardingValue(value);
     }
     
     /**
