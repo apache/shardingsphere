@@ -19,6 +19,8 @@ package io.shardingsphere.core.hint;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
@@ -39,6 +41,10 @@ public final class HintManagerHolder {
     public static final String DB_TABLE_NAME = "DB_TABLE_NAME";
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
+    
+    private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
+    
+    private final Multimap<String, Comparable<?>> tableShardingValues = HashMultimap.create();
     
     @Setter
     private static boolean databaseShardingOnly;
