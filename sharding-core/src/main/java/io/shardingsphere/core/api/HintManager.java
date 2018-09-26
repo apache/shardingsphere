@@ -19,6 +19,8 @@ package io.shardingsphere.core.api;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
@@ -42,9 +44,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
-    private final Map<String, ShardingValue> databaseShardingValues = new HashMap<>();
+    private final Multimap<String, ShardingValue> databaseShardingValues = HashMultimap.create();
     
-    private final Map<String, ShardingValue> tableShardingValues = new HashMap<>();
+    private final Multimap<String, ShardingValue> tableShardingValues = HashMultimap.create();
     
     /**
      * Get a new instance for {@code HintManager}.
