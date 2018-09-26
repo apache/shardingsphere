@@ -28,7 +28,7 @@ alterSpecification:
     | FORCE
     | lockOption
     | modifyColumn
-    | (ORDER BY columnName (COMMA columnName)* )+ 
+    | (ORDER BY columnName (COMMA columnName)*)+ 
     | renameIndex
     | renameTable
     | (WITHOUT|WITH) VALIDATION
