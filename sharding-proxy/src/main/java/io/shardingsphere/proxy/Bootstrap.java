@@ -81,7 +81,7 @@ public final class Bootstrap {
     private static void startWithoutRegistryCenter(
             final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         ProxyContext.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
-        initSkyWalking();
+        initOpenTracing();
         new ShardingProxy().start(port);
     }
     
@@ -93,13 +93,13 @@ public final class Bootstrap {
             }
             ProxyContext.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
-            initSkyWalking();
+            initOpenTracing();
             new ShardingProxy().start(port);
         }
     }
     
-    private static void initSkyWalking() {
-        if (ProxyContext.getInstance().isSkyWalkingEnable()) {
+    private static void initOpenTracing() {
+        if (ProxyContext.getInstance().isOpenTracingEnable()) {
             ShardingTracer.init();
         }
     }
