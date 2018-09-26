@@ -22,10 +22,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.api.HintManager;
+import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Arrays;
 
 /**
  * Hint manager holder.
@@ -112,6 +115,35 @@ public final class HintManagerHolder {
         return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
     }
     
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final Comparable<?>[] values) {
+        Preconditions.checkArgument(null != values && values.length > 0);
+        return new ListShardingValue(logicTable, shardingColumn, Arrays.asList(values));
+    }
+    
+    /**
+     * Get sharding value for database.
+     *
+     * @param logicTable logic table name
+     * @return sharding value for database
+     */
+    public ShardingValue getDatabaseShardingValue(final String logicTable) {
+        return databaseShardingValues.get(logicTable);
+    }
+    
+    /**
+     * Get sharding value for table.
+     *
+     * @param logicTable logic table name
+     * @return sharding value for table
+     */
+    public ShardingValue getTableShardingValue(final String logicTable) {
+        return tableShardingValues.get(logicTable);
+    }
+    
     /**
      * Get database sharding value.
      * 
@@ -133,6 +165,15 @@ public final class HintManagerHolder {
     }
     
     /**
+     * Get hint manager in current thread.
+     *
+     * @return hint manager in current thread
+     */
+    public static HintManager get() {
+        return HINT_MANAGER_HOLDER.get();
+    }
+    
+    /**
      * Adjust is force route to master database only or not.
      * 
      * @return is force route to master database only or not
@@ -151,13 +192,5 @@ public final class HintManagerHolder {
         databaseShardingOnly = false;
         isMasterRouteOnly = false;
     }
-    
-    /**
-     * Get hint manager in current thread.
-     * 
-     * @return hint manager in current thread
-     */
-    public static HintManager get() {
-        return HINT_MANAGER_HOLDER.get();
-    }
 }
+
