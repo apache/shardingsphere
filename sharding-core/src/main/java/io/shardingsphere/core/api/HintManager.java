@@ -94,7 +94,8 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
-        addTableShardingValue(logicTable, ShardingOperator.EQUAL, value);
+        tableShardingValues.put(logicTable, value);
+        HintManagerHolder.setDatabaseShardingOnly(false);
     }
     
     /**
@@ -108,8 +109,7 @@ public final class HintManager implements AutoCloseable {
     }
     
     private void addTableShardingValue(final String logicTable, final ShardingOperator operator, final Comparable<?>... values) {
-        HintManagerHolder.setDatabaseShardingOnly(false);
-        tableShardingValues.put(logicTable, getShardingValue(logicTable, HintManagerHolder.DB_COLUMN_NAME, operator, values));
+    
     }
     
     @SuppressWarnings("unchecked")
