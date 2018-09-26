@@ -15,28 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
+package io.shardingsphere.core.spi.executor;
 
-import java.sql.SQLException;
-import java.util.Collection;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
+import io.shardingsphere.core.routing.RouteUnit;
 
 /**
- * Sharding group execute callback.
- * 
+ * SQL Execution hook.
+ *
  * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+public interface SQLExecutionHook {
     
     /**
-     * Execute callback.
+     * Handle when SQL execution started.
      * 
-     * @param inputs input values
+     * @param routeUnit route unit to be executed
+     * @param dataSourceMetaData data source meta data
      * @param isTrunkThread is execution in trunk thread
-     * @return execute result
-     * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
+    
+    /**
+     * Handle when SQL execution finished success.
+     */
+    void finishSuccess();
+    
+    /**
+     * Handle when SQL execution finished failure.
+     *
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

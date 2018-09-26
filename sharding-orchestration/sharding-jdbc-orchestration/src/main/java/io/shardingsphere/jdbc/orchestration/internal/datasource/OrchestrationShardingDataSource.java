@@ -84,7 +84,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
      * Renew sharding data source.
      *
      * @param shardingEvent sharding configuration event bus event.
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     @Subscribe
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
@@ -95,9 +95,10 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
      * Renew disable dataSource names.
      *
      * @param disabledStateEventBusEvent jdbc disabled event bus event
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
         Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
         dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties());
     }

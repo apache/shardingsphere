@@ -19,9 +19,6 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.spi.event.parsing.ParsingEventHandlerLoader;
-import io.shardingsphere.core.spi.event.parsing.ParsingFinishEvent;
-import io.shardingsphere.core.spi.event.parsing.ParsingStartEvent;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
@@ -54,6 +51,8 @@ import io.shardingsphere.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
+import io.shardingsphere.core.spi.parsing.ParsingHook;
+import io.shardingsphere.core.spi.parsing.SPIParsingHook;
 import io.shardingsphere.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
@@ -83,19 +82,20 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
+    private final ParsingHook parsingHook = new SPIParsingHook();
+    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        ParsingEventHandlerLoader.getInstance().start(new ParsingStartEvent(logicSQL));
-        ParsingFinishEvent finishEvent = new ParsingFinishEvent();
+        parsingHook.start(logicSQL);
         try {
-            return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            parsingHook.finishSuccess();
+            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            finishEvent.setException(ex);
+            parsingHook.finishFailure(ex);
             throw ex;
-        } finally {
-            ParsingEventHandlerLoader.getInstance().finish(finishEvent);
         }
     }
     

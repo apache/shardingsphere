@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -37,7 +36,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Prepared statement executor.
@@ -99,8 +97,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
+        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), getSqlType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -125,8 +122,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public int executeUpdate() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), getSqlType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -153,8 +149,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public boolean execute() throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
+        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), getSqlType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {

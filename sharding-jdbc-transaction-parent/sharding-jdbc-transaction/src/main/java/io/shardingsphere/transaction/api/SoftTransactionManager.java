@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.api;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
+import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.transaction.api.config.SoftTransactionConfiguration;
 import io.shardingsphere.transaction.bed.BEDSoftTransaction;
 import io.shardingsphere.transaction.bed.sync.BestEffortsDeliveryListener;
@@ -102,8 +102,8 @@ public final class SoftTransactionManager {
         if (getCurrentTransaction().isPresent()) {
             throw new UnsupportedOperationException("Cannot support nested transaction.");
         }
-        ExecutorDataMap.getDataMap().put(TRANSACTION, result);
-        ExecutorDataMap.getDataMap().put(TRANSACTION_CONFIG, transactionConfig);
+        ShardingExecuteDataMap.getDataMap().put(TRANSACTION, result);
+        ShardingExecuteDataMap.getDataMap().put(TRANSACTION_CONFIG, transactionConfig);
         return result;
     }
     
@@ -113,7 +113,7 @@ public final class SoftTransactionManager {
      * @return transaction configuration from current thread
      */
     public static Optional<SoftTransactionConfiguration> getCurrentTransactionConfiguration() {
-        Object transactionConfig = ExecutorDataMap.getDataMap().get(TRANSACTION_CONFIG);
+        Object transactionConfig = ShardingExecuteDataMap.getDataMap().get(TRANSACTION_CONFIG);
         return (null == transactionConfig)
                 ? Optional.<SoftTransactionConfiguration>absent()
                 : Optional.of((SoftTransactionConfiguration) transactionConfig);
@@ -125,7 +125,7 @@ public final class SoftTransactionManager {
      * @return current transaction
      */
     public static Optional<AbstractSoftTransaction> getCurrentTransaction() {
-        Object transaction = ExecutorDataMap.getDataMap().get(TRANSACTION);
+        Object transaction = ShardingExecuteDataMap.getDataMap().get(TRANSACTION);
         return (null == transaction)
                 ? Optional.<AbstractSoftTransaction>absent()
                 : Optional.of((AbstractSoftTransaction) transaction);
@@ -135,7 +135,7 @@ public final class SoftTransactionManager {
      * Close transaction manager from current thread.
      */
     static void closeCurrentTransactionManager() {
-        ExecutorDataMap.getDataMap().put(TRANSACTION, null);
-        ExecutorDataMap.getDataMap().put(TRANSACTION_CONFIG, null);
+        ShardingExecuteDataMap.getDataMap().put(TRANSACTION, null);
+        ShardingExecuteDataMap.getDataMap().put(TRANSACTION_CONFIG, null);
     }
 }

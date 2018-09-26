@@ -23,6 +23,7 @@ import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Hint manager holder.
@@ -39,6 +40,9 @@ public final class HintManagerHolder {
     
     public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
     
+    @Setter
+    private static boolean databaseShardingOnly;
+    
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
@@ -49,6 +53,15 @@ public final class HintManagerHolder {
     public static void setHintManager(final HintManager hintManager) {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "HintManagerHolder has previous value, please clear first.");
         HINT_MANAGER_HOLDER.set(hintManager);
+    }
+    
+    /**
+     * Judge whether only database is sharding.
+     *
+     * @return database sharding or not
+     */
+    public static boolean isDatabaseShardingOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
     }
     
     /**
@@ -78,15 +91,6 @@ public final class HintManagerHolder {
      */
     public static boolean isMasterRouteOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
-    }
-    
-    /**
-     * Adjust database sharding only.
-     * 
-     * @return database sharding only or not
-     */
-    public static boolean isDatabaseShardingOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
     }
     
     /**

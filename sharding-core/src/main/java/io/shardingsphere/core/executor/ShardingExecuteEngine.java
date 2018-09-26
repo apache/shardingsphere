@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -90,12 +91,14 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     private <I, O> Collection<ListenableFuture<O>> asyncExecute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> callback) {
         Collection<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
+        final Map<String, Object> dataMap = ShardingExecuteDataMap.getDataMap();
         for (final I each : inputs) {
             result.add(executorService.submit(new Callable<O>() {
                 
                 @Override
                 public O call() throws SQLException {
-                    return callback.execute(each);
+                    ShardingExecuteDataMap.setDataMap(dataMap);
+                    return callback.execute(each, false);
                 }
             }));
         }
@@ -103,7 +106,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     private <I, O> O syncExecute(final I input, final ShardingExecuteCallback<I, O> callback) throws SQLException {
-        return callback.execute(input);
+        return callback.execute(input, true);
     }
     
     private <O> List<O> getResults(final O firstResult, final Collection<ListenableFuture<O>> restFutures) throws SQLException {
@@ -164,17 +167,19 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     private <I, O> ListenableFuture<Collection<O>> asyncGroupExecute(final ShardingExecuteGroup<I> inputGroup, final ShardingGroupExecuteCallback<I, O> callback) {
+        final Map<String, Object> dataMap = ShardingExecuteDataMap.getDataMap();
         return executorService.submit(new Callable<Collection<O>>() {
             
             @Override
             public Collection<O> call() throws SQLException {
-                return callback.execute(inputGroup.getInputs());
+                ShardingExecuteDataMap.setDataMap(dataMap);
+                return callback.execute(inputGroup.getInputs(), false);
             }
         });
     }
     
     private <I, O> Collection<O> syncGroupExecute(final ShardingExecuteGroup<I> executeGroup, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
-        return callback.execute(executeGroup.getInputs());
+        return callback.execute(executeGroup.getInputs(), true);
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {

@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.jdbc.core.connection.ShardingConnection;
@@ -42,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -158,8 +156,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), getSqlType(), isExceptionThrown, dataMap) {
+        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), getSqlType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {

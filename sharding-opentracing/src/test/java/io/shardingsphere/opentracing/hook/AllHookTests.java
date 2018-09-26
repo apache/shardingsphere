@@ -15,28 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
+package io.shardingsphere.opentracing.hook;
 
-import java.sql.SQLException;
-import java.util.Collection;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Sharding group execute callback.
- * 
- * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
- */
-public interface ShardingGroupExecuteCallback<I, O> {
-    
-    /**
-     * Execute callback.
-     * 
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @return execute result
-     * @throws SQLException throw when execute failure
-     */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+@RunWith(Suite.class)
+@SuiteClasses({
+        OpenTracingRootInvokeHookTest.class, 
+        OpenTracingParsingHookTest.class, 
+        OpenTracingSQLExecutionHookTest.class 
+})
+public final class AllHookTests {
 }

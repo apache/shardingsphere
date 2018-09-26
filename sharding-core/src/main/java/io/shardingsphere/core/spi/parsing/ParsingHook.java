@@ -15,28 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
-
-import java.sql.SQLException;
-import java.util.Collection;
+package io.shardingsphere.core.spi.parsing;
 
 /**
- * Sharding group execute callback.
- * 
+ * Parsing hook.
+ *
  * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+public interface ParsingHook {
     
     /**
-     * Execute callback.
-     * 
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @return execute result
-     * @throws SQLException throw when execute failure
+     * Handle when parse started.
+     *
+     * @param sql SQL to be parsed
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+    void start(String sql);
+    
+    /**
+     * Handle when parse finished success.
+     */
+    void finishSuccess();
+    
+    /**
+     * Handle when parse finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

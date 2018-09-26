@@ -15,28 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
-
-import java.sql.SQLException;
-import java.util.Collection;
+package io.shardingsphere.core.spi.root;
 
 /**
- * Sharding group execute callback.
- * 
+ * Root invoke hook.
+ *
  * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+public interface RootInvokeHook {
     
     /**
-     * Execute callback.
-     * 
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @return execute result
-     * @throws SQLException throw when execute failure
+     * Handle when root invoke started.
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+    void start();
+    
+    /**
+     * Handle when root invoke finished.
+     * 
+     * @param connectionCount connection count
+     */
+    void finish(int connectionCount);
 }

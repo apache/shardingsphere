@@ -15,28 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
+package io.shardingsphere.core.spi.root;
 
-import java.sql.SQLException;
-import java.util.Collection;
+import java.util.ServiceLoader;
 
 /**
- * Sharding group execute callback.
- * 
+ * Root invoke hook for SPI.
+ *
  * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    /**
-     * Execute callback.
-     * 
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @return execute result
-     * @throws SQLException throw when execute failure
-     */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+    private static final ServiceLoader<RootInvokeHook> SERVICE_LOADER = ServiceLoader.load(RootInvokeHook.class);
+    
+    @Override
+    public void start() {
+        for (RootInvokeHook each : SERVICE_LOADER) {
+            each.start();
+        }
+    }
+    
+    @Override
+    public void finish(final int connectionCount) {
+        for (RootInvokeHook each : SERVICE_LOADER) {
+            each.finish(connectionCount);
+        }
+    }
 }

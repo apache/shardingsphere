@@ -22,7 +22,8 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.core.spi.root.RootInvokeHandlerLoader;
+import io.shardingsphere.core.spi.root.RootInvokeHook;
+import io.shardingsphere.core.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.proxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.proxy.config.ProxyContext;
 import io.shardingsphere.proxy.frontend.common.FrontendHandler;
@@ -59,6 +60,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     private final EventLoopGroup eventLoopGroup;
     
     private final AuthorityHandler authorityHandler = new AuthorityHandler();
+    
+    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
@@ -113,7 +116,8 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         
         @Override
         public void run() {
-            RootInvokeHandlerLoader.getInstance().start();
+            rootInvokeHook.start();
+            int connectionSize = 0;
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection()) {
                 setBackendConnection(backendConnection);
@@ -128,14 +132,16 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                 if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
                     writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
                 }
+                connectionSize = backendConnection.getConnectionSize();
             } catch (final SQLException ex) {
                 context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
                 context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            } finally {
+                rootInvokeHook.finish(connectionSize);
             }
-            RootInvokeHandlerLoader.getInstance().finish();
         }
         
         private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {

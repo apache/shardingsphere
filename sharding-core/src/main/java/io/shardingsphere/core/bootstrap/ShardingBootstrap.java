@@ -15,28 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
+package io.shardingsphere.core.bootstrap;
 
-import java.sql.SQLException;
-import java.util.Collection;
+import io.shardingsphere.core.event.ShardingEventListenerRegistrySPILoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Sharding group execute callback.
- * 
+ * Sharding bootstrap.
+ *
  * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingBootstrap {
     
     /**
-     * Execute callback.
-     * 
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @return execute result
-     * @throws SQLException throw when execute failure
+     * Initialize sharding bootstrap.
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+    public static void init() {
+        ShardingEventListenerRegistrySPILoader.registerListeners();
+    }
 }

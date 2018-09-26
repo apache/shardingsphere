@@ -21,13 +21,13 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
-import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorDataMap;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
@@ -64,7 +64,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL Execute engine for JDBC.
@@ -97,9 +96,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType() ? new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery())
-                : new SQLExecutePrepareTemplate(ProxyContext.getInstance().getMaxConnectionsSizePerQuery(), BackendExecutorContext.getInstance().getExecuteEngine());
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine());
+        int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMaxConnectionsSizePerQuery();
+        ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
+        sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType()
+                ? new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery, executeEngine);
+        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     }
     
     @SuppressWarnings("unchecked")
@@ -108,12 +109,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         SQLType sqlType = routeResult.getSqlStatement().getType();
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys),
-                new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys));
+                new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys),
+                new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -197,8 +197,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         private boolean hasMetaData;
         
-        private FirstProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
+        private FirstProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
@@ -219,8 +219,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         private final boolean isReturnGeneratedKeys;
         
-        private ProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
+        private ProxyJDBCExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
