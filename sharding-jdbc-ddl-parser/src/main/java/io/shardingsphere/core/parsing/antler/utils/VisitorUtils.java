@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.google.common.base.Optional;
 
@@ -58,7 +57,7 @@ public class VisitorUtils {
             int pos = name.lastIndexOf(dotString);
             String literals = null;
             if (pos > 0) {
-                literals = name.substring(pos+dotString.length() + 1);
+                literals = name.substring(pos + dotString.length());
             } else {
                 pos = 0;
                 literals = name;
@@ -137,15 +136,22 @@ public class VisitorUtils {
      *            DDL root node of syntax tree
      */
     public static void parseAddColumn(final AlterTableStatement statement, final ParseTree ddlRootNode) {
-        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(ddlRootNode, "columnDefinition");
-        if (null == columnNodes) {
+        List<ParseTree> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ddlRootNode, "addColumn");
+        if (null == addColumnCtxs) {
             return;
         }
 
-        for (final ParseTree each : columnNodes) {
-            ColumnDefinition column = parseColumnDefinition(each);
-            if (null != column) {
-                statement.getAddColumns().add(column);
+        for (ParseTree each : addColumnCtxs) {
+            List<ParseTree> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(each, "columnDefinition");
+            if (null == columnDefinitionCtxs) {
+                continue;
+            }
+
+            for (ParseTree columnDefinitionCtx : columnDefinitionCtxs) {
+                ColumnDefinition column = parseColumnDefinition(columnDefinitionCtx);
+                if (null != column) {
+                    statement.getAddColumns().add(column);
+                }
             }
         }
     }
@@ -164,7 +170,7 @@ public class VisitorUtils {
             return;
         }
 
-        for(ParseTree each : dropColumnCtxs) {
+        for (ParseTree each : dropColumnCtxs) {
             List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(each, "columnName");
             if (null == columnNodes) {
                 continue;
@@ -174,9 +180,9 @@ public class VisitorUtils {
                 statement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }
-        
+
     }
-    
+
     /**
      * Parse alter table modify column nodes.
      * 
@@ -188,10 +194,10 @@ public class VisitorUtils {
     public static void parseModifyColumn(final AlterTableStatement statement, final ParseTree ddlRootNode) {
         ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ddlRootNode,
                 "modifyColumn");
-        if(null == modifyColumnCtx) {
+        if (null == modifyColumnCtx) {
             return;
         }
-        
+
         ColumnDefinition column = parseColumnDefinition(modifyColumnCtx);
         if (null != column) {
             statement.getUpdateColumns().put(column.getName(), column);
@@ -207,7 +213,7 @@ public class VisitorUtils {
      *            DDL root node of syntax tree
      */
     public static void parseDropIndex(final AlterTableStatement statement, final ParseTree ddlRootNode) {
-        
+
     }
 
     /**
@@ -361,38 +367,39 @@ public class VisitorUtils {
             return null;
         }
 
-        ParserRuleContext columnNameNode = (ParserRuleContext) (ParserRuleContext) TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                "columnName");
-        
+        ParserRuleContext columnNameNode = (ParserRuleContext) (ParserRuleContext) TreeUtils
+                .getFirstChildByRuleName(columnDefinitionNode, "columnName");
+
         if (null == columnNameNode) {
             return null;
         }
 
         ParserRuleContext dataTypeCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
                 "dataType");
-        
+
         String typeName = null;
         if (dataTypeCtx != null) {
             typeName = dataTypeCtx.getChild(0).getText();
         }
 
         Integer length = null;
-        
+
         ParserRuleContext dataTypeLengthCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(dataTypeCtx,
                 "dataTypeLength");
-        
+
         if (null != dataTypeLengthCtx) {
-           if(dataTypeLengthCtx.getChildCount() >= 3) {
-               try {
-                   length = Integer.parseInt(dataTypeLengthCtx.getChild(1).getText());
-               } catch (NumberFormatException e) {
-                   // just for checksty
-                   length = null;
-               }
-           }
+            if (dataTypeLengthCtx.getChildCount() >= 3) {
+                try {
+                    length = Integer.parseInt(dataTypeLengthCtx.getChild(1).getText());
+                } catch (NumberFormatException e) {
+                    // just for checksty
+                    length = null;
+                }
+            }
         }
 
-        TerminalNode primaryKeyNode = TreeUtils.getFirstTerminalByType(columnDefinitionNode, "PRIMARY");
+        ParserRuleContext primaryKeyNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
+                "primaryKey");
         boolean primaryKey = false;
         if (null != primaryKeyNode) {
             primaryKey = true;
