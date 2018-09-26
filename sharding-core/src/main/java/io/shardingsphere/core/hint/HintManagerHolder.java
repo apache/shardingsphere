@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.api.HintManager;
 import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -44,6 +45,10 @@ public final class HintManagerHolder {
     private static boolean databaseShardingOnly;
     
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
+    
+    @Getter
+    @Setter
+    private boolean masterRouteOnly;
     
     /**
      * Set hint manager.
