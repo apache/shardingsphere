@@ -46,9 +46,10 @@
 ### API调整
 
 1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) 调整Orchestration模块Maven坐标
-1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) 修改Sharding + Master-slave配置的Spring namespace xsd
+1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) 调整数据分片和读写分离的Spring命名空间
 1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) 调整Hint API
-1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) 精炼整体包结构
+1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) 调整包结构
+1. [ISSUE #1305](https://github.com/sharding-sphere/sharding-sphere/issues/1305) 废弃并删除sharding-jdbc-transaction-parent模块
 
 
 ### 缺陷修正
