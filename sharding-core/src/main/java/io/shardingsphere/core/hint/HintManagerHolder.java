@@ -68,15 +68,17 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Add sharding value for database sharding only.
+     * Add sharding value for one certain sharding database.
      *
      * <p>The sharding operator is {@code =}</p>
-     * When you only need to sharding database, use this method to add database sharding value.
+     * When you need to assign the values to one certain sharding database, use this method to add sharding value for this database.
      *
-     * @param value sharding value
+     * @param values sharding value
      */
-    public static void setDatabaseShardingValue(final Comparable<?> value) {
-        addDatabaseShardingValue(DB_TABLE_NAME, value);
+    public static void setDatabaseShardingValue(final Comparable<?>... values) {
+        for (Comparable<?> each : values) {
+            addDatabaseShardingValue(DB_TABLE_NAME, each);
+        }
         databaseShardingOnly = true;
     }
     
@@ -113,6 +115,15 @@ public final class HintManagerHolder {
      */
     public static boolean isDatabaseShardingOnly() {
         return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
+    }
+    
+    /**
+     * Judge whether it is routed to master database or not.
+     *
+     * @return is force route to master database only or not
+     */
+    public static boolean isMasterRouteOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && isMasterRouteOnly;
     }
     
     @SuppressWarnings("unchecked")
@@ -157,15 +168,6 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Adjust is force route to master database only or not.
-     * 
-     * @return is force route to master database only or not
-     */
-    public static boolean isMasterRouteOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && isMasterRouteOnly;
-    }
-    
-    /**
      * Clear hint manager for current thread-local.
      */
     public static void clear() {
@@ -176,4 +178,3 @@ public final class HintManagerHolder {
         isMasterRouteOnly = false;
     }
 }
-
