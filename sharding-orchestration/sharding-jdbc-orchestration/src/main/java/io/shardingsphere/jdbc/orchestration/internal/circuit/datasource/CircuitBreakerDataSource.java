@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.circuit.datasource;
 
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 
 import java.io.PrintWriter;

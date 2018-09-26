@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.spring;
 
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.tools.RunScript;

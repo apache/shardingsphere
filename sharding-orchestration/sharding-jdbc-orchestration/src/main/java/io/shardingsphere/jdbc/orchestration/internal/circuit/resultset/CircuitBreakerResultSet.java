@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.circuit.resultset;
 
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
 import java.io.Reader;

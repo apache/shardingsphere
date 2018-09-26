@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.circuit.statement;
 
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import lombok.Getter;
 

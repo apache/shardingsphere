@@ -18,7 +18,7 @@
 package io.shardingsphere.jdbc.orchestration.spring;
 
 import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.jdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.spring.fixture.IncrementKeyGenerator;

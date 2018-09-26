@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.internal.circuit.connection;
 
-import io.shardingsphere.core.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.statement.CircuitBreakerPreparedStatement;
 import io.shardingsphere.jdbc.orchestration.internal.circuit.statement.CircuitBreakerStatement;

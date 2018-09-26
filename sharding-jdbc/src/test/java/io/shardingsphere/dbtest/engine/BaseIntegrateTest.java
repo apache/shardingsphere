@@ -18,10 +18,10 @@
 package io.shardingsphere.dbtest.engine;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
-import io.shardingsphere.core.api.yaml.YamlShardingDataSourceFactory;
+import io.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;

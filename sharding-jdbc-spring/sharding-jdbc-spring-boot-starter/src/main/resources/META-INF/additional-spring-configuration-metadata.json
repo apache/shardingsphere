@@ -64,7 +64,7 @@
     {
       "name": "sharding.jdbc.datasource",
       "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>",
-      "sourceType": "io.shardingsphere.core.util.DataSourceUtil"
+      "sourceType": "io.shardingsphere.shardingjdbc.util.DataSourceUtil"
     },
     {
       "sourceType": "io.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfiguration",

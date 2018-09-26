@@ -18,10 +18,10 @@
 package io.shardingsphere.jdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.MasterSlaveDataSourceFactory;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
+import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.util.DataSourceUtil;
+import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
 import io.shardingsphere.jdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.jdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import io.shardingsphere.jdbc.spring.boot.util.PropertyUtil;

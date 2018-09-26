@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.orchestration.spring.datasource;
 
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
 

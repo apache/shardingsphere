@@ -17,7 +17,7 @@
 
 package io.shardingsphere.jdbc.spring;
 
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.jdbc.spring.fixture.DecrementKeyGenerator;
 import io.shardingsphere.jdbc.spring.fixture.IncrementKeyGenerator;

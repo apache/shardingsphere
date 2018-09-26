@@ -19,10 +19,10 @@ package io.shardingsphere.jdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.DataSourceUtil;
+import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;

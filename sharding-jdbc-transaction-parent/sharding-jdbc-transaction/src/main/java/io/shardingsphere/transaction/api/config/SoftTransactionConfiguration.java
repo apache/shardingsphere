@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.api.config;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.jdbc.core.datasource.ShardingDataSource;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.transaction.constants.TransactionLogDataSourceType;
 import io.shardingsphere.transaction.datasource.TransactionLogDataSource;
 import io.shardingsphere.transaction.datasource.impl.MemoryTransactionLogDataSource;
