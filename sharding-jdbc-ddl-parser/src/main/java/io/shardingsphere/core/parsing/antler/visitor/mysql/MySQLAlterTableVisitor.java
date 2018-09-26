@@ -19,12 +19,48 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
         visitDropIndex(statement, rootNode);
         visitAddPrimaryKey(statement, rootNode);
         
+        visitChangeColumn(statement, rootNode);
         VisitorUtils.parseModifyColumn(statement, rootNode);
         VisitorUtils.parseRenameIndex(statement, rootNode);
         VisitorUtils.parseAddPrimaryKey(statement, rootNode);
         VisitorUtils.parseDropPrimaryKey(statement, rootNode);
     }
     
+    /**
+     * Parse alter table change column node.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param rootNode
+     *            root node of syntax tree
+     */
+    public static void visitChangeColumn(final AlterTableStatement statement, final ParseTree rootNode) {
+        ParserRuleContext changeColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+                "changeColumn");
+        if(null == changeColumnCtx) {
+            return;
+        }
+        
+        ParserRuleContext oldColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
+                "columnName");
+        
+        if(null == oldColumnCtx) {
+            return;
+        }
+        
+        ParserRuleContext columnDefinitionCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
+                "columnDefinition");
+        
+        if(null == columnDefinitionCtx) {
+            return;
+        }
+        
+        ColumnDefinition column = VisitorUtils.parseColumnDefinition(columnDefinitionCtx);
+        if (null != column) {
+            statement.getUpdateColumns().remove(oldColumnCtx.getText());
+            statement.getUpdateColumns().put(column.getName(), column);
+        }
+    }
     
     /**
      * Visit add index node.
