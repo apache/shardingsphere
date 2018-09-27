@@ -30,10 +30,6 @@ createDefinition:
     | tableConstraint
     | LIKE tableName likeOption*
      ;
-     
-columnDefinition:
-	(columnName dataType collateClause? columnConstraint*)
-	;
 	
 likeOption:
     (INCLUDING | EXCLUDING )
