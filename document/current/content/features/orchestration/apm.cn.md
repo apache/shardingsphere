@@ -23,7 +23,7 @@ weight = 4
 
 * 通过读取系统参数注入APM系统提供的Tracer实现类
 ```
-    启动时添加参数：-Dshardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    启动时添加参数：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
     调用初始化方法：ShardingTracer.init()                          
 ```
 

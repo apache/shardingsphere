@@ -23,7 +23,7 @@ If user want to use other APM systems which support [OpenTracing] (http://opentr
 
 * Inject the Tracer implementation class through System.properties
 ```
-    System.Properties：-Dshardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    System.Properties：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
     mehtod：ShardingTracer.init()                          
 ```
 
