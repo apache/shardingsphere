@@ -2,28 +2,29 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
+       xmlns:orchestration="http://shardingsphere.io/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/tx 
-                        http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd">
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://shardingsphere.io/schema/shardingsphere/orchestration
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.mybatis" />
 
-    <sharding:data-source id="shardingDatabaseTableDataSource" registry-center-ref="regCenter" />
+    <orchestration:sharding-data-source id="shardingDatabasesTablesDataSource" registry-center-ref="regCenter" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="shardingDatabaseTableDataSource" />
+        <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shardingDatabaseTableDataSource"/>
+        <property name="dataSource" ref="shardingDatabasesTablesDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
     

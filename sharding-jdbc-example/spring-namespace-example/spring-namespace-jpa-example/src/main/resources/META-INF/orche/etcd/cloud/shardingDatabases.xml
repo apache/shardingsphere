@@ -14,9 +14,9 @@
                         http://shardingsphere.io/schema/shardingsphere/orchestration
                         http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="classpath*:META-INF/orche/etcd/regCenter.xml" />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
-
-    <orchestration:sharding-data-source id="shardingDatabasesDataSource" registry-center-ref="regCenter"/>
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
+    
+    <orchestration:sharding-data-source id="shardingDatabasesDataSource" registry-center-ref="regCenter" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDatabasesDataSource" />

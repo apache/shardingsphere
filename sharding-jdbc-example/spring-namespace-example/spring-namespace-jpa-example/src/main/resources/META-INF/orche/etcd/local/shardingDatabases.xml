@@ -53,7 +53,6 @@
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.fixture.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
-    
     <sharding:data-source id="realShardingDatabasesDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
@@ -62,6 +61,5 @@
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
-
     <orchestraion:sharding-data-source id="shardingDatabasesDataSource" data-source-ref="realShardingDatabasesDataSource" registry-center-ref="regCenter" overwrite="true" />
 </beans>

@@ -14,18 +14,11 @@
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.mybatis" />
     
-    <!--<bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">-->
-        <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>-->
-        <!--<property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>-->
-        <!--<property name="username" value="root"/>-->
-        <!--<property name="password" value=""/>-->
-    <!--</bean>-->
-
     <bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
-        <property name="url" value="jdbc:sqlserver://10.222.16.144:1433;DatabaseName=test"/>
-        <property name="username" value="sa"/>
-        <property name="password" value="Jdbc1234"/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
     </bean>
     
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.mybatis.fixtrue.algorithm.PreciseModuloTableShardingAlgorithm" />
