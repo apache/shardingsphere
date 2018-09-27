@@ -1,17 +1,32 @@
+/*
+ * Copyright 2016-2018 shardingsphere.io.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingsphere.core.parsing.antler.visitor.postgre;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
-import io.shardingsphere.core.parsing.antler.visitor.AlterTableVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.AddPrimaryKeyVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.ModifyColumnVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.RenameColumnVisitor;
+import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 
 public class PostgreAlterTableVisitor extends AlterTableVisitor {
-
-    @Override
-    protected void visitPrivateTree(final AlterTableStatement statement, final ParseTree rootNode) {
-        VisitorUtils.visitAddPrimaryKey(statement, rootNode, "alterTableAddConstraint");
-        VisitorUtils.visitRenameColumn(statement, rootNode);
-        VisitorUtils.visitModifyColumn(statement, rootNode);
+    public PostgreAlterTableVisitor() {
+        super();
+        addVisitor(new AddPrimaryKeyVisitor("alterTableAddConstraint"));
+        addVisitor(new ModifyColumnVisitor());
+        addVisitor(new RenameColumnVisitor());
     }
 }

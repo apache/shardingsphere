@@ -1,103 +1,31 @@
+/*
+ * Copyright 2016-2018 shardingsphere.io.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
 package io.shardingsphere.core.parsing.antler.visitor.sqlserver;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.visitor.AlterTableVisitor;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerAddIndexVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerAddPrimaryKeyVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerDropIndexVisitor;
+import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 
 public class SQLServerAlterTableVisitor extends AlterTableVisitor {
-    protected void visitPrivateTree(final AlterTableStatement statement, final ParseTree rootNode) {
-        visitAddIndex(statement, rootNode);
-        visitDropIndex(statement, rootNode);
-        visitAddPrimaryKey(statement, rootNode);//drop primary key need use drop constraint
-    }
-
-    /**
-     * Visit add index node.
-     * 
-     * @param statement
-     *            statement parse result
-     * @param ancestorNode
-     *            ancestor of index node
-     * @return indexName node
-     */
-    protected void visitAddIndex(final AlterTableStatement statement, final ParseTree ancestorNode) {
-        ParserRuleContext indexDefOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "addColumn");
-        if (null != indexDefOptionNode) {
-            ParserRuleContext indexNameNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(indexDefOptionNode,
-                    "indexName");
-            if (null != indexNameNode) {
-                statement.getSqlTokens().add(new IndexToken(indexNameNode.getStart().getStartIndex(),
-                        indexNameNode.getText(), statement.getTables().getSingleTableName()));
-            }
-        }
-    }
-
-    /**
-     * Visit drop index node.
-     * 
-     * @param statement
-     *            statement parse result
-     * @param ancestorNode
-     *            ancestor of index node
-     * @return indexName node
-     */
-    protected void visitDropIndex(final AlterTableStatement statement, final ParseTree ancestorNode) {
-        ParserRuleContext indexDefOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "alterDropIndex");
-        if (null != indexDefOptionNode) {
-            ParserRuleContext indexNameNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(indexDefOptionNode,
-                    "indexName");
-            if (null != indexNameNode) {
-                statement.getSqlTokens().add(new IndexToken(indexNameNode.getStart().getStartIndex(),
-                        indexNameNode.getText(), statement.getTables().getSingleTableName()));
-            }
-        }
-    }
-
-    /**
-     * Visit drop index node.
-     * 
-     * @param statement
-     *            statement parse result
-     * @param ancestorNode
-     *            ancestor of index node
-     * @return indexName node
-     */
-    protected void visitAddPrimaryKey(final AlterTableStatement statement, final ParseTree ancestorNode) {
-        ParserRuleContext addColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "addColumn");
-
-        if (null == addColumnCtx) {
-            return;
-        }
-
-        List<ParseTree> alterColumnAddOptionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx,
-                "alterColumnAddOption");
-
-        if (null == alterColumnAddOptionCtxs) {
-            return;
-        }
-
-        for (ParseTree each : alterColumnAddOptionCtxs) {
-            ParserRuleContext primaryKeyNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(each,
-                    "primaryKey");
-            if (null == primaryKeyNode) {
-                continue;
-            }
-
-            List<ParseTree> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(each, "columnName");
-            for (ParseTree columnNameCtx : columnNameCtxs) {
-                statement.getUpdateColumns().put(columnNameCtx.getText(),
-                        new ColumnDefinition(columnNameCtx.getText(), null, null, true));
-            }
-        }
+    public SQLServerAlterTableVisitor() {
+        addVisitor(new SQLServerAddIndexVisitor()); 
+        addVisitor(new SQLServerDropIndexVisitor());
+        addVisitor(new SQLServerAddPrimaryKeyVisitor());
     }
 }

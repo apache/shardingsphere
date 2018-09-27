@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.core.parsing.antler;
 
 import org.antlr.v4.runtime.CommonToken;
