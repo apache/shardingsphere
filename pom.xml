@@ -7,7 +7,6 @@
     
     <modules>
         <module>sharding-jdbc-example</module>
-        <module>sharding-jdbc-transaction-example</module>
         <module>sharding-proxy-example</module>
     </modules>
     

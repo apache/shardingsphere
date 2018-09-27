@@ -2,10 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-sphere-example</artifactId>
+        <artifactId>sharding-jdbc-example</artifactId>
         <version>3.0.0.M4-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-transaction-example</artifactId>
+    <artifactId>transaction-example</artifactId>
     
     <dependencies>
         <dependency>

@@ -21,27 +21,12 @@ import io.shardingsphere.example.transaction.fixture.service.DemoService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-public class LocalTransactionMybatisMultiThreadMain {
-    public static void main(final String[] args) throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(10);
+public class LocalTransactionMybatisMain {
+    
+    public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/shardingDatabasesTables.xml")) {
             final DemoService demoService = applicationContext.getBean(DemoService.class);
-            ExecutorService executorService = Executors.newFixedThreadPool(5);
-            for (int i = 0; i < 10; i++) {
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        demoService.demo();
-                        latch.countDown();
-                    }
-                });
-            }
-            latch.await();
-            executorService.shutdown();
+            demoService.demo();
         }
     }
 }
