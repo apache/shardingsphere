@@ -41,7 +41,7 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:oracle:thin:@/{0,2}([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)");
+    private final Pattern pattern = Pattern.compile("jdbc:oracle:thin:@/{0,2}([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
     public OracleDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
