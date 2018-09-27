@@ -18,12 +18,12 @@
 package io.shardingsphere.example.transaction.fixture;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.transaction.fixture.algorithm.PreciseModuloDatabaseShardingAlgorithm;
 import io.shardingsphere.example.transaction.fixture.algorithm.PreciseModuloTableShardingAlgorithm;
+import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;

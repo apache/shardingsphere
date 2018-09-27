@@ -17,15 +17,15 @@
 
 package io.shardingsphere.example.jdbc.main.orche.java.etcd;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
-import io.shardingsphere.jdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.jdbc.orchestration.config.OrchestrationType;
-import io.shardingsphere.jdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

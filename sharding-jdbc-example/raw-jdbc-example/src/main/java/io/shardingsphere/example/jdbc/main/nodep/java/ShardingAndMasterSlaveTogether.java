@@ -18,15 +18,15 @@
 package io.shardingsphere.example.jdbc.main.nodep.java;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.api.ShardingDataSourceFactory;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
+import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

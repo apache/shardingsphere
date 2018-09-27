@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.jdbc.main.nodep.yaml;
 
-import io.shardingsphere.core.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.example.jdbc.fixture.DataRepository;
+import io.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;

@@ -18,7 +18,7 @@
 package io.shardingsphere.example.transaction.fixture;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
