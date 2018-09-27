@@ -19,12 +19,12 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core</artifactId>
+            <artifactId>sharding-transaction</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction</artifactId>
+            <artifactId>sharding-orchestration-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
