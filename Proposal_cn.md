@@ -140,7 +140,6 @@ Sharding-Proxy目前使用MySQL JDBC驱动连接MySQL，之后我们会通过SPI
 | *Dependency*                        | *License*       |
 | ----------------------------------- | --------------- |
 | guava                               | Apache-2.0      |
-| commons-lang3                       | Apache-2.0      |
 | commons-pool                        | Apache-2.0      |
 | commons-dbcp                        | Apache-2.0      |
 | netty                               | Apache-2.0      |
@@ -149,7 +148,6 @@ Sharding-Proxy目前使用MySQL JDBC驱动连接MySQL，之后我们会通过SPI
 | lombok                              | MIT             |
 | groovy                              | Apache-2.0      |
 | snakeyaml                           | Apache-2.0      |
-| gson                                | Apache-2.0      |
 | spring-context-support              | Apache-2.0      |
 | spring-context-test                 | Apache-2.0      |
 | spring-boot-starter                 | Apache-2.0      |

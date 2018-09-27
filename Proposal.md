@@ -159,7 +159,6 @@ We will use SPI to load JDBC driver, so MySQL JDBC driver is no longer provided 
 | ------------------------------------ | --------------- | -------------------------------------------------------------- |
 | Guava                                | Apache-2.0      |                                                                |
 | Guava Retrying                       | Apache-2.0      |                                                                |
-| commons-lang3                        | Apache-2.0      |                                                                |
 | commons-codec                        | Apache-2.0      |                                                                |
 | commons-pool                         | Apache-2.0      |                                                                |
 | commons-dbcp                         | Apache-2.0      |                                                                |
@@ -170,7 +169,6 @@ We will use SPI to load JDBC driver, so MySQL JDBC driver is no longer provided 
 | lombok                               | MIT             |                                                                |
 | groovy                               | Apache-2.0      |                                                                |
 | snakeyaml                            | Apache-2.0      |                                                                |
-| gson                                 | Apache-2.0      |                                                                |
 | spring-context-support               | Apache-2.0      |                                                                |
 | spring-context-test                  | Apache-2.0      |                                                                |
 | spring-boot-starter                  | Apache-2.0      |                                                                |
@@ -187,7 +185,6 @@ We will use SPI to load JDBC driver, so MySQL JDBC driver is no longer provided 
 | mssql-jdbc                           | MIT             |                                                                |
 | HikariCP                             | Apache-2.0      |                                                                |
 | ANTLR                                | BSD             |                                                                |
-| Quartz                               | Apache-2.0      |                                                                |
 | OpenTracing                          | BSD             |                                                                |
 
 
