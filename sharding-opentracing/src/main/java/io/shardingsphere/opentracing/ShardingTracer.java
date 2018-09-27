@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTracer {
     
-    private static final String OPENTRACING_TRACER_CLASS_NAME = "shardingsphere.opentracing.tracer.class";
+    private static final String OPENTRACING_TRACER_CLASS_NAME = "io.shardingsphere.opentracing.tracer.class";
     
     /**
      * Initialize sharding tracer.

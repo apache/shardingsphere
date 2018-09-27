@@ -9,13 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-orchestration-core</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-orchestration-reg</artifactId>
-            <version>${sharding-sphere.version}</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
-

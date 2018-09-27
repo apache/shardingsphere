@@ -29,8 +29,8 @@ import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
-import io.shardingsphere.core.spi.executor.SPISQLExecutionHook;
-import io.shardingsphere.core.spi.executor.SQLExecutionHook;
+import io.shardingsphere.spi.executor.SPISQLExecutionHook;
+import io.shardingsphere.spi.executor.SQLExecutionHook;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;

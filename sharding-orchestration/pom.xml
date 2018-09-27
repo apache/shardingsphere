@@ -15,30 +15,22 @@
     <modules>
         <module>sharding-orchestration-core</module>
         <module>sharding-orchestration-reg</module>
-        <module>sharding-jdbc-orchestration</module>
-        <module>sharding-jdbc-orchestration-spring</module>
     </modules>
-
-    <properties>
-        <sharding-sphere.version>3.0.0.M4-SNAPSHOT</sharding-sphere.version>
-    </properties>
     
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc</artifactId>
-            <version>${sharding-sphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-core</artifactId>
-            <version>${sharding-sphere.version}</version>
+            <version>${project.version}</version>
         </dependency>
+        
+        <!-- todo should be removed -->
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-sql-test</artifactId>
-            <version>${sharding-sphere.version}</version>
+            <artifactId>sharding-jdbc-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -75,7 +67,7 @@
             <groupId>com.github.rholder</groupId>
             <artifactId>guava-retrying</artifactId>
         </dependency>
-
+        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

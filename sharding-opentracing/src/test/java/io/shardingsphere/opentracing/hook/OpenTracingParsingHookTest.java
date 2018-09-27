@@ -20,8 +20,8 @@ package io.shardingsphere.opentracing.hook;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.spi.parsing.ParsingHook;
-import io.shardingsphere.core.spi.parsing.SPIParsingHook;
+import io.shardingsphere.spi.parsing.ParsingHook;
+import io.shardingsphere.spi.parsing.SPIParsingHook;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -39,8 +39,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     public void assertExecuteSuccess() {
         parsingHook.start("SELECT * FROM XXX;");
         parsingHook.finishSuccess();
-        assertThat(getTracer().finishedSpans().size(), is(1));
-        MockSpan actual = getTracer().finishedSpans().get(0);
+        MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
@@ -52,13 +51,12 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     public void assertExecuteFailure() {
         parsingHook.start("SELECT * FROM XXX;");
         parsingHook.finishFailure(new ShardingException("parse SQL error"));
-        assertThat(getTracer().finishedSpans().size(), is(1));
-        MockSpan actual = getTracer().finishedSpans().get(0);
+        MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
-        assertSpanError(actual, ShardingException.class, "parse SQL error");
+        assertSpanError(ShardingException.class, "parse SQL error");
     }
 }

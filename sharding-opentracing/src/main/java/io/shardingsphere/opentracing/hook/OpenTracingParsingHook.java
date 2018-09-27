@@ -19,7 +19,7 @@ package io.shardingsphere.opentracing.hook;
 
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import io.shardingsphere.core.spi.parsing.ParsingHook;
+import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 

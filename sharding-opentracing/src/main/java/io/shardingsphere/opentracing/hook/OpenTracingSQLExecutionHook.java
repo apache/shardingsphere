@@ -24,7 +24,7 @@ import io.opentracing.tag.Tags;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
-import io.shardingsphere.core.spi.executor.SQLExecutionHook;
+import io.shardingsphere.spi.executor.SQLExecutionHook;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 
@@ -66,11 +66,11 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     }
     
     private List<String> toStringList(final List<List<Object>> parameterSets) {
-        List<String> parameterString = new LinkedList<>();
+        List<String> result = new LinkedList<>();
         for (List<Object> each : parameterSets) {
-            parameterString.add(String.format("[%s]", Joiner.on(", ").join(each)));
+            result.add(String.format("[%s]", Joiner.on(", ").join(each)));
         }
-        return parameterString;
+        return result;
     }
     
     @Override

@@ -17,13 +17,10 @@
 
 package io.shardingsphere.opentracing;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.eventbus.EventBus;
 import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;
@@ -42,14 +39,13 @@ public final class ShardingTracerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        System.setProperty("shardingsphere.opentracing.tracer.class", FooTracer.class.getName());
+        System.setProperty("io.shardingsphere.opentracing.tracer.class", FooTracer.class.getName());
         clearGlobalTracer();
-        unregisterEventBus();
     }
     
     @After
     public void tearDown() {
-        System.getProperties().remove("shardingsphere.opentracing.tracer.class");
+        System.getProperties().remove("io.shardingsphere.opentracing.tracer.class");
     }
     
     @Test
@@ -72,7 +68,7 @@ public final class ShardingTracerTest {
     
     @Test(expected = ShardingException.class)
     public void assertTracerClassError() {
-        System.setProperty("shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
+        System.setProperty("io.shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
         ShardingTracer.init();
     }
     
@@ -80,11 +76,5 @@ public final class ShardingTracerTest {
         Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
         tracerField.setAccessible(true);
         tracerField.set(GlobalTracer.class, NoopTracerFactory.create());
-    }
-    
-    private static void unregisterEventBus() throws NoSuchFieldException, IllegalAccessException {
-        Field subscribersByTypeField = EventBus.class.getDeclaredField("subscribersByType");
-        subscribersByTypeField.setAccessible(true);
-        subscribersByTypeField.set(ShardingEventBusInstance.getInstance(), HashMultimap.create());
     }
 }
