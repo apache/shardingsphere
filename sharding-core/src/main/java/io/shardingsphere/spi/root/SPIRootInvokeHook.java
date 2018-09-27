@@ -17,7 +17,9 @@
 
 package io.shardingsphere.spi.root;
 
-import java.util.ServiceLoader;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
+
+import java.util.Collection;
 
 /**
  * Root invoke hook for SPI.
@@ -26,18 +28,20 @@ import java.util.ServiceLoader;
  */
 public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private final ServiceLoader<RootInvokeHook> serviceLoader = ServiceLoader.load(RootInvokeHook.class);
+    private static final NewInstanceServiceLoader<RootInvokeHook> SERVICE_LOADER = NewInstanceServiceLoader.load(RootInvokeHook.class);
+    
+    private final Collection<RootInvokeHook> rootInvokeHooks = SERVICE_LOADER.newServiceInstances();
     
     @Override
     public void start() {
-        for (RootInvokeHook each : serviceLoader) {
+        for (RootInvokeHook each : rootInvokeHooks) {
             each.start();
         }
     }
     
     @Override
     public void finish(final int connectionCount) {
-        for (RootInvokeHook each : serviceLoader) {
+        for (RootInvokeHook each : rootInvokeHooks) {
             each.finish(connectionCount);
         }
     }

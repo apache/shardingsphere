@@ -19,8 +19,9 @@ package io.shardingsphere.spi.executor;
 
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 
-import java.util.ServiceLoader;
+import java.util.Collection;
 
 /**
  * SQL Execution hook for SPI.
@@ -29,25 +30,27 @@ import java.util.ServiceLoader;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private final ServiceLoader<SQLExecutionHook> serviceLoader = ServiceLoader.load(SQLExecutionHook.class);
+    private static final NewInstanceServiceLoader<SQLExecutionHook> SERVICE_LOADER = NewInstanceServiceLoader.load(SQLExecutionHook.class);
+    
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = SERVICE_LOADER.newServiceInstances();
     
     @Override
     public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
-        for (SQLExecutionHook each : serviceLoader) {
+        for (SQLExecutionHook each : sqlExecutionHooks) {
             each.start(routeUnit, dataSourceMetaData, isTrunkThread);
         }
     }
     
     @Override
     public void finishSuccess() {
-        for (SQLExecutionHook each : serviceLoader) {
+        for (SQLExecutionHook each : sqlExecutionHooks) {
             each.finishSuccess();
         }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (SQLExecutionHook each : serviceLoader) {
+        for (SQLExecutionHook each : sqlExecutionHooks) {
             each.finishFailure(cause);
         }
     }
