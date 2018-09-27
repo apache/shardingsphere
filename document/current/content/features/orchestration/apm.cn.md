@@ -15,7 +15,7 @@ weight = 4
 
 ### 使用SkyWalking插件
 
-请参考[SkyWalking部署手册](https://github.com/OpenSkywalking/skywalking/wiki/Quick-start-chn)。
+请参考[SkyWalking部署手册](https://github.com/apache/incubator-skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
 
 ### 使用OpenTracing插件
 

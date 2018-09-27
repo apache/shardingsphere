@@ -15,7 +15,7 @@ weight = 4
 
 ### Using SkyWalking
 
-Please refer to [SkyWalking Manual](https://github.com/OpenSkywalking/skywalking/wiki/Quick-start-chn)。
+Please refer to [SkyWalking Manual](https://github.com/apache/incubator-skywalking/blob/5.x/docs/en/Quick-start.md).
 
 ### Using OpenTracing
 
