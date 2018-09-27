@@ -3,7 +3,7 @@ grammar SQLServerBase;
 import SQLServerKeyword,Keyword,Symbol,BaseRule,DataType;
 
 ID: 
-    (LEFT_BRACKET? [a-zA-Z_$#][a-zA-Z0-9_$#]* RIGHT_BRACKET? DOT*)?
+    (LEFT_BRACKET? [a-zA-Z_$#][a-zA-Z0-9_$#]* RIGHT_BRACKET? DOT)*
     (LEFT_BRACKET? [a-zA-Z_$#][a-zA-Z0-9_$#]* RIGHT_BRACKET?)
     |[a-zA-Z0-9_$]+ DOT ASTERISK
     ;
