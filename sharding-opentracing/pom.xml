@@ -35,14 +35,6 @@
             <artifactId>opentracing-mock</artifactId>
         </dependency>
         
-        <!-- to be removed -->
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

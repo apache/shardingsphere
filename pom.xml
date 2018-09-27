@@ -10,8 +10,6 @@
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
-        <module>sharding-jdbc-spring</module>
-        
         <module>sharding-proxy</module>
         
         <module>sharding-transaction</module>
