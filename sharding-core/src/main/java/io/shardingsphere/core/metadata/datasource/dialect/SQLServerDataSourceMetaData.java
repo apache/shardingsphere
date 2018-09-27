@@ -41,8 +41,8 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);DatabaseName=([\\w\\-]+)");
-    
+    private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);DatabaseName=([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
+
     public SQLServerDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
