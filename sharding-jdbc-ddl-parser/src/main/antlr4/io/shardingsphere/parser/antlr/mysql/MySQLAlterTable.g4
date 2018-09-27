@@ -13,7 +13,7 @@ alterSpecification:
     (tableOptions)
     | ADD COLUMN? (singleColumn | multiColumn)
     | ADD indexDefinition
-    | ADD constraintDefinition
+    | addConstraint
     | algorithmOption
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
@@ -49,6 +49,10 @@ alterSpecification:
     | UPGRADE PARTITIONING
     ;
 
+addConstraint:
+     ADD constraintDefinition
+     ;
+     
 changeColumn:
     changeColumnOp columnName columnDefinition (FIRST|AFTER columnName)?
     ;

@@ -310,6 +310,25 @@ public class VisitorUtils {
             statement.setDropPrimaryKey(true);
         }
     }
+    
+    
+    /**
+     * visit drop primary key.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param ddlRootNode
+     *            DDL root node of syntax tree
+     */
+    public static void visitOracleDropPrimaryKey(final AlterTableStatement statement, final ParseTree ddlRootNode) {
+        ParseTree dropPrimaryKeyCtx = TreeUtils.getFirstChildByRuleName(ddlRootNode, "dropConstraintClause");
+        if (null != dropPrimaryKeyCtx) {
+            ParseTree primaryKeyCtx = TreeUtils.getFirstChildByRuleName(dropPrimaryKeyCtx, "primaryKey");
+            if (null != primaryKeyCtx) {
+                statement.setDropPrimaryKey(true);
+            }
+        }
+    }
 
     /**
      * Parse drop column.
@@ -406,5 +425,164 @@ public class VisitorUtils {
         }
 
         return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
+    }
+
+    /**
+     * Visit alter table rename column nodes.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param rootNode
+     *            Root node of syntax tree
+     */
+    public static void visitRenameColumn(final AlterTableStatement statement, final ParseTree rootNode) {
+        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+                "renameColumn");
+        if (null == modifyColumnCtx) {
+            return;
+        }
+
+        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "columnName");
+        if (null == columnNodes || columnNodes.size() != 2) {
+            return;
+        }
+
+        String oldName = columnNodes.get(0).getText();
+        String newName = columnNodes.get(1).getText();
+        ColumnDefinition oldDefinition = statement.getUpdateColumns().remove(oldName);
+        if (null != oldDefinition) {
+            oldDefinition.setName(newName);
+        } else {
+            oldDefinition = new ColumnDefinition(newName, null, null, false);
+        }
+
+        statement.getUpdateColumns().put(newName, oldDefinition);
+    }
+    
+    /**
+     * Parse alter table change column node.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param rootNode
+     *            root node of syntax tree
+     */
+    public static void visitChangeColumn(final AlterTableStatement statement, final ParseTree rootNode) {
+        ParserRuleContext changeColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+                "changeColumn");
+        if(null == changeColumnCtx) {
+            return;
+        }
+        
+        ParserRuleContext oldColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
+                "columnName");
+        
+        if(null == oldColumnCtx) {
+            return;
+        }
+        
+        ParserRuleContext columnDefinitionCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
+                "columnDefinition");
+        
+        if(null == columnDefinitionCtx) {
+            return;
+        }
+        
+        ColumnDefinition column = VisitorUtils.parseColumnDefinition(columnDefinitionCtx);
+        if (null != column) {
+            statement.getUpdateColumns().remove(oldColumnCtx.getText());
+            statement.getUpdateColumns().put(column.getName(), column);
+        }
+    }
+
+    /**
+     * Visit alter table modify column nodes.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param rootNode
+     *            Root node of syntax tree
+     * @param ruleName
+     *            primary key node name
+     */
+    public static void visitAddPrimaryKey(final AlterTableStatement statement, final ParseTree rootNode,
+            String ruleName) {
+        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode, ruleName);
+        if (null == modifyColumnCtx) {
+            return;
+        }
+
+        ParseTree primaryKeyCtx = TreeUtils.getFirstChildByRuleName(modifyColumnCtx, "primaryKey");
+        if (null == primaryKeyCtx) {
+            return;
+        }
+
+        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "columnName");
+        if (null == columnNodes) {
+            return;
+        }
+        for (final ParseTree each : columnNodes) {
+            String columnName = each.getText();
+            ColumnDefinition updateColumn = statement.getUpdateColumns().get(columnName);
+            if (null == updateColumn) {
+                updateColumn = new ColumnDefinition(columnName, null, null, true);
+                statement.getUpdateColumns().put(columnName, updateColumn);
+            } else {
+                updateColumn.setPrimaryKey(true);
+            }
+            statement.getUpdateColumns().put(columnName, new ColumnDefinition(columnName, null, null, true));
+        }
+    }
+    
+    /**
+     * Visit alter table modify column nodes.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param rootNode
+     *            Root node of syntax tree
+     */
+    public static void visitModifyColumn(final AlterTableStatement statement, final ParseTree rootNode) {
+        List<ParseTree> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "modifyColumn");
+        if (null == modifyColumnCtxs) {
+            return;
+        }
+
+        for (ParseTree each : modifyColumnCtxs) {
+            // it`s not columndefinition, but can call this method
+            ColumnDefinition column = VisitorUtils.parseColumnDefinition(each);
+            if (null != column) {
+                statement.getUpdateColumns().put(column.getName(), column);
+            }
+        }
+    }
+    
+    /**
+     * Visit alter table modify column nodes.
+     * 
+     * @param statement
+     *            statement parse result
+     * @param rootNode
+     *            Root node of syntax tree
+     */
+    public static void visitOracleModifyColumn(final AlterTableStatement statement, final ParseTree rootNode) {
+        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+                "modifyColumn");
+        if (null == modifyColumnCtx) {
+            return;
+        }
+
+        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "modifyColProperties");
+        if (null == columnNodes) {
+            return;
+        }
+
+        for (final ParseTree each : columnNodes) {
+            // it`s not columndefinition, but can call this method
+            ColumnDefinition column = VisitorUtils.parseColumnDefinition(each);
+            if (null != column) {
+                statement.getUpdateColumns().put(column.getName(), column);
+            }
+        }
     }
 }
