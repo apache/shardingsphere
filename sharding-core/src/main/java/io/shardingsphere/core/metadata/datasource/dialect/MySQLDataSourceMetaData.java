@@ -50,7 +50,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
             port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
             schemeName = matcher.group(3);
         } else {
-            throw new ShardingException("The URL of JDBC is not supported.");
+            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
     }
    
