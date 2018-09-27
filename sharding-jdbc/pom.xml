@@ -20,14 +20,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP-java7</artifactId>
         </dependency>
