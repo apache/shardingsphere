@@ -21,11 +21,5 @@
             <artifactId>sharding-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- todo to be removed -->
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
