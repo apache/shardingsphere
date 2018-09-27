@@ -49,7 +49,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
             port = DEFAULT_PORT;
             schemeName = matcher.group(2);
         } else {
-            throw new ShardingException("The URL of JDBC is not supported.");
+            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
     }
     
