@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core;
 
-import io.shardingsphere.api.AllApiTests;
 import io.shardingsphere.core.constant.AllConstantsTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.hint.AllHintTests;
@@ -36,7 +35,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllConstantsTests.class, 
-        AllApiTests.class, 
         AllUtilTests.class,
         AllMetaDataTests.class, 
         AllParsingTests.class,
@@ -48,5 +46,5 @@ import org.junit.runners.Suite.SuiteClasses;
         AllHintTests.class, 
         AllYamlTests.class
     })
-public final class AllTests {
+public final class AllCoreTests {
 }
