@@ -15,24 +15,16 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-        <!-- switch off when using orchestration -->
-        <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
             <version>${sharding-sphere.version}</version>
         </dependency>
-        <!-- switch on when using orchestration -->
-        <!-- 
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
             <version>${sharding-sphere.version}</version>
         </dependency>
-        -->
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP-java7</artifactId>
