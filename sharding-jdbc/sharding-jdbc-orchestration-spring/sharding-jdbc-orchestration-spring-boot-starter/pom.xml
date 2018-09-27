@@ -6,7 +6,7 @@
         <version>3.0.0.M4-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -18,5 +18,3 @@
         </dependency>
     </dependencies>
 </project>
-
-

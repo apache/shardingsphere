@@ -16,16 +16,6 @@
         </dependency>
         
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <classifier>indy</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-        </dependency>
-        
-        <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-sql-test</artifactId>
             <version>${project.version}</version>
