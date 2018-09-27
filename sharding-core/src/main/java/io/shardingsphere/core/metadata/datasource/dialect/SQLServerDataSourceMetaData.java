@@ -41,16 +41,16 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);DatabaseName=([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);(DatabaseName|database)=([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
 
     public SQLServerDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
             hostName = matcher.group(2);
             port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
-            schemeName = matcher.group(4);
+            schemeName = matcher.group(5);
         } else {
-            throw new ShardingException("The URL of JDBC is not supported.");
+            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
     }
     
