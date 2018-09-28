@@ -39,7 +39,7 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class ShardingAndMasterSlaveTogether {
+public class ShardingAndMasterSlaveTogetherPrecise {
     
     public static void main(final String[] args) throws SQLException {
         new DataRepository(getDataSource()).demo();
