@@ -39,9 +39,11 @@ public class DataRepository {
         queryWithEqual();
         System.out.println("2.Query with IN--------------");
         queryWithIn();
-        System.out.println("3.Drop tables--------------");
+        System.out.println("3.Query with Range--------------");
+        queryWithRange();
+        System.out.println("4.Drop tables--------------");
         dropTable();
-        System.out.println("4.All done-----------");
+        System.out.println("5.All done-----------");
     }
     
     private void createTable() throws SQLException {
@@ -93,7 +95,18 @@ public class DataRepository {
             printQuery(preparedStatement);
         }
     }
-
+    
+    private void queryWithRange() throws SQLException {
+        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id BETWEEN ? AND ?";
+        try (
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 1);
+            preparedStatement.setInt(2, 10);
+            printQuery(preparedStatement);
+        }
+    }
+    
     private void printQuery(final PreparedStatement preparedStatement) throws SQLException {
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
