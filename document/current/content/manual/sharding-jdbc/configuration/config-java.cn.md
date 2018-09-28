@@ -112,30 +112,29 @@ weight = 1
 ### 使用Zookeeper的数据治理
 
 ```java
-DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-    DataSource dataSource = new OrchestrationShardingDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
-                     new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
-                      
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists("localhost:2181");
         result.setNamespace("orchestration-demo");
         return result;
     }
-
 ```
 
 ### 使用Etcd的数据治理
 
 ```java
-   DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-       DataSource dataSource = new OrchestrationShardingDataSource (
-                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                    createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
-                    new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
-       
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
         result.setServerLists("http://localhost:2379");
@@ -271,10 +270,11 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 属性配置项，可以为以下属性。
 
-| *名称*             | *数据类型* | *说明*                      |
-| ----------------- | --------- | --------------------------- |
-| sql.show (?)      | boolean   | 是否开启SQL显示，默认值: false |
-| executor.size (?) | int       | 工作线程数量，默认值: CPU核数  |
+| *名称*                             | *数据类型* | *说明*                                            |
+| ---------------------------------- | --------- | ------------------------------------------------- |
+| sql.show (?)                       | boolean   | 是否打印SQL解析和改写日志，默认值: false              |
+| executor.size (?)                  | int       | 用于SQL执行的工作线程数量，为零则表示无限制。默认值: 0  |
+| max.connections.size.per.query (?) | int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1    |
 
 
 ### 数据治理

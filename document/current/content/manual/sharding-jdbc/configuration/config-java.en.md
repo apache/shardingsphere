@@ -112,12 +112,12 @@ weight = 1
 ### Orchestration by Zookeeper
 
 ```java
-       DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-       DataSource dataSource = new OrchestrationShardingDataSource(
-                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                    createShardingDataSource(createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties()), 
-                        new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
-
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists("localhost:2181");
@@ -129,12 +129,12 @@ weight = 1
 ### Orchestration by Etcd
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-        DataSource dataSource = new OrchestrationShardingDataSource (
-                     createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                     createShardingDataSource(createDataSourceMap(), createShardingRule(), new HashMap<String, Object>(), new Properties()), 
-                     new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
-        
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    }
+    
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
         result.setServerLists("http://localhost:2379");
@@ -223,10 +223,11 @@ Subclass of ShardingStrategyConfiguration.
 
 Enumeration of properties.
 
-| *Name*            | *DataType* | *Description*                                           |
-| ----------------- | ---------- | ------------------------------------------------------- |
-| sql.show (?)      | boolean    | To show SQLS or not, default value: false               |
-| executor.size (?) | int        | The number of working threads, default value: CPU count |
+| *Name*                             | *DataType* | *Description*                                                                  |
+| ---------------------------------- | ---------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                       | boolean    | Print SQL parse and rewrite log, default value: false                          |
+| executor.size (?)                  | int        | The number of SQL execution threads, zero means no limit. default value: 0     |
+| max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
 
 #### configMap
 
