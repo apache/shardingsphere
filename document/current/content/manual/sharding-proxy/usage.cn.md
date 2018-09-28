@@ -5,7 +5,7 @@ title = "使用手册"
 weight = 1
 +++
 
-1. 下载Sharding-Proxy的最新发行版，地址:https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.M3.tar.gz
+1. 下载Sharding-Proxy的最新发行版，地址:https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.M4.tar.gz
 1. 如果使用docker，可以执行`docker pull shardingsphere/sharding-proxy`获取镜像。详细信息请参考[Docker镜像](/cn/manual/sharding-proxy/docker/)。
 1. 解压缩后修改conf/config.yaml文件，进行分片规则、读写分离规则配置. 配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。如需使用自定义
 的配置文件，可在conf/下创建配置文件，并在启动时进行配置。
