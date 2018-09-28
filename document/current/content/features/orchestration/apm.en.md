@@ -52,9 +52,9 @@ User accesses the Sharding-Proxy 18 times, each database is accessed twice each 
 
 You can see SQL parsing and execution in this figure.
 
-`/SHARDING-SPHERE/ROUTING/`: Represents the parsing and routing performance of this SQL.
+`/Sharding-Sphere/parseSQL/`: Represents the parsing performance of this SQL.
 
-![The parsing and routing node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-route-span.png)
+![The parsing node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
 
 `/SHARDING-SPHERE/EXECUTE/{SQLType}`: Represents the overall execution performance of this SQL.
 

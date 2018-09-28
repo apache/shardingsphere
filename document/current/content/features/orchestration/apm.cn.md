@@ -53,9 +53,9 @@ weight = 4
 
 从跟踪图中可以能够看到SQL解析和执行的情况。
 
-`/SHARDING-SPHERE/ROUTING/` : 表示本次SQL的解析路由性能。
+`/Sharding-Sphere/parseSQL/` : 表示本次SQL的解析性能。
 
-![解析路由节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-route-span.png)
+![解析节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
 
 `/SHARDING-SPHERE/EXECUTE/{SQLType}` : 表示本次SQL的总体执行性能。
 
