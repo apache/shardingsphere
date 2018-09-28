@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>spring-boot-example</artifactId>
-        <version>3.0.0.M4-SNAPSHOT</version>
+        <version>3.0.0.M4</version>
     </parent>
     <artifactId>spring-boot-data-mybatis-example</artifactId>
     
