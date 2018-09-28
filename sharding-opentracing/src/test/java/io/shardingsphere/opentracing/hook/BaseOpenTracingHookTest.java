@@ -25,6 +25,7 @@ import io.opentracing.util.GlobalTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.opentracing.constant.ShardingErrorLogTags;
+import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -47,7 +48,8 @@ public abstract class BaseOpenTracingHookTest {
     }
     
     @AfterClass
-    public static void releaseTracer() throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    public static void releaseTracer() {
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);
         field.set(GlobalTracer.class, NoopTracerFactory.create());

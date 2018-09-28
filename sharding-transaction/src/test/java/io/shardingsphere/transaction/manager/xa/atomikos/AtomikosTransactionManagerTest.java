@@ -23,6 +23,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +52,8 @@ public final class AtomikosTransactionManagerTest {
     private UserTransactionManager userTransactionManager;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    @SneakyThrows
+    public void setUp() {
         Field field = AtomikosTransactionManager.class.getDeclaredField("USER_TRANSACTION_MANAGER");
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");

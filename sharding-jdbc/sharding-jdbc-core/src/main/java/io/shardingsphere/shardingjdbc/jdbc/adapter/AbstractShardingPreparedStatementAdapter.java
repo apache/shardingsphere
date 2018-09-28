@@ -17,10 +17,10 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -257,14 +257,6 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
         parameters.set(parameterIndex - 1, value);
     }
     
-    private void recordSetParameter(final String methodName, final Class[] argumentTypes, final Object... arguments) {
-        try {
-            setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod(methodName, argumentTypes), arguments, arguments[1]));
-        } catch (final NoSuchMethodException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
     protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> parameters) {
         setParameterMethodInvocations.clear();
         addParameters(parameters);
@@ -275,8 +267,13 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     
     private void addParameters(final List<Object> parameters) {
         for (int i = 0; i < parameters.size(); i++) {
-            recordSetParameter("setObject", new Class[]{int.class, Object.class}, i + 1, parameters.get(i));
+            setParameter(new Class[]{int.class, Object.class}, i + 1, parameters.get(i));
         }
+    }
+    
+    @SneakyThrows
+    private void setParameter(final Class[] argumentTypes, final Object... arguments) {
+        setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setObject", argumentTypes), arguments, arguments[1]));
     }
     
     @Override

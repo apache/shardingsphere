@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
+import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,8 @@ public final class XATransactionListenerTest {
     private ShardingTransactionManager shardingTransactionManager;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    @SneakyThrows
+    public void setUp() {
         Field field = XATransactionListener.class.getDeclaredField("shardingTransactionManager");
         field.setAccessible(true);
         field.set(xaTransactionListener, shardingTransactionManager);

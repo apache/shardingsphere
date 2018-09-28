@@ -17,9 +17,9 @@
 
 package io.shardingsphere.spi;
 
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -57,14 +57,11 @@ public final class NewInstanceServiceLoader<T> {
      * 
      * @return service instances
      */
+    @SneakyThrows
     public Collection<T> newServiceInstances() {
         Collection<T> result = new LinkedList<>();
         for (Class<T> each : serviceClasses) {
-            try {
-                result.add(each.newInstance());
-            } catch (final ReflectiveOperationException ex) {
-                throw new ShardingException(ex);
-            }
+            result.add(each.newInstance());
         }
         return result;
     }

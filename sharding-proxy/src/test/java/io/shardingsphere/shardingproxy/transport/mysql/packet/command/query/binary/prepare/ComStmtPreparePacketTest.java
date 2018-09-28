@@ -37,6 +37,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -68,18 +69,19 @@ public final class ComStmtPreparePacketTest {
     private FrontendHandler frontendHandler;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         setProxyContextRuleRegistryMap();
         setFrontendHandlerSchema();
     }
     
     @Before
     @After
-    public void reset() throws ReflectiveOperationException {
+    public void reset() {
         BinaryStatementRegistryUtil.reset();
     }
     
-    private void setProxyContextRuleRegistryMap() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setProxyContextRuleRegistryMap() {
         RuleRegistry ruleRegistry = mock(RuleRegistry.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
         when(ruleRegistry.getMetaData()).thenReturn(metaData);
@@ -104,7 +106,7 @@ public final class ComStmtPreparePacketTest {
     }
     
     @Test
-    public void assertExecuteForQueryWithParameters() throws ReflectiveOperationException {
+    public void assertExecuteForQueryWithParameters() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setParametersIndex(1);
         selectStatement.getTables().add(new Table("tbl", Optional.<String>absent()));
@@ -124,7 +126,7 @@ public final class ComStmtPreparePacketTest {
     }
     
     @Test
-    public void assertExecuteForQueryWithoutParameters() throws ReflectiveOperationException {
+    public void assertExecuteForQueryWithoutParameters() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().add(new Table("tbl", Optional.<String>absent()));
         selectStatement.getItems().addAll(Collections.singletonList(new CommonSelectItem("1", Optional.<String>absent())));
@@ -136,7 +138,7 @@ public final class ComStmtPreparePacketTest {
     }
     
     @Test
-    public void assertExecuteForInsertWithoutParameters() throws ReflectiveOperationException {
+    public void assertExecuteForInsertWithoutParameters() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getTables().add(new Table("tbl", Optional.<String>absent()));
         Optional<CommandResponsePackets> actual = getComStmtPreparePacketWithMockedSQLParsingEngine("INSERT INTO tbl VALUES(1)", insertStatement).execute();
@@ -147,7 +149,7 @@ public final class ComStmtPreparePacketTest {
     }
     
     @Test
-    public void assertExecuteForDALWithoutParameters() throws ReflectiveOperationException {
+    public void assertExecuteForDALWithoutParameters() {
         ShowTablesStatement showTablesStatement = new ShowTablesStatement();
         Optional<CommandResponsePackets> actual = getComStmtPreparePacketWithMockedSQLParsingEngine("SHOW TABLES", showTablesStatement).execute();
         assertTrue(actual.isPresent());
@@ -156,7 +158,8 @@ public final class ComStmtPreparePacketTest {
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(1));
     }
     
-    private ComStmtPreparePacket getComStmtPreparePacketWithMockedSQLParsingEngine(final String sql, final SQLStatement sqlStatement) throws ReflectiveOperationException {
+    @SneakyThrows
+    private ComStmtPreparePacket getComStmtPreparePacketWithMockedSQLParsingEngine(final String sql, final SQLStatement sqlStatement) {
         when(payload.readStringEOF()).thenReturn(sql);
         ComStmtPreparePacket result = new ComStmtPreparePacket(1, payload, frontendHandler);
         SQLParsingEngine sqlParsingEngine = mock(SQLParsingEngine.class);

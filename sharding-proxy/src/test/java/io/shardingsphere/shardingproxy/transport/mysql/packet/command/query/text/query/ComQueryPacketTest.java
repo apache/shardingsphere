@@ -40,6 +40,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -77,7 +78,7 @@ public final class ComQueryPacketTest {
     private Listener listener;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         setProxyContextNIOConfig();
         setProxyContextRuleRegistryMap();
         setFrontendHandlerSchema();
@@ -87,18 +88,20 @@ public final class ComQueryPacketTest {
     }
     
     @After
-    public void tearDown() throws ReflectiveOperationException {
+    public void tearDown() {
         ShardingEventBusInstance.getInstance().unregister(listener);
         setTransactionType(null);
     }
     
-    private void setProxyContextNIOConfig() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setProxyContextNIOConfig() {
         Field field = ProxyContext.class.getDeclaredField("useNIO");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), true);
     }
     
-    private void setProxyContextRuleRegistryMap() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setProxyContextRuleRegistryMap() {
         RuleRegistry ruleRegistry = mock(RuleRegistry.class);
         Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
         ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
@@ -111,7 +114,8 @@ public final class ComQueryPacketTest {
         when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
-    private void setTransactionType(final TransactionType transactionType) throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setTransactionType(final TransactionType transactionType) {
         Field transactionTypeField = ProxyContext.class.getDeclaredField("transactionType");
         transactionTypeField.setAccessible(true);
         transactionTypeField.set(ProxyContext.getInstance(), transactionType);
@@ -127,7 +131,7 @@ public final class ComQueryPacketTest {
     }
     
     @Test
-    public void assertExecuteWithoutTransaction() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
         BackendHandler backendHandler = mock(BackendHandler.class);
         when(backendHandler.next()).thenReturn(true, false);
@@ -149,14 +153,15 @@ public final class ComQueryPacketTest {
         assertFalse(packet.next());
     }
     
-    private void setBackendHandler(final ComQueryPacket packet, final BackendHandler backendHandler) throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setBackendHandler(final ComQueryPacket packet, final BackendHandler backendHandler) {
         Field field = ComQueryPacket.class.getDeclaredField("backendHandler");
         field.setAccessible(true);
         field.set(packet, backendHandler);
     }
     
     @Test
-    public void assertExecuteTCLWithLocalTransaction() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteTCLWithLocalTransaction() throws SQLException {
         setTransactionType(TransactionType.LOCAL);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
@@ -167,7 +172,7 @@ public final class ComQueryPacketTest {
     }
     
     @Test
-    public void assertExecuteTCLWithXATransaction() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteTCLWithXATransaction() throws SQLException {
         setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
@@ -178,7 +183,7 @@ public final class ComQueryPacketTest {
     }
     
     @Test
-    public void assertExecuteRollbackWithXATransaction() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteRollbackWithXATransaction() throws SQLException {
         setTransactionType(TransactionType.XA);
         listener.setExpected(TransactionOperationType.ROLLBACK);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter.invocation;
 
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.sql.PreparedStatement;
@@ -27,13 +28,15 @@ import static org.junit.Assert.assertThat;
 public final class SetParameterMethodInvocationTest {
     
     @Test
-    public void assertGetValue() throws NoSuchMethodException, SecurityException {
+    @SneakyThrows
+    public void assertGetValue() {
         SetParameterMethodInvocation actual = new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setInt", int.class, int.class), new Object[] {1, 100}, 100);
         assertThat(actual.getValue(), is((Object) 100));
     }
     
     @Test
-    public void assertChangeValueArgument() throws NoSuchMethodException, SecurityException {
+    @SneakyThrows
+    public void assertChangeValueArgument() {
         SetParameterMethodInvocation actual = new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setInt", int.class, int.class), new Object[] {1, 100}, 100);
         actual.changeValueArgument(200);
         assertThat(actual.getArguments()[1], is((Object) 200));

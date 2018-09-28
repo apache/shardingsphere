@@ -58,7 +58,7 @@ public abstract class AbstractBaseExecutorTest {
     private TestDMLExecutionEventListener dmlExecutionEventListener;
     
     @Before
-    public void setUp() throws SQLException, ReflectiveOperationException {
+    public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
@@ -87,7 +87,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     @After
-    public void tearDown() throws ReflectiveOperationException {
+    public void tearDown() {
         ExecutorTestUtil.clear();
         ShardingEventBusInstance.getInstance().unregister(dqlExecutionEventListener);
         ShardingEventBusInstance.getInstance().unregister(dmlExecutionEventListener);

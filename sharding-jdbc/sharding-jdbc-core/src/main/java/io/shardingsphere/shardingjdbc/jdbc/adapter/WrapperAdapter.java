@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.invocation.JdbcMethodInvocation;
+import lombok.SneakyThrows;
 
 import java.sql.SQLException;
 import java.sql.Wrapper;
@@ -56,12 +56,9 @@ public abstract class WrapperAdapter implements Wrapper {
      * @param argumentTypes argument types
      * @param arguments arguments
      */
+    @SneakyThrows
     public final void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        try {
-            jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
-        } catch (final NoSuchMethodException ex) {
-            throw new ShardingException(ex);
-        }
+        jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
     }
     
     /**

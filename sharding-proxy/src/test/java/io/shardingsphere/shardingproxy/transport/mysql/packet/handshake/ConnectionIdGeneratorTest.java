@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
+import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,14 +32,8 @@ public final class ConnectionIdGeneratorTest {
     
     @Before
     @After
-    public void resetConnectionId() throws ReflectiveOperationException {
+    public void resetConnectionId() {
         setCurrentConnectionId(0);
-    }
-    
-    private void setCurrentConnectionId(final int connectionId) throws ReflectiveOperationException {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
-        field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), connectionId);
     }
     
     @Test
@@ -47,8 +42,15 @@ public final class ConnectionIdGeneratorTest {
     }
     
     @Test
-    public void assertMaxNextId() throws ReflectiveOperationException {
+    public void assertMaxNextId() {
         setCurrentConnectionId(Integer.MAX_VALUE);
         assertThat(ConnectionIdGenerator.getInstance().nextId(), is(1));
+    }
+    
+    @SneakyThrows
+    private void setCurrentConnectionId(final int connectionId) {
+        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
+        field.setAccessible(true);
+        field.set(ConnectionIdGenerator.getInstance(), connectionId);
     }
 }

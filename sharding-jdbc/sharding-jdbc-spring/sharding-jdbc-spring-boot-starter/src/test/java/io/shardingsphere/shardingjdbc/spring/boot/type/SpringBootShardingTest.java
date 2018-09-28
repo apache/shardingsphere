@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,11 +52,9 @@ public class SpringBootShardingTest {
     private DataSource dataSource;
     
     @Test
-    public void assertWithShardingDataSource() throws NoSuchFieldException, IllegalAccessException {
+    public void assertWithShardingDataSource() {
         assertThat(dataSource, instanceOf(ShardingDataSource.class));
-        Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
-        field.setAccessible(true);
-        ShardingContext shardingContext = (ShardingContext) field.get(dataSource);
+        ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, dataSource);
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
@@ -63,11 +62,16 @@ public class SpringBootShardingTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
-    
-        Field propertiesField = ShardingDataSource.class.getDeclaredField("shardingProperties");
-        propertiesField.setAccessible(true);
-        ShardingProperties shardingProperties = (ShardingProperties) propertiesField.get(dataSource);
+        ShardingProperties shardingProperties = getFieldValue("shardingProperties", ShardingDataSource.class, dataSource);
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    private <T> T getFieldValue(final String fieldName, final Class<?> fieldClass, final Object target) {
+        Field field = fieldClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (T) field.get(target);
     }
 }
