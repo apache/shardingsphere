@@ -60,3 +60,17 @@ weight = 4
 `/Sharding-Sphere/executeSQL/` : 表示具体执行的实际SQL的性能。
 
 ![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)
+
+### 异常情况展示
+
+![异常跟踪图](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace_err.png)
+
+从跟踪图中可以能够看到发生异常的节点。
+
+`/Sharding-Sphere/executeSQL/` : 表示执行SQL异常的结果。
+
+![异常节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Tags_err.png)
+
+`/Sharding-Sphere/executeSQL/` : 表示执行SQL异常的日志。
+
+![异常节点日志](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Logs_err.png)

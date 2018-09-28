@@ -59,3 +59,17 @@ You can see SQL parsing and execution in this figure.
 `/Sharding-Sphere/executeSQL/`: Represents the performance of the actual SQL.
 
 ![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)
+
+### Exception diagram
+
+![Exception tracking diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace_err.png)
+
+You can see Exceptions in this figure.
+
+`/Sharding-Sphere/executeSQL/` : Represents the Exceptions of the actual SQL.
+
+![Exception node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Tags_err.png)
+
+`/Sharding-Sphere/executeSQL/` : Represents the Exception logs of the actual SQL.
+
+![Exception log](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Logs_err.png)
