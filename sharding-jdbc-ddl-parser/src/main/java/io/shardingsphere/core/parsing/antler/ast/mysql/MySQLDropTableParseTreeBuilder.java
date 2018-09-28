@@ -29,15 +29,27 @@ import io.shardingsphere.parser.antlr.mysql.MySQLDropTableLexer;
 
 public class MySQLDropTableParseTreeBuilder extends AbstractParseTreeBuilder {
 
+    /** Create lexer instance.
+     * @param stream text stream
+     * @return antlr lexer instance
+     */
     @Override
     protected Lexer newLexer(final CharStream stream) {
         return new MySQLDropTableLexer(stream);
     }
 
+    /** Create parser instance.
+     * @param stream token stream
+     * @return antlr parser instance
+     */
     protected Parser newParser(final TokenStream tokenStream) {
         return new MySQLAdvancedDropTableParser(tokenStream);
     }
 
+    /** Get sql parse tree.
+     * @param parser instance
+     * @return sql parse tree
+     */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
         MySQLAdvancedDropTableParser dropTableParser = (MySQLAdvancedDropTableParser) parser;

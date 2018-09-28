@@ -28,13 +28,13 @@ import io.shardingsphere.parser.antlr.sqlserver.SQLServerCreateTableParser;
 
 public class SQLServerAdvancedCreateTableParser extends SQLServerCreateTableParser {
 
-    public SQLServerAdvancedCreateTableParser(TokenStream input) {
+    public SQLServerAdvancedCreateTableParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         this._errHandler = new AdvancedErrorStrategy(ID);
     }
 
-    public Token match(int ttype) throws RecognitionException {
+    public Token match(final int ttype) throws RecognitionException {
         Token t = getCurrentToken();
 
         boolean compatID = false;

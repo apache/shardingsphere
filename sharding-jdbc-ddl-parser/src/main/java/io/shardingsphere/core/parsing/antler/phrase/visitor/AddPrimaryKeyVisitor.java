@@ -31,9 +31,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AddPrimaryKeyVisitor implements PhraseVisitor {
     private final String ruleName;
-    
+
+    /** Visit add primary key node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
         ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode, ruleName);

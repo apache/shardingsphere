@@ -29,8 +29,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class AddColumnVisitor extends ColumnDefinitionVisitor {
 
+    /** Visit drop column node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         List<ParseTree> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "addColumn");
         if (null == addColumnCtxs) {

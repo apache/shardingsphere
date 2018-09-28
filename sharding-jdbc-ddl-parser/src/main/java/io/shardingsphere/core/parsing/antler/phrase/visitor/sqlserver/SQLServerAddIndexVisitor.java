@@ -26,8 +26,12 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 public class SQLServerAddIndexVisitor implements PhraseVisitor {
 
+    /** Visit add index node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         ParserRuleContext indexDefOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
                 "addColumn");
         if (null == indexDefOptionNode) {

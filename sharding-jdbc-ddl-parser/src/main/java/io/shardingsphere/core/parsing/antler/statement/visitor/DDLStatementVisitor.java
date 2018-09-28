@@ -22,6 +22,9 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 
 public class DDLStatementVisitor extends AbstractStatementVisitor {
 
+    /** Create ddl statement.
+     * @return empty sql statment
+     */
     @Override
     protected SQLStatement newStatement() {
         return new DDLStatement();

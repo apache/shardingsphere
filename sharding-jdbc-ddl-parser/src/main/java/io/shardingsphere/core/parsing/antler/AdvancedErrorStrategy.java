@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler;
 
+import org.antlr.v4.runtime.ANTLRErrorStrategy;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.InputMismatchException;
@@ -29,30 +30,36 @@ import org.antlr.v4.runtime.misc.IntervalSet;
 
 public class AdvancedErrorStrategy extends DefaultErrorStrategy {
     private int id;
-    
-    public AdvancedErrorStrategy(int id) {
+
+    public AdvancedErrorStrategy(final int id) {
         super();
         this.id = id;
     }
-    
+
+    /** The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
+     * that the current lookahead symbol is consistent with what were expecting
+     * if failed to match keyword,use ID try again.
+     * @param recognizer the parser instance
+     * @throws RecognitionException the recognition exception
+     */
     @Override
-    public void sync(Parser recognizer) throws RecognitionException {
+    public void sync(final Parser recognizer) throws RecognitionException {
         if (inErrorRecoveryMode(recognizer)) {
             return;
         }
-       
+
         try {
             TokenStream tokens = recognizer.getInputStream();
             Token token = tokens.LT(1);
-            
+
             ATNState s = recognizer.getInterpreter().atn.states.get(recognizer.getState());
             IntervalSet nextTokens = recognizer.getATN().nextTokens(s);
-            if(nextTokens.contains(token.getType())) {
+            if (nextTokens.contains(token.getType())) {
                 nextTokensContext = null;
                 nextTokensState = ATNState.INVALID_STATE_NUMBER;
                 return;
             }
-            
+
             if (nextTokens.contains(Token.EPSILON)) {
                 if (nextTokensContext == null) {
                     // It's possible the next token won't match; information tracked
@@ -62,9 +69,9 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
                 }
                 return;
             }
-            
-            if(nextTokens.contains(id)) {
-                CommonToken  commonToken = castCommonToken(token);
+
+            if (nextTokens.contains(id)) {
+                CommonToken commonToken = castCommonToken(token);
                 commonToken.setType(id);
             }
             super.sync(recognizer);
@@ -72,40 +79,39 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
             tryExecByID(recognizer, e);
         }
     }
-    
-    private void tryExecByID(Parser recognizer, InputMismatchException e) {
+
+    private void tryExecByID(final Parser recognizer, final InputMismatchException e) {
         Token token = e.getOffendingToken();
         CommonToken commonToken = castCommonToken(token);
-        if(null == commonToken) {
+        if (null == commonToken) {
             throw e;
         }
-        
+
         int previousType = commonToken.getType();
-        if(previousType > id) {
+        if (previousType > id) {
             return;
         }
-        
+
         commonToken.setType(id);
         try {
             super.sync(recognizer);
-        } catch (InputMismatchException e1) {
-            if(e.getOffendingToken() == e1.getOffendingToken()) {
+        } catch (InputMismatchException ex) {
+            if (e.getOffendingToken() == ex.getOffendingToken()) {
                 commonToken.setType(previousType);
                 throw e;
             }
-            tryExecByID(recognizer, e1); 
-        } catch (Exception e1) {
+            tryExecByID(recognizer, ex);
+        } catch (Exception ex) {
             commonToken.setType(previousType);
             throw e;
         }
     }
-    
-    private CommonToken castCommonToken(Token token) {
-        if(token instanceof CommonToken) {
-            return (CommonToken)token;
+
+    private CommonToken castCommonToken(final Token token) {
+        if (token instanceof CommonToken) {
+            return (CommonToken) token;
         }
         return null;
     }
-    
-    
+
 }

@@ -25,8 +25,12 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 public class RenameIndexVisitor implements PhraseVisitor {
 
+    /** Visit rename index node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         ParserRuleContext renameIndexNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
                 "renameIndex");
         if (null != renameIndexNode) {

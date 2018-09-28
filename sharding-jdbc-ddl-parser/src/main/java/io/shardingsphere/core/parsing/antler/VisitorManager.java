@@ -30,9 +30,10 @@ import io.shardingsphere.core.parsing.antler.visitor.oracle.OracleAlterTableVisi
 import io.shardingsphere.core.parsing.antler.visitor.postgre.PostgreAlterTableVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.sqlserver.SQLServerAlterTableVisitor;
 
-public class VisitorManager {
-    private Map<String, StatementVisitor> visitors = new HashMap<String, StatementVisitor>();
+public final class VisitorManager {
     private static VisitorManager instance = new VisitorManager();
+
+    private Map<String, StatementVisitor> visitors = new HashMap<String, StatementVisitor>();
 
     private VisitorManager() {
         visitors.put("CreateTable", new CreateTableVisitor());
@@ -49,16 +50,20 @@ public class VisitorManager {
         visitors.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
     }
 
+    /**
+     * Get VisitorManager instance.
+     * @return VisitorManager instance
+     */
     public static VisitorManager getInstance() {
         return instance;
     }
 
     /**
-     * get statement visitor
+     * get statement visitor.
      * 
-     * @param dbType
-     * @param commandName
-     * @return
+     * @param dbType database type,ex:mysql,postgre...
+     * @param commandName sql command name
+     * @return Statement visitor
      */
     public StatementVisitor getVisitor(final DatabaseType dbType, final String commandName) {
         String key = dbType.name() + commandName;

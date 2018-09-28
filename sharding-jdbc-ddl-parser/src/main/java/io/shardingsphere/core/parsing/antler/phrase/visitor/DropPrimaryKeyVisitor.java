@@ -25,8 +25,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class DropPrimaryKeyVisitor implements PhraseVisitor {
 
+    /** Visit drop primary key node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
         ParserRuleContext dropPrimaryKeyNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,

@@ -22,5 +22,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public interface StatementVisitor {
-    SQLStatement visit(final ParserRuleContext rootNode);
+    
+    /** Visit ast,generate statement.
+     * @param rootNode root node of ast
+     * @return sql statement
+     */
+    SQLStatement visit(ParserRuleContext rootNode);
 }

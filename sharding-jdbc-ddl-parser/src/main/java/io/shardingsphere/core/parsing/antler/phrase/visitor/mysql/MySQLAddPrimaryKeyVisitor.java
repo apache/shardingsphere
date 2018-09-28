@@ -30,8 +30,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
 
+    /** Visit add primary key node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
         ParserRuleContext constraintDefinitionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,

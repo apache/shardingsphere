@@ -29,16 +29,28 @@ import io.shardingsphere.parser.antlr.sqlserver.SQLServerDropTableLexer;
 
 public class SQLServerDropTableParseTreeBuilder extends AbstractParseTreeBuilder {
 
+    /** Create lexer instance.
+     * @param stream text stream
+     * @return antlr lexer instance
+     */
     @Override
     protected Lexer newLexer(final CharStream stream) {
         return new SQLServerDropTableLexer(stream);
     }
 
+    /** Create parser instance.
+     * @param stream token stream
+     * @return antlr parser instance
+     */
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new SQLServerAdvancedDropTableParser(tokenStream);
     }
 
+    /** Get sql parse tree.
+     * @param parser instance
+     * @return sql parse tree
+     */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
         SQLServerAdvancedDropTableParser dropTableParser = (SQLServerAdvancedDropTableParser) parser;

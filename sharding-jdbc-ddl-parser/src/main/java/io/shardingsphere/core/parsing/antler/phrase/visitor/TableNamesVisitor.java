@@ -27,16 +27,20 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class TableNamesVisitor extends TableNameVisitor {
 
+    /** Visit ast.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
-        List<ParseTree>  tableNameCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "tableName");
-        
-        if(null == tableNameCtxs) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+        List<ParseTree> tableNameCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "tableName");
+
+        if (null == tableNameCtxs) {
             return;
         }
-        
+
         for (ParseTree each : tableNameCtxs) {
-            super.visit((ParserRuleContext)each, statement);
+            super.visit((ParserRuleContext) each, statement);
         }
     }
 

@@ -31,52 +31,64 @@ import org.antlr.v4.runtime.dfa.DFAState;
 
 public class AdvancedParserATNSimulator extends ParserATNSimulator {
     private int id;
-    
-    public AdvancedParserATNSimulator(Parser parser, ATN atn, DFA[] decisionToDFA,
-            PredictionContextCache sharedContextCache, int id) {
+
+    public AdvancedParserATNSimulator(final Parser parser, final ATN atn, final DFA[] decisionToDFA,
+            final PredictionContextCache sharedContextCache, final int id) {
         super(parser, atn, decisionToDFA, sharedContextCache);
         this.id = id;
     }
-    
-    protected int execATN(DFA dfa, DFAState s0, TokenStream input, int startIndex, ParserRuleContext outerContext) {
+
+    /**
+     * Performs ATN simulation to compute a predicted alternative based
+     *  upon the remaining input, but also updates the DFA cache to avoid
+     *  having to traverse the ATN again for the same input sequence.
+     * @param dfa antlr dfa instance
+     * @param s0 start state
+     * @param input input token stream
+     * @param startIndex  start index
+     * @param outerContext outer context
+     * @return alternative path number
+     */
+    protected int execATN(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext) {
         try {
             return super.execATN(dfa, s0, input, startIndex, outerContext);
         } catch (NoViableAltException e) {
             return tryExecByID(dfa, s0, input, startIndex, outerContext, e);
         }
     }
-    
-    private int tryExecByID(DFA dfa, DFAState s0, TokenStream input, int startIndex, ParserRuleContext outerContext, NoViableAltException e) {
+
+    private int tryExecByID(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext,
+            final NoViableAltException e) {
         Token token = e.getOffendingToken();
         CommonToken commonToken = castCommonToken(token);
-        if(null == commonToken) {
+        if (null == commonToken) {
             throw e;
         }
-        
+
         int previousType = commonToken.getType();
-        if(previousType > id || Token.EOF == token.getType()) {
+        if (previousType > id || Token.EOF == token.getType()) {
             throw e;
         }
-        
+
         commonToken.setType(id);
         try {
-           return super.execATN(dfa, s0, input, startIndex, outerContext);
-        } catch (NoViableAltException e1) {
-            if(e.getOffendingToken() == e1.getOffendingToken()) {
+            return super.execATN(dfa, s0, input, startIndex, outerContext);
+        } catch (NoViableAltException ex) {
+            if (e.getOffendingToken() == ex.getOffendingToken()) {
                 throw e;
             }
-            
-            return tryExecByID(dfa,  s0, input, startIndex,  outerContext, e1);
-        } catch (Exception e1) {
+
+            return tryExecByID(dfa, s0, input, startIndex, outerContext, ex);
+        } catch (Exception ex) {
             commonToken.setType(previousType);
             throw e;
         }
-        
+
     }
-    
-    private CommonToken castCommonToken(Token token) {
-        if(token instanceof CommonToken) {
-            return (CommonToken)token;
+
+    private CommonToken castCommonToken(final Token token) {
+        if (token instanceof CommonToken) {
+            return (CommonToken) token;
         }
         return null;
     }

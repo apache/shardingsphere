@@ -29,8 +29,12 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
 
 public class ColumnDefinitionVisitor implements PhraseVisitor {
 
+    /** Visit column definition node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
 
         List<ParseTree> columnDefinitions = TreeUtils.getAllDescendantByRuleName(rootNode, "ColumnDefinition");

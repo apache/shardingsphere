@@ -22,5 +22,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public interface PhraseVisitor {
-    void visit(final ParserRuleContext rootNode, final SQLStatement statement);
+    /** Visit ast.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
+    void visit(ParserRuleContext rootNode, SQLStatement statement);
 }

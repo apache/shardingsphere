@@ -27,6 +27,10 @@ import org.antlr.v4.runtime.TokenStream;
 
 public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
 
+    /** Parse input to ast.
+     * @param input sql text
+     * @return parse tree
+     */
     @Override
     public ParserRuleContext parse(final String input) {
         CharStream stream = CharStreams.fromString(input);
@@ -36,10 +40,22 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
         return getParserTree(parser);
     }
 
-    protected abstract Lexer newLexer(final CharStream stream);
+    /** Create lexer instance.
+     * @param stream text stream
+     * @return antlr lexer instance
+     */
+    protected abstract Lexer newLexer(CharStream stream);
 
-    protected abstract Parser newParser(final TokenStream tokenStream);
+    /** Create parser instance.
+     * @param stream token stream
+     * @return antlr parser instance
+     */
+    protected abstract Parser newParser(TokenStream tokenStream);
 
-    protected abstract ParserRuleContext getParserTree(final Parser parser);
+    /** Get sql parse tree.
+     * @param parser instance
+     * @return sql parse tree
+     */
+    protected abstract ParserRuleContext getParserTree(Parser parser);
 
 }

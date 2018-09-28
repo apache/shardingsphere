@@ -28,6 +28,13 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 public class StatementFactory {
+    /**Parse input to SQLStatement.
+     * @param dbType database type
+     * @param tokenType token type
+     * @param shardingRule databases and tables sharding rule
+     * @param lexerEngine lexical analysis engine
+     * @return SQLStatement instance
+     */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
             final ShardingRule shardingRule, final LexerEngine lexerEngine) {
 
@@ -43,7 +50,7 @@ public class StatementFactory {
         return null;
     }
 
-    private static String getCommandName(ParserRuleContext node) {
+    private static String getCommandName(final ParserRuleContext node) {
         String name = node.getClass().getSimpleName();
         int pos = name.indexOf("Context");
         if (pos > 0) {

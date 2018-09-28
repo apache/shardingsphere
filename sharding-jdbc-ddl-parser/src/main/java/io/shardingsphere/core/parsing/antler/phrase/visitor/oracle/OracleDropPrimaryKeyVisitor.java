@@ -42,8 +42,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
 
+    /** Visit drop primary key node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
         ParseTree dropConstraintCtx = TreeUtils.getFirstChildByRuleName(rootNode, "dropConstraintClause");

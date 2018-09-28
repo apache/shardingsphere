@@ -27,7 +27,10 @@ public class CreateTableVisitor extends AbstractStatementVisitor {
         addVisitor(new TableNameVisitor());
         addVisitor(new ColumnDefinitionVisitor());
     }
-    
+
+    /** Create create table statement.
+     * @return empty sql statment
+     */
     @Override
     protected SQLStatement newStatement() {
         return new CreateTableStatement();

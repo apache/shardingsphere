@@ -26,8 +26,12 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public abstract class AbstractStatementVisitor implements StatementVisitor {
-    protected List<PhraseVisitor> visitors = new ArrayList<>();
+    private List<PhraseVisitor> visitors = new ArrayList<>();
 
+    /** Visit ast,generate statement.
+     * @param rootNode root node of ast
+     * @return sql statement
+     */
     @Override
     public SQLStatement visit(final ParserRuleContext rootNode) {
         SQLStatement statement = newStatement();
@@ -39,11 +43,16 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
         return statement;
     }
 
-    public void addVisitor(PhraseVisitor visitor) {
+    /** Add visitor.
+     * @param visitor phrase visitor for filling statement
+     */
+    public void addVisitor(final PhraseVisitor visitor) {
         visitors.add(visitor);
     }
-    
-    
+
+    /** Create statement.
+     * @return empty sql statment
+     */
     protected abstract SQLStatement newStatement();
 
 }

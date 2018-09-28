@@ -298,7 +298,7 @@ public class TreeUtils {
     /**Find first descendant node whose type is ${type}.
      * 
      * @param node start node
-     * @param type terminal node type
+     * @param name terminal node name
      * @return match node
      */
     public static TerminalNode getFirstTerminalByType(final ParseTree node, final String name) {

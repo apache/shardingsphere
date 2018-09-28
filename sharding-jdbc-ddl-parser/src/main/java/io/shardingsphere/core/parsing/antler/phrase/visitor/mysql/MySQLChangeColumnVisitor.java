@@ -28,29 +28,29 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class MySQLChangeColumnVisitor extends ColumnDefinitionVisitor {
 
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        
+
         ParserRuleContext changeColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
                 "changeColumn");
-        if(null == changeColumnCtx) {
+        if (null == changeColumnCtx) {
             return;
         }
-        
+
         ParserRuleContext oldColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
                 "columnName");
-        
-        if(null == oldColumnCtx) {
+
+        if (null == oldColumnCtx) {
             return;
         }
-        
+
         ParserRuleContext columnDefinitionCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
                 "columnDefinition");
-        
-        if(null == columnDefinitionCtx) {
+
+        if (null == columnDefinitionCtx) {
             return;
         }
-        
+
         ColumnDefinition column = parseColumnDefinition(columnDefinitionCtx);
         if (null != column) {
             alterStatement.getUpdateColumns().remove(oldColumnCtx.getText());

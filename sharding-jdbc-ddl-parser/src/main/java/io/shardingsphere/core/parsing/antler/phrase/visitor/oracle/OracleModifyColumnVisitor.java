@@ -31,7 +31,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class OracleModifyColumnVisitor extends ColumnDefinitionVisitor {
 
     @Override
-    public void visit(ParserRuleContext rootNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
         ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,

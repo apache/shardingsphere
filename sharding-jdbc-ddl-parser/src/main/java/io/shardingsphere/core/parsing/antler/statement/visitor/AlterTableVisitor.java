@@ -32,7 +32,10 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
         addVisitor(new AddColumnVisitor());
         addVisitor(new DropColumnVisitor());
     }
-    
+
+    /** Create alter table statement.
+     * @return empty sql statment
+     */
     @Override
     protected SQLStatement newStatement() {
         return new AlterTableStatement();

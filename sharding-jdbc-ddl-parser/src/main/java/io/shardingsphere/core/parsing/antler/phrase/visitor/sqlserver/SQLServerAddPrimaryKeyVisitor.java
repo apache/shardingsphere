@@ -30,6 +30,10 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
 
+    /** Visit add primary key node.
+     * @param rootNode root node of ast
+     * @param statement sql statement
+     */
     @Override
     public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
