@@ -15,15 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.plugin.keygen;
+package io.shardingsphere;
 
+import io.shardingsphere.api.AllApiTests;
+import io.shardingsphere.core.AllCoreTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        HostNameKeyGeneratorTest.class,
-        IPKeyGeneratorTest.class
+        AllApiTests.class, 
+        AllCoreTests.class
     })
 public final class AllTests {
 }

@@ -24,7 +24,6 @@ import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import io.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -150,7 +149,7 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableCreateSQLs(), ";\n"))) {
+                 StringReader stringReader = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableCreateSQLs()))) {
                 RunScript.execute(connection, stringReader);
             }
         }
@@ -174,7 +173,7 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = DataSourceUtil.createDataSource(databaseType, each);
             try (Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(StringUtils.join(databaseEnvironmentSchema.getTableDropSQLs(), ";\n"))) {
+                 StringReader stringReader = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableDropSQLs()))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO table maybe not exist

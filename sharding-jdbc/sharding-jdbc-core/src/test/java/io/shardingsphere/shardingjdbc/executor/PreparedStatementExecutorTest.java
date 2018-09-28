@@ -25,6 +25,7 @@ import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -57,30 +58,9 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     private PreparedStatementExecutor actual;
     
     @Override
-    public void setUp() throws SQLException, ReflectiveOperationException {
+    public void setUp() throws SQLException {
         super.setUp();
         actual = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
-    }
-    
-    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
-        field.setAccessible(true);
-        field.set(actual, sqlType);
-    }
-    
-    private void setExecuteGroups(final List<PreparedStatement> preparedStatements, final SQLType sqlType) throws ReflectiveOperationException {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
-        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
-        for (PreparedStatement each : preparedStatements) {
-            List<List<Object>> parameterSets = new LinkedList<>();
-            String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
-            parameterSets.add(Collections.singletonList((Object) 1));
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
-        }
-        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
-        field.setAccessible(true);
-        field.set(actual, executeGroups);
     }
     
     @Test
@@ -91,7 +71,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException{
         PreparedStatement preparedStatement = getPreparedStatement();
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getInt(1)).thenReturn(1);
@@ -119,7 +99,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         ResultSet resultSet1 = mock(ResultSet.class);
@@ -146,7 +126,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
@@ -163,7 +143,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
@@ -184,7 +164,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeUpdate()).thenReturn(10);
         setSQLType(SQLType.DML);
@@ -200,7 +180,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeUpdate()).thenReturn(10);
@@ -219,7 +199,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
@@ -236,7 +216,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteUpdateForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
@@ -256,7 +236,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.execute()).thenReturn(false);
         setSQLType(SQLType.DML);
@@ -272,7 +252,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatementsSuccessWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForMultiplePreparedStatementsSuccessWithDML() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.execute()).thenReturn(false);
@@ -291,7 +271,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementFailureWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForSinglePreparedStatementFailureWithDML() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
@@ -308,7 +288,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatementsFailureWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForMultiplePreparedStatementsFailureWithDML() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
@@ -328,7 +308,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.execute()).thenReturn(true);
         setSQLType(SQLType.DQL);
@@ -344,7 +324,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteForMultiplePreparedStatements() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForMultiplePreparedStatements() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.execute()).thenReturn(true);
@@ -360,5 +340,28 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
         verify(getEventCaller(), times(0)).verifyException(null);
+    }
+    
+    @SneakyThrows
+    private void setSQLType(final SQLType sqlType) {
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
+    }
+    
+    @SneakyThrows
+    private void setExecuteGroups(final List<PreparedStatement> preparedStatements, final SQLType sqlType) {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        for (PreparedStatement each : preparedStatements) {
+            List<List<Object>> parameterSets = new LinkedList<>();
+            String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
+            parameterSets.add(Collections.singletonList((Object) 1));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
     }
 }

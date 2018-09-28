@@ -22,6 +22,7 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.opentracing.fixture.FooTracer;
+import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.mock;
 public final class ShardingTracerTest {
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() {
         System.setProperty("io.shardingsphere.opentracing.tracer.class", FooTracer.class.getName());
         clearGlobalTracer();
     }
@@ -72,7 +73,8 @@ public final class ShardingTracerTest {
         ShardingTracer.init();
     }
     
-    private static void clearGlobalTracer() throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    private static void clearGlobalTracer() {
         Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
         tracerField.setAccessible(true);
         tracerField.set(GlobalTracer.class, NoopTracerFactory.create());

@@ -31,7 +31,7 @@ public final class BinaryStatementRegistryTest {
     
     @Before
     @After
-    public void reset() throws ReflectiveOperationException {
+    public void reset() {
         BinaryStatementRegistryUtil.reset();
     }
     

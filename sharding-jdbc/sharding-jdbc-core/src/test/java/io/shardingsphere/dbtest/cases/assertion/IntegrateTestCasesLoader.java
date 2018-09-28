@@ -28,6 +28,7 @@ import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCases;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCases;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.JAXBContext;
@@ -74,15 +75,12 @@ public final class IntegrateTestCasesLoader {
     
     private final Map<String, IntegrateTestCase> dclIntegrateTestCaseMap;
     
+    @SneakyThrows
     private IntegrateTestCasesLoader() {
-        try {
-            dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-            dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
-            ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-            dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        } catch (final IOException | URISyntaxException | JAXBException ex) {
-            throw new RuntimeException(ex);
-        }
+        dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
     }
     
     /**

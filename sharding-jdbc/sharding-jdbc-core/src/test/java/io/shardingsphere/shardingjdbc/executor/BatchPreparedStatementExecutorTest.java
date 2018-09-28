@@ -25,6 +25,7 @@ import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.BatchRouteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -52,51 +53,14 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     private BatchPreparedStatementExecutor actual;
     
     @Override
-    public void setUp() throws SQLException, ReflectiveOperationException {
+    public void setUp() throws SQLException {
         super.setUp();
         actual = new BatchPreparedStatementExecutor(1, 1, 1, false, getConnection());
     }
     
-    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
-        field.setAccessible(true);
-        field.set(actual, sqlType);
-    }
-    
-    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) throws ReflectiveOperationException {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
-        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
-        Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
-        for (PreparedStatement each : preparedStatements) {
-            List<List<Object>> parameterSets = new LinkedList<>();
-            parameterSets.add(Collections.singletonList((Object) 1));
-            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets));
-            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(routeUnit);
-            batchRouteUnit.mapAddBatchCount(0);
-            batchRouteUnit.mapAddBatchCount(1);
-            routeUnits.add(batchRouteUnit);
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
-        }
-        setFields(executeGroups, routeUnits);
-    }
-    
-    private void setFields(
-            final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) throws NoSuchFieldException, IllegalAccessException {
-        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
-        field.setAccessible(true);
-        field.set(actual, executeGroups);
-        field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");
-        field.setAccessible(true);
-        field.set(actual, routeUnits);
-        field = BatchPreparedStatementExecutor.class.getDeclaredField("batchCount");
-        field.setAccessible(true);
-        field.set(actual, 2);
-    }
-    
     @SuppressWarnings("unchecked")
     @Test
-    public void assertNoPreparedStatement() throws SQLException, ReflectiveOperationException {
+    public void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {0, 0});
         setSQLType(SQLType.DQL);
@@ -105,7 +69,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         setSQLType(SQLType.DQL);
@@ -131,7 +95,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
@@ -150,7 +114,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
@@ -166,7 +130,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException exp = new SQLException();
@@ -182,5 +146,44 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller(), times(2)).verifyException(exp);
+    }
+    
+    @SneakyThrows
+    private void setSQLType(final SQLType sqlType) {
+        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
+    }
+    
+    
+    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
+        for (PreparedStatement each : preparedStatements) {
+            List<List<Object>> parameterSets = new LinkedList<>();
+            parameterSets.add(Collections.singletonList((Object) 1));
+            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, parameterSets));
+            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(routeUnit);
+            batchRouteUnit.mapAddBatchCount(0);
+            batchRouteUnit.mapAddBatchCount(1);
+            routeUnits.add(batchRouteUnit);
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        setFields(executeGroups, routeUnits);
+    }
+    
+    @SneakyThrows
+    private void setFields(final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) {
+        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
+        field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");
+        field.setAccessible(true);
+        field.set(actual, routeUnits);
+        field = BatchPreparedStatementExecutor.class.getDeclaredField("batchCount");
+        field.setAccessible(true);
+        field.set(actual, 2);
     }
 }

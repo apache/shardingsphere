@@ -29,6 +29,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
+import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,17 +63,18 @@ public final class ComStmtExecutePacketTest {
     private FrontendHandler frontendHandler;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         setProxyContextNIOConfig();
     }
     
     @Before
     @After
-    public void reset() throws ReflectiveOperationException {
+    public void reset() {
         BinaryStatementRegistryUtil.reset();
     }
     
-    private void setProxyContextNIOConfig() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setProxyContextNIOConfig() {
         Field field = ProxyContext.class.getDeclaredField("useNIO");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), true);
@@ -93,7 +95,7 @@ public final class ComStmtExecutePacketTest {
     }
     
     @Test
-    public void assertExecute() throws ReflectiveOperationException, SQLException {
+    public void assertExecute() throws SQLException {
         BinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         BackendHandler backendHandler = mock(BackendHandler.class);
         when(payload.readInt4()).thenReturn(1);
@@ -114,7 +116,8 @@ public final class ComStmtExecutePacketTest {
         assertFalse(packet.next());
     }
     
-    private void setBackendHandler(final ComStmtExecutePacket packet, final BackendHandler backendHandler) throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setBackendHandler(final ComStmtExecutePacket packet, final BackendHandler backendHandler) {
         Field field = ComStmtExecutePacket.class.getDeclaredField("backendHandler");
         field.setAccessible(true);
         field.set(packet, backendHandler);

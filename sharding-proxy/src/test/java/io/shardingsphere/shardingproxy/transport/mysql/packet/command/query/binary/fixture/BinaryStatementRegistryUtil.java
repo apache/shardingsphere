@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.bin
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -30,10 +31,9 @@ public final class BinaryStatementRegistryUtil {
     
     /**
      * Reset {@code BinaryStatementRegistry}.
-     * 
-     * @throws ReflectiveOperationException reflective operation exception
      */
-    public static void reset() throws ReflectiveOperationException {
+    @SneakyThrows
+    public static void reset() {
         Field statementIdAssignerField = BinaryStatementRegistry.class.getDeclaredField("statementIdAssigner");
         statementIdAssignerField.setAccessible(true);
         ((Map) statementIdAssignerField.get(BinaryStatementRegistry.getInstance())).clear();

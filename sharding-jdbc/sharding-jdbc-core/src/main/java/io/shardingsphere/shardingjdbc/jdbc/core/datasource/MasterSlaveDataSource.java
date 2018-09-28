@@ -27,7 +27,6 @@ import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -101,7 +100,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
             try {
                 Method closeMethod = each.getClass().getDeclaredMethod("close");
                 closeMethod.invoke(each);
-            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            } catch (final ReflectiveOperationException ignored) {
             }
         }
     }

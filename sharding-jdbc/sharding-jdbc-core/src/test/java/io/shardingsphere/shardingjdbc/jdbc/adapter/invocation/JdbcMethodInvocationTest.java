@@ -17,19 +17,21 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter.invocation;
 
-import io.shardingsphere.core.exception.ShardingException;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 public final class JdbcMethodInvocationTest {
     
     @Test
-    public void assertInvokeSuccess() throws NoSuchMethodException, SecurityException {
+    @SneakyThrows
+    public void assertInvokeSuccess() {
         JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getMethod("length"), new Object[] {});
         actual.invoke("");
     }
     
-    @Test(expected = ShardingException.class)
-    public void assertInvokeFailure() throws NoSuchMethodException, SecurityException {
+    @Test(expected = IllegalAccessException.class)
+    @SneakyThrows
+    public void assertInvokeFailure() {
         JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
         actual.invoke("");
     }

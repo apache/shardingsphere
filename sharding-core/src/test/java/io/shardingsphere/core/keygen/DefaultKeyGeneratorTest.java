@@ -18,6 +18,7 @@
 package io.shardingsphere.core.keygen;
 
 import io.shardingsphere.core.keygen.fixture.FixedTimeService;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -80,7 +81,8 @@ public final class DefaultKeyGeneratorTest {
     }
     
     @Test
-    public void assertSetWorkerIdSuccess() throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    public void assertSetWorkerIdSuccess() {
         DefaultKeyGenerator.setWorkerId(1L);
         Field workerIdField = DefaultKeyGenerator.class.getDeclaredField("workerId");
         workerIdField.setAccessible(true);

@@ -32,6 +32,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Colu
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -76,7 +77,7 @@ public final class ComFieldListPacketTest {
     }
     
     @Test
-    public void assertExecuteWhenSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteWhenSuccess() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         when(backendHandler.next()).thenReturn(true, false);
@@ -103,7 +104,7 @@ public final class ComFieldListPacketTest {
     }
     
     @Test
-    public void assertExecuteWhenFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteWhenFailure() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         CommandResponsePackets expected = new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown"));
@@ -115,7 +116,8 @@ public final class ComFieldListPacketTest {
         assertThat(actual.get(), is(expected));
     }
     
-    private void setBackendHandler(final ComFieldListPacket packet) throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setBackendHandler(final ComFieldListPacket packet) {
         Field field = ComFieldListPacket.class.getDeclaredField("backendHandler");
         field.setAccessible(true);
         field.set(packet, backendHandler);

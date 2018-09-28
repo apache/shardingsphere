@@ -21,6 +21,7 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.spring.boot.util.EmbedTestingServer;
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,7 +56,8 @@ public class OrchestrationSpringBootMasterSlaveTest {
     }
     
     @Test
-    public void assertWithMasterSlaveDataSource() throws ReflectiveOperationException {
+    @SneakyThrows
+    public void assertWithMasterSlaveDataSource() {
         assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
         Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);

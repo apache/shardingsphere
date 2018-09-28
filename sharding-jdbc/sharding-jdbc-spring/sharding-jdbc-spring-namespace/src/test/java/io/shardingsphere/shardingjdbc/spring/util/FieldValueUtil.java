@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.spring.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 
@@ -42,17 +43,13 @@ public final class FieldValueUtil {
         return getFieldValue(clazz, obj, fieldName);
     }
     
+    @SneakyThrows
     private static Object getFieldValue(final Class<?> clazz, final Object obj, final String fieldName) {
-        try {
-            Field field = clazz.getDeclaredField(fieldName);
-            if (!field.isAccessible()) {
-                field.setAccessible(true);
-            }
-            return field.get(obj);
-        } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
+        Field field = clazz.getDeclaredField(fieldName);
+        if (!field.isAccessible()) {
+            field.setAccessible(true);
         }
+        return field.get(obj);
     }
     
     /**

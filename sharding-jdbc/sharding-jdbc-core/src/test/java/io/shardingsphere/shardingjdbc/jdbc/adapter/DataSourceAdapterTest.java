@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.junit.Test;
@@ -66,7 +65,7 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
         getShardingDataSource().replayMethodsInvocation(list);
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = NoSuchMethodException.class)
     public void assertRecordMethodInvocationFailure() {
         getShardingDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }

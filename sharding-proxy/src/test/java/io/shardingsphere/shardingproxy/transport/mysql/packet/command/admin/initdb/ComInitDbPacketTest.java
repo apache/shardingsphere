@@ -27,6 +27,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPac
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,8 @@ public final class ComInitDbPacketTest {
     private FrontendHandler frontendHandler;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    @SneakyThrows
+    public void setUp() {
         List<String> schemaNames = new ArrayList<>(1);
         schemaNames.add(ShardingConstant.LOGIC_SCHEMA_NAME);
         Field field = ProxyContext.class.getDeclaredField("schemaNames");

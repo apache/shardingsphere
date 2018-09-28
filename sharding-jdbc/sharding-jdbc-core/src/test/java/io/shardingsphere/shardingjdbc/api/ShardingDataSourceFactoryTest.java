@@ -22,6 +22,7 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import lombok.SneakyThrows;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -47,7 +48,7 @@ import static org.mockito.Mockito.when;
 public final class ShardingDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceWithShardingRuleAndConfigMapAndProperties() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    public void assertCreateDataSourceWithShardingRuleAndConfigMapAndProperties() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfig();
         Properties props = new Properties();
         Map<String, Object> configMap = new ConcurrentHashMap<>();
@@ -72,8 +73,8 @@ public final class ShardingDataSourceFactoryTest {
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(connection);
-        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
-                ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
+        when(statement.getConnection().getMetaData().getTables(
+                ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Map<String, DataSource> result = new HashMap<>(1);
         when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
@@ -90,13 +91,15 @@ public final class ShardingDataSourceFactoryTest {
         return result;
     }
     
-    private ShardingRule getShardingRule(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    private ShardingRule getShardingRule(final DataSource dataSource) {
         Field field = dataSource.getClass().getDeclaredField("shardingContext");
         field.setAccessible(true);
         return ((ShardingContext) field.get(dataSource)).getShardingRule();
     }
     
-    private Properties getShardingProperties(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    private Properties getShardingProperties(final DataSource dataSource) {
         Field shardingPropertiesField = dataSource.getClass().getDeclaredField("shardingProperties");
         shardingPropertiesField.setAccessible(true);
         Field propsField = shardingPropertiesField.get(dataSource).getClass().getDeclaredField("props");

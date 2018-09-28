@@ -35,6 +35,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.bina
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,12 +65,13 @@ public final class CommandPacketFactoryTest {
     private FrontendHandler frontendHandler;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         setProxyContextRuleRegistryMap();
         setFrontendHandlerSchema();
     }
     
-    private void setProxyContextRuleRegistryMap() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void setProxyContextRuleRegistryMap() {
         RuleRegistry ruleRegistry = mock(RuleRegistry.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
         when(ruleRegistry.getMetaData()).thenReturn(metaData);

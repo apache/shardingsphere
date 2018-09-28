@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.listener;
 
 import io.shardingsphere.shardingproxy.config.ProxyContext;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,8 @@ public final class ProxyListenerRegisterTest {
     private ProxyContext proxyContext;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    @SneakyThrows
+    public void setUp() {
         Field field = ProxyListenerRegister.class.getDeclaredField("proxyContext");
         field.setAccessible(true);
         field.set(proxyListenerRegister, proxyContext);

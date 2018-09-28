@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 import com.google.common.primitives.Bytes;
 import io.shardingsphere.core.rule.ProxyAuthority;
 import io.shardingsphere.shardingproxy.config.ProxyContext;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,19 +39,21 @@ public final class AuthorityHandlerTest {
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         initProxyAuthorityForProxyContext();
         initAuthPluginDataForAuthorityHandler();
     }
     
-    private void initProxyAuthorityForProxyContext() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void initProxyAuthorityForProxyContext() {
         ProxyAuthority proxyAuthority = new ProxyAuthority();
         Field field = ProxyContext.class.getDeclaredField("proxyAuthority");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), proxyAuthority);
     }
     
-    private void initAuthPluginDataForAuthorityHandler() throws ReflectiveOperationException {
+    @SneakyThrows
+    private void initAuthPluginDataForAuthorityHandler() {
         AuthPluginData authPluginData = new AuthPluginData(part1, part2);
         Field field = AuthorityHandler.class.getDeclaredField("authPluginData");
         field.setAccessible(true);

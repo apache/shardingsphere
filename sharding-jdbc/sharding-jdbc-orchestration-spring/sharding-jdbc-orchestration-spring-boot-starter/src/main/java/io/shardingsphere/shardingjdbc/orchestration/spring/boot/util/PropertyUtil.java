@@ -17,15 +17,14 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.spring.boot.util;
 
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public final class PropertyUtil {
     static {
         try {
             Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignored) {
             springBootVersion = 2;
         }
     }
@@ -64,47 +63,39 @@ public final class PropertyUtil {
     }
 
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     private static Object v1(final Environment environment, final String prefix) {
-        try {
-            Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
-            Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
-            Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
-            Object resolverObject = resolverConstructor.newInstance(environment);
-            String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
-            Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
-            Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
-            Map<String, Object> propertiesWithPlaceholderResolved = new HashMap<>();
-            for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                if (value instanceof String && ((String) value).contains(
-                        PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
-                    String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
-                    propertiesWithPlaceholderResolved.put(key, resolvedValue);
-                } else {
-                    propertiesWithPlaceholderResolved.put(key, value);
-                }
+        Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
+        Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
+        Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
+        Object resolverObject = resolverConstructor.newInstance(environment);
+        String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
+        Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
+        Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
+        Map<String, Object> propertiesWithPlaceholderResolved = new HashMap<>();
+        for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof String && ((String) value).contains(
+                    PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
+                String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
+                propertiesWithPlaceholderResolved.put(key, resolvedValue);
+            } else {
+                propertiesWithPlaceholderResolved.put(key, value);
             }
-            return Collections.unmodifiableMap(propertiesWithPlaceholderResolved);
-        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-                | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new ShardingException(ex.getMessage(), ex);
         }
+        return Collections.unmodifiableMap(propertiesWithPlaceholderResolved);
     }
     
+    @SneakyThrows
     private static Object v2(final Environment environment, final String prefix, final Class<?> targetClass) {
-        try {
-            Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
-            Method getMethod = binderClass.getDeclaredMethod("get", Environment.class);
-            Method bindMethod = binderClass.getDeclaredMethod("bind", String.class, Class.class);
-            Object binderObject = getMethod.invoke(null, environment);
-            String prefixParam = prefix.endsWith(".") ? prefix.substring(0, prefix.length() - 1) : prefix;
-            Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
-            Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
-            return resultGetMethod.invoke(bindResultObject);
-        } catch (final ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException ex) {
-            throw new ShardingException(ex.getMessage(), ex);
-        }
+        Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
+        Method getMethod = binderClass.getDeclaredMethod("get", Environment.class);
+        Method bindMethod = binderClass.getDeclaredMethod("bind", String.class, Class.class);
+        Object binderObject = getMethod.invoke(null, environment);
+        String prefixParam = prefix.endsWith(".") ? prefix.substring(0, prefix.length() - 1) : prefix;
+        Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
+        Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
+        return resultGetMethod.invoke(bindResultObject);
     }
 }

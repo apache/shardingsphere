@@ -21,6 +21,7 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -175,13 +176,10 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     private Multimap<String, Connection> getCachedConnections(final AbstractConnectionAdapter connectionAdapter) {
-        try {
-            Field field = AbstractConnectionAdapter.class.getDeclaredField("cachedConnections");
-            field.setAccessible(true);
-            return (Multimap<String, Connection>) field.get(connectionAdapter);
-        } catch (final ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
-        }
+        Field field = AbstractConnectionAdapter.class.getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        return (Multimap<String, Connection>) field.get(connectionAdapter);
     }
 }

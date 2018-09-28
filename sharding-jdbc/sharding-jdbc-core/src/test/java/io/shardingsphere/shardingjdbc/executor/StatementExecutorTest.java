@@ -26,6 +26,7 @@ import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorException
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -58,7 +59,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     private StatementExecutor actual;
     
     @Override
-    public void setUp() throws SQLException, ReflectiveOperationException {
+    public void setUp() throws SQLException {
         super.setUp();
         actual = new StatementExecutor(1, 1, 1, getConnection());
     }
@@ -71,7 +72,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteQueryForSingleStatementSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForSingleStatementSuccess() throws SQLException {
         Statement statement = getStatement();
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getInt(1)).thenReturn(1);
@@ -83,29 +84,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
     }
     
-    private void setSQLType(final SQLType sqlType) throws ReflectiveOperationException {
-        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
-        field.setAccessible(true);
-        field.set(actual, sqlType);
-    }
-    
-    private void setExecuteGroups(final List<Statement> statements, final SQLType sqlType) throws ReflectiveOperationException {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
-        List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
-        for (Statement each : statements) {
-            List<List<Object>> parameterSets = new LinkedList<>();
-            String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
-            parameterSets.add(Collections.singletonList((Object) 1));
-            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
-        }
-        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
-        field.setAccessible(true);
-        field.set(actual, executeGroups);
-    }
-    
     @Test
-    public void assertExecuteQueryForMultipleStatementsSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForMultipleStatementsSuccess() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         ResultSet resultSet1 = mock(ResultSet.class);
@@ -128,7 +108,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteQueryForSingleStatementFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForSingleStatementFailure() throws SQLException {
         Statement statement = getStatement();
         SQLException exp = new SQLException();
         when(statement.executeQuery(DQL_SQL)).thenThrow(exp);
@@ -141,7 +121,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         SQLException exp = new SQLException();
@@ -162,7 +142,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateForSingleStatementSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForSingleStatementSuccess() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL)).thenReturn(10);
         setSQLType(SQLType.DML);
@@ -178,7 +158,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateForMultipleStatementsSuccess() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForMultipleStatementsSuccess() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         when(statement1.executeUpdate(DML_SQL)).thenReturn(10);
@@ -197,7 +177,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateForSingleStatementFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForSingleStatementFailure() throws SQLException {
         Statement statement = getStatement();
         SQLException exp = new SQLException();
         when(statement.executeUpdate(DML_SQL)).thenThrow(exp);
@@ -214,7 +194,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateForMultipleStatementsFailure() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         SQLException exp = new SQLException();
@@ -234,7 +214,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateWithAutoGeneratedKeys() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateWithAutoGeneratedKeys() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(10);
         setSQLType(SQLType.DML);
@@ -250,7 +230,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateWithColumnIndexes() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateWithColumnIndexes() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL, new int[] {1})).thenReturn(10);
         setSQLType(SQLType.DML);
@@ -276,7 +256,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdateWithColumnNames() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteUpdateWithColumnNames() throws SQLException {
         Statement statement = getStatement();
         when(statement.executeUpdate(DML_SQL, new String[] {"col"})).thenReturn(10);
         setSQLType(SQLType.DML);
@@ -292,7 +272,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteForSingleStatementSuccessWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForSingleStatementSuccessWithDML() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL)).thenReturn(false);
         setSQLType(SQLType.DML);
@@ -308,7 +288,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteForMultipleStatementsSuccessWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForMultipleStatementsSuccessWithDML() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         when(statement1.execute(DML_SQL)).thenReturn(false);
@@ -327,7 +307,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteForSingleStatementFailureWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForSingleStatementFailureWithDML() throws SQLException {
         Statement statement = getStatement();
         SQLException exp = new SQLException();
         when(statement.execute(DML_SQL)).thenThrow(exp);
@@ -344,7 +324,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteForMultipleStatementsFailureWithDML() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForMultipleStatementsFailureWithDML() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         SQLException exp = new SQLException();
@@ -364,7 +344,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteForSingleStatementWithDQL() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForSingleStatementWithDQL() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DQL_SQL)).thenReturn(true);
         setSQLType(SQLType.DQL);
@@ -380,7 +360,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteForMultipleStatements() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteForMultipleStatements() throws SQLException {
         Statement statement1 = getStatement();
         Statement statement2 = getStatement();
         when(statement1.execute(DQL_SQL)).thenReturn(true);
@@ -399,7 +379,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAutoGeneratedKeys() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteWithAutoGeneratedKeys() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
         setSQLType(SQLType.DML);
@@ -416,7 +396,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithColumnIndexes() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteWithColumnIndexes() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL, new int[] {1})).thenReturn(false);
         setSQLType(SQLType.DML);
@@ -432,7 +412,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithColumnNames() throws SQLException, ReflectiveOperationException {
+    public void assertExecuteWithColumnNames() throws SQLException {
         Statement statement = getStatement();
         when(statement.execute(DML_SQL, new String[] {"col"})).thenReturn(false);
         setSQLType(SQLType.DML);
@@ -448,7 +428,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     }
     
     @Test
-    public void assertOverallExceptionFailure() throws SQLException, ReflectiveOperationException {
+    public void assertOverallExceptionFailure() throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(true);
         Statement statement = getStatement();
         SQLException exp = new SQLException();
@@ -461,5 +441,28 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         }
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);
+    }
+    
+    @SneakyThrows
+    private void setExecuteGroups(final List<Statement> statements, final SQLType sqlType) {
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
+        executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
+        for (Statement each : statements) {
+            List<List<Object>> parameterSets = new LinkedList<>();
+            String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
+            parameterSets.add(Collections.singletonList((Object) 1));
+            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+        }
+        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        field.setAccessible(true);
+        field.set(actual, executeGroups);
+    }
+    
+    @SneakyThrows
+    private void setSQLType(final SQLType sqlType) {
+        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
+        field.setAccessible(true);
+        field.set(actual, sqlType);
     }
 }

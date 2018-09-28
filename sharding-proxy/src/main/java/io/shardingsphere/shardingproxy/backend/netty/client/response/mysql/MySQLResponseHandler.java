@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.backend.netty.client.response.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.netty.client.response.ResponseHandler;
@@ -37,10 +36,10 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,22 +91,19 @@ public final class MySQLResponseHandler extends ResponseHandler {
         }
     }
     
+    @SneakyThrows
     private byte[] securePasswordAuthentication(final byte[] password, final byte[] authPluginData) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-            byte[] part1 = messageDigest.digest(password);
-            messageDigest.reset();
-            byte[] part2 = messageDigest.digest(part1);
-            messageDigest.reset();
-            messageDigest.update(authPluginData);
-            byte[] result = messageDigest.digest(part2);
-            for (int i = 0; i < result.length; i++) {
-                result[i] = (byte) (result[i] ^ part1[i]);
-            }
-            return result;
-        } catch (final NoSuchAlgorithmException ex) {
-            throw new ShardingException(ex);
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+        byte[] part1 = messageDigest.digest(password);
+        messageDigest.reset();
+        byte[] part2 = messageDigest.digest(part1);
+        messageDigest.reset();
+        messageDigest.update(authPluginData);
+        byte[] result = messageDigest.digest(part2);
+        for (int i = 0; i < result.length; i++) {
+            result[i] = (byte) (result[i] ^ part1[i]);
         }
+        return result;
     }
     
     @Override

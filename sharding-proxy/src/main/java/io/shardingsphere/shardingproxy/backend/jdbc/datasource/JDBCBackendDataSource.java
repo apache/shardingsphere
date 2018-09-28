@@ -27,7 +27,6 @@ import io.shardingsphere.shardingproxy.config.RuleRegistry;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -151,7 +150,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             try {
                 Method method = each.getClass().getDeclaredMethod("close");
                 method.invoke(each);
-            } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {
+            } catch (final ReflectiveOperationException ignored) {
             }
         }
     }

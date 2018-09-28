@@ -17,14 +17,13 @@
 
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
-import io.shardingsphere.core.exception.ShardingException;
+import lombok.SneakyThrows;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.beans.IntrospectionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -46,25 +45,19 @@ public final class ProxyConfigurationRepresenter extends Representer {
     
     public ProxyConfigurationRepresenter() {
         super();
-        this.nullRepresenter = new NullRepresent();
+        nullRepresenter = new NullRepresent();
     }
     
+    @SneakyThrows
     @Override
     protected Set<Property> getProperties(final Class<?> type) {
-        Set<Property> propertySet;
-        try {
-            propertySet = super.getProperties(type);
-        } catch (IntrospectionException ex) {
-            throw new ShardingException(ex);
-        }
-        Set<Property> filteredSet = new LinkedHashSet<>();
-        for (Property prop : propertySet) {
-            String name = prop.getName();
-            if (!eliminatedPropertyNames.contains(name)) {
-                filteredSet.add(prop);
+        Set<Property> result = new LinkedHashSet<>();
+        for (Property each : super.getProperties(type)) {
+            if (!eliminatedPropertyNames.contains(each.getName())) {
+                result.add(each);
             }
         }
-        return filteredSet;
+        return result;
     }
     
     private class NullRepresent implements Represent {

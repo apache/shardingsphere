@@ -17,11 +17,10 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter.invocation;
 
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -43,11 +42,8 @@ public class JdbcMethodInvocation {
      * 
      * @param target target object
      */
+    @SneakyThrows
     public void invoke(final Object target) {
-        try {
-            method.invoke(target, arguments);
-        } catch (final IllegalAccessException | InvocationTargetException ex) {
-            throw new ShardingException("Invoke jdbc method exception", ex);
-        }
+        method.invoke(target, arguments);
     }
 }
