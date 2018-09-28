@@ -11,7 +11,7 @@ The answer is:
 
 Sharding-Sphere uses lombok to implement minimal code. For details, please refer to [lombok](https://projectlombok.org/download.html).
 
-sharding-jdbc-orchestration module needs to perform ` mvn install` command to generate gRPC-related Java file according to the protobuf file.
+sharding-orchestration-reg module needs to perform ` mvn install` command to generate gRPC-related Java file according to the protobuf file.
 
 #### 2. How to solve the Error of Cloud not resolve placeholder ... in string value ...?
 
@@ -166,4 +166,4 @@ More detail, please refer to the ojdb sourcecode of coracle.jdbc.driver.Timestam
 The answer is:
 
 Deploying an XSD file to a public web address is not the requirement of the Spring namespace usage specification, but some users have such requirements, so we deploy the XSD file to the Sharding-Sphere website.
-In fact, META-INF\spring.schemas in the jar package of sharding-jdbc-core-config-spring configures the position of xsd file：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd.
+In fact, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace configures the position of xsd file：META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd.

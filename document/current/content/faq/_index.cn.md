@@ -11,7 +11,7 @@ chapter = true
 
 Sharding-Sphere使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
-sharding-jdbc-orchestration模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
+sharding-orchestration-reg模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
 
 #### 2. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
@@ -95,11 +95,11 @@ Sharding-Sphere采用snowflake算法作为默认的分布式分布式自增主�
 
 必须确保数据库表中该字段和分片算法该字段类型一致，如：数据库中该字段类型为int(11)，泛型所对应的分片类型应为Integer，如果需要配置为Long类型，请确保数据库中该字段类型为bigint。
 
-#### 10. Sharding-JDBC除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
+#### 10. Sharding-Sphere除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
 回答：是的，可以支持。但原生自增主键有使用限制，即不能将原生自增主键同时作为分片键使用。
 
-由于Sharding-JDBC并不知晓数据库的表结构，而原生自增主键是不包含在原始SQL中内的，因此Sharding-JDBC无法将该字段解析为分片字段。如自增主键非分片键，则无需关注，可正常返回；若自增主键同时作为分片键使用，Sharding-JDBC无法解析其分片值，导致SQL路由至多张表，从而影响应用的正确性。
+由于Sharding-Sphere并不知晓数据库的表结构，而原生自增主键是不包含在原始SQL中内的，因此Sharding-Sphere无法将该字段解析为分片字段。如自增主键非分片键，则无需关注，可正常返回；若自增主键同时作为分片键使用，Sharding-Sphere无法解析其分片值，导致SQL路由至多张表，从而影响应用的正确性。
 
 而原生自增主键返回的前提条件是INSERT SQL必须最终路由至一张表，因此，面对返回多表的INSERT SQL，自增主键则会返回零。
 
@@ -165,4 +165,4 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
 
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，但考虑到部分用户的需求，我们也将相关xsd文件部署至Sharding-Sphere官网。
 
-实际上sharding-jdbc-core-config-spring的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
+实际上sharding-jdbc-spring-namespace的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
