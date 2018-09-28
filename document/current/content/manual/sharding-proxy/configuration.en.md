@@ -5,11 +5,16 @@ title = "Configuration Manual"
 weight = 2
 +++
 
-## Example
+## Data sources and sharding rule configuration example
+
+Sharding-Proxy support multiple logic schema, for every configuration file which prefix as `config-`, and suffix as `.yaml`. 
+Below is configuration example of `config-xxx.yaml`.
 
 ### Sharding
 
 ```yaml
+schemaName: sharding_db
+
 dataSources:
   ds0: 
     url: jdbc:mysql://localhost:3306/ds0
@@ -20,7 +25,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65
-    
   ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
@@ -46,32 +50,22 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
-  
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-  
-  props:
-    connection.mode: MEMORY_STRICTLY
-    executor.size: 16
-    sql.show: false
-    
-proxyAuthority:
-  username: root
-  password:
 ```
 
 ### Read-write splitting
 
 ```yaml
+schemaName: sharding_master_slave_db
+
 dataSources:
   ds_master:
     url: jdbc:mysql://localhost:3306/ds_master
@@ -82,7 +76,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65
-    
   ds_slave0:
     url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
@@ -92,7 +85,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65 
-    
   ds_slave1:
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
@@ -109,20 +101,13 @@ masterSlaveRule:
   slaveDataSourceNames: 
     - ds_slave0
     - ds_slave1
-    
-  props:
-    connection.mode: MEMORY_STRICTLY
-    executor.size: 16
-    sql.show: false
-       
-proxyAuthority:
-  username: root
-  password:
 ```
 
 ### Sharding + Read-write splitting
 
 ```yaml
+schemaName: sharding_master_slave_db
+
 dataSources:
   ds0:
     url: jdbc:mysql://localhost:3306/ds0
@@ -133,7 +118,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65 
-    
   ds0_slave0:
     url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
@@ -143,7 +127,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65
-          
   ds0_slave1:
     url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
@@ -153,7 +136,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65
-           
   ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
@@ -163,7 +145,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65
-      
   ds1_slave0:
     url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
@@ -173,7 +154,6 @@ dataSources:
     idleTimeout: 60000
     maxLifetime: 1800000
     maximumPoolSize: 65
-            
   ds1_slave1:
     url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
@@ -199,19 +179,15 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
-  
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-  
   masterSlaveRules:
       ms_ds0:
         masterDataSourceName: ds0
@@ -229,19 +205,11 @@ shardingRule:
         loadBalanceAlgorithmType: ROUND_ROBIN
         configMap:
           master-slave-key1: master-slave-value1
-
-  props:
-    connection.mode: MEMORY_STRICTLY
-    executor.size: 16
-    sql.show: false
-
-proxyAuthority:
-  username: root
-  password:
 ```
 
+## Global configuration example
 
-### Orchestration by Zookeeper
+### Orchestration by ZooKeeper
 
 ```yaml
 #Ignore data sources, sharding and read-write splitting configuration
@@ -266,11 +234,29 @@ orchestration:
     serverLists: http://localhost:2379
 ```
 
-## Configuration reference
+### Authentication
+
+```yaml
+proxyAuthority:
+  username: root
+  password:
+```
+
+### Common properties
+
+```yaml
+props:
+  executor.size: 16
+  sql.show: false
+```
+
+## Data sources and sharding rule configuration reference
 
 ### Sharding
 
 ```yaml
+schemaName: #Logic database schema name
+
 dataSources: #Data sources configuration, multiple `data_source_name` available
   <data_source_name>: #Different with Sharding-JDBC, do not need configure data source pool here.
     url: #Database URL
@@ -288,22 +274,31 @@ shardingRule: #Ignore sharding rule configuration, same as Sharding-JDBC
 ### Read-write splitting
 
 ```yaml
+schemaName: #Logic database schema name
+
 dataSources: #Ignore data source configuration, same as sharding
 
 masterSlaveRule: #Ignore read-write splitting rule configuration, same as Sharding-JDBC
 ```
 
+## Global configuration reference
+
+### Orchestration by Zookeeper
+
+Same as configuration of Sharding-JDBC.
+
+### Orchestration by Etcd
+
+Same as configuration of Sharding-JDBC.
+
 ### Proxy Properties
 
 ```yaml
-  props:
-    # MEMORY_STRICTLY: Proxy holds as many connections as the count of actual tables routed in a database.
-    #                  The benefit of this approach is saving memory for Proxy by Stream ResultSet.
-    # CONNECTION_STRICTLY: Proxy will release connections after get the overall rows from the ResultSet.
-    #                      Meanwhile, the cost of the memory will be increased.
-    connection.mode: 
-    executor.size: # Max threads will connect to databases.The default value is available processors count.
-    sql.show: false
+#Ignore configuration which same as Sharding-JDBC
+props:
+  acceptor.size: #Max thread count to handle client's requests, default value is CPU*2
+  proxy.transaction.enabled: #Enable transaction, only support XA now, default value is false
+  proxy.opentracing.enabled: #Enable open tracing, default value is false. More details please reference[APM](/en/features/orchestration/apm/)
 ```
 
 ### Authorization for Proxy
@@ -315,14 +310,6 @@ proxyAuthority:
    username: root
    password:
 ```
-
-### Orchestration by Zookeeper
-
-Same as configuration of Sharding-JDBC.
-
-### Orchestration by Etcd
-
-Same as configuration of Sharding-JDBC.
 
 ## Yaml syntax
 
