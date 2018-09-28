@@ -597,6 +597,9 @@
                     <format>xml</format>
                     <instrumentation>
                         <ignoreTrivial>true</ignoreTrivial>
+                        <ignoreMethodAnnotations>
+                            <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
+                        </ignoreMethodAnnotations>
                         <excludes>
                             <exclude>io/shardingsphere/**/*Test.class</exclude>
                             <exclude>io/shardingsphere/**/Test*.class</exclude>
