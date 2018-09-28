@@ -56,14 +56,6 @@ You can see SQL parsing and execution in this figure.
 
 ![The parsing node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
 
-`/SHARDING-SPHERE/EXECUTE/{SQLType}`: Represents the overall execution performance of this SQL.
+`/Sharding-Sphere/executeSQL/`: Represents the performance of the actual SQL.
 
-![The logical execution node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
-
-`/SHARDING-SPHERE/EXECUTE/`: Represents the performance of the actual SQL.
-
-![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
-
-`/SHARDING-SPHERE/MERGE/`: Represents the performance of performing merge results.
-
-![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-merge-span.png)
+![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)

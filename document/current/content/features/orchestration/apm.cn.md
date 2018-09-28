@@ -57,14 +57,6 @@ weight = 4
 
 ![解析节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
 
-`/SHARDING-SPHERE/EXECUTE/{SQLType}` : 表示本次SQL的总体执行性能。
+`/Sharding-Sphere/executeSQL/` : 表示具体执行的实际SQL的性能。
 
-![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
-
-`/SHARDING-SPHERE/EXECUTE/` : 表示具体执行的实际SQL的性能。
-
-![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
-
-`/SHARDING-SPHERE/MERGE/` : 表示执行结果归并的性能。
-
-![结果归并节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-merge-span.png)
+![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)
