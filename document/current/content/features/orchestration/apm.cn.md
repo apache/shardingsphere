@@ -15,7 +15,7 @@ weight = 4
 
 ### 使用SkyWalking插件
 
-请参考[SkyWalking部署手册](https://github.com/OpenSkywalking/skywalking/wiki/Quick-start-chn)。
+请参考[SkyWalking部署手册](https://github.com/apache/incubator-skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
 
 ### 使用OpenTracing插件
 
@@ -23,7 +23,7 @@ weight = 4
 
 * 通过读取系统参数注入APM系统提供的Tracer实现类
 ```
-    启动时添加参数：-Dshardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    启动时添加参数：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
     调用初始化方法：ShardingTracer.init()                          
 ```
 
@@ -39,32 +39,38 @@ weight = 4
 
 ### 应用架构
 
-该应用是一个`SpringBoot`应用，使用`Sharding-Sphere`访问两个数据库`ds0`和`ds1`，且每个数据库中有两个分表。
+使用`Sharding-Proxy`访问两个数据库`192.168.0.1:3306`和`192.168.0.2:3306`，且每个数据库中有两个分表。
 
 ### 拓扑图展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology-new.png)
+![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/5x_topology.png)
 
-从图中看，虽然用户访问一次应用，但是每个数据库访问了两次。这是由于本次访问涉及到每个库中的两个分表，所以一共访问了四张表。
+从图中看，用户访问18次Sharding-Proxy应用，每次每个数据库访问了两次。这是由于每次访问涉及到每个库中的两个分表，所以每次访问了四张表。
 
 ### 跟踪数据展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace-new.png)
+![跟踪图](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace.png)
 
-从跟踪图中可以能够看到SQL路由、执行和最终结果归并的情况。
+从跟踪图中可以能够看到SQL解析和执行的情况。
 
-`/SHARDING-SPHERE/ROUTING/` : 表示本次SQL的解析路由性能。
+`/Sharding-Sphere/parseSQL/` : 表示本次SQL的解析性能。
 
-![解析路由节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-route-span.png)
+![解析节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
 
-`/SHARDING-SPHERE/EXECUTE/{SQLType}` : 表示本次SQL的总体执行性能。
+`/Sharding-Sphere/executeSQL/` : 表示具体执行的实际SQL的性能。
 
-![逻辑执行节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
+![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)
 
-`/SHARDING-SPHERE/EXECUTE/` : 表示具体执行的实际SQL的性能。
+### 异常情况展示
 
-![实际访问节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
+![异常跟踪图](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace_err.png)
 
-`/SHARDING-SPHERE/MERGE/` : 表示执行结果归并的性能。
+从跟踪图中可以能够看到发生异常的节点。
 
-![结果归并节点](http://ovfotjrsi.bkt.clouddn.com/apm/apm-merge-span.png)
+`/Sharding-Sphere/executeSQL/` : 表示执行SQL异常的结果。
+
+![异常节点](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Tags_err.png)
+
+`/Sharding-Sphere/executeSQL/` : 表示执行SQL异常的日志。
+
+![异常节点日志](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Logs_err.png)

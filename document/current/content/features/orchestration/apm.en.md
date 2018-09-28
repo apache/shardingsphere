@@ -15,7 +15,7 @@ weight = 4
 
 ### Using SkyWalking
 
-Please refer to [SkyWalking Manual](https://github.com/OpenSkywalking/skywalking/wiki/Quick-start-chn)。
+Please refer to [SkyWalking Manual](https://github.com/apache/incubator-skywalking/blob/5.x/docs/en/Quick-start.md).
 
 ### Using OpenTracing
 
@@ -23,7 +23,7 @@ If user want to use other APM systems which support [OpenTracing] (http://opentr
 
 * Inject the Tracer implementation class through System.properties
 ```
-    System.Properties：-Dshardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    System.Properties：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
     mehtod：ShardingTracer.init()                          
 ```
 
@@ -38,32 +38,38 @@ If user want to use other APM systems which support [OpenTracing] (http://opentr
 
 ### Application schema
 
-The application is a ` SpringBoot ` application, using ` Sharding-Sphere ` to access two databases of `ds0` and `ds1`, each owns two tables in database.
+Using ` Sharding-Proxy ` to access two databases of `192.168.0.1:3306` and `192.168.0.2:3306`, each owns two tables in database.
 
 ### Topology diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology-new.png)
+![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_topology.png)
 
-Although the user accesses the application once, each database is accessed twice. This is because this visit involves two splitting tables in each database, four tables in total.
+User accesses the Sharding-Proxy 18 times, each database is accessed twice each time. This is because one access involves two splitting tables in each database, four tables in total.
 
 ### Tracking diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace-new.png)
+![The tracking diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace.png)
 
-You can see SQL routing, execution and final result set merge in this figure.
+You can see SQL parsing and execution in this figure.
 
-`/SHARDING-SPHERE/ROUTING/`: Represents the parsing and routing performance of this SQL.
+`/Sharding-Sphere/parseSQL/`: Represents the parsing performance of this SQL.
 
-![The parsing and routing node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-route-span.png)
+![The parsing node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
 
-`/SHARDING-SPHERE/EXECUTE/{SQLType}`: Represents the overall execution performance of this SQL.
+`/Sharding-Sphere/executeSQL/`: Represents the performance of the actual SQL.
 
-![The logical execution node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-overall-span.png)
+![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)
 
-`/SHARDING-SPHERE/EXECUTE/`: Represents the performance of the actual SQL.
+### Exception diagram
 
-![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-execute-span.png)
+![Exception tracking diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace_err.png)
 
-`/SHARDING-SPHERE/MERGE/`: Represents the performance of performing merge results.
+You can see Exceptions in this figure.
 
-![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/apm-merge-span.png)
+`/Sharding-Sphere/executeSQL/` : Represents the Exceptions of the actual SQL.
+
+![Exception node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Tags_err.png)
+
+`/Sharding-Sphere/executeSQL/` : Represents the Exception logs of the actual SQL.
+
+![Exception log](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Logs_err.png)
