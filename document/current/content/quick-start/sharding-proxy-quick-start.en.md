@@ -7,9 +7,9 @@ weight = 2
 
 ## 1. Configure sharding rule
 
-Edit `%SHARDING_PROXY_HOME%\conf\config.yaml`. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/). 
+Edit `%SHARDING_PROXY_HOME%\conf\config-xxx.yaml`. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
 
-> If you want use self-defined configuration file，please create your configuration file in %SHARDING_PROXY_HOME%\conf\ and then start server as follows.
+Edit `%SHARDING_PROXY_HOME%\conf\server.yaml`. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/). 
 
 ## 2. Start server
 
@@ -23,10 +23,4 @@ ${sharding-proxy}\bin\start.sh ${port}
 
 ```sh
 ${sharding-proxy}\bin\start.sh ${port}
-```
-
-* Set port and configuration file name to start
-
-```sh
-${sharding-proxy}\bin\start.sh ${port} ${file_name}
 ```
