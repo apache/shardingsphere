@@ -49,9 +49,9 @@ weight = 4
 
 ### 跟踪数据展示
 
-![拓扑图](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace-new.png)
+![跟踪图](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace.png)
 
-从跟踪图中可以能够看到SQL路由、执行和最终结果归并的情况。
+从跟踪图中可以能够看到SQL解析和执行的情况。
 
 `/SHARDING-SPHERE/ROUTING/` : 表示本次SQL的解析路由性能。
 

@@ -48,9 +48,9 @@ User accesses the Sharding-Proxy 18 times, each database is accessed twice each 
 
 ### Tracking diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-trace-new.png)
+![The tracking diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace.png)
 
-You can see SQL routing, execution and final result set merge in this figure.
+You can see SQL parsing and execution in this figure.
 
 `/SHARDING-SPHERE/ROUTING/`: Represents the parsing and routing performance of this SQL.
 
