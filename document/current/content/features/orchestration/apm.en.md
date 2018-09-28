@@ -38,13 +38,13 @@ If user want to use other APM systems which support [OpenTracing] (http://opentr
 
 ### Application schema
 
-The application is a ` SpringBoot ` application, using ` Sharding-Sphere ` to access two databases of `ds0` and `ds1`, each owns two tables in database.
+Using ` Sharding-Proxy ` to access two databases of `192.168.0.1:3306` and `192.168.0.2:3306`, each owns two tables in database.
 
 ### Topology diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/apm-topology-new.png)
+![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_topology.png)
 
-Although the user accesses the application once, each database is accessed twice. This is because this visit involves two splitting tables in each database, four tables in total.
+User accesses the Sharding-Proxy 18 times, each database is accessed twice each time. This is because one access involves two splitting tables in each database, four tables in total.
 
 ### Tracking diagram
 
