@@ -9,13 +9,19 @@ weight = 4
 
 `APM`是应用性能监控的缩写。目前`APM`的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
 
-[Sharding-Sphere](http://shardingsphere.io)团队与[SkyWalking](http://skywalking.io)团队共同合作，推出了`Sharding-Sphere`自动探针，可以将`Sharding-Sphere`的性能数据发送到`SkyWalking`中。
+Sharding-Sphere并不负责如何采集、存储以及展示应用性能监控的相关数据，而是将SQL解析与SQL执行这两块数据分片的最核心的相关信息发送至应用性能监控系统，并交由其处理。
+换句话说，Sharding-Sphere仅负责产生具有价值的数据，并通过标准协议递交至相关系统。Sharding-Sphere可以通过两种方式对接应用性能监控系统。
+
+第一种方式是使用OpenTracing API发送性能追踪数据。面向OpenTracing协议的APM产品都可以和Sharding-Sphere自动对接，比如SkyWalking，Zipkin和Jaeger。使用这种方式只需要在启动时配置OpenTracing协议的实现者即可。
+它的优点是可以兼容所有的与OpenTracing协议兼容的产品作为APM的展现系统，如果采用公司愿意实现自己的APM系统，也只需要实现OpenTracing协议，即可自动展示Sharding-Sphere的链路追踪信息。
+缺点是OpenTracing协议发展并不稳定，较新的版本实现者较少，且协议本身过于中立，对于个性化的相关产品的实现不如原生支持强大。
+
+第二种方式是使用SkyWalking的自动探针。
+[Sharding-Sphere](http://shardingsphere.io)团队与[SkyWalking](http://skywalking.io)团队共同合作，在`SkyWalking`中实现了`Sharding-Sphere`自动探针，可以将相关的应用性能数据自动发送到`SkyWalking`中。
 
 ## 使用方法
 
 ### 使用OpenTracing协议
-
-如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用Sharding-Sphere提供的API配合该APM系统使用。
 
 * 通过读取系统参数注入APM系统提供的Tracer实现类
 ```
@@ -36,6 +42,8 @@ weight = 4
 请参考[SkyWalking部署手册](https://github.com/apache/incubator-skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
 
 ## 效果展示
+
+无论使用哪种方式，都可以方便的将APM信息展示在对接的系统中，以下以SkyWalking为例。
 
 ### 应用架构
 

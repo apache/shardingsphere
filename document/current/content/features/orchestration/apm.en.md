@@ -15,8 +15,6 @@ weight = 4
 
 ### Using OpenTracing
 
-If user want to use other APM systems which support [OpenTracing] (http://opentracing.io), just use sharding-sphere API to work with those APM systems.
-
 * Inject the Tracer implementation class through System.properties
 ```
     System.Properties：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
