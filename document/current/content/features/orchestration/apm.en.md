@@ -13,10 +13,6 @@ weight = 4
 
 ## Usage
 
-### Using SkyWalking
-
-Please refer to [SkyWalking Manual](https://github.com/apache/incubator-skywalking/blob/5.x/docs/en/Quick-start.md).
-
 ### Using OpenTracing
 
 If user want to use other APM systems which support [OpenTracing] (http://opentracing.io), just use sharding-sphere API to work with those APM systems.
@@ -33,6 +29,10 @@ If user want to use other APM systems which support [OpenTracing] (http://opentr
 ```
 
 *Notices: When using SkyWalking's OpenTracing monitor agent, disabling the original Sharding-Sphere monitor agent plugin is necessary to avoid conflicting with each other.*
+
+### Using SkyWalking
+
+Please refer to [SkyWalking Manual](https://github.com/apache/incubator-skywalking/blob/5.x/docs/en/Quick-start.md).
 
 ## UI
 

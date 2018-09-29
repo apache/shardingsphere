@@ -13,27 +13,27 @@ weight = 4
 
 ## 使用方法
 
-### 使用SkyWalking插件
-
-请参考[SkyWalking部署手册](https://github.com/apache/incubator-skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
-
-### 使用OpenTracing插件
+### 使用OpenTracing协议
 
 如果想使用其他的APM系统，且该系统支持[OpenTracing](http://opentracing.io)。可以使用Sharding-Sphere提供的API配合该APM系统使用。
 
 * 通过读取系统参数注入APM系统提供的Tracer实现类
 ```
     启动时添加参数：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
-    调用初始化方法：ShardingTracer.init()                          
+    调用初始化方法：ShardingTracer.init()
 ```
 
 * 通过参数注入APM系统提供的Tracer实现类 
-```
-    shardingTracer.init(new SkywalkingTracer())   
+
+```java
+    shardingTracer.init(new SkywalkingTracer())
 ```
 
 *注意:使用SkyWalking的OpenTracing探针时，应将原Sharding-Sphere探针插件禁用，以防止两种插件互相冲突*
 
+### 使用SkyWalking自动探针
+
+请参考[SkyWalking部署手册](https://github.com/apache/incubator-skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
 
 ## 效果展示
 
