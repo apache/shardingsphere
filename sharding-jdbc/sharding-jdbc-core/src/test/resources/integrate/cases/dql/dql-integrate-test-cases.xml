@@ -331,7 +331,7 @@
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_pagination_with_group_by_and_order_by">
-        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 100:int" expected-data-file="select_pagination_with_group_by_and_order_by.xml" />
+        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_group_by_and_order_by.xml" />
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_inner_join_related_with_alias">
