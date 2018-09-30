@@ -54,11 +54,16 @@ addConstraint:
      ;
      
 changeColumn:
-    changeColumnOp columnName columnDefinition (FIRST|AFTER columnName)?
+    changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;
     
 changeColumnOp:
     CHANGE COLUMN?
+    ;
+
+firstOrAfterColumn:
+	FIRST
+	|AFTER columnName
     ;
     
 dropColumn:
@@ -86,7 +91,7 @@ partitionNames:
     ;    
 
 modifyColumn:    
-    MODIFY COLUMN? columnDefinition (FIRST | AFTER columnName)?
+    MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
     
 algorithmOption:
@@ -98,14 +103,9 @@ lockOption:
     ;
     
 singleColumn:
-    columnDefinition (FIRST | AFTER columnName)?
+    columnDefinition firstOrAfterColumn?
     ;
     
 multiColumn:
     LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
     ;
-
-
-
-
- 

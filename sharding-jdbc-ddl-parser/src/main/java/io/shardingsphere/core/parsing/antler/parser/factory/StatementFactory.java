@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antler.parser.factory;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.VisitorManager;
 import io.shardingsphere.core.parsing.antler.statement.visitor.StatementVisitor;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
@@ -28,6 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 public class StatementFactory {
+    
     /**Parse input to SQLStatement.
      * @param dbType database type
      * @param tokenType token type
@@ -36,14 +38,14 @@ public class StatementFactory {
      * @return SQLStatement instance
      */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
-            final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+            final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
 
         ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(dbType, tokenType, shardingRule, lexerEngine);
         if (rootNode != null) {
             String commandName = getCommandName(rootNode);
             StatementVisitor visitor = VisitorManager.getInstance().getVisitor(dbType, commandName);
             if (null != visitor) {
-                return visitor.visit(rootNode);
+                return visitor.visit(rootNode, shardingTableMetaData);
             }
         }
 

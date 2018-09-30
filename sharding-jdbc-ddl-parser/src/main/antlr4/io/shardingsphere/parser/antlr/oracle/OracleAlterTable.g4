@@ -77,7 +77,7 @@ dropSupplementalLogItem:
 allocateExtentClause:
     ALLOCATE EXTENT
       ( LEFT_PAREN ( SIZE sizeClause
-      | DATAFILE 'filename'
+      | DATAFILE STRING
       | INSTANCE NUMBER
       ) *
     RIGHT_PAREN 

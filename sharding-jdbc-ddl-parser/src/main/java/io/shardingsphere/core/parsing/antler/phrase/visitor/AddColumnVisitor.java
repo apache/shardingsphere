@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class AddColumnVisitor extends ColumnDefinitionVisitor {
 
-    /** Visit drop column node.
+    /** Visit add column node.
      * @param rootNode root node of ast
      * @param statement sql statement
      */

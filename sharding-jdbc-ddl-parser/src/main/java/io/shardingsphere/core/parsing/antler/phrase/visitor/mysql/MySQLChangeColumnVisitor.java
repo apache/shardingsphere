@@ -19,13 +19,13 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-public class MySQLChangeColumnVisitor extends ColumnDefinitionVisitor {
+public class MySQLChangeColumnVisitor extends MySQLColumnPositionVisitor {
 
     @Override
     public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
@@ -54,8 +54,8 @@ public class MySQLChangeColumnVisitor extends ColumnDefinitionVisitor {
         ColumnDefinition column = parseColumnDefinition(columnDefinitionCtx);
         if (null != column) {
             alterStatement.getUpdateColumns().remove(oldColumnCtx.getText());
-            alterStatement.getUpdateColumns().put(column.getName(), column);
+            alterStatement.getUpdateColumns().put(oldColumnCtx.getText(), column);
+            visitFirstOrAfter(changeColumnCtx, (MySQLAlterTableStatement) alterStatement, column.getName());
         }
     }
-
 }
