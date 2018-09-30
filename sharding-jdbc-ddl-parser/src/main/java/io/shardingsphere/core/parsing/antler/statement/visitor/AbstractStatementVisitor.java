@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -33,14 +34,22 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
      * @return sql statement
      */
     @Override
-    public SQLStatement visit(final ParserRuleContext rootNode) {
-        SQLStatement statement = newStatement();
+    public SQLStatement visit(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
+        SQLStatement statement = newStatement(shardingTableMetaData);
 
         for (PhraseVisitor each : visitors) {
             each.visit(rootNode, statement);
         }
         
+        postVisit(statement);
         return statement;
+    }
+    
+    /** process after visit.
+     * @param statement sql statement
+     */
+    protected void postVisit(SQLStatement statement) {
+
     }
 
     /** Add visitor.
@@ -54,5 +63,15 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
      * @return empty sql statment
      */
     protected abstract SQLStatement newStatement();
-
+    
+    
+    /** Use shardingTableMetaData create SQLStatement.
+     * @param shardingTableMetaData table metadata
+     * @return
+     */
+    protected SQLStatement newStatement(ShardingTableMetaData shardingTableMetaData) {
+        return newStatement();
+    }
+    
+    
 }

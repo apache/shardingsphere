@@ -14,19 +14,21 @@
  * limitations under the License.
  * </p>
  */
+package io.shardingsphere.core.parsing.antler.sql.ddl.mysql;
 
-package io.shardingsphere.core.parsing.antler.statement.visitor;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.antlr.v4.runtime.ParserRuleContext;
+import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-
-public interface StatementVisitor {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public class MySQLAlterTableStatement extends AlterTableStatement{
+    private final List<ColumnPosition> positionChangedColumns = new ArrayList<>();
     
-    /** Visit ast,generate statement.
-     * @param rootNode root node of ast
-     * @return sql statement
-     */
-    SQLStatement visit(ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData);
 }

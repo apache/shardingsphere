@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.visitor.oracle;
 
+import io.shardingsphere.core.parsing.antler.phrase.visitor.AddColumnVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.RenameColumnVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.oracle.OracleDropPrimaryKeyVisitor;
@@ -25,7 +26,7 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor
 
 public class OracleAlterTableVisitor extends AlterTableVisitor {
     public OracleAlterTableVisitor() {
-        super();
+        addVisitor(new AddColumnVisitor());
         addVisitor(new OracleModifyColumnVisitor());
         addVisitor(new RenameColumnVisitor());
         addVisitor(new AddPrimaryKeyVisitor("addConstraintClause"));

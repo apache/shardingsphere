@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,5 +42,9 @@ public class AlterTableStatement extends DDLStatement {
     private boolean dropPrimaryKey;
 
     private String newTableName;
-
+    
+    private ShardingTableMetaData tableMetaDataMap;
+    
+    private TableMetaData tableMetaData;
+    
 }

@@ -14,19 +14,29 @@
  * limitations under the License.
  * </p>
  */
+package io.shardingsphere.core.parsing.antler.sql.ddl;
 
-package io.shardingsphere.core.parsing.antler.statement.visitor;
+import lombok.Getter;
+import lombok.Setter;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-
-public interface StatementVisitor {
+@Getter
+@Setter
+public class ColumnPosition implements Comparable<ColumnPosition>{
+    private int startIndex;
     
-    /** Visit ast,generate statement.
-     * @param rootNode root node of ast
-     * @return sql statement
-     */
-    SQLStatement visit(ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData);
+    private String firstColumn;
+
+    private String columnName;
+
+    private String afterColumn;
+
+
+    @Override
+    public int compareTo(ColumnPosition o) {
+        if(o == null) {
+            return -1;
+        }
+        
+        return this.getStartIndex() - o.getStartIndex();
+    }
 }
