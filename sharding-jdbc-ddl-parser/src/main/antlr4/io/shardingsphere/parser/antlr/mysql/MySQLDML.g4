@@ -1,17 +1,6 @@
 grammar MySQLDML;
 import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase, DMLBase,Symbol;
 
-selectSpec: 
-    (ALL | DISTINCT | DISTINCTROW)? 
-    HIGH_PRIORITY? 
-    STRAIGHT_JOIN?
-    SQL_SMALL_RESULT?
-    SQL_BIG_RESULT?
-    SQL_BUFFER_RESULT?
-    (SQL_CACHE | SQL_NO_CACHE)?
-    SQL_CALC_FOUND_ROWS?
-    ;
-
 caseExpress:
     caseCond
     |caseComp

@@ -3,7 +3,7 @@ grammar SQLServerBase;
 import SQLServerKeyword,Keyword,Symbol,BaseRule,DataType;
 
 ID: 
-    (LEFT_BRACKET? [a-zA-Z_$#][a-zA-Z0-9_$#]* RIGHT_BRACKET? DOT*)?
+    (LEFT_BRACKET? [a-zA-Z_$#][a-zA-Z0-9_$#]* RIGHT_BRACKET? DOT)*
     (LEFT_BRACKET? [a-zA-Z_$#][a-zA-Z0-9_$#]* RIGHT_BRACKET?)
     |[a-zA-Z0-9_$]+ DOT ASTERISK
     ;
@@ -11,13 +11,9 @@ ID:
 dataType: 
     typeName   
     (
-        LEFT_PAREN  
-        (
-            NUMBER ( COMMA NUMBER )?
-            |MAX 
-            |((CONTENT | DOCUMENT)? xmlSchemaCollection) 
-        )
-        RIGHT_PAREN 
+          dataTypeLength
+        | LEFT_PAREN MAX RIGHT_PAREN
+        | LEFT_PAREN (CONTENT | DOCUMENT)? xmlSchemaCollection RIGHT_PAREN
     )?   
     ;
     

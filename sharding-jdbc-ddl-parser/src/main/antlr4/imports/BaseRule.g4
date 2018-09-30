@@ -40,6 +40,13 @@ partitionName: ID;
 rewriteRuleName: ID;
 ownerName: ID;
 
+primaryKey:
+	PRIMARY KEY
+	;
+
+dataTypeLength:
+    LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
+    ;
 
 matchNone:
     'Default does not match anything'
@@ -73,6 +80,10 @@ indexNames:
 rowNames:
     rowName (COMMA rowName)*
     ;
+    
+bitExprs:
+     bitExpr (COMMA bitExpr)*
+     ;
 
 exprs:
      expr (COMMA expr)*
@@ -167,7 +178,7 @@ simpleExpr:
     ;
 
 functionCall:
-    ID LEFT_PAREN(| simpleExpr ( COMMA  simpleExpr)*) RIGHT_PAREN
+    ID LEFT_PAREN(bitExprs?) RIGHT_PAREN
     ;    
  
  privateExprOfDb:

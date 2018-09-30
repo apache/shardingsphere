@@ -2,65 +2,20 @@ grammar PostgreBase;
 
 import PostgreKeyword, DataType, Keyword, Symbol, BaseRule;
 
+columnDefinition:
+	columnName dataType collateClause? columnConstraint*
+	;
+	
 dataType:
-    basicDataType (LEFT_BRACKET RIGHT_BRACKET)*
+    typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LEFT_BRACKET RIGHT_BRACKET)*
     ;
 
-basicDataType:
-    BIGINT
-    |INT8
-    |BIGSERIAL
-    |SERIAL8
-    |BIT VARYING? numericPrecision?
-    |VARBIT numericPrecision?
-    |BOOLEAN
-    |BOOL
-//    |BOX
-    |BYTEA
-    |((CHARACTER VARYING?) | CHAR | VARCHAR) numericPrecision?
-    |CIDR
-    |CIRCLE
-    |DATE
-    |DOUBLE PRECISION
-    |FLOAT8
-    |(INTEGER | INT4 | INT)
-    |intervalType
-    |JSON
-    |JSONB
-    |LINE
-    |LSEG
-    |MACADDR
-    |MACADDR8
-    |MONEY
-    |NUMERIC numericPrecision
-    |DECIMAL numericPrecision?
-    |PATH
-    |PG_LSN
-    |POINT
-    |POLYGON
-    |REAL
-    |FLOAT4
-    |SMALLINT
-    |INT2
-    |SERIAL
-    |SERIAL4
-    |FLOAT numericPrecision?
-    |TEXT
-    |(TIME | TIMESTAMP) numericPrecision?((WITHOUT TIME ZONE)? | (WITH TIME ZONE))
-    |TSQUERY
-    |TSVECTOR
-    |TXID_SNAPSHOT
-    |UUID
-    |XML
-    ;
-
-numericPrecision:
-    LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
-    ;
-
-intervalType:
-    INTERVAL intervalFields? numericPrecision?
-    ;
+typeName:
+	BIT VARYING? 
+	|CHARACTER VARYING?
+	|DOUBLE PRECISION
+	|ID
+	;
 
 intervalFields:
     intervalField (TO intervalField)?
@@ -116,11 +71,11 @@ constraintClause:
 columnConstraintOption:
     (NOT NULL)
     |NULL
-      |checkOption
-      |(DEFAULT defaultExpr)
+    |checkOption
+    |(DEFAULT defaultExpr)
     |(GENERATED ( ALWAYS | BY DEFAULT ) AS IDENTITY ( LEFT_PAREN sequenceOptions RIGHT_PAREN )?)
     |(UNIQUE indexParameters)
-    |(PRIMARY KEY indexParameters)
+    |(primaryKey indexParameters)
     |(REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? (ON UPDATE action)?)
     ;
 
@@ -171,7 +126,7 @@ tableConstraint:
 tableConstraintOption:
     checkOption
     |(UNIQUE columnList indexParameters)
-    |(PRIMARY KEY columnList indexParameters)
+    |(primaryKey columnList indexParameters)
     |(EXCLUDE (usingIndexType)? LEFT_PAREN excludeParam (COMMA excludeParam)* RIGHT_PAREN  indexParameters (WHERE ( predicate ))?)
     |(FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON DELETE action )? (ON UPDATE action)?)
     ;

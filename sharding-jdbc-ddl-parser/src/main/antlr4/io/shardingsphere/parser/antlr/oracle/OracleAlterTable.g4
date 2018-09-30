@@ -26,9 +26,13 @@ alterTableProperties:
 alterIotOrXml:
     (
       alterIotOrXmlRepeatHeader+
-      | (RENAME TO tableName)
+      |renameTable
     )*
     alterIotClauses? alterXmlschemaClause?
+    ;
+
+renameTable:
+    RENAME TO tableName
     ;
 
 alterIotOrXmlRepeatHeader:
@@ -73,7 +77,7 @@ dropSupplementalLogItem:
 allocateExtentClause:
     ALLOCATE EXTENT
       ( LEFT_PAREN ( SIZE sizeClause
-      | DATAFILE 'filename'
+      | DATAFILE STRING
       | INSTANCE NUMBER
       ) *
     RIGHT_PAREN 
@@ -150,19 +154,19 @@ alterXmlschemaClause:
   
 columnClauses:
     opColumnClause+
-    | renameColumnClause
+    | renameColumn
     | modifyCollectionRetrieval+
     | modifyLobStorageClause+
     | alterVarrayColProperties+
     ;
 
 opColumnClause:
-    addColumnClause
-    | modifyColumnClauses
+    addColumn
+    | modifyColumn
     | dropColumnClause
     ;
     
-addColumnClause:
+addColumn:
     ADD
     columnOrVirtualDefinitions 
     columnProperties?
@@ -170,8 +174,11 @@ addColumnClause:
     ;
 
 columnOrVirtualDefinitions:
-    columnOrVirtualDefinition
-    (COMMA columnOrVirtualDefinition)*
+    LEFT_PAREN 
+        columnOrVirtualDefinition
+        (COMMA columnOrVirtualDefinition)* 
+    RIGHT_PAREN
+    |columnOrVirtualDefinition
     ;
     
 columnOrVirtualDefinition:
@@ -198,7 +205,7 @@ outOfLinePartBody:
     | varrayColProperties
     ;
     
-modifyColumnClauses:
+modifyColumn:
     MODIFY 
     ( 
         LEFT_PAREN modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN
@@ -224,10 +231,14 @@ modifyColSubstitutable:
     
 dropColumnClause:
     ( SET UNUSED columnOrColumnList cascadeOrInvalidate*)
-    | (DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?)
+    | dropColumn
     | (DROP ( (UNUSED COLUMNS)| (COLUMNS CONTINUE) )checkpointNumber?)
     ;
 
+dropColumn:
+    DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
+	;
+	
 columnOrColumnList:
     (COLUMN columnName)
     | (LEFT_PAREN columnName ( COMMA columnName )* RIGHT_PAREN) 
@@ -242,8 +253,8 @@ checkpointNumber:
     CHECKPOINT NUMBER
     ;
     
-renameColumnClause:
-    RENAME COLUMN columnName TO 
+renameColumn:
+    RENAME COLUMN columnName TO columnName
     ;
     
 modifyCollectionRetrieval:
@@ -295,7 +306,7 @@ constraintOption:
      ;
  
 constraintPrimaryOrUnique:
-      (PRIMARY KEY)
+      primaryKey
      | (UNIQUE columnList)
      ;
         
@@ -768,9 +779,9 @@ exchangePartitionSubpart:
     ;
 
 alterExternalTable:
-    ( addColumnClause
-    | modifyColumnClauses
-    | dropColumnClause
+    ( addColumn
+    | modifyColumn
+    | dropColumn
     | parallelClause
     | externalDataProperties
     | (REJECT LIMIT ( NUMBER | UNLIMITED ))

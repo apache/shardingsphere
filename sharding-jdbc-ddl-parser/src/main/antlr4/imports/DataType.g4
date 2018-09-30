@@ -8,9 +8,7 @@ STRING:
     ;
 
 NUMBER:
-     MINUS? INT_ DOT INT_+ EXP?
-     |MINUS? INT_ | EXP
-     |MINUS? INT_
+     MINUS? INT_? DOT? INT_ EXP?
      ;
 
 INT_ :

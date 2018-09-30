@@ -1,5 +1,5 @@
 grammar SQLServerAlterTable;
-import SQLServerKeyword, DataType, Keyword, SQLServerBase,BaseRule,Symbol;
+import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
 
 alterTable:
     alterTableOp
@@ -23,25 +23,35 @@ alterTableOp:
     ;
     
 alterColumn:
-     ALTER COLUMN columnName   
     (   
-       dataType   
-        (
-            (COLLATE collationName)   
-           ( NULL | NOT NULL ) 
-            |( SPARSE )
-        )*
-      | ((ADD | DROP)  ( ROWGUIDCOL | PERSISTED | NOT FOR REPLICATION | SPARSE | HIDDEN_)) 
-      | ((ADD | DROP) MASKED (WITH LEFT_PAREN FUNCTION EQ_OR_ASSIGN STRING RIGHT_PAREN )?) 
+        modifyColumn
+      | alterColumnAddOrDrop
+      | alterColumnMasked 
     )   
     (WITH LEFT_PAREN ONLINE EQ_OR_ASSIGN ON | OFF RIGHT_PAREN)?  
     ;
 
+modifyColumn:
+	alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
+	;
+
+alterColumnOp:
+	ALTER COLUMN columnName
+	;
+	
+alterColumnAddOrDrop:
+    alterColumnOp (ADD | DROP) (ROWGUIDCOL | PERSISTED | NOT FOR REPLICATION | SPARSE | HIDDEN_)
+    ;
+
+alterColumnMasked:
+    alterColumnOp (ADD | DROP) MASKED (WITH LEFT_PAREN FUNCTION EQ_OR_ASSIGN STRING RIGHT_PAREN )?
+    ;    
+    
 addColumn:
     (WITH (CHECK | NOCHECK))?
     ADD   
     (
-       (alterColumnAddOption (COMMA  alterColumnAddOption)*) 
+       (alterColumnAddOption (COMMA alterColumnAddOption)*) 
       |(
           (columnNameGeneratedClause COMMA periodClause)
         |(periodClause COMMA columnNameGeneratedClause)
@@ -50,70 +60,21 @@ addColumn:
     ;
 
 periodClause:
-    PERIOD FOR SYSTEM_TIME LEFT_PAREN  columnName   
+    PERIOD FOR SYSTEM_TIME LEFT_PAREN columnName   
     COMMA columnName RIGHT_PAREN
     ;
     
 alterColumnAddOption:
-    columnDefinition
-    |constraintForColumn
-    | computedColumnDefinition  
+      columnDefinition  
+    | computedColumnDefinition    
+    | columnSetDefinition   
     | tableConstraint   
-    | columnSetDefinition
     | tableIndex
-    | columnIndex
+    | constraintForColumn
     ;
       
 constraintForColumn:
-    columnConstraint FOR columnName
-    ;
-
-columnDefinition:
-    columnName dataType  
-    columnConstraint?
-    collateClause?
-    (NOT? NULL)?
-    ;
-
-columnConstraint :   
-    (CONSTRAINT constraintName )?   
-    DEFAULT simpleExpr
-    ;
-
-computedColumnDefinition :  
-    columnName AS expr   
-    (PERSISTED( NOT NULL )?)?  
-    columnConstraint?   
-    ;
-
-tableConstraint:  
-    (CONSTRAINT constraintName )?   
-    (
-        tablePrimaryConstraint
-        | tableForeignKeyConstraint   
-        | (CHECK expr)
-    )
-    ;
-
-tablePrimaryConstraint: 
-    primaryKeyUnique  (CLUSTERED | NONCLUSTERED)? 
-    (  
-        columnNameWithSortsWithParen
-        |hashWithBucket
-    )
-    ;
-
-hashWithBucket:
-    HASH columnList withBucket
-    ;
-    
-withBucket:
-    WITH LEFT_PAREN BUCKET_COUNT EQ_OR_ASSIGN NUMBER RIGHT_PAREN
-    ;
-
-primaryKeyUnique:
-    (PRIMARY KEY) 
-    | UNIQUE
+    (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
     ;
 
 columnNameWithSortsWithParen:
@@ -121,20 +82,11 @@ columnNameWithSortsWithParen:
     ;
     
 columnNameWithSort:
-    columnName ( ASC | DESC )?
-    ;
-
-tableForeignKeyConstraint:
-    (FOREIGN KEY)? columnList
-    REFERENCES tableName columnList  
-    ;
-
-columnSetDefinition :  
-    columnSetName ID COLUMN_SET FOR ALL_SPARSE_COLUMNS  
+    columnName(ASC | DESC)?
     ;
 
 columnIndex:   
-    INDEX indexName 
+    indexWithName
     ( CLUSTERED | NONCLUSTERED )?  
     HASH withBucket  
     ;
@@ -154,8 +106,8 @@ alterDrop:
     DROP 
     (
         |alterTableDropConstraint
-        |alterTableDropColumn
-        |alterTableDropIndex
+        |dropColumn
+        |alterDropIndex
         |(PERIOD FOR SYSTEM_TIME)
     )
     ;
@@ -170,7 +122,7 @@ dropConstraintName:
     ;
 
 dropConstraintWithClause:
-    WITH  LEFT_PAREN dropConstraintOption ( COMMA dropConstraintOption)* RIGHT_PAREN   
+    WITH  LEFT_PAREN dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
     ;
 
 dropConstraintOption:    
@@ -182,11 +134,11 @@ dropConstraintOption:
     )
     ;  
  
- alterTableDropColumn:
+dropColumn:
     COLUMN (IF EXISTS)? columnNames
     ; 
 
-alterTableDropIndex:
+alterDropIndex:
     INDEX (IF EXISTS)?  
     indexName (COMMA indexName)*
     ;
@@ -287,20 +239,18 @@ rebuildOption:
     | indexOption
     | (ONLINE EQ_OR_ASSIGN (OFF | onLowPriorLockWait))   
     ;
-  
-alterIndex:
-    ALTER INDEX indexName   
-    typeName  REBUILD 
-    (NONCLUSTERED? WITH LEFT_PAREN BUCKET_COUNT EQ_OR_ASSIGN NUMBER RIGHT_PAREN)?
-    ;
 
 tableIndex: 
-    INDEX indexName 
+    indexWithName 
     (
       indexNonClusterClause 
       |indexClusterClause
     )
     ;
+
+indexWithName:
+	INDEX indexName
+	;
 
 indexNonClusterClause:
     NONCLUSTERED

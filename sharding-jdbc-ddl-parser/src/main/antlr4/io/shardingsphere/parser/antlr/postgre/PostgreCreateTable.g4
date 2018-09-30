@@ -26,11 +26,11 @@ createDefinitions:
    ;
 
 createDefinition:
-     (columnName dataType collateClause? columnConstraint*)
+     columnDefinition
     | tableConstraint
     | LIKE tableName likeOption*
      ;
-
+	
 likeOption:
     (INCLUDING | EXCLUDING )
     (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
