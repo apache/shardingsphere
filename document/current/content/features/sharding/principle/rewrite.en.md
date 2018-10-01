@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "SQL Rewrite"
+title = "Rewrite Engine"
 weight = 3
 +++
 
