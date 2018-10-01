@@ -39,42 +39,46 @@ engineName:
     ;
     
 columnDefinition:
-    columnName dataType (dataTypeOption | dataTypeGenerated)?
+    columnName dataType (dataTypeOption* | dataTypeGenerated)?
     ;
     
 dataType:
-    BIT dataTypeLength?
-    |((TINYINT | SMALLINT | MEDIUMINT | INT | INTEGER| BIGINT) dataTypeLength? UNSIGNED? (NOT? NULL)? AUTO_INCREMENT? numberTypeSuffix)
-    |((REAL | DOUBLE | FLOAT | DECIMAL | NUMERIC) dataTypeLength? (NOT? NULL)? AUTO_INCREMENT? numberTypeSuffix )
-    |((DATE | TIME) (NOT? NULL)? (DEFAULT (STRING | NULL))?)
-    |((timestampType | DATETIME) (NOT? NULL)?  (DEFAULT (currentTimestampType | NUMBER | STRING | NULL))? (ON UPDATE currentTimestampType)? )
-    |(YEAR dataTypeLength? (NOT? NULL)?  (DEFAULT (NUMBER | STRING | NULL))?)
-    |((CHAR | VARCHAR) dataTypeLength? (NOT? NULL)? characterSet? collateClause? (DEFAULT (STRING | NULL))?)
-    |((BINARY | VARBINARY) dataTypeLength? (NOT? NULL)?  (DEFAULT NUMBER |STRING | NULL)? )
-    |(TINYBLOB | BLOB | MEDIUMBLOB | LONGBLOB |JSON) (NOT? NULL)? 
-    |((TINYTEXT | TEXT | MEDIUMTEXT | LONGTEXT ) (NOT? NULL)?  BINARY ? characterSet? collateClause? )
-    |((ENUM | SET) (LEFT_PAREN STRING (COMMA STRING)* RIGHT_PAREN  (NOT? NULL)? (DEFAULT (STRING | NULL))? characterSet? collateClause?))
-    ;
-   
-timestampType:
-    TIMESTAMP dataTypeLength?
-    ;
-    
-currentTimestampType:
-    CURRENT_TIMESTAMP dataTypeLength?
-    ;
-
-numberTypeSuffix:
-    UNSIGNED? ZEROFILL?  (DEFAULT (NUMBER |STRING | NULL))?
+    ((INTEGER | INT | TINYINT | SMALLINT | MEDIUMINT | BIGINT) dataTypeLength? UNSIGNED? ZEROFILL?)
+    | ((DECIMAL | DEC | NUMERIC | FIXED) dataTypeLength? UNSIGNED? ZEROFILL?)
+    | ((FLOAT | DOUBLE | DOUBLE PRECISION) dataTypeLength? UNSIGNED? ZEROFILL?)
+    | BIT dataTypeLength?
+    | (BOOL | BOOLEAN)
+    | DATE
+    | ((DATETIME | TIMESTAMP | TIME | YEAR) dataTypeLength?)
+    | (((NATIONAL? CHAR) | (NATIONAL? VARCHAR) | TEXT) dataTypeLength? characterSet? collateClause?)
+    | ((BINARY | VARBINARY | BLOB) dataTypeLength?)
+    | (TINYBLOB | MEDIUMBLOB | LONGBLOB)
+    | ((TINYTEXT | MEDIUMTEXT | LONGTEXT) characterSet? collateClause?)
+    | ((ENUM | SET) (LEFT_PAREN STRING (COMMA STRING)* RIGHT_PAREN characterSet? collateClause?))
+    | (GEOMETRY | POINT | LINESTRING | POLYGON | MULTIPOINT | MULTILINESTRING | MULTIPOLYGON | GEOMETRYCOLLECTION | JSON)
     ;
     
 dataTypeOption:
-    (UNIQUE KEY?)? 
-    (PRIMARY? KEY)?
-    (COMMENT STRING)?
-    (COLUMN_FORMAT (FIXED|DYNAMIC|DEFAULT))?
-    (STORAGE (DISK|MEMORY|DEFAULT))?
-    (referenceDefinition)?
+    (NOT? NULL)
+    | (DEFAULT defaultValue)
+    | AUTO_INCREMENT
+    | (UNIQUE KEY?)
+    | (PRIMARY? KEY)
+    | (COMMENT STRING)
+    | (COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT))
+    | (STORAGE (DISK|MEMORY|DEFAULT))
+    | referenceDefinition
+    ;
+
+defaultValue:
+    NULL
+    | NUMBER
+    | STRING
+    | (currentTimestampType (ON UPDATE currentTimestampType)?)
+    ;
+
+currentTimestampType:
+    (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW) dataTypeLength?
     ;
     
  referenceDefinition:
@@ -134,7 +138,7 @@ partitionDefinitions:
     
 partitionDefinition:
     PARTITION partitionName
-    (VALUES (lessThanPartition|IN valueListWithParen))?
+    (VALUES (lessThanPartition | IN valueListWithParen))?
     (STORAGE? ENGINE EQ_OR_ASSIGN? engineName)?
     (COMMENT EQ_OR_ASSIGN? STRING )?
     (DATA DIRECTORY EQ_OR_ASSIGN? STRING)?

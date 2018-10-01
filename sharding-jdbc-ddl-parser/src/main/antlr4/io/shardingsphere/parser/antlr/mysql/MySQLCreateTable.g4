@@ -2,7 +2,8 @@ grammar MySQLCreateTable;
 import MySQLKeyword, DataType, Keyword, MySQLTableBase, MySQLDQL, DQLBase, MySQLBase,BaseRule,Symbol;
 
 createTable:
-    CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
+    CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName
+    createTableOptions
     ; 
 
 createTableOptions:
@@ -12,9 +13,13 @@ createTableOptions:
     ;
     
 createTableBasic:
-    LEFT_PAREN createDefinitions RIGHT_PAREN
+    createDefinitionsWithParen
     tableOptions?
     partitionOptions?
+    ;
+
+createDefinitionsWithParen:
+    LEFT_PAREN createDefinitions RIGHT_PAREN
     ;
 
 createDefinitions:

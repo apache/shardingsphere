@@ -45,7 +45,7 @@ primaryKey:
 	;
 
 dataTypeLength:
-    LEFT_PAREN NUMBER (COMMA NUMBER)? RIGHT_PAREN
+    LEFT_PAREN (NUMBER (COMMA NUMBER)?)? RIGHT_PAREN
     ;
 
 matchNone:

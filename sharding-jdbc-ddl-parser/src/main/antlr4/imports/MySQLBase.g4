@@ -66,8 +66,9 @@ keyPart:
 
  value:
     DEFAULT
-    |expr
-    |exprsWithParen
+    | MAXVALUE
+    | expr
+    | exprsWithParen
     ;
 
 valueList:
