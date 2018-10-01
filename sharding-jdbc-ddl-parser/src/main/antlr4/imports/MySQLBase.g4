@@ -63,14 +63,17 @@ keyPart:
     | WITH PARSER parserName
     | COMMENT STRING
     ;
-    
+
  value:
-    DEFAULT|expr;
+    DEFAULT
+    |expr
+    |exprsWithParen
+    ;
 
 valueList:
      value (COMMA value)*
     ;
-    
+
 valueListWithParen:
     LEFT_PAREN valueList RIGHT_PAREN
     ;
