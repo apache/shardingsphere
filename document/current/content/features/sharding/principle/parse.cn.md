@@ -21,7 +21,7 @@ SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18
 
 解析之后的为抽象语法树见下图。
 
-![SQL抽象语法数](http://ovfotjrsi.bkt.clouddn.com/sharding/sql_ast.png)
+![SQL抽象语法树](http://ovfotjrsi.bkt.clouddn.com/sharding/sql_ast.png)
 
 为了便于理解，抽象语法树中的关键字的Token用绿色表示，变量的Token用红色表示，灰色表示需要进一步拆分。
 
