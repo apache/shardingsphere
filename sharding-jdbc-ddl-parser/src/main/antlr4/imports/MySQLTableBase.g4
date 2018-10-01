@@ -139,14 +139,18 @@ partitionDefinitions:
 partitionDefinition:
     PARTITION partitionName
     (VALUES (lessThanPartition | IN valueListWithParen))?
-    (STORAGE? ENGINE EQ_OR_ASSIGN? engineName)?
-    (COMMENT EQ_OR_ASSIGN? STRING )?
-    (DATA DIRECTORY EQ_OR_ASSIGN? STRING)?
-    (INDEX DIRECTORY EQ_OR_ASSIGN? STRING)?
-    (MAX_ROWS EQ_OR_ASSIGN? NUMBER)?
-    (MIN_ROWS EQ_OR_ASSIGN? NUMBER)?
-    (TABLESPACE EQ_OR_ASSIGN? tablespaceName)?
+    partitionDefinitionOption*
     (subpartitionDefinition (COMMA subpartitionDefinition)*)?
+    ;
+
+partitionDefinitionOption:
+    (STORAGE)? ENGINE EQ_OR_ASSIGN? engineName
+    | COMMENT EQ_OR_ASSIGN? STRING
+    | DATA DIRECTORY EQ_OR_ASSIGN? STRING
+    | INDEX DIRECTORY EQ_OR_ASSIGN? STRING
+    | MAX_ROWS EQ_OR_ASSIGN? NUMBER
+    | MIN_ROWS EQ_OR_ASSIGN? NUMBER
+    | TABLESPACE EQ_OR_ASSIGN? tablespaceName
     ;
 
 lessThanPartition:
@@ -155,13 +159,7 @@ lessThanPartition:
     
 subpartitionDefinition:
     SUBPARTITION partitionName
-    ((STORAGE)? ENGINE EQ_OR_ASSIGN? engineName)?
-    (COMMENT EQ_OR_ASSIGN? STRING )?
-    (DATA DIRECTORY EQ_OR_ASSIGN? STRING)?
-    (INDEX DIRECTORY EQ_OR_ASSIGN? STRING)?
-    (MAX_ROWS EQ_OR_ASSIGN? NUMBER)?
-    (MIN_ROWS EQ_OR_ASSIGN? NUMBER)?
-    (TABLESPACE EQ_OR_ASSIGN? tablespaceName)?
+    partitionDefinitionOption*
     ;   
     
 indexDefinition:
