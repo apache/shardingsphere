@@ -225,4 +225,4 @@ todo
 
 改写引擎的整体结构划分如下图所示。
 
-![路由引擎结构](http://ovfotjrsi.bkt.clouddn.com/sharding/rewrite_architecture.png)
+![路由引擎结构](http://ovfotjrsi.bkt.clouddn.com/sharding/rewrite_architecture_v2.png)
