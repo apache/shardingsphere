@@ -52,7 +52,7 @@ SELECT * FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id  WHERE 
 可以看到，SQL拆分的数目与单表是一致的。
 
 笛卡尔积路由是最复杂的情况，它无法根据绑定表的关系定位分片规则，因此非绑定表之间的关联查询需要拆解为笛卡尔积组合执行。
-如果上个示例中的SQL并未配置绑定表关系，那么那么路由的结果应为：
+如果上个示例中的SQL并未配置绑定表关系，那么路由的结果应为：
 
 ```sql
 SELECT * FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id  WHERE order_id IN (1, 2);
