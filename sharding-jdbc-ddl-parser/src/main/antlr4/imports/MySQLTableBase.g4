@@ -44,7 +44,7 @@ columnDefinition:
     
 dataType:
     BIT dataTypeLength?
-    |((TINYINT | SMALLINT | MEDIUMINT | INT | INTEGER| BIGINT) dataTypeLength? (NOT? NULL)? AUTO_INCREMENT? numberTypeSuffix)
+    |((TINYINT | SMALLINT | MEDIUMINT | INT | INTEGER| BIGINT) dataTypeLength? UNSIGNED? (NOT? NULL)? AUTO_INCREMENT? numberTypeSuffix)
     |((REAL | DOUBLE | FLOAT | DECIMAL | NUMERIC) dataTypeLength? (NOT? NULL)? AUTO_INCREMENT? numberTypeSuffix )
     |((DATE | TIME) (NOT? NULL)? (DEFAULT (STRING | NULL))?)
     |((timestampType | DATETIME) (NOT? NULL)?  (DEFAULT (currentTimestampType | NUMBER | STRING | NULL))? (ON UPDATE currentTimestampType)? )
@@ -166,11 +166,6 @@ indexDefinition:
     
 indexDefOption:
     indexName? indexType? keyParts indexOption?
-    ;
-    
-    
-indexAndKey:	
-    INDEX|KEY
     ;
 
 constraintDefinition:
