@@ -65,15 +65,13 @@ SELECT * FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id  WHERE 
 
 ## 广播路由
 
-对于不携带分片键的SQL，则采取广播路由的方式。根据SQL类型又可以划分为全库广播路由、全库表广播路由、单播路由和阻断路由这4种类型。
+对于不携带分片键的SQL，则采取广播路由的方式。根据SQL类型又可以划分为全库广播路由、全库表广播路由、全实例广播路由、单播路由和阻断路由这5种类型。
 
-全库广播路由用于处理对数据库的操作，例如：
+全库广播路由用于处理对数据库的操作，包括用于库设置的SET类型的数据库管理命令，以及TCL这样的事务控制语句。
 
-```sql
-SET AUTOCOMMIT=1;
-```
+全库表广播路由用于处理对数据库中与其逻辑表相关的所有真实表的操作，主要包括不带分片键的DQL和DML，以及DDL等。
 
-全库表广播路由用于处理对数据库中所有表的操作，例如：不带分片键的DQL和DML，以及DDL等。
+全实例广播路由用于DCL操作，授权语句针对的是数据库的实例。无论一个实例中包含多少个Schema，每个数据库的实例只执行一次。
 
 单播路由用于获取某一真实表信息的场景，它仅需要从任意库中的任意真实表中获取数据即可。例如：
 
@@ -91,4 +89,4 @@ USE order_db;
 
 路由引擎的整体结构划分如下图。
 
-![路由引擎结构](http://ovfotjrsi.bkt.clouddn.com/sharding/route_structure.png)
+![路由引擎结构](http://ovfotjrsi.bkt.clouddn.com/sharding/route_architecture.png)
