@@ -1,6 +1,7 @@
 grammar PostgreDropTable;
-import PostgreKeyword, DataType, Keyword, PostgreBase,BaseRule,Symbol;
+
+import PostgreKeyword, PostgreBase, BaseRule;
 
 dropTable:
-    DROP TABLE (IF EXISTS)? tableNames (CASCADE | RESTRICT)?
+    DROP TABLE (IF EXISTS)? tableNames
     ;

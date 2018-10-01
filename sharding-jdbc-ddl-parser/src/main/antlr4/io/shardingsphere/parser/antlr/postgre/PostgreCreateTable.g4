@@ -1,20 +1,11 @@
 grammar PostgreCreateTable;
+
 import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
 
 createTable:
-    createBasicTable
-    |createTypeTable
-    |createTableForPartition
-    ;
-
-createBasicTable:
     createTableHeader
     createDefinitions
     inheritClause?
-    partitionClause?
-    tableWithClause?
-    commitClause?
-    tableSpaceClause?
     ;
 
 createTableHeader:
@@ -38,62 +29,6 @@ likeOption:
 
 inheritClause:
     INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN
-    ;
-
-partitionClause:
-    PARTITION BY (RANGE | LIST) LEFT_PAREN partitionClauseParam (COMMA partitionClauseParam)* RIGHT_PAREN
-    ;
-
-partitionClauseParam:
-    (columnName | simpleExpr | LEFT_PAREN simpleExpr RIGHT_PAREN) collateClause? opclass?
-    ;
-
-tableWithClause:
-    withStorageParameters
-    |(WITH OIDS)
-    |(WITHOUT OIDS)
-    ;
-
-commitClause:
-    ON COMMIT (PRESERVE ROWS | DELETE ROWS | DROP)
-    ;
-
-tableSpaceClause:
-    TABLESPACE tablespaceName
-    ;
-
-createTypeTable:
-    createTableHeader
-    typeNameClause
-    createDefinition1s?
-    partitionClause?
-    tableWithClause?
-    commitClause?
-    tableSpaceClause?
-    ;
-
-typeNameClause:
-    OF typeName
-    ;
-
-createDefinition1s:
-    LEFT_PAREN createDefinition1 (COMMA createDefinition1)* RIGHT_PAREN
-    ;
-
-createDefinition1:
-    (columnName (WITH OPTIONS )? columnConstraint*)
-    | tableConstraint
-    ;
-
-createTableForPartition:
-    createTableHeader
-    partitionOfParent
-    createDefinition1s?
-    forValuesParition
-    partitionClause?
-    tableWithClause?
-    commitClause?
-    tableSpaceClause?
     ;
 
 partitionOfParent:
