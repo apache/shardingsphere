@@ -15,7 +15,7 @@ indexAndKey:
     ;
       
 characterAndCollate:
-    characterSet collateClause
+    characterSet collateClause?
     ;
     
 characterSet:
@@ -33,7 +33,7 @@ collateClause:
     ;
 
 characterAndCollateWithEqual:
-    characterSetWithEqual collateClauseWithEqual
+    characterSetWithEqual collateClauseWithEqual?
     ;
     
 characterSetWithEqual:
