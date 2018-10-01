@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.1.3. </b>"
+pre = "<b>3.1.4. </b>"
 title = "Other Features"
-weight = 3
+weight = 4
 chapter = true
 +++
 

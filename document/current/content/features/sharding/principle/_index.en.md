@@ -1,7 +1,8 @@
 +++
-toc = true
-title = "Process"
-weight = 4
+pre = "<b>3.1.1. </b>"
+title = "Kernel Principle"
+weight = 2
+chapter = true
 +++
 
 Sharding-Sphere's 3 projects have same main process on data sharding. They are SQL Parser => Executor Optimizer => SQL Router => SQL Rewrite => SQL Execution => Result Merger, and using the logical table which the user configured, the real SQL is completely shielded from the database access.
