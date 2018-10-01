@@ -31,26 +31,26 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
 
     /** Visit add primary key node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext constraintDefinitionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+        ParserRuleContext constraintDefinitionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "addConstraint");
         if (null == constraintDefinitionNode) {
             return;
         }
 
-        ParserRuleContext primaryKeyOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+        ParserRuleContext primaryKeyOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "primaryKeyOption");
         if (null == primaryKeyOptionNode) {
             return;
         }
 
-        List<ParseTree> keyPartNodes = TreeUtils.getAllDescendantByRuleName(rootNode, "keyPart");
+        List<ParseTree> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, "keyPart");
         if (null == keyPartNodes) {
             return;
         }

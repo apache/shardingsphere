@@ -31,14 +31,14 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
 
     /** Visit add primary key node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext addColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode, "addColumn");
+        ParserRuleContext addColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode, "addColumn");
 
         if (null == addColumnCtx) {
             return;

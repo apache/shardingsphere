@@ -23,8 +23,8 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public interface PhraseVisitor {
     /** Visit ast.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
-    void visit(ParserRuleContext rootNode, SQLStatement statement);
+    void visit(ParserRuleContext ancestorNode, SQLStatement statement);
 }

@@ -25,35 +25,45 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class AddColumnVisitor extends ColumnDefinitionVisitor {
 
     /** Visit add column node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParseTree> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "addColumn");
+        List<ParseTree> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "addColumn");
         if (null == addColumnCtxs) {
             return;
         }
 
         for (ParseTree each : addColumnCtxs) {
-            List<ParseTree> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(each, "columnDefinition");
-            if (null == columnDefinitionCtxs) {
-                continue;
-            }
+            visitAddColumn(each, alterStatement);
+        }
+    }
+    
+    public void visitAddColumn(final ParseTree addColumnCtx, final AlterTableStatement alterStatement) {
+        List<ParseTree> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, "columnDefinition");
+        if (null == columnDefinitionCtxs) {
+            return;
+        }
 
-            for (ParseTree columnDefinitionCtx : columnDefinitionCtxs) {
-                ColumnDefinition column = parseColumnDefinition(columnDefinitionCtx);
-                if (null != column) {
-                    alterStatement.getAddColumns().add(column);
-                }
+        for (ParseTree columnDefinitionCtx : columnDefinitionCtxs) {
+            ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
+            if (null != column) {
+                alterStatement.getAddColumns().add(column);
+                postVisitColumnDefinition(addColumnCtx, alterStatement, column.getName());
             }
         }
     }
+    
+    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,
+            String columnName) {
 
+    }
 }

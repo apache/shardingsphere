@@ -30,13 +30,13 @@ import io.shardingsphere.core.util.SQLUtil;
 public class DropColumnVisitor implements PhraseVisitor {
 
     /** Visit drop column node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParseTree> dropColumnCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "dropColumn");
+        List<ParseTree> dropColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "dropColumn");
         if (null == dropColumnCtxs) {
             return;
         }

@@ -43,7 +43,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
 
     /** Visit drop primary key node.
-     * @param rootNode root node of ast
+     * @param rootNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
