@@ -204,9 +204,45 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 
 分页信息修正时，如果使用占位符的方式书写SQL，则只需要改写参数列表即可，无需改写SQL本身。
 
-### 批量插入拆分
+### 批量拆分
 
-todo
+在使用批量插入的SQL时，如果插入的数据是跨分片的，那么需要对SQL进行改写来防止将多余的数据写入到数据库中。
+插入操作与查询操作的不同之处在于，查询语句中即使用了不存在于当前分片的分片键，也不会对数据产生影响；而插入操作则必须将多余的分片键删除。
+举例说明，如下SQL：
+
+```sql
+INSERT INTO t_order (order_id, xxx) VALUES (1, 'xxx'), (2, 'xxx'), (3, 'xxx');
+```
+
+假设数据库仍然是按照order_id的奇偶值分为2片，那么将这条SQL仅仅修改表名之后向数据库执行，则两个分片都会写入相同的记录。
+虽然只有符合分片查询条件的数据才能够被查询语句取出，但存在冗余数据的实现方案并不合理。因此需要将SQL改写为：
+
+```sql
+INSERT INTO t_order_0 (order_id, xxx) VALUES (2, 'xxx');
+INSERT INTO t_order_1 (order_id, xxx) VALUES (1, 'xxx'), (3, 'xxx');
+```
+
+使用IN的查询与批量插入的情况相似，不过IN操作并不会导致数据查询结果错误。通过对IN查询的改写，可以进一步的提升查询性能。如以下SQL：
+
+```sql
+SELECT * FROM t_order WHERE order_id IN (1, 2, 3);
+```
+
+改写为：
+
+```sql
+SELECT * FROM t_order_0 WHERE order_id IN (2);
+SELECT * FROM t_order_1 WHERE order_id IN (1, 3);
+```
+
+可以进一步的提升查询性能。Sharding-Sphere暂时还未实现此改写策略，目前的改写结果是：
+
+```sql
+SELECT * FROM t_order_0 WHERE order_id IN (1, 2, 3);
+SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
+```
+
+虽然SQL的执行结果是正确的，但并未达到最优的查询效率。
 
 ## 优化改写
 
@@ -225,4 +261,4 @@ todo
 
 改写引擎的整体结构划分如下图所示。
 
-![路由引擎结构](http://ovfotjrsi.bkt.clouddn.com/sharding/rewrite_architecture_v2.png)
+![改写引擎结构](http://ovfotjrsi.bkt.clouddn.com/sharding/rewrite_architecture_v2.png)
