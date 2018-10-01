@@ -1,5 +1,6 @@
 grammar SQLServerDropTable;
-import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
+
+import SQLServerKeyword, SQLServerBase, BaseRule;
 
 dropTable:
     DROP TABLE (IF EXISTS)? tableNames

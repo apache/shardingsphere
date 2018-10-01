@@ -1,4 +1,5 @@
 grammar SQLServerAlterTable;
+
 import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
 
 alterTable:
@@ -8,14 +9,10 @@ alterTable:
     |alterDrop
     |alterCheckConstraint
     |alterTrigger
-    |alterTracking
     |alterSwitch
     |alterSet
-    |alterRebuild
-    |mergeOrSplit
     |tableOption
-    |fileTableOption
-    |stretchConfiguration)
+    )
     ;
     
 alterTableOp:
@@ -23,12 +20,7 @@ alterTableOp:
     ;
     
 alterColumn:
-    (   
-        modifyColumn
-      | alterColumnAddOrDrop
-      | alterColumnMasked 
-    )   
-    (WITH LEFT_PAREN ONLINE EQ_OR_ASSIGN ON | OFF RIGHT_PAREN)?  
+     modifyColumn
     ;
 
 modifyColumn:
@@ -38,14 +30,6 @@ modifyColumn:
 alterColumnOp:
 	ALTER COLUMN columnName
 	;
-	
-alterColumnAddOrDrop:
-    alterColumnOp (ADD | DROP) (ROWGUIDCOL | PERSISTED | NOT FOR REPLICATION | SPARSE | HIDDEN_)
-    ;
-
-alterColumnMasked:
-    alterColumnOp (ADD | DROP) MASKED (WITH LEFT_PAREN FUNCTION EQ_OR_ASSIGN STRING RIGHT_PAREN )?
-    ;    
     
 addColumn:
     (WITH (CHECK | NOCHECK))?
@@ -153,11 +137,6 @@ alterTrigger:
     (ALL | (triggerName ( COMMA triggerName)*))  
     ;
     
-alterTracking:
-    (ENABLE | DISABLE) CHANGE_TRACKING   
-    (WITH LEFT_PAREN TRACK_COLUMNS_UPDATED EQ_OR_ASSIGN (ON | OFF) RIGHT_PAREN )?
-    ;
-    
 alterSwitch:
     SWITCH ( PARTITION expr )?  
     TO tableName   
@@ -198,47 +177,7 @@ alterSetOnClause:
     )?
     ;
       
-alterRebuild:
-    REBUILD   
-    (
-         (PARTITION EQ_OR_ASSIGN ALL)? WITH LEFT_PAREN rebuildOption ( COMMA rebuildOption)* RIGHT_PAREN
-         |(PARTITION EQ_OR_ASSIGN numberRange)? (WITH LEFT_PAREN singlePartitionRebuildOption (COMMA singlePartitionRebuildOption)* RIGHT_PAREN )?  
-     )
-    ;    
     
-fileTableOption :
-    (ENABLE | DISABLE) FILETABLE_NAMESPACE
-    |SET LEFT_PAREN FILETABLE_DIRECTORY EQ_OR_ASSIGN directoryName RIGHT_PAREN 
-    ;  
-
-stretchConfiguration :  
-    SET 
-    LEFT_PAREN  
-        REMOTE_DATA_ARCHIVE   
-        (  
-            (EQ_OR_ASSIGN ON LEFT_PAREN  tableStretchOptions  RIGHT_PAREN)  
-            | (EQ_OR_ASSIGN OFF_WITHOUT_DATA_RECOVERY LEFT_PAREN MIGRATION_STATE EQ_OR_ASSIGN PAUSED RIGHT_PAREN)  
-            | (LEFT_PAREN tableStretchOptions (COMMA)? RIGHT_PAREN)  
-        )  
-    RIGHT_PAREN  
-    ;
-
-tableStretchOptions:  
-     ( FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
-       MIGRATION_STATE EQ_OR_ASSIGN ( OUTBOUND | INBOUND | PAUSED )  
-    ;
-
-singlePartitionRebuildOption :  
-      (SORT_IN_TEMPDB EQ_OR_ASSIGN ( ON | OFF ))  
-    | (MAXDOP EQ_OR_ASSIGN NUMBER)  
-    | compressionOption 
-    | (ONLINE EQ_OR_ASSIGN (OFF |onLowPriorLockWait))
-    ;
-
-rebuildOption:   
-    | indexOption
-    | (ONLINE EQ_OR_ASSIGN (OFF | onLowPriorLockWait))   
-    ;
 
 tableIndex: 
     indexWithName 
@@ -276,10 +215,3 @@ tableOption:
         (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN )?)   
     ;
   
-mergeOrSplit:
-    (SPLIT | MERGE) RANGE LEFT_PAREN simpleExpr RIGHT_PAREN   
-    ;
- 
- numberRange:
-    NUMBER (TO NUMBER)?
-    ;

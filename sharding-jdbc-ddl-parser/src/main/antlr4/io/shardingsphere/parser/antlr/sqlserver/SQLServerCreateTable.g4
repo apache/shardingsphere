@@ -1,4 +1,5 @@
 grammar SQLServerCreateTable;
+
 import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
 
 createTable:
@@ -103,6 +104,6 @@ dataWareHouseTableOption:
      ; 
      
 tableStretchOptions:  
-     ( FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
-       MIGRATION_STATE EQ_OR_ASSIGN ( OUTBOUND | INBOUND | PAUSED )  
-    ;
+     (FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
+     MIGRATION_STATE EQ_OR_ASSIGN ( OUTBOUND | INBOUND | PAUSED )  
+     ;
