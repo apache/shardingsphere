@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antler.visitor.mysql;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.DropPrimaryKeyVisitor;
