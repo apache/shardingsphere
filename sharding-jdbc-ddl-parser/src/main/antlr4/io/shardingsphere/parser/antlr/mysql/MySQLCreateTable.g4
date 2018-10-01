@@ -16,7 +16,7 @@ createTableBasic:
     tableOptions?
     partitionOptions?
     ;
-    
+
 createDefinitions:
     createDefinition (COMMA createDefinition)*
     ;
@@ -24,11 +24,6 @@ createDefinitions:
 createDefinition:
     columnDefinition
     |(constraintDefinition|indexDefinition| checkExpr)
-    ;
-    
-defaultValue:
-    NULL
-    |simpleExpr
     ;
     
 checkExpr:
@@ -45,7 +40,7 @@ createTableSelect:
     ;
     
 createTableLike:
-    (likeTable) 
+    likeTable
     | LEFT_PAREN likeTable RIGHT_PAREN
     ;    
 

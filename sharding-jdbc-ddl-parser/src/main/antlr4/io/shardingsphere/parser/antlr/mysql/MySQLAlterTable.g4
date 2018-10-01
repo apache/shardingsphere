@@ -2,7 +2,7 @@ grammar MySQLAlterTable;
 import MySQLKeyword, DataType, Keyword, BaseRule,MySQLTableBase, MySQLBase,Symbol;
 
 alterTable:
-     ALTER TABLE tableName alterSpecifications? partitionOptions?
+     ALTER TABLE tableName alterSpecifications?
     ;
 
 alterSpecifications:
@@ -28,7 +28,7 @@ alterSpecification:
     | FORCE
     | lockOption
     | modifyColumn
-    | (ORDER BY columnName (COMMA columnName)*)+ 
+    | (ORDER BY columnName (COMMA columnName)*)+
     | renameIndex
     | renameTable
     | (WITHOUT|WITH) VALIDATION
@@ -49,63 +49,55 @@ alterSpecification:
     | UPGRADE PARTITIONING
     ;
 
+singleColumn:
+    columnDefinition firstOrAfterColumn?
+    ;
+
+multiColumn:
+    LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
+    ;
+
 addConstraint:
-     ADD constraintDefinition
-     ;
-     
+    ADD constraintDefinition
+    ;
+
 changeColumn:
     changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;
-    
+
 changeColumnOp:
     CHANGE COLUMN?
+    ;
+
+dropColumn:
+    DROP COLUMN? columnName
+    ;
+
+dropIndexDef:
+    DROP indexAndKey indexName
+    ;
+
+dropPrimaryKey:
+    DROP primaryKey
+    ;
+
+modifyColumn:
+    MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
 firstOrAfterColumn:
 	FIRST
 	|AFTER columnName
     ;
-    
-dropColumn:
-    DROP COLUMN? columnName
-    ;
-    
-dropIndexDef:
-    DROP indexAndKey indexName
-    ;
-    
-dropPrimaryKey:
-    DROP primaryKey
-    ;
-    
+
 renameIndex:
     RENAME indexAndKey indexName TO indexName
     ;
 
-renameTable:    
+renameTable:
     RENAME (TO|AS)? tableName
     ;
 
 partitionNames:
     partitionName (COMMA partitionName)*
-    ;    
-
-modifyColumn:    
-    MODIFY COLUMN? columnDefinition firstOrAfterColumn?
-    ;
-    
-algorithmOption:
-    ALGORITHM EQ_OR_ASSIGN? (DEFAULT|INPLACE|COPY)
-    ;
-
-lockOption:
-    LOCK EQ_OR_ASSIGN? (DEFAULT|NONE|SHARED|EXCLUSIVE)
-    ;
-    
-singleColumn:
-    columnDefinition firstOrAfterColumn?
-    ;
-    
-multiColumn:
-    LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
     ;
