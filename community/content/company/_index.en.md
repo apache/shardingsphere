@@ -23,6 +23,7 @@ Organizations using Sharding in chronological order.
 * [Joybuy](https://www.joybuy.com/)
 * The JD department of Big data and intelligent supply chain
 * [imrfresh](https://www.imrfresh.com/)
+* [Dayi35](https://www.dayi35.com/)
 
 ## FinTech
 
@@ -44,6 +45,7 @@ Organizations using Sharding in chronological order.
 * [tianya](http://www.tianya.cn/)
 * [yiche](http://www.yiche.com/)
 * [baixing](http://www.baixing.com/)
+* [yidianzixun](https://www.yidianzixun.com/)
 
 ## O2O
 
@@ -52,6 +54,7 @@ Organizations using Sharding in chronological order.
 * [ChinaRoad](https://660pp.com)
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
+* [DiDi global](https://www.didiglobal.com/)
 
 ## SNS
 
@@ -98,6 +101,7 @@ Organizations using Sharding in chronological order.
 * [youxuan](http://www.youx.mobi/)
 * [huochebang](http://www.huochebang.com/)
 * [rabbitpre](http://www.rabbitpre.com/)
+* [AreoSpace](http://www.ascf.com.cn/n4194536/)
 
 ## Express
 
@@ -115,3 +119,4 @@ Organizations using Sharding in chronological order.
 ## Online education
 
 * [TAL](http://www.100tal.com/)
+* [KAIKE.LA](http://www.kaike.la/)

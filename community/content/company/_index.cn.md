@@ -23,6 +23,7 @@ chapter = true
 * [京东商城海外站](https://www.joybuy.com/)
 * 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
+* [大易有塑](https://www.dayi35.com/)
 
 ## 互联网金融
 
@@ -44,6 +45,7 @@ chapter = true
 * [天涯社区](http://www.tianya.cn/)
 * [易车网](http://www.yiche.com/)
 * [百姓网](http://www.baixing.com/)
+* [一点资讯](https://www.yidianzixun.com/)
 
 ## O2O
 
@@ -52,6 +54,7 @@ chapter = true
 * [PP停车](https://660pp.com)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
+* [滴滴小桔车服](https://www.didiglobal.com/)
 
 ## 社交平台
 
@@ -98,6 +101,7 @@ chapter = true
 * [YOU选](http://www.youx.mobi/)
 * [货车帮](http://www.huochebang.com/)
 * [兔展](http://www.rabbitpre.com/)
+* [航天长峰](http://www.ascf.com.cn/n4194536/)
 
 ## 物流
 
@@ -115,3 +119,4 @@ chapter = true
 ## 在线教育
 
 * [好未来](http://www.100tal.com/)
+* [开课啦](http://www.kaike.la/)
