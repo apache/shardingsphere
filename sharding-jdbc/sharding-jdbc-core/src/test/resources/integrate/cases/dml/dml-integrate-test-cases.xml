@@ -74,10 +74,10 @@
     <dml-test-case sql-case-id="insert_without_generate_key_column">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
     </dml-test-case>
-    <!---->
-    <!--<dml-test-case sql-case-id="insert_set_without_generate_key_column">-->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
-    <!--</dml-test-case>-->
+
+    <dml-test-case sql-case-id="insert_set_without_generate_key_column">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_batch">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
