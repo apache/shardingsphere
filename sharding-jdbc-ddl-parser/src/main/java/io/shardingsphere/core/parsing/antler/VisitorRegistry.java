@@ -30,12 +30,12 @@ import io.shardingsphere.core.parsing.antler.visitor.oracle.OracleAlterTableVisi
 import io.shardingsphere.core.parsing.antler.visitor.postgre.PostgreAlterTableVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.sqlserver.SQLServerAlterTableVisitor;
 
-public final class VisitorManager {
-    private static VisitorManager instance = new VisitorManager();
+public final class VisitorRegistry {
+    private static VisitorRegistry instance = new VisitorRegistry();
 
     private Map<String, StatementVisitor> visitors = new HashMap<String, StatementVisitor>();
 
-    private VisitorManager() {
+    private VisitorRegistry() {
         visitors.put("CreateTable", new CreateTableVisitor());
         visitors.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
         visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreAlterTableVisitor());
@@ -54,7 +54,7 @@ public final class VisitorManager {
      * Get VisitorManager instance.
      * @return VisitorManager instance
      */
-    public static VisitorManager getInstance() {
+    public static VisitorRegistry getInstance() {
         return instance;
     }
 
