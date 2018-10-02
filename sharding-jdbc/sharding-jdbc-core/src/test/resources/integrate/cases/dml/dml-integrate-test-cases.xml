@@ -71,9 +71,9 @@
     </dml-test-case>
     
     <!-- TODO parse generator context for insert set -->
-    <!--<dml-test-case sql-case-id="insert_without_generate_key_column">-->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
-    <!--</dml-test-case>-->
+    <dml-test-case sql-case-id="insert_without_generate_key_column">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
     <!---->
     <!--<dml-test-case sql-case-id="insert_set_without_generate_key_column">-->
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
