@@ -97,8 +97,8 @@
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_in_with_geography">
-        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
-        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
+        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
+        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_sum">
