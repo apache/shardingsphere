@@ -30,14 +30,14 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class RenameColumnVisitor implements PhraseVisitor {
 
     /** Visit rename column node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
-        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "renameColumn");
         if (null == modifyColumnCtx) {
             return;

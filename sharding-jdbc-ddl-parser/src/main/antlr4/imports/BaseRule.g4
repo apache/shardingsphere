@@ -12,7 +12,6 @@ ID:
     
 schemaName: ID;
 tableName: ID;
-tableOrViewName: ID;
 columnName: ID; 
 tablespaceName: ID;
 collationName: STRING | ID;
@@ -22,7 +21,6 @@ cteName:ID;
 parserName: ID;
 extensionName: ID;
 rowName: ID;
-storageParameter: ID;
 opclass: ID;
 
 fileGroup: ID;
@@ -178,7 +176,7 @@ simpleExpr:
     ;
 
 functionCall:
-    ID LEFT_PAREN(bitExprs?) RIGHT_PAREN
+    ID LEFT_PAREN( bitExprs?) RIGHT_PAREN
     ;    
  
  privateExprOfDb:

@@ -33,27 +33,7 @@ intervalField:
 collateClause:
     COLLATE collationName
     ;
-
-withStorageParameters:
-    WITH storageParametersWithParen
-    ;
-
-storageParametersWithParen:
-    LEFT_PAREN storageParameters RIGHT_PAREN
-    ;
-
-storageParameters:
-    storageParameterWithValue (COMMA storageParameterWithValue)*
-    ;
-
-storageParameterWithValue:
-    storageParameter EQ_OR_ASSIGN simpleExpr
-    ;
-
-tableSpaceClause:
-    TABLESPACE tablespaceName
-    ;
-
+    
 usingIndexType:
     USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
     ;
@@ -69,14 +49,14 @@ constraintClause:
     ;
 
 columnConstraintOption:
-    (NOT NULL)
-    |NULL
-    |checkOption
-    |(DEFAULT defaultExpr)
-    |(GENERATED ( ALWAYS | BY DEFAULT ) AS IDENTITY ( LEFT_PAREN sequenceOptions RIGHT_PAREN )?)
-    |(UNIQUE indexParameters)
-    |(primaryKey indexParameters)
-    |(REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? (ON UPDATE action)?)
+      NOT? NULL
+    | checkOption
+    | DEFAULT defaultExpr
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LEFT_PAREN sequenceOptions RIGHT_PAREN)?
+    | UNIQUE indexParameters
+    | primaryKey indexParameters
+    | REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)?
+     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? (ON UPDATE action)?
     ;
 
 checkOption:
@@ -101,7 +81,6 @@ sequenceOption:
     ;
 
 indexParameters:
-    withStorageParameters?
     (USING INDEX TABLESPACE tablespaceName)?
     ;
 
@@ -124,64 +103,14 @@ tableConstraint:
     ;
 
 tableConstraintOption:
-    checkOption
-    |(UNIQUE columnList indexParameters)
-    |(primaryKey columnList indexParameters)
-    |(EXCLUDE (usingIndexType)? LEFT_PAREN excludeParam (COMMA excludeParam)* RIGHT_PAREN  indexParameters (WHERE ( predicate ))?)
-    |(FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON DELETE action )? (ON UPDATE action)?)
-    ;
-
-excludeParam:
-    excludeElement WITH operator
+     checkOption
+    | UNIQUE columnList indexParameters
+    | primaryKey columnList indexParameters
+    | FOREIGN KEY columnList REFERENCES tableName columnList
     ;
 
 excludeElement:
     (columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
-    ;
-
-operator:
-    SAFE_EQ
-    |EQ_OR_ASSIGN
-    |NEQ
-    |NEQ_SYM
-    |GT
-    |GTE
-    |LT
-    |LTE
-    |AND_SYM
-    |OR_SYM
-    |NOT_SYM
-    ;
-
-forValuesParition:
-    FOR VALUES partitionBoundSpec
-    ;
-
-partitionBoundSpec:
-    (IN inValueOption)
-    |(FROM fromValueOption TO fromValueOption)
-    ;
-
-inValueOption:
-    LEFT_PAREN inValue (COMMA inValue)* RIGHT_PAREN
-    ;
-
-inValue:
-    NUMBER
-    |STRING
-    |TRUE
-    |FALSE
-    |NULL
-    ;
-
-fromValueOption:
-    LEFT_PAREN fromValue (COMMA fromValue)* RIGHT_PAREN
-    ;
-
-fromValue:
-    inValue
-    |MINVALUE
-    |MAXVALUE
     ;
 
 privateExprOfDb:
@@ -230,10 +159,24 @@ privateExprOfDb:
     frameClause?
      ;
      
- orderByExpr:
+orderByExpr:
      ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
      ;
      
+operator:
+    SAFE_EQ
+    |EQ_OR_ASSIGN
+    |NEQ
+    |NEQ_SYM
+    |GT
+    |GTE
+    |LT
+    |LTE
+    |AND_SYM
+    |OR_SYM
+    |NOT_SYM
+    ;
+    
  frameClause:
      ((RANGE | ROWS) frameStart)
      |(RANGE | ROWS ) BETWEEN frameStart AND frameEnd
@@ -265,12 +208,12 @@ collateExpr:
     ;
 
 arrayConstructorWithCast:
-    arrayConstructor castExprWithColon?
+       arrayConstructor castExprWithColon?
      |(ARRAY LEFT_BRACKET RIGHT_BRACKET castExprWithColon)    
     ;
     
 arrayConstructor:
-    | ARRAY LEFT_BRACKET exprs RIGHT_BRACKET
+      ARRAY LEFT_BRACKET exprs RIGHT_BRACKET
     | ARRAY LEFT_BRACKET arrayConstructor (COMMA arrayConstructor)* RIGHT_BRACKET
     ;
 

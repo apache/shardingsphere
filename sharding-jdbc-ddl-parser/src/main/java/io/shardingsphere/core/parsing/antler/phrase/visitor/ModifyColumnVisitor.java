@@ -25,30 +25,36 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-public class ModifyColumnVisitor extends ColumnDefinitionVisitor {
+public class ModifyColumnVisitor implements PhraseVisitor {
 
     /** Visit modify column node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
-        List<ParseTree> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "modifyColumn");
+        List<ParseTree> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "modifyColumn");
         if (null == modifyColumnCtxs) {
             return;
         }
 
         for (ParseTree each : modifyColumnCtxs) {
             // it`s not columndefinition, but can call this method
-            ColumnDefinition column = parseColumnDefinition(each);
+            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
                 alterStatement.getUpdateColumns().put(column.getName(), column);
+                postVisitColumnDefinition(ancestorNode, statement, column.getName());
             }
         }
     }
-
+    
+    
+    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,String columnName) {
+        
+    }
 }

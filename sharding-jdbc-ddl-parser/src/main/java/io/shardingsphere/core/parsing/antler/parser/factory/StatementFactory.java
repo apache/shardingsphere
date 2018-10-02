@@ -21,7 +21,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antler.VisitorManager;
+import io.shardingsphere.core.parsing.antler.VisitorRegistry;
 import io.shardingsphere.core.parsing.antler.statement.visitor.StatementVisitor;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
@@ -43,7 +43,7 @@ public class StatementFactory {
         ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(dbType, tokenType, shardingRule, lexerEngine);
         if (rootNode != null) {
             String commandName = getCommandName(rootNode);
-            StatementVisitor visitor = VisitorManager.getInstance().getVisitor(dbType, commandName);
+            StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, commandName);
             if (null != visitor) {
                 return visitor.visit(rootNode, shardingTableMetaData);
             }

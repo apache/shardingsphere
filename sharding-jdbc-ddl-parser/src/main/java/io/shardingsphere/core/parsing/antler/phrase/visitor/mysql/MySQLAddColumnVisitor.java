@@ -16,43 +16,25 @@
  */
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import java.util.List;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.AddColumnVisitor;
+import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-public class MySQLAddColumnVisitor extends MySQLColumnPositionVisitor {
-    /** Visit add column node.
-     * @param rootNode root node of ast
-     * @param statement sql statement
-     */
+public class MySQLAddColumnVisitor extends AddColumnVisitor {
+    
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParseTree> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(rootNode, "addColumn");
-        if (null == addColumnCtxs) {
-            return;
-        }
+    protected void postVisitColumnDefinition(final ParseTree rootNode, final SQLStatement statement,
+            String columnName) {
+        ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) rootNode, columnName);
 
-        for (ParseTree each : addColumnCtxs) {
-            List<ParseTree> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(each, "columnDefinition");
-            if (null == columnDefinitionCtxs) {
-                continue;
-            }
-
-            for (ParseTree columnDefinitionCtx : columnDefinitionCtxs) {
-                ColumnDefinition column = parseColumnDefinition(columnDefinitionCtx);
-                if (null != column) {
-                    alterStatement.getAddColumns().add(column);
-                    visitFirstOrAfter((ParserRuleContext) each, (MySQLAlterTableStatement)alterStatement, column.getName());
-                }
-            }
+        MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
+        if (null != columnPosition) {
+            alterStatement.getPositionChangedColumns().add(columnPosition);
         }
     }
 }

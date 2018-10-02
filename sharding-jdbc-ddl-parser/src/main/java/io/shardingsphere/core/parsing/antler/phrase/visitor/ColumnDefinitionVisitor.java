@@ -24,26 +24,27 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
 public class ColumnDefinitionVisitor implements PhraseVisitor {
 
     /** Visit column definition node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
 
-        List<ParseTree> columnDefinitions = TreeUtils.getAllDescendantByRuleName(rootNode, "ColumnDefinition");
+        List<ParseTree> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ancestorNode, "ColumnDefinition");
         if (null == columnDefinitions) {
             return;
         }
 
         for (final ParseTree each : columnDefinitions) {
-            ColumnDefinition column = parseColumnDefinition(each);
+            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null == column) {
                 continue;
             }
@@ -55,58 +56,4 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
             }
         }
     }
-
-    /**
-     * Parse column definition.
-     * 
-     * @param columnDefinitionNode
-     *            column definition rule
-     * @return column defition
-     */
-    protected ColumnDefinition parseColumnDefinition(final ParseTree columnDefinitionNode) {
-        if (null == columnDefinitionNode) {
-            return null;
-        }
-
-        ParserRuleContext columnNameNode = (ParserRuleContext) (ParserRuleContext) TreeUtils
-                .getFirstChildByRuleName(columnDefinitionNode, "columnName");
-
-        if (null == columnNameNode) {
-            return null;
-        }
-
-        ParserRuleContext dataTypeCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                "dataType");
-
-        String typeName = null;
-        if (dataTypeCtx != null) {
-            typeName = dataTypeCtx.getChild(0).getText();
-        }
-
-        Integer length = null;
-
-        ParserRuleContext dataTypeLengthCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(dataTypeCtx,
-                "dataTypeLength");
-
-        if (null != dataTypeLengthCtx) {
-            if (dataTypeLengthCtx.getChildCount() >= 3) {
-                try {
-                    length = Integer.parseInt(dataTypeLengthCtx.getChild(1).getText());
-                } catch (NumberFormatException e) {
-                    // just for checksty
-                    length = null;
-                }
-            }
-        }
-
-        ParserRuleContext primaryKeyNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                "primaryKey");
-        boolean primaryKey = false;
-        if (null != primaryKeyNode) {
-            primaryKey = true;
-        }
-
-        return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
-    }
-
 }

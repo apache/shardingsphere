@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 shardingsphere.io.
+MySQLStatementParseTreeBuilder.java * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,12 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
         Lexer lexer = newLexer(stream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         Parser parser = newParser(tokenStream);
-        return getParserTree(parser);
+        ParserRuleContext rootCtx = getParserTree(parser);
+        if(null != rootCtx) {
+            return (ParserRuleContext)rootCtx.getChild(0);
+        }
+        
+        return null;
     }
 
     /** Create lexer instance.

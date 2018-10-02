@@ -33,14 +33,14 @@ public class AddPrimaryKeyVisitor implements PhraseVisitor {
     private final String ruleName;
 
     /** Visit add primary key node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
-        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode, ruleName);
+        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode, ruleName);
         if (null == modifyColumnCtx) {
             return;
         }

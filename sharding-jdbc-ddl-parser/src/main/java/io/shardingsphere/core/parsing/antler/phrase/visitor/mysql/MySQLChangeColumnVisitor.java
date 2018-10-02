@@ -19,19 +19,21 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-public class MySQLChangeColumnVisitor extends MySQLColumnPositionVisitor {
+public class MySQLChangeColumnVisitor implements PhraseVisitor {
 
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+        MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
 
-        ParserRuleContext changeColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+        ParserRuleContext changeColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "changeColumn");
         if (null == changeColumnCtx) {
             return;
@@ -51,11 +53,14 @@ public class MySQLChangeColumnVisitor extends MySQLColumnPositionVisitor {
             return;
         }
 
-        ColumnDefinition column = parseColumnDefinition(columnDefinitionCtx);
+        ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
         if (null != column) {
             alterStatement.getUpdateColumns().remove(oldColumnCtx.getText());
             alterStatement.getUpdateColumns().put(oldColumnCtx.getText(), column);
-            visitFirstOrAfter(changeColumnCtx, (MySQLAlterTableStatement) alterStatement, column.getName());
+            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnCtx, column.getName());
+            if(null != columnPosition) {
+                alterStatement.getPositionChangedColumns().add(columnPosition);
+            }
         }
     }
 }

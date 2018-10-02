@@ -64,7 +64,7 @@ foreignKeyOnAction:
     ;       
     
 foreignKeyOn:
-    NO ACTION 
+      NO ACTION 
     | CASCADE 
     | SET NULL 
     | SET DEFAULT 

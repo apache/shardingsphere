@@ -22,19 +22,20 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-public class OracleModifyColumnVisitor extends ColumnDefinitionVisitor {
+public class OracleModifyColumnVisitor implements PhraseVisitor {
 
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
-        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "modifyColumn");
         if (null == modifyColumnCtx) {
             return;
@@ -47,7 +48,7 @@ public class OracleModifyColumnVisitor extends ColumnDefinitionVisitor {
 
         for (final ParseTree each : columnNodes) {
             // it`s not columndefinition, but can call this method
-            ColumnDefinition column = parseColumnDefinition(each);
+            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
                 alterStatement.getUpdateColumns().put(column.getName(), column);
             }

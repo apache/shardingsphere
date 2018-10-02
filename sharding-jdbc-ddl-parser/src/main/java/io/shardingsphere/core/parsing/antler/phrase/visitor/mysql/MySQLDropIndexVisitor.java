@@ -27,12 +27,12 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 public class MySQLDropIndexVisitor implements PhraseVisitor {
 
     /** Visit drop index node.
-     * @param rootNode root node of ast
+     * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
-        ParserRuleContext dropIndexDefNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(rootNode,
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+        ParserRuleContext dropIndexDefNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "dropIndexDef");
         if (null == dropIndexDefNode) {
             return;
