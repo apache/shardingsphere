@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.ast.oracle;
+package io.shardingsphere.core.parsing.antler.ast;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
@@ -23,11 +23,10 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
-import io.shardingsphere.core.parsing.antler.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.parser.oracle.OracleAdvancedDropTableParser;
-import io.shardingsphere.parser.antlr.oracle.OracleDropTableLexer;
+import io.shardingsphere.core.parsing.antler.parser.PostgreStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.PostgreStatementLexer;
 
-public class OracleDropTableParseTreeBuilder extends AbstractParseTreeBuilder {
+public class PostgreStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /** Create lexer instance.
      * @param stream text stream
@@ -35,7 +34,7 @@ public class OracleDropTableParseTreeBuilder extends AbstractParseTreeBuilder {
      */
     @Override
     protected Lexer newLexer(final CharStream stream) {
-        return new OracleDropTableLexer(stream);
+        return new PostgreStatementLexer(stream);
     }
 
     /** Create parser instance.
@@ -44,7 +43,7 @@ public class OracleDropTableParseTreeBuilder extends AbstractParseTreeBuilder {
      */
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
-        return new OracleAdvancedDropTableParser(tokenStream);
+        return new PostgreStatementAdvancedParser(tokenStream);
     }
 
     /** Get sql parse tree.
@@ -53,8 +52,8 @@ public class OracleDropTableParseTreeBuilder extends AbstractParseTreeBuilder {
      */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        OracleAdvancedDropTableParser dropTableParser = (OracleAdvancedDropTableParser) parser;
-        return dropTableParser.dropTable();
+        PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser)parser;
+        return parse.execute();
     }
 
 }

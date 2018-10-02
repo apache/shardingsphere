@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.ast.mysql;
+package io.shardingsphere.core.parsing.antler.ast;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
@@ -23,11 +23,10 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
-import io.shardingsphere.core.parsing.antler.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.parser.mysql.MySQLAdvancedAlterTableParser;
-import io.shardingsphere.parser.antlr.mysql.MySQLAlterTableLexer;
+import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.MySQLStatementLexer;
 
-public class MySQLAlterTableParseTreeBuilder extends AbstractParseTreeBuilder {
+public class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /** Create lexer instance.
      * @param stream text stream
@@ -35,7 +34,7 @@ public class MySQLAlterTableParseTreeBuilder extends AbstractParseTreeBuilder {
      */
     @Override
     protected Lexer newLexer(final CharStream stream) {
-        return new MySQLAlterTableLexer(stream);
+        return new MySQLStatementLexer(stream);
     }
 
     /** Create parser instance.
@@ -44,7 +43,7 @@ public class MySQLAlterTableParseTreeBuilder extends AbstractParseTreeBuilder {
      */
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
-        return new MySQLAdvancedAlterTableParser(tokenStream);
+        return new MySQLStatementAdvancedParser(tokenStream);
     }
 
     /** Get sql parse tree.
@@ -53,8 +52,8 @@ public class MySQLAlterTableParseTreeBuilder extends AbstractParseTreeBuilder {
      */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        MySQLAdvancedAlterTableParser alterTableParser = (MySQLAdvancedAlterTableParser)parser;
-        return alterTableParser.alterTable();
+        MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser)parser;
+        return parse.execute();
     }
 
 }

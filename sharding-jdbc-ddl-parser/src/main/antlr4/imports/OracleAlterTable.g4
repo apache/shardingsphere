@@ -1,6 +1,6 @@
 grammar OracleAlterTable;
 
-import OracleKeyword, DataType, Keyword,OracleIndexBase, OracleTableBase,OracleBase,BaseRule,Symbol;
+import OracleKeyword, DataType, Keyword,OracleCreateIndex, OracleTableBase,OracleBase,BaseRule,Symbol;
 
 alterTable:
     ALTER TABLE tableName

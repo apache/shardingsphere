@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.ast.sqlserver;
+package io.shardingsphere.core.parsing.antler.ast;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
@@ -23,11 +23,10 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
-import io.shardingsphere.core.parsing.antler.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.parser.sqlserver.SQLServerAdvancedCreateTableParser;
-import io.shardingsphere.parser.antlr.sqlserver.SQLServerCreateTableLexer;
+import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.OracleStatementLexer;
 
-public class SQLServerCreateTableParseTreeBuilder extends AbstractParseTreeBuilder {
+public class OracleStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /** Create lexer instance.
      * @param stream text stream
@@ -35,7 +34,7 @@ public class SQLServerCreateTableParseTreeBuilder extends AbstractParseTreeBuild
      */
     @Override
     protected Lexer newLexer(final CharStream stream) {
-        return new SQLServerCreateTableLexer(stream);
+        return new OracleStatementLexer(stream);
     }
 
     /** Create parser instance.
@@ -44,7 +43,7 @@ public class SQLServerCreateTableParseTreeBuilder extends AbstractParseTreeBuild
      */
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
-        return new SQLServerAdvancedCreateTableParser(tokenStream);
+        return new OracleStatementAdvancedParser(tokenStream);
     }
 
     /** Get sql parse tree.
@@ -53,8 +52,8 @@ public class SQLServerCreateTableParseTreeBuilder extends AbstractParseTreeBuild
      */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        SQLServerAdvancedCreateTableParser createTableParser = (SQLServerAdvancedCreateTableParser) parser;
-        return createTableParser.createTable();
+        OracleStatementAdvancedParser parse = (OracleStatementAdvancedParser)parser;
+        return parse.execute();
     }
 
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.parser.postgre;
+package io.shardingsphere.core.parsing.antler.parser;
 
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RecognitionException;
@@ -24,11 +24,11 @@ import org.antlr.v4.runtime.TokenStream;
 
 import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
-import io.shardingsphere.parser.antlr.postgre.PostgreDropTableParser;
+import io.shardingsphere.parser.antlr.SQLServerStatementParser;
 
-public class PostgreAdvancedDropTableParser extends PostgreDropTableParser {
+public class SQLServerStatementAdvancedParser extends SQLServerStatementParser {
 
-    public PostgreAdvancedDropTableParser(final TokenStream input) {
+    public SQLServerStatementAdvancedParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         this._errHandler = new AdvancedErrorStrategy(ID);

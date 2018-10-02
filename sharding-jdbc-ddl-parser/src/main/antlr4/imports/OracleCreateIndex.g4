@@ -1,4 +1,4 @@
-grammar OracleIndexBase;
+grammar OracleCreateIndex;
 
 import OracleKeyword, DataType, Keyword,OracleBase,BaseRule,Symbol;
 

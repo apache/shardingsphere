@@ -1,6 +1,6 @@
 grammar OracleCreateTable;
 
-import OracleKeyword, DataType, Keyword, OracleIndexBase,OracleTableBase,OracleBase,BaseRule,Symbol;
+import OracleKeyword, DataType, Keyword, OracleCreateIndex, OracleTableBase, OracleBase, BaseRule, Symbol;
 
 createTable:
     CREATE (GLOBAL TEMPORARY)? TABLE  tableName relationalTable
