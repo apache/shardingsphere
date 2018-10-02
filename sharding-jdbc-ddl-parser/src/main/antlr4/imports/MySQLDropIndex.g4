@@ -1,6 +1,6 @@
 grammar MySQLDropIndex;
-import MySQLKeyword, DataType, Keyword,MySQLBase,BaseRule,Symbol;
+import MySQLKeyword, Keyword, BaseRule;
 
-dropIndex:
-    DROP INDEX (ONLINE | OFFLINE) indexName ON tableName
+dropIndex
+    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
     ;

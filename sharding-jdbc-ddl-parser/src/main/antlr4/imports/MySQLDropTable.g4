@@ -1,7 +1,7 @@
 grammar MySQLDropTable;
-import MySQLKeyword, DataType, Keyword,MySQLBase,BaseRule,Symbol;
+import MySQLKeyword, Keyword, BaseRule;
 
-dropTable:
-    DROP TEMPORARY? TABLE (IF EXISTS)?
+dropTable
+    : DROP TEMPORARY? TABLE ifExists?
     tableNames
     ;

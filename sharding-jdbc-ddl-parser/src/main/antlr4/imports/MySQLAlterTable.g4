@@ -1,37 +1,38 @@
 grammar MySQLAlterTable;
-import MySQLKeyword, DataType, Keyword, BaseRule,MySQLTableBase, MySQLBase,Symbol;
+import MySQLKeyword, Keyword, MySQLTableBase, MySQLBase, BaseRule, DataType, Symbol;
 
-alterTable:
-     ALTER TABLE tableName alterSpecifications?
+alterTable
+    : ALTER TABLE tableName
+    alterSpecifications?
     ;
 
-alterSpecifications:
-    alterSpecification (COMMA alterSpecification)*
+alterSpecifications
+    : alterSpecification (COMMA alterSpecification)*
     ;
 
-alterSpecification:
-    (tableOptions)
+alterSpecification
+    : tableOptions
     | ADD COLUMN? (singleColumn | multiColumn)
     | ADD indexDefinition
     | addConstraint
-    | algorithmOption
+    | ALGORITHM EQ_OR_ASSIGN? (DEFAULT | INPLACE|COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
-    | DEFAULT? characterAndCollateWithEqual
-    | CONVERT TO characterAndCollate
-    | (DISABLE|ENABLE) KEYS
-    | (DISCARD|IMPORT_) TABLESPACE
+    | DEFAULT? characterSet collateClause?
+    | CONVERT TO characterSet collateClause?
+    | (DISABLE | ENABLE) KEYS
+    | (DISCARD | IMPORT_) TABLESPACE
     | dropColumn
     | dropIndexDef
     | dropPrimaryKey
     | DROP FOREIGN KEY fkSymbol
     | FORCE
-    | lockOption
+    | LOCK EQ_OR_ASSIGN? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
-    | (ORDER BY columnName (COMMA columnName)*)+
+    | ORDER BY columnName (COMMA columnName)*
     | renameIndex
     | renameTable
-    | (WITHOUT|WITH) VALIDATION
+    | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION partitionDefinitions
     | DROP PARTITION partitionNames
     | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
@@ -49,55 +50,59 @@ alterSpecification:
     | UPGRADE PARTITIONING
     ;
 
-singleColumn:
-    columnDefinition firstOrAfterColumn?
+singleColumn
+    : columnDefinition firstOrAfterColumn?
     ;
 
-multiColumn:
-    LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
+firstOrAfterColumn
+    : FIRST
+	| AFTER columnName
     ;
 
-addConstraint:
-    ADD constraintDefinition
+multiColumn
+    : LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
     ;
 
-changeColumn:
-    changeColumnOp columnName columnDefinition firstOrAfterColumn?
+addConstraint
+    : ADD constraintDefinition
     ;
 
-changeColumnOp:
-    CHANGE COLUMN?
+changeColumn
+    : changeColumnOp columnName columnDefinition firstOrAfterColumn?
+    ;
+
+changeColumnOp
+    : CHANGE COLUMN?
     ;
 
 dropColumn:
     DROP COLUMN? columnName
     ;
 
-dropIndexDef:
-    DROP indexAndKey indexName
+dropIndexDef
+    : DROP indexAndKey indexName
     ;
 
-dropPrimaryKey:
-    DROP primaryKey
+dropPrimaryKey
+    : DROP primaryKey
     ;
 
-modifyColumn:
-    MODIFY COLUMN? columnDefinition firstOrAfterColumn?
+fkSymbol
+    : ID
     ;
 
-firstOrAfterColumn:
-	FIRST
-	|AFTER columnName
+modifyColumn
+    : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
-renameIndex:
-    RENAME indexAndKey indexName TO indexName
+renameIndex
+    : RENAME indexAndKey indexName TO indexName
     ;
 
-renameTable:
-    RENAME (TO|AS)? tableName
+renameTable
+    : RENAME (TO|AS)? tableName
     ;
 
-partitionNames:
-    partitionName (COMMA partitionName)*
+partitionNames
+    : partitionName (COMMA partitionName)*
     ;

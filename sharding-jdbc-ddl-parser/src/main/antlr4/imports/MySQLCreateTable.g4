@@ -1,56 +1,54 @@
 grammar MySQLCreateTable;
-import MySQLKeyword, DataType, Keyword, MySQLTableBase, MySQLDQL, DQLBase, MySQLBase,BaseRule,Symbol;
+import MySQLKeyword, Keyword, MySQLDQL, MySQLTableBase, DQLBase, MySQLBase, BaseRule, DataType, Symbol;
 
-createTable:
-    CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName
+createTable
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName
     createTableOptions
     ; 
 
-createTableOptions:
-    createTableBasic
-    |createTableSelect
-    |createTableLike
+createTableOptions
+    : createTableBasic
+    | createTableSelect
+    | createTableLike
     ;
     
-createTableBasic:
-    createDefinitionsWithParen
+createTableBasic
+    : createDefinitionsWithParen
     tableOptions?
     partitionOptions?
     ;
 
-createDefinitionsWithParen:
-    LEFT_PAREN createDefinitions RIGHT_PAREN
+createDefinitionsWithParen
+    : LEFT_PAREN createDefinitions RIGHT_PAREN
     ;
 
-createDefinitions:
-    createDefinition (COMMA createDefinition)*
+createDefinitions
+    : createDefinition (COMMA createDefinition)*
     ;
     
-createDefinition:
-    columnDefinition
-    |(constraintDefinition|indexDefinition| checkExpr)
+createDefinition
+    : columnDefinition
+    | (constraintDefinition | indexDefinition | checkExpr)
     ;
     
-checkExpr:
-    CHECK exprWithParen
+checkExpr
+    : CHECK expr
     ;
         
-createTableSelect:
-    (LEFT_PAREN createDefinitions RIGHT_PAREN)?
+createTableSelect
+    : createDefinitionsWithParen?
     tableOptions?
-    partitionOptions??
+    partitionOptions?
     (IGNORE | REPLACE)?
-    AS?
-    unionSelect
+    AS? unionSelect
     ;
     
-createTableLike:
-    likeTable
-    | LEFT_PAREN likeTable RIGHT_PAREN
+createTableLike
+    : likeTable | LEFT_PAREN likeTable RIGHT_PAREN
     ;    
 
-likeTable:
-    LIKE tableName
+likeTable
+    : LIKE tableName
     ;
 
  

@@ -9,7 +9,7 @@ ID:
     (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA?)
     |[a-zA-Z_$0-9]+ DOT ASTERISK
     ;
-    
+
 schemaName: ID;
 tableName: ID;
 columnName: ID; 
@@ -38,13 +38,24 @@ partitionName: ID;
 rewriteRuleName: ID;
 ownerName: ID;
 
+ifExists
+    : IF EXISTS;
+
+ifNotExists
+    : IF NOT EXISTS;
+
+dataTypeLength
+    : LEFT_PAREN (NUMBER (COMMA NUMBER)?)? RIGHT_PAREN
+    ;
+
+nullNotnull
+    : NULL
+    | NOT NULL
+    ;
+
 primaryKey:
 	PRIMARY KEY
 	;
-
-dataTypeLength:
-    LEFT_PAREN (NUMBER (COMMA NUMBER)?)? RIGHT_PAREN
-    ;
 
 matchNone:
     'Default does not match anything'
@@ -59,8 +70,16 @@ rangeClause:
     | NUMBER OFFSET NUMBER
     ;
 
+tableNamesWithParen:
+    LEFT_PAREN tableNames RIGHT_PAREN
+    ;
+
 tableNames:
     tableName (COMMA tableName)*
+    ;
+
+columnNamesWithParen:
+    LEFT_PAREN columnNames RIGHT_PAREN
     ;
 
 columnNames:
@@ -89,7 +108,8 @@ exprs:
  
 exprsWithParen:
     LEFT_PAREN exprs RIGHT_PAREN
-    ;    
+    ;
+
 //https://dev.mysql.com/doc/refman/8.0/en/expressions.html
 expr:
     expr OR expr
@@ -199,7 +219,7 @@ liter:
 subquery:
     matchNone
     ;
-    
+
 collateClause:
     matchNone
     ;

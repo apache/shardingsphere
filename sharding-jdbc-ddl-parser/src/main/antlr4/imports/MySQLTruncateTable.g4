@@ -1,6 +1,6 @@
 grammar MySQLTruncateTable;
-import MySQLKeyword, DataType, Keyword,MySQLBase,BaseRule,Symbol;
+import MySQLKeyword, Keyword, BaseRule;
 
-truncateTable:
-     TRUNCATE TABLE? tableName
-     ;
+truncateTable
+    : TRUNCATE TABLE? tableName
+    ;

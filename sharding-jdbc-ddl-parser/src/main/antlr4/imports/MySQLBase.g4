@@ -1,88 +1,63 @@
 grammar MySQLBase;
 
-import MySQLKeyword,Keyword,Symbol,DataType, BaseRule;
+import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
-symbol:
-    ID
-    ;
-
-fkSymbol:
-    ID
-    ;  
- 
-indexAndKey:
-    INDEX|KEY
-    ;
-      
-characterAndCollate:
-    characterSet collateClause?
-    ;
-    
-characterSet:
-    (CHARACTER | CHAR) SET charsetName
-    |CHARSET EQ_OR_ASSIGN? charsetName
-    ;
-    
-charsetName:
-    ID
-    |BINARY
+characterSet
+    : (CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName
+    | CHARSET EQ_OR_ASSIGN? charsetName
     ;
 
-collateClause:
-    COLLATE ID
+charsetName
+    : ID
+    | BINARY
     ;
 
-characterAndCollateWithEqual:
-    characterSetWithEqual collateClauseWithEqual?
+collateClause
+    : COLLATE EQ_OR_ASSIGN? collationName
     ;
-    
-characterSetWithEqual:
-    ((CHARACTER | CHAR) SET EQ_OR_ASSIGN? charsetName)
-    |CHARSET EQ_OR_ASSIGN? charsetName
+
+keyPartsWithParen
+    : LEFT_PAREN keyParts RIGHT_PAREN
     ;
-    
-collateClauseWithEqual:
-    COLLATE EQ_OR_ASSIGN? ID
-    ; 
-    
-indexType:
-    USING (BTREE | HASH)
+
+keyParts
+    : keyPart (COMMA keyPart)*
     ;
-    
-keyParts:
-    LEFT_PAREN keyPart (COMMA keyPart)* RIGHT_PAREN
+
+keyPart
+    : columnName (LEFT_PAREN NUMBER RIGHT_PAREN)? (ASC | DESC)?
     ;
-    
-keyPart:
-    columnName (LEFT_PAREN NUMBER RIGHT_PAREN)? (ASC | DESC)?
+
+symbol
+    : ID
     ;
-    
- indexOption:
-    KEY_BLOCK_SIZE EQ_OR_ASSIGN? value
+
+indexType
+    : USING (BTREE | HASH)
+    ;
+
+indexAndKey
+    : INDEX|KEY
+    ;
+
+indexOption
+    : KEY_BLOCK_SIZE EQ_OR_ASSIGN? value
     | indexType
     | WITH PARSER parserName
     | COMMENT STRING
+;
+
+valueListWithParen
+    : LEFT_PAREN valueList RIGHT_PAREN
     ;
 
- value:
-    DEFAULT
+valueList
+    : value (COMMA value)*
+    ;
+
+value
+    : DEFAULT
     | MAXVALUE
     | expr
     | exprsWithParen
-    ;
-
-valueList:
-     value (COMMA value)*
-    ;
-
-valueListWithParen:
-    LEFT_PAREN valueList RIGHT_PAREN
-    ;
-    
-algorithmOption:
-    ALGORITHM EQ_OR_ASSIGN? (DEFAULT|INPLACE|COPY)
-    ;
-
-lockOption:
-    LOCK EQ_OR_ASSIGN? (DEFAULT|NONE|SHARED|EXCLUSIVE)
     ;

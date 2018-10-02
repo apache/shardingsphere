@@ -1,6 +1,6 @@
 grammar DMLBase;
 
-import DQLBase,BaseRule,DataType,Keyword, Symbol;
+import MysqlBase, DQLBase,BaseRule,DataType,Keyword, Symbol;
 
 execute:
     select
@@ -71,17 +71,6 @@ assignment:
     columnName EQ_OR_ASSIGN value
     ;
 
-value:
-    DEFAULT|expr;
-
-valueList:
-     value (COMMA value)*
-    ;
-    
-valueListWithParen:
-    LEFT_PAREN valueList RIGHT_PAREN
-    ;    
-    
 insert:
     ;
 
