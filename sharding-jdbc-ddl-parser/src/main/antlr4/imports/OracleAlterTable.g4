@@ -105,38 +105,38 @@ addConstraintClause
     : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
 
-modifyConstraintClause:
-    MODIFY constraintOption constraintState CASCADE?
+modifyConstraintClause
+    : MODIFY constraintOption constraintState CASCADE?
     ;
 
-constraintWithName:
-    CONSTRAINT constraintName
+constraintWithName
+    : CONSTRAINT constraintName
     ;    
     
-constraintOption:
-     constraintWithName
-     | constraintPrimaryOrUnique
-     ;
+constraintOption
+    : constraintWithName
+    | constraintPrimaryOrUnique
+    ;
  
-constraintPrimaryOrUnique:
-      primaryKey
-     | (UNIQUE columnList)
-     ;
+constraintPrimaryOrUnique
+    : primaryKey
+    | UNIQUE columnList
+    ;
         
-renameConstraintClause:
-   RENAME constraintWithName TO constraintName
-   ;
+renameConstraintClause
+    : RENAME constraintWithName TO constraintName
+    ;
    
-dropConstraintClause:
-    DROP
+dropConstraintClause
+    : DROP
     (
         (constraintPrimaryOrUnique CASCADE? (( KEEP | DROP) INDEX)?)
        | (CONSTRAINT constraintName ( CASCADE )?)
     ) 
     ;
 
-alterExternalTable:
-    ( addColumn
+alterExternalTable
+    : ( addColumn
     | modifyColumn
     | dropColumn
     )+
