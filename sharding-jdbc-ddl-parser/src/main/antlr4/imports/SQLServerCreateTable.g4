@@ -2,16 +2,16 @@ grammar SQLServerCreateTable;
 
 import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
 
-createTable:
-    createTableHeader createTableBody
+createTable
+    : createTableHeader createTableBody
     ;
 
-createTableHeader:
-    CREATE TABLE tableName
+createTableHeader
+    : CREATE TABLE tableName
     ;
     
-createTableBody:
-    (AS FILETABLE)?  
+createTableBody
+    : (AS FILETABLE)?  
     LEFT_PAREN 
         createTableDefinition (COMMA createTableDefinition)*
         (COMMA periodClause)?  
@@ -30,21 +30,21 @@ createTableBody:
     (WITH LEFT_PAREN  tableOption (COMMA tableOption)*  RIGHT_PAREN)?  
     ;
     
-createTableDefinition:
-    columnDefinition  
+createTableDefinition
+    : columnDefinition  
     | computedColumnDefinition    
     | columnSetDefinition   
     | tableConstraint   
     | tableIndex
     ;
  
-periodClause:
-    PERIOD FOR SYSTEM_TIME LEFT_PAREN  columnName   
+periodClause
+    : PERIOD FOR SYSTEM_TIME LEFT_PAREN  columnName   
     COMMA columnName RIGHT_PAREN
     ;
 
-tableIndex: 
-    INDEX indexName 
+tableIndex
+    : INDEX indexName 
     (
           (CLUSTERED | NONCLUSTERED )? columnNameWithSortsWithParen 
          | CLUSTERED COLUMNSTORE 
@@ -57,8 +57,8 @@ tableIndex:
     (FILESTREAM_ON ( groupName | schemaName | STRING ))?  
     ;
     
-tableOption:  
-     DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE ) (ON PARTITIONS LEFT_PAREN  partitionExpressions RIGHT_PAREN )?
+tableOption  
+    : DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE ) (ON PARTITIONS LEFT_PAREN  partitionExpressions RIGHT_PAREN )?
     | FILETABLE_DIRECTORY EQ_OR_ASSIGN directoryName 
     | FILETABLE_COLLATE_FILENAME EQ_OR_ASSIGN ( collationName | DATABASE_DEAULT )
     | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_OR_ASSIGN constraintName
@@ -76,15 +76,15 @@ tableOption:
     |dataWareHouseTableOption     
     ;
 
-tableOptOption :  
-    (MEMORY_OPTIMIZED EQ_OR_ASSIGN ON)   
+tableOptOption 
+    : (MEMORY_OPTIMIZED EQ_OR_ASSIGN ON)   
     | (DURABILITY EQ_OR_ASSIGN (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
     | (SYSTEM_VERSIONING EQ_OR_ASSIGN ON ( LEFT_PAREN  HISTORY_TABLE EQ_OR_ASSIGN tableName  
         (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN )?)   
     ;
 
-distributionOption :     
-    DISTRIBUTION EQ_OR_ASSIGN 
+distributionOption     
+    : DISTRIBUTION EQ_OR_ASSIGN 
     (
           HASH LEFT_PAREN columnName RIGHT_PAREN
         | ROUND_ROBIN 
@@ -92,18 +92,18 @@ distributionOption :
      ) 
     ; 
     
-dataWareHouseTableOption:
-    (CLUSTERED COLUMNSTORE INDEX)
+dataWareHouseTableOption
+    : (CLUSTERED COLUMNSTORE INDEX)
     | HEAP   
     | dataWareHousePartitionOption
     ;
  
- dataWareHousePartitionOption:
-     (PARTITION LEFT_PAREN columnName  RANGE (LEFT | RIGHT)?  
+ dataWareHousePartitionOption
+     : (PARTITION LEFT_PAREN columnName  RANGE (LEFT | RIGHT)?  
         FOR VALUES LEFT_PAREN  simpleExpr (COMMA simpleExpr)* RIGHT_PAREN  RIGHT_PAREN)
      ; 
      
-tableStretchOptions:  
-     (FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
+tableStretchOptions 
+     : (FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
      MIGRATION_STATE EQ_OR_ASSIGN ( OUTBOUND | INBOUND | PAUSED )  
      ;

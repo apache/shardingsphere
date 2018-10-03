@@ -2,8 +2,8 @@ grammar SQLServerAlterTable;
 
 import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
 
-alterTable:
-    alterTableOp
+alterTable
+    : alterTableOp
     (alterColumn
     |addColumn
     |alterDrop
@@ -15,24 +15,24 @@ alterTable:
     )
     ;
     
-alterTableOp:
-    ALTER TABLE tableName
+alterTableOp
+    : ALTER TABLE tableName
     ;
     
-alterColumn:
-     modifyColumn
+alterColumn
+    : modifyColumn
     ;
 
-modifyColumn:
-	alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
+modifyColumn
+	: alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
 	;
 
-alterColumnOp:
-	ALTER COLUMN columnName
+alterColumnOp
+	: ALTER COLUMN columnName
 	;
     
-addColumn:
-    (WITH (CHECK | NOCHECK))?
+addColumn
+    : (WITH (CHECK | NOCHECK))?
     ADD   
     (
        (alterColumnAddOption (COMMA alterColumnAddOption)*) 
@@ -43,13 +43,13 @@ addColumn:
     )  
     ;
 
-periodClause:
-    PERIOD FOR SYSTEM_TIME LEFT_PAREN columnName   
+periodClause
+    : PERIOD FOR SYSTEM_TIME LEFT_PAREN columnName   
     COMMA columnName RIGHT_PAREN
     ;
     
-alterColumnAddOption:
-      columnDefinition  
+alterColumnAddOption
+    : columnDefinition  
     | computedColumnDefinition    
     | columnSetDefinition   
     | tableConstraint   
@@ -57,20 +57,20 @@ alterColumnAddOption:
     | constraintForColumn
     ;
       
-constraintForColumn:
-    (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
+constraintForColumn
+    : (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
     ;
 
-columnNameWithSortsWithParen:
-    LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
+columnNameWithSortsWithParen
+    : LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
     ;
     
-columnNameWithSort:
-    columnName(ASC | DESC)?
+columnNameWithSort
+    : columnName(ASC | DESC)?
     ;
 
-columnIndex:   
-    indexWithName
+columnIndex 
+    : indexWithName
     ( CLUSTERED | NONCLUSTERED )?  
     HASH withBucket  
     ;
@@ -81,13 +81,13 @@ columnNameGeneratedClause:
     columnNameGenerated
     ;
     
-columnNameGenerated:
-    columnName typeName GENERATED ALWAYS AS ROW (START | END)?   
+columnNameGenerated
+    : columnName typeName GENERATED ALWAYS AS ROW (START | END)?   
     HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
     ;
  
-alterDrop:
-    DROP 
+alterDrop
+    : DROP 
     (
         |alterTableDropConstraint
         |dropColumn
@@ -96,21 +96,21 @@ alterDrop:
     )
     ;
     
-alterTableDropConstraint:
-    CONSTRAINT? (IF EXISTS)?  
+alterTableDropConstraint
+    : CONSTRAINT? (IF EXISTS)?  
     dropConstraintName (COMMA dropConstraintName)*
     ;
     
-dropConstraintName:
-    constraintName dropConstraintWithClause?
+dropConstraintName
+    : constraintName dropConstraintWithClause?
     ;
 
-dropConstraintWithClause:
-    WITH  LEFT_PAREN dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
+dropConstraintWithClause
+    : WITH  LEFT_PAREN dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
     ;
 
-dropConstraintOption:    
-    (   
+dropConstraintOption   
+    : (   
         (MAXDOP EQ_OR_ASSIGN NUMBER ) 
       | (ONLINE EQ_OR_ASSIGN ( ON | OFF ))  
       | (MOVE TO   
@@ -118,8 +118,8 @@ dropConstraintOption:
     )
     ;  
  
-dropColumn:
-    COLUMN (IF EXISTS)? columnNames
+dropColumn
+    : COLUMN (IF EXISTS)? columnNames
     ; 
 
 alterDropIndex:
@@ -127,8 +127,8 @@ alterDropIndex:
     indexName (COMMA indexName)*
     ;
     
-alterCheckConstraint:  
-    WITH? (CHECK | NOCHECK) CONSTRAINT   
+alterCheckConstraint 
+    : WITH? (CHECK | NOCHECK) CONSTRAINT   
     (ALL | (constraintName (COMMA constraintName)*))  
     ;
     
@@ -137,15 +137,14 @@ alterTrigger:
     (ALL | (triggerName ( COMMA triggerName)*))  
     ;
     
-alterSwitch:
-    SWITCH ( PARTITION expr )?  
-    TO tableName   
-    ( PARTITION expr)?  
-    ( WITH LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?  
+alterSwitch
+    : SWITCH ( PARTITION expr )? TO tableName   
+    (PARTITION expr)?  
+    (WITH LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?  
     ;
     
-alterSet:    
-    SET   
+alterSet    
+    : SET   
     LEFT_PAREN  
     (
         setFileStreamClause
@@ -154,20 +153,20 @@ alterSet:
     RIGHT_PAREN 
     ; 
 
-setFileStreamClause:
-    FILESTREAM_ON EQ_OR_ASSIGN ( schemaName | fileGroup | STRING )
+setFileStreamClause
+    : FILESTREAM_ON EQ_OR_ASSIGN ( schemaName | fileGroup | STRING )
     ;
     
-setSystemVersionClause:
-    SYSTEM_VERSIONING EQ_OR_ASSIGN   
+setSystemVersionClause
+    : SYSTEM_VERSIONING EQ_OR_ASSIGN   
     (   
         OFF   
        |alterSetOnClause 
     ) 
     ;
     
-alterSetOnClause:
-    ON   
+alterSetOnClause
+    : ON   
     (
       LEFT_PAREN 
         (HISTORY_TABLE EQ_OR_ASSIGN tableName)?  
@@ -179,39 +178,39 @@ alterSetOnClause:
       
     
 
-tableIndex: 
-    indexWithName 
+tableIndex
+    : indexWithName 
     (
       indexNonClusterClause 
       |indexClusterClause
     )
     ;
 
-indexWithName:
-	INDEX indexName
+indexWithName
+	: INDEX indexName
 	;
 
-indexNonClusterClause:
-    NONCLUSTERED
+indexNonClusterClause
+    : NONCLUSTERED
     (hashWithBucket | (columnNameWithSortsWithParen indexOnClause?)) 
     ;
     
-indexOnClause:
-    (ON groupName) 
+indexOnClause
+    : ON groupName
     | DEFAULT
     ;
 
-indexClusterClause:
-    CLUSTERED COLUMNSTORE 
+indexClusterClause
+    : CLUSTERED COLUMNSTORE 
     (WITH COMPRESSION_DELAY EQ_OR_ASSIGN NUMBER MINUTES?)?
     indexOnClause?
     ;
 
-tableOption:  
-    (SET LEFT_PAREN LOCK_ESCALATION EQ_OR_ASSIGN (AUTO | TABLE | DISABLE) RIGHT_PAREN)   
-    |(MEMORY_OPTIMIZED EQ_OR_ASSIGN ON)   
-    | (DURABILITY EQ_OR_ASSIGN (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
-    | (SYSTEM_VERSIONING EQ_OR_ASSIGN ON ( LEFT_PAREN  HISTORY_TABLE EQ_OR_ASSIGN tableName  
-        (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN )?)   
+tableOption
+    : SET LEFT_PAREN LOCK_ESCALATION EQ_OR_ASSIGN (AUTO | TABLE | DISABLE) RIGHT_PAREN   
+    | MEMORY_OPTIMIZED EQ_OR_ASSIGN ON  
+    | DURABILITY EQ_OR_ASSIGN (SCHEMA_ONLY | SCHEMA_AND_DATA) 
+    | SYSTEM_VERSIONING EQ_OR_ASSIGN ON ( LEFT_PAREN  HISTORY_TABLE EQ_OR_ASSIGN tableName  
+        (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN )?  
     ;
   

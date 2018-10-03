@@ -2,8 +2,8 @@ grammar OracleDropIndex;
 
 import OracleKeyword, BaseRule;
 
-dropIndex:
-    DROP INDEX indexName
+dropIndex
+    : DROP INDEX indexName
     ;
     
  

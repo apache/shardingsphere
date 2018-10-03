@@ -2,43 +2,43 @@ grammar OracleCreateIndex;
 
 import OracleKeyword, DataType, Keyword,OracleBase,BaseRule,Symbol;
 
-createIndex:
-    CREATE ( UNIQUE | BITMAP )? INDEX  indexName
+createIndex
+    : CREATE ( UNIQUE | BITMAP)? INDEX  indexName
     ON 
     ( tableIndexClause
      | bitmapJoinIndexClause
     )
     ;
     
-tableIndexClause:
-    tableName alias?
+tableIndexClause
+    : tableName alias?
     LEFT_PAREN indexExprSort
     (COMMA indexExprSort)* RIGHT_PAREN 
     ;
 
-indexExprSort:
-    indexExpr ( ASC | DESC )?
+indexExprSort
+    : indexExpr ( ASC | DESC )?
     ;
     
-indexExpr:
-    columnName 
+indexExpr
+    : columnName 
     | expr 
     ;
     
-tablespaceClauseWithParen:
-    LEFT_PAREN tablespaceClause RIGHT_PAREN
+tablespaceClauseWithParen
+    : LEFT_PAREN tablespaceClause RIGHT_PAREN
     ;
     
-tablespaceClause:
-    TABLESPACE tablespaceName
+tablespaceClause
+    : TABLESPACE tablespaceName
     ;
     
-domainIndexClause:
-    indexTypeName
+domainIndexClause
+    : indexTypeName
     ;
 
-bitmapJoinIndexClause:
-    tableName
+bitmapJoinIndexClause
+    : tableName
     LEFT_PAREN 
     columnSortClause( COMMA columnSortClause)*
     RIGHT_PAREN 

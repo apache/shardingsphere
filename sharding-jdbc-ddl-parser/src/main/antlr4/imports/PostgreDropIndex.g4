@@ -2,6 +2,6 @@ grammar PostgreDropIndex;
 
 import PostgreKeyword, PostgreBase, BaseRule;
 
-dropIndex:
-    DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames
+dropIndex
+    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames
     ;

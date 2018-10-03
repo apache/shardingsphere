@@ -2,135 +2,148 @@ grammar OracleBase;
 
 import OracleKeyword,Keyword,Symbol,BaseRule,DataType;
 
-
-attributeName: ID;
-segName: ID;
-
-objectName:ID;
-elementName: ID;
-archiveName: ID;
-indexTypeName: ID;
-clusterName: ID;
-varrayItemName: ID;
-
-simpleExprsWithParen:
-    LEFT_PAREN simpleExprs RIGHT_PAREN 
+attributeName
+    : ID
     ;
     
-simpleExprs:
-    simpleExpr ( COMMA simpleExpr)* 
+segName
+    : ID
     ;
 
-lobItem:
-    attributeName
-    |columnName
+objectName
+    :ID
     ;
     
-lobItems:
-    lobItem (COMMA lobItem)*
+elementName
+    : ID
+    ;
+    
+archiveName
+    : ID
+    ;
+    
+indexTypeName
+    : ID
+    ;
+    
+clusterName
+    : ID
+    ;
+    
+varrayItemName
+    : ID
     ;
 
-lobItemList:
-    LEFT_PAREN lobItems RIGHT_PAREN
+simpleExprsWithParen
+    : LEFT_PAREN simpleExprs RIGHT_PAREN 
+    ;
+    
+simpleExprs
+    : simpleExpr ( COMMA simpleExpr)* 
     ;
 
-dataType: 
-    typeName dataTypeLength?
+lobItem
+    : attributeName
+    | columnName
+    ;
+    
+lobItems
+    : lobItem (COMMA lobItem)*
+    ;
+
+lobItemList
+    : LEFT_PAREN lobItems RIGHT_PAREN
+    ;
+
+dataType
+    : typeName dataTypeLength?
     | specialDatatype
     | typeName dataTypeLength? datetimeTypeSuffix
     ;
     
-typeName:
-	  DOUBLE PRECISION
+typeName
+	: DOUBLE PRECISION
 	| INTERVAL YEAR
 	| INTERVAL DAY
 	| ID
 	;
 	
-specialDatatype:
-    typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN)
+specialDatatype
+    : typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN)
     | NATIONAL typeName (VARYING)? LEFT_PAREN NUMBER RIGHT_PAREN 
     | typeName LEFT_PAREN? columnName  RIGHT_PAREN?
     ;
 
-datetimeTypeSuffix:
-      ( WITH LOCAL? TIME ZONE )?
+datetimeTypeSuffix
+    : (WITH LOCAL? TIME ZONE)?
     | TO MONTH
-    | TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?
+    | TO SECOND (LEFT_PAREN NUMBER RIGHT_PAREN)?
     ;
 
-columnSortClause:
-    tableAndAlias columnName
+columnSortClause
+    : tableAndAlias columnName
     (ASC | DESC)?
     ;
   
- tableAndAlias:
-    tableName alias?
+ tableAndAlias
+    : tableName alias?
     ;
  
- privateExprOfDb:
-    treatFunction
-    |caseExpr
-    |intervalExpression
-    |objectAccessExpression
-    |constructorExpr
+ privateExprOfDb
+    : treatFunction
+    | caseExpr
+    | intervalExpression
+    | objectAccessExpression
+    | constructorExpr
     ;
 
-treatFunction:
-    TREAT LEFT_PAREN expr AS REF? typeName RIGHT_PAREN
+treatFunction
+    : TREAT LEFT_PAREN expr AS REF? typeName RIGHT_PAREN
     ;
 
-caseExpr:
-    CASE ( simpleCaseExpr
+caseExpr
+    : CASE ( simpleCaseExpr
      | searchedCaseExpr
      )
      elseClause?
      END
     ;
     
-simpleCaseExpr:
-    expr
+simpleCaseExpr
+    : expr
     searchedCaseExpr+
     ;
     
-searchedCaseExpr:
-    WHEN expr THEN simpleExpr
+searchedCaseExpr
+    : WHEN expr THEN simpleExpr
     ;
     
-elseClause:
-    ELSE expr
+elseClause
+    : ELSE expr
     ;
 
-dateTimeExpr:
-    expr AT 
+dateTimeExpr
+    : expr AT 
     (
-        LOCAL
-        |TIME ZONE
-          ( 
-          STRING
-          | DBTIMEZONE
-          | expr
-          )      
+         LOCAL
+        | TIME ZONE (STRING | DBTIMEZONE | expr)      
     )
     ;
     
-exprRecursive:
-    (PRIOR expr)
+exprRecursive
+    : PRIOR expr
     ;
 
-intervalExpression:
-    LEFT_PAREN expr MINUS expr RIGHT_PAREN 
+intervalExpression
+    : LEFT_PAREN expr MINUS expr RIGHT_PAREN 
     (
-        (DAY ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?)
-       | (YEAR ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO MONTH)
+         DAY ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?
+       | YEAR ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO MONTH
     )
     ;
 
-objectAccessExpression:
-    (
-    	(LEFT_PAREN simpleExpr RIGHT_PAREN)
-        |treatFunction
-    )
+objectAccessExpression
+    : ( LEFT_PAREN simpleExpr RIGHT_PAREN |treatFunction)
     DOT
     ( 
         attributeName (DOT attributeName )* (DOT functionCall)?
@@ -138,6 +151,6 @@ objectAccessExpression:
     )
     ;
     
-constructorExpr:
-    NEW typeName exprsWithParen
-   ;
+constructorExpr
+    : NEW typeName exprsWithParen
+    ;
