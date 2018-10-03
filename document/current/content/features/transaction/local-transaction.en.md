@@ -17,4 +17,4 @@ weight = 1
 
 * Sharding-JDBC support
 
-* Sharding-Proxy support at 3.1.0
+* Sharding-Proxy will support at 3.1.0
