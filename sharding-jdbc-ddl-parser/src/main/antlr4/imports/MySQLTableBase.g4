@@ -124,8 +124,8 @@ tableOption
     | UNION EQ_OR_ASSIGN? tableNamesWithParen
     ;
 
-engineName:
-    ID
+engineName
+    : ID
     | MEMORY
     ;
 

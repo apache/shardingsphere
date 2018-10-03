@@ -1,6 +1,6 @@
 grammar DMLBase;
 
-import MysqlBase, DQLBase,BaseRule,DataType,Keyword, Symbol;
+import Keyword, MySQLBase, DQLBase, BaseRule, DataType, Symbol;
 
 execute:
     select

@@ -28,7 +28,9 @@ createDefinitions
     
 createDefinition
     : columnDefinition
-    | (constraintDefinition | indexDefinition | checkExpr)
+    | constraintDefinition
+    | indexDefinition
+    | checkExpr
     ;
     
 checkExpr
@@ -44,7 +46,8 @@ createTableSelect
     ;
     
 createTableLike
-    : likeTable | LEFT_PAREN likeTable RIGHT_PAREN
+    : likeTable
+    | LEFT_PAREN likeTable RIGHT_PAREN
     ;    
 
 likeTable

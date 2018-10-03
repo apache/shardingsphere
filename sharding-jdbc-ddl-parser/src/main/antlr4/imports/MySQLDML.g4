@@ -1,5 +1,5 @@
 grammar MySQLDML;
-import MySQLKeyword, DataType, Keyword, BaseRule, MySQLDQL, DQLBase, DMLBase,Symbol;
+import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DMLBase, DataType, Symbol;
 
 caseExpress:
     caseCond
