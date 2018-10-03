@@ -2,7 +2,7 @@
 pre = "<b>3.4.1. </b>"
 toc = true
 title = "本地事务"
-weight = 2
+weight = 1
 +++
 
 ## 概念

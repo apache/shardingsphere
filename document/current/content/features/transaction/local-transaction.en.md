@@ -2,7 +2,7 @@
 pre = "<b>3.4.1. </b>"
 toc = true
 title = "Local transaction"
-weight = 2
+weight = 1
 +++
 
 ## Concept
