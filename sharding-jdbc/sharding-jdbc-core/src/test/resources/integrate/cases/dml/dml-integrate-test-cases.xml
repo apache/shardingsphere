@@ -20,6 +20,10 @@
         <assertion expected-data-file="insert_for_order_1_2.xml" />
     </dml-test-case>
     
+    <dml-test-case sql-case-id="insert_on_duplicate_key_update">
+        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="update.xml" />
+    </dml-test-case>
+    
     <!-- TODO fixme -->
     <!--<dml-test-case sql-case-id="insert_with_all_placeholders_for_table_identifier">-->
         <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
