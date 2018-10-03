@@ -62,9 +62,6 @@ Sharding-Sphere最初将使用何种模式的决定权交由用户配置，让�
 自动化执行引擎将连接模式的选择粒度细化至每一次SQL的操作。
 针对每次SQL请求，自动化执行引擎都将根据其路由结果，进行实时的演算和权衡，并自主地采用恰当的连接模式执行，以达到资源控制和效率的最优平衡。
 针对自动化的执行引擎，用户只需配置maxConnectionSizePerQuery即可，该参数表示一次查询时每个数据库所允许使用的最大连接数。
-执行引擎的流程如下图所示。
-
-![执行引擎流程图](http://ovfotjrsi.bkt.clouddn.com/sharding/execute_architecture.png)
 
 执行引擎分为准备和执行两个阶段。
 
@@ -116,3 +113,7 @@ Sharding-Sphere为了避免死锁的出现，在获取数据库连接时进行�
 Sharding-Sphere的其他模块，如：分布式事务、调用链路追踪等，会订阅感兴趣的事件，并进行相应的处理。
 
 Sharding-Sphere通过在执行准备阶段的获取的连接模式，生成内存归并结果集或流式归并结果集，并将其传递至结果归并引擎，以进行下一步的工作。
+
+执行引擎的整体结构划分如下图所示。
+
+![执行引擎流程图](http://ovfotjrsi.bkt.clouddn.com/sharding/execute_architecture_v2.png)
