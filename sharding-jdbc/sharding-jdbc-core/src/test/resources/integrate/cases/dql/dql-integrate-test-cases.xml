@@ -90,7 +90,17 @@
     <dql-test-case sql-case-id="select_with_force_index_join">
         <assertion parameters="1000:int" expected-data-file="select_with_force_index_join.xml" />
     </dql-test-case>
-    
+
+    <dql-test-case sql-case-id="select_equal_with_geography">
+        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
+        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_in_with_geography">
+        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
+        <assertion parameters="'{&quot;rule2&quot;:&quot;null&quot;}', '{&quot;rule2&quot;:&quot;null&quot;}', 100:int, 200:int, 12:int, 1000:int" expected-data-file="empty_order.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_sum">
         <assertion expected-data-file="select_sum.xml" />
     </dql-test-case>
@@ -329,7 +339,15 @@
     <dql-test-case sql-case-id="select_pagination_with_row_number_not_at_end">
         <assertion parameters="20:int" expected-data-file="select_pagination_with_row_number_not_at_end.xml" />
     </dql-test-case>
-    
+
+    <dql-test-case sql-case-id="select_pagination_with_group_by_and_order_by">
+        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_group_by_and_order_by.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_pagination_with_diff_group_by_and_order_by">
+        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_diff_group_by_and_order_by.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_inner_join_related_with_alias">
         <assertion parameters="1000:int" expected-data-file="select_inner_join.xml" />
     </dql-test-case>
@@ -349,7 +367,7 @@
     <!--<dql-test-case sql-case-id="select_sub_query_with_multiple_tables">-->
     <!--<assertion parameters="1000:int, 1001:int" expected-data-file="select_sub_query_with_multiple_tables.xml" />-->
     <!--</dql-test-case>-->
-    
+
     <dql-test-case sql-case-id="select_sub_query_with_order_by">
         <assertion expected-data-file="select_sub_query_with_order_by.xml" />
     </dql-test-case>
