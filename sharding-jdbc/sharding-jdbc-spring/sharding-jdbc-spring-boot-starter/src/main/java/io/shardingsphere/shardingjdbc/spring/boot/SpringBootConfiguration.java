@@ -19,6 +19,7 @@ package io.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
@@ -31,10 +32,12 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.StandardEnvironment;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,8 +79,11 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @SuppressWarnings("unchecked")
     private void setDataSourceMap(final Environment environment) {
         String prefix = "sharding.jdbc.datasource.";
-        String dataSources = environment.getProperty(prefix + "names");
-        for (String each : dataSources.split(",")) {
+        StandardEnvironment standardEnv = (StandardEnvironment) environment;
+        standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
+        String dataSources = standardEnv.getProperty(prefix + "names");
+        List<String> dataSourceList = new InlineExpressionParser(dataSources).splitAndEvaluate();
+        for (String each : dataSourceList) {
             try {
                 Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each, Map.class);
                 Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");

@@ -17,7 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.spring.boot;
 
+import io.shardingsphere.shardingjdbc.spring.boot.type.SpringBootMasterSlaveInlineTest;
 import io.shardingsphere.shardingjdbc.spring.boot.type.SpringBootMasterSlaveTest;
+import io.shardingsphere.shardingjdbc.spring.boot.type.SpringBootShardingInlineTest;
 import io.shardingsphere.shardingjdbc.spring.boot.type.SpringBootShardingTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,7 +28,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         SpringBootMasterSlaveTest.class,
-        SpringBootShardingTest.class 
+        SpringBootMasterSlaveInlineTest.class,
+        SpringBootShardingTest.class,
+        SpringBootShardingInlineTest.class
     })
 public final class AllTests {
 }
