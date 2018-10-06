@@ -24,17 +24,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class JdbcRepository {
+public class DataRepository {
     
     private final DataSource dataSource;
     
     private final boolean isXA;
     
-    public JdbcRepository(final DataSource dataSource) {
+    public DataRepository(final DataSource dataSource) {
         this(dataSource, false);
     }
     
-    public JdbcRepository(final DataSource dataSource, final boolean isXA) {
+    public DataRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
         this.isXA = isXA;
     }
