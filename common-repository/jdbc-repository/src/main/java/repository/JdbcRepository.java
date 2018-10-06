@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.proxy.repository;
+package repository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
