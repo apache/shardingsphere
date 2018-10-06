@@ -14,4 +14,12 @@
     <modules>
         <module>jdbc-repository</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-core</artifactId>
+            <version>${sharding-sphere.version}</version>
+        </dependency>
+    </dependencies>
 </project>
