@@ -17,8 +17,16 @@
 
 package io.shardingsphere.example.spring.boot.jpa.repository;
 
-import io.shardingsphere.example.spring.boot.jpa.entity.OrderItem;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+import io.shardingsphere.example.spring.boot.jpa.entity.OrderItem;
+
+import java.util.List;
+
+public interface OrderItemRepository {
+    
+    Long insert(OrderItem orderItemId);
+    
+    void delete(Long orderItemId);
+    
+    List<OrderItem> selectAll();
 }
