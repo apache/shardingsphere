@@ -67,9 +67,9 @@ public class JdbcRepository {
                 orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
                 statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
             }
-            setCommit(connection);
+            commit(connection);
         } catch (SQLException ex) {
-            connection.rollback();
+            rollback(connection);
         }
         finally {
             connection.close();
@@ -89,9 +89,9 @@ public class JdbcRepository {
                 statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
             }
             makeException();
-            setCommit(connection);
+            commit(connection);
         } catch (Exception ex) {
-            connection.rollback();
+            rollback(connection);
         }
         finally {
             connection.close();
@@ -126,9 +126,9 @@ public class JdbcRepository {
                 preparedStatement.setObject(2, orderId);
                 preparedStatement.executeUpdate();
             }
-            setCommit(connection);
+            commit(connection);
         } catch (SQLException ex) {
-            connection.rollback();
+            rollback(connection);
         }
         finally {
             connection.close();
@@ -154,9 +154,15 @@ public class JdbcRepository {
         }
     }
     
-    private void setCommit(final Connection connection) throws SQLException {
+    private void commit(final Connection connection) throws SQLException {
         if (isXA) {
             connection.commit();
+        }
+    }
+    
+    private void rollback(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.rollback();
         }
     }
     
