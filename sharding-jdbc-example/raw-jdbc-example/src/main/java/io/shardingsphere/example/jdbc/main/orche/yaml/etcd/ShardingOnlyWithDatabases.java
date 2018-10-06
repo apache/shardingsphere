@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
-import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import repository.DataRepository;
 
 import javax.sql.DataSource;
 import java.io.File;
