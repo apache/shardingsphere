@@ -18,7 +18,7 @@
 package io.shardingsphere.example.proxy.main;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import repository.JdbcRepository;
+import repository.DataRepository;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,8 +34,8 @@ public class ProxyXaMain {
     private static final int PROXY_PORT = 3307;
     
     public static void main(String[] args) throws SQLException {
-        JdbcRepository jdbcRepository = new JdbcRepository(createDataSource(), true);
-        jdbcRepository.demo();
+        DataRepository dataRepository = new DataRepository(createDataSource(), true);
+        dataRepository.demo();
     }
     
     private static DataSource createDataSource() {
