@@ -26,6 +26,7 @@ import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -40,6 +41,7 @@ import io.shardingsphere.shardingproxy.config.ProxyContext;
 import io.shardingsphere.shardingproxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.config.RuleRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -84,8 +86,8 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
-        return ruleRegistry == null 
-                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) 
+        return ruleRegistry == null
+                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR))
                 : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
@@ -93,6 +95,10 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
             return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
         }
+        if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof ShowDatabasesStatement) {
+            return handleUseStatement();
+        }
+        
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
@@ -123,9 +129,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         mergedResult = MergeEngineFactory.newInstance(
                 ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
-        if (mergedResult instanceof ShowDatabasesMergedResult) {
-            mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
-        } else if (mergedResult instanceof ShowTablesMergedResult) {
+        if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(ruleRegistry.getSchemaName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
@@ -167,5 +171,17 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return new ResultPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes());
+    }
+    
+    private CommandResponsePackets handleUseStatement() {
+        mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+        int currentSequenceId = 0;
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(++currentSequenceId, 1);
+        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
+        columnDefinition41Packets.add(new ColumnDefinition41Packet(++currentSequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
+        executeResponse = new ExecuteQueryResponse(queryResponsePackets);
+        this.currentSequenceId = queryResponsePackets.getPackets().size();
+        return queryResponsePackets;
     }
 }
