@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.fixture;
+package repository;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
