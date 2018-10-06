@@ -103,18 +103,6 @@ public class XaRawJdbcRepository {
         System.out.println(10 / 0);
     }
     
-    private void setAutoCommit(final Connection connection) throws SQLException {
-        if (isXA) {
-            connection.setAutoCommit(false);
-        }
-    }
-    
-    private void setCommit(final Connection connection) throws SQLException {
-        if (isXA) {
-            connection.commit();
-        }
-    }
-    
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
         long result = -1;
         statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
@@ -126,9 +114,9 @@ public class XaRawJdbcRepository {
         return result;
     }
     
-    protected void updateData() throws SQLException {
+    private void updateData() throws SQLException {
         Connection connection = dataSource.getConnection();
-        connection.setAutoCommit(false);
+        setAutoCommit(connection);
         try {
             for (int i = 1; i <= 10; i++) {
                 Long orderId = getRandomOrderId(connection, 10);
@@ -138,12 +126,24 @@ public class XaRawJdbcRepository {
                 preparedStatement.setObject(2, orderId);
                 preparedStatement.executeUpdate();
             }
-            connection.commit();
+            setCommit(connection);
         } catch (SQLException ex) {
             connection.rollback();
         }
         finally {
             connection.close();
+        }
+    }
+    
+    private void setAutoCommit(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.setAutoCommit(false);
+        }
+    }
+    
+    private void setCommit(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.commit();
         }
     }
     
