@@ -8,6 +8,7 @@
     <modules>
         <module>sharding-jdbc-example</module>
         <module>sharding-proxy-example</module>
+        <module>common-repository</module>
     </modules>
     
     <properties>
