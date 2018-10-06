@@ -38,30 +38,26 @@ public class DemoService {
     
     public void demo() {
         List<Long> orderIds = new ArrayList<>(10);
-        List<Long> orderItemIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            long orderId = orderRepository.save(order).getOrderId();
+            orderRepository.insert(order);
+            long orderId = order.getOrderId();
             orderIds.add(orderId);
+            
             OrderItem item = new OrderItem();
             item.setOrderId(orderId);
             item.setUserId(51);
-            orderItemIds.add(orderItemRepository.save(item).getOrderItemId());
+            orderItemRepository.insert(item);
         }
-        List<OrderItem> orderItems = orderItemRepository.findAll();
-        System.out.println(orderItemRepository.findAll());
+        System.out.println(orderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
-        if (orderItems.size() > 0) {
-            for (Long each : orderItemIds) {
-                orderItemRepository.delete(each);
-            }
-            for (Long each : orderIds) {
-                orderRepository.delete(each);
-            }
+        for (Long each : orderIds) {
+            orderRepository.delete(each);
+            orderItemRepository.delete(each);
         }
-        System.out.println(orderItemRepository.findAll());
+        System.out.println(orderItemRepository.selectAll());
     }
 }
