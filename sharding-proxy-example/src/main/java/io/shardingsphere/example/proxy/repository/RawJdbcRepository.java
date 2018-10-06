@@ -28,8 +28,15 @@ public class RawJdbcRepository {
     
     private final DataSource dataSource;
     
+    private final boolean isXA;
+    
     public RawJdbcRepository(final DataSource dataSource) {
+        this(dataSource, false);
+    }
+    
+    public RawJdbcRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
+        this.isXA = isXA;
     }
     
     public void demo() throws SQLException {
