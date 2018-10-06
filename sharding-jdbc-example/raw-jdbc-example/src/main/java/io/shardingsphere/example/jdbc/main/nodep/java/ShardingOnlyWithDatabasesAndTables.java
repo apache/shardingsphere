@@ -21,7 +21,7 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
+import algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import repository.DataRepository;
 import repository.DataSourceUtil;
