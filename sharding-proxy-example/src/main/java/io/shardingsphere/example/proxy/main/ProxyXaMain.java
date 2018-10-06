@@ -34,8 +34,8 @@ public class ProxyXaMain {
     private static final int PROXY_PORT = 3307;
     
     public static void main(String[] args) throws SQLException {
-        JdbcRepository rawJdbcRepository = new JdbcRepository(createDataSource(), true);
-        rawJdbcRepository.demo();
+        JdbcRepository jdbcRepository = new JdbcRepository(createDataSource(), true);
+        jdbcRepository.demo();
     }
     
     private static DataSource createDataSource() {
