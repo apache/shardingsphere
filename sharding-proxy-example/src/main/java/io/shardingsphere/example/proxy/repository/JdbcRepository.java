@@ -24,17 +24,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class XaRawJdbcRepository {
+public class JdbcRepository {
     
     private final DataSource dataSource;
     
     private final boolean isXA;
     
-    public XaRawJdbcRepository(final DataSource dataSource) {
+    public JdbcRepository(final DataSource dataSource) {
         this(dataSource, false);
     }
     
-    public XaRawJdbcRepository(final DataSource dataSource, final boolean isXA) {
+    public JdbcRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
         this.isXA = isXA;
     }
@@ -135,18 +135,6 @@ public class XaRawJdbcRepository {
         }
     }
     
-    private void setAutoCommit(final Connection connection) throws SQLException {
-        if (isXA) {
-            connection.setAutoCommit(false);
-        }
-    }
-    
-    private void setCommit(final Connection connection) throws SQLException {
-        if (isXA) {
-            connection.commit();
-        }
-    }
-    
     private Long getRandomOrderId(Connection connection, int userId) throws SQLException {
         Statement statement = connection.createStatement();
         int index = (int) (Math.random() * 10);
@@ -158,6 +146,18 @@ public class XaRawJdbcRepository {
             }
         }
         return 0L;
+    }
+    
+    private void setAutoCommit(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.setAutoCommit(false);
+        }
+    }
+    
+    private void setCommit(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.commit();
+        }
     }
     
     private void queryWithEqual() throws SQLException {
