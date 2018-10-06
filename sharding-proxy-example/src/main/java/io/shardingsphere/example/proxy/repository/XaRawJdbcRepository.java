@@ -28,13 +28,20 @@ public class XaRawJdbcRepository {
     
     private final DataSource dataSource;
     
+    private final boolean isXA;
+    
     public XaRawJdbcRepository(final DataSource dataSource) {
+        this(dataSource, false);
+    }
+    
+    public XaRawJdbcRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
+        this.isXA = isXA;
     }
     
     public void demo() throws SQLException {
         createTable();
-        insertDataWithXA();
+        insertData();
         insertFailure();
         updateData();
         System.out.println("1.Query with EQUAL--------------");
@@ -49,9 +56,9 @@ public class XaRawJdbcRepository {
         execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
     }
     
-    private void insertDataWithXA() throws SQLException {
+    private void insertData() throws SQLException {
         Connection connection = dataSource.getConnection();
-        connection.setAutoCommit(false);
+        setAutoCommit(connection);
         Statement statement = connection.createStatement();
         try {
             for (int i = 1; i < 10; i++) {
@@ -60,26 +67,7 @@ public class XaRawJdbcRepository {
                 orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
                 statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
             }
-            connection.commit();
-        } catch (SQLException ex) {
-            connection.rollback();
-        }
-        finally {
-            connection.close();
-            statement.close();
-        }
-    }
-    
-    private void insertDataWithoutXA() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        Statement statement = connection.createStatement();
-        try {
-            for (int i = 1; i < 10; i++) {
-                long orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (10, 'INIT')");
-                statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 10)", orderId));
-                orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
-                statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
-            }
+            setCommit(connection);
         } catch (SQLException ex) {
             connection.rollback();
         }
@@ -91,7 +79,7 @@ public class XaRawJdbcRepository {
     
     private void insertFailure() throws SQLException {
         Connection connection = dataSource.getConnection();
-        connection.setAutoCommit(false);
+        setAutoCommit(connection);
         Statement statement = connection.createStatement();
         try {
             for (int i = 1; i < 10; i++) {
@@ -101,7 +89,7 @@ public class XaRawJdbcRepository {
                 statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
             }
             makeException();
-            connection.commit();
+            setCommit(connection);
         } catch (Exception ex) {
             connection.rollback();
         }
@@ -113,6 +101,18 @@ public class XaRawJdbcRepository {
     
     private void makeException() {
         System.out.println(10 / 0);
+    }
+    
+    private void setAutoCommit(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.setAutoCommit(false);
+        }
+    }
+    
+    private void setCommit(final Connection connection) throws SQLException {
+        if (isXA) {
+            connection.commit();
+        }
     }
     
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
