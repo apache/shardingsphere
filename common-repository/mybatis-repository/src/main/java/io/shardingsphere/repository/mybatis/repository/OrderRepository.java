@@ -18,7 +18,9 @@
 package io.shardingsphere.repository.mybatis.repository;
 
 import io.shardingsphere.repository.mybatis.entity.Order;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface OrderRepository {
     
     void createIfNotExistsTable();
