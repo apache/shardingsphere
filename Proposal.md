@@ -234,10 +234,9 @@ Travis
 
 ### Champion
 
-- Benjamin Hindman (benh at apache dot org)
-
 ### Mentors
 
+- Benjamin Hindman (benh at apache dot org)
 - Willem Ning Jiang (ningjiang at apache dot org)
 
 ### Informal Mentors
