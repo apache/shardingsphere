@@ -3,7 +3,7 @@ grammar SQLServerTableBase;
 import SQLServerKeyword,Keyword,Symbol,SQLServerBase,BaseRule,DataType;
 
 columnDefinition
-    :columnName dataType  
+    : columnName dataType
     columnDefinitionOption*
     (columnConstraint(COMMA columnConstraint)*)?
     columnIndex?
