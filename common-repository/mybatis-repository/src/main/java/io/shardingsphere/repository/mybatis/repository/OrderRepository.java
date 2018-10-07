@@ -15,24 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository;
+package io.shardingsphere.repository.mybatis.repository;
 
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.Order;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.OrderItem;
+import io.shardingsphere.repository.mybatis.entity.Order;
 
-import java.util.List;
-
-public interface OrderItemRepository {
+public interface OrderRepository {
     
     void createIfNotExistsTable();
     
     void truncateTable();
     
-    Long insert(OrderItem model);
+    Long insert(Order model);
     
-    void delete(Long orderItemId);
+    void delete(Long orderId);
     
     void dropTable();
-    
-    List<Order> selectAll();
 }
