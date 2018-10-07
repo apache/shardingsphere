@@ -19,8 +19,8 @@ package io.shardingsphere.example.jdbc.main.nodep.java;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
-import repository.DataRepository;
-import repository.DataSourceUtil;
+import io.shardingsphere.repository.common.repository.DataRepository;
+import io.shardingsphere.repository.common.repository.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
