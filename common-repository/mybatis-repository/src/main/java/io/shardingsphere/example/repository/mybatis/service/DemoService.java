@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.repository.mybatis.service;
+package io.shardingsphere.example.repository.mybatis.service;
 
-import io.shardingsphere.repository.mybatis.entity.Order;
-import io.shardingsphere.repository.mybatis.entity.OrderItem;
-import io.shardingsphere.repository.mybatis.repository.OrderItemRepository;
-import io.shardingsphere.repository.mybatis.repository.OrderRepository;
+import io.shardingsphere.example.repository.mybatis.entity.Order;
+import io.shardingsphere.example.repository.mybatis.entity.OrderItem;
+import io.shardingsphere.example.repository.mybatis.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.mybatis.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
