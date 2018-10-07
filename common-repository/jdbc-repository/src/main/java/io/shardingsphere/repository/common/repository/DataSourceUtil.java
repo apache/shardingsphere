@@ -15,7 +15,7 @@
  * </p>
  */
 
-package repository;
+package io.shardingsphere.repository.common.repository;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
