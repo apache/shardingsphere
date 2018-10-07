@@ -14,7 +14,7 @@
     <modules>
         <module>jdbc-repository</module>
         <module>jpa-repository</module>
-        <module>mybits-repository</module>
+        <module>mybatis-repository</module>
     </modules>
 
     <dependencies>
