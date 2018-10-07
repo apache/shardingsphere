@@ -28,8 +28,8 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import repository.DataRepository;
-import repository.DataSourceUtil;
+import io.shardingsphere.repository.common.repository.DataRepository;
+import io.shardingsphere.repository.common.repository.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
