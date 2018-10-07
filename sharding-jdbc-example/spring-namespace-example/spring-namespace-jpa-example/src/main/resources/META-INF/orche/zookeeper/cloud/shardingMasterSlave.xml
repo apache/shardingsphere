@@ -14,7 +14,7 @@
                         http://shardingsphere.io/schema/shardingsphere/orchestration
                         http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
+    <context:component-scan base-package="io.shardingsphere.example.repository.jpa"/>
     
     <orchestration:sharding-data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter"/>
     
@@ -23,7 +23,7 @@
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.fixture.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.repository.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
