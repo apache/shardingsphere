@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace.jpa.fixture.entity;
+package io.shardingsphere.example.repository.jpa.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,29 +26,21 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "t_order_item")
-public class OrderItem implements Serializable {
+@Table(name = "t_order")
+public class Order implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = 661434701950670670L;
     
     @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderItemId;
-    
     @Column(name = "order_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderId;
     
     @Column(name = "user_id")
     private int userId;
     
-    public long getOrderItemId() {
-        return orderItemId;
-    }
-    
-    public void setOrderItemId(final long orderItemId) {
-        this.orderItemId = orderItemId;
-    }
+    @Column(name = "status")
+    private String status;
     
     public long getOrderId() {
         return orderId;
@@ -66,8 +58,16 @@ public class OrderItem implements Serializable {
         this.userId = userId;
     }
     
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(final String status) {
+        this.status = status;
+    }
+    
     @Override
     public String toString() {
-        return String.format("order_item_id: %s, order_id: %s, user_id: %s", orderItemId, orderId, userId);
+        return String.format("order_id: %s, user_id: %s, status: %s", orderId, userId, status);
     }
 }
