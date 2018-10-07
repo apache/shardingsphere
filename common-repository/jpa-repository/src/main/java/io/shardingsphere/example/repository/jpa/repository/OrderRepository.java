@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace.jpa.fixture.repository;
+package io.shardingsphere.example.repository.jpa.repository;
 
-import io.shardingsphere.example.spring.namespace.jpa.fixture.entity.Order;
+import io.shardingsphere.example.repository.jpa.entity.Order;
 
 public interface OrderRepository {
     
