@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service;
+package io.shardingsphere.repository.mybatis.service;
 
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.Order;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.OrderItem;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderItemRepository;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderRepository;
+import io.shardingsphere.repository.mybatis.entity.Order;
+import io.shardingsphere.repository.mybatis.entity.OrderItem;
+import io.shardingsphere.repository.mybatis.repository.OrderItemRepository;
+import io.shardingsphere.repository.mybatis.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
