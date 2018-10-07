@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.main.orche.zookeeper;
 
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service.DemoService;
+import io.shardingsphere.repository.mybatis.service.DemoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithDatabasesAndTables {
