@@ -48,11 +48,14 @@ public final class SQLCasesLoader {
     
     private static final SQLCasesLoader INSTANCE = new SQLCasesLoader();
     
+    private final Map<String, SQLCase> antlrSupportedSQLCaseMap;
+    
     private final Map<String, SQLCase> supportedSQLCaseMap;
     
     private final Map<String, SQLCase> unsupportedSQLCaseMap;
     
     private SQLCasesLoader() {
+        antlrSupportedSQLCaseMap = loadSQLCases("antlr_supported_sql");
         supportedSQLCaseMap = loadSQLCases("sql");
         unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
     }
@@ -131,6 +134,18 @@ public final class SQLCasesLoader {
     }
     
     /**
+     * Get antlr supported SQL.
+     *
+     * @param sqlCaseId SQL case ID
+     * @param sqlCaseType SQL case type
+     * @param parameters SQL parameters
+     * @return SQL
+     */
+    public String getAntlrSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
+        return getSQL(antlrSupportedSQLCaseMap, sqlCaseId, sqlCaseType, parameters);
+    }
+    
+    /**
      * Get supported SQL.
      *
      * @param sqlCaseId SQL case ID
@@ -180,6 +195,17 @@ public final class SQLCasesLoader {
             return sql;
         }
         return String.format(sql.replace("?", "%s"), parameters.toArray()).replace("%%", "%").replace("'%'", "'%%'");
+    }
+    
+    /**
+     * Get test parameters for junit parameterized test case for antlr supported SQL.
+     *
+     * @param allDatabaseTypes all database types
+     * @param enumType enum type
+     * @return test parameters for junit parameterized test case for supported SQL
+     */
+    public Collection<Object[]> getAntlrSupportedSQLTestParameters(final Collection<? extends Enum> allDatabaseTypes, final Class<? extends Enum> enumType) {
+        return getTestParameters(antlrSupportedSQLCaseMap, allDatabaseTypes, enumType);
     }
     
     /**
