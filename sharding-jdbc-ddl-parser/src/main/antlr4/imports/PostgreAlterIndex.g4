@@ -2,24 +2,24 @@ grammar PostgreAlterIndex;
 
 import PostgreKeyword, PostgreBase, BaseRule;
 
-alterIndex:
-      alterIndexName renameIndex
+alterIndex
+    : alterIndexName renameIndex
     | alterIndexDependsOnExtension
     | alterIndexSetTableSpace
     ;
 
-alterIndexName:
-    ALTER INDEX (IF EXISTS)? indexName
+alterIndexName
+    : ALTER INDEX (IF EXISTS)? indexName
     ;
 
-renameIndex:
-    RENAME TO indexName
+renameIndex
+    : RENAME TO indexName
     ;
 
-alterIndexDependsOnExtension:
-    ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
+alterIndexDependsOnExtension
+    : ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
     ;
 
-alterIndexSetTableSpace:
-    ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
+alterIndexSetTableSpace
+    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
     ;

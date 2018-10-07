@@ -2,35 +2,35 @@ grammar PostgreCreateTable;
 
 import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
 
-createTable:
-    createTableHeader
+createTable
+    : createTableHeader
     createDefinitions
     inheritClause?
     ;
 
-createTableHeader:
-    CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
+createTableHeader
+    : CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
     ;
 
-createDefinitions:
-   LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
-   ;
+createDefinitions
+    : LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
+    ;
 
-createDefinition:
-     columnDefinition
+createDefinition
+    : columnDefinition
     | tableConstraint
     | LIKE tableName likeOption*
-     ;
+    ;
 	
-likeOption:
-    (INCLUDING | EXCLUDING )
+likeOption
+    : (INCLUDING | EXCLUDING)
     (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
     ;
 
-inheritClause:
-    INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN
+inheritClause
+    : INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN
     ;
 
-partitionOfParent:
-    PARTITION OF tableName
+partitionOfParent
+    : PARTITION OF tableName
     ;

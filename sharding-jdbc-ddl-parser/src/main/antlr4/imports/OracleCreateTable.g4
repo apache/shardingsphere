@@ -2,29 +2,29 @@ grammar OracleCreateTable;
 
 import OracleKeyword, DataType, Keyword, OracleCreateIndex, OracleTableBase, OracleBase, BaseRule, Symbol;
 
-createTable:
-    CREATE (GLOBAL TEMPORARY)? TABLE  tableName relationalTable
+createTable
+    : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
     ;
     
-relationalTable:
-    LEFT_PAREN relationalProperties RIGHT_PAREN
+relationalTable
+    : LEFT_PAREN relationalProperties RIGHT_PAREN
     (ON COMMIT (DELETE | PRESERVE) ROWS)?
     tableProperties
     ;
     
-relationalProperties:
-    relationalProperty (COMMA relationalProperty)*
+relationalProperties
+    : relationalProperty (COMMA relationalProperty)*
     ;
     
-relationalProperty:
-     columnDefinition
+relationalProperty
+    : columnDefinition
     | virtualColumnDefinition
     | outOfLineConstraint
     | outOfLineRefConstraint
     ;
     
-tableProperties:
-    columnProperties?
+tableProperties
+    : columnProperties?
     (AS subquery)?
     ;
     

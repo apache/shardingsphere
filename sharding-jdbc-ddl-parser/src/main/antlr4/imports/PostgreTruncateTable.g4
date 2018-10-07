@@ -1,15 +1,15 @@
 grammar PostgreTruncateTable;
 
-import PostgreKeyword, PostgreBase, BaseRule;
+import PostgreKeyword, PostgreBase, BaseRule, Symbol;
 
-truncateTable:
-    TRUNCATE TABLE? ONLY? tableNameParts
+truncateTable
+    : TRUNCATE TABLE? ONLY? tableNameParts
     ;
 
-tableNameParts:
-    tableNamePart (COMMA tableNamePart)*
+tableNameParts
+    : tableNamePart (COMMA tableNamePart)*
     ;
 
-tableNamePart:
-    tableName ASTERISK?
+tableNamePart
+    : tableName ASTERISK?
     ;

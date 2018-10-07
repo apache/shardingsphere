@@ -2,25 +2,25 @@ grammar PostgreAlterTable;
 
 import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
 
-alterTable:
-      alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint)
+alterTable
+    : alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint)
     | alterTableNameExists renameTable
     ;
 
-alterTableNameWithAsterisk:
-    alterTableOp (IF EXISTS)? ONLY? tableName ASTERISK?
+alterTableNameWithAsterisk
+    : alterTableOp (IF EXISTS)? ONLY? tableName ASTERISK?
     ;
 
-alterTableOp:
-    ALTER TABLE
+alterTableOp
+    : ALTER TABLE
     ;
 
-alterTableActions:
-    alterTableAction (COMMA alterTableAction)*
+alterTableActions
+    : alterTableAction (COMMA alterTableAction)*
     ;
 
-alterTableAction:
-      addColumn
+alterTableAction
+    : addColumn
     | dropColumn
     | modifyColumn
     | alterTableAddConstraint
@@ -32,49 +32,49 @@ alterTableAction:
     | REPLICA IDENTITY (DEFAULT | USING INDEX indexName | FULL | NOTHING)
     ;
 
-tableConstraintUsingIndex:
-    (CONSTRAINT constraintName)?
+tableConstraintUsingIndex
+    : (CONSTRAINT constraintName)?
     (UNIQUE | primaryKey) USING INDEX indexName
     constraintOptionalParam
     ;
 
- constraintOptionalParam:
-     (NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
-     ;
+ constraintOptionalParam
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
+    ;
 
-addColumn:
-    ADD COLUMN? (IF NOT EXISTS )? columnDefinition
+addColumn
+    : ADD COLUMN? (IF NOT EXISTS )? columnDefinition
     ;
     
-dropColumn:
-     DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
-     ;
+dropColumn
+    : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
+    ;
      
-modifyColumn:
-     alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
-     ;
+modifyColumn
+    : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
+    ;
      
-alterColumn:     
-     ALTER COLUMN? columnName
-     ;
+alterColumn     
+    : ALTER COLUMN? columnName
+    ;
      
-alterTableAddConstraint:       
-      ADD tableConstraint (NOT VALID)?
+alterTableAddConstraint       
+    : ADD tableConstraint (NOT VALID)?
     | ADD tableConstraintUsingIndex
     ;
     
-renameColumn:
-     RENAME COLUMN? columnName TO columnName
+renameColumn
+    : RENAME COLUMN? columnName TO columnName
     ;
 
-renameConstraint:
-    RENAME CONSTRAINT constraintName TO constraintName
+renameConstraint
+    : RENAME CONSTRAINT constraintName TO constraintName
     ;
 
-alterTableNameExists:
-    alterTableOp (IF EXISTS)? tableName
+alterTableNameExists
+    : alterTableOp (IF EXISTS)? tableName
     ;
 
-renameTable:
-    RENAME TO tableName
+renameTable
+    : RENAME TO tableName
     ;

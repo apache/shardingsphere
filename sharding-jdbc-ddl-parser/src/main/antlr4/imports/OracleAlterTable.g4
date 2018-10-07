@@ -2,8 +2,8 @@ grammar OracleAlterTable;
 
 import OracleKeyword, DataType, Keyword,OracleCreateIndex, OracleTableBase,OracleBase,BaseRule,Symbol;
 
-alterTable:
-    ALTER TABLE tableName
+alterTable
+    : ALTER TABLE tableName
      ( alterTableProperties
      | columnClauses
      | constraintClauses
@@ -11,38 +11,35 @@ alterTable:
     )?
     ;
     
-alterTableProperties:
-    renameTable
-    | (REKEY encryptionSpec )
+alterTableProperties
+    : renameTable
+    | REKEY encryptionSpec
     ;
 
 renameTable:
     RENAME TO tableName
     ;
 
-columnClauses:
-    opColumnClause+
+columnClauses
+    : opColumnClause+
     | renameColumn
     ;
 
-opColumnClause:
-      addColumn
+opColumnClause
+    : addColumn
     | modifyColumn
     | dropColumnClause
     ;
     
-addColumn:
-    ADD
-    columnOrVirtualDefinitions 
-    columnProperties?
+addColumn
+    : ADD columnOrVirtualDefinitions columnProperties?
     ;
 
-columnOrVirtualDefinitions:
-    LEFT_PAREN 
-        columnOrVirtualDefinition
+columnOrVirtualDefinitions
+    : LEFT_PAREN columnOrVirtualDefinition
         (COMMA columnOrVirtualDefinition)* 
-    RIGHT_PAREN
-    |columnOrVirtualDefinition
+      RIGHT_PAREN
+    | columnOrVirtualDefinition
     ;
     
 columnOrVirtualDefinition:
@@ -50,101 +47,96 @@ columnOrVirtualDefinition:
     | virtualColumnDefinition
     ;
     
-modifyColumn:
-    MODIFY 
+modifyColumn
+    : MODIFY 
     ( 
         LEFT_PAREN modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN
        | modifyColSubstitutable
     )
     ;
     
-modifyColProperties:
-    columnName 
-    ( dataType )?
-    ( DEFAULT expr )?
-    ((ENCRYPT encryptionSpec) | DECRYPT )?
+modifyColProperties
+    : columnName dataType?
+    (DEFAULT expr)?
+    (ENCRYPT encryptionSpec | DECRYPT)?
     inlineConstraint* 
     ;
     
-modifyColSubstitutable:
-    COLUMN columnName
-    ( NOT )? SUBSTITUTABLE AT ALL LEVELS
-    ( FORCE )?
+modifyColSubstitutable
+    : COLUMN columnName
+    NOT? SUBSTITUTABLE AT ALL LEVELS FORCE?
     ;
     
-dropColumnClause:
-    ( SET UNUSED columnOrColumnList cascadeOrInvalidate*)
+dropColumnClause
+    : SET UNUSED columnOrColumnList cascadeOrInvalidate*
     | dropColumn
     ;
 
-dropColumn:
-    DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
+dropColumn
+    : DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
 	;
 	
-columnOrColumnList:
-    (COLUMN columnName)
-    | (LEFT_PAREN columnName ( COMMA columnName )* RIGHT_PAREN) 
+columnOrColumnList
+    : COLUMN columnName
+    | LEFT_PAREN columnName ( COMMA columnName )* RIGHT_PAREN
     ;
 
-cascadeOrInvalidate:
-    (CASCADE CONSTRAINTS )
+cascadeOrInvalidate
+    : CASCADE CONSTRAINTS
     | INVALIDATE
     ;
 
-checkpointNumber:
-    CHECKPOINT NUMBER
+checkpointNumber
+    : CHECKPOINT NUMBER
     ;
     
-renameColumn:
-    RENAME COLUMN columnName TO columnName
+renameColumn
+    : RENAME COLUMN columnName TO columnName
     ;
     
-constraintClauses:
-    addConstraintClause
+constraintClauses
+    : addConstraintClause
     | modifyConstraintClause
     | renameConstraintClause
     | dropConstraintClause+
     ;
     
-addConstraintClause:
-    ADD 
-    ( outOfLineConstraint+
-     |outOfLineRefConstraint
-    )
+addConstraintClause
+    : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
 
-modifyConstraintClause:
-    MODIFY constraintOption constraintState CASCADE?
+modifyConstraintClause
+    : MODIFY constraintOption constraintState CASCADE?
     ;
 
-constraintWithName:
-    CONSTRAINT constraintName
+constraintWithName
+    : CONSTRAINT constraintName
     ;    
     
-constraintOption:
-     constraintWithName
-     | constraintPrimaryOrUnique
-     ;
+constraintOption
+    : constraintWithName
+    | constraintPrimaryOrUnique
+    ;
  
-constraintPrimaryOrUnique:
-      primaryKey
-     | (UNIQUE columnList)
-     ;
+constraintPrimaryOrUnique
+    : primaryKey
+    | UNIQUE columnList
+    ;
         
-renameConstraintClause:
-   RENAME constraintWithName TO constraintName
-   ;
+renameConstraintClause
+    : RENAME constraintWithName TO constraintName
+    ;
    
-dropConstraintClause:
-    DROP
+dropConstraintClause
+    : DROP
     (
         (constraintPrimaryOrUnique CASCADE? (( KEEP | DROP) INDEX)?)
        | (CONSTRAINT constraintName ( CASCADE )?)
     ) 
     ;
 
-alterExternalTable:
-    ( addColumn
+alterExternalTable
+    : ( addColumn
     | modifyColumn
     | dropColumn
     )+
