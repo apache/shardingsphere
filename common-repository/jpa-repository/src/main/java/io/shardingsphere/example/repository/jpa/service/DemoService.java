@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.namespace.jpa.fixture.service;
+package io.shardingsphere.example.repository.jpa.service;
 
-import io.shardingsphere.example.spring.namespace.jpa.fixture.entity.Order;
-import io.shardingsphere.example.spring.namespace.jpa.fixture.entity.OrderItem;
-import io.shardingsphere.example.spring.namespace.jpa.fixture.repository.OrderItemRepository;
-import io.shardingsphere.example.spring.namespace.jpa.fixture.repository.OrderRepository;
+import io.shardingsphere.example.repository.jpa.entity.OrderItem;
+import io.shardingsphere.example.repository.jpa.entity.Order;
+import io.shardingsphere.example.repository.jpa.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.jpa.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
