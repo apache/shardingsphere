@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.repository.mybatis.repository;
+package io.shardingsphere.example.repository.mybatis.repository;
 
-import io.shardingsphere.repository.mybatis.entity.Order;
+import io.shardingsphere.example.repository.mybatis.entity.Order;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
