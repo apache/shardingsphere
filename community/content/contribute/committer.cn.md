@@ -7,7 +7,7 @@ chapter = true
 ## 成为一个提交者
 
  - 过去的6个月持续的做出贡献
- - 深入理解Sharding核心技术
+ - 深入理解Sharding-Sphere核心技术
  - 遵守开发规范
  - 高质量提交
  - 开启Google 2FA([2FA](/cn/contribute/2fa/))

@@ -9,7 +9,7 @@ It's our pleasure if you leave the information of your organization when using S
 
 Welcome to register by `company` + `homepage` + `company type` [here](https://github.com/sharding-sphere/sharding-sphere/issues/234).
 
-Organizations using Sharding in chronological order.
+Organizations using Sharding-Sphere in chronological order.
 
 ## E-commerce
 

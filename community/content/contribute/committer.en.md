@@ -7,7 +7,7 @@ chapter = true
 ## Becoming a committer
 
  - Consistent contributions over the past 6 months
- - Deep understanding of Sharding core technology
+ - Deep understanding of Sharding-Sphere core technology
  - Compliance with the development conventions
  - High quality of commits
  - Enable Two-factor authentication([2FA](/en/contribute/2fa/))

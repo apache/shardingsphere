@@ -9,7 +9,7 @@ chapter = true
 
 As a member of PMC, you **must** contribute and maintain the features or modules, and also take part in project management and building the eco-system. Because of that, you have following rights:
 
-1. In charged with responsibility and governance for all projects/repositories in Sharding organization.
+1. In charged with responsibility and governance for all projects/repositories in Sharding-Sphere organization.
 
 1. Edit rights for all repositories.
 
@@ -29,13 +29,13 @@ The current Project Management Committee is as follows (in chronological order):
 
 * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) Database and APM expert, Apache SkyWalking(incubator) PMC member
 
-* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) Ex-Director, ele.me
+* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) CTO, BeiKe Finance
 
 * 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) Ex-Director, Orange Finance
 
 ## Voting
 
-In various situations the Sharding shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
+In various situations the Sharding-Sphere shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
 
 ## Internal Committer
 
