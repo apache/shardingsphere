@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
 
-import io.shardingsphere.example.jdbc.fixture.DataRepository;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.example.repository.common.repository.DataRepository;
 
 import javax.sql.DataSource;
 import java.io.File;

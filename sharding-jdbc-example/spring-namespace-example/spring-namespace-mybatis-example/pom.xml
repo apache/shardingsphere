@@ -28,5 +28,10 @@
             <artifactId>mssql-jdbc</artifactId>
             <version>6.1.7.jre7-preview</version>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>mybatis-repository</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
