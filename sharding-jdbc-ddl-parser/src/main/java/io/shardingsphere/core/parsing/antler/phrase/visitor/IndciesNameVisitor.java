@@ -15,26 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.statement.visitor;
+package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
-import io.shardingsphere.core.parsing.antler.phrase.visitor.IndciesNameVisitor;
-import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
+import java.util.List;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
-public class CreateTableVisitor extends AbstractStatementVisitor {
-    public CreateTableVisitor() {
-        addVisitor(new TableNameVisitor());
-        addVisitor(new ColumnDefinitionVisitor());
-        addVisitor(new IndciesNameVisitor());
-    }
+public class IndciesNameVisitor implements PhraseVisitor {
 
-    /** Create create table statement.
-     * @return empty sql statment
-     */
     @Override
-    protected SQLStatement newStatement() {
-        return new CreateTableStatement();
+    public void visit(ParserRuleContext ancestorNode, SQLStatement statement) {
+        CreateTableStatement createStatement = (CreateTableStatement) statement;
+        String tableName = createStatement.getTables().getSingleTableName();
+        List<IndexToken> indicesToken = VisitorUtils.visitIndices(ancestorNode, tableName);
+        statement.getSqlTokens().addAll(indicesToken);
     }
+
 }
