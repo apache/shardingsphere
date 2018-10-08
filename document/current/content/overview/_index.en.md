@@ -23,7 +23,7 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en.png)
+![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en_v2.png)
 
 ## Introduction
 
@@ -98,4 +98,4 @@ They are all governed by mesh layer.
 
 ## Roadmap
 
-![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v2.png)
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v3.png)
