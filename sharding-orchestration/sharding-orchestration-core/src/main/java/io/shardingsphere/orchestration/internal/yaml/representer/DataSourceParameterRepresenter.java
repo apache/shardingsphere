@@ -29,7 +29,7 @@ import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * Sharding or master-slave rule config representer.
+ * Datasource parameter representer.
  *
  * @author panjuan
  */
