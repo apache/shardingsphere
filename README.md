@@ -28,7 +28,7 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
-![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en.png)
+![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en_v2.png)
 
 ### Sharding-JDBC
 
@@ -102,4 +102,4 @@ They are all governed by mesh layer.
 
 ## Roadmap
 
-![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v2.png)
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v3.png)
