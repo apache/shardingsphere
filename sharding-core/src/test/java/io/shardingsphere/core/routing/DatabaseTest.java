@@ -19,9 +19,9 @@ package io.shardingsphere.core.routing;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import io.shardingsphere.core.api.HintManager;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.HintManager;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingsphere.core.rule.ShardingRule;

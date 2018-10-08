@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;

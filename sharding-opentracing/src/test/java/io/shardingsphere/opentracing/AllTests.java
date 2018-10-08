@@ -17,7 +17,7 @@
 
 package io.shardingsphere.opentracing;
 
-import io.shardingsphere.opentracing.listener.AllListenerTests;
+import io.shardingsphere.opentracing.hook.AllHookTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         ShardingTracerTest.class,
-        AllListenerTests.class
+        AllHookTests.class
 })
 public final class AllTests {
 }

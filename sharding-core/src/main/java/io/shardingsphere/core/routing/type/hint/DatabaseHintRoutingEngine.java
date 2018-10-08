@@ -19,15 +19,13 @@ package io.shardingsphere.core.routing.type.hint;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.hint.ShardingKey;
 import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.TableUnit;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +38,6 @@ import java.util.Collections;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     private final Collection<String> dataSourceNames;
@@ -49,13 +46,11 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
+        Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME);
         Preconditions.checkState(shardingValue.isPresent());
-        log.debug("Before database sharding only db:{} sharding values: {}", dataSourceNames, shardingValue.get());
         Collection<String> routingDataSources;
         routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.singletonList(shardingValue.get()));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
-        log.debug("After database sharding only result: {}", routingDataSources);
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {
             result.getTableUnits().getTableUnits().add(new TableUnit(each));

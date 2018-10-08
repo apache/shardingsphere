@@ -19,10 +19,13 @@ package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.executor.ShardingExecuteCallback;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -42,23 +45,49 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@AllArgsConstructor
 public final class SQLExecutePrepareTemplate {
     
     private final int maxConnectionsSizePerQuery;
     
+    private ShardingExecuteEngine shardingExecuteEngine;
+    
     /**
      * Get execute unit groups.
-     * 
+     *
      * @param routeUnits route units
      * @param callback SQL execute prepare callback
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        return null == shardingExecuteEngine ? getSynchronizedExecuteUnitGroups(routeUnits, callback) : getAsynchronizedExecuteUnitGroups(routeUnits, callback);
+    }
+    
+    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
+            final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
+        }
+        return result;
+    }
+    
+    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getAsynchronizedExecuteUnitGroups(
+            final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
+        List<Collection<ShardingExecuteGroup<StatementExecuteUnit>>> results = shardingExecuteEngine.execute(sqlUnitGroups.entrySet(),
+                new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
+                    
+                    @Override
+                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input, final boolean isTrunkThread) throws SQLException {
+                        return getSQLExecuteGroups(input.getKey(), input.getValue(), callback);
+                    }
+                });
+        Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
+        for (Collection<ShardingExecuteGroup<StatementExecuteUnit>> each : results) {
+            result.addAll(each);
         }
         return result;
     }
@@ -79,18 +108,18 @@ public final class SQLExecutePrepareTemplate {
         List<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
         List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
-        List<Connection> connections = callback.getConnections(dataSourceName, sqlUnitGroups.size());
+        ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
+        List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitGroups.size());
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
-            result.add(getSQLExecuteGroup(connections.get(count++), dataSourceName, each, callback));
+            result.add(getSQLExecuteGroup(connectionMode, connections.get(count++), dataSourceName, each, callback));
         }
         return result;
     }
     
-    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(
-            final Connection connection, final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
+    private ShardingExecuteGroup<StatementExecuteUnit> getSQLExecuteGroup(final ConnectionMode connectionMode, final Connection connection, 
+                                                                          final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
-        ConnectionMode connectionMode = 1 == sqlUnitGroup.size() ? ConnectionMode.MEMORY_STRICTLY : ConnectionMode.CONNECTION_STRICTLY;
         for (SQLUnit each : sqlUnitGroup) {
             result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
         }
