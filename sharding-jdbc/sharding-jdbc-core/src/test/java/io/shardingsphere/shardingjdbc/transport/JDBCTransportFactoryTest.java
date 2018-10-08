@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.transport;
+package io.shardingsphere.shardingjdbc.transport;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.apache.servicecomb.saga.transports.SQLTransport;

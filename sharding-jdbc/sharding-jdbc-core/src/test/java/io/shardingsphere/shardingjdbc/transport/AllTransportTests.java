@@ -15,26 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc;
+package io.shardingsphere.shardingjdbc.transport;
 
-import io.shardingsphere.shardingjdbc.api.AllApiTests;
-import io.shardingsphere.shardingjdbc.executor.AllExecutorTests;
-import io.shardingsphere.shardingjdbc.jdbc.AllJDBCTests;
-import io.shardingsphere.shardingjdbc.transaction.AllTransactionTests;
-import io.shardingsphere.shardingjdbc.transport.AllTransportTests;
-import io.shardingsphere.shardingjdbc.util.AllUtilTests;
+/**
+ * ${DESCRIPTION}
+ *
+ * @author yangyi
+ */
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        AllApiTests.class, 
-        AllExecutorTests.class, 
-        AllJDBCTests.class, 
-        AllTransactionTests.class, 
-        AllUtilTests.class,
-        AllTransportTests.class
-    })
-public final class AllUnitTests {
+@Suite.SuiteClasses({
+        JDBCSqlTransportTest.class,
+        JDBCTransportFactoryTest.class
+})
+public class AllTransportTests {
 }

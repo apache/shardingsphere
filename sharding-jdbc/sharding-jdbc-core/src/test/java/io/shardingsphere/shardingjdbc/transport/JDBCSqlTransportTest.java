@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.transport;
+package io.shardingsphere.shardingjdbc.transport;
 
-import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
+import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.servicecomb.saga.core.TransportFailedException;
 import org.junit.Before;
 import org.junit.Test;
