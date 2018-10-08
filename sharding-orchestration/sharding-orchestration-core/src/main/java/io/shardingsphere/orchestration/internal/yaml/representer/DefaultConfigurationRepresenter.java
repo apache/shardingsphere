@@ -22,7 +22,6 @@ import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
@@ -39,10 +38,6 @@ public class DefaultConfigurationRepresenter extends Representer {
                                                   Object propertyValue, Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         Node valueNode = tuple.getValueNode();
-        Node keyNode = tuple.getKeyNode();
-        if (keyNode instanceof ScalarNode && ((ScalarNode)keyNode).getValue().equals("password")) {
-            return tuple;
-        }
         if (Tag.NULL.equals(valueNode.getTag())) {
             return null;
         }
