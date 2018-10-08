@@ -68,10 +68,4 @@ public class DefaultConfigurationRepresenter extends Representer {
         }
         return tuple;
     }
-    
-    private class NullRepresent implements Represent {
-        public Node representData(final Object data) {
-            return representScalar(Tag.NULL, "");
-        }
-    }
 }
