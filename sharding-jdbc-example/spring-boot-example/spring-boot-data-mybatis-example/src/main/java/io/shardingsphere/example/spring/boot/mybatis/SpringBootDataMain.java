@@ -25,9 +25,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({ "io.shardingsphere.repository.mybatis" })
-@EntityScan(basePackages = {"io.shardingsphere.repository.mybatis.entity"})
-@MapperScan(basePackages = "io.shardingsphere.repository.mybatis.repository")
+@ComponentScan({ "io.shardingsphere.example.repository.mybatis" })
+@EntityScan(basePackages = {"io.shardingsphere.example.repository.mybatis.entity"})
+@MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
 @SpringBootApplication
 public class SpringBootDataMain {
     
