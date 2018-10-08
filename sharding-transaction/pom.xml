@@ -39,5 +39,20 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicecomb.saga</groupId>
+            <artifactId>saga-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicecomb.saga</groupId>
+            <artifactId>saga-format</artifactId>
+        </dependency>
     </dependencies>
 </project>
