@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.base;
+package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import io.shardingsphere.proxy.config.ProxyContext;
-import io.shardingsphere.proxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.RuleRegistry;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.junit.Before;
 import org.junit.Test;
