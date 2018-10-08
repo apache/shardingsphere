@@ -25,7 +25,6 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
@@ -34,11 +33,6 @@ import org.yaml.snakeyaml.representer.Representer;
  * @author panjuan
  */
 public class DefaultConfigurationRepresenter extends Representer {
-    
-    public DefaultConfigurationRepresenter() {
-        super();
-        nullRepresenter = new DefaultConfigurationRepresenter.NullRepresent();
-    }
     
     @Override
     protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
