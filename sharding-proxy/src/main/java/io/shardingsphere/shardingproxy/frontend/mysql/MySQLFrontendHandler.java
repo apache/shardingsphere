@@ -39,7 +39,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.AuthorityHandler;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.AuthenticationHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
@@ -59,7 +59,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     private final EventLoopGroup eventLoopGroup;
     
-    private final AuthorityHandler authorityHandler = new AuthorityHandler();
+    private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
@@ -67,14 +67,14 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
-        context.writeAndFlush(new HandshakePacket(connectionId, authorityHandler.getAuthPluginData()));
+        context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
-            if (authorityHandler.login(response41.getUsername(), response41.getAuthResponse())) {
+            if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !ProxyContext.getInstance().schemaExists(response41.getDatabase())) {
                     context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return;
