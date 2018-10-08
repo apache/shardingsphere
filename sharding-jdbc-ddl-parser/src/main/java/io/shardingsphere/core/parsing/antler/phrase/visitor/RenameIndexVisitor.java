@@ -18,10 +18,11 @@
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 public class RenameIndexVisitor implements PhraseVisitor {
 
@@ -33,14 +34,28 @@ public class RenameIndexVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         ParserRuleContext renameIndexNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "renameIndex");
-        if (null != renameIndexNode) {
-            ParserRuleContext oldIndexNode = (ParserRuleContext) renameIndexNode.getChild(2);
-            ParserRuleContext newIndexNode = (ParserRuleContext) renameIndexNode
-                    .getChild(renameIndexNode.getChildCount() - 1);
-            statement.getSqlTokens().add(new IndexToken(oldIndexNode.getStart().getStartIndex(), oldIndexNode.getText(),
-                    statement.getTables().getSingleTableName()));
-            statement.getSqlTokens().add(new IndexToken(newIndexNode.getStart().getStartIndex(), newIndexNode.getText(),
-                    statement.getTables().getSingleTableName()));
+        
+        if (null == renameIndexNode || 4 > renameIndexNode.getChildCount()) {
+            return;
         }
+        
+        ParseTree oldIndexNode =  renameIndexNode.getChild(2);
+        if (!(oldIndexNode instanceof ParserRuleContext)) {
+            return;
+        }
+        
+        ParseTree newIndexNode =  renameIndexNode.getChild(4);
+        if (!(newIndexNode instanceof ParserRuleContext)) {
+            return;
+        }
+        
+        ParserRuleContext oldIndexCtx = (ParserRuleContext) oldIndexNode;
+        ParserRuleContext newIndexCtx = (ParserRuleContext) newIndexNode;
+        
+        statement.getSqlTokens()
+        .add(VisitorUtils.visitIndex(oldIndexCtx, statement.getTables().getSingleTableName()));
+        
+        statement.getSqlTokens()
+        .add(VisitorUtils.visitIndex(newIndexCtx, statement.getTables().getSingleTableName()));
     }
 }

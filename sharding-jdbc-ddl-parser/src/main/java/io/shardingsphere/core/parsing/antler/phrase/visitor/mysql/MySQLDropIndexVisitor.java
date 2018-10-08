@@ -18,11 +18,12 @@
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 public class MySQLDropIndexVisitor implements PhraseVisitor {
 
@@ -32,17 +33,28 @@ public class MySQLDropIndexVisitor implements PhraseVisitor {
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        ParserRuleContext dropIndexDefNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext dropIndexDefNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "dropIndexDef");
+        
         if (null == dropIndexDefNode) {
             return;
         }
+        
+        int childCnt = dropIndexDefNode.getChildCount();
+        if (0 == childCnt) {
+            return;
+        }
+        
+        ParseTree lastChild = dropIndexDefNode.getChild(childCnt - 1);
+        if(!(lastChild instanceof ParserRuleContext)) {
+            return;
+        }
+        
 
-        ParserRuleContext indexNameNode = (ParserRuleContext) dropIndexDefNode
-                .getChild(dropIndexDefNode.getChildCount() - 1);
+        ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
         if (null != indexNameNode) {
-            statement.getSqlTokens().add(new IndexToken(indexNameNode.getStart().getStartIndex(),
-                    indexNameNode.getText(), statement.getTables().getSingleTableName()));
+            statement.getSqlTokens()
+                    .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
         }
     }
 

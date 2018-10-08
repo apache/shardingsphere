@@ -33,9 +33,9 @@ public class RenameTableVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext renameTableNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext renameTableNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "renameTable");
-        if (null != renameTableNode) {
+        if (null != renameTableNode && 0 < renameTableNode.getChildCount()) {
             alterStatement.setNewTableName(renameTableNode.getChild(renameTableNode.getChildCount() - 1).getText());
         }
     }

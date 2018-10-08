@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
@@ -38,12 +37,12 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
 
-        List<ParseTree> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ancestorNode, "ColumnDefinition");
+        List<ParserRuleContext> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ancestorNode, "ColumnDefinition");
         if (null == columnDefinitions) {
             return;
         }
 
-        for (final ParseTree each : columnDefinitions) {
+        for (final ParserRuleContext each : columnDefinitions) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null == column) {
                 continue;

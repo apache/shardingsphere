@@ -37,23 +37,23 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParseTree> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "addColumn");
+        List<ParserRuleContext> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "addColumn");
         if (null == addColumnCtxs) {
             return;
         }
 
-        for (ParseTree each : addColumnCtxs) {
+        for (ParserRuleContext each : addColumnCtxs) {
             visitAddColumn(each, alterStatement);
         }
     }
     
-    public void visitAddColumn(final ParseTree addColumnCtx, final AlterTableStatement alterStatement) {
-        List<ParseTree> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, "columnDefinition");
+    public void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
+        List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, "columnDefinition");
         if (null == columnDefinitionCtxs) {
             return;
         }
 
-        for (ParseTree columnDefinitionCtx : columnDefinitionCtxs) {
+        for (ParserRuleContext columnDefinitionCtx : columnDefinitionCtxs) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
             if (null != column) {
                 alterStatement.getAddColumns().add(column);

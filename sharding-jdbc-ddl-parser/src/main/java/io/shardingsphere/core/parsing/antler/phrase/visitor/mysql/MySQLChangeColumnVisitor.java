@@ -33,20 +33,20 @@ public class MySQLChangeColumnVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
 
-        ParserRuleContext changeColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext changeColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "changeColumn");
         if (null == changeColumnCtx) {
             return;
         }
 
-        ParserRuleContext oldColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
+        ParserRuleContext oldColumnCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx,
                 "columnName");
 
         if (null == oldColumnCtx) {
             return;
         }
 
-        ParserRuleContext columnDefinitionCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(changeColumnCtx,
+        ParserRuleContext columnDefinitionCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx,
                 "columnDefinition");
 
         if (null == columnDefinitionCtx) {

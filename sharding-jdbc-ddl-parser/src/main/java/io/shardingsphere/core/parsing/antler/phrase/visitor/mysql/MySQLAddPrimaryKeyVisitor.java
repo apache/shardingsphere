@@ -38,19 +38,19 @@ public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext constraintDefinitionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext constraintDefinitionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "addConstraint");
         if (null == constraintDefinitionNode) {
             return;
         }
 
-        ParserRuleContext primaryKeyOptionNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext primaryKeyOptionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "primaryKeyOption");
         if (null == primaryKeyOptionNode) {
             return;
         }
 
-        List<ParseTree> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, "keyPart");
+        List<ParserRuleContext> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, "keyPart");
         if (null == keyPartNodes) {
             return;
         }

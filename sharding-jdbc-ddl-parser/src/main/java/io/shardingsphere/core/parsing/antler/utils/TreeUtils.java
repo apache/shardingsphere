@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antler.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class TreeUtils {
@@ -33,7 +34,7 @@ public class TreeUtils {
      * @param name rule name
      * @return match node
      */
-    public static ParseTree getFirstChildByRuleName(final ParseTree node, final String name) {
+    public static ParserRuleContext getFirstChildByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
             return null;
         }
@@ -49,7 +50,11 @@ public class TreeUtils {
 
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
-            ParseTree retNode = getFirstChildByRuleName(child, name);
+            if(!(child instanceof ParserRuleContext)) {
+                continue;
+            }
+            
+            ParserRuleContext retNode = getFirstChildByRuleName((ParserRuleContext)child, name);
             if (null != retNode) {
                 return retNode;
             }
@@ -64,7 +69,7 @@ public class TreeUtils {
      * @param name rule name
      * @return match nodes
      */
-    public static List<ParseTree> getAllDescendantByRuleName(final ParseTree node, final String name) {
+    public static List<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
             return null;
         }
@@ -74,7 +79,7 @@ public class TreeUtils {
             ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
         }
 
-        List<ParseTree> childs = new ArrayList<>();
+        List<ParserRuleContext> childs = new ArrayList<>();
         if (ruleName.equals(node.getClass().getSimpleName())) {
             childs.add(node);
         }
@@ -84,14 +89,16 @@ public class TreeUtils {
             return childs;
         }
 
-        List<ParseTree> childNodes = new ArrayList<>();
+        List<ParserRuleContext> childNodes = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             ParseTree child = node.getChild(i);
-            childNodes.add(child);
+            if(child instanceof ParserRuleContext) {
+               childNodes.add((ParserRuleContext)child);
+            }
         }
 
-        for (final ParseTree child : childNodes) {
-            List<ParseTree> retChilds = getAllDescendantByRuleName(child, name);
+        for (final ParserRuleContext child : childNodes) {
+            List<ParserRuleContext> retChilds = getAllDescendantByRuleName(child, name);
             if (retChilds != null) {
                 childs.addAll(retChilds);
             }

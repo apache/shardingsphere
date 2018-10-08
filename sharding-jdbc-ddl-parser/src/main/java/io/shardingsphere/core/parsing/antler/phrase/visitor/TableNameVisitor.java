@@ -30,16 +30,16 @@ import io.shardingsphere.core.util.SQLUtil;
 
 public class TableNameVisitor implements PhraseVisitor {
 
-    /** Visit table naem node.
+    /** Visit table name node.
      * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        ParserRuleContext tableNameNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext tableNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "tableName");
-        if (null != tableNameNode) {
-            String name = tableNameNode.getText();
+        if (null != tableNameCtx) {
+            String name = tableNameCtx.getText();
             if (null == name) {
                 return;
             }
@@ -54,7 +54,7 @@ public class TableNameVisitor implements PhraseVisitor {
                 literals = name;
             }
 
-            statement.getSqlTokens().add(new TableToken(tableNameNode.getStart().getStartIndex(), pos, name));
+            statement.getSqlTokens().add(new TableToken(tableNameCtx.getStart().getStartIndex(), pos, name));
             statement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
         }
     }

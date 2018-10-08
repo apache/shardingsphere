@@ -33,7 +33,7 @@ public class DropPrimaryKeyVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext dropPrimaryKeyNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
+        ParserRuleContext dropPrimaryKeyNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "dropPrimaryKey");
         if (null != dropPrimaryKeyNode) {
             alterStatement.setDropPrimaryKey(true);

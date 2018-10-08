@@ -38,25 +38,25 @@ public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext addColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode, "addColumn");
+        ParserRuleContext addColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, "addColumn");
 
         if (null == addColumnCtx) {
             return;
         }
 
-        ParseTree tableConstraintCtx = TreeUtils.getFirstChildByRuleName(addColumnCtx, "tableConstraint");
+        ParserRuleContext tableConstraintCtx = TreeUtils.getFirstChildByRuleName(addColumnCtx, "tableConstraint");
 
         if (null == tableConstraintCtx) {
             return;
         }
 
-        ParserRuleContext primaryKeyCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(tableConstraintCtx,
+        ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(tableConstraintCtx,
                 "primaryKey");
         if (null == primaryKeyCtx) {
             return;
         }
 
-        List<ParseTree> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, "columnName");
+        List<ParserRuleContext> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, "columnName");
         for (ParseTree columnNameCtx : columnNameCtxs) {
             alterStatement.getUpdateColumns().put(columnNameCtx.getText(),
                     new ColumnDefinition(columnNameCtx.getText(), null, null, true));

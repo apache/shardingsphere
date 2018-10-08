@@ -40,7 +40,7 @@ public class AddPrimaryKeyVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
-        ParserRuleContext modifyColumnCtx = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode, ruleName);
+        ParserRuleContext modifyColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, ruleName);
         if (null == modifyColumnCtx) {
             return;
         }
@@ -50,11 +50,11 @@ public class AddPrimaryKeyVisitor implements PhraseVisitor {
             return;
         }
 
-        List<ParseTree> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "columnName");
+        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "columnName");
         if (null == columnNodes) {
             return;
         }
-        for (final ParseTree each : columnNodes) {
+        for (final ParserRuleContext each : columnNodes) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getUpdateColumns().get(columnName);
             if (null == updateColumn) {

@@ -38,12 +38,12 @@ public class ModifyColumnVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         
-        List<ParseTree> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "modifyColumn");
+        List<ParserRuleContext> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "modifyColumn");
         if (null == modifyColumnCtxs) {
             return;
         }
 
-        for (ParseTree each : modifyColumnCtxs) {
+        for (ParserRuleContext each : modifyColumnCtxs) {
             // it`s not columndefinition, but can call this method
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
