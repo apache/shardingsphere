@@ -24,6 +24,7 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
@@ -32,6 +33,11 @@ import org.yaml.snakeyaml.representer.Representer;
  * @author panjuan
  */
 public class DataSourceParameterRepresenter extends Representer {
+    
+    public DataSourceParameterRepresenter() {
+        super();
+        nullRepresenter = new DataSourceParameterRepresenter.NullRepresent();
+    }
     
     @Override
     protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
@@ -56,5 +62,11 @@ public class DataSourceParameterRepresenter extends Representer {
             }
         }
         return tuple;
+    }
+    
+    private class NullRepresent implements Represent {
+        public Node representData(final Object data) {
+            return representScalar(Tag.NULL, "");
+        }
     }
 }
