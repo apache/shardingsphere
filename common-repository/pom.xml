@@ -10,18 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>common-repository</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>jdbc-repository</module>
         <module>jpa-repository</module>
         <module>mybatis-repository</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-core</artifactId>
-            <version>${sharding-sphere.version}</version>
-        </dependency>
-    </dependencies>
 </project>
