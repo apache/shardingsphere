@@ -67,12 +67,12 @@ public final class BackendHandlerFactory {
      * @param backendConnection backend connection
      * @param databaseType database type
      * @param frontendHandler frontend handler
+     * @param schema schema
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newTextProtocolInstance(
-            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
-        Optional<String> schema = getSchema(sql);
-        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema.isPresent() ? schema.get() : frontendHandler.getCurrentSchema());
+            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler, final String schema) {
+        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema);
         backendConnection.setRuleRegistry(ruleRegistry);
         return PROXY_CONTEXT.isUseNIO()
                 ? new NettyBackendHandler(frontendHandler, ruleRegistry, connectionId, sequenceId, sql, databaseType)
@@ -89,24 +89,50 @@ public final class BackendHandlerFactory {
      * @param backendConnection backend connection
      * @param databaseType database type
      * @param frontendHandler frontend handler
+     * @param schema schema
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters, 
-                                                           final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
-        Optional<String> schema = getSchema(sql);
-        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema.isPresent() ? schema.get() : frontendHandler.getCurrentSchema());
+    public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters,
+                                                           final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler, final String schema) {
+        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema);
         backendConnection.setRuleRegistry(ruleRegistry);
         return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(frontendHandler, ruleRegistry, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(frontendHandler, ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(ruleRegistry, parameters)));
     }
     
-    private static Optional<String> getSchema(final String sql) {
+    /**
+     * Create new instance by sql judge.
+     * 
+     * @param connectionId connection ID of database connected
+     * @param sequenceId sequence ID of SQL packet
+     * @param sql SQL to be executed
+     * @param backendConnection backend connection
+     * @param databaseType database type
+     * @param frontendHandler frontend handler
+     * @return instance of backend handler
+     */
+    public static BackendHandler createBackendHandler(
+            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement 
-                || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowOtherStatement || sqlStatement instanceof UseStatement) {
-            // TODO dcl and set syntax need instance broadcast
-            return Optional.of(PROXY_CONTEXT.getDefaultSchema());
+        if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
+            return new SchemaBroadcastBackendHandler(connectionId, sequenceId, sql, databaseType, frontendHandler);
         }
+        
+        if (sqlStatement instanceof UseStatement || sqlStatement instanceof ShowDatabasesStatement) {
+            //TODO return schema ignore handler
+            return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler, PROXY_CONTEXT.getDefaultSchema());
+        }
+        
+        if (sqlStatement instanceof ShowOtherStatement) {
+            //TODO return schema unicast handler
+            return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler, PROXY_CONTEXT.getDefaultSchema());
+        }
+        
+        String schema = getSchema(sqlStatement).isPresent() ? getSchema(sqlStatement).get() : frontendHandler.getCurrentSchema();
+        return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler, schema);
+    }
+    
+    private static Optional<String> getSchema(final SQLStatement sqlStatement) {
         if (!sqlStatement.getSqlTokens().isEmpty()
                 && (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowColumnsStatement
                 || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement)) {
