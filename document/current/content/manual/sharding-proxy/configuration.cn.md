@@ -244,7 +244,7 @@ orchestration:
 ### 认证信息
 
 ```yaml
-proxyAuthority:
+authentication:
   username: root
   password:
 ```
@@ -313,7 +313,7 @@ props:
 用于执行登录Sharding Proxy的权限验证。配置用户名、密码后，必须使用正确的用户名、密码才可登录Proxy。
 
 ```yaml
-proxyAuthority:
+authentication:
    username: root
    password:
 ```
