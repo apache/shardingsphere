@@ -15,18 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor;
+package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.manager.base.executor.SagaSQLExeucteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Sql Execute callback factory.
@@ -41,14 +41,13 @@ public final class SQLExecuteCallbackFactory {
      * @param databaseType      types of database
      * @param sqlType           types of sql
      * @param isExceptionThrown is exception thrown
-     * @param dataMap           data map
      * @return update SQLExecuteCallBack
      */
-    public static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    public static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
         if (isSagaTransaction(sqlType)) {
-            return getSagaUpdateSQLExecuteCallback(databaseType, sqlType, isExceptionThrown, dataMap);
+            return getSagaUpdateSQLExecuteCallback(databaseType, sqlType, isExceptionThrown);
         }
-        return new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown, dataMap) {
+        return new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
             @Override
             protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 return ((PreparedStatement) statementExecuteUnit.getStatement()).executeUpdate();
@@ -62,14 +61,13 @@ public final class SQLExecuteCallbackFactory {
      * @param databaseType      types of database
      * @param sqlType           types of sql
      * @param isExceptionThrown is exception thrown
-     * @param dataMap           data map
      * @return single SQLExecuteCallBack
      */
-    public static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    public static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
         if (isSagaTransaction(sqlType)) {
-            return getSagaSQLExecuteCallback(databaseType, sqlType, isExceptionThrown, dataMap);
+            return getSagaSQLExecuteCallback(databaseType, sqlType, isExceptionThrown);
         }
-        return new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown, dataMap) {
+        return new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
@@ -78,8 +76,8 @@ public final class SQLExecuteCallbackFactory {
         };
     }
     
-    private static SQLExecuteCallback<Integer> getSagaUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        return new SagaSQLExeucteCallback<Integer>(databaseType, sqlType, isExceptionThrown, dataMap) {
+    private static SQLExecuteCallback<Integer> getSagaUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        return new SagaSQLExeucteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
             @Override
             protected Integer executeResult() {
                 return 0;
@@ -87,8 +85,8 @@ public final class SQLExecuteCallbackFactory {
         };
     }
     
-    private static SQLExecuteCallback<Boolean> getSagaSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        return new SagaSQLExeucteCallback<Boolean>(databaseType, sqlType, isExceptionThrown, dataMap) {
+    private static SQLExecuteCallback<Boolean> getSagaSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        return new SagaSQLExeucteCallback<Boolean>(databaseType, sqlType, isExceptionThrown) {
             @Override
             protected Boolean executeResult() {
                 return false;

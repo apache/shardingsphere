@@ -15,8 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.revert;
-
+package io.shardingsphere.shardingjdbc.revert;
 
 import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertResult;

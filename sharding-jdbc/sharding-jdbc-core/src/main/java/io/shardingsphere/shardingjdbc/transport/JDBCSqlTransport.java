@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.transport;
+package io.shardingsphere.shardingjdbc.transport;
 
-import io.shardingsphere.core.jdbc.adapter.AbstractConnectionAdapter;
+import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.transaction.manager.base.servicecomb.AbstractSQLTransport;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
