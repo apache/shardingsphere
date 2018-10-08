@@ -66,7 +66,7 @@ public final class ProxyYamlConfigurationLoader {
                 ruleConfigurations.add(ruleConfig.get());
             }
         }
-        Preconditions.checkState(!ruleConfigurations.isEmpty(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
+        Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getOrchestration(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
         Map<String, ProxyYamlRuleConfiguration> ruleConfigurationMap = new HashMap<>(ruleConfigurations.size(), 1);
         for (ProxyYamlRuleConfiguration each : ruleConfigurations) {
             ruleConfigurationMap.put(each.getSchemaName(), each);
@@ -81,7 +81,7 @@ public final class ProxyYamlConfigurationLoader {
         ) {
             ProxyYamlServerConfiguration result = new Yaml(new Constructor(ProxyYamlServerConfiguration.class)).loadAs(inputStreamReader, ProxyYamlServerConfiguration.class);
             Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getAuthentication().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
             return result;
         }
     }
