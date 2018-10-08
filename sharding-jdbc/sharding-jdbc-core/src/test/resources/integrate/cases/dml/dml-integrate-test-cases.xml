@@ -20,6 +20,10 @@
         <assertion expected-data-file="insert_for_order_1_2.xml" />
     </dml-test-case>
     
+    <dml-test-case sql-case-id="insert_on_duplicate_key_update">
+        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="update.xml" />
+    </dml-test-case>
+    
     <!-- TODO fixme -->
     <!--<dml-test-case sql-case-id="insert_with_all_placeholders_for_table_identifier">-->
         <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
@@ -70,14 +74,13 @@
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
     </dml-test-case>
     
-    <!-- TODO parse generator context for insert set -->
-    <!--<dml-test-case sql-case-id="insert_without_generate_key_column">-->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
-    <!--</dml-test-case>-->
-    <!---->
-    <!--<dml-test-case sql-case-id="insert_set_without_generate_key_column">-->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
-    <!--</dml-test-case>-->
+    <dml-test-case sql-case-id="insert_without_generate_key_column">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql-case-id="insert_set_without_generate_key_column">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_batch">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
