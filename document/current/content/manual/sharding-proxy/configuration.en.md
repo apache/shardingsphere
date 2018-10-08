@@ -237,7 +237,7 @@ orchestration:
 ### Authentication
 
 ```yaml
-proxyAuthority:
+authentication:
   username: root
   password:
 ```
@@ -306,7 +306,7 @@ props:
 To perform Authorization for Sharding Proxy when login in. After configuring the username and password, you must use the correct username and password to login into the Proxy.
 
 ```yaml
-proxyAuthority:
+authentication:
    username: root
    password:
 ```
