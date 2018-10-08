@@ -41,12 +41,11 @@ public class DataSourceParameterRepresenter extends Representer {
     }
     
     @Override
-    protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
-                                                  Object propertyValue, Tag customTag) {
+    protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         Node valueNode = tuple.getValueNode();
         Node keyNode = tuple.getKeyNode();
-        if (keyNode instanceof ScalarNode && ((ScalarNode)keyNode).getValue().equals("password")) {
+        if (keyNode instanceof ScalarNode && ((ScalarNode) keyNode).getValue().equals("password")) {
             return tuple;
         }
         if (Tag.NULL.equals(valueNode.getTag())) {
