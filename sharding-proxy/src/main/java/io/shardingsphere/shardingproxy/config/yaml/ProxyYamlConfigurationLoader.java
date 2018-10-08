@@ -81,7 +81,7 @@ public final class ProxyYamlConfigurationLoader {
         ) {
             ProxyYamlServerConfiguration result = new Yaml(new Constructor(ProxyYamlServerConfiguration.class)).loadAs(inputStreamReader, ProxyYamlServerConfiguration.class);
             Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getAuthentication().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
             return result;
         }
     }
