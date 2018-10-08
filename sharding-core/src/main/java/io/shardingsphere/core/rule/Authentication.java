@@ -29,7 +29,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class ProxyAuthority {
+public final class Authentication {
     
     private String username;
     
