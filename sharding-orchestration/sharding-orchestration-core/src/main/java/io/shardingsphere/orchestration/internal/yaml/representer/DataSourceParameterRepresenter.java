@@ -52,17 +52,11 @@ public class DataSourceParameterRepresenter extends Representer {
             return null;
         }
         if (valueNode instanceof CollectionNode) {
-            if (Tag.SEQ.equals(valueNode.getTag())) {
-                SequenceNode seq = (SequenceNode) valueNode;
-                if (seq.getValue().isEmpty()) {
-                    return null;
-                }
+            if (Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty()) {
+                return null;
             }
-            if (Tag.MAP.equals(valueNode.getTag())) {
-                MappingNode seq = (MappingNode) valueNode;
-                if (seq.getValue().isEmpty()) {
-                    return null;
-                }
+            if (Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty()) {
+                return null;
             }
         }
         return tuple;
