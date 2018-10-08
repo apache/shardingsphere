@@ -19,10 +19,10 @@ package io.shardingsphere.core.parsing.parser.context;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Order item.
@@ -31,6 +31,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 @ToString
 public final class OrderItem {
     
@@ -131,10 +132,5 @@ public final class OrderItem {
     
     private boolean indexEquals(final OrderItem orderItem) {
         return -1 != index && index == orderItem.getIndex();
-    }
-    
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

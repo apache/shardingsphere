@@ -40,7 +40,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\w*");
+    private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\w*", Pattern.CASE_INSENSITIVE);
     
     public H2DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
@@ -49,7 +49,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
             port = DEFAULT_PORT;
             schemeName = matcher.group(2);
         } else {
-            throw new ShardingException("The URL of JDBC is not supported.");
+            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
     }
     

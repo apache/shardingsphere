@@ -22,6 +22,7 @@ import io.shardingsphere.core.event.executor.SQLExecutionEvent;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 
@@ -32,7 +33,7 @@ public final class ExecutorTestUtil {
      * Listen event.
      *
      * @param eventCaller event caller
-     * @param event       SQL execution event
+     * @param event SQL execution event
      */
     public static void listen(final EventCaller eventCaller, final SQLExecutionEvent event) {
         eventCaller.verifyDataSource(event.getRouteUnit().getDataSourceName());
@@ -46,10 +47,9 @@ public final class ExecutorTestUtil {
     
     /**
      * Clear thread local.
-     *
-     * @throws ReflectiveOperationException reflective operation exception
      */
-    public static void clear() throws ReflectiveOperationException {
+    @SneakyThrows
+    public static void clear() {
         Field field = ExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN");
         field.setAccessible(true);
         ((ThreadLocal) field.get(ExecutorExceptionHandler.class)).remove();

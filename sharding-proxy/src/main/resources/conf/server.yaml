@@ -25,4 +25,5 @@
 #    # XA: Proxy will run with XA transaction.
 #    # BASE: Proxy will run with B.A.S.E transaction.
 #  proxy.transaction.type: BASE
+#  proxy.opentracing.enabled: false
 #  sql.show: false
