@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.jdbc;
+package io.shardingsphere.example.jdbc.util;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
