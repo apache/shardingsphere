@@ -26,7 +26,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.Arrays;
 
 /**
- * Authority handler.
+ * Authentication handler.
  *
  * @author panjuan
  */
