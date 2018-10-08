@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
 import com.google.common.primitives.Bytes;
-import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingproxy.config.ProxyContext;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -30,9 +30,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class AuthorityHandlerTest {
+public final class AuthenticationHandlerTest {
     
-    private final AuthorityHandler authorityHandler = new AuthorityHandler();
+    private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
     
     private final byte[] part1 = {84, 85, 115, 77, 68, 116, 85, 78};
 
@@ -40,43 +40,43 @@ public final class AuthorityHandlerTest {
     
     @Before
     public void setUp() {
-        initProxyAuthorityForProxyContext();
+        initAuthenticationForProxyContext();
         initAuthPluginDataForAuthorityHandler();
     }
     
     @SneakyThrows
-    private void initProxyAuthorityForProxyContext() {
-        ProxyAuthority proxyAuthority = new ProxyAuthority();
-        Field field = ProxyContext.class.getDeclaredField("proxyAuthority");
+    private void initAuthenticationForProxyContext() {
+        Authentication authentication = new Authentication();
+        Field field = ProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), proxyAuthority);
+        field.set(ProxyContext.getInstance(), authentication);
     }
     
     @SneakyThrows
     private void initAuthPluginDataForAuthorityHandler() {
         AuthPluginData authPluginData = new AuthPluginData(part1, part2);
-        Field field = AuthorityHandler.class.getDeclaredField("authPluginData");
+        Field field = AuthenticationHandler.class.getDeclaredField("authPluginData");
         field.setAccessible(true);
-        field.set(authorityHandler, authPluginData);
+        field.set(authenticationHandler, authPluginData);
     }
     
     @Test
     public void assertLoginWithPassword() {
-        ProxyContext.getInstance().getProxyAuthority().setUsername("root");
-        ProxyContext.getInstance().getProxyAuthority().setPassword("root");
+        ProxyContext.getInstance().getAuthentication().setUsername("root");
+        ProxyContext.getInstance().getAuthentication().setPassword("root");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authorityHandler.login("root", authResponse));
+        assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        ProxyContext.getInstance().getProxyAuthority().setUsername("root");
+        ProxyContext.getInstance().getAuthentication().setUsername("root");
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(authorityHandler.login("root", authResponse));
+        assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @Test
     public void assertGetAuthPluginData() {
-        assertThat(authorityHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
+        assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
     }
 }
