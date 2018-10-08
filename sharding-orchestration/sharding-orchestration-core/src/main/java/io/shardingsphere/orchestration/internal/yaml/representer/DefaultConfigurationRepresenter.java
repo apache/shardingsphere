@@ -27,7 +27,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * Sharding or master-slave rule config representer.
+ * Default configuration representer.
  *
  * @author panjuan
  */
