@@ -117,10 +117,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isBASETransaction = TransactionType.BASE == ProxyContext.getInstance().getTransactionType()
                 && sqlType == SQLType.DML
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown, dataMap)
-                : new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown)
+                : new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
         SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
-                : new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, dataMap, isReturnGeneratedKeys);
+                : new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
                 firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -242,8 +242,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final class ProxySagaSQLExecuteCallback extends SagaSQLExeucteCallback<ExecuteResponseUnit> {
     
-        ProxySagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-            super(DatabaseType.MySQL, sqlType, isExceptionThrown, dataMap);
+        ProxySagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
         }
         
         @Override

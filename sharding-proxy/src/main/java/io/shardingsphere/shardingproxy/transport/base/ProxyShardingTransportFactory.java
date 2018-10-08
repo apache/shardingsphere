@@ -15,14 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.base;
+package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import io.shardingsphere.proxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.ProxyContext;
 import io.shardingsphere.transaction.manager.base.servicecomb.ShardingTransportFactory;
 import org.apache.servicecomb.saga.transports.SQLTransport;
-
-import java.sql.Connection;
 
 /**
  * Transport factory for sharding-sphere proxy.

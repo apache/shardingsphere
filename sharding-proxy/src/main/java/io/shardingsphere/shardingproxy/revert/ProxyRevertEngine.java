@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.revert;
+package io.shardingsphere.shardingproxy.revert;
 
 import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertResult;

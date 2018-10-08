@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.proxy.transport.base;
+package io.shardingsphere.shardingproxy.transport.base;
 
-import io.shardingsphere.proxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.transaction.manager.base.servicecomb.AbstractSQLTransport;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
