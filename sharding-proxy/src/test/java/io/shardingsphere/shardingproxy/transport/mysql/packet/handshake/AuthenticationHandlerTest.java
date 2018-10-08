@@ -41,7 +41,7 @@ public final class AuthenticationHandlerTest {
     @Before
     public void setUp() {
         initAuthenticationForProxyContext();
-        initAuthPluginDataForAuthorityHandler();
+        initAuthPluginDataForAuthenticationHandler();
     }
     
     @SneakyThrows
@@ -53,7 +53,7 @@ public final class AuthenticationHandlerTest {
     }
     
     @SneakyThrows
-    private void initAuthPluginDataForAuthorityHandler() {
+    private void initAuthPluginDataForAuthenticationHandler() {
         AuthPluginData authPluginData = new AuthPluginData(part1, part2);
         Field field = AuthenticationHandler.class.getDeclaredField("authPluginData");
         field.setAccessible(true);
