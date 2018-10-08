@@ -26,7 +26,7 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.manager.base.executor.SagaSQLExeucteCallback;
+import io.shardingsphere.transaction.manager.base.executor.SagaSQLExecuteCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,9 +72,9 @@ public class SQLExeucteCallbackFactoryTest {
     public void assertGetSagaSQLExecuteCallback() {
         TransactionTypeHolder.set(TransactionType.BASE);
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL ,SQLType.DML, false);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExeucteCallback, is(true));
+        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
         sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, false);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExeucteCallback, is(true));
+        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
         TransactionTypeHolder.set(TransactionType.LOCAL);
     }
     

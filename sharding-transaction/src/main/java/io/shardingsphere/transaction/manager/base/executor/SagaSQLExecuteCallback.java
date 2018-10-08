@@ -36,14 +36,14 @@ import java.util.Map;
  *
  * @author yangyi
  */
-public abstract class SagaSQLExeucteCallback<T> extends SQLExecuteCallback<T> {
+public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
     
     private final String transactionId;
     
     private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
     
-    public SagaSQLExeucteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        super(databaseType, sqlType, isExceptionThrown, dataMap);
+    public SagaSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        super(databaseType, sqlType, isExceptionThrown);
         this.transactionId = ((BASETransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE)).getTransactionId();
         shardingEventBus.post(new SagaSQLExecutionEvent(null, transactionId));
     }

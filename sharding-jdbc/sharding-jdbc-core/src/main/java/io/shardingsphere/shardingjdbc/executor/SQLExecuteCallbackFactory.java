@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.manager.base.executor.SagaSQLExeucteCallback;
+import io.shardingsphere.transaction.manager.base.executor.SagaSQLExecuteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -77,7 +77,7 @@ public final class SQLExecuteCallbackFactory {
     }
     
     private static SQLExecuteCallback<Integer> getSagaUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
-        return new SagaSQLExeucteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
+        return new SagaSQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
             @Override
             protected Integer executeResult() {
                 return 0;
@@ -86,7 +86,7 @@ public final class SQLExecuteCallbackFactory {
     }
     
     private static SQLExecuteCallback<Boolean> getSagaSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
-        return new SagaSQLExeucteCallback<Boolean>(databaseType, sqlType, isExceptionThrown) {
+        return new SagaSQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown) {
             @Override
             protected Boolean executeResult() {
                 return false;
