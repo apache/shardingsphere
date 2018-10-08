@@ -48,7 +48,7 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
     /** process after visit.
      * @param statement sql statement
      */
-    protected void postVisit(SQLStatement statement) {
+    protected void postVisit(final SQLStatement statement) {
 
     }
 
@@ -69,9 +69,7 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
      * @param shardingTableMetaData table metadata
      * @return
      */
-    protected SQLStatement newStatement(ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         return newStatement();
     }
-    
-    
 }

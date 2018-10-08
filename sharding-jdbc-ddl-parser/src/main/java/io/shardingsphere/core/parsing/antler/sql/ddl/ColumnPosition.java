@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.core.parsing.antler.sql.ddl;
 
 import lombok.Getter;
@@ -21,9 +22,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ColumnPosition implements Comparable<ColumnPosition>{
+public class ColumnPosition implements Comparable<ColumnPosition> {
     private int startIndex;
-    
+
     private String firstColumn;
 
     private String columnName;
@@ -31,12 +32,17 @@ public class ColumnPosition implements Comparable<ColumnPosition>{
     private String afterColumn;
 
 
+    /**Compare by start index.
+     * @param o compare object
+     * @return positive number this object great than o, 0 is equal,
+     *       negative number less than o
+     */
     @Override
-    public int compareTo(ColumnPosition o) {
-        if(o == null) {
+    public int compareTo(final ColumnPosition o) {
+        if (o == null) {
             return -1;
         }
-        
+
         return this.getStartIndex() - o.getStartIndex();
     }
 }

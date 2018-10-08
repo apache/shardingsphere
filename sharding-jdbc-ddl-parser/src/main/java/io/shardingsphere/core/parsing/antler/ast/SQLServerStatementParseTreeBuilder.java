@@ -28,7 +28,9 @@ import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
 
 public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
-    /** Create lexer instance.
+    /**
+     * Create lexer instance.
+     *
      * @param stream text stream
      * @return antlr lexer instance
      */
@@ -37,7 +39,9 @@ public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder
         return new SQLServerStatementLexer(stream);
     }
 
-    /** Create parser instance.
+    /**
+     * Create parser instance.
+     *
      * @param stream token stream
      * @return antlr parser instance
      */
@@ -46,13 +50,15 @@ public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder
         return new SQLServerStatementAdvancedParser(tokenStream);
     }
 
-    /** Get sql parse tree.
+    /**
+     * Get sql parse tree.
+     *
      * @param parser instance
      * @return sql parse tree
      */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser)parser;
+        SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser) parser;
         return parse.execute();
     }
 

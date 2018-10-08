@@ -30,7 +30,7 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 public class VisitorUtils {
     /**
      * Parse column definition.
-     * 
+     *
      * @param columnDefinitionNode column definition rule
      * @return column defition
      */
@@ -79,13 +79,15 @@ public class VisitorUtils {
 
         return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
     }
-    
-    /** Visit column position. 
+
+    /**
+     * Visit column position.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param columnName column name
-     * @return
+     * @param columnName   column name
+     * @return column position object
      */
-    public static ColumnPosition visitFirstOrAfter(ParserRuleContext ancestorNode, String columnName) {
+    public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
         ParserRuleContext firstOrAfterColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "firstOrAfterColumn");
         if (null == firstOrAfterColumnCtx) {
@@ -95,24 +97,26 @@ public class VisitorUtils {
         ParserRuleContext columnNameCtx = TreeUtils.getFirstChildByRuleName(firstOrAfterColumnCtx, "columnName");
         ColumnPosition columnPosition = new ColumnPosition();
         columnPosition.setStartIndex(firstOrAfterColumnCtx.getStart().getStartIndex());
-        
+
         if (columnNameCtx != null) {
             columnPosition.setColumnName(columnName);
             columnPosition.setAfterColumn(columnNameCtx.getText());
-        }else {
+        } else {
             columnPosition.setFirstColumn(columnName);
         }
 
         return columnPosition;
     }
-    
-    
-    /** Visit indices node
+
+
+    /**
+     * Visit indices node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param tableName table name
-     * @return
+     * @param tableName    table name
+     * @return index token list
      */
-    public static List<IndexToken> visitIndices(ParserRuleContext ancestorNode, String tableName) {
+    public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
         List<ParserRuleContext> indexNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
                 "indexName");
         if (null == indexNameCtxs) {
@@ -120,28 +124,34 @@ public class VisitorUtils {
         }
 
         List<IndexToken> indicesToken = new ArrayList<>();
-        
-        for(ParserRuleContext each : indexNameCtxs) {
+
+        for (ParserRuleContext each : indexNameCtxs) {
             indicesToken.add(visitIndex(each, tableName));
         }
-        
+
         return indicesToken;
     }
-    
-    
-    /** Visit index node.
+
+
+    /**
+     * Visit index node.
+     *
      * @param indexNameCtx index name context
-     * @param tableName table name
-     * @return
+     * @param tableName  table name
+     * @return index token
      */
-    public static IndexToken visitIndex(ParserRuleContext indexNameCtx, String tableName) {
+    public static IndexToken visitIndex(final ParserRuleContext indexNameCtx, final String tableName) {
         String name = getName(indexNameCtx.getText());
         int startPos = indexNameCtx.getStop().getStopIndex() - name.length();
 
         return new IndexToken(startPos, name, tableName);
     }
-    
-    public static String getName(String text) {
+
+    /** Get name from text.
+     * @param text input text
+     * @return object name
+     */
+    public static String getName(final String text) {
         String dotString = Symbol.DOT.getLiterals();
         int pos = text.lastIndexOf(dotString);
         if (pos > 0) {

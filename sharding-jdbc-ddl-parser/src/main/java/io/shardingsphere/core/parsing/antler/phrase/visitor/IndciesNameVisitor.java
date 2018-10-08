@@ -28,8 +28,12 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 public class IndciesNameVisitor implements PhraseVisitor {
 
+    /** Visit indcies name table node.
+     * @param ancestorNode ancestor node of ast
+     * @param statement sql statement
+     */
     @Override
-    public void visit(ParserRuleContext ancestorNode, SQLStatement statement) {
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         String tableName = createStatement.getTables().getSingleTableName();
         List<IndexToken> indicesToken = VisitorUtils.visitIndices(ancestorNode, tableName);

@@ -26,9 +26,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class SQLServerDropIndexVisitor implements PhraseVisitor {
 
-    /** Visit drop index node.
+    /**
+     * Visit drop index node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement    sql statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -39,7 +41,7 @@ public class SQLServerDropIndexVisitor implements PhraseVisitor {
                     "indexName");
             if (null != indexNameNode) {
                 statement.getSqlTokens()
-                .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
+                        .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
             }
         }
     }

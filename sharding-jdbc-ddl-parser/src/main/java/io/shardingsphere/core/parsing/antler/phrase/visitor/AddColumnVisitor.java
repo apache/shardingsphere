@@ -46,7 +46,11 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
             visitAddColumn(each, alterStatement);
         }
     }
-    
+
+    /**Visit add column context.
+     * @param addColumnCtx add column contxt
+     * @param alterStatement alter table statement
+     */
     public void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
         List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, "columnDefinition");
         if (null == columnDefinitionCtxs) {
@@ -63,7 +67,6 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
     }
     
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,
-            String columnName) {
-
+                                             final String columnName) {
     }
 }

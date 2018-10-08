@@ -34,39 +34,45 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public abstract class AlterTableVisitor extends AbstractStatementVisitor {
 
     public AlterTableVisitor() {
-        addVisitor(new TableNameVisitor()); 
+        addVisitor(new TableNameVisitor());
         addVisitor(new RenameTableVisitor());
         addVisitor(new DropColumnVisitor());
     }
 
-    /** process after visit.
+    /**
+     * process after visit.
+     *
      * @param statement sql statement
      */
-    protected void postVisit(SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement)statement;
+    protected void postVisit(final SQLStatement statement) {
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
         TableMetaData oldTableMeta = alterStatement.getTableMetaDataMap().get(alterStatement.getTables().getSingleTableName());
-        if(null == oldTableMeta) {
-           return; 
+        if (null == oldTableMeta) {
+            return;
         }
-        
+
         List<ColumnMetaData> newColumnMeta = updateColumn(alterStatement, oldTableMeta);
         addColumn(alterStatement, newColumnMeta);
         adjustColumn(alterStatement, newColumnMeta);
         dropColumn(alterStatement, newColumnMeta);
         alterStatement.setTableMetaData(new TableMetaData(newColumnMeta));
     }
-    
-    /**Adjust column position.
+
+    /**
+     * Adjust column position.
+     *
      * @param alterStatement alter table statement
-     * @param newColumnMeta
+     * @param newColumnMeta  table new column meta data
      */
     protected void adjustColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-        
+
     }
-    
-    /**Update column info.
+
+    /**
+     * Update column info.
+     *
      * @param alterStatement alter table statement
-     * @param oldTableMeta table meta data before update
+     * @param oldTableMeta   table meta data before update
      * @return update column info
      */
     private List<ColumnMetaData> updateColumn(final AlterTableStatement alterStatement, final TableMetaData oldTableMeta) {
@@ -97,20 +103,24 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
 
         return newColumnMeta;
     }
-    
-    /**Add column meta data.
+
+    /**
+     * Add column meta data.
+     *
      * @param alterStatement alter table statement
-     * @param newColumnMeta new column meta data
+     * @param newColumnMeta  new column meta data
      */
     private void addColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
         for (ColumnDefinition each : alterStatement.getAddColumns()) {
             newColumnMeta.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
         }
     }
-    
-    /**Drop column meta data.
+
+    /**
+     * Drop column meta data.
+     *
      * @param alterStatement alter table statement
-     * @param newColumnMeta new column meta data
+     * @param newColumnMeta  new column meta data
      */
     private void dropColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
         Iterator<ColumnMetaData> it = newColumnMeta.iterator();
@@ -121,22 +131,26 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
             }
         }
     }
-    
-    /** Use shardingTableMetaData create SQLStatement.
+
+    /**
+     * Use shardingTableMetaData create SQLStatement.
+     *
      * @param shardingTableMetaData table metadata
      * @return
      */
     protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement statement = (AlterTableStatement)newStatement();
+        AlterTableStatement statement = (AlterTableStatement) newStatement();
         statement.setTableMetaDataMap(shardingTableMetaData);
         return statement;
     }
-    
-    /** Create statement.
+
+    /**
+     * Create statement.
+     *
      * @return empty sql statment
      */
     protected SQLStatement newStatement() {
         return new AlterTableStatement();
     }
-    
+
 }

@@ -30,14 +30,16 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class ModifyColumnVisitor implements PhraseVisitor {
 
-    /** Visit modify column node.
+    /**
+     * Visit modify column node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement    sql statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        
+
         List<ParserRuleContext> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "modifyColumn");
         if (null == modifyColumnCtxs) {
             return;
@@ -52,9 +54,8 @@ public class ModifyColumnVisitor implements PhraseVisitor {
             }
         }
     }
-    
-    
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,String columnName) {
-        
+
+    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
+
     }
 }

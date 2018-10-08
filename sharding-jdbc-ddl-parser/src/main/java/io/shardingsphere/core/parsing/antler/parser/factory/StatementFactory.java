@@ -35,6 +35,7 @@ public class StatementFactory {
      * @param tokenType token type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine
+     * @param shardingTableMetaData table meta data
      * @return SQLStatement instance
      */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,

@@ -26,9 +26,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class SQLServerAddIndexVisitor implements PhraseVisitor {
 
-    /** Visit add index node.
+    /**
+     * Visit add index node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement    sql statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -37,12 +39,12 @@ public class SQLServerAddIndexVisitor implements PhraseVisitor {
         if (null == indexDefOptionNode) {
             return;
         }
-        
+
         ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(indexDefOptionNode,
                 "indexName");
         if (null != indexNameNode) {
             statement.getSqlTokens()
-            .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
+                    .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
         }
     }
 

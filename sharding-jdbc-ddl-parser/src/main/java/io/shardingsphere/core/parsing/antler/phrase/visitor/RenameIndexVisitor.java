@@ -26,36 +26,38 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class RenameIndexVisitor implements PhraseVisitor {
 
-    /** Visit rename index node.
+    /**
+     * Visit rename index node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement    sql statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         ParserRuleContext renameIndexNode = (ParserRuleContext) TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "renameIndex");
-        
+
         if (null == renameIndexNode || 4 > renameIndexNode.getChildCount()) {
             return;
         }
-        
-        ParseTree oldIndexNode =  renameIndexNode.getChild(2);
+
+        ParseTree oldIndexNode = renameIndexNode.getChild(2);
         if (!(oldIndexNode instanceof ParserRuleContext)) {
             return;
         }
-        
-        ParseTree newIndexNode =  renameIndexNode.getChild(4);
+
+        ParseTree newIndexNode = renameIndexNode.getChild(4);
         if (!(newIndexNode instanceof ParserRuleContext)) {
             return;
         }
-        
+
         ParserRuleContext oldIndexCtx = (ParserRuleContext) oldIndexNode;
         ParserRuleContext newIndexCtx = (ParserRuleContext) newIndexNode;
-        
+
         statement.getSqlTokens()
-        .add(VisitorUtils.visitIndex(oldIndexCtx, statement.getTables().getSingleTableName()));
-        
+                .add(VisitorUtils.visitIndex(oldIndexCtx, statement.getTables().getSingleTableName()));
+
         statement.getSqlTokens()
-        .add(VisitorUtils.visitIndex(newIndexCtx, statement.getTables().getSingleTableName()));
+                .add(VisitorUtils.visitIndex(newIndexCtx, statement.getTables().getSingleTableName()));
     }
 }

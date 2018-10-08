@@ -30,6 +30,10 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class OracleModifyColumnVisitor implements PhraseVisitor {
 
+    /** Visit modify column node.
+     * @param ancestorNode ancestor node of ast
+     * @param statement sql statement
+     */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;

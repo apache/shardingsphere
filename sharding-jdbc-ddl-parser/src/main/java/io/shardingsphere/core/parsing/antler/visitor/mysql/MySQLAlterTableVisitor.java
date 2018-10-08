@@ -42,27 +42,31 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
         addVisitor(new MySQLAddIndexVisitor());
         addVisitor(new MySQLDropIndexVisitor());
         addVisitor(new RenameIndexVisitor());
-        
+
         addVisitor(new AddPrimaryKeyVisitor("addConstraint"));
         addVisitor(new DropPrimaryKeyVisitor());
-        
+
         addVisitor(new MySQLChangeColumnVisitor());
         addVisitor(new MySQLModifyColumnVisitor());
     }
 
-    /** Create statement.
+    /**
+     * Create statement.
+     *
      * @return empty sql statment
      */
     protected SQLStatement newStatement() {
         return new MySQLAlterTableStatement();
     }
-    
-    /**Adjust column position.
+
+    /**
+     * Adjust column position.
+     *
      * @param alterStatement alter table statement
-     * @param newColumnMeta
+     * @param newColumnMeta table new column meta data
      */
     protected void adjustColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-        MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement)alterStatement;
+        MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement) alterStatement;
         if (mysqlAlter.getPositionChangedColumns().isEmpty()) {
             return;
         }
@@ -79,8 +83,10 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
             }
         }
     }
-    
-    /** Adjust column to first.
+
+    /**
+     * Adjust column to first.
+     *
      * @param newColumnMeta new columns meta
      * @param columnName first column name
      */
@@ -100,10 +106,12 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
             newColumnMeta.add(0, firstMeta);
         }
     }
-    
-    /**Adjust column to after column.
-     * @param newColumnMeta
-     * @param columnPosition column position 
+
+    /**
+     * Adjust column to after column.
+     *
+     * @param newColumnMeta new columns meta
+     * @param columnPosition column position
      */
     private void adjustAfter(final List<ColumnMetaData> newColumnMeta, final ColumnPosition columnPosition) {
         int afterIndex = -1;
@@ -116,13 +124,13 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
             if (newColumnMeta.get(i).getColumnName().equals(columnPosition.getAfterColumn())) {
                 afterIndex = i;
             }
-            
-            if(adjustColumnIndex >= 0 && afterIndex >= 0) {
+
+            if (adjustColumnIndex >= 0 && afterIndex >= 0) {
                 break;
             }
         }
 
-        if (adjustColumnIndex >= 0 && afterIndex >= 0 && adjustColumnIndex != afterIndex +1) {
+        if (adjustColumnIndex >= 0 && afterIndex >= 0 && adjustColumnIndex != afterIndex + 1) {
             ColumnMetaData adjustColumn = newColumnMeta.remove(adjustColumnIndex);
             if (afterIndex < adjustColumnIndex) {
                 afterIndex = afterIndex + 1;

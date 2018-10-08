@@ -27,29 +27,30 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class MySQLDropIndexVisitor implements PhraseVisitor {
 
-    /** Visit drop index node.
+    /**
+     * Visit drop index node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement    sql statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         ParserRuleContext dropIndexDefNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
                 "dropIndexDef");
-        
+
         if (null == dropIndexDefNode) {
             return;
         }
-        
+
         int childCnt = dropIndexDefNode.getChildCount();
         if (0 == childCnt) {
             return;
         }
-        
+
         ParseTree lastChild = dropIndexDefNode.getChild(childCnt - 1);
-        if(!(lastChild instanceof ParserRuleContext)) {
+        if (!(lastChild instanceof ParserRuleContext)) {
             return;
         }
-        
 
         ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
         if (null != indexNameNode) {
@@ -57,5 +58,4 @@ public class MySQLDropIndexVisitor implements PhraseVisitor {
                     .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
         }
     }
-
 }

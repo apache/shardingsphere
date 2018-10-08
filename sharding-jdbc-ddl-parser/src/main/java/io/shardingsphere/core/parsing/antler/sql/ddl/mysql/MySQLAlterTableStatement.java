@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.core.parsing.antler.sql.ddl.mysql;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class MySQLAlterTableStatement extends AlterTableStatement{
+public class MySQLAlterTableStatement extends AlterTableStatement {
     private final List<ColumnPosition> positionChangedColumns = new ArrayList<>();
-    
+
 }

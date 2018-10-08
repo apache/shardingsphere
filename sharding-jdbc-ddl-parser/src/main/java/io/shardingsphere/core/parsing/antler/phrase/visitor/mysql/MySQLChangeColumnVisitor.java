@@ -29,6 +29,10 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class MySQLChangeColumnVisitor implements PhraseVisitor {
 
+    /** Visit change column node.
+     * @param ancestorNode ancestor node of ast
+     * @param statement sql statement
+     */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
@@ -58,7 +62,7 @@ public class MySQLChangeColumnVisitor implements PhraseVisitor {
             alterStatement.getUpdateColumns().remove(oldColumnCtx.getText());
             alterStatement.getUpdateColumns().put(oldColumnCtx.getText(), column);
             ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnCtx, column.getName());
-            if(null != columnPosition) {
+            if (null != columnPosition) {
                 alterStatement.getPositionChangedColumns().add(columnPosition);
             }
         }

@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -26,10 +27,15 @@ import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class MySQLAddColumnVisitor extends AddColumnVisitor {
-    
+
+    /** Visit mysql add column.
+     * @param ancestorNode ancestor node of ast
+     * @param statement sql statement
+     * @param columnName column name
+     */
     @Override
     protected void postVisitColumnDefinition(final ParseTree rootNode, final SQLStatement statement,
-            String columnName) {
+                                             final String columnName) {
         ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) rootNode, columnName);
 
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;

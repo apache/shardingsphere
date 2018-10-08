@@ -27,7 +27,9 @@ import org.antlr.v4.runtime.TokenStream;
 
 public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
 
-    /** Parse input to ast.
+    /**
+     * Parse input to ast.
+     *
      * @param input sql text
      * @return parse tree
      */
@@ -38,26 +40,32 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         Parser parser = newParser(tokenStream);
         ParserRuleContext rootCtx = getParserTree(parser);
-        if(null != rootCtx) {
-            return (ParserRuleContext)rootCtx.getChild(0);
+        if (null != rootCtx) {
+            return (ParserRuleContext) rootCtx.getChild(0);
         }
-        
+
         return null;
     }
 
-    /** Create lexer instance.
+    /**
+     * Create lexer instance.
+     *
      * @param stream text stream
      * @return antlr lexer instance
      */
     protected abstract Lexer newLexer(CharStream stream);
 
-    /** Create parser instance.
+    /**
+     * Create parser instance.
+     *
      * @param stream token stream
      * @return antlr parser instance
      */
     protected abstract Parser newParser(TokenStream tokenStream);
 
-    /** Get sql parse tree.
+    /**
+     * Get sql parse tree.
+     *
      * @param parser instance
      * @return sql parse tree
      */

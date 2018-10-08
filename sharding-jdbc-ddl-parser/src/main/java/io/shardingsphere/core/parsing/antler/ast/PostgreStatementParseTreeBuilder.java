@@ -28,7 +28,9 @@ import io.shardingsphere.parser.antlr.PostgreStatementLexer;
 
 public class PostgreStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
-    /** Create lexer instance.
+    /**
+     * Create lexer instance.
+     *
      * @param stream text stream
      * @return antlr lexer instance
      */
@@ -37,7 +39,9 @@ public class PostgreStatementParseTreeBuilder extends AbstractParseTreeBuilder {
         return new PostgreStatementLexer(stream);
     }
 
-    /** Create parser instance.
+    /**
+     * Create parser instance.
+     *
      * @param stream token stream
      * @return antlr parser instance
      */
@@ -46,13 +50,15 @@ public class PostgreStatementParseTreeBuilder extends AbstractParseTreeBuilder {
         return new PostgreStatementAdvancedParser(tokenStream);
     }
 
-    /** Get sql parse tree.
+    /**
+     * Get sql parse tree.
+     *
      * @param parser instance
      * @return sql parse tree
      */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser)parser;
+        PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser) parser;
         return parse.execute();
     }
 

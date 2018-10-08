@@ -26,10 +26,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class TreeUtils {
     public static final String RULE_SUFFIX = "Context";
 
-    
 
-    /**Find first child node whose rule name is ${name}.
-     * 
+    /**
+     * Find first child node whose rule name is ${name}.
+     *
      * @param node start node
      * @param name rule name
      * @return match node
@@ -50,11 +50,11 @@ public class TreeUtils {
 
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
-            if(!(child instanceof ParserRuleContext)) {
+            if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-            
-            ParserRuleContext retNode = getFirstChildByRuleName((ParserRuleContext)child, name);
+
+            ParserRuleContext retNode = getFirstChildByRuleName((ParserRuleContext) child, name);
             if (null != retNode) {
                 return retNode;
             }
@@ -63,8 +63,9 @@ public class TreeUtils {
         return null;
     }
 
-    /**Find all children node whose rule name is ${name}.
-     * 
+    /**
+     * Find all children node whose rule name is ${name}.
+     *
      * @param node start node
      * @param name rule name
      * @return match nodes
@@ -92,8 +93,8 @@ public class TreeUtils {
         List<ParserRuleContext> childNodes = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             ParseTree child = node.getChild(i);
-            if(child instanceof ParserRuleContext) {
-               childNodes.add((ParserRuleContext)child);
+            if (child instanceof ParserRuleContext) {
+                childNodes.add((ParserRuleContext) child);
             }
         }
 
@@ -107,9 +108,10 @@ public class TreeUtils {
         return childs;
     }
 
-   
-    /**Determine whether the two class is compatible.
-     * 
+
+    /**
+     * Determine whether the two class is compatible.
+     *
      * @param c1 first param
      * @param c2 second param
      * @return true is compatible
