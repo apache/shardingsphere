@@ -121,8 +121,7 @@ public final class BackendHandlerFactory {
         }
         
         if (sqlStatement instanceof ShowOtherStatement) {
-            //TODO return schema unicast handler
-            return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, PROXY_CONTEXT.getDefaultSchema());
+            return new SchemaUnicastBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
         
         String schema = getSchema(sqlStatement).isPresent() ? getSchema(sqlStatement).get() : frontendHandler.getCurrentSchema();
