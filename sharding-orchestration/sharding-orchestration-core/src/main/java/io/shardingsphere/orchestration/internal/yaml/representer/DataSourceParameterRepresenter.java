@@ -31,7 +31,7 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author panjuan
  */
-public class DefaultConfigurationRepresenter extends Representer {
+public class DataSourceParameterRepresenter extends Representer {
     
     @Override
     protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
