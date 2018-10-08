@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;

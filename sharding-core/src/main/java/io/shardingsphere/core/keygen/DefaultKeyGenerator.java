@@ -19,11 +19,8 @@ package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Default distributed primary key generator.
@@ -45,7 +42,6 @@ import java.util.Date;
  * 
  * @author gaohongtao
  */
-@Slf4j
 public final class DefaultKeyGenerator implements KeyGenerator {
     
     public static final long EPOCH;
@@ -108,9 +104,6 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             sequence = 0;
         }
         lastTime = currentMillis;
-        if (log.isDebugEnabled()) {
-            log.debug("{}-{}-{}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(lastTime)), workerId, sequence);
-        }
         return ((currentMillis - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     

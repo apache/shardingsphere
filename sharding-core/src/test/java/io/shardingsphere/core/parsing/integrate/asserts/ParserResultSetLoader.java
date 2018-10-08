@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.integrate.asserts;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResultSet;
+import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -64,14 +64,11 @@ public final class ParserResultSetLoader {
         return result;
     }
     
+    @SneakyThrows
     private Map<String, ParserResult> loadParserResultSet(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
-        try {
-            for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
-                result.put(each.getSqlCaseId(), each);
-            }
-        } catch (JAXBException ex) {
-            throw new RuntimeException(ex);
+        for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
+            result.put(each.getSqlCaseId(), each);
         }
         return result;
     }

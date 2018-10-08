@@ -18,7 +18,7 @@
 package io.shardingsphere.core.optimizer.insert;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.OptimizeEngine;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;

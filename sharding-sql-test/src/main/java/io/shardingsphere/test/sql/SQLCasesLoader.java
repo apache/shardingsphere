@@ -19,12 +19,12 @@ package io.shardingsphere.test.sql;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -69,13 +69,10 @@ public final class SQLCasesLoader {
         return INSTANCE;
     }
     
+    @SneakyThrows
     private static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        try {
-            return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
-        } catch (final IOException | JAXBException ex) {
-            throw new RuntimeException(ex);
-        }
+        return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
     }
     
     private static Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
@@ -92,7 +89,7 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) throws FileNotFoundException, JAXBException {
+    private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
@@ -112,7 +109,8 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    private static void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) throws FileNotFoundException, JAXBException {
+    @SneakyThrows
+    private static void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (null == files) {
@@ -126,14 +124,14 @@ public final class SQLCasesLoader {
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws FileNotFoundException, JAXBException {
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
             sqlCaseMap.put(each.getId(), each);
         }
     }
     
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream, final String sqlType) throws FileNotFoundException, JAXBException {
+    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream, final String sqlType) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
             each.setSqlType(sqlType);

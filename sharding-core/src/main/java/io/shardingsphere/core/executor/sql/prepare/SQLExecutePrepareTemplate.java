@@ -79,9 +79,9 @@ public final class SQLExecutePrepareTemplate {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
         List<Collection<ShardingExecuteGroup<StatementExecuteUnit>>> results = shardingExecuteEngine.execute(sqlUnitGroups.entrySet(),
                 new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
-                
+                    
                     @Override
-                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input) throws SQLException {
+                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input, final boolean isTrunkThread) throws SQLException {
                         return getSQLExecuteGroups(input.getKey(), input.getValue(), callback);
                     }
                 });

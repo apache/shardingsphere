@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class ExecutorExceptionHandlerTest {
     
     @After
-    public void tearDown() throws ReflectiveOperationException {
+    public void tearDown() {
         ExecutorTestUtil.clear();
     }
     

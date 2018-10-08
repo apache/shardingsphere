@@ -41,7 +41,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:mysql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\w*");
+    private final Pattern pattern = Pattern.compile("jdbc:mysql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\w*", Pattern.CASE_INSENSITIVE);
     
     public MySQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
@@ -50,7 +50,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
             port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
             schemeName = matcher.group(3);
         } else {
-            throw new ShardingException("The URL of JDBC is not supported.");
+            throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
     }
    
