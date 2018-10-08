@@ -19,7 +19,7 @@ package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import io.shardingsphere.example.repository.common.repository.DataRepository;
+import io.shardingsphere.example.repository.jdbc.DataRepository;
 
 import javax.sql.DataSource;
 import java.io.File;

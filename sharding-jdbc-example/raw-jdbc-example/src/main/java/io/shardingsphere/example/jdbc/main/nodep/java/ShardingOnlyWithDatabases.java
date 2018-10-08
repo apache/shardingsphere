@@ -21,8 +21,8 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import io.shardingsphere.example.repository.common.repository.DataRepository;
-import io.shardingsphere.example.repository.common.repository.DataSourceUtil;
+import io.shardingsphere.example.repository.jdbc.DataRepository;
+import io.shardingsphere.example.repository.jdbc.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

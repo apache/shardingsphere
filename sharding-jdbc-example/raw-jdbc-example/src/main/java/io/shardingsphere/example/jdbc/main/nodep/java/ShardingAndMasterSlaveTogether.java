@@ -25,8 +25,8 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import io.shardingsphere.example.repository.common.repository.DataRepository;
-import io.shardingsphere.example.repository.common.repository.DataSourceUtil;
+import io.shardingsphere.example.repository.jdbc.DataRepository;
+import io.shardingsphere.example.repository.jdbc.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
