@@ -27,7 +27,6 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -43,7 +42,6 @@ import io.shardingsphere.shardingproxy.backend.netty.future.SynchronizedFuture;
 import io.shardingsphere.shardingproxy.config.ProxyContext;
 import io.shardingsphere.shardingproxy.config.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.config.RuleRegistry;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -81,8 +79,6 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private static final BackendNettyClientManager CLIENT_MANAGER = BackendNettyClientManager.getInstance();
     
-    private final FrontendHandler frontendHandler;
-    
     private final RuleRegistry ruleRegistry;
     
     private final int connectionId;
@@ -109,10 +105,6 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     }
     
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (sqlStatement instanceof UseStatement) {
-            return handleUseStatement((UseStatement) sqlStatement, frontendHandler);
-        }
         String dataSourceName = new MasterSlaveRouter(ruleRegistry.getMasterSlaveRule(), PROXY_CONTEXT.isShowSQL()).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
@@ -123,16 +115,13 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
         }
-        return merge(sqlStatement, packets, queryResults);
+        return merge(new SQLJudgeEngine(sql).judge(), packets, queryResults);
     }
     
     private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
                 ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable(), databaseType, PROXY_CONTEXT.isShowSQL(), ruleRegistry.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(sql);
-        if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
-            return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
-        }
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
