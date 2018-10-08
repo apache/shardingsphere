@@ -15,6 +15,6 @@ weight = 1
 
 ## Supported
 
-* Sharding-JDBC support
+* Sharding-JDBC support by end user to configure without XA data sources
 
-* Sharding-Proxy will support at 3.1.0
+* Sharding-Proxy do not need support, just use XA or BASE transaction

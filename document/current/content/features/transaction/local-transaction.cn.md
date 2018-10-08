@@ -15,6 +15,6 @@ weight = 1
 
 ## 支持情况
 
-* Sharding-JDBC支持
+* Sharding-JDBC可以支持由用户自行配置不使用XA数据源
 
-* Sharding-Proxy预计3.1.0支持
+* Sharding-Proxy无需支持，使用XA或柔性事务即可
