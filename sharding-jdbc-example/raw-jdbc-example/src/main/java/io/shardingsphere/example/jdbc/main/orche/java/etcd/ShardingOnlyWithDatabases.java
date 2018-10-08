@@ -26,7 +26,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import io.shardingsphere.example.repository.jdbc.DataRepository;
+import io.shardingsphere.example.repository.jdbc.JDBCRepository;
 import io.shardingsphere.example.repository.jdbc.DataSourceUtil;
 
 import javax.sql.DataSource;
@@ -43,7 +43,7 @@ public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new DataRepository(dataSource).demo();
+        new JDBCRepository(dataSource).demo();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     

@@ -24,7 +24,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import io.shardingsphere.example.repository.jdbc.DataRepository;
+import io.shardingsphere.example.repository.jdbc.JDBCRepository;
 import io.shardingsphere.example.repository.jdbc.DataSourceUtil;
 
 import javax.sql.DataSource;
@@ -47,7 +47,7 @@ public class MasterSlaveOnly {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new DataRepository(dataSource).demo();
+        new JDBCRepository(dataSource).demo();
         ((OrchestrationMasterSlaveDataSource) dataSource).close();
     }
     

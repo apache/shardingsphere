@@ -19,7 +19,7 @@ package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import io.shardingsphere.example.repository.jdbc.DataRepository;
+import io.shardingsphere.example.repository.jdbc.JDBCRepository;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -30,7 +30,7 @@ public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
-        new DataRepository(dataSource).demo();
+        new JDBCRepository(dataSource).demo();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     
