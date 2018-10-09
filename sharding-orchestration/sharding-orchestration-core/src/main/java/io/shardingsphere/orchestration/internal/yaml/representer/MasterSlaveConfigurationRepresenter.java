@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
+import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
@@ -46,6 +47,12 @@ public final class MasterSlaveConfigurationRepresenter extends Representer {
     public MasterSlaveConfigurationRepresenter() {
         super();
         nullRepresenter = new NullRepresent();
+    }
+    
+    @Override
+    protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
+        NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+        return isUnwantedNodeTuple(tuple) ? null : tuple;
     }
     
     private boolean isUnwantedNodeTuple(final NodeTuple tuple) {
