@@ -19,6 +19,7 @@ package io.shardingsphere.example.repository.api.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,10 +30,10 @@ import java.util.List;
 public class DemoService {
     
     @Resource
-    private OrderRepository orderRepository;
+    private Repository<Order> orderRepository;
     
     @Resource
-    private OrderItemRepository orderItemRepository;
+    private Repository<OrderItem> orderItemRepository;
     
     public void demo() {
         orderRepository.createIfNotExistsTable();
@@ -55,12 +56,18 @@ public class DemoService {
             item.setStatus("INSERT_TEST");
             orderItemRepository.insert(item);
         }
+        System.out.println("Order Data--------------");
+        System.out.println(orderRepository.selectAll());
+        System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
         }
+        System.out.println("Order Data--------------");
+        System.out.println(orderRepository.selectAll());
+        System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
         orderItemRepository.dropTable();
         orderRepository.dropTable();
