@@ -26,7 +26,9 @@ import java.util.List;
 @Mapper
 public interface OrderItemRepository extends Repository<OrderItem> {
     
+    @Override
     Long insert(OrderItem model);
     
+    @Override
     List<OrderItem> selectAll();
 }
