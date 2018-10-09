@@ -1,42 +1,42 @@
 grammar DMLBase;
 
-import DQLBase,BaseRule,DataType,Keyword, Symbol;
+import Keyword, MySQLBase, DQLBase, BaseRule, DataType, Symbol;
 
-execute:
-    select
-    |insert
-    |update
-    |delete
+execute
+    : select
+    | insert
+    | update
+    | delete
     ;
     
-fromClause: 
-    FROM tableReferences
+fromClause 
+    : FROM tableReferences
     ;
     
-whereClause: 
-    WHERE expr
+whereClause
+    : WHERE expr
     ;
     
-groupByClause: 
-    GROUP BY groupByItem (COMMA groupByItem)* 
+groupByClause
+    : GROUP BY groupByItem (COMMA groupByItem)* 
     (WITH ROLLUP)? 
     havingClause?
     ;
     
-havingClause: 
-    HAVING  expr
+havingClause
+    : HAVING  expr
     ;
     
-orderByClause: 
-    ORDER BY groupByItem (COMMA groupByItem)*
+orderByClause
+    : ORDER BY groupByItem (COMMA groupByItem)*
     ;
     
 groupByItem:
     (columnName | NUMBER |expr)  (ASC|DESC)?
     ;
     
-limitClause:
-    LIMIT rangeClause
+limitClause
+    : LIMIT rangeClause
     ;
 
 //define delete rule template
@@ -47,8 +47,8 @@ delete:
     limitClause?
     ;
     
-partitionClause: 
-    PARTITION idList
+partitionClause 
+    : PARTITION idList
     ;
 
 update: 
@@ -59,29 +59,18 @@ update:
     limitClause?
     ;
 
-setClause: 
-    SET assignmentList
+setClause 
+    : SET assignmentList
     ;
     
-assignmentList: 
-    assignment (COMMA assignment)*
+assignmentList
+    : assignment (COMMA assignment)*
     ;
     
-assignment:
-    columnName EQ_OR_ASSIGN value
+assignment
+    : columnName EQ_OR_ASSIGN value
     ;
 
-value:
-    DEFAULT|expr;
-
-valueList:
-     value (COMMA value)*
-    ;
-    
-valueListWithParen:
-    LEFT_PAREN valueList RIGHT_PAREN
-    ;    
-    
 insert:
     ;
 

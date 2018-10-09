@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="drop_table" value="DROP TABLE t_log" db-types="MySQL" />
+    <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL" />
+    <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_temp_log" db-types="MySQL" />
+    <sql-case id="drop_index" value="DROP INDEX t_log_index ON t_log" db-types="MySQL" />
+    <sql-case id="drop_index_offline" value="DROP INDEX OFFLINE t_log_index ON t_log" db-types="MySQL" />
+</sql-cases>
