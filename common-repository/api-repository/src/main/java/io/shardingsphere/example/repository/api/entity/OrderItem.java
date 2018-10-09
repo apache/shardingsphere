@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.repository.api.entity;
 
-public final class OrderItem {
+public class OrderItem {
     
     private long orderItemId;
     
