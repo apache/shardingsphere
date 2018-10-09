@@ -25,7 +25,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
@@ -57,7 +57,7 @@ public final class ProxyContext {
     
     private Map<String, RuleRegistry> ruleRegistryMap = new ConcurrentHashMap<>();
     
-    private ProxyAuthority proxyAuthority;
+    private Authentication authentication;
     
     private boolean showSQL;
     
@@ -125,7 +125,7 @@ public final class ProxyContext {
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-        proxyAuthority = serverConfig.getProxyAuthority();
+        authentication = serverConfig.getAuthentication();
     }
     
     /**

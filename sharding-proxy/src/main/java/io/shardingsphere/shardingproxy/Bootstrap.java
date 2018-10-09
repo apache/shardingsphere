@@ -106,7 +106,7 @@ public final class Bootstrap {
     
     private static YamlServerConfiguration getYamlServerConfiguration(final ProxyYamlServerConfiguration serverConfig) {
         YamlServerConfiguration result = new YamlServerConfiguration();
-        result.setProxyAuthority(serverConfig.getProxyAuthority());
+        result.setAuthentication(serverConfig.getAuthentication());
         result.setProps(serverConfig.getProps());
         return result;
     }

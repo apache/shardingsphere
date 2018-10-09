@@ -57,7 +57,7 @@ orchestration:
     namespace: orchestration
     serverLists: localhost:2181
 
-proxyAuthority:
+authentication:
   username: root
   password: root
 

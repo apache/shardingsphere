@@ -22,21 +22,47 @@ import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
- * Default configuration representer.
+ * Datasource parameter representer.
  *
  * @author panjuan
  */
-public class DefaultConfigurationRepresenter extends Representer {
+public class DataSourceParameterRepresenter extends Representer {
+    
+    private static Collection<String> reservedNodeNames = new HashSet<>();
+    
+    static {
+        reservedNodeNames.add("password");
+    }
+    
+    public DataSourceParameterRepresenter() {
+        super();
+        nullRepresenter = new DataSourceParameterRepresenter.NullRepresent();
+    }
     
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        return isUnwantedNodeTuple(tuple.getValueNode()) ? null : tuple;
+        if (isWantedNodeTuple(tuple.getKeyNode())) {
+            return tuple;
+        }
+        if (isUnwantedNodeTuple(tuple.getValueNode())) {
+            return null;
+        }
+        return tuple;
+    }
+    
+    private boolean isWantedNodeTuple(final Node keyNode) {
+        return keyNode instanceof ScalarNode && reservedNodeNames.contains(((ScalarNode) keyNode).getValue());
     }
     
     private boolean isUnwantedNodeTuple(final Node valueNode) {
@@ -57,5 +83,11 @@ public class DefaultConfigurationRepresenter extends Representer {
     
     private boolean isEmptyMappingNode(final Node valueNode) {
         return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
+    }
+    
+    private class NullRepresent implements Represent {
+        public Node representData(final Object data) {
+            return representScalar(Tag.NULL, "");
+        }
     }
 }
