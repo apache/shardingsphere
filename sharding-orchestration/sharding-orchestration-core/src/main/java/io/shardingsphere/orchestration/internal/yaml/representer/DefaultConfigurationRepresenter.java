@@ -50,4 +50,20 @@ public class DefaultConfigurationRepresenter extends Representer {
         }
         return tuple;
     }
+    
+    private boolean isNullNode(final Node valueNode) {
+        return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private boolean isEmptyCollectionNode(final Node valueNode) {
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode) || isEmptyMappingNode(valueNode));
+    }
+    
+    private boolean isEmptySequenceNode(final Node valueNode) {
+        return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
+    }
+    
+    private boolean isEmptyMappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
+    }
 }
