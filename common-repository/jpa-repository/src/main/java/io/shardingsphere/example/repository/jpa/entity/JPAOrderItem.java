@@ -33,40 +33,30 @@ public class JPAOrderItem extends OrderItem implements Serializable {
     
     private static final long serialVersionUID = 263434701950670170L;
     
-    @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderItemId;
-    
     @Column(name = "order_id")
     private long orderId;
     
     @Column(name = "user_id")
     private int userId;
     
+    @Id
+    @Column(name = "order_item_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Override
     public long getOrderItemId() {
-        return orderItemId;
+        return super.getOrderItemId();
     }
     
-    public void setOrderItemId(final long orderItemId) {
-        this.orderItemId = orderItemId;
-    }
     
     public long getOrderId() {
         return orderId;
     }
     
-    public void setOrderId(final long orderId) {
-        this.orderId = orderId;
-    }
     
     public int getUserId() {
         return userId;
     }
     
-    public void setUserId(final int userId) {
-        this.userId = userId;
-    }
     
     @Override
     public String toString() {
