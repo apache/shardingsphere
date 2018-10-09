@@ -27,6 +27,7 @@
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.0</logback.version>
+        <guava.version>18.0</guava.version>
         
         <mybatis.version>3.4.2</mybatis.version>
         <mybatis-spring.version>1.3.0</mybatis-spring.version>
@@ -43,6 +44,11 @@
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>
                 <artifactId>hibernate-jpa-2.1-api</artifactId>
