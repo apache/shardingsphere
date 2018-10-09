@@ -17,52 +17,60 @@
 
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
-import lombok.SneakyThrows;
 import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.CollectionNode;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
- * Data source representer.
+ * Sharding configuration representer.
  *
  * @author panjuan
  */
 public final class ShardingConfigurationRepresenter extends Representer {
     
-    private static Collection<String> eliminatedPropertyNames = new HashSet<>();
+    private static Collection<String> eliminatedNodeNames = new HashSet<>();
     
     static {
-        eliminatedPropertyNames.add("configMap");
-        eliminatedPropertyNames.add(";props");
+        eliminatedNodeNames.add("configMap");
+        eliminatedNodeNames.add("props");
     }
     
-    public ShardingConfigurationRepresenter() {
-        super();
-        nullRepresenter = new NullRepresent();
-    }
-    
-    @SneakyThrows
     @Override
-    protected Set<Property> getProperties(final Class<?> type) {
-        Set<Property> result = new LinkedHashSet<>();
-        for (Property each : super.getProperties(type)) {
-            if (!eliminatedPropertyNames.contains(each.getName())) {
-                result.add(each);
-            }
-        }
-        return result;
+    protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
+        NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+        return isUnwantedNodeTuple(tuple) ? null : tuple;
     }
     
-    private class NullRepresent implements Represent {
-        public Node representData(final Object data) {
-            return representScalar(Tag.NULL, "");
-        }
+    private boolean isUnwantedNodeTuple(final NodeTuple tuple) {
+        return isEliminatedNode(tuple.getKeyNode()) || isNullNode(tuple.getValueNode()) || isEmptyCollectionNode(tuple.getValueNode());
+    }
+    
+    private boolean isEliminatedNode(final Node keyNode) {
+        return keyNode instanceof ScalarNode && eliminatedNodeNames.contains(((ScalarNode) keyNode).getValue());
+    }
+    
+    private boolean isNullNode(final Node valueNode) {
+        return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private boolean isEmptyCollectionNode(final Node valueNode) {
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode) || isEmptyMappingNode(valueNode));
+    }
+    
+    private boolean isEmptySequenceNode(final Node valueNode) {
+        return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
+    }
+    
+    private boolean isEmptyMappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
     }
 }
