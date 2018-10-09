@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.repository.jpa.repository;
 
-import io.shardingsphere.example.repository.jpa.entity.Order;
+import io.shardingsphere.example.repository.jpa.entity.JPAOrder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -33,9 +33,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     private EntityManager entityManager;
     
     @Override
-    public Long insert(final Order order) {
-        entityManager.persist(order);
-        return order.getOrderId();
+    public Long insert(final JPAOrder JPAOrder) {
+        entityManager.persist(JPAOrder);
+        return JPAOrder.getOrderId();
     }
     
     @Override
