@@ -25,7 +25,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import java.sql.SQLException;
 
 /**
- * backend handler for schema unicast.
+ * Backend handler for schema unicast.
  * 
  * @author chenqingyang
  */

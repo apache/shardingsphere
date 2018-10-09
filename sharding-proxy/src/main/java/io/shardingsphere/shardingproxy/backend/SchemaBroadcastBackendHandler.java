@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * backend handler for schema broadcast.
+ * Backend handler for schema broadcast.
  *
  * @author chenqingyang
  */

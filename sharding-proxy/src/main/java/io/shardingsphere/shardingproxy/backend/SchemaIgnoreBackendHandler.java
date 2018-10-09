@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * backend handler for schema ignore.
+ * Backend handler for schema ignore.
  * 
  * @author chenqingyang
  */
