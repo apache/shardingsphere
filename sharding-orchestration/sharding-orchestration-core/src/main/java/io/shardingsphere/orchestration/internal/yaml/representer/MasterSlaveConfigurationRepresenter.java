@@ -42,6 +42,7 @@ public final class MasterSlaveConfigurationRepresenter extends Representer {
     
     static {
         eliminatedNodeNames.add("configMap");
+        eliminatedNodeNames.add("props");
     }
     
     public MasterSlaveConfigurationRepresenter() {
