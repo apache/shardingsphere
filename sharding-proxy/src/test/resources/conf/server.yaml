@@ -1,0 +1,14 @@
+orchestration:
+  name: orchestration_ds
+  overwrite: true
+  zookeeper:
+    namespace: orchestration
+    serverLists: localhost:2181
+
+authentication:
+  username: root
+  password: root
+
+props:
+  max.connections.size.per.query: 1
+  sql.show: false
