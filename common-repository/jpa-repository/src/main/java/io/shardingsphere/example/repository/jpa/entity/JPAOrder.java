@@ -36,40 +36,31 @@ public class JPAOrder extends Order implements Serializable {
     @Id
     @Column(name = "order_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderId;
-    
-    @Column(name = "user_id")
-    private int userId;
-    
-    @Column(name = "status")
-    private String status;
-    
+    @Override
     public long getOrderId() {
-        return orderId;
+        return super.getOrderId();
     }
     
     public void setOrderId(final long orderId) {
-        this.orderId = orderId;
+        super.setOrderId(orderId);
     }
     
+    @Column(name = "user_id")
+    @Override
     public int getUserId() {
-        return userId;
+        return super.getUserId();
     }
     
     public void setUserId(final int userId) {
-        this.userId = userId;
+        super.setUserId(userId);
     }
     
+    @Column(name = "status")
     public String getStatus() {
-        return status;
+        return super.getStatus();
     }
     
     public void setStatus(final String status) {
-        this.status = status;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("order_id: %s, user_id: %s, status: %s", orderId, userId, status);
+        super.setStatus(status);
     }
 }
