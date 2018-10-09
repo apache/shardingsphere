@@ -41,26 +41,14 @@ public class JPAOrder extends Order implements Serializable {
         return super.getOrderId();
     }
     
-    public void setOrderId(final long orderId) {
-        super.setOrderId(orderId);
-    }
-    
     @Column(name = "user_id")
     @Override
     public int getUserId() {
         return super.getUserId();
     }
     
-    public void setUserId(final int userId) {
-        super.setUserId(userId);
-    }
-    
     @Column(name = "status")
     public String getStatus() {
         return super.getStatus();
-    }
-    
-    public void setStatus(final String status) {
-        super.setStatus(status);
     }
 }
