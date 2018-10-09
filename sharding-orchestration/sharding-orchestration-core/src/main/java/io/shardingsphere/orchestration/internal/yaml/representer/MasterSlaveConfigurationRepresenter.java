@@ -17,8 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
-import lombok.SneakyThrows;
-import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
@@ -26,8 +24,6 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Data source representer.
@@ -47,17 +43,7 @@ public final class MasterSlaveConfigurationRepresenter extends Representer {
         nullRepresenter = new NullRepresent();
     }
     
-    @Override
-    @SneakyThrows
-    protected Set<Property> getProperties(final Class<?> type) {
-        Set<Property> result = new LinkedHashSet<>();
-        for (Property each : super.getProperties(type)) {
-            if (!eliminatedPropertyNames.contains(each.getName())) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
+   
     
     private class NullRepresent implements Represent {
         
