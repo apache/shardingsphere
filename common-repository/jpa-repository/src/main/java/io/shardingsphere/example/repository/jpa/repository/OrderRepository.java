@@ -20,9 +20,13 @@ package io.shardingsphere.example.repository.jpa.repository;
 import io.shardingsphere.example.repository.api.repository.Repository;
 import io.shardingsphere.example.repository.jpa.entity.JPAOrder;
 
+import java.util.List;
+
 public interface OrderRepository extends Repository<JPAOrder> {
     
     @Override
     Long insert(JPAOrder JPAOrder);
     
+    @Override
+    List<JPAOrder> selectAll();
 }
