@@ -37,10 +37,10 @@ import java.util.HashSet;
  */
 public final class MasterSlaveConfigurationRepresenter extends Representer {
     
-    private static Collection<String> eliminatedPropertyNames = new HashSet<>();
+    private static Collection<String> eliminatedNodeNames = new HashSet<>();
     
     static {
-        eliminatedPropertyNames.add("configMap");
+        eliminatedNodeNames.add("configMap");
     }
     
     public MasterSlaveConfigurationRepresenter() {
