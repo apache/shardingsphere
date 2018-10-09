@@ -50,7 +50,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     
     @Override
     public void delete(final Long orderItemId) {
-        Query query = entityManager.createQuery("DELETE FROM OrderItem i WHERE i.orderItemId = ?1 AND i.userId = 51");
+        Query query = entityManager.createQuery("DELETE FROM JPAOrderItem i WHERE i.orderItemId = ?1 AND i.userId = 51");
         query.setParameter(1, orderItemId);
         query.executeUpdate();
     }
@@ -58,6 +58,6 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @SuppressWarnings("unchecked")
     @Override
     public List<JPAOrderItem> selectAll() {
-        return (List<JPAOrderItem>) entityManager.createQuery("SELECT i FROM Order o, OrderItem i WHERE o.orderId = i.orderId").getResultList();
+        return (List<JPAOrderItem>) entityManager.createQuery("SELECT i FROM JPAOrder o, JPAOrderItem i WHERE o.orderId = i.orderId").getResultList();
     }
 }
