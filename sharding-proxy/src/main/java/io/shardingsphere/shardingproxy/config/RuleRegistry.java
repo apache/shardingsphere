@@ -26,6 +26,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
 import lombok.Setter;
 

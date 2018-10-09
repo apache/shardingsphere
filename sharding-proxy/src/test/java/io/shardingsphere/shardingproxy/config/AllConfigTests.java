@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.config;
 
+import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManagerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
