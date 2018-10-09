@@ -73,4 +73,23 @@ public final class ShardingConfigurationRepresenter extends Representer {
     private boolean isEliminatedNode(final Node keyNode) {
         return keyNode instanceof ScalarNode && eliminatedNodeNames.contains(((ScalarNode) keyNode).getValue());
     }
+    
+    private boolean isNullNode(final Node valueNode) {
+        return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private boolean isEmptyCollectionNode(final Node valueNode) {
+        if (valueNode instanceof CollectionNode) {
+            return (Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty()) || (Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty());
+        }
+        return false;
+    }
+    
+    private boolean isEmptySequenceNode(final Node valueNode) {
+        return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
+    }
+    
+    private boolean MappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
+    }
 }
