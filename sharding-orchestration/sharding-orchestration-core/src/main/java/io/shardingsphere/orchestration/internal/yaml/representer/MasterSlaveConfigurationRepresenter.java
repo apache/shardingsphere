@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * Data source representer.
+ * Master slave configuration representer.
  *
  * @author panjuan
  */
