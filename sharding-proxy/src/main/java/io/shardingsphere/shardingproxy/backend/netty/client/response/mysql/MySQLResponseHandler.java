@@ -62,8 +62,8 @@ public final class MySQLResponseHandler extends ResponseHandler {
     private final Map<Integer, MySQLQueryResult> resultMap;
     
     public MySQLResponseHandler(final String dataSourceName, final String schema) {
-        dataSourceParameter = PROXY_CONTEXT.getRuleRegistry(schema).getDataSources().get(dataSourceName);
-        dataSourceMetaData = PROXY_CONTEXT.getRuleRegistry(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+        dataSourceParameter = PROXY_CONTEXT.getRuleInstance(schema).getDataSources().get(dataSourceName);
+        dataSourceMetaData = PROXY_CONTEXT.getRuleInstance(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
         resultMap = new HashMap<>();
     }
     

@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Sharding rule registry.
+ * Rule instance.
  *
  * @author zhangliang
  * @author zhangyonglun
@@ -46,7 +46,7 @@ import java.util.Map.Entry;
  * @author wangkai
  */
 @Getter
-public final class RuleRegistry {
+public final class RuleInstance {
     
     private final String schemaName;
     
@@ -63,7 +63,7 @@ public final class RuleRegistry {
     @Setter
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    public RuleRegistry(final String schemaName, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
+    public RuleInstance(final String schemaName, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
         this.schemaName = schemaName;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;

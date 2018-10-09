@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -70,7 +70,7 @@ public final class ComStmtPreparePacketTest {
     
     @Before
     public void setUp() {
-        setProxyContextRuleRegistryMap();
+        setProxyContextRuleInstanceMap();
         setFrontendHandlerSchema();
     }
     
@@ -81,15 +81,15 @@ public final class ComStmtPreparePacketTest {
     }
     
     @SneakyThrows
-    private void setProxyContextRuleRegistryMap() {
-        RuleRegistry ruleRegistry = mock(RuleRegistry.class);
+    private void setProxyContextRuleInstanceMap() {
+        RuleInstance ruleInstance = mock(RuleInstance.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
-        when(ruleRegistry.getMetaData()).thenReturn(metaData);
-        Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
-        ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
-        Field field = ProxyContext.class.getDeclaredField("ruleRegistryMap");
+        when(ruleInstance.getMetaData()).thenReturn(metaData);
+        Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
+        ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
+        Field field = ProxyContext.class.getDeclaredField("ruleInstanceMap");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), ruleRegistryMap);
+        field.set(ProxyContext.getInstance(), ruleInstanceMap);
     }
     
     private void setFrontendHandlerSchema() {

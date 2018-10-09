@@ -28,7 +28,7 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -80,7 +80,7 @@ public final class ComQueryPacketTest {
     @Before
     public void setUp() {
         setProxyContextNIOConfig();
-        setProxyContextRuleRegistryMap();
+        setProxyContextRuleInstanceMap();
         setFrontendHandlerSchema();
         listener = new Listener();
         listener.setExpected(TransactionOperationType.COMMIT);
@@ -101,13 +101,13 @@ public final class ComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setProxyContextRuleRegistryMap() {
-        RuleRegistry ruleRegistry = mock(RuleRegistry.class);
-        Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
-        ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
-        Field field = ProxyContext.class.getDeclaredField("ruleRegistryMap");
+    private void setProxyContextRuleInstanceMap() {
+        RuleInstance ruleInstance = mock(RuleInstance.class);
+        Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
+        ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
+        Field field = ProxyContext.class.getDeclaredField("ruleInstanceMap");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), ruleRegistryMap);
+        field.set(ProxyContext.getInstance(), ruleInstanceMap);
     }
     
     private void setFrontendHandlerSchema() {

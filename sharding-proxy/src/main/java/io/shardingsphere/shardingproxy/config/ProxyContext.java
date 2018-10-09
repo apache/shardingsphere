@@ -56,7 +56,7 @@ public final class ProxyContext {
     
     private List<String> schemaNames = new LinkedList<>();
     
-    private Map<String, RuleRegistry> ruleRegistryMap = new ConcurrentHashMap<>();
+    private Map<String, RuleInstance> ruleInstanceMap = new ConcurrentHashMap<>();
     
     private Authentication authentication;
     
@@ -106,7 +106,7 @@ public final class ProxyContext {
         for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
+            ruleInstanceMap.put(schemaName, new RuleInstance(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
         }
     }
     
@@ -135,7 +135,7 @@ public final class ProxyContext {
      * @param executeEngine sharding execute engine
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        for (RuleRegistry each : ruleRegistryMap.values()) {
+        for (RuleInstance each : ruleInstanceMap.values()) {
             each.initShardingMetaData(executeEngine);
         }
     }
@@ -151,13 +151,13 @@ public final class ProxyContext {
     }
     
     /**
-     * Get rule registry of schema.
+     * Get rule instance of schema.
      *
      * @param schema schema
-     * @return rule registry of schema
+     * @return rule instance of schema
      */
-    public RuleRegistry getRuleRegistry(final String schema) {
-        return Strings.isNullOrEmpty(schema) ? null : ruleRegistryMap.get(schema);
+    public RuleInstance getRuleInstance(final String schema) {
+        return Strings.isNullOrEmpty(schema) ? null : ruleInstanceMap.get(schema);
     }
     
     /**
@@ -168,13 +168,13 @@ public final class ProxyContext {
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
         initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
-        for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+        for (Entry<String, RuleInstance> entry : ruleInstanceMap.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        ruleRegistryMap.clear();
+        ruleInstanceMap.clear();
         for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
             String schemaName = entry.getKey();
-            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
+            ruleInstanceMap.put(schemaName, new RuleInstance(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
         }
     }
     
@@ -195,7 +195,7 @@ public final class ProxyContext {
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+        for (Entry<String, RuleInstance> entry : ruleInstanceMap.entrySet()) {
             entry.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
         }
     }

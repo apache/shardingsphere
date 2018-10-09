@@ -64,7 +64,7 @@ public final class BackendNettyClientManager {
      */
     public void start() throws InterruptedException {
         for (String each : PROXY_CONTEXT.getSchemaNames()) {
-            BackendNettyClient backendNettyClient = new BackendNettyClient(PROXY_CONTEXT.getRuleRegistry(each));
+            BackendNettyClient backendNettyClient = new BackendNettyClient(PROXY_CONTEXT.getRuleInstance(each));
             clientMap.put(each, backendNettyClient);
             backendNettyClient.start();
         }
