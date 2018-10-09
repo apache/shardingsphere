@@ -23,7 +23,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.VisitorRegistry;
 import io.shardingsphere.core.parsing.antler.statement.visitor.StatementVisitor;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -34,14 +33,14 @@ public class StatementFactory {
      * @param dbType database type
      * @param tokenType token type
      * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine
+     * @param sql input sql text
      * @param shardingTableMetaData table meta data
      * @return SQLStatement instance
      */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
-            final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+            final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
 
-        ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(dbType, tokenType, shardingRule, lexerEngine);
+        ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(dbType, tokenType, shardingRule, sql);
         if (rootNode != null) {
             String commandName = getCommandName(rootNode);
             StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, commandName);

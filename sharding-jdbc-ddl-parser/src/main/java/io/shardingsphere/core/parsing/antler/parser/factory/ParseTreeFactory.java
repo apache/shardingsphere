@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.antler.ast.MySQLStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.OracleStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.PostgreStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.SQLServerStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -35,20 +34,20 @@ public class ParseTreeFactory {
      * @param dbType database type.
      * @param tokenType token type.
      * @param shardingRule databases and tables sharding rule.
-     * @param lexerEngine lexical analysis engine.
+     * @param sql input sql text.
      * @return parse tree
      */
     public static ParserRuleContext getTableDDLParser(final DatabaseType dbType, final TokenType tokenType,
-                                                      final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+                                                      final ShardingRule shardingRule, final String sql) {
         switch (dbType) {
             case MySQL:
-                return new MySQLStatementParseTreeBuilder().parse(lexerEngine.getInput());
+                return new MySQLStatementParseTreeBuilder().parse(sql);
             case Oracle:
-                return new OracleStatementParseTreeBuilder().parse(lexerEngine.getInput());
+                return new OracleStatementParseTreeBuilder().parse(sql);
             case SQLServer:
-                return new SQLServerStatementParseTreeBuilder().parse(lexerEngine.getInput());
+                return new SQLServerStatementParseTreeBuilder().parse(sql);
             case PostgreSQL:
-                return new PostgreStatementParseTreeBuilder().parse(lexerEngine.getInput());
+                return new PostgreStatementParseTreeBuilder().parse(sql);
 
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
