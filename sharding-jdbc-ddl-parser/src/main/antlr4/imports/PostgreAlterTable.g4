@@ -3,12 +3,12 @@ grammar PostgreAlterTable;
 import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
 
 alterTable
-    : alterTableNameWithAsterisk(alterTableActions| renameColumn | renameConstraint)
+    : alterTableNameWithAsterisk (alterTableActions| renameColumn | renameConstraint)
     | alterTableNameExists renameTable
     ;
 
 alterTableNameWithAsterisk
-    : alterTableOp (IF EXISTS)? ONLY? tableName ASTERISK?
+    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK?
     ;
 
 alterTableOp
