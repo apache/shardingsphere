@@ -35,6 +35,15 @@ public class OrderRepositoryImpl implements OrderRepository {
     private EntityManager entityManager;
     
     @Override
+    public void createIfNotExistsTable() {}
+    
+    @Override
+    public void truncateTable() {}
+    
+    @Override
+    public void dropTable() {}
+    
+    @Override
     public Long insert(final JPAOrder JPAOrder) {
         entityManager.persist(JPAOrder);
         return JPAOrder.getOrderId();
