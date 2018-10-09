@@ -160,15 +160,6 @@ public final class ProxyContext {
     }
     
     /**
-     * Get default schema.
-     *
-     * @return default schema
-     */
-    public String getDefaultSchema() {
-        return schemaNames.get(0);
-    }
-    
-    /**
      * Renew proxy configuration.
      *
      * @param proxyConfigurationEventBusEvent proxy event bus event.

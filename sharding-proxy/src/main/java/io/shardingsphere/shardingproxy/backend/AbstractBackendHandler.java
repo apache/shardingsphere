@@ -18,13 +18,9 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
 import java.sql.SQLException;
 
@@ -34,8 +30,6 @@ import java.sql.SQLException;
  * @author zhangliang
  */
 public abstract class AbstractBackendHandler implements BackendHandler {
-    
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
     
     @Override
     public final CommandResponsePackets execute() {
@@ -69,14 +63,5 @@ public abstract class AbstractBackendHandler implements BackendHandler {
             return Optional.of((SQLException) exception.getCause().getCause());
         }
         return Optional.absent();
-    }
-    
-    protected final CommandResponsePackets handleUseStatement(final UseStatement useStatement, final FrontendHandler frontendHandler) {
-        String schema = useStatement.getSchema();
-        if (!PROXY_CONTEXT.schemaExists(schema)) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
-        }
-        frontendHandler.setCurrentSchema(schema);
-        return new CommandResponsePackets(new OKPacket(1));
     }
 }
