@@ -26,15 +26,7 @@ import java.util.List;
 @Mapper
 public interface OrderItemRepository extends Repository<OrderItem> {
     
-    void createIfNotExistsTable();
-    
-    void truncateTable();
-    
     Long insert(OrderItem model);
-    
-    void delete(Long orderItemId);
-    
-    void dropTable();
     
     List<OrderItem> selectAll();
 }
