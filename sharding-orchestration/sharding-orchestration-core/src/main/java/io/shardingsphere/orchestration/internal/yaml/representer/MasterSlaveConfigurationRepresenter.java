@@ -17,7 +17,12 @@
 
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
+import org.yaml.snakeyaml.nodes.CollectionNode;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
@@ -41,6 +46,30 @@ public final class MasterSlaveConfigurationRepresenter extends Representer {
     public MasterSlaveConfigurationRepresenter() {
         super();
         nullRepresenter = new NullRepresent();
+    }
+    
+    private boolean isUnwantedNodeTuple(final NodeTuple tuple) {
+        return isEliminatedNode(tuple.getKeyNode()) || isNullNode(tuple.getValueNode()) || isEmptyCollectionNode(tuple.getValueNode());
+    }
+    
+    private boolean isEliminatedNode(final Node keyNode) {
+        return keyNode instanceof ScalarNode && eliminatedNodeNames.contains(((ScalarNode) keyNode).getValue());
+    }
+    
+    private boolean isNullNode(final Node valueNode) {
+        return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private boolean isEmptyCollectionNode(final Node valueNode) {
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode) || isEmptyMappingNode(valueNode));
+    }
+    
+    private boolean isEmptySequenceNode(final Node valueNode) {
+        return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
+    }
+    
+    private boolean isEmptyMappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
     }
     
     private class NullRepresent implements Represent {
