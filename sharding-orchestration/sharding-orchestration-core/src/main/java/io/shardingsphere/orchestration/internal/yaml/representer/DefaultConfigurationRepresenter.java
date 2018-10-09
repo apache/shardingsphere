@@ -36,8 +36,6 @@ public class DefaultConfigurationRepresenter extends Representer {
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        Node valueNode = tuple.getValueNode();
-        
         return isUnwantedNodeTuple(tuple.getValueNode()) ? null : tuple;
     }
     
