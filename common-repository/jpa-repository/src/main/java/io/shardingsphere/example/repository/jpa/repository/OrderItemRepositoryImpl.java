@@ -33,15 +33,14 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @PersistenceContext
     private EntityManager entityManager;
     
+    @Override
+    public void createIfNotExistsTable() {}
     
     @Override
-    void createIfNotExistsTable();
+    public void truncateTable() {}
     
     @Override
-    void truncateTable();
-    
-    @Override
-    void dropTable();
+    public void dropTable() {}
     
     @Override
     public Long insert(final JPAOrderItem JPAOrderItem) {
