@@ -69,10 +69,4 @@ public final class ShardingConfigurationRepresenter extends Representer {
     private boolean isEliminatedPropertyName(final Node keyNode) {
         return keyNode instanceof ScalarNode && eliminatedPropertyNames.contains(((ScalarNode) keyNode).getValue());
     }
-    
-//    private class NullRepresent implements Represent {
-//        public Node representData(final Object data) {
-//            return representScalar(Tag.NULL, "");
-//        }
-//    }
 }
