@@ -34,6 +34,13 @@ public class MySQLStatementAdvancedParser extends MySQLStatementParser {
         this._errHandler = new AdvancedErrorStrategy(ID);
     }
 
+    /**
+     * Match token by token type.
+     *
+     * @param ttype token type
+     * @return current matched token
+     * @throws RecognitionException mismatch throw exception
+     */
     public Token match(final int ttype) throws RecognitionException {
         Token t = getCurrentToken();
 
@@ -45,9 +52,7 @@ public class MySQLStatementAdvancedParser extends MySQLStatementParser {
         if (t.getType() == ttype || compatID) {
             if (ttype == Token.EOF) {
                 matchedEOF = true;
-            }
-
-            if (!matchedEOF && compatID && (t instanceof CommonToken)) {
+            } else if (compatID && (t instanceof CommonToken)) {
                 CommonToken commonToken = (CommonToken) t;
                 commonToken.setType(ID);
             }
