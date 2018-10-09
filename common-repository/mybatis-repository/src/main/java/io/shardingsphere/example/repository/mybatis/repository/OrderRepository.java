@@ -21,8 +21,12 @@ import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.repository.Repository;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface OrderRepository extends Repository<Order> {
     
     Long insert(Order model);
+    
+    List<Order> selectAll();
 }
