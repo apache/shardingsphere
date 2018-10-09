@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>3.0.0.M4-SNAPSHOT</version>
+        <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
     <artifactId>raw-jdbc-example</artifactId>
     
@@ -22,6 +22,11 @@
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-core</artifactId>
             <version>${sharding-sphere.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>jdbc-repository</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

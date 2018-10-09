@@ -17,9 +17,10 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.main.nodep;
 
-import io.shardingsphere.example.spring.namespace.jpa.fixture.service.DemoService;
+
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import io.shardingsphere.example.repository.jpa.service.DemoService;
 
 public class ShardingAndMasterSlaveTogether {
     

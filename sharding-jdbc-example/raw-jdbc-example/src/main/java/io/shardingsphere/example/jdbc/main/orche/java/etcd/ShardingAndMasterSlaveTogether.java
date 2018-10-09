@@ -22,17 +22,16 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.jdbc.fixture.DataRepository;
-import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
-import io.shardingsphere.example.jdbc.fixture.algorithm.PreciseModuloDatabaseShardingAlgorithm;
+import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
-import io.shardingsphere.example.jdbc.fixture.algorithm.RangeModuloDatabaseShardingAlgorithm;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.example.repository.jdbc.JDBCRepository;
+import io.shardingsphere.example.jdbc.util.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -50,7 +49,7 @@ public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new DataRepository(dataSource).demo(false);
+        new JDBCRepository(dataSource).demo();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     
@@ -68,7 +67,7 @@ public class ShardingAndMasterSlaveTogether {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseModuloDatabaseShardingAlgorithm(), new RangeModuloDatabaseShardingAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(

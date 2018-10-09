@@ -21,10 +21,10 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.jdbc.fixture.DataRepository;
-import io.shardingsphere.example.jdbc.fixture.DataSourceUtil;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import io.shardingsphere.example.repository.jdbc.JDBCRepository;
+import io.shardingsphere.example.jdbc.util.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,7 +35,7 @@ import java.util.Properties;
 public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getDataSource()).demo(true);
+        new JDBCRepository(getDataSource()).demo();
     }
     
     private static DataSource getDataSource() throws SQLException {

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.main.orche.etcd;
 
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service.DemoService;
+import io.shardingsphere.example.repository.mybatis.service.DemoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithDatabases {

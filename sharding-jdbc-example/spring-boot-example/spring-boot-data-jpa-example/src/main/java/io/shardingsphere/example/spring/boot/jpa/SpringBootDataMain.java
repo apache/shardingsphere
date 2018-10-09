@@ -17,11 +17,15 @@
 
 package io.shardingsphere.example.spring.boot.jpa;
 
-import io.shardingsphere.example.spring.boot.jpa.service.DemoService;
+import io.shardingsphere.example.repository.jpa.service.DemoService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
+@ComponentScan({ "io.shardingsphere.example.repository.jpa" })
+@EntityScan( basePackages = {"io.shardingsphere.example.repository.jpa"})
 @SpringBootApplication
 public class SpringBootDataMain {
     
