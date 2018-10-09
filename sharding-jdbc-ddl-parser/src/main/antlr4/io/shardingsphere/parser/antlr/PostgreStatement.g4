@@ -1,9 +1,9 @@
 grammar PostgreStatement;
 
-import PostgreCreateIndex, PostgreAlterIndex, PostgreDropIndex, PostgreCreateTable, PostgreAlterTable, PostgreDropTable, PostgreTruncateTable;
+import PostgreBase, PostgreCreateIndex, PostgreAlterIndex, PostgreDropIndex, PostgreCreateTable, PostgreAlterTable, PostgreDropTable, PostgreTruncateTable;
 
-execute:
-     createIndex
+execute
+    : createIndex
     | alterIndex
     | dropIndex
     | createTable

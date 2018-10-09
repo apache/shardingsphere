@@ -1,9 +1,9 @@
 grammar MySQLStatement;
 
-import MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable;
+import MySQLBase, MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable;
 
-execute:
-    | select
+execute
+    : select
     | insert
     | update
     | delete

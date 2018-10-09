@@ -2,8 +2,8 @@ grammar OracleStatement;
 
 import OracleCreateIndex, OracleAlterIndex, OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable;
 
-execute:
-     createIndex
+execute
+    : createIndex
     | alterIndex
     | dropIndex
     | createTable
