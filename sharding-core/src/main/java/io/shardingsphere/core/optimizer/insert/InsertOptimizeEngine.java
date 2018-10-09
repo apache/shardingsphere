@@ -81,7 +81,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 }
                 String expression;
                 Number currentGeneratedKey = generatedKeys.next();
-                if (0 == parameters.size()) {
+                if (parameters.isEmpty()) {
                     if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
                         expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey.toString() + ")";
                     } else {
