@@ -1,6 +1,6 @@
 grammar OracleDropIndex;
 
-import OracleKeyword, BaseRule;
+import OracleKeyword, Keyword, BaseRule;
 
 dropIndex
     : DROP INDEX indexName

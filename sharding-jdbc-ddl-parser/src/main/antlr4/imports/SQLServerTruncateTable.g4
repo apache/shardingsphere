@@ -1,6 +1,6 @@
 grammar SQLServerTruncateTable;
 
-import SQLServerKeyword, SQLServerBase, BaseRule;
+import SQLServerKeyword, Keyword, SQLServerBase, BaseRule;
 
 truncateTable
     : TRUNCATE TABLE tableName

@@ -1,6 +1,6 @@
 grammar OracleTruncateTable;
 
-import OracleKeyword, BaseRule;
+import OracleKeyword, Keyword, BaseRule;
 
 truncateTable
     : TRUNCATE TABLE tableName

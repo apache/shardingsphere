@@ -1,6 +1,6 @@
 grammar PostgreAlterIndex;
 
-import PostgreKeyword, PostgreBase, BaseRule;
+import PostgreKeyword, Keyword, PostgreBase, BaseRule;
 
 alterIndex
     : alterIndexName renameIndex

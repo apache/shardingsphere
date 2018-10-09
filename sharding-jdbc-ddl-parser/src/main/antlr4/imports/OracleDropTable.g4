@@ -1,6 +1,6 @@
 grammar OracleDropTable;
 
-import OracleKeyword, BaseRule;
+import OracleKeyword, Keyword, BaseRule;
 
 dropTable
     : DROP TABLE tableName
