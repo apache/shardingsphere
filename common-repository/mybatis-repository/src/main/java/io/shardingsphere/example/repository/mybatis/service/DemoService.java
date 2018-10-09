@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.repository.mybatis.service;
 
-import io.shardingsphere.example.repository.mybatis.entity.Order;
-import io.shardingsphere.example.repository.mybatis.entity.OrderItem;
+import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.mybatis.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.mybatis.repository.OrderRepository;
 import org.springframework.stereotype.Service;
