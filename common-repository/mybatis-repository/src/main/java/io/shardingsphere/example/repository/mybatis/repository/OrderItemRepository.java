@@ -17,14 +17,14 @@
 
 package io.shardingsphere.example.repository.mybatis.repository;
 
-import io.shardingsphere.example.repository.mybatis.entity.Order;
-import io.shardingsphere.example.repository.mybatis.entity.OrderItem;
+import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.Repository;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface OrderItemRepository {
+public interface OrderItemRepository extends Repository<OrderItem> {
     
     void createIfNotExistsTable();
     
@@ -36,5 +36,5 @@ public interface OrderItemRepository {
     
     void dropTable();
     
-    List<Order> selectAll();
+    List<OrderItem> selectAll();
 }
