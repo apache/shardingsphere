@@ -37,18 +37,12 @@ public class DefaultConfigurationRepresenter extends Representer {
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         Node valueNode = tuple.getValueNode();
-        if (Tag.NULL.equals(valueNode.getTag())) {
-            return null;
-        }
-        if (valueNode instanceof CollectionNode) {
-            if (Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty()) {
-                return null;
-            }
-            if (Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty()) {
-                return null;
-            }
-        }
-        return tuple;
+        
+        return isUnwantedNodeTuple(tuple.getValueNode()) ? null : tuple;
+    }
+    
+    private boolean isUnwantedNodeTuple(final Node valueNode) {
+        return isNullNode(valueNode) || isEmptyCollectionNode(valueNode);
     }
     
     private boolean isNullNode(final Node valueNode) {
