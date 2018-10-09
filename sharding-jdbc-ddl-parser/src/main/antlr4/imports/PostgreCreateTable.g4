@@ -30,7 +30,3 @@ likeOption
 inheritClause
     : INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN
     ;
-
-partitionOfParent
-    : PARTITION OF tableName
-    ;
