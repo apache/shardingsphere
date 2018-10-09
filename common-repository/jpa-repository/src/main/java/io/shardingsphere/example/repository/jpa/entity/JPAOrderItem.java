@@ -17,6 +17,8 @@
 
 package io.shardingsphere.example.repository.jpa.entity;
 
+import io.shardingsphere.example.repository.api.entity.OrderItem;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +29,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "t_order_item")
-public class OrderItem implements Serializable {
+public class JPAOrderItem extends OrderItem implements Serializable {
     
     private static final long serialVersionUID = 263434701950670170L;
     
