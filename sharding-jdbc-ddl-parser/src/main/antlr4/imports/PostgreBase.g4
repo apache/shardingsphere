@@ -107,7 +107,20 @@ tableConstraintOption
     : checkOption
     | UNIQUE columnList indexParameters
     | primaryKey columnList indexParameters
-    | FOREIGN KEY columnList REFERENCES tableName columnList
+    | FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
+    ;
+
+foreignKeyOnAction
+    : ON UPDATE foreignKeyOn
+    | ON DELETE foreignKeyOn
+    ;
+
+foreignKeyOn
+    : RESTRICT
+    | CASCADE
+    | SET NULL
+    | NO ACTION
+    | SET DEFAULT
     ;
 
 excludeElement
