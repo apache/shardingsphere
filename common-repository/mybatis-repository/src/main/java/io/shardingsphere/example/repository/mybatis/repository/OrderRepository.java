@@ -17,11 +17,12 @@
 
 package io.shardingsphere.example.repository.mybatis.repository;
 
-import io.shardingsphere.example.repository.mybatis.entity.Order;
+import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.repository.Repository;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface OrderRepository {
+public interface OrderRepository extends Repository<Order> {
     
     void createIfNotExistsTable();
     
@@ -31,5 +32,4 @@ public interface OrderRepository {
     
     void delete(Long orderId);
     
-    void dropTable();
 }
