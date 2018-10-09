@@ -57,12 +57,18 @@ public class DemoService {
             item.setStatus("INSERT_TEST");
             orderItemRepository.insert(item);
         }
+        System.out.println("Order Data--------------");
+        System.out.println(orderRepository.selectAll());
+        System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
         }
+        System.out.println("Order Data--------------");
+        System.out.println(orderRepository.selectAll());
+        System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
         orderItemRepository.dropTable();
         orderRepository.dropTable();
