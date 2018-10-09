@@ -24,12 +24,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OrderRepository extends Repository<Order> {
     
-    void createIfNotExistsTable();
-    
-    void truncateTable();
-    
     Long insert(Order model);
-    
-    void delete(Long orderId);
-    
 }
