@@ -28,12 +28,21 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * Datasource parameter representer.
  *
  * @author panjuan
  */
 public class DataSourceParameterRepresenter extends Representer {
+    
+    private static Collection<String> reservedNodeNames = new HashSet<>();
+    
+    static {
+        reservedNodeNames.add("password");
+    }
     
     public DataSourceParameterRepresenter() {
         super();
