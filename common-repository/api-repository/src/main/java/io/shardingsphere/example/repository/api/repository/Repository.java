@@ -21,7 +21,7 @@ import io.shardingsphere.example.repository.api.entity.Order;
 
 import java.util.List;
 
-public interface OrderItemRepository<T> {
+public interface Repository<T> {
     
     void createIfNotExistsTable();
     
