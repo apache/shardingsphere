@@ -43,8 +43,6 @@ public final class MasterSlaveConfigurationRepresenter extends Representer {
         nullRepresenter = new NullRepresent();
     }
     
-   
-    
     private class NullRepresent implements Represent {
         
         @Override
