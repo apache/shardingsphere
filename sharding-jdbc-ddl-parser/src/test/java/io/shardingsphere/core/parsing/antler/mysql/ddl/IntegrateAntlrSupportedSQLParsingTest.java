@@ -17,10 +17,14 @@
 
 package io.shardingsphere.core.parsing.antler.mysql.ddl;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.parser.antlr.MySQLStatementLexer;
+import io.shardingsphere.parser.antlr.MySQLStatementParser;
+import io.shardingsphere.parser.antlr.PostgreStatementLexer;
+import io.shardingsphere.parser.antlr.PostgreStatementParser;
+import io.shardingsphere.test.sql.SQLCaseType;
+import io.shardingsphere.test.sql.SQLCasesLoader;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -31,13 +35,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
-import io.shardingsphere.parser.antlr.MySQLStatementLexer;
-import io.shardingsphere.parser.antlr.MySQLStatementParser;
-import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.test.sql.SQLCasesLoader;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -61,19 +61,26 @@ public final class IntegrateAntlrSupportedSQLParsingTest {
         CodePointCharStream cs = CharStreams.fromString(sqlCasesLoader.getAntlrSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
         switch (databaseType) {
             case MySQL:
-                MySQLStatementLexer lexer = new MySQLStatementLexer(cs);
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                MySQLStatementParser parser = new MySQLStatementAdvancedParser(tokens);
-                parser.addErrorListener(new BaseErrorListener() {
+                MySQLStatementLexer mysqlStatementLexer = new MySQLStatementLexer(cs);
+                MySQLStatementParser mysqlStatementParser = new MySQLStatementParser(new CommonTokenStream(mysqlStatementLexer));
+                mysqlStatementParser.addErrorListener(new BaseErrorListener() {
                     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
                         throw new RuntimeException();
                     }
                 });
-                parser.execute();
+                mysqlStatementParser.execute();
                 break;
             case Oracle:
                 break;
             case PostgreSQL:
+                PostgreStatementLexer postgreStatementLexer = new PostgreStatementLexer(cs);
+                PostgreStatementParser postgreStatementParser = new PostgreStatementParser(new CommonTokenStream(postgreStatementLexer));
+                postgreStatementParser.addErrorListener(new BaseErrorListener() {
+                    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+                        throw new RuntimeException();
+                    }
+                });
+                postgreStatementParser.execute();
                 break;
             case SQLServer:
                 break;
