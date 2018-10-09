@@ -47,27 +47,11 @@ public final class ShardingConfigurationRepresenter extends Representer {
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        Node valueNode = tuple.getValueNode();
-        Node keyNode = tuple.getKeyNode();
-        if (isEliminatedNode(keyNode)) {
-            return null;
-        }
-        if (Tag.NULL.equals(valueNode.getTag())) {
-            return null;
-        }
-        if (valueNode instanceof CollectionNode) {
-            if (Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty()) {
-                return null;
-            }
-            if (Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty()) {
-                return null;
-            }
-        }
-        return tuple;
+        return isUnwantedNodeTuple(tuple) ? null : tuple;
     }
     
     private boolean isUnwantedNodeTuple(final NodeTuple tuple) {
-        
+        return isEliminatedNode(tuple.getKeyNode()) || isNullNode(tuple.getValueNode()) || isEmptyCollectionNode(tuple.getValueNode());
     }
     
     private boolean isEliminatedNode(final Node keyNode) {
@@ -79,11 +63,7 @@ public final class ShardingConfigurationRepresenter extends Representer {
     }
     
     private boolean isEmptyCollectionNode(final Node valueNode) {
-        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode))
-        if (valueNode instanceof CollectionNode) {
-            return (Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty()) || (Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty());
-        }
-        return false;
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode) || isEmptyMappingNode(valueNode));
     }
     
     private boolean isEmptySequenceNode(final Node valueNode) {
