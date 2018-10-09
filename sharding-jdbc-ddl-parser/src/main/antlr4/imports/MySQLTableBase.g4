@@ -7,24 +7,18 @@ columnDefinition
     ;
 
 dataType
-    : (INTEGER | INT | TINYINT | SMALLINT | MEDIUMINT | BIGINT) dataTypeLength? UNSIGNED? ZEROFILL?
-    | (DECIMAL | DEC | NUMERIC | FIXED) dataTypeLength? UNSIGNED? ZEROFILL?
-    | (FLOAT | DOUBLE | DOUBLE PRECISION) dataTypeLength? UNSIGNED? ZEROFILL?
-    | BIT dataTypeLength?
-    | (BOOL | BOOLEAN)
-    | DATE
-    | (DATETIME | TIMESTAMP | TIME | YEAR) dataTypeLength?
-    | (NATIONAL? CHAR | NATIONAL? VARCHAR | TEXT) dataTypeLength? characterSet? collateClause?
-    | (BINARY | VARBINARY | BLOB) dataTypeLength?
-    | (TINYBLOB | MEDIUMBLOB | LONGBLOB)
-    | (TINYTEXT | MEDIUMTEXT | LONGTEXT) characterSet? collateClause?
-    | (ENUM | SET) (LEFT_PAREN STRING (COMMA STRING)* RIGHT_PAREN characterSet? collateClause?)
-    | (GEOMETRY | POINT | LINESTRING | POLYGON | MULTIPOINT | MULTILINESTRING | MULTIPOLYGON | GEOMETRYCOLLECTION | JSON)
+    : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
+    | typeName (LEFT_PAREN STRING (COMMA STRING)* RIGHT_PAREN characterSet? collateClause?)
+    ;
+ 
+ typeName
+    : DOUBLE PRECISION
+    | ID
     ;
 
 dataTypeOption
     : dataTypeGeneratedOption
-    | DEFAULT defaultValue
+    | DEFAULT? defaultValue
     | AUTO_INCREMENT
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK|MEMORY|DEFAULT)
@@ -43,10 +37,11 @@ defaultValue
     | NUMBER
     | STRING
     | currentTimestampType (ON UPDATE currentTimestampType)?
+    | ON UPDATE currentTimestampType
     ;
 
 currentTimestampType
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW) dataTypeLength?
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER) dataTypeLength?
     ;
 
 referenceDefinition

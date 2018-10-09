@@ -45,7 +45,7 @@ indexOption
     | indexType
     | WITH PARSER parserName
     | COMMENT STRING
-;
+    ;
 
 valueListWithParen
     : LEFT_PAREN valueList RIGHT_PAREN
