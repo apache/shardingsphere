@@ -54,6 +54,15 @@ public class DataSourceParameterRepresenter extends Representer {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         Node valueNode = tuple.getValueNode();
         Node keyNode = tuple.getKeyNode();
+        
+        if (isWantedNodeTuple(tuple.getKeyNode())) {
+            return tuple;
+        }
+        
+        if (isUnwantedNodeTuple(tuple.getValueNode())) {
+            return null;
+        }
+        
         if (keyNode instanceof ScalarNode && ((ScalarNode) keyNode).getValue().equals("password")) {
             return tuple;
         }
@@ -69,6 +78,14 @@ public class DataSourceParameterRepresenter extends Representer {
             }
         }
         return tuple;
+    }
+    
+    private boolean isWantedNodeTuple(final Node keyNode) {
+        return keyNode instanceof ScalarNode && reservedNodeNames.contains(((ScalarNode) keyNode).getValue());
+    }
+    
+    private boolean isUnwantedNodeTuple(final Node valueNode) {
+        return isNullNode(valueNode) || isEmptyCollectionNode(valueNode);
     }
     
     private boolean isNullNode(final Node valueNode) {
