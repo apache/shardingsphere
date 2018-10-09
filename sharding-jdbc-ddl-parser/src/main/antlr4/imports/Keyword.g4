@@ -2,169 +2,282 @@ lexer grammar Keyword;
 
 import Symbol;
     
-SELECT: S E L E C T;
-ALL: A L L;
-ANY: A N Y;
-DISTINCT: D I S T I N C T;
+ALL
+    : A L L
+    ;
 
-FROM: F R O M;
-PARTITION: P A R T I T I O N;
-WHERE: W H E R E;
-GROUP: G R O U P;
-BY: B Y;
-ASC: A S C;
-DESC: D E S C;
-WITH: W I T H;
-RECURSIVE: R E C U R S I V E;
-ROLLUP: R O L L U P;
-HAVING: H A V I N G;
-WINDOW: W I N D O W;
-AS: A S;
-ORDER: O R D E R;
-LIMIT: L I M I T;
-OFFSET: O F F S E T;
-INTO: I N T O;
+AND
+    : A N D
+    ;
 
-ALTER: A L T E R;
-CREATE: C R E A T E;
-TEMPORARY: T E M P O R A R Y;
-TABLE: T A B L E;
-COLUMN: C O L U M N;
-ADD: A D D;
-DROP: D R O P;
-ENABLE: E N A B L E;
-DISABLE: D I S A B L E;
-CONSTRAINT: C O N S T R A I N T;
-UNIQUE: U N I Q U E;
-FULLTEXT: F U L L T E X T;
-FOREIGN: F O R E I G N;
-NONE: N O N E;
-MODIFY: M O D I F Y; 
-RENAME: R E N A M E;
-VALIDATION: V A L I D A T I O N;
-IMPORT_: I M P O R T;
-TABLESPACE: T A B L E S P A C E;
-TRUNCATE: T R U N C A T E; 
-ANALYZE: A N A L Y Z E; 
-CHECK: C H E C K;
-OPTIMIZE: O P T I M I Z E;
-REBUILD: R E B U I L D;
-REPAIR: R E P A I R;
-REMOVE: R E M O V E;
-UPGRADE: U P G R A D E;
-TO: T O;
-COPY: C O P Y;
-PRIMARY: P R I M A R Y;
-KEYS: K E Y S;
-WITHOUT: W I T H O U T;
-COALESCE: C O A L E S C E;
+ANY
+    : A N Y
+    ;
 
-SET: S E T;
-FOR: F O R;
-UPDATE: U P D A T E;
-SHARE: S H A R E;
-OF: O F;
-NOWAIT: N O W A I T;
+AS
+    : A S
+    ;
 
-LOCKED: L O C K E D;
-LOCK: L O C K;
-IN: I N;
-MODE: M O D E;
+ASC
+    : A S C
+    ;
 
-INNER: I N N E R;
-CROSS: C R O S S;
-JOIN: J O I N;
-ON: O N;
-LEFT: L E F T;
-RIGHT: R I G H T;
-OUTER: O U T E R;
-NATURAL: N A T U R A L;
-USING: U S I N G;
-USE: U S E;
-INDEX: I N D E X;
-KEY: K E Y;
-IGNORE: I G N O R E;
-FORCE: F O R C E;
-UNION: U N I O N;
+BETWEEN
+    : B E T W E E N
+    ;
 
+BINARY
+    : B I N A R Y
+    ;
 
-DEFAULT: D E F A U L T;
-DELETE: D E L E T E;
-QUICK: Q U I C K;
-INSERT: I N S E R T;
+BIT_INCLUSIVE_OR
+    : B I T UL_ I N C L U S I V E UL_ O R
+    ;
 
-VALUES: V A L U E S;
-VALUE: V A L U E;
-DUPLICATE: D U P L I C A T E;
+BIT_NUM
+    : B I T UL_ N U M
+    ;
 
-EXISTS: E X I S T S;
-IS: I S;
-AND: A N D;
-OR: O R;
-XOR: X O R;
-NOT: N O T;
+BY
+    : B Y
+    ;
 
+DATE
+    : D A T E
+    ;
 
-BETWEEN: B E T W E E N;
-NULL: N U L L;
-TRUE:T R U E;
-FALSE : F A L S E;
-UNKNOWN: U N K N O W N;
+DESC
+    : D E S C
+    ;
 
-SOUNDS: S O U N D S; 
-LIKE: L I K E;
-DIV: D I V;
-MOD: M O D;
-ROW: R O W;
-ESCAPE: E S C A P E;
-REGEXP: R E G E X P; 
+DIV
+    : D I V
+    ;
 
-CASE: C A S E;
-WHEN: W H E N;
-THEN: T H E N;
-IF: I F;
-ELSE: E L S E;
-END: E N D;
+ESCAPE
+    : E S C A P E
+    ;
 
+EXISTS
+    : E X I S T S
+    ;
 
+FALSE
+    : F A L S E
+    ;
 
-BIT: B I T;
-TINYINT: T I N Y I N T;
-UNSIGNED: U N S I G N E D;
-ZEROFILL: Z E R O F I L L;
-SMALLINT: S M A L L I N T;
-MEDIUMINT: M E D I U M I N T;
-INT: I N T;
-INTEGER: I N T E G E R;
-BIGINT: B I G I N T;
-REAL: R E A L;
-DOUBLE: D O U B L E;
-FLOAT: F L O A T;
-DECIMAL: D E C I M A L;
-NUMERIC: N U M E R I C;
-DATE: D A T E;
-TIME: T I M E;
-TIMESTAMP: T I M E S T A M P;
-CURRENT_TIMESTAMP: C U R R E N T UL_ T I M E S T A M P;
-DATETIME: D A T E T I M E;
-YEAR: Y E A R;
-CHAR: C H A R;
-VARCHAR: V A R C H A R;
-BINARY: B  I N A R Y;
-VARBINARY: V A R B  I N A R Y;
-TINYBLOB: T I N Y B L O B;
-BLOB: B L O B;
-MEDIUMBLOB: M E D I U M B L O B;
-LONGBLOB: L O N G B L O B;
-TINYTEXT: T I N Y T E X T;
-TEXT: T E X T;
-MEDIUMTEXT: M E D I U M T E X T;
-LONGTEXT: L O N G T E X T;
-ENUM: E N U M;
-JSON: J S O N;
+FROM
+    : F R O M
+    ;
 
-REPLACE: R E P L A C E;
+GROUP
+    : G R O U P
+    ;
 
-RANGE: R A N G E;
-LIST: L I S T;
-COMMIT: C O M M I T;
+HAVING
+    : H A V I N G
+    ;
+
+IF
+    : I F
+    ;
+
+IN
+    : I N
+    ;
+
+IS
+    : I S
+    ;
+
+KEY
+    : K E Y
+    ;
+
+LIKE
+    : L I K E
+    ;
+
+LIMIT
+    : L I M I T
+    ;
+
+MOD
+    : M O D
+    ;
+
+NOT
+    : N O T
+    ;
+
+NULL
+    : N U L L
+    ;
+
+OFFSET
+    : O F F S E T
+    ;
+
+OR
+    : O R
+    ;
+
+ORDER
+    : O R D E R
+    ;
+
+PARTITION
+    : P A R T I T I O N
+    ;
+
+PRIMARY
+    : P R I M A R Y
+    ;
+
+RECURSIVE
+    : R E C U R S I V E
+    ;
+
+REGEXP
+    : R E G E X P
+    ;
+
+ROLLUP
+    : R O L L U P
+    ;
+
+ROW
+    : R O W
+    ;
+
+SELECT
+    : S E L E C T
+    ;
+
+SET
+    : S E T
+    ;
+
+SOUNDS
+    : S O U N D S
+    ;
+
+TIME
+    : T I M E
+    ;
+
+TIMESTAMP
+    : T I M E S T A M P
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+UNION
+    : U N I O N
+    ;
+
+UNKNOWN
+    : U N K N O W N
+    ;
+
+WHERE
+    : W H E R E
+    ;
+
+WITH
+    : W I T H
+    ;
+
+XOR
+    : X O R
+    ;
+
+ADD
+    : A D D
+    ;
+
+ALTER
+    : A L T E R
+    ;
+
+ALWAYS
+    : A L W A Y S
+    ;
+
+CASCADE
+    : C A S C A D E
+    ;
+
+CHECK
+    : C H E C K
+    ;
+
+COLUMN
+    : C O L U M N
+    ;
+
+CONSTRAINT
+    : C O N S T R A I N T
+    ;
+
+CREATE
+    : C R E A T E
+    ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+
+DELETE
+    : D E L E T E
+    ;
+
+DROP
+    : D R O P
+    ;
+
+FOREIGN
+    : F O R E I G N
+    ;
+
+GENERATED
+    : G E N E R A T E D
+    ;
+
+INDEX
+    : I N D E X
+    ;
+
+NO
+    : N O
+    ;
+
+ON
+    : O N
+    ;
+
+REFERENCES
+    : R E F E R E N C E S
+    ;
+
+TABLE
+    : T A B L E
+    ;
+
+TO
+    : T O
+    ;
+
+TRUNCATE
+    : T R U N C A T E
+    ;
+
+UNIQUE
+    : U N I Q U E
+    ;
+
+YEAR
+    : Y E A R
+    ;
