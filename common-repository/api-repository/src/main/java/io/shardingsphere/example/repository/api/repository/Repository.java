@@ -25,11 +25,11 @@ public interface Repository<T> {
     
     void truncateTable();
     
+    void dropTable();
+    
     Long insert(T model);
     
     void delete(Long id);
-    
-    void dropTable();
     
     List<T> selectAll();
 }
