@@ -30,7 +30,7 @@ public class MasterSlaveOnly {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
-        new DataRepository(dataSource).demo();
+        new DataRepository(dataSource).demo(true);
     }
     
     private static File getYamlFile() {

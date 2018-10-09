@@ -45,7 +45,7 @@ public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new DataRepository(dataSource).demo();
+        new DataRepository(dataSource).demo(true);
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     

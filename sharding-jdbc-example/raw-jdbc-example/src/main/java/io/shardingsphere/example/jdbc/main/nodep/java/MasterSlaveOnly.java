@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MasterSlaveOnly {
     
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getDataSource()).demo();
+        new DataRepository(getDataSource()).demo(false);
     }
     
     private static DataSource getDataSource() throws SQLException {

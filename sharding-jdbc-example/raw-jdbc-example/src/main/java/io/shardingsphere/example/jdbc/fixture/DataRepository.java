@@ -32,15 +32,17 @@ public class DataRepository {
         this.dataSource = dataSource;
     }
     
-    public void demo() throws SQLException {
+    public void demo(boolean isInlineStrategy) throws SQLException {
         createTable();
         insertData();
         System.out.println("1.Query with EQUAL--------------");
         queryWithEqual();
         System.out.println("2.Query with IN--------------");
         queryWithIn();
-        System.out.println("3.Query with Range--------------");
-        queryWithRange();
+        if (!isInlineStrategy) {
+            System.out.println("3.Query with Range--------------");
+            queryWithRange();
+        }
         System.out.println("4.Drop tables--------------");
         dropTable();
         System.out.println("5.All done-----------");

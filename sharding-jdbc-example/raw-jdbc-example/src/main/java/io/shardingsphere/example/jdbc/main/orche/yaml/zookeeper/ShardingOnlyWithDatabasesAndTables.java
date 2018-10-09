@@ -30,7 +30,7 @@ public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
-        new DataRepository(dataSource).demo();
+        new DataRepository(dataSource).demo(true);
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     

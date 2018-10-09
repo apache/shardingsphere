@@ -30,7 +30,7 @@ public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getYamlFile());
-        new DataRepository(dataSource).demo();
+        new DataRepository(dataSource).demo(true);
     }
     
     private static File getYamlFile() {

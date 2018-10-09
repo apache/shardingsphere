@@ -35,7 +35,7 @@ import java.util.Properties;
 public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws SQLException {
-        new DataRepository(getDataSource()).demo();
+        new DataRepository(getDataSource()).demo(true);
     }
     
     private static DataSource getDataSource() throws SQLException {
