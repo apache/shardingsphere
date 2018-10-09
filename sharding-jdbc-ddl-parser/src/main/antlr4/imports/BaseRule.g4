@@ -53,66 +53,66 @@ nullNotnull
     | NOT NULL
     ;
 
-primaryKey:
-	PRIMARY KEY
+primaryKey
+	: PRIMARY KEY
 	;
 
-matchNone:
-    'Default does not match anything'
+matchNone
+    : 'Default does not match anything'
     ;
     
-idList:
-    LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
+idList
+    : LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
     ;
 
-rangeClause:
-    NUMBER (COMMA  NUMBER)* 
+rangeClause
+    : NUMBER (COMMA  NUMBER)* 
     | NUMBER OFFSET NUMBER
     ;
 
-tableNamesWithParen:
-    LEFT_PAREN tableNames RIGHT_PAREN
+tableNamesWithParen
+    : LEFT_PAREN tableNames RIGHT_PAREN
     ;
 
-tableNames:
-    tableName (COMMA tableName)*
+tableNames
+    : tableName (COMMA tableName)*
     ;
 
-columnNamesWithParen:
-    LEFT_PAREN columnNames RIGHT_PAREN
+columnNamesWithParen
+    : LEFT_PAREN columnNames RIGHT_PAREN
     ;
 
-columnNames:
-    columnName (COMMA columnName)*
+columnNames
+    : columnName (COMMA columnName)*
     ;
     
-columnList:
-    LEFT_PAREN columnNames RIGHT_PAREN
+columnList
+    : LEFT_PAREN columnNames RIGHT_PAREN
     ;
 
-indexNames:
-    indexName (COMMA indexName)*
+indexNames
+    : indexName (COMMA indexName)*
     ;
 
-rowNames:
-    rowName (COMMA rowName)*
+rowNames
+    : rowName (COMMA rowName)*
     ;
     
 bitExprs:
-     bitExpr (COMMA bitExpr)*
-     ;
+    bitExpr (COMMA bitExpr)*
+    ;
 
-exprs:
-     expr (COMMA expr)*
-     ;
+exprs
+    : expr (COMMA expr)*
+    ;
  
-exprsWithParen:
-    LEFT_PAREN exprs RIGHT_PAREN
+exprsWithParen
+    : LEFT_PAREN exprs RIGHT_PAREN
     ;
 
 //https://dev.mysql.com/doc/refman/8.0/en/expressions.html
-expr:
-    expr OR expr
+expr
+    : expr OR expr
     | expr OR_SYM  expr
     | expr XOR expr
     | expr AND expr
@@ -125,24 +125,30 @@ expr:
     | exprRecursive
     ;
 
-exprRecursive:
-    matchNone
+exprRecursive
+    : matchNone
     ;
     
-booleanPrimary:
-    booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
-      | booleanPrimary SAFE_EQ predicate
-     | booleanPrimary comparisonOperator predicate
-      | booleanPrimary comparisonOperator (ALL | ANY) subquery
-      | predicate
-      ;
-
-comparisonOperator:
-    EQ_OR_ASSIGN | GTE | GT | LTE | LT | NEQ_SYM | NEQ
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
+    | booleanPrimary SAFE_EQ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | predicate
     ;
 
-predicate:
-    bitExpr NOT? IN subquery
+comparisonOperator
+    : EQ_OR_ASSIGN 
+    | GTE 
+    | GT 
+    | LTE 
+    | LT 
+    | NEQ_SYM 
+    | NEQ
+    ;
+
+predicate
+    : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LEFT_PAREN simpleExpr ( COMMA  simpleExpr)* RIGHT_PAREN
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
@@ -151,8 +157,8 @@ predicate:
     | bitExpr
     ;
   
-bitExpr:
-    bitExpr BIT_INCLUSIVE_OR bitExpr
+bitExpr
+    : bitExpr BIT_INCLUSIVE_OR bitExpr
     | bitExpr BIT_AND bitExpr
     | bitExpr SIGNED_LEFT_SHIFT bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT bitExpr
@@ -160,7 +166,6 @@ bitExpr:
     | bitExpr MINUS bitExpr
     | bitExpr ASTERISK bitExpr
     | bitExpr SLASH bitExpr
-    | bitExpr DIV bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_SYM bitExpr
     | bitExpr BIT_EXCLUSIVE_OR bitExpr
@@ -169,8 +174,8 @@ bitExpr:
     | simpleExpr
     ;
     
-simpleExpr:
-    functionCall
+simpleExpr
+    : functionCall
     | liter
     | ID
     | simpleExpr collateClause
@@ -195,39 +200,39 @@ simpleExpr:
     |privateExprOfDb
     ;
 
-functionCall:
-    ID LEFT_PAREN( bitExprs?) RIGHT_PAREN
+functionCall
+    : ID LEFT_PAREN( bitExprs?) RIGHT_PAREN
     ;    
  
- privateExprOfDb:
-     matchNone
-     ;
+privateExprOfDb
+    : matchNone
+    ;
      
-liter:
-    QUESTION
-    |NUMBER
-    |TRUE 
-    |FALSE
-    |NULL
-    |LEFT_BRACE ID STRING RIGHT_BRACE //
-    |HEX_DIGIT
-    |ID? STRING  collateClause?
-    |(DATE | TIME |TIMESTAMP)STRING
-    |ID? BIT_NUM collateClause?
+liter
+    : QUESTION
+    | NUMBER
+    | TRUE 
+    | FALSE
+    | NULL
+    | LEFT_BRACE ID STRING RIGHT_BRACE
+    | HEX_DIGIT
+    | ID? STRING  collateClause?
+    | (DATE | TIME |TIMESTAMP) STRING
+    | ID? BIT_NUM collateClause?
     ; 
 
-subquery:
-    matchNone
+subquery
+    : matchNone
     ;
 
-collateClause:
-    matchNone
+collateClause
+    : matchNone
     ;
 
-orderByClause: 
-    ORDER BY groupByItem (COMMA groupByItem)*
+orderByClause
+    : ORDER BY groupByItem (COMMA groupByItem)*
     ;
     
-groupByItem:
-    (columnName | NUMBER |expr)  (ASC|DESC)?
+groupByItem
+    : (columnName | NUMBER |expr)  (ASC|DESC)?
     ;
