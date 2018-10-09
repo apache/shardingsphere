@@ -37,11 +37,11 @@ import java.util.HashSet;
  */
 public final class ShardingConfigurationRepresenter extends Representer {
     
-    private static Collection<String> eliminatedPropertyNames = new HashSet<>();
+    private static Collection<String> eliminatedNodeNames = new HashSet<>();
     
     static {
-        eliminatedPropertyNames.add("configMap");
-        eliminatedPropertyNames.add("props");
+        eliminatedNodeNames.add("configMap");
+        eliminatedNodeNames.add("props");
     }
     
     @Override
@@ -71,6 +71,6 @@ public final class ShardingConfigurationRepresenter extends Representer {
     }
     
     private boolean isEliminatedNode(final Node keyNode) {
-        return keyNode instanceof ScalarNode && eliminatedPropertyNames.contains(((ScalarNode) keyNode).getValue());
+        return keyNode instanceof ScalarNode && eliminatedNodeNames.contains(((ScalarNode) keyNode).getValue());
     }
 }
