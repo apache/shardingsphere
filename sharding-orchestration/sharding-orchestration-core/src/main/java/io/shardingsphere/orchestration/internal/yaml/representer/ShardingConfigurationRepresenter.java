@@ -49,7 +49,7 @@ public final class ShardingConfigurationRepresenter extends Representer {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         Node valueNode = tuple.getValueNode();
         Node keyNode = tuple.getKeyNode();
-        if (isEliminatedPropertyName(keyNode)) {
+        if (isEliminatedNode(keyNode)) {
             return null;
         }
         if (Tag.NULL.equals(valueNode.getTag())) {
@@ -66,7 +66,11 @@ public final class ShardingConfigurationRepresenter extends Representer {
         return tuple;
     }
     
-    private boolean isEliminatedPropertyName(final Node keyNode) {
+    private boolean isUnwantedNodeTuple(final NodeTuple tuple) {
+        
+    }
+    
+    private boolean isEliminatedNode(final Node keyNode) {
         return keyNode instanceof ScalarNode && eliminatedPropertyNames.contains(((ScalarNode) keyNode).getValue());
     }
 }
