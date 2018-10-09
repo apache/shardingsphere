@@ -42,18 +42,14 @@ public class JPAOrderItem extends OrderItem implements Serializable {
     }
     
     @Column(name = "order_id")
+    @Override
     public long getOrderId() {
         return super.getOrderId();
     }
     
     @Column(name = "user_id")
+    @Override
     public int getUserId() {
         return super.getUserId();
-    }
-    
-    
-    @Override
-    public String toString() {
-        return String.format("order_item_id: %s, order_id: %s, user_id: %s", orderItemId, orderId, userId);
     }
 }
