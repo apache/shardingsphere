@@ -79,6 +79,7 @@ public final class ShardingConfigurationRepresenter extends Representer {
     }
     
     private boolean isEmptyCollectionNode(final Node valueNode) {
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode))
         if (valueNode instanceof CollectionNode) {
             return (Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty()) || (Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty());
         }
@@ -89,7 +90,7 @@ public final class ShardingConfigurationRepresenter extends Representer {
         return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
     }
     
-    private boolean MappingNode(final Node valueNode) {
+    private boolean isEmptyMappingNode(final Node valueNode) {
         return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
     }
 }
