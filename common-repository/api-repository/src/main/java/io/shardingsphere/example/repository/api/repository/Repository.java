@@ -17,8 +17,6 @@
 
 package io.shardingsphere.example.repository.api.repository;
 
-import io.shardingsphere.example.repository.api.entity.Order;
-
 import java.util.List;
 
 public interface Repository<T> {
@@ -33,5 +31,5 @@ public interface Repository<T> {
     
     void dropTable();
     
-    List<Order> selectAll();
+    List<T> selectAll();
 }
