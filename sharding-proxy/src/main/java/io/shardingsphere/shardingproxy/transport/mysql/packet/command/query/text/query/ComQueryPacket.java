@@ -27,7 +27,7 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -84,14 +84,14 @@ public final class ComQueryPacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        if (ProxyContext.getInstance().isCircuitBreak()) {
+        if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == ProxyContext.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
+        if (TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready 

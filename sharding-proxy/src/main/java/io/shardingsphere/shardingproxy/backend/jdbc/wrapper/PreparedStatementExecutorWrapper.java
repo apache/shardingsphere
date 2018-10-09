@@ -25,7 +25,7 @@ import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.rewrite.MasterSlaveSQLRewriteEngine;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final RuleInstance ruleInstance;
     
@@ -60,7 +60,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String rewriteSQL = new MasterSlaveSQLRewriteEngine(ruleInstance.getMasterSlaveRule(), sql, sqlStatement, ruleInstance.getMetaData()).rewrite();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(ruleInstance.getMasterSlaveRule(), PROXY_CONTEXT.isShowSQL()).route(rewriteSQL)) {
+        for (String each : new MasterSlaveRouter(ruleInstance.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.<List<Object>>emptyList())));
         }
         return result;
@@ -68,7 +68,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         return new PreparedStatementRoutingEngine(
-                sql, ruleInstance.getShardingRule(), ruleInstance.getMetaData().getTable(), databaseType, PROXY_CONTEXT.isShowSQL(), ruleInstance.getMetaData().getDataSource()).route(parameters);
+                sql, ruleInstance.getShardingRule(), ruleInstance.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), ruleInstance.getMetaData().getDataSource()).route(parameters);
     }
     
     @Override

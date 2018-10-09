@@ -22,7 +22,7 @@ import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlConfigurationLoader;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
@@ -80,7 +80,7 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(
             final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        ProxyContext.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
+        GlobalRegistry.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -91,7 +91,7 @@ public final class Bootstrap {
             if (!ruleConfigs.isEmpty()) {
                 orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
             }
-            ProxyContext.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
+            GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
             initOpenTracing();
             new ShardingProxy().start(port);
@@ -99,7 +99,7 @@ public final class Bootstrap {
     }
     
     private static void initOpenTracing() {
-        if (ProxyContext.getInstance().isOpenTracingEnable()) {
+        if (GlobalRegistry.getInstance().isOpenTracingEnable()) {
             ShardingTracer.init();
         }
     }

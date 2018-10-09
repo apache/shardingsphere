@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -70,7 +70,7 @@ public final class ComStmtPreparePacketTest {
     
     @Before
     public void setUp() {
-        setProxyContextRuleInstanceMap();
+        setRuleInstanceMap();
         setFrontendHandlerSchema();
     }
     
@@ -81,15 +81,15 @@ public final class ComStmtPreparePacketTest {
     }
     
     @SneakyThrows
-    private void setProxyContextRuleInstanceMap() {
+    private void setRuleInstanceMap() {
         RuleInstance ruleInstance = mock(RuleInstance.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
         when(ruleInstance.getMetaData()).thenReturn(metaData);
         Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
         ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
-        Field field = ProxyContext.class.getDeclaredField("ruleInstanceMap");
+        Field field = GlobalRegistry.class.getDeclaredField("ruleInstanceMap");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), ruleInstanceMap);
+        field.set(GlobalRegistry.getInstance(), ruleInstanceMap);
     }
     
     private void setFrontendHandlerSchema() {

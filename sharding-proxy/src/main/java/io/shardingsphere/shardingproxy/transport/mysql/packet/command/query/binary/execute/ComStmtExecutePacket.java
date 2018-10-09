@@ -24,7 +24,7 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -139,7 +139,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
-        if (ProxyContext.getInstance().isCircuitBreak()) {
+        if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         return Optional.of(backendHandler.execute());

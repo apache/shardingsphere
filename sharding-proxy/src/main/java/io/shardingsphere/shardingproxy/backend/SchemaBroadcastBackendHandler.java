@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -50,7 +50,7 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         List<DatabasePacket> packets = new LinkedList<>();
-        for (String schema : ProxyContext.getInstance().getSchemaNames()) {
+        for (String schema : GlobalRegistry.getInstance().getSchemaNames()) {
             try (BackendConnection backendConnection = new BackendConnection()) {
                 BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, databaseType, schema);
                 CommandResponsePackets commandResponsePackets = backendHandler.execute();
@@ -63,12 +63,12 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         return false;
     }
     
     @Override
-    public ResultPacket getResultValue() throws SQLException {
+    public ResultPacket getResultValue() {
         return null;
     }
     

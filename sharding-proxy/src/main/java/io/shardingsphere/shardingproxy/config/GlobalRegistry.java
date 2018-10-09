@@ -44,15 +44,15 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Proxy context.
+ * Global registry.
  *
  * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ProxyContext {
+public final class GlobalRegistry {
     
-    private static final ProxyContext INSTANCE = new ProxyContext();
+    private static final GlobalRegistry INSTANCE = new GlobalRegistry();
     
     private List<String> schemaNames = new LinkedList<>();
     
@@ -61,8 +61,6 @@ public final class ProxyContext {
     private Authentication authentication;
     
     private boolean showSQL;
-    
-    private boolean useNIO;
     
     private int maxConnectionsSizePerQuery;
     
@@ -74,6 +72,8 @@ public final class ProxyContext {
     
     private boolean openTracingEnable;
     
+    private boolean useNIO;
+    
     private BackendNIOConfiguration backendNIOConfig;
     
     private boolean isCircuitBreak;
@@ -83,7 +83,7 @@ public final class ProxyContext {
      *
      * @return instance of proxy context.
      */
-    public static ProxyContext getInstance() {
+    public static GlobalRegistry getInstance() {
         return INSTANCE;
     }
     

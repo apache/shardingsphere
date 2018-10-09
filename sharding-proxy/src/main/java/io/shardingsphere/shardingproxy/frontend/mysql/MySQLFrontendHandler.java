@@ -22,10 +22,8 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.spi.root.RootInvokeHook;
-import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroup;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
@@ -43,6 +41,8 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.Authenti
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import io.shardingsphere.spi.root.RootInvokeHook;
+import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -75,7 +75,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
             HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
             if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
-                if (!Strings.isNullOrEmpty(response41.getDatabase()) && !ProxyContext.getInstance().schemaExists(response41.getDatabase())) {
+                if (!Strings.isNullOrEmpty(response41.getDatabase()) && !GlobalRegistry.getInstance().schemaExists(response41.getDatabase())) {
                     context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return;
                 }

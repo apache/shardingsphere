@@ -79,7 +79,7 @@ public final class RuleInstance {
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
         metaData = new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule, 
-                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), ProxyContext.getInstance().getMaxConnectionsSizePerQuery());
+                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {

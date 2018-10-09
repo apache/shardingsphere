@@ -34,7 +34,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -63,7 +63,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final RuleInstance ruleInstance;
     
@@ -98,14 +98,14 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
             TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleInstance.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
-                    new ProxyTableMetaDataConnectionManager(ruleInstance.getBackendDataSource()), PROXY_CONTEXT.getMaxConnectionsSizePerQuery());
+                    new ProxyTableMetaDataConnectionManager(ruleInstance.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
             ruleInstance.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleInstance.getShardingRule()));
         }
         return merge(sqlStatement);
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
-        return TransactionType.XA == ProxyContext.getInstance().getTransactionType() && SQLType.DDL == sqlType
+        return TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
     

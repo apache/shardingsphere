@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.config.RuleInstance;
 import lombok.Getter;
 
@@ -57,7 +57,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = ProxyContext.getInstance().getTransactionType();
+        TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
         Map<String, DataSourceParameter> dataSourceParameters = ruleInstance.getDataSources();
         // TODO getCircuitDataSourceMap if RuleInstance.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
         return getNormalDataSourceMap(transactionType, dataSourceParameters);
