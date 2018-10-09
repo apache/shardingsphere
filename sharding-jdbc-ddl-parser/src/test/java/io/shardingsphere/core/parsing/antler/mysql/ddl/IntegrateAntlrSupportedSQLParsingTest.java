@@ -17,12 +17,10 @@
 
 package io.shardingsphere.core.parsing.antler.mysql.ddl;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.parser.antlr.MySQLStatementLexer;
-import io.shardingsphere.parser.antlr.MySQLStatementParser;
-import io.shardingsphere.test.sql.SQLCaseType;
-import io.shardingsphere.test.sql.SQLCasesLoader;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -33,9 +31,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.MySQLStatementLexer;
+import io.shardingsphere.parser.antlr.MySQLStatementParser;
+import io.shardingsphere.test.sql.SQLCaseType;
+import io.shardingsphere.test.sql.SQLCasesLoader;
+import lombok.RequiredArgsConstructor;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -61,7 +63,7 @@ public final class IntegrateAntlrSupportedSQLParsingTest {
             case MySQL:
                 MySQLStatementLexer lexer = new MySQLStatementLexer(cs);
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
-                MySQLStatementParser parser = new MySQLStatementParser(tokens);
+                MySQLStatementParser parser = new MySQLStatementAdvancedParser(tokens);
                 parser.addErrorListener(new BaseErrorListener() {
                     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
                         throw new RuntimeException();
