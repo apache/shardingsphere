@@ -21,13 +21,13 @@ import java.util.List;
 
 public interface Repository<T> {
     
-    void createIfNotExistsTable();
-    
-    void truncateTable();
+    void createTableIfNotExists();
     
     void dropTable();
     
-    Long insert(T model);
+    void truncateTable();
+    
+    Long insert(T entity);
     
     void delete(Long id);
     

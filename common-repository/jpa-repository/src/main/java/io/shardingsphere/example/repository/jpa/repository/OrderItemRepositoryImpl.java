@@ -34,7 +34,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     private EntityManager entityManager;
     
     @Override
-    public void createIfNotExistsTable() {}
+    public void createTableIfNotExists() {}
     
     @Override
     public void truncateTable() {}
@@ -43,9 +43,9 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     public void dropTable() {}
     
     @Override
-    public Long insert(final JPAOrderItem JPAOrderItem) {
-        entityManager.persist(JPAOrderItem);
-        return JPAOrderItem.getOrderItemId();
+    public Long insert(final JPAOrderItem entity) {
+        entityManager.persist(entity);
+        return entity.getOrderItemId();
     }
     
     @Override

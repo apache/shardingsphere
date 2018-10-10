@@ -27,7 +27,7 @@ import java.util.List;
 public interface OrderRepository extends Repository<Order> {
     
     @Override
-    Long insert(Order model);
+    Long insert(Order entity);
     
     @Override
     List<Order> selectAll();

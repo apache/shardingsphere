@@ -37,8 +37,8 @@ public class DemoService {
     private OrderItemRepository orderItemRepository;
     
     public void demo() {
-        orderRepository.createIfNotExistsTable();
-        orderItemRepository.createIfNotExistsTable();
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
         List<Long> orderIds = new ArrayList<>(10);

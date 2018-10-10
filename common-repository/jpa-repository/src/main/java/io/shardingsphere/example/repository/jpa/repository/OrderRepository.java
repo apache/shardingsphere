@@ -25,7 +25,7 @@ import java.util.List;
 public interface OrderRepository extends Repository<JPAOrder> {
     
     @Override
-    Long insert(JPAOrder JPAOrder);
+    Long insert(JPAOrder entity);
     
     @Override
     List<JPAOrder> selectAll();

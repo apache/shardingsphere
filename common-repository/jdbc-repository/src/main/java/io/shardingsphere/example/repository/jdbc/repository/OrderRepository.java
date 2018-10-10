@@ -44,7 +44,7 @@ public final class OrderRepository implements Repository<Order> {
     }
     
     @Override
-    public void createIfNotExistsTable() {
+    public void createTableIfNotExists() {
         execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
     }
     
@@ -59,11 +59,11 @@ public final class OrderRepository implements Repository<Order> {
     }
     
     @Override
-    public Long insert(final Order order) {
+    public Long insert(final Order entity) {
         if (isXA) {
-            insertFailure(order);
+            insertFailure(entity);
         }
-        return insertSuccess(order);
+        return insertSuccess(entity);
     }
     
     @Override
