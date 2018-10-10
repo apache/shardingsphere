@@ -19,35 +19,35 @@ package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DemoService {
     
-    private final OrderRepository orderRepository;
+    private final JDBCOrderRepository JDBCOrderRepository;
     
-    private final OrderItemRepository orderItemRepository;
+    private final JDBCOrderItemRepository JDBCOrderItemRepository;
     
-    public DemoService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
+    public DemoService(final JDBCOrderRepository JDBCOrderRepository, final JDBCOrderItemRepository JDBCOrderItemRepository) {
+        this.JDBCOrderRepository = JDBCOrderRepository;
+        this.JDBCOrderItemRepository = JDBCOrderItemRepository;
     }
     
     public void demo() {
-        orderRepository.createTableIfNotExists();
-        orderItemRepository.createTableIfNotExists();
-        orderRepository.truncateTable();
-        orderItemRepository.truncateTable();
+        JDBCOrderRepository.createTableIfNotExists();
+        JDBCOrderItemRepository.createTableIfNotExists();
+        JDBCOrderRepository.truncateTable();
+        JDBCOrderItemRepository.truncateTable();
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            orderRepository.insert(order);
+            JDBCOrderRepository.insert(order);
             long orderId = order.getOrderId();
             orderIds.add(orderId);
             
@@ -55,22 +55,22 @@ public class DemoService {
             item.setOrderId(orderId);
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
-            orderItemRepository.insert(item);
+            JDBCOrderItemRepository.insert(item);
         }
         System.out.println("Order Data--------------");
-        System.out.println(orderRepository.selectAll());
+        System.out.println(JDBCOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(orderItemRepository.selectAll());
+        System.out.println(JDBCOrderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
-            orderRepository.delete(each);
-            orderItemRepository.delete(each);
+            JDBCOrderRepository.delete(each);
+            JDBCOrderItemRepository.delete(each);
         }
         System.out.println("Order Data--------------");
-        System.out.println(orderRepository.selectAll());
+        System.out.println(JDBCOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(orderItemRepository.selectAll());
-        orderItemRepository.dropTable();
-        orderRepository.dropTable();
+        System.out.println(JDBCOrderItemRepository.selectAll());
+        JDBCOrderItemRepository.dropTable();
+        JDBCOrderRepository.dropTable();
     }
 }
