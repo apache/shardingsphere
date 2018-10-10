@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.jdbc.main.nodep.yaml;
 
-import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.DemoService;
 import io.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
@@ -29,7 +29,7 @@ public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getYamlFile());
-        new DemoService(new OrderRepository(dataSource), new OrderItemRepository(dataSource)).demo();
+        new DemoService(new JDBCOrderRepository(dataSource), new JDBCOrderItemRepository(dataSource)).demo();
     }
     
     private static File getYamlFile() {
