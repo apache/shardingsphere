@@ -89,9 +89,10 @@ public final class OrderItemRepository implements Repository<OrderItem> {
         try {
             while (resultSet.next()) {
                 OrderItem orderItem = new OrderItem();
-                orderItem.setOrderId(resultSet.getLong(1));
-                orderItem.setUserId(resultSet.getInt(2));
-                orderItem.setStatus(resultSet.getString(3));
+                orderItem.setOrderItemId(resultSet.getLong(1));
+                orderItem.setOrderId(resultSet.getLong(2));
+                orderItem.setUserId(resultSet.getInt(3));
+                orderItem.setStatus(resultSet.getString(4));
                 result.add(orderItem);
             }
         } catch (final SQLException ignored) {
