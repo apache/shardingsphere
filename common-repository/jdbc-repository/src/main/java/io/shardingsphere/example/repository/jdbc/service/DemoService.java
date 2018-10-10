@@ -15,20 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.api.service;
+package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.api.repository.Repository;
+import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DemoService {
     
-    private Repository<Order> orderRepository;
+    private OrderRepository orderRepository;
     
-    private Repository<OrderItem> orderItemRepository;
+    private OrderItemRepository orderItemRepository;
     
     public void demo() {
         orderRepository.createIfNotExistsTable();
