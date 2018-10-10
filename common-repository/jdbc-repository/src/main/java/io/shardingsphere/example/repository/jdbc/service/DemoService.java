@@ -27,9 +27,14 @@ import java.util.List;
 
 public class DemoService {
     
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
     
-    private OrderItemRepository orderItemRepository;
+    private final OrderItemRepository orderItemRepository;
+    
+    public DemoService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+    }
     
     public void demo() {
         orderRepository.createIfNotExistsTable();
