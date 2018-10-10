@@ -93,7 +93,7 @@ public final class XaOrderRepository implements OrderRepository {
     private Long insertSuccess(final Order order) {
         long orderId = -1;
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();) {
+             Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
             order.setOrderId(orderId);
