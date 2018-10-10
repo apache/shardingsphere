@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.repository.jdbc.repository;
 
+import com.sun.tools.corba.se.idl.constExpr.Or;
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.repository.Repository;
 
@@ -26,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 public final class OrderRepository extends Repository<Order> {
     
@@ -77,6 +79,16 @@ public final class OrderRepository extends Repository<Order> {
             } catch (final SQLException ignored) {
             }
         }
+    }
+    
+    @Override
+    public void delete(final Long id) {
+        execute(String.format("delete from t_order where orderId = %d", id));
+    }
+    
+    @Override
+    public List<Order> selectAll() {
+    
     }
     
     private void insertFailure() throws SQLException {
