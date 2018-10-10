@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class OrderRepository extends Repository<Order> {
@@ -88,7 +89,28 @@ public final class OrderRepository extends Repository<Order> {
     
     @Override
     public List<Order> selectAll() {
+        String sql = "SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            return getOrders(resultSet);
+        } catch (final SQLException ignored) {
+        }
+    }
     
+    private List<Order> getOrders(final ResultSet resultSet) {
+        List<Order> orders = new LinkedList<>();
+        try {
+            while (resultSet.next()) {
+                Order order = new Order();
+                order.setOrderId(resultSet.getLong(1));
+                order.setUserId(resultSet.getInt(2));
+                order.setStatus(resultSet.getString(3));
+                orders.add(order);
+            }
+        } catch (final SQLException ignored) {
+        }
+        return orders;
     }
     
     private void insertFailure() throws SQLException {
@@ -185,16 +207,6 @@ public final class OrderRepository extends Repository<Order> {
                 connection.rollback();
             } catch (final SQLException ignored) {
             }
-        }
-    }
-    
-    private void queryWithEqual() throws SQLException {
-        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=?";
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, 10);
-            printQuery(preparedStatement);
         }
     }
     
