@@ -87,13 +87,15 @@ public final class OrderRepository implements Repository<Order> {
     
     @Override
     public List<Order> selectAll() {
+        List<Order> result = new LinkedList<>();
         String sql = "SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
-            return getOrders(resultSet);
+            result.addAll(getOrders(resultSet));
         } catch (final SQLException ignored) {
         }
+        return result;
     }
     
     private List<Order> getOrders(final ResultSet resultSet) {
