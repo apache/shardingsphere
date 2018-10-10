@@ -48,7 +48,6 @@ public class DemoService {
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
             orderRepository.insert(order);
-            orderRepository.insertFailure(order);
             long orderId = order.getOrderId();
             orderIds.add(orderId);
             
@@ -57,7 +56,6 @@ public class DemoService {
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
             orderItemRepository.insert(item);
-            orderItemRepository.insertFailure(item);
         }
         System.out.println("Order Data--------------");
         System.out.println(orderRepository.selectAll());
