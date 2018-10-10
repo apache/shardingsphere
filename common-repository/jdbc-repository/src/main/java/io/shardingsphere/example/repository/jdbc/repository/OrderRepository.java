@@ -80,27 +80,6 @@ public final class OrderRepository implements Repository<Order> {
         return orderId;
     }
     
-    private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
-        long result = -1;
-        statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-        try (ResultSet resultSet = statement.getGeneratedKeys()) {
-            if (resultSet.next()) {
-                result = resultSet.getLong(1);
-            }
-        }
-        return result;
-    }
-    
-    private void close(final Connection connection, final Statement statement) {
-        if (null != connection && null != statement) {
-            try {
-                connection.close();
-                statement.close();
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
     @Override
     public void delete(final Long id) {
         execute(String.format("delete from t_order where orderId = %d", id));
@@ -153,6 +132,27 @@ public final class OrderRepository implements Repository<Order> {
             close(connection, statement);
         }
         return orderId;
+    }
+    
+    private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
+        long result = -1;
+        statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+        try (ResultSet resultSet = statement.getGeneratedKeys()) {
+            if (resultSet.next()) {
+                result = resultSet.getLong(1);
+            }
+        }
+        return result;
+    }
+    
+    private void close(final Connection connection, final Statement statement) {
+        if (null != connection && null != statement) {
+            try {
+                connection.close();
+                statement.close();
+            } catch (final SQLException ignored) {
+            }
+        }
     }
     
     private void makeException() {
