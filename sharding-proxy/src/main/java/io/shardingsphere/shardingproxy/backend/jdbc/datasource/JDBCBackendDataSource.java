@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
@@ -55,17 +54,15 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = ruleInstance.getDataSources();
         // TODO getCircuitDataSourceMap if RuleInstance.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
-        return getNormalDataSourceMap(transactionType, dataSourceParameters);
+        return getNormalDataSourceMap(ruleInstance.getDataSources());
     }
     
-    private Map<String, DataSource> getNormalDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+    private Map<String, DataSource> getNormalDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
-                result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+                result.put(entry.getKey(), getBackendDataSourceFactory().build(entry.getKey(), entry.getValue()));
             // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -75,8 +72,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return result;
     }
     
-    private JDBCBackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
-        switch (transactionType) {
+    private JDBCBackendDataSourceFactory getBackendDataSourceFactory() {
+        switch (GlobalRegistry.getInstance().getTransactionType()) {
             case XA:
                 return new JDBCXABackendDataSourceFactory();
             default:
