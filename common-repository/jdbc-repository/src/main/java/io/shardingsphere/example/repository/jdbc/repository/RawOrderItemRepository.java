@@ -53,18 +53,12 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     
     @Override
     public Long insert(final OrderItem orderItem) {
-        Connection connection = null;
-        Statement statement = null;
         long orderItemId = -1;
-        try {
-            connection = dataSource.getConnection();
-            statement = connection.createStatement();
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
             orderItem.setOrderItemId(orderItemId);
         } catch (final SQLException ignored) {
-        }
-        finally {
-            close(connection, statement);
         }
         return orderItemId;
     }
