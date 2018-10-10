@@ -20,6 +20,8 @@ package io.shardingsphere.shardingproxy.config;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -36,11 +38,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Yaml configuration loader.
+ * Sharding configuration loader.
  *
  * @author chenqingyang
  */
-public final class ProxyYamlConfigurationLoader {
+public final class ShardingConfigurationLoader {
     
     private static final String CONFIG_PATH = "/conf/";
     
@@ -54,10 +56,10 @@ public final class ProxyYamlConfigurationLoader {
      * @return proxy configuration
      * @throws IOException IO exception
      */
-    public ProxyConfiguration load() throws IOException {
+    public ShardingConfiguration load() throws IOException {
         Collection<String> schemaNames = new HashSet<>();
-        ProxyYamlServerConfiguration serverConfig = loadServerConfiguration(new File(ProxyYamlConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
-        File configPath = new File(ProxyYamlConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
+        ProxyYamlServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
+        File configPath = new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
         Collection<ProxyYamlRuleConfiguration> ruleConfigurations = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
             Optional<ProxyYamlRuleConfiguration> ruleConfig = loadRuleConfiguration(each, serverConfig);
@@ -71,7 +73,7 @@ public final class ProxyYamlConfigurationLoader {
         for (ProxyYamlRuleConfiguration each : ruleConfigurations) {
             ruleConfigurationMap.put(each.getSchemaName(), each);
         }
-        return new ProxyConfiguration(serverConfig, ruleConfigurationMap);
+        return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
     }
     
     private ProxyYamlServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {

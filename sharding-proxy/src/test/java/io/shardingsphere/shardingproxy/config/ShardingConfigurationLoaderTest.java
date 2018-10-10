@@ -21,6 +21,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -31,11 +32,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ProxyYamlConfigurationLoaderTest {
+public final class ShardingConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ProxyConfiguration actual = new ProxyYamlConfigurationLoader().load();
+        ShardingConfiguration actual = new ShardingConfigurationLoader().load();
         assertOrchestrationConfiguration(actual.getServerConfiguration().getOrchestration());
         assertThat(actual.getRuleConfigurationMap().size(), is(2));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));

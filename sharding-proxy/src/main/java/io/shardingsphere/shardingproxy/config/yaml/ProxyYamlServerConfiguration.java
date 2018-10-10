@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config;
+package io.shardingsphere.shardingproxy.config.yaml;
 
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;

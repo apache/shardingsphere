@@ -22,10 +22,10 @@ import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.shardingproxy.config.ProxyConfiguration;
-import io.shardingsphere.shardingproxy.config.ProxyYamlConfigurationLoader;
-import io.shardingsphere.shardingproxy.config.ProxyYamlRuleConfiguration;
-import io.shardingsphere.shardingproxy.config.ProxyYamlServerConfiguration;
+import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
+import io.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -57,13 +57,13 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        ProxyConfiguration proxyConfig = new ProxyYamlConfigurationLoader().load();
+        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
-        if (null == proxyConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(proxyConfig.getServerConfiguration(), proxyConfig.getRuleConfigurationMap(), port);
+        if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
+            startWithoutRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
         } else {
-            startWithRegistryCenter(proxyConfig.getServerConfiguration(), proxyConfig.getRuleConfigurationMap(), port);
+            startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
         }
     }
     

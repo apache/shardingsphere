@@ -17,29 +17,23 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Rule configuration for yaml.
+ * Sharding configuration.
  *
- * @author panjuan
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ProxyYamlRuleConfiguration {
+public final class ShardingConfiguration {
     
-    private String schemaName;
+    private final ProxyYamlServerConfiguration serverConfiguration;
     
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
-    
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    private final Map<String, ProxyYamlRuleConfiguration> ruleConfigurationMap;
 }
