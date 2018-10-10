@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "t_order_item")
-public class JPAOrderItem extends OrderItem implements Serializable {
+public final class JPAOrderItem extends OrderItem implements Serializable {
     
     private static final long serialVersionUID = 263434701950670170L;
     
