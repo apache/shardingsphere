@@ -17,29 +17,31 @@
 
 package io.shardingsphere.core.parsing.antler.mysql.ddl;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.TokenStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.PostgreStatementAdvancedParser;
 import io.shardingsphere.core.parsing.antler.parser.factory.StatementFactory;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import io.shardingsphere.parser.antlr.MySQLStatementLexer;
-import io.shardingsphere.parser.antlr.MySQLStatementParser;
 import io.shardingsphere.parser.antlr.PostgreStatementLexer;
-import io.shardingsphere.parser.antlr.PostgreStatementParser;
 import io.shardingsphere.test.sql.AntlrSQLCasesLoader;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -65,30 +67,17 @@ public final class IntegrateAntlrSupportedSQLParsingTest extends AbstractBaseInt
     }
     
     @Test
-    public void assertUnsupportedSQL() {
-        CodePointCharStream cs = CharStreams.fromString(sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+    public void assertUnsupportedSQL() throws Exception {
+        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        CodePointCharStream cs = CharStreams.fromString(sql);
         switch (databaseType) {
             case MySQL:
-                MySQLStatementLexer mysqlStatementLexer = new MySQLStatementLexer(cs);
-                MySQLStatementParser mysqlStatementParser = new MySQLStatementParser(new CommonTokenStream(mysqlStatementLexer));
-                mysqlStatementParser.addErrorListener(new BaseErrorListener() {
-                    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-                        throw new RuntimeException();
-                    }
-                });
-                mysqlStatementParser.execute();
+                execute(MySQLStatementLexer.class, MySQLStatementAdvancedParser.class,  cs);
                 break;
             case Oracle:
                 break;
             case PostgreSQL:
-                PostgreStatementLexer postgreStatementLexer = new PostgreStatementLexer(cs);
-                PostgreStatementParser postgreStatementParser = new PostgreStatementParser(new CommonTokenStream(postgreStatementLexer));
-                postgreStatementParser.addErrorListener(new BaseErrorListener() {
-                    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-                        throw new RuntimeException();
-                    }
-                });
-                postgreStatementParser.execute();
+                execute(PostgreStatementLexer.class, PostgreStatementAdvancedParser.class,  cs);
                 break;
             case SQLServer:
                 break;
@@ -101,5 +90,15 @@ public final class IntegrateAntlrSupportedSQLParsingTest extends AbstractBaseInt
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
         new SQLStatementAssert(StatementFactory.getStatement(databaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, AntlrSQLCasesLoader.getInstance(), AntlrParserResultSetLoader.getInstance()).assertSQLStatement();
+    }
+    
+    public void execute(Class<?> lexerClass, Class<?> parserClass, CharStream cs) throws Exception {
+        Constructor<?> lexerCon = lexerClass.getConstructor(new Class[] {CharStream.class});
+        Lexer lexer = (Lexer)lexerCon.newInstance(new Object[] {cs});
+        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+        Constructor<?> parserCon = parserClass.getConstructor(new Class[] {TokenStream.class});
+        Object parser = parserCon.newInstance(new Object[] {tokenStream});
+        Method method = parserClass.getMethod("execute");
+        method.invoke(parser, new Object[] {});
     }
 }
