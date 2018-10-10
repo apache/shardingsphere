@@ -17,7 +17,11 @@
 
 package io.shardingsphere.example.repository.api.entity;
 
-public class OrderItem {
+import java.io.Serializable;
+
+public class OrderItem implements Serializable {
+    
+    private static final long serialVersionUID = 263434701950670170L;
     
     private long orderItemId;
     

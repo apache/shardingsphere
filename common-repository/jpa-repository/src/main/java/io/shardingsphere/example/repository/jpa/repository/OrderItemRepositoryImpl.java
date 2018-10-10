@@ -17,7 +17,8 @@
 
 package io.shardingsphere.example.repository.jpa.repository;
 
-import io.shardingsphere.example.repository.jpa.entity.JPAOrderItem;
+import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -43,7 +44,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     public void dropTable() {}
     
     @Override
-    public Long insert(final JPAOrderItem entity) {
+    public Long insert(final OrderItem entity) {
         entityManager.persist(entity);
         return entity.getOrderItemId();
     }
@@ -57,7 +58,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<JPAOrderItem> selectAll() {
-        return (List<JPAOrderItem>) entityManager.createQuery("SELECT i FROM JPAOrder o, JPAOrderItem i WHERE o.orderId = i.orderId").getResultList();
+    public List<OrderItem> selectAll() {
+        return (List<OrderItem>) entityManager.createQuery("SELECT i FROM JPAOrder o, JPAOrderItem i WHERE o.orderId = i.orderId").getResultList();
     }
 }

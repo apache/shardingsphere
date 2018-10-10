@@ -15,18 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.jpa.repository;
+package io.shardingsphere.example.repository.mybatis.repository;
 
-import io.shardingsphere.example.repository.api.repository.CommonRepository;
-import io.shardingsphere.example.repository.jpa.entity.JPAOrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderRepository;
+import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-public interface OrderItemRepository extends CommonRepository<JPAOrderItem> {
-    
-    @Override
-    Long insert(JPAOrderItem entity);
-    
-    @Override
-    List<JPAOrderItem> selectAll();
+@Mapper
+public interface MybatisOrderRepository extends OrderRepository {
 }

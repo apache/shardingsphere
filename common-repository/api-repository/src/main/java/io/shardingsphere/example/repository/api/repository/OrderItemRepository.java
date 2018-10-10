@@ -15,15 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.mybatis.repository;
+package io.shardingsphere.example.repository.api.repository;
 
 import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.api.repository.CommonRepository;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
 public interface OrderItemRepository extends CommonRepository<OrderItem> {
     
     @Override

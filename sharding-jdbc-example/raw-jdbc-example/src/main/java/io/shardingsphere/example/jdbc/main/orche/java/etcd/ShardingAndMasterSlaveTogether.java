@@ -25,9 +25,9 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.jdbc.util.DataSourceUtil;
-import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.DemoService;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
+import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
@@ -51,7 +51,7 @@ public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new DemoService(new OrderRepository(dataSource), new OrderItemRepository(dataSource)).demo();
+        new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     

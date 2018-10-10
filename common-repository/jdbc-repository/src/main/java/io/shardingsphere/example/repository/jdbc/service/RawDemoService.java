@@ -15,39 +15,39 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.mybatis.service;
+package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.mybatis.repository.MybatisOrderItemRepository;
-import io.shardingsphere.example.repository.mybatis.repository.MybatisOrderRepository;
-import org.springframework.stereotype.Service;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class DemoService {
+public class RawDemoService {
     
-    @Resource
-    private MybatisOrderRepository mybatisOrderRepository;
+    private final RawOrderRepository RawOrderRepository;
     
-    @Resource
-    private MybatisOrderItemRepository mybatisOrderItemRepository;
+    private final RawOrderItemRepository RawOrderItemRepository;
+    
+    public RawDemoService(final RawOrderRepository RawOrderRepository, final RawOrderItemRepository RawOrderItemRepository) {
+        this.RawOrderRepository = RawOrderRepository;
+        this.RawOrderItemRepository = RawOrderItemRepository;
+    }
     
     public void demo() {
-        mybatisOrderRepository.createTableIfNotExists();
-        mybatisOrderItemRepository.createTableIfNotExists();
-        mybatisOrderRepository.truncateTable();
-        mybatisOrderItemRepository.truncateTable();
+        RawOrderRepository.createTableIfNotExists();
+        RawOrderItemRepository.createTableIfNotExists();
+        RawOrderRepository.truncateTable();
+        RawOrderItemRepository.truncateTable();
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            mybatisOrderRepository.insert(order);
+            RawOrderRepository.insert(order);
             long orderId = order.getOrderId();
             orderIds.add(orderId);
             
@@ -55,22 +55,22 @@ public class DemoService {
             item.setOrderId(orderId);
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
-            mybatisOrderItemRepository.insert(item);
+            RawOrderItemRepository.insert(item);
         }
         System.out.println("Order Data--------------");
-        System.out.println(mybatisOrderRepository.selectAll());
+        System.out.println(RawOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(mybatisOrderItemRepository.selectAll());
+        System.out.println(RawOrderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
-            mybatisOrderRepository.delete(each);
-            mybatisOrderItemRepository.delete(each);
+            RawOrderRepository.delete(each);
+            RawOrderItemRepository.delete(each);
         }
         System.out.println("Order Data--------------");
-        System.out.println(mybatisOrderRepository.selectAll());
+        System.out.println(RawOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(mybatisOrderItemRepository.selectAll());
-        mybatisOrderItemRepository.dropTable();
-        mybatisOrderRepository.dropTable();
+        System.out.println(RawOrderItemRepository.selectAll());
+        RawOrderItemRepository.dropTable();
+        RawOrderRepository.dropTable();
     }
 }

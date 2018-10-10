@@ -19,35 +19,35 @@ package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
+import io.shardingsphere.example.repository.jdbc.repository.XaOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.XaOrderRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DemoService {
+public class XaDemoService {
     
-    private final OrderRepository orderRepository;
+    private final XaOrderRepository xaOrderRepository;
     
-    private final OrderItemRepository orderItemRepository;
+    private final XaOrderItemRepository xaOrderItemRepository;
     
-    public DemoService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
+    public XaDemoService(final XaOrderRepository xaOrderRepository, final XaOrderItemRepository xaOrderItemRepository) {
+        this.xaOrderRepository = xaOrderRepository;
+        this.xaOrderItemRepository = xaOrderItemRepository;
     }
     
     public void demo() {
-        orderRepository.createTableIfNotExists();
-        orderItemRepository.createTableIfNotExists();
-        orderRepository.truncateTable();
-        orderItemRepository.truncateTable();
+        xaOrderRepository.createTableIfNotExists();
+        xaOrderItemRepository.createTableIfNotExists();
+        xaOrderRepository.truncateTable();
+        xaOrderItemRepository.truncateTable();
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            orderRepository.insert(order);
+            xaOrderRepository.insert(order);
             long orderId = order.getOrderId();
             orderIds.add(orderId);
             
@@ -55,22 +55,22 @@ public class DemoService {
             item.setOrderId(orderId);
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
-            orderItemRepository.insert(item);
+            xaOrderItemRepository.insert(item);
         }
         System.out.println("Order Data--------------");
-        System.out.println(orderRepository.selectAll());
+        System.out.println(xaOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(orderItemRepository.selectAll());
+        System.out.println(xaOrderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
-            orderRepository.delete(each);
-            orderItemRepository.delete(each);
+            xaOrderRepository.delete(each);
+            xaOrderItemRepository.delete(each);
         }
         System.out.println("Order Data--------------");
-        System.out.println(orderRepository.selectAll());
+        System.out.println(xaOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(orderItemRepository.selectAll());
-        orderItemRepository.dropTable();
-        orderRepository.dropTable();
+        System.out.println(xaOrderItemRepository.selectAll());
+        xaOrderItemRepository.dropTable();
+        xaOrderRepository.dropTable();
     }
 }

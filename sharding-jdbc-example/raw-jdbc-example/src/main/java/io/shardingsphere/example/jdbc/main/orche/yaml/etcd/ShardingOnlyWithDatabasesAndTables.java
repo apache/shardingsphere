@@ -18,9 +18,9 @@
 package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
 import io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper.ShardingOnlyWithTables;
-import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.DemoService;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
+import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
@@ -33,7 +33,7 @@ public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
-        new DemoService(new OrderRepository(dataSource), new OrderItemRepository(dataSource)).demo();
+        new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     
