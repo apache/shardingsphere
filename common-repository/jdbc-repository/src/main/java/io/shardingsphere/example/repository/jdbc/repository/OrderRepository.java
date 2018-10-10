@@ -208,15 +208,19 @@ public class OrderRepository extends Repository<Order> {
         }
     }
     
-    private void dropTable() throws SQLException {
-        execute("DROP TABLE t_order_item");
+    @Override
+    public void dropTable() {
         execute("DROP TABLE t_order");
     }
     
+    @Override
+    public void truncateTable() {
+        execute("truncate table t_order");
+    }
+    
     private void execute(final String sql) {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
             ex.printStackTrace();
