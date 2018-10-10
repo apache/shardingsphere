@@ -17,20 +17,18 @@
 
 package io.shardingsphere.example.repository.jdbc.repository;
 
-import com.sun.tools.corba.se.idl.constExpr.Or;
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.repository.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class OrderRepository extends Repository<Order> {
+public final class OrderRepository implements Repository<Order> {
     
     private final DataSource dataSource;
     
@@ -149,27 +147,6 @@ public final class OrderRepository extends Repository<Order> {
         return result;
     }
     
-    private void updateData() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        setAutoCommit(connection);
-        try {
-            for (int i = 1; i <= 10; i++) {
-                Long orderId = getRandomOrderId(connection, 10);
-                String sql = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=? and order_id=?";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setObject(1, 10);
-                preparedStatement.setObject(2, orderId);
-                preparedStatement.executeUpdate();
-            }
-            commit(connection);
-        } catch (SQLException ex) {
-            rollback(connection);
-        }
-        finally {
-            connection.close();
-        }
-    }
-    
     private Long getRandomOrderId(Connection connection, int userId) throws SQLException {
         Statement statement = connection.createStatement();
         int index = (int) (Math.random() * 10);
@@ -206,28 +183,6 @@ public final class OrderRepository extends Repository<Order> {
             try {
                 connection.rollback();
             } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    private void queryWithIn() throws SQLException {
-        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id IN (?, ?)";
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, 10);
-            preparedStatement.setInt(2, 11);
-            printQuery(preparedStatement);
-        }
-    }
-    
-    private void printQuery(final PreparedStatement preparedStatement) throws SQLException {
-        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                System.out.print("order_item_id:" + resultSet.getLong(1) + ", ");
-                System.out.print("order_id:" + resultSet.getLong(2) + ", ");
-                System.out.print("user_id:" + resultSet.getInt(3));
-                System.out.println();
             }
         }
     }
