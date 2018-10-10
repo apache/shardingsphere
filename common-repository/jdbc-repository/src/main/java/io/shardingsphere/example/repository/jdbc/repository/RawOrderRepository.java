@@ -32,15 +32,8 @@ public final class RawOrderRepository implements OrderRepository {
     
     private final DataSource dataSource;
     
-    private final boolean isXA;
-    
     public RawOrderRepository(final DataSource dataSource) {
-        this(dataSource, false);
-    }
-    
-    public RawOrderRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
-        this.isXA = isXA;
     }
     
     @Override
@@ -59,11 +52,21 @@ public final class RawOrderRepository implements OrderRepository {
     }
     
     @Override
-    public Long insert(final Order entity) {
-        if (isXA) {
-            insertFailure(entity);
+    public Long insert(final Order order) {
+        Connection connection = null;
+        Statement statement = null;
+        long orderId = -1;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.createStatement();
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
+            order.setOrderId(orderId);
+        } catch (final SQLException ignored) {
         }
-        return insertSuccess(entity);
+        finally {
+            close(connection, statement);
+        }
+        return orderId;
     }
     
     @Override
@@ -99,47 +102,6 @@ public final class RawOrderRepository implements OrderRepository {
         return result;
     }
     
-    private Long insertSuccess(final Order order) {
-        Connection connection = null;
-        Statement statement = null;
-        long orderId = -1;
-        try {
-            connection = dataSource.getConnection();
-            setAutoCommit(connection);
-            statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
-            order.setOrderId(orderId);
-            commit(connection);
-        } catch (final SQLException ex) {
-            rollback(connection);
-        }
-        finally {
-            close(connection, statement);
-        }
-        return orderId;
-    }
-    
-    private Long insertFailure(final Order order) {
-        Connection connection = null;
-        Statement statement = null;
-        long orderId = -1;
-        try {
-            connection = dataSource.getConnection();
-            setAutoCommit(connection);
-            statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
-            order.setOrderId(orderId);
-            makeException();
-            commit(connection);
-        } catch (final Exception ex) {
-            rollback(connection);
-        }
-        finally {
-            close(connection, statement);
-        }
-        return orderId;
-    }
-    
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
         long result = -1;
         statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
@@ -156,37 +118,6 @@ public final class RawOrderRepository implements OrderRepository {
             try {
                 connection.close();
                 statement.close();
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    private void makeException() {
-        System.out.println(10 / 0);
-    }
-    
-    private void setAutoCommit(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.setAutoCommit(false);
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    private void commit(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.commit();
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    private void rollback(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.rollback();
             } catch (final SQLException ignored) {
             }
         }
