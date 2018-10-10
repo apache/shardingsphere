@@ -24,7 +24,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface OrderRepository extends CommonRepository<Order> {
+public interface MybatisOrderRepository extends CommonRepository<Order> {
     
     @Override
     Long insert(Order entity);
