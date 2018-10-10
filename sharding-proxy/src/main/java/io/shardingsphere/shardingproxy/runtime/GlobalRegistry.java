@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config;
+package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
@@ -24,13 +24,14 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.Authentication;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
+import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,25 +44,23 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Proxy context.
+ * Global registry.
  *
  * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ProxyContext {
+public final class GlobalRegistry {
     
-    private static final ProxyContext INSTANCE = new ProxyContext();
+    private static final GlobalRegistry INSTANCE = new GlobalRegistry();
     
     private List<String> schemaNames = new LinkedList<>();
     
-    private Map<String, RuleRegistry> ruleRegistryMap = new ConcurrentHashMap<>();
+    private Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
     
     private Authentication authentication;
     
     private boolean showSQL;
-    
-    private boolean useNIO;
     
     private int maxConnectionsSizePerQuery;
     
@@ -73,6 +72,8 @@ public final class ProxyContext {
     
     private boolean openTracingEnable;
     
+    private boolean useNIO;
+    
     private BackendNIOConfiguration backendNIOConfig;
     
     private boolean isCircuitBreak;
@@ -82,7 +83,7 @@ public final class ProxyContext {
      *
      * @return instance of proxy context.
      */
-    public static ProxyContext getInstance() {
+    public static GlobalRegistry getInstance() {
         return INSTANCE;
     }
     
@@ -105,7 +106,7 @@ public final class ProxyContext {
         for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
         }
     }
     
@@ -134,7 +135,7 @@ public final class ProxyContext {
      * @param executeEngine sharding execute engine
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        for (RuleRegistry each : ruleRegistryMap.values()) {
+        for (ShardingSchema each : shardingSchemas.values()) {
             each.initShardingMetaData(executeEngine);
         }
     }
@@ -150,13 +151,13 @@ public final class ProxyContext {
     }
     
     /**
-     * Get rule registry of schema.
+     * Get sharding schema.
      *
-     * @param schema schema
-     * @return rule registry of schema
+     * @param schemaName schema name
+     * @return sharding schema
      */
-    public RuleRegistry getRuleRegistry(final String schema) {
-        return Strings.isNullOrEmpty(schema) ? null : ruleRegistryMap.get(schema);
+    public ShardingSchema getShardingSchema(final String schemaName) {
+        return Strings.isNullOrEmpty(schemaName) ? null : shardingSchemas.get(schemaName);
     }
     
     /**
@@ -167,13 +168,13 @@ public final class ProxyContext {
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
         initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
-        for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        ruleRegistryMap.clear();
+        shardingSchemas.clear();
         for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
             String schemaName = entry.getKey();
-            ruleRegistryMap.put(schemaName, new RuleRegistry(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
         }
     }
     
@@ -194,7 +195,7 @@ public final class ProxyContext {
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        for (Entry<String, RuleRegistry> entry : ruleRegistryMap.entrySet()) {
+        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
         }
     }

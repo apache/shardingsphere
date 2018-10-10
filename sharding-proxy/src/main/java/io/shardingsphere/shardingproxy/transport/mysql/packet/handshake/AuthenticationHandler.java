@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 @Getter
 public final class AuthenticationHandler {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final AuthPluginData authPluginData = new AuthPluginData();
     
@@ -45,7 +45,7 @@ public final class AuthenticationHandler {
      * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        Authentication authentication = PROXY_CONTEXT.getAuthentication();
+        Authentication authentication = GLOBAL_REGISTRY.getAuthentication();
         if (Strings.isNullOrEmpty(authentication.getPassword())) {
             return authentication.getUsername().equals(username);
         }

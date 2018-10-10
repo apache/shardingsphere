@@ -38,9 +38,9 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.shardingproxy.backend.netty.NettyBackendHandler;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -56,7 +56,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BackendHandlerFactory {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     /**
      * Create new instance of text protocol backend handler.
@@ -71,11 +71,11 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema);
-        backendConnection.setRuleRegistry(ruleRegistry);
-        return PROXY_CONTEXT.isUseNIO()
-                ? new NettyBackendHandler(ruleRegistry, connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(ruleRegistry)));
+        ShardingSchema shardingSchema = GLOBAL_REGISTRY.getShardingSchema(schema);
+        backendConnection.setShardingSchema(shardingSchema);
+        return GLOBAL_REGISTRY.isUseNIO()
+                ? new NettyBackendHandler(shardingSchema, connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(shardingSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(shardingSchema)));
     }
     
     /**
@@ -92,10 +92,10 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters,
                                                            final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        RuleRegistry ruleRegistry = PROXY_CONTEXT.getRuleRegistry(schema);
-        backendConnection.setRuleRegistry(ruleRegistry);
-        return PROXY_CONTEXT.isUseNIO() ? new NettyBackendHandler(ruleRegistry, connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(ruleRegistry, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(ruleRegistry, parameters)));
+        ShardingSchema shardingSchema = GLOBAL_REGISTRY.getShardingSchema(schema);
+        backendConnection.setShardingSchema(shardingSchema);
+        return GLOBAL_REGISTRY.isUseNIO() ? new NettyBackendHandler(shardingSchema, connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(shardingSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(shardingSchema, parameters)));
     }
     
     /**

@@ -22,8 +22,8 @@ import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -49,7 +49,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SchemaIgnoreBackendHandler implements BackendHandler {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final SQLStatement sqlStatement;
     
@@ -91,7 +91,7 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
     
     private CommandResponsePackets handleUseStatement(final UseStatement useStatement, final FrontendHandler frontendHandler) {
         String schema = useStatement.getSchema();
-        if (!PROXY_CONTEXT.schemaExists(schema)) {
+        if (!GLOBAL_REGISTRY.schemaExists(schema)) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
         frontendHandler.setCurrentSchema(schema);
@@ -99,7 +99,7 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
     }
     
     private CommandResponsePackets handleShowDatabasesStatement() {
-        mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
+        mergedResult = new ShowDatabasesMergedResult(GLOBAL_REGISTRY.getSchemaNames());
         int sequenceId = 0;
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);

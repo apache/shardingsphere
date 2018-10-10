@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config;
+package io.shardingsphere.shardingproxy.runtime.metadata;
 
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;

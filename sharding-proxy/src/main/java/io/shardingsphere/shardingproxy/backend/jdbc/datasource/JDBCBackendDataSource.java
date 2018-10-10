@@ -18,13 +18,11 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
-import lombok.Getter;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -44,30 +42,27 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
-    private final RuleRegistry ruleRegistry;
+    private final ShardingSchema shardingSchema;
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public JDBCBackendDataSource(final RuleRegistry ruleRegistry) {
-        this.ruleRegistry = ruleRegistry;
+    public JDBCBackendDataSource(final ShardingSchema shardingSchema) {
+        this.shardingSchema = shardingSchema;
         dataSourceMap = createDataSourceMap();
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = ProxyContext.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = ruleRegistry.getDataSources();
-        // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
-        return getNormalDataSourceMap(transactionType, dataSourceParameters);
+        // TODO getCircuitDataSourceMap if getCircuitBreakerDataSourceNames() is not empty
+        return getNormalDataSourceMap(shardingSchema.getDataSources());
     }
     
-    private Map<String, DataSource> getNormalDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
+    private Map<String, DataSource> getNormalDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
-                result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+                result.put(entry.getKey(), getBackendDataSourceFactory().build(entry.getKey(), entry.getValue()));
             // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -77,8 +72,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return result;
     }
     
-    private JDBCBackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
-        switch (transactionType) {
+    private JDBCBackendDataSourceFactory getBackendDataSourceFactory() {
+        switch (GlobalRegistry.getInstance().getTransactionType()) {
             case XA:
                 return new JDBCXABackendDataSourceFactory();
             default:
@@ -121,12 +116,12 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        return ruleRegistry.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
+        return shardingSchema.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
     }
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : ruleRegistry.getDisabledDataSourceNames()) {
+        for (String each : shardingSchema.getDisabledDataSourceNames()) {
             result.remove(each);
         }
         return result;

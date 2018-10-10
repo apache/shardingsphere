@@ -22,6 +22,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(ProxyTableMetaDataConnectionManagerTest.class)
+@SuiteClasses(ShardingConfigurationLoaderTest.class)
 public final class AllConfigTests {
 }

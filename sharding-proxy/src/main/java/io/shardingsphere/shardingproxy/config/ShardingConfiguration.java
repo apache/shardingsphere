@@ -17,19 +17,23 @@
 
 package io.shardingsphere.shardingproxy.config;
 
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
- * Configuration of use NIO to connection backend databases.
+ * Sharding configuration.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class BackendNIOConfiguration {
+public final class ShardingConfiguration {
     
-    private final int maxConnections;
+    private final ProxyYamlServerConfiguration serverConfiguration;
     
-    private final int connectionTimeoutSeconds;
+    private final Map<String, ProxyYamlRuleConfiguration> ruleConfigurationMap;
 }
