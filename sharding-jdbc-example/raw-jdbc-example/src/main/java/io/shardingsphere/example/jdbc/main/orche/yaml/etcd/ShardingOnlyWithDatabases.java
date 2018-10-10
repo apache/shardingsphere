@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.jdbc.main.orche.yaml.etcd;
 
-import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.DemoService;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
@@ -32,7 +32,7 @@ public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
-        new DemoService(new OrderRepository(dataSource), new OrderItemRepository(dataSource)).demo();
+        new DemoService(new JDBCOrderRepository(dataSource), new JDBCOrderItemRepository(dataSource)).demo();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     
