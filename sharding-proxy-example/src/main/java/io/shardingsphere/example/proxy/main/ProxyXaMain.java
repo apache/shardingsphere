@@ -18,7 +18,7 @@
 package io.shardingsphere.example.proxy.main;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import io.shardingsphere.example.repository.jdbc.JDBCRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCRepository;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
