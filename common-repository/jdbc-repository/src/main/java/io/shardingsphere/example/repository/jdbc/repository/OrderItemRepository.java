@@ -46,7 +46,7 @@ public final class OrderItemRepository implements Repository<OrderItem> {
     
     @Override
     public void createIfNotExistsTable() {
-        execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
+        execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id))");
     }
     
     @Override
@@ -60,7 +60,7 @@ public final class OrderItemRepository implements Repository<OrderItem> {
     }
     
     @Override
-    public Long insert(final Order order) {
+    public Long insert(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
         long orderId = -1;
@@ -68,8 +68,8 @@ public final class OrderItemRepository implements Repository<OrderItem> {
             connection = dataSource.getConnection();
             setAutoCommit(connection);
             statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
-            order.setOrderId(orderId);
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
+            orderItem.setOrderId(orderId);
             commit(connection);
         } catch (SQLException ex) {
             rollback(connection);
