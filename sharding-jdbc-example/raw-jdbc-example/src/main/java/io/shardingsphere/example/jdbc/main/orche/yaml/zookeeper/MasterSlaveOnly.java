@@ -19,7 +19,7 @@ package io.shardingsphere.example.jdbc.main.orche.yaml.zookeeper;
 
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import io.shardingsphere.example.repository.jdbc.JDBCRepository;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCRepository;
 
 import javax.sql.DataSource;
 import java.io.File;
