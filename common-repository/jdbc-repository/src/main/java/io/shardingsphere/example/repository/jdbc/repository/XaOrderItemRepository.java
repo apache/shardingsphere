@@ -92,34 +92,26 @@ public final class XaOrderItemRepository implements OrderItemRepository {
     }
     
     private Long insertSuccess(final OrderItem orderItem) {
-        Connection connection = null;
-        Statement statement = null;
         long orderItemId = -1;
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
             setAutoCommit(connection);
-            statement = connection.createStatement();
             orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
             orderItem.setOrderItemId(orderItemId);
             commit(connection);
-        } catch (final SQLException ex) {
-            rollback(connection);
-        }
-        finally {
-            close(connection, statement);
+        } catch (final SQLException ignored) {
         }
         return orderItemId;
     }
     
-    private Long insertFailure(final OrderItem orderItem) {
+    private void insertFailure(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
-        long orderItemId = -1;
         try {
             connection = dataSource.getConnection();
             setAutoCommit(connection);
             statement = connection.createStatement();
-            orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
+            long orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
             orderItem.setOrderId(orderItemId);
             makeException();
             commit(connection);
@@ -129,7 +121,6 @@ public final class XaOrderItemRepository implements OrderItemRepository {
         finally {
             close(connection, statement);
         }
-        return orderItemId;
     }
     
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
