@@ -32,15 +32,8 @@ public final class XaOrderItemRepository implements OrderItemRepository {
 
     private final DataSource dataSource;
 
-    private final boolean isXA;
-
     public XaOrderItemRepository(final DataSource dataSource) {
-        this(dataSource, false);
-    }
-
-    public XaOrderItemRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
-        this.isXA = isXA;
     }
     
     @Override
@@ -60,9 +53,7 @@ public final class XaOrderItemRepository implements OrderItemRepository {
     
     @Override
     public Long insert(final OrderItem entity) {
-        if (isXA) {
-            insertFailure(entity);
-        }
+        insertFailure(entity);
         return insertSuccess(entity);
     }
     
@@ -153,12 +144,14 @@ public final class XaOrderItemRepository implements OrderItemRepository {
     }
     
     private void close(final Connection connection, final Statement statement) {
-        if (null != connection && null != statement) {
-            try {
+        try {
+            if (null != connection) {
                 connection.close();
-                statement.close();
-            } catch (final SQLException ignored) {
             }
+            if (null != statement) {
+                statement.close();
+            }
+        } catch (final SQLException ignored) {
         }
     }
     
@@ -167,29 +160,26 @@ public final class XaOrderItemRepository implements OrderItemRepository {
     }
     
     private void setAutoCommit(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.setAutoCommit(false);
-            } catch (final SQLException ignored) {
-            }
+        try {
+            connection.setAutoCommit(false);
+        } catch (final SQLException ignored) {
         }
     }
     
     private void commit(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.commit();
-            } catch (final SQLException ignored) {
-            }
+        try {
+            connection.commit();
+        } catch (final SQLException ignored) {
         }
     }
     
     private void rollback(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.rollback();
-            } catch (final SQLException ignored) {
-            }
+        if (null == connection) {
+            return;
+        }
+        try {
+            connection.rollback();
+        } catch (final SQLException ignored) {
         }
     }
     
