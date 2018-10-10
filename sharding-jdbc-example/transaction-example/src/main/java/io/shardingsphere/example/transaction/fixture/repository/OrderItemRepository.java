@@ -24,7 +24,7 @@ import java.util.List;
 
 public interface OrderItemRepository {
     
-    void createIfNotExistsTable();
+    void createTableIfNotExists();
     
     void truncateTable();
     

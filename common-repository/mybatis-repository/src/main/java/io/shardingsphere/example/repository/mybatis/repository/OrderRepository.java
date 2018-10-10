@@ -18,13 +18,13 @@
 package io.shardingsphere.example.repository.mybatis.repository;
 
 import io.shardingsphere.example.repository.api.entity.Order;
-import io.shardingsphere.example.repository.api.repository.Repository;
+import io.shardingsphere.example.repository.api.repository.CommonRepository;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface OrderRepository extends Repository<Order> {
+public interface OrderRepository extends CommonRepository<Order> {
     
     @Override
     Long insert(Order entity);

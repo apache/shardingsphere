@@ -21,7 +21,7 @@ import io.shardingsphere.example.transaction.fixture.entity.Order;
 
 public interface OrderRepository {
     
-    void createIfNotExistsTable();
+    void createTableIfNotExists();
     
     void truncateTable();
     

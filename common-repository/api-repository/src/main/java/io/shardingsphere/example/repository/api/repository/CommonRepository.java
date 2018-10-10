@@ -19,7 +19,7 @@ package io.shardingsphere.example.repository.api.repository;
 
 import java.util.List;
 
-public interface Repository<T> {
+public interface CommonRepository<T> {
     
     void createTableIfNotExists();
     

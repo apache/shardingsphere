@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class TransactionalDao {
     private OrderItemRepository orderItemRepository;
     
     public void createTable() {
-        orderRepository.createIfNotExistsTable();
-        orderItemRepository.createIfNotExistsTable();
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
     }
     
     public void truncateTable() {

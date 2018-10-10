@@ -18,7 +18,7 @@
 package io.shardingsphere.example.repository.jdbc.repository;
 
 import io.shardingsphere.example.repository.api.entity.Order;
-import io.shardingsphere.example.repository.api.repository.Repository;
+import io.shardingsphere.example.repository.api.repository.CommonRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,7 +28,7 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class OrderRepository implements Repository<Order> {
+public final class OrderRepository implements CommonRepository<Order> {
     
     private final DataSource dataSource;
     
