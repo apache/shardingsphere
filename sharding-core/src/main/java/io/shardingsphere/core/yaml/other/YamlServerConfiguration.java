@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.yaml.other;
 
-import io.shardingsphere.core.rule.ProxyAuthority;
+import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +32,7 @@ import java.util.Properties;
 @Setter
 public final class YamlServerConfiguration {
     
-    private ProxyAuthority proxyAuthority = new ProxyAuthority();
+    private Authentication authentication = new Authentication();
     
     private Properties props = new Properties();
 }

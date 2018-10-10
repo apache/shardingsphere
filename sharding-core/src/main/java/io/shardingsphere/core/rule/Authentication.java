@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Proxy authority.
+ * Authentication.
  *
  * @author panjuan
  */
 @NoArgsConstructor
 @Getter
 @Setter
-public final class ProxyAuthority {
+public final class Authentication {
     
     private String username;
     

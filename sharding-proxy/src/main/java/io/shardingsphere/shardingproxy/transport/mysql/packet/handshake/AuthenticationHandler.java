@@ -18,22 +18,22 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
 import com.google.common.base.Strings;
-import io.shardingsphere.core.rule.ProxyAuthority;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.core.rule.Authentication;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Arrays;
 
 /**
- * Authority handler.
+ * Authentication handler.
  *
  * @author panjuan
  */
 @Getter
-public final class AuthorityHandler {
+public final class AuthenticationHandler {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final AuthPluginData authPluginData = new AuthPluginData();
     
@@ -45,11 +45,11 @@ public final class AuthorityHandler {
      * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        ProxyAuthority proxyAuthority = PROXY_CONTEXT.getProxyAuthority();
-        if (Strings.isNullOrEmpty(proxyAuthority.getPassword())) {
-            return proxyAuthority.getUsername().equals(username);
+        Authentication authentication = GLOBAL_REGISTRY.getAuthentication();
+        if (Strings.isNullOrEmpty(authentication.getPassword())) {
+            return authentication.getUsername().equals(username);
         }
-        return proxyAuthority.getUsername().equals(username) && Arrays.equals(getAuthCipherBytes(proxyAuthority.getPassword()), authResponse);
+        return authentication.getUsername().equals(username) && Arrays.equals(getAuthCipherBytes(authentication.getPassword()), authResponse);
     }
     
     private byte[] getAuthCipherBytes(final String password) {

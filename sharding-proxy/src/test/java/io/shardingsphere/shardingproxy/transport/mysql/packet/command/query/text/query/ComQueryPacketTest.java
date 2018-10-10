@@ -27,8 +27,8 @@ import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -79,8 +79,8 @@ public final class ComQueryPacketTest {
     
     @Before
     public void setUp() {
-        setProxyContextNIOConfig();
-        setProxyContextRuleRegistryMap();
+        setNIOConfig();
+        setRuleInstanceMap();
         setFrontendHandlerSchema();
         listener = new Listener();
         listener.setExpected(TransactionOperationType.COMMIT);
@@ -94,20 +94,20 @@ public final class ComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setProxyContextNIOConfig() {
-        Field field = ProxyContext.class.getDeclaredField("useNIO");
+    private void setNIOConfig() {
+        Field field = GlobalRegistry.class.getDeclaredField("useNIO");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), true);
+        field.set(GlobalRegistry.getInstance(), true);
     }
     
     @SneakyThrows
-    private void setProxyContextRuleRegistryMap() {
-        RuleRegistry ruleRegistry = mock(RuleRegistry.class);
-        Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
-        ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
-        Field field = ProxyContext.class.getDeclaredField("ruleRegistryMap");
+    private void setRuleInstanceMap() {
+        RuleInstance ruleInstance = mock(RuleInstance.class);
+        Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
+        ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
+        Field field = GlobalRegistry.class.getDeclaredField("ruleInstanceMap");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), ruleRegistryMap);
+        field.set(GlobalRegistry.getInstance(), ruleInstanceMap);
     }
     
     private void setFrontendHandlerSchema() {
@@ -116,9 +116,9 @@ public final class ComQueryPacketTest {
     
     @SneakyThrows
     private void setTransactionType(final TransactionType transactionType) {
-        Field transactionTypeField = ProxyContext.class.getDeclaredField("transactionType");
+        Field transactionTypeField = GlobalRegistry.class.getDeclaredField("transactionType");
         transactionTypeField.setAccessible(true);
-        transactionTypeField.set(ProxyContext.getInstance(), transactionType);
+        transactionTypeField.set(GlobalRegistry.getInstance(), transactionType);
     }
     
     @Test

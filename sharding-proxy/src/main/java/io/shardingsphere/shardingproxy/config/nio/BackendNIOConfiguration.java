@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config;
+package io.shardingsphere.shardingproxy.config.nio;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
