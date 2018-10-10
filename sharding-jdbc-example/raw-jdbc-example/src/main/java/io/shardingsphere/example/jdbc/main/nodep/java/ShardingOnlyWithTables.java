@@ -20,8 +20,8 @@ package io.shardingsphere.example.jdbc.main.nodep.java;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.example.jdbc.util.DataSourceUtil;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.DemoService;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
@@ -35,7 +35,7 @@ public class ShardingOnlyWithTables {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new DemoService(new JDBCOrderRepository(dataSource), new JDBCOrderItemRepository(dataSource)).demo();
+        new DemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
     }
     
     private static DataSource getDataSource() throws SQLException {
