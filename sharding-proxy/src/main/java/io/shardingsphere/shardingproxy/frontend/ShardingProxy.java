@@ -32,7 +32,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
 
 /**
@@ -44,7 +44,7 @@ import io.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitia
  */
 public final class ShardingProxy {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
@@ -55,7 +55,7 @@ public final class ShardingProxy {
     private EventLoopGroup userGroup;
     
     public ShardingProxy() {
-        PROXY_CONTEXT.initShardingMetaData(backendExecutorContext.getExecuteEngine());
+        GLOBAL_REGISTRY.initShardingMetaData(backendExecutorContext.getExecuteEngine());
     }
     
     /**
@@ -66,7 +66,7 @@ public final class ShardingProxy {
      */
     public void start(final int port) throws InterruptedException {
         try {
-            if (PROXY_CONTEXT.isUseNIO()) {
+            if (GLOBAL_REGISTRY.isUseNIO()) {
                 BackendNettyClientManager.getInstance().start();
             }
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -83,7 +83,7 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
-            if (PROXY_CONTEXT.isUseNIO()) {
+            if (GLOBAL_REGISTRY.isUseNIO()) {
                 BackendNettyClientManager.getInstance().stop();
             }
         }
@@ -99,7 +99,7 @@ public final class ShardingProxy {
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup();
-        userGroup = new EpollEventLoopGroup(PROXY_CONTEXT.getAcceptorSize());
+        userGroup = new EpollEventLoopGroup(GLOBAL_REGISTRY.getAcceptorSize());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -112,7 +112,7 @@ public final class ShardingProxy {
     
     private void groupsNio(final ServerBootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup();
-        userGroup = new NioEventLoopGroup(PROXY_CONTEXT.getAcceptorSize());
+        userGroup = new NioEventLoopGroup(GLOBAL_REGISTRY.getAcceptorSize());
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)

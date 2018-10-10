@@ -155,7 +155,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         field.set(actual, sqlType);
     }
     
-    
     private void setExecuteGroups(final List<PreparedStatement> preparedStatements) {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();

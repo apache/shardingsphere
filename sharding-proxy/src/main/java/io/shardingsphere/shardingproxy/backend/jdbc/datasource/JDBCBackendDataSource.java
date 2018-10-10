@@ -22,8 +22,8 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.config.RuleInstance;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -47,19 +47,19 @@ import java.util.Map.Entry;
 @Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
-    private final RuleRegistry ruleRegistry;
+    private final RuleInstance ruleInstance;
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public JDBCBackendDataSource(final RuleRegistry ruleRegistry) {
-        this.ruleRegistry = ruleRegistry;
+    public JDBCBackendDataSource(final RuleInstance ruleInstance) {
+        this.ruleInstance = ruleInstance;
         dataSourceMap = createDataSourceMap();
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = ProxyContext.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = ruleRegistry.getDataSources();
-        // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
+        TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
+        Map<String, DataSourceParameter> dataSourceParameters = ruleInstance.getDataSources();
+        // TODO getCircuitDataSourceMap if RuleInstance.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
         return getNormalDataSourceMap(transactionType, dataSourceParameters);
     }
     
@@ -100,7 +100,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     /**
      * Get connections.
      *
-     * @param connectionMode connection mode
+     * @param connectionMode connection mode 
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
      * @return connections
@@ -126,12 +126,12 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      * @return available data source map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return ruleRegistry.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
+        return ruleInstance.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
     }
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : ruleRegistry.getDisabledDataSourceNames()) {
+        for (String each : ruleInstance.getDisabledDataSourceNames()) {
             result.remove(each);
         }
         return result;

@@ -1,0 +1,37 @@
+schemaName: master_slave_db
+
+dataSources:
+  master_ds:
+    url: jdbc:mysql://127.0.0.1:3306/master_ds
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 50
+  slave_ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/slave_ds_0
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 50
+  slave_ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/slave_ds_1
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 50
+
+masterSlaveRule:
+  name: ms_ds
+  masterDataSourceName: master_ds
+  slaveDataSourceNames:
+    - slave_ds_0
+    - slave_ds_1
