@@ -32,15 +32,8 @@ public final class XaOrderRepository implements OrderRepository {
     
     private final DataSource dataSource;
     
-    private final boolean isXA;
-    
     public XaOrderRepository(final DataSource dataSource) {
-        this(dataSource, false);
-    }
-    
-    public XaOrderRepository(final DataSource dataSource, final boolean isXA) {
         this.dataSource = dataSource;
-        this.isXA = isXA;
     }
     
     @Override
@@ -60,9 +53,7 @@ public final class XaOrderRepository implements OrderRepository {
     
     @Override
     public Long insert(final Order entity) {
-        if (isXA) {
-            insertFailure(entity);
-        }
+        insertFailure(entity);
         return insertSuccess(entity);
     }
     
@@ -100,21 +91,14 @@ public final class XaOrderRepository implements OrderRepository {
     }
     
     private Long insertSuccess(final Order order) {
-        Connection connection = null;
-        Statement statement = null;
         long orderId = -1;
-        try {
-            connection = dataSource.getConnection();
-            setAutoCommit(connection);
-            statement = connection.createStatement();
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();) {
+            connection.setAutoCommit(false);
             orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
             order.setOrderId(orderId);
-            commit(connection);
-        } catch (final SQLException ex) {
-            rollback(connection);
-        }
-        finally {
-            close(connection, statement);
+            connection.commit();
+        } catch (final SQLException ignored) {
         }
         return orderId;
     }
@@ -125,12 +109,12 @@ public final class XaOrderRepository implements OrderRepository {
         long orderId = -1;
         try {
             connection = dataSource.getConnection();
-            setAutoCommit(connection);
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
             orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
             order.setOrderId(orderId);
             makeException();
-            commit(connection);
+            connection.commit();
         } catch (final Exception ex) {
             rollback(connection);
         }
@@ -152,12 +136,14 @@ public final class XaOrderRepository implements OrderRepository {
     }
     
     private void close(final Connection connection, final Statement statement) {
-        if (null != connection && null != statement) {
-            try {
+        try {
+            if (null != connection) {
                 connection.close();
-                statement.close();
-            } catch (final SQLException ignored) {
             }
+            if (null != statement) {
+                statement.close();
+            }
+        } catch (final SQLException ignored) {
         }
     }
     
@@ -165,30 +151,13 @@ public final class XaOrderRepository implements OrderRepository {
         System.out.println(10 / 0);
     }
     
-    private void setAutoCommit(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.setAutoCommit(false);
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    private void commit(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.commit();
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
     private void rollback(final Connection connection) {
-        if (isXA) {
-            try {
-                connection.rollback();
-            } catch (final SQLException ignored) {
-            }
+        if (null == connection) {
+            return;
+        }
+        try {
+            connection.rollback();
+        } catch (final SQLException ignored) {
         }
     }
     
