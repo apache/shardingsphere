@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+    <parser-result sql-case-id="alter_index_rename">
+        <tokens>
+            <index-token begin-position="12" original-literals="idx_id" />
+            <index-token begin-position="29" original-literals="idx_id" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_index">
+    	<tables>
+            <table name="t_log" />
+        </tables>
+        
+        <tokens>
+            <index-token begin-position="29" original-literals="idx_id" />
+        </tokens>
+    </parser-result>
+    
+</parser-result-sets>
