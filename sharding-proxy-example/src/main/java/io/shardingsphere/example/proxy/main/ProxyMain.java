@@ -19,7 +19,7 @@ package io.shardingsphere.example.proxy.main;
 
 import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
 import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.DemoService;
+import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -36,7 +36,7 @@ public final class ProxyMain {
     
     public static void main(String[] args) {
         DataSource dataSource = createDataSource();
-        new DemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
+        new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
     }
     
     private static DataSource createDataSource() {
