@@ -66,26 +66,6 @@ public final class OrderItemRepository implements Repository<OrderItem> {
         return insertSuccess(orderItem);
     }
     
-    private Long insertSuccess(final OrderItem orderItem) {
-        Connection connection = null;
-        Statement statement = null;
-        long orderId = -1;
-        try {
-            connection = dataSource.getConnection();
-            setAutoCommit(connection);
-            statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
-            orderItem.setOrderItemId(orderId);
-            commit(connection);
-        } catch (final SQLException ex) {
-            rollback(connection);
-        }
-        finally {
-            close(connection, statement);
-        }
-        return orderId;
-    }
-    
     @Override
     public void delete(final Long id) {
         execute(String.format("delete from t_order_item where order_item_id = %d", id));
@@ -119,7 +99,27 @@ public final class OrderItemRepository implements Repository<OrderItem> {
         return result;
     }
     
-    public long insertFailure(final OrderItem orderItem) {
+    private Long insertSuccess(final OrderItem orderItem) {
+        Connection connection = null;
+        Statement statement = null;
+        long orderId = -1;
+        try {
+            connection = dataSource.getConnection();
+            setAutoCommit(connection);
+            statement = connection.createStatement();
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
+            orderItem.setOrderItemId(orderId);
+            commit(connection);
+        } catch (final SQLException ex) {
+            rollback(connection);
+        }
+        finally {
+            close(connection, statement);
+        }
+        return orderId;
+    }
+    
+    private Long insertFailure(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
         long orderId = -1;
