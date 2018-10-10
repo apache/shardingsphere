@@ -60,6 +60,13 @@ public final class OrderRepository implements Repository<Order> {
     
     @Override
     public Long insert(final Order order) {
+        if (isXA) {
+            insertFailure(order);
+        }
+        return insertSuccess(order);
+    }
+    
+    private Long insertSuccess(final Order order) {
         Connection connection = null;
         Statement statement = null;
         long orderId = -1;
