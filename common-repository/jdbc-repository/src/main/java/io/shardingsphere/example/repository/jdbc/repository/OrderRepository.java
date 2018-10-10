@@ -70,7 +70,7 @@ public final class OrderRepository implements Repository<Order> {
             orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
             order.setOrderId(orderId);
             commit(connection);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             rollback(connection);
         }
         finally {
@@ -124,7 +124,7 @@ public final class OrderRepository implements Repository<Order> {
             order.setOrderId(orderId);
             makeException();
             commit(connection);
-        } catch (SQLException ex) {
+        } catch (final Exception ex) {
             rollback(connection);
         }
         finally {
