@@ -15,23 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.mysql.ddl;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.TokenStream;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+package io.shardingsphere.core.parsing.antlr.mysql.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
@@ -46,10 +30,29 @@ import io.shardingsphere.test.sql.AntlrSQLCasesLoader;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ANTLRErrorListener;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.TokenStream;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class IntegrateAntlrSupportedSQLParsingTest extends AbstractBaseIntegrateSQLParsingTest{
+public final class MySQLDDLParsingTest extends AbstractBaseIntegrateSQLParsingTest{
     
     private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
     
@@ -98,7 +101,13 @@ public final class IntegrateAntlrSupportedSQLParsingTest extends AbstractBaseInt
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         Constructor<?> parserCon = parserClass.getConstructor(new Class[] {TokenStream.class});
         Object parser = parserCon.newInstance(new Object[] {tokenStream});
-        Method method = parserClass.getMethod("execute");
-        method.invoke(parser, new Object[] {});
+        Method addErrorListener = parserClass.getMethod("addErrorListener", ANTLRErrorListener.class);
+        addErrorListener.invoke(parser, new BaseErrorListener() {
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+                throw new RuntimeException();
+            }
+        });
+        Method execute = parserClass.getMethod("execute");
+        execute.invoke(parser, new Object[] {});
     }
 }

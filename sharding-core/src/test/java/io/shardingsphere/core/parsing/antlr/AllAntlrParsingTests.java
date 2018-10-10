@@ -15,16 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler;
+package io.shardingsphere.core.parsing.antlr;
 
-import io.shardingsphere.core.parsing.antler.mysql.ddl.IntegrateAntlrSupportedSQLParsingTest;
+import io.shardingsphere.core.parsing.antlr.mysql.ddl.MySQLDDLParsingTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        IntegrateAntlrSupportedSQLParsingTest.class
+        MySQLDDLParsingTest.class
 })
-public final class AllTests {
+public final class AllAntlrParsingTests {
 }
+

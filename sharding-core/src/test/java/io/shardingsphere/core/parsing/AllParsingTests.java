@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing;
 
+import io.shardingsphere.core.parsing.antlr.AllAntlrParsingTests;
 import io.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
 import io.shardingsphere.core.parsing.lexer.AllLexerTests;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumnTest;
@@ -34,7 +35,8 @@ import org.junit.runners.Suite;
         SQLJudgeEngineTest.class, 
         OrderItemTest.class,
         DerivedColumnTest.class, 
-        AllParsingIntegrateTests.class
+        AllParsingIntegrateTests.class,
+        AllAntlrParsingTests.class
     })
 public final class AllParsingTests {
 }
