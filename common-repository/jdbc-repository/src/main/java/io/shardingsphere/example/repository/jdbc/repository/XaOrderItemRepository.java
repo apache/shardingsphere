@@ -95,10 +95,10 @@ public final class XaOrderItemRepository implements OrderItemRepository {
         long orderItemId = -1;
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            setAutoCommit(connection);
+            connection.setAutoCommit(false);
             orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
             orderItem.setOrderItemId(orderItemId);
-            commit(connection);
+            connection.commit();
         } catch (final SQLException ignored) {
         }
         return orderItemId;
@@ -109,12 +109,12 @@ public final class XaOrderItemRepository implements OrderItemRepository {
         Statement statement = null;
         try {
             connection = dataSource.getConnection();
-            setAutoCommit(connection);
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
             long orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
             orderItem.setOrderId(orderItemId);
             makeException();
-            commit(connection);
+            connection.commit();
         } catch (final Exception ex) {
             rollback(connection);
         }
@@ -148,20 +148,6 @@ public final class XaOrderItemRepository implements OrderItemRepository {
     
     private void makeException() {
         System.out.println(10 / 0);
-    }
-    
-    private void setAutoCommit(final Connection connection) {
-        try {
-            connection.setAutoCommit(false);
-        } catch (final SQLException ignored) {
-        }
-    }
-    
-    private void commit(final Connection connection) {
-        try {
-            connection.commit();
-        } catch (final SQLException ignored) {
-        }
     }
     
     private void rollback(final Connection connection) {
