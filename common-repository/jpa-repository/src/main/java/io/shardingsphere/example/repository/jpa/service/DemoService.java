@@ -19,8 +19,8 @@ package io.shardingsphere.example.repository.jpa.service;
 
 import io.shardingsphere.example.repository.jpa.entity.JPAOrder;
 import io.shardingsphere.example.repository.jpa.entity.JPAOrderItem;
-import io.shardingsphere.example.repository.jpa.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.jpa.repository.OrderRepository;
+import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
