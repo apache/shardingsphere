@@ -48,7 +48,7 @@ import java.util.Map.Entry;
 @Getter
 public final class ShardingSchema {
     
-    private final String schemaName;
+    private final String name;
     
     private final Map<String, DataSourceParameter> dataSources;
     
@@ -63,8 +63,8 @@ public final class ShardingSchema {
     @Setter
     private Collection<String> disabledDataSourceNames = new LinkedList<>();
     
-    public ShardingSchema(final String schemaName, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
-        this.schemaName = schemaName;
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
+        this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());

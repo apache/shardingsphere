@@ -127,7 +127,7 @@ public final class BackendNettyClient {
                 DataSourceMetaData dataSourceMetaData = shardingSchema.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
                 return new FixedChannelPool(
                         bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), 
-                        new BackendNettyClientChannelPoolHandler(dataSourceName, shardingSchema.getSchemaName()), maxConnections);
+                        new BackendNettyClientChannelPoolHandler(dataSourceName, shardingSchema.getName()), maxConnections);
             }
         };
         for (String each : shardingSchema.getDataSources().keySet()) {

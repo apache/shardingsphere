@@ -154,7 +154,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         if (!channelMap.containsKey(dataSourceName)) {
             channelMap.put(dataSourceName, new ArrayList<Channel>());
         }
-        SimpleChannelPool pool = CLIENT_MANAGER.getBackendNettyClient(shardingSchema.getSchemaName()).getPoolMap().get(dataSourceName);
+        SimpleChannelPool pool = CLIENT_MANAGER.getBackendNettyClient(shardingSchema.getName()).getPoolMap().get(dataSourceName);
         Channel channel = pool.acquire().get(GLOBAL_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
@@ -235,7 +235,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private void channelRelease() {
         for (Entry<String, List<Channel>> entry : channelMap.entrySet()) {
             for (Channel each : entry.getValue()) {
-                CLIENT_MANAGER.getBackendNettyClient(shardingSchema.getSchemaName()).getPoolMap().get(entry.getKey()).release(each);
+                CLIENT_MANAGER.getBackendNettyClient(shardingSchema.getName()).getPoolMap().get(entry.getKey()).release(each);
             }
         }
     }

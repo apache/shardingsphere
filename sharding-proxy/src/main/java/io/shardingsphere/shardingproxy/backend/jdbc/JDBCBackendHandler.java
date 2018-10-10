@@ -116,7 +116,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         mergedResult = MergeEngineFactory.newInstance(
                 shardingSchema.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, shardingSchema.getMetaData().getTable()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(shardingSchema.getSchemaName());
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(shardingSchema.getName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
@@ -139,7 +139,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            each.setName("Tables_in_" + shardingSchema.getSchemaName());
+            each.setName("Tables_in_" + shardingSchema.getName());
         }
     }
     
