@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.proxy.main;
 
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.DemoService;
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -37,7 +37,7 @@ public class ProxyXaMain {
     
     public static void main(String[] args) throws SQLException {
         DataSource dataSource = createDataSource();
-        new DemoService(new JDBCOrderRepository(dataSource, true), new JDBCOrderItemRepository(dataSource, true)).demo();
+        new DemoService(new RawOrderRepository(dataSource, true), new RawOrderItemRepository(dataSource, true)).demo();
     }
     
     private static DataSource createDataSource() {
