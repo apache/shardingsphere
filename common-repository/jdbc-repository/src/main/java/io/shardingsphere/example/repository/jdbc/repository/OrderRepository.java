@@ -50,6 +50,16 @@ public final class OrderRepository implements Repository<Order> {
     }
     
     @Override
+    public void dropTable() {
+        execute("DROP TABLE t_order");
+    }
+    
+    @Override
+    public void truncateTable() {
+        execute("truncate table t_order");
+    }
+    
+    @Override
     public Long insert(final Order order) {
         Connection connection = null;
         Statement statement = null;
@@ -68,6 +78,17 @@ public final class OrderRepository implements Repository<Order> {
             close(connection, statement);
         }
         return orderId;
+    }
+    
+    private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
+        long result = -1;
+        statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+        try (ResultSet resultSet = statement.getGeneratedKeys()) {
+            if (resultSet.next()) {
+                result = resultSet.getLong(1);
+            }
+        }
+        return result;
     }
     
     private void close(final Connection connection, final Statement statement) {
@@ -99,18 +120,18 @@ public final class OrderRepository implements Repository<Order> {
     }
     
     private List<Order> getOrders(final ResultSet resultSet) {
-        List<Order> orders = new LinkedList<>();
+        List<Order> result = new LinkedList<>();
         try {
             while (resultSet.next()) {
                 Order order = new Order();
                 order.setOrderId(resultSet.getLong(1));
                 order.setUserId(resultSet.getInt(2));
                 order.setStatus(resultSet.getString(3));
-                orders.add(order);
+                result.add(order);
             }
         } catch (final SQLException ignored) {
         }
-        return orders;
+        return result;
     }
     
     private void insertFailure() throws SQLException {
@@ -138,30 +159,6 @@ public final class OrderRepository implements Repository<Order> {
         System.out.println(10 / 0);
     }
     
-    private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
-        long result = -1;
-        statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-        try (ResultSet resultSet = statement.getGeneratedKeys()) {
-            if (resultSet.next()) {
-                result = resultSet.getLong(1);
-            }
-        }
-        return result;
-    }
-    
-    private Long getRandomOrderId(Connection connection, int userId) throws SQLException {
-        Statement statement = connection.createStatement();
-        int index = (int) (Math.random() * 10);
-        ResultSet resultSet = statement.executeQuery("SELECT order_id FROM t_order WHERE user_id=" + userId);
-        long location = 0;
-        while (resultSet.next()) {
-            if (++location == index) {
-                return resultSet.getLong(1);
-            }
-        }
-        return 0L;
-    }
-    
     private void setAutoCommit(final Connection connection) {
         if (isXA) {
             try {
@@ -187,16 +184,6 @@ public final class OrderRepository implements Repository<Order> {
             } catch (final SQLException ignored) {
             }
         }
-    }
-    
-    @Override
-    public void dropTable() {
-        execute("DROP TABLE t_order");
-    }
-    
-    @Override
-    public void truncateTable() {
-        execute("truncate table t_order");
     }
     
     private void execute(final String sql) {
