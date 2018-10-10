@@ -27,7 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class OrderRepository extends Repository<Order> {
+public final class OrderRepository extends Repository<Order> {
     
     private final DataSource dataSource;
     
@@ -57,7 +57,7 @@ public class OrderRepository extends Repository<Order> {
             connection = dataSource.getConnection();
             setAutoCommit(connection);
             statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement,String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
             order.setOrderId(orderId);
             commit(connection);
         } catch (SQLException ex) {
