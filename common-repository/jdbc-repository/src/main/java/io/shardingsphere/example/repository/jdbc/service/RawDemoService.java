@@ -27,27 +27,27 @@ import java.util.List;
 
 public class RawDemoService {
     
-    private final RawOrderRepository RawOrderRepository;
+    private final RawOrderRepository rawOrderRepository;
     
-    private final RawOrderItemRepository RawOrderItemRepository;
+    private final RawOrderItemRepository rawOrderItemRepository;
     
-    public RawDemoService(final RawOrderRepository RawOrderRepository, final RawOrderItemRepository RawOrderItemRepository) {
-        this.RawOrderRepository = RawOrderRepository;
-        this.RawOrderItemRepository = RawOrderItemRepository;
+    public RawDemoService(final RawOrderRepository rawOrderRepository, final RawOrderItemRepository rawOrderItemRepository) {
+        this.rawOrderRepository = rawOrderRepository;
+        this.rawOrderItemRepository = rawOrderItemRepository;
     }
     
     public void demo() {
-        RawOrderRepository.createTableIfNotExists();
-        RawOrderItemRepository.createTableIfNotExists();
-        RawOrderRepository.truncateTable();
-        RawOrderItemRepository.truncateTable();
+        rawOrderRepository.createTableIfNotExists();
+        rawOrderItemRepository.createTableIfNotExists();
+        rawOrderRepository.truncateTable();
+        rawOrderItemRepository.truncateTable();
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            RawOrderRepository.insert(order);
+            rawOrderRepository.insert(order);
             long orderId = order.getOrderId();
             orderIds.add(orderId);
             
@@ -55,22 +55,22 @@ public class RawDemoService {
             item.setOrderId(orderId);
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
-            RawOrderItemRepository.insert(item);
+            rawOrderItemRepository.insert(item);
         }
         System.out.println("Order Data--------------");
-        System.out.println(RawOrderRepository.selectAll());
+        System.out.println(rawOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(RawOrderItemRepository.selectAll());
+        System.out.println(rawOrderItemRepository.selectAll());
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
-            RawOrderRepository.delete(each);
-            RawOrderItemRepository.delete(each);
+            rawOrderRepository.delete(each);
+            rawOrderItemRepository.delete(each);
         }
         System.out.println("Order Data--------------");
-        System.out.println(RawOrderRepository.selectAll());
+        System.out.println(rawOrderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(RawOrderItemRepository.selectAll());
-        RawOrderItemRepository.dropTable();
-        RawOrderRepository.dropTable();
+        System.out.println(rawOrderItemRepository.selectAll());
+        rawOrderItemRepository.dropTable();
+        rawOrderRepository.dropTable();
     }
 }

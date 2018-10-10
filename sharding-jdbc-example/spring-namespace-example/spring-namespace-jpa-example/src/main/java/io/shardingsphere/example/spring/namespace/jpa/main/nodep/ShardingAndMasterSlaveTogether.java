@@ -17,7 +17,6 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.main.nodep;
 
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import io.shardingsphere.example.repository.jpa.service.DemoService;
