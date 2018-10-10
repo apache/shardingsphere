@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config.yaml;
+package io.shardingsphere.shardingproxy.config;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

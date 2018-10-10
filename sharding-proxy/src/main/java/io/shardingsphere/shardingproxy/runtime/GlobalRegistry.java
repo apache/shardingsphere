@@ -31,7 +31,7 @@ import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
-import io.shardingsphere.shardingproxy.config.nio.BackendNIOConfiguration;
+import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

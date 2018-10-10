@@ -15,21 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config.nio;
+package io.shardingsphere.shardingproxy.config;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Configuration of use NIO to connection backend databases.
+ * Rule configuration for yaml.
  *
- * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class BackendNIOConfiguration {
+@Setter
+public final class ProxyYamlRuleConfiguration {
     
-    private final int maxConnections;
+    private String schemaName;
     
-    private final int connectionTimeoutSeconds;
+    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
+    
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
 }

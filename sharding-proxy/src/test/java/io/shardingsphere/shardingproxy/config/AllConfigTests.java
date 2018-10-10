@@ -17,14 +17,11 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlConfigurationLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        ProxyYamlConfigurationLoaderTest.class
-})
+@SuiteClasses(ProxyYamlConfigurationLoaderTest.class)
 public final class AllConfigTests {
 }
