@@ -15,20 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.mybatis.repository;
-
-import io.shardingsphere.example.repository.api.entity.Order;
-import io.shardingsphere.example.repository.api.repository.Repository;
-import org.apache.ibatis.annotations.Mapper;
+package io.shardingsphere.example.repository.api.repository;
 
 import java.util.List;
 
-@Mapper
-public interface OrderRepository extends Repository<Order> {
+public interface Repository<T> {
     
-    @Override
-    Long insert(Order model);
+    void createIfNotExistsTable();
     
-    @Override
-    List<Order> selectAll();
+    void truncateTable();
+    
+    void dropTable();
+    
+    Long insert(T model);
+    
+    void delete(Long id);
+    
+    List<T> selectAll();
 }

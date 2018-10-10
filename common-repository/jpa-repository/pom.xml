@@ -31,5 +31,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>api-repository</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

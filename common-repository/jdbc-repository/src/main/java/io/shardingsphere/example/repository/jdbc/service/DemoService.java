@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.mybatis.service;
+package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.mybatis.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.mybatis.repository.OrderRepository;
-import org.springframework.stereotype.Service;
+import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 public class DemoService {
     
-    @Resource
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
     
-    @Resource
-    private OrderItemRepository orderItemRepository;
+    private final OrderItemRepository orderItemRepository;
+    
+    public DemoService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+    }
     
     public void demo() {
         orderRepository.createIfNotExistsTable();

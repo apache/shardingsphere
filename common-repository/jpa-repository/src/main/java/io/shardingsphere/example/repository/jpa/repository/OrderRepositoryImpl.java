@@ -17,13 +17,15 @@
 
 package io.shardingsphere.example.repository.jpa.repository;
 
-import io.shardingsphere.example.repository.jpa.entity.Order;
+import io.shardingsphere.example.repository.jpa.entity.JPAOrder;
+import io.shardingsphere.example.repository.jpa.entity.JPAOrderItem;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -33,15 +35,30 @@ public class OrderRepositoryImpl implements OrderRepository {
     private EntityManager entityManager;
     
     @Override
-    public Long insert(final Order order) {
-        entityManager.persist(order);
-        return order.getOrderId();
+    public void createIfNotExistsTable() {}
+    
+    @Override
+    public void truncateTable() {}
+    
+    @Override
+    public void dropTable() {}
+    
+    @Override
+    public Long insert(final JPAOrder JPAOrder) {
+        entityManager.persist(JPAOrder);
+        return JPAOrder.getOrderId();
     }
     
     @Override
     public void delete(final Long orderId) {
-        Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1 AND o.userId = 51");
+        Query query = entityManager.createQuery("DELETE FROM JPAOrder o WHERE o.orderId = ?1 AND o.userId = 51");
         query.setParameter(1, orderId);
         query.executeUpdate();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<JPAOrder> selectAll() {
+        return (List<JPAOrder>) entityManager.createQuery("SELECT o FROM JPAOrder o, JPAOrderItem i WHERE o.orderId = i.orderId").getResultList();
     }
 }

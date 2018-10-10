@@ -17,15 +17,16 @@
 
 package io.shardingsphere.example.repository.jpa.repository;
 
-import io.shardingsphere.example.repository.jpa.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.Repository;
+import io.shardingsphere.example.repository.jpa.entity.JPAOrderItem;
 
 import java.util.List;
 
-public interface OrderItemRepository {
+public interface OrderItemRepository extends Repository<JPAOrderItem> {
     
-    Long insert(OrderItem orderItemId);
+    @Override
+    Long insert(JPAOrderItem JPAOrderItemId);
     
-    void delete(Long orderItemId);
-    
-    List<OrderItem> selectAll();
+    @Override
+    List<JPAOrderItem> selectAll();
 }

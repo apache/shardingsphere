@@ -17,11 +17,12 @@
 
 package io.shardingsphere.example.proxy.main;
 
+import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
+import io.shardingsphere.example.repository.jdbc.service.DemoService;
 import org.apache.commons.dbcp.BasicDataSource;
-import io.shardingsphere.example.repository.jdbc.JDBCRepository;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /*
  * 1. Copy resources/config.yaml to sharding-proxy conf folder and overwrite original file.
@@ -33,9 +34,9 @@ public final class ProxyMain {
     
     private static final int PROXY_PORT = 3307;
     
-    public static void main(String[] args) throws SQLException {
-        JDBCRepository jdbcRepository = new JDBCRepository(createDataSource(), false);
-        jdbcRepository.demo();
+    public static void main(String[] args) {
+        DataSource dataSource = createDataSource();
+        new DemoService(new OrderRepository(dataSource), new OrderItemRepository(dataSource)).demo();
     }
     
     private static DataSource createDataSource() {

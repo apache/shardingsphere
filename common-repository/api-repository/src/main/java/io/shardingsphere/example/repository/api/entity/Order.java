@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.mybatis.entity;
+package io.shardingsphere.example.repository.api.entity;
 
-public final class Order {
+public class Order {
     
     private long orderId;
     

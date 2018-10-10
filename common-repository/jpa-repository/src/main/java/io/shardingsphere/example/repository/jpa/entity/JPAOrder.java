@@ -17,6 +17,8 @@
 
 package io.shardingsphere.example.repository.jpa.entity;
 
+import io.shardingsphere.example.repository.api.entity.Order;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,48 +28,27 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "t_order_item")
-public class OrderItem implements Serializable {
+@Table(name = "t_order")
+public final class JPAOrder extends Order implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = 661434701950670670L;
     
     @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderItemId;
-    
     @Column(name = "order_id")
-    private long orderId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Override
+    public long getOrderId() {
+        return super.getOrderId();
+    }
     
     @Column(name = "user_id")
-    private int userId;
-    
-    public long getOrderItemId() {
-        return orderItemId;
-    }
-    
-    public void setOrderItemId(final long orderItemId) {
-        this.orderItemId = orderItemId;
-    }
-    
-    public long getOrderId() {
-        return orderId;
-    }
-    
-    public void setOrderId(final long orderId) {
-        this.orderId = orderId;
-    }
-    
-    public int getUserId() {
-        return userId;
-    }
-    
-    public void setUserId(final int userId) {
-        this.userId = userId;
-    }
-    
     @Override
-    public String toString() {
-        return String.format("order_item_id: %s, order_id: %s, user_id: %s", orderItemId, orderId, userId);
+    public int getUserId() {
+        return super.getUserId();
+    }
+    
+    @Column(name = "status")
+    public String getStatus() {
+        return super.getStatus();
     }
 }

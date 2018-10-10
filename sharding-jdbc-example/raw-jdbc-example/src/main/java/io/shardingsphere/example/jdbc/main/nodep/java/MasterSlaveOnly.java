@@ -18,9 +18,11 @@
 package io.shardingsphere.example.jdbc.main.nodep.java;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
-import io.shardingsphere.example.repository.jdbc.JDBCRepository;
 import io.shardingsphere.example.jdbc.util.DataSourceUtil;
+import io.shardingsphere.example.repository.jdbc.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.OrderRepository;
+import io.shardingsphere.example.repository.jdbc.service.DemoService;
+import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,7 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MasterSlaveOnly {
     
     public static void main(final String[] args) throws SQLException {
-        new JDBCRepository(getDataSource()).demo();
+        DataSource dataSource = getDataSource();
+        new DemoService(new OrderRepository(dataSource), new OrderItemRepository(dataSource)).demo();
     }
     
     private static DataSource getDataSource() throws SQLException {
