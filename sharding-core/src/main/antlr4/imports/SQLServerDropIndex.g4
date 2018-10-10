@@ -3,5 +3,5 @@ grammar SQLServerDropIndex;
 import SQLServerKeyword, Keyword, SQLServerBase, BaseRule;
 
 dropIndex
-    : DROP INDEX indexName ON tableName
+    : DROP INDEX (IF EXISTS)? indexName ON tableName
     ;
