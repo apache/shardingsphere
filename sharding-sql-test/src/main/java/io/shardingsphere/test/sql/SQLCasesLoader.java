@@ -116,7 +116,7 @@ public class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillSQLMap(sqlStatementMap, new FileInputStream(each));
+                loadSQLCasesFromDirectory(sqlStatementMap, each);
             }
         } else {
             fillSQLMap(sqlStatementMap, new FileInputStream(file));

@@ -70,7 +70,7 @@ public final class MySQLDDLParsingTest extends AbstractBaseIntegrateSQLParsingTe
     }
     
     @Test
-    public void assertUnsupportedSQL() throws Exception {
+    public void parsingSupportedSQL() throws Exception {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
         CodePointCharStream cs = CharStreams.fromString(sql);
         switch (databaseType) {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases>
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_log ADD COLUMN column1 varchar(10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_column_with_back_quota" value="ALTER TABLE `t_log` ADD COLUMN `column1` varchar(10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_column_if_not_exists" value="ALTER TABLE t_log ADD COLUMN IF NOT EXISTS column1 varchar(10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY(id)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order_item ADD UNIQUE(id)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON UPDATE CASCADE" db-types="PostgreSQL" />
+    <sql-case id="alter_table_alter_column" value="ALTER TABLE t_log ALTER COLUMN column1 TYPE varchar(20)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_log DROP COLUMN column1" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_column_if_exists" value="ALTER TABLE t_log DROP COLUMN IF EXISTS column1" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order_item DROP CONSTRAINT idx_id" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_constraint_if_exists" value="ALTER TABLE t_order_item DROP CONSTRAINT IF EXISTS idx_id" db-types="PostgreSQL" />
+    <sql-case id="alter_index_rename" value="ALTER INDEX idx_id RENAME TO idx_id" db-types="PostgreSQL" />
+    <sql-case id="alter_index_rename_if_exists" value="ALTER INDEX IF EXISTS idx_id RENAME TO idx_id" db-types="PostgreSQL" />
+</sql-cases>
