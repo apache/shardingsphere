@@ -119,7 +119,7 @@ public final class OrderRepository implements Repository<Order> {
         return orderId;
     }
     
-    public long insertFailure(final Order order) {
+    private Long insertFailure(final Order order) {
         Connection connection = null;
         Statement statement = null;
         long orderId = -1;
