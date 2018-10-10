@@ -102,13 +102,13 @@ public final class OrderItemRepository implements Repository<OrderItem> {
     private Long insertSuccess(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
-        long orderId = -1;
+        long orderItemId = -1;
         try {
             connection = dataSource.getConnection();
             setAutoCommit(connection);
             statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
-            orderItem.setOrderItemId(orderId);
+            orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
+            orderItem.setOrderItemId(orderItemId);
             commit(connection);
         } catch (final SQLException ex) {
             rollback(connection);
@@ -116,19 +116,19 @@ public final class OrderItemRepository implements Repository<OrderItem> {
         finally {
             close(connection, statement);
         }
-        return orderId;
+        return orderItemId;
     }
     
     private Long insertFailure(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
-        long orderId = -1;
+        long orderItemId = -1;
         try {
             connection = dataSource.getConnection();
             setAutoCommit(connection);
             statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
-            orderItem.setOrderId(orderId);
+            orderItemId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
+            orderItem.setOrderId(orderItemId);
             makeException();
             commit(connection);
         } catch (final Exception ex) {
@@ -137,7 +137,7 @@ public final class OrderItemRepository implements Repository<OrderItem> {
         finally {
             close(connection, statement);
         }
-        return orderId;
+        return orderItemId;
     }
     
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
