@@ -17,7 +17,6 @@
 
 package io.shardingsphere.example.repository.jdbc.repository;
 
-import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.Repository;
 
@@ -82,38 +81,38 @@ public final class OrderItemRepository implements Repository<OrderItem> {
     
     @Override
     public void delete(final Long id) {
-        execute(String.format("delete from t_order where orderId = %d", id));
+        execute(String.format("delete from t_order_item where order_item_id = %d", id));
     }
     
     @Override
-    public List<Order> selectAll() {
-        List<Order> result = new LinkedList<>();
-        String sql = "SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
+    public List<OrderItem> selectAll() {
+        List<OrderItem> result = new LinkedList<>();
+        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
-            result.addAll(getOrders(resultSet));
+            result.addAll(getOrderItems(resultSet));
         } catch (final SQLException ignored) {
         }
         return result;
     }
     
-    private List<Order> getOrders(final ResultSet resultSet) {
-        List<Order> result = new LinkedList<>();
+    private List<OrderItem> getOrderItems(final ResultSet resultSet) {
+        List<OrderItem> result = new LinkedList<>();
         try {
             while (resultSet.next()) {
-                Order order = new Order();
-                order.setOrderId(resultSet.getLong(1));
-                order.setUserId(resultSet.getInt(2));
-                order.setStatus(resultSet.getString(3));
-                result.add(order);
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderId(resultSet.getLong(1));
+                orderItem.setUserId(resultSet.getInt(2));
+                orderItem.setStatus(resultSet.getString(3));
+                result.add(orderItem);
             }
         } catch (final SQLException ignored) {
         }
         return result;
     }
     
-    public long insertFailure(final Order order) {
+    public long insertFailure(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
         long orderId = -1;
@@ -121,8 +120,8 @@ public final class OrderItemRepository implements Repository<OrderItem> {
             connection = dataSource.getConnection();
             setAutoCommit(connection);
             statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
-            order.setOrderId(orderId);
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
+            orderItem.setOrderId(orderId);
             makeException();
             commit(connection);
         } catch (SQLException ex) {
