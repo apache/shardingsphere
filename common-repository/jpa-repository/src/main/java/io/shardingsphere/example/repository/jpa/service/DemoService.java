@@ -40,11 +40,11 @@ public class DemoService {
         List<Long> orderIds = new ArrayList<>(10);
         System.out.println("1.Insert--------------");
         for (int i = 0; i < 10; i++) {
-            JPAOrder JPAOrder = new JPAOrder();
-            JPAOrder.setUserId(51);
-            JPAOrder.setStatus("INSERT_TEST");
-            orderRepository.insert(JPAOrder);
-            long orderId = JPAOrder.getOrderId();
+            JPAOrder jpaOrder = new JPAOrder();
+            jpaOrder.setUserId(51);
+            jpaOrder.setStatus("INSERT_TEST");
+            orderRepository.insert(jpaOrder);
+            long orderId = jpaOrder.getOrderId();
             orderIds.add(orderId);
             
             JPAOrderItem item = new JPAOrderItem();
