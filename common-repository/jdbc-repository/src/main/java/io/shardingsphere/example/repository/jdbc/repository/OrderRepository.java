@@ -42,29 +42,40 @@ public class OrderRepository extends Repository<Order> {
         this.isXA = isXA;
     }
     
-    private void createIfNotExistsTable() {
+    @Override
+    public void createIfNotExistsTable() {
         execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
         execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
     }
     
-    private void insertData() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        setAutoCommit(connection);
-        Statement statement = connection.createStatement();
+    @Override
+    public Long insert(final Order order) {
+        Connection connection = null;
+        Statement statement = null;
+        long orderId = -1;
         try {
-            for (int i = 1; i < 10; i++) {
-                long orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (10, 'INIT')");
-                statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 10)", orderId));
-                orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
-                statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
-            }
+            connection = dataSource.getConnection();
+            setAutoCommit(connection);
+            statement = connection.createStatement();
+            orderId = insertAndGetGeneratedKey(statement,String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
+            order.setOrderId(orderId);
             commit(connection);
         } catch (SQLException ex) {
             rollback(connection);
         }
         finally {
-            connection.close();
-            statement.close();
+            close(connection, statement);
+        }
+        return orderId;
+    }
+    
+    private void close(final Connection connection, final Statement statement) {
+        if (null != connection && null != statement) {
+            try {
+                connection.close();
+                statement.close();
+            } catch (final SQLException ignored) {
+            }
         }
     }
     
@@ -85,8 +96,7 @@ public class OrderRepository extends Repository<Order> {
             rollback(connection);
         }
         finally {
-            connection.close();
-            statement.close();
+            close(connection, statement);
         }
     }
     
@@ -139,21 +149,30 @@ public class OrderRepository extends Repository<Order> {
         return 0L;
     }
     
-    private void setAutoCommit(final Connection connection) throws SQLException {
+    private void setAutoCommit(final Connection connection) {
         if (isXA) {
-            connection.setAutoCommit(false);
+            try {
+                connection.setAutoCommit(false);
+            } catch (final SQLException ignored) {
+            }
         }
     }
     
-    private void commit(final Connection connection) throws SQLException {
+    private void commit(final Connection connection) {
         if (isXA) {
-            connection.commit();
+            try {
+                connection.commit();
+            } catch (final SQLException ignored) {
+            }
         }
     }
     
-    private void rollback(final Connection connection) throws SQLException {
+    private void rollback(final Connection connection) {
         if (isXA) {
-            connection.rollback();
+            try {
+                connection.rollback();
+            } catch (final SQLException ignored) {
+            }
         }
     }
     
