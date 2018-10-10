@@ -21,7 +21,7 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
+import io.shardingsphere.shardingproxy.config.ShardingSchema;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -66,20 +66,20 @@ public final class CommandPacketFactoryTest {
     
     @Before
     public void setUp() {
-        setRuleInstanceMap();
+        setShardingSchemas();
         setFrontendHandlerSchema();
     }
     
     @SneakyThrows
-    private void setRuleInstanceMap() {
-        RuleInstance ruleInstance = mock(RuleInstance.class);
+    private void setShardingSchemas() {
+        ShardingSchema shardingSchema = mock(ShardingSchema.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
-        when(ruleInstance.getMetaData()).thenReturn(metaData);
-        Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
-        ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
-        Field field = GlobalRegistry.class.getDeclaredField("ruleInstanceMap");
+        when(shardingSchema.getMetaData()).thenReturn(metaData);
+        Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
+        shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
+        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), ruleInstanceMap);
+        field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
     private void setFrontendHandlerSchema() {

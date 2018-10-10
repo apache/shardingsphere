@@ -22,7 +22,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
+import io.shardingsphere.shardingproxy.config.ShardingSchema;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -44,18 +44,18 @@ import java.util.Map.Entry;
  */
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
-    private final RuleInstance ruleInstance;
+    private final ShardingSchema shardingSchema;
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public JDBCBackendDataSource(final RuleInstance ruleInstance) {
-        this.ruleInstance = ruleInstance;
+    public JDBCBackendDataSource(final ShardingSchema shardingSchema) {
+        this.shardingSchema = shardingSchema;
         dataSourceMap = createDataSourceMap();
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        // TODO getCircuitDataSourceMap if RuleInstance.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
-        return getNormalDataSourceMap(ruleInstance.getDataSources());
+        // TODO getCircuitDataSourceMap if getCircuitBreakerDataSourceNames() is not empty
+        return getNormalDataSourceMap(shardingSchema.getDataSources());
     }
     
     private Map<String, DataSource> getNormalDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -116,12 +116,12 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        return ruleInstance.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
+        return shardingSchema.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
     }
     
     private Map<String, DataSource> getAvailableDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : ruleInstance.getDisabledDataSourceNames()) {
+        for (String each : shardingSchema.getDisabledDataSourceNames()) {
             result.remove(each);
         }
         return result;

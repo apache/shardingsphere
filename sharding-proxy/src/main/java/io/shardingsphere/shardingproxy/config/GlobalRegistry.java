@@ -56,7 +56,7 @@ public final class GlobalRegistry {
     
     private List<String> schemaNames = new LinkedList<>();
     
-    private Map<String, RuleInstance> ruleInstanceMap = new ConcurrentHashMap<>();
+    private Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
     
     private Authentication authentication;
     
@@ -106,7 +106,7 @@ public final class GlobalRegistry {
         for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            ruleInstanceMap.put(schemaName, new RuleInstance(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
         }
     }
     
@@ -135,7 +135,7 @@ public final class GlobalRegistry {
      * @param executeEngine sharding execute engine
      */
     public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        for (RuleInstance each : ruleInstanceMap.values()) {
+        for (ShardingSchema each : shardingSchemas.values()) {
             each.initShardingMetaData(executeEngine);
         }
     }
@@ -151,13 +151,13 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Get rule instance of schema.
+     * Get sharding schema.
      *
-     * @param schema schema
-     * @return rule instance of schema
+     * @param schemaName schema name
+     * @return sharding schema
      */
-    public RuleInstance getRuleInstance(final String schema) {
-        return Strings.isNullOrEmpty(schema) ? null : ruleInstanceMap.get(schema);
+    public ShardingSchema getShardingSchema(final String schemaName) {
+        return Strings.isNullOrEmpty(schemaName) ? null : shardingSchemas.get(schemaName);
     }
     
     /**
@@ -168,13 +168,13 @@ public final class GlobalRegistry {
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
         initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
-        for (Entry<String, RuleInstance> entry : ruleInstanceMap.entrySet()) {
+        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        ruleInstanceMap.clear();
+        shardingSchemas.clear();
         for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
             String schemaName = entry.getKey();
-            ruleInstanceMap.put(schemaName, new RuleInstance(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
         }
     }
     
@@ -195,7 +195,7 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        for (Entry<String, RuleInstance> entry : ruleInstanceMap.entrySet()) {
+        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
         }
     }

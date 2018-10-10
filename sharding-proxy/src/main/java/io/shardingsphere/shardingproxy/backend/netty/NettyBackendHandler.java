@@ -39,7 +39,7 @@ import io.shardingsphere.shardingproxy.backend.netty.client.response.mysql.MySQL
 import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.shardingproxy.backend.netty.future.SynchronizedFuture;
 import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
+import io.shardingsphere.shardingproxy.config.ShardingSchema;
 import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -78,7 +78,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private static final BackendNettyClientManager CLIENT_MANAGER = BackendNettyClientManager.getInstance();
     
-    private final RuleInstance ruleInstance;
+    private final ShardingSchema shardingSchema;
     
     private final int connectionId;
     
@@ -100,11 +100,11 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
-        return ruleInstance.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
+        return shardingSchema.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
-        String dataSourceName = new MasterSlaveRouter(ruleInstance.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(sql).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(shardingSchema.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
         executeSQL(dataSourceName, sql);
@@ -119,7 +119,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ruleInstance.getShardingRule(), ruleInstance.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), ruleInstance.getMetaData().getDataSource());
+                shardingSchema.getShardingRule(), shardingSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), shardingSchema.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
@@ -154,7 +154,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         if (!channelMap.containsKey(dataSourceName)) {
             channelMap.put(dataSourceName, new ArrayList<Channel>());
         }
-        SimpleChannelPool pool = CLIENT_MANAGER.getBackendNettyClient(ruleInstance.getSchemaName()).getPoolMap().get(dataSourceName);
+        SimpleChannelPool pool = CLIENT_MANAGER.getBackendNettyClient(shardingSchema.getSchemaName()).getPoolMap().get(dataSourceName);
         Channel channel = pool.acquire().get(GLOBAL_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds(), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
@@ -198,7 +198,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(ruleInstance.getShardingRule(), queryResults, sqlStatement, ruleInstance.getMetaData().getTable()).merge();
+            mergedResult = MergeEngineFactory.newInstance(shardingSchema.getShardingRule(), queryResults, sqlStatement, shardingSchema.getMetaData().getTable()).merge();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }
@@ -208,9 +208,10 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     // TODO :jiaqi use sql packet to refresh meta data
     // TODO refresh table meta data by SQL parse result
     private void refreshTableMetaData(final String logicTableName) throws SQLException {
-        TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleInstance.getMetaData().getDataSource(), 
-                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(ruleInstance.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
-        ruleInstance.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleInstance.getShardingRule()));
+        TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
+                shardingSchema.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(), 
+                new ProxyTableMetaDataConnectionManager(shardingSchema.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
+        shardingSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, shardingSchema.getShardingRule()));
     }
     
     @Override
@@ -234,7 +235,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private void channelRelease() {
         for (Entry<String, List<Channel>> entry : channelMap.entrySet()) {
             for (Channel each : entry.getValue()) {
-                CLIENT_MANAGER.getBackendNettyClient(ruleInstance.getSchemaName()).getPoolMap().get(entry.getKey()).release(each);
+                CLIENT_MANAGER.getBackendNettyClient(shardingSchema.getSchemaName()).getPoolMap().get(entry.getKey()).release(each);
             }
         }
     }

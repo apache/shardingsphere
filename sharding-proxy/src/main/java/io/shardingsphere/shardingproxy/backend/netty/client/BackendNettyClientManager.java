@@ -64,7 +64,7 @@ public final class BackendNettyClientManager {
      */
     public void start() throws InterruptedException {
         for (String each : GLOBAL_REGISTRY.getSchemaNames()) {
-            BackendNettyClient backendNettyClient = new BackendNettyClient(GLOBAL_REGISTRY.getRuleInstance(each));
+            BackendNettyClient backendNettyClient = new BackendNettyClient(GLOBAL_REGISTRY.getShardingSchema(each));
             clientMap.put(each, backendNettyClient);
             backendNettyClient.start();
         }

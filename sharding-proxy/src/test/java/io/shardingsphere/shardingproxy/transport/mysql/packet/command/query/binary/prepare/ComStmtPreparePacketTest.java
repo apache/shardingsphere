@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
+import io.shardingsphere.shardingproxy.config.ShardingSchema;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -70,7 +70,7 @@ public final class ComStmtPreparePacketTest {
     
     @Before
     public void setUp() {
-        setRuleInstanceMap();
+        setShardingSchemaMap();
         setFrontendHandlerSchema();
     }
     
@@ -81,15 +81,15 @@ public final class ComStmtPreparePacketTest {
     }
     
     @SneakyThrows
-    private void setRuleInstanceMap() {
-        RuleInstance ruleInstance = mock(RuleInstance.class);
+    private void setShardingSchemaMap() {
+        ShardingSchema shardingSchema = mock(ShardingSchema.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
-        when(ruleInstance.getMetaData()).thenReturn(metaData);
-        Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
-        ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
-        Field field = GlobalRegistry.class.getDeclaredField("ruleInstanceMap");
+        when(shardingSchema.getMetaData()).thenReturn(metaData);
+        Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
+        shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
+        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), ruleInstanceMap);
+        field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
     private void setFrontendHandlerSchema() {
