@@ -110,7 +110,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private boolean isUnsupportedBASE(final SQLType sqlType) throws SQLException {
-        return TransactionType.BASE == ProxyContext.getInstance().getTransactionType() && SQLType.DDL == sqlType
+        return TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
     }
     

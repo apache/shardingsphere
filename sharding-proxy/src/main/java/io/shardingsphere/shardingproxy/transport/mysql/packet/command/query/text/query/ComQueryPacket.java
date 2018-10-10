@@ -104,7 +104,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType() && isInBASETransaction(operationType.get())) {
             ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(operationType.get(), currentSchema));
             if (TransactionOperationType.BEGIN == operationType.get()) {
-                RevertEngineHolder.getInstance().setRevertEngine(new ProxyRevertEngine(ProxyContext.getInstance().getRuleRegistry(currentSchema).getBackendDataSource().getDataSourceMap()));
+                RevertEngineHolder.getInstance().setRevertEngine(new ProxyRevertEngine(GlobalRegistry.getInstance().getRuleInstance(currentSchema).getBackendDataSource().getDataSourceMap()));
             } else {
                 RevertEngineHolder.getInstance().remove();
             }
