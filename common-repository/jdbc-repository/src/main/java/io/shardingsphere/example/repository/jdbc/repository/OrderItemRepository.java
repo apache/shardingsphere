@@ -60,6 +60,13 @@ public final class OrderItemRepository implements Repository<OrderItem> {
     
     @Override
     public Long insert(final OrderItem orderItem) {
+        if (isXA) {
+            insertFailure(orderItem);
+        }
+        return insertSuccess(orderItem);
+    }
+    
+    private Long insertSuccess(final OrderItem orderItem) {
         Connection connection = null;
         Statement statement = null;
         long orderId = -1;
@@ -68,7 +75,7 @@ public final class OrderItemRepository implements Repository<OrderItem> {
             setAutoCommit(connection);
             statement = connection.createStatement();
             orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order_item (order_id, user_id, status) VALUES (%s, %s,'%s')", orderItem.getOrderId(), orderItem.getUserId(), orderItem.getStatus()));
-            orderItem.setOrderId(orderId);
+            orderItem.setOrderItemId(orderId);
             commit(connection);
         } catch (final SQLException ex) {
             rollback(connection);
