@@ -34,7 +34,7 @@ import java.util.Properties;
 
 public class ShardingDatasourceUtil {
     
-    public static DataSource getShardingDataSource(DatasourceType type) throws SQLException {
+    public static DataSource getShardingDataSource(final DatasourceType type) throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
         orderTableRuleConfig.setLogicTable("t_order");
