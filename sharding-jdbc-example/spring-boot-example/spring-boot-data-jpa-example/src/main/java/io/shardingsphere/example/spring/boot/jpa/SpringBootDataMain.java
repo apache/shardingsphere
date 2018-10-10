@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({ "io.shardingsphere.example.repository.jpa" })
-@EntityScan( basePackages = {"io.shardingsphere.example.repository.jpa"})
+@ComponentScan("io.shardingsphere.example.repository.jpa")
+@EntityScan(basePackages = "io.shardingsphere.example.repository.jpa")
 @SpringBootApplication
 public class SpringBootDataMain {
     
