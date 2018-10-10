@@ -46,7 +46,6 @@ public final class OrderRepository implements Repository<Order> {
     @Override
     public void createIfNotExistsTable() {
         execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
     }
     
     @Override
@@ -82,7 +81,7 @@ public final class OrderRepository implements Repository<Order> {
     
     @Override
     public void delete(final Long id) {
-        execute(String.format("delete from t_order where orderId = %d", id));
+        execute(String.format("delete from t_order where order_id = %d", id));
     }
     
     @Override
