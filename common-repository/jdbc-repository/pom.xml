@@ -9,4 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jdbc-repository</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>api-repository</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
