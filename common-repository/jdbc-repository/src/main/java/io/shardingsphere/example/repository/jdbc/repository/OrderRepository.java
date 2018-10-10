@@ -66,26 +66,6 @@ public final class OrderRepository implements Repository<Order> {
         return insertSuccess(order);
     }
     
-    private Long insertSuccess(final Order order) {
-        Connection connection = null;
-        Statement statement = null;
-        long orderId = -1;
-        try {
-            connection = dataSource.getConnection();
-            setAutoCommit(connection);
-            statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
-            order.setOrderId(orderId);
-            commit(connection);
-        } catch (final SQLException ex) {
-            rollback(connection);
-        }
-        finally {
-            close(connection, statement);
-        }
-        return orderId;
-    }
-    
     @Override
     public void delete(final Long id) {
         execute(String.format("delete from t_order where order_id = %d", id));
@@ -117,6 +97,26 @@ public final class OrderRepository implements Repository<Order> {
         } catch (final SQLException ignored) {
         }
         return result;
+    }
+    
+    private Long insertSuccess(final Order order) {
+        Connection connection = null;
+        Statement statement = null;
+        long orderId = -1;
+        try {
+            connection = dataSource.getConnection();
+            setAutoCommit(connection);
+            statement = connection.createStatement();
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
+            order.setOrderId(orderId);
+            commit(connection);
+        } catch (final SQLException ex) {
+            rollback(connection);
+        }
+        finally {
+            close(connection, statement);
+        }
+        return orderId;
     }
     
     public long insertFailure(final Order order) {
