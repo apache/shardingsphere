@@ -45,7 +45,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.unit.Execut
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;

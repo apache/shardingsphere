@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;

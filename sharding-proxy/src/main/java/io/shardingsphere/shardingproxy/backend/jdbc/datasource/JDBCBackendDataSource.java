@@ -21,8 +21,8 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;

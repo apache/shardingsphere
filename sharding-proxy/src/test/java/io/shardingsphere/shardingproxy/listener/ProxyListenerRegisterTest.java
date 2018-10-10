@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.listener;
 
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;

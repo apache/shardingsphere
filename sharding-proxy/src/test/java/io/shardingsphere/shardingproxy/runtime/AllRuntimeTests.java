@@ -17,11 +17,15 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
+import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManagerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(ChannelRegistryTest.class)
+@SuiteClasses({
+        ProxyTableMetaDataConnectionManagerTest.class, 
+        ChannelRegistryTest.class
+})
 public final class AllRuntimeTests {
 }

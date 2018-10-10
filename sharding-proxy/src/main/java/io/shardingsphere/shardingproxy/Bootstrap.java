@@ -22,13 +22,13 @@ import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlConfigurationLoader;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

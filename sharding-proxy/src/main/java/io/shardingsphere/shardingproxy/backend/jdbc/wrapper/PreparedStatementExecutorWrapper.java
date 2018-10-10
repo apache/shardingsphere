@@ -25,9 +25,9 @@ import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.ShardingSchema;
 import io.shardingsphere.shardingproxy.rewrite.MasterSlaveSQLRewriteEngine;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;

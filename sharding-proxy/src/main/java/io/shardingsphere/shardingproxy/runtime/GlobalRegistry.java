@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config;
+package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;

@@ -38,10 +38,10 @@ import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientMa
 import io.shardingsphere.shardingproxy.backend.netty.client.response.mysql.MySQLQueryResult;
 import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.shardingproxy.backend.netty.future.SynchronizedFuture;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.ShardingSchema;
-import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;

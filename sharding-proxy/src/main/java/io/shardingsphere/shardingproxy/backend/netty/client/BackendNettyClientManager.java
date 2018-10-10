@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.netty.client;
 
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

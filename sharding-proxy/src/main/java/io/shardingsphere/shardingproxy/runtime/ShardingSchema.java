@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config;
+package io.shardingsphere.shardingproxy.runtime;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -26,7 +26,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManagerTest;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlConfigurationLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -25,8 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ProxyYamlConfigurationLoaderTest.class, 
-        ProxyTableMetaDataConnectionManagerTest.class
+        ProxyYamlConfigurationLoaderTest.class
 })
 public final class AllConfigTests {
 }

@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;

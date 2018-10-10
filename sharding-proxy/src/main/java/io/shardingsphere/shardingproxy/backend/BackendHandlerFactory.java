@@ -38,9 +38,9 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.shardingproxy.backend.netty.NettyBackendHandler;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.ShardingSchema;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
