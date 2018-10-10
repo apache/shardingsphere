@@ -6,5 +6,6 @@
     <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL" />
     <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_temp_log" db-types="MySQL" />
     <sql-case id="drop_index" value="DROP INDEX idx_id ON t_log" db-types="MySQL" />
+    <sql-case id="drop_index_with_back_quota" value="DROP INDEX `idx_id` ON `t_log`" db-types="MySQL" />
     <sql-case id="drop_index_offline" value="DROP INDEX OFFLINE idx_id ON t_log" db-types="MySQL" />
 </sql-cases>
