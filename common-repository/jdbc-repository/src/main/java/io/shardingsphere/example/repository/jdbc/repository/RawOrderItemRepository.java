@@ -31,7 +31,7 @@ import java.util.List;
 public final class RawOrderItemRepository implements OrderItemRepository {
     
     private final DataSource dataSource;
-
+    
     public RawOrderItemRepository(final DataSource dataSource) {
         this.dataSource = dataSource;
     }

@@ -31,7 +31,7 @@ import java.util.List;
 public final class XaOrderItemRepository implements OrderItemRepository {
 
     private final DataSource dataSource;
-
+    
     public XaOrderItemRepository(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
