@@ -83,5 +83,33 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+        
+        <dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4</artifactId>
+		</dependency>
     </dependencies>
+    
+    <build>
+		<plugins>
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>4.7.1</version> <!-- use older version to process XPathLexer.g4, avoiding cyclic build dependency -->
+				<executions>
+					<execution>
+						<id>antlr</id>
+						<configuration>
+							<libDirectory>src/main/antlr4/imports/</libDirectory>
+							<listener>false</listener>
+							<visitor>false</visitor>
+						</configuration>
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

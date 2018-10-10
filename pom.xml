@@ -52,6 +52,7 @@
         <guava-retrying.version>2.0.0</guava-retrying.version>
         <quartz.version>2.3.0</quartz.version>
         <opentracing.version>0.30.0</opentracing.version>
+        <antlr4.version>4.7.1</antlr4.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -175,6 +176,11 @@
                 <artifactId>opentracing-util</artifactId>
                 <version>${opentracing.version}</version>
             </dependency>
+            <dependency>
+			          <groupId>org.antlr</groupId>
+			          <artifactId>antlr4</artifactId>
+			          <version>${antlr4.version}</version>
+		        </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>

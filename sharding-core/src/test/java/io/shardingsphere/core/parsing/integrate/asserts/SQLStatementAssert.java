@@ -31,6 +31,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.test.sql.SQLCaseType;
+import io.shardingsphere.test.sql.SQLCasesLoader;
 
 /**
  * SQL statement assert.
@@ -62,9 +63,25 @@ public final class SQLStatementAssert {
     private final TableMetaDataAssert metaAssert;
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(SQLCasesLoader.getInstance(),ParserResultSetLoader.getInstance(),sqlCaseId, sqlCaseType);
         this.actual = actual;
         final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
+        expected = parserResultSetLoader.getParserResult(sqlCaseId);
+        tableAssert = new TableAssert(assertMessage);
+        conditionAssert = new ConditionAssert(assertMessage);
+        tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
+        indexAssert = new IndexAssert(sqlCaseType, assertMessage);
+        itemAssert = new ItemAssert(assertMessage);
+        groupByAssert = new GroupByAssert(assertMessage);
+        orderByAssert = new OrderByAssert(assertMessage);
+        limitAssert = new LimitAssert(sqlCaseType, assertMessage);
+        metaAssert = new TableMetaDataAssert(assertMessage);
+    }
+    
+    
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType,final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader,sqlCaseId, sqlCaseType);
+        this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);

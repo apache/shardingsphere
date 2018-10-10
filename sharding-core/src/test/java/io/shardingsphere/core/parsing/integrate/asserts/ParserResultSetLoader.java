@@ -33,13 +33,13 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public final class ParserResultSetLoader {
+public class ParserResultSetLoader {
     
     private static final ParserResultSetLoader INSTANCE = new ParserResultSetLoader();
     
     private final Map<String, ParserResult> parserResultMap;
     
-    private ParserResultSetLoader() {
+    protected ParserResultSetLoader() {
         parserResultMap = loadParserResultSet();
     }
     
