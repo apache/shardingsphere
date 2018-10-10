@@ -134,25 +134,25 @@ public final class OrderRepository implements Repository<Order> {
         return result;
     }
     
-    private void insertFailure() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        setAutoCommit(connection);
-        Statement statement = connection.createStatement();
+    public long insertFailure(final Order order) {
+        Connection connection = null;
+        Statement statement = null;
+        long orderId = -1;
         try {
-            for (int i = 1; i < 10; i++) {
-                long orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (10, 'INIT')");
-                statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 10)", orderId));
-                orderId = insertAndGetGeneratedKey(statement,"INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
-                statement.execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
-            }
+            connection = dataSource.getConnection();
+            setAutoCommit(connection);
+            statement = connection.createStatement();
+            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
+            order.setOrderId(orderId);
             makeException();
             commit(connection);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             rollback(connection);
         }
         finally {
             close(connection, statement);
         }
+        return orderId;
     }
     
     private void makeException() {
@@ -190,8 +190,7 @@ public final class OrderRepository implements Repository<Order> {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(sql);
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
+        } catch (final SQLException ignored) {
         }
     }
 }
