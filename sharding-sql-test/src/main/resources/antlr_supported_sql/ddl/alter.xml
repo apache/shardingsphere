@@ -1,18 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-    <sql-case id="alter_table_add_column" value="ALTER TABLE t_log ADD COLUMN column1 varchar(10) AFTER status" db-types="MySQL" />
-    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_log ADD COLUMN (column2 varchar(10) NOT NULL, column3 geometry NOT NULL)" db-types="MySQL" />
-    <sql-case id="alter_table_add_index" value="ALTER TABLE t_log ADD INDEX t_log_index (column1(10) DESC) USING BTREE" db-types="MySQL" />
-    <sql-case id="alter_table_add_fulltext_index" value="ALTER TABLE t_log ADD FULLTEXT INDEX t_log_fulltext_index (column2)" db-types="MySQL" />
-    <sql-case id="alter_table_add_spatial_index" value="ALTER TABLE t_log ADD SPATIAL INDEX t_log_spatial_index (column3)" db-types="MySQL" />
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_log ADD COLUMN column1 varchar(10)" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_add_column_with_back_quota" value="ALTER TABLE `t_log` ADD COLUMN `column1` varchar(10)" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_add_column_if_not_exists" value="ALTER TABLE t_log ADD COLUMN IF NOT EXISTS column1 varchar(10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_column_mysql_column_option" value="ALTER TABLE `t_log` ADD COLUMN `column1` varchar(10) NOT NULL COMMENT 'column1'" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_after" value="ALTER TABLE t_log ADD COLUMN column1 varchar(10) AFTER status" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_log ADD COLUMN (column1 varchar(10), column2 geometry)" db-types="MySQL" />
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_log ADD CONSTRAINT PRIMARY KEY (id)" db-types="MySQL" />
-    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_log ADD CONSTRAINT UNIQUE KEY t_log_unique_key (id)" db-types="MySQL" />
-    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT FOREIGN KEY t_order_item_foreign_key (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON UPDATE CASCADE" db-types="MySQL" />
+    <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY(id)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_log ADD CONSTRAINT UNIQUE KEY uk_id (id)" db-types="MySQL" />
+    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order_item ADD UNIQUE(id)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT FOREIGN KEY fk_order_id (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON UPDATE CASCADE" db-types="MySQL" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON UPDATE CASCADE" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_index" value="ALTER TABLE t_log ADD INDEX idx_id (id)" db-types="MySQL" />
+    <sql-case id="alter_table_add_index_with_index_option" value="ALTER TABLE t_log ADD INDEX idx_id (id) USING BTREE COMMENT 'idx_id'" db-types="MySQL" />
+    <sql-case id="alter_table_add_fulltext_index" value="ALTER TABLE t_log ADD FULLTEXT INDEX idx_column1 (column1)" db-types="MySQL" />
+    <sql-case id="alter_table_add_spatial_index" value="ALTER TABLE t_log ADD SPATIAL INDEX idx_column2 (column2)" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column" value="ALTER TABLE t_log ALTER COLUMN column1 TYPE varchar(20)" db-types="PostgreSQL" />
     <sql-case id="alter_table_modify_column" value="ALTER TABLE t_log MODIFY COLUMN column1 varchar(10) NOT NULL" db-types="MySQL" />
     <sql-case id="alter_table_change_column" value="ALTER TABLE t_log CHANGE COLUMN column1 column1 varchar(10) NOT NULL" db-types="MySQL" />
-    <sql-case id="alter_table_rename_index" value="ALTER TABLE t_log RENAME INDEX t_log_index TO t_log_index" db-types="MySQL" />
-    <sql-case id="alter_table_drop_index" value="ALTER TABLE t_log DROP INDEX t_log_index" db-types="MySQL" />
-    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_log DROP COLUMN column1" db-types="MySQL" />
+    <sql-case id="alter_table_rename_index" value="ALTER TABLE t_log RENAME INDEX idx_id TO idx_id" db-types="MySQL" />
+    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_log DROP COLUMN column1" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_drop_column_if_exists" value="ALTER TABLE t_log DROP COLUMN IF EXISTS column1" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_primary_key" value="ALTER TABLE t_log DROP PRIMARY KEY" db-types="MySQL" />
-    <sql-case id="alter_table_drop_foreign_key" value="ALTER TABLE t_order_item DROP FOREIGN KEY t_order_item_foreign_key" db-types="MySQL" />
+    <sql-case id="alter_table_drop_foreign_key" value="ALTER TABLE t_order_item DROP FOREIGN KEY fk_order_id" db-types="MySQL" />
+    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order_item DROP CONSTRAINT idx_id" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_constraint_if_exists" value="ALTER TABLE t_order_item DROP CONSTRAINT IF EXISTS idx_id" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_index" value="ALTER TABLE t_log DROP INDEX idx_id" db-types="MySQL" />
+    <sql-case id="alter_index_rename" value="ALTER INDEX idx_id RENAME TO idx_id" db-types="PostgreSQL" />
+    <sql-case id="alter_index_rename_if_exists" value="ALTER INDEX IF EXISTS idx_id RENAME TO idx_id" db-types="PostgreSQL" />
 </sql-cases>
