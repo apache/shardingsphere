@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.mysql.ddl;
+package io.shardingsphere.core.parsing.antlr.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
@@ -52,7 +52,7 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class MySQLDDLParsingTest extends AbstractBaseIntegrateSQLParsingTest{
+public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsingTest{
     
     private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
     
