@@ -17,13 +17,12 @@
 
 package io.shardingsphere.example.proxy.main;
 
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.DemoService;
+import io.shardingsphere.example.repository.jdbc.repository.XaOrderItemRepository;
+import io.shardingsphere.example.repository.jdbc.repository.XaOrderRepository;
+import io.shardingsphere.example.repository.jdbc.service.XaDemoService;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /*
  * 1. Modify proxy.transaction.enabled: `false` to `true` to enable XA transaction on file resources/config.yaml.
@@ -35,9 +34,9 @@ public class ProxyXaMain {
     
     private static final int PROXY_PORT = 3307;
     
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         DataSource dataSource = createDataSource();
-        new DemoService(new RawOrderRepository(dataSource, true), new RawOrderItemRepository(dataSource, true)).demo();
+        new XaDemoService(new XaOrderRepository(dataSource), new XaOrderItemRepository(dataSource)).demo();
     }
     
     private static DataSource createDataSource() {
