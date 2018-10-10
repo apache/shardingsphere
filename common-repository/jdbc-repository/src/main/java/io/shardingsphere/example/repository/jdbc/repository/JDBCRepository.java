@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.jdbc;
+package io.shardingsphere.example.repository.jdbc.repository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
