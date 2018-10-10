@@ -25,13 +25,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "t_order")
-public final class JPAOrder extends Order implements Serializable {
-    
-    private static final long serialVersionUID = 661434701950670670L;
+public final class JPAOrder extends Order {
     
     @Id
     @Column(name = "order_id")
