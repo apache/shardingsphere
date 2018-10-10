@@ -103,15 +103,14 @@ public final class XaOrderRepository implements OrderRepository {
         return orderId;
     }
     
-    private Long insertFailure(final Order order) {
+    private void insertFailure(final Order order) {
         Connection connection = null;
         Statement statement = null;
-        long orderId = -1;
         try {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             statement = connection.createStatement();
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
+            long orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
             order.setOrderId(orderId);
             makeException();
             connection.commit();
@@ -121,7 +120,6 @@ public final class XaOrderRepository implements OrderRepository {
         finally {
             close(connection, statement);
         }
-        return orderId;
     }
     
     private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
