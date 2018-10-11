@@ -48,7 +48,7 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     
     @Override
     public void truncateTable() {
-        execute("truncate table t_order_item");
+        execute("TRUNCATE TABLE t_order_item");
     }
     
     @Override
@@ -65,7 +65,7 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     
     @Override
     public void delete(final Long id) {
-        execute(String.format("delete from t_order_item where order_item_id = %d", id));
+        execute(String.format("DELETE FROM t_order_item WHERE order_item_id = %d", id));
     }
     
     @Override

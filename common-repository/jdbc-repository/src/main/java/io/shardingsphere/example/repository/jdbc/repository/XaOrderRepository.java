@@ -59,7 +59,7 @@ public final class XaOrderRepository implements OrderRepository {
     
     @Override
     public void delete(final Long id) {
-        execute(String.format("delete from t_order where order_id = %d", id));
+        execute(String.format("DELETE FROM t_order WHERE order_id = %d", id));
     }
     
     @Override
