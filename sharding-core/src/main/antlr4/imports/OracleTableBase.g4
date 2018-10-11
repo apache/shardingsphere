@@ -30,7 +30,7 @@ inlineConstraint
     ;
     
 referencesClause
-    : REFERENCES objectName columnList?
+    : REFERENCES tableName columnList?
     (ON DELETE (CASCADE | SET NULL))?
     ;
     

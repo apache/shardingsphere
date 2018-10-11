@@ -2,38 +2,26 @@ grammar OracleBase;
 
 import OracleKeyword,Keyword,Symbol,BaseRule,DataType;
 
-attributeName
-    : ID
+ID: 
+    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA? DOT)?
+    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA?)
+    |[a-zA-Z_$#0-9]+ DOT ASTERISK
     ;
     
-segName
+tableName
     : ID
+    | STRING
     ;
 
-objectName
-    :ID
-    ;
-    
-elementName
+attributeName
     : ID
+    | STRING
     ;
-    
-archiveName
-    : ID
-    ;
-    
+
 indexTypeName
     : ID
     ;
     
-clusterName
-    : ID
-    ;
-    
-varrayItemName
-    : ID
-    ;
-
 simpleExprsWithParen
     : LEFT_PAREN simpleExprs RIGHT_PAREN 
     ;
