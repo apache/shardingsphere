@@ -59,13 +59,13 @@ public class MasterSlaveOnly {
     
     private static DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.MASTER_SLAVE));
+                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.MASTER_SLAVE);
+                "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     

@@ -22,7 +22,6 @@ masterSlaveRule:
 
 orchestration:
   name: demo_yaml_ds_ms
-  type: MASTER_SLAVE
   overwrite: true
   etcd:
     serverLists: http://localhost:2379

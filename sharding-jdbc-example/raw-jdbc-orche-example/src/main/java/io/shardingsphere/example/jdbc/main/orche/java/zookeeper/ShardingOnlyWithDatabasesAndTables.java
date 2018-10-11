@@ -59,7 +59,7 @@ public class ShardingOnlyWithDatabasesAndTables {
     
     private static DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
@@ -70,7 +70,7 @@ public class ShardingOnlyWithDatabasesAndTables {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING);
+                "orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     

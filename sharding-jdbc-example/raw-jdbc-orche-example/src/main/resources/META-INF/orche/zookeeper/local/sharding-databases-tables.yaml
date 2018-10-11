@@ -41,7 +41,6 @@ shardingRule:
 
 orchestration:
   name: demo_yaml_ds_sharding
-  type: SHARDING
   overwrite: true
   zookeeper:
     namespace: orchestration-yaml-demo

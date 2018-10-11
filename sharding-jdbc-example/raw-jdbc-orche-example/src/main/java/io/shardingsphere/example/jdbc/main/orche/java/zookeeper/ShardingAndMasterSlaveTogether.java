@@ -66,7 +66,7 @@ public class ShardingAndMasterSlaveTogether {
     
     private static DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
@@ -78,7 +78,7 @@ public class ShardingAndMasterSlaveTogether {
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING);
+                "orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     

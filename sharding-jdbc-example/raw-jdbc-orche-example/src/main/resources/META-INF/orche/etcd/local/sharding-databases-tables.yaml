@@ -41,7 +41,6 @@ shardingRule:
 
 orchestration:
   name: demo_yaml_ds_sharding
-  type: SHARDING
   overwrite: true
   etcd:
     serverLists: http://localhost:2379
