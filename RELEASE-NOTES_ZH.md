@@ -50,7 +50,7 @@
 1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) 调整Hint API
 1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) 调整包结构
 1. [ISSUE #1305](https://github.com/sharding-sphere/sharding-sphere/issues/1305) 废弃并删除sharding-jdbc-transaction-parent模块
-
+1. [ISSUE #1382](https://github.com/sharding-sphere/sharding-sphere/issues/1328) 去除Orchestration模块中type的配置
 
 ### 缺陷修正
 
