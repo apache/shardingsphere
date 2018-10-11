@@ -19,13 +19,5 @@ package io.shardingsphere.example.repository.api.repository;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 
-import java.util.List;
-
 public interface OrderRepository extends CommonRepository<Order> {
-    
-    @Override
-    Long insert(Order entity);
-    
-    @Override
-    List<Order> selectAll();
 }
