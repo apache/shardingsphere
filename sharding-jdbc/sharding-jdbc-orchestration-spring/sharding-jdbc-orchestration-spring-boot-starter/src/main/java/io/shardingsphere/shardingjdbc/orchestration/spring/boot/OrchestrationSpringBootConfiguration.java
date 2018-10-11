@@ -19,8 +19,12 @@ package io.shardingsphere.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.orchestration.config.OrchestrationType;
+import io.shardingsphere.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
@@ -88,6 +92,21 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private boolean isValidOrchestrationConfiguration() {
         return !Strings.isNullOrEmpty(orchestrationProperties.getName());
+    }
+    
+    private OrchestrationType getOrchestrationTypeByRegistry() {
+        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration());
+        ConfigurationService configService = orchestrationFacade.getConfigService();
+        ShardingRuleConfiguration shardingRuleConfiguration = orchestrationFacade.getConfigService().loadShardingRuleConfiguration();
+        orchestrationFacade.close();
+        if (null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty()) {
+            return OrchestrationType.SHARDING;
+        }
+        return OrchestrationType.MASTER_SLAVE;
+    }
+    
+    private OrchestrationType getOrchestrationTypeByLocal() {
+        return shardingProperties.getTables().isEmpty() ? OrchestrationType.MASTER_SLAVE : OrchestrationType.SHARDING;
     }
     
     private DataSource createShardingDataSource() throws SQLException {
