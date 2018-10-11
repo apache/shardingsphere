@@ -5,7 +5,7 @@
         <artifactId>sharding-jdbc-example</artifactId>
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
-    <artifactId>spring-boot-example</artifactId>
+    <artifactId>spring-boot-nodep-example</artifactId>
     <packaging>pom</packaging>
     
     <modules>
