@@ -19,6 +19,7 @@ package io.shardingsphere.test.sql;
 
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
@@ -32,6 +33,8 @@ import java.util.List;
 @XmlRootElement(name = "sql-cases")
 @Getter
 public final class SQLCases {
+    @XmlAttribute(name = "db-types")
+    private String databaseTypes;
     
     @XmlElement(name = "sql-case")
     private List<SQLCase> sqlCases = new LinkedList<>();

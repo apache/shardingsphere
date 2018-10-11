@@ -126,6 +126,9 @@ public class SQLCasesLoader {
     private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
+            if(null == each.getDatabaseTypes()) {
+                each.setDatabaseTypes(sqlCases.getDatabaseTypes());
+            }
             sqlCaseMap.put(each.getId(), each);
         }
     }
