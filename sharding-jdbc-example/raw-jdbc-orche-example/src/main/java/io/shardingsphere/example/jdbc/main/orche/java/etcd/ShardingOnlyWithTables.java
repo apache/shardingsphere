@@ -24,7 +24,6 @@ import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemReposito
 import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
@@ -54,7 +53,7 @@ public class ShardingOnlyWithTables {
     
     private static DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
@@ -63,7 +62,7 @@ public class ShardingOnlyWithTables {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING);
+                "orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
