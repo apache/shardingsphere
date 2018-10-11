@@ -6,7 +6,8 @@
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
     <artifactId>spring-boot-nodep-jpa-example</artifactId>
-    
+    <packaging>pom</packaging>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
