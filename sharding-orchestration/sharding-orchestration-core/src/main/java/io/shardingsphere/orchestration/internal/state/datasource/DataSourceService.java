@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.datasource;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -118,6 +119,7 @@ public final class DataSourceService {
      */
     public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration() {
         MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration();
+        Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
             result.getSlaveDataSourceNames().remove(each);
