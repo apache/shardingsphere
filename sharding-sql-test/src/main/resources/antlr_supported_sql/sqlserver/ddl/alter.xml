@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases db-types="SQLServer">
-    <sql-case id="alter_table_add_column" value="ALTER TABLE t_log ADD column1 varchar(10)" />
-    <sql-case id="alter_table_add_column_with_bracket" value="ALTER TABLE [t_log] ADD [column1] varchar(10)" />
-    <sql-case id="alter_table_add_column_column_option" value="ALTER TABLE t_log ADD column1 varchar(10) COLLATE Latin1_General_BIN NOT NULL" />
-    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_log ADD column1 varchar(10), column2 varchar(10)" />
-    <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_log ADD PRIMARY KEY (id)" />
-    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_log ADD UNIQUE (id)" />
-    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
-    <sql-case id="alter_table_alter_column" value="ALTER TABLE t_log ALTER COLUMN column1 varchar(10)" />
-    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_log DROP COLUMN column1" />
-    <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_log DROP COLUMN column1, column2" />
-    <sql-case id="alter_table_drop_column_if_exists" value="ALTER TABLE t_log DROP COLUMN IF EXISTS column1" />
-    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_log DROP pk_id" />
-    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_log DROP idx_column1, idx_column2" />
-    <sql-case id="alter_table_drop_constraint_if_exists" value="ALTER TABLE t_log DROP IF EXISTS idx_id" />
+    <sql-case id="sqlserver_alter_table_add_column" value="ALTER TABLE t_log ADD column1 varchar(10)" />
+    <sql-case id="sqlserver_alter_table_add_column_with_bracket" value="ALTER TABLE [t_log] ADD [column1] varchar(10)" />
+    <sql-case id="sqlserver_alter_table_add_column_column_option" value="ALTER TABLE t_log ADD column1 varchar(10) COLLATE Latin1_General_BIN NOT NULL" />
+    <sql-case id="sqlserver_alter_table_add_columns" value="ALTER TABLE t_log ADD column1 varchar(10), column2 varchar(10)" />
+    <sql-case id="sqlserver_alter_table_add_primary_key" value="ALTER TABLE t_log ADD PRIMARY KEY (id)" />
+    <sql-case id="sqlserver_alter_table_add_unique_key" value="ALTER TABLE t_log ADD UNIQUE (id)" />
+    <sql-case id="sqlserver_alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
+    <sql-case id="sqlserver_alter_table_alter_column" value="ALTER TABLE t_log ALTER COLUMN column1 varchar(10)" />
+    <sql-case id="sqlserver_alter_table_drop_column" value="ALTER TABLE t_log DROP COLUMN column1" />
+    <sql-case id="sqlserver_alter_table_drop_columns" value="ALTER TABLE t_log DROP COLUMN column1, column2" />
+    <sql-case id="sqlserver_alter_table_drop_column_if_exists" value="ALTER TABLE t_log DROP COLUMN IF EXISTS column1" />
+    <sql-case id="sqlserver_alter_table_drop_constraint" value="ALTER TABLE t_log DROP pk_id" />
+    <sql-case id="sqlserver_alter_table_drop_constraints" value="ALTER TABLE t_log DROP idx_column1, idx_column2" />
+    <sql-case id="sqlserver_alter_table_drop_constraint_if_exists" value="ALTER TABLE t_log DROP IF EXISTS idx_id" />
 </sql-cases>
