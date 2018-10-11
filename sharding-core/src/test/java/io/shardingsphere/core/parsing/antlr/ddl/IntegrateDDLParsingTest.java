@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.antlr.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
 import io.shardingsphere.core.parsing.antler.parser.PostgreStatementAdvancedParser;
 import io.shardingsphere.core.parsing.antler.parser.SQLServerStatementAdvancedParser;
 import io.shardingsphere.core.parsing.antler.parser.factory.StatementFactory;
@@ -26,6 +27,7 @@ import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoad
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import io.shardingsphere.parser.antlr.MySQLStatementLexer;
+import io.shardingsphere.parser.antlr.OracleStatementLexer;
 import io.shardingsphere.parser.antlr.PostgreStatementLexer;
 import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
 import io.shardingsphere.test.sql.AntlrSQLCasesLoader;
@@ -80,6 +82,7 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
                 execute(MySQLStatementLexer.class, MySQLStatementAdvancedParser.class,  cs);
                 break;
             case Oracle:
+                execute(OracleStatementLexer.class, OracleStatementAdvancedParser.class,  cs);
                 break;
             case PostgreSQL:
                 execute(PostgreStatementLexer.class, PostgreStatementAdvancedParser.class,  cs);

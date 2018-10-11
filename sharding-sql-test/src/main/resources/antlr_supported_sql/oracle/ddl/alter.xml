@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases db-types="Oracle" >
+    <sql-case id="oracle_alter_table_rename" value="ALTER INDEX t_log RENAME TO t_log" />
+    <sql-case id="oracle_alter_table_rename_with_back_quota" value="ALTER INDEX `t_log` RENAME TO `t_log`" />
+    <sql-case id="oracle_alter_table_add_column" value="ALTER TABLE t_log ADD COLUMN column1 varchar(10)" />
+    <sql-case id="oracle_alter_table_add_primary_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY(id)" />
+    <sql-case id="oracle_alter_table_add_unique_key" value="ALTER TABLE t_order_item ADD UNIQUE(id)" />
+    <sql-case id="oracle_alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE" />
+    <sql-case id="oracle_alter_table_rename_column" value="ALTER TABLE t_log RENAME COLUMN column1 to column1" />
+    <sql-case id="oracle_alter_table_modify_column" value="ALTER TABLE t_log MODIFY (column1 varchar(20))" />
+    <sql-case id="oracle_alter_table_drop_column" value="ALTER TABLE t_log DROP COLUMN column1" />
+    <sql-case id="oracle_alter_table_drop_constraint" value="ALTER TABLE t_log DROP CONSTRAINT idx_id" />
+    <sql-case id="oracle_alter_table_drop_primary_key" value="ALTER TABLE t_log DROP PRIMARY KEY" />
+    <sql-case id="oracle_alter_table_drop_unique_key" value="ALTER TABLE t_log DROP UNIQUE(id)" />
+    <sql-case id="oracle_alter_table_drop_constraint" value="ALTER TABLE t_log DROP CONSTRAINT idx_id" />
+    <sql-case id="oracle_alter_table_rename_constraint" value="ALTER TABLE t_log RENAME CONSTRAINT idx_id TO idx_id" />
+    <sql-case id="oracle_alter_index_rename" value="ALTER INDEX idx_id RENAME TO idx_id" />
+</sql-cases>
