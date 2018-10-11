@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
@@ -74,9 +73,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        OrchestrationType type = orchestrationProperties.getType();
-        Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
-        return OrchestrationType.SHARDING == type ? createShardingDataSource() : createMasterSlaveDataSource();
+        return shardingProperties.getTables().isEmpty() ? createMasterSlaveDataSource() : createShardingDataSource();
     }
     
     private DataSource createShardingDataSource() throws SQLException {
