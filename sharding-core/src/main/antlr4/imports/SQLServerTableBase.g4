@@ -53,13 +53,13 @@ diskTablePrimaryKeyConstraintOption
 columnForeignKeyConstraint
     : (FOREIGN KEY)?  
     REFERENCES tableName LEFT_PAREN  columnName RIGHT_PAREN   
-    foreignKeyOnAction
+    foreignKeyOnAction*
     ;
 
 foreignKeyOnAction
-    : (ON DELETE foreignKeyOn)?   
-    (ON UPDATE foreignKeyOn)?   
-    (NOT FOR REPLICATION)? 
+    : ON DELETE foreignKeyOn
+    | ON UPDATE foreignKeyOn
+    | NOT FOR REPLICATION
     ;       
     
 foreignKeyOn
@@ -162,7 +162,7 @@ memoryTablePrimaryConstraintOption
 tableForeignKeyConstraint
     : (FOREIGN KEY)? columnList
     REFERENCES tableName columnList  
-    foreignKeyOnAction
+    foreignKeyOnAction*
     ;
     
 computedColumnDefinition  

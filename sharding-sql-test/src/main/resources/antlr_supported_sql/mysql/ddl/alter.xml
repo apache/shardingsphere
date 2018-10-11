@@ -7,7 +7,7 @@
     <sql-case id="alter_table_add_columns" value="ALTER TABLE t_log ADD COLUMN (column1 varchar(10), column2 geometry)" />
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_log ADD CONSTRAINT PRIMARY KEY (id)" />
     <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_log ADD CONSTRAINT UNIQUE KEY uk_id (id)" />
-    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT FOREIGN KEY fk_order_id (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON UPDATE CASCADE" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT FOREIGN KEY fk_order_id (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
     <sql-case id="alter_table_add_index" value="ALTER TABLE t_log ADD INDEX idx_id (id)" />
     <sql-case id="alter_table_add_index_with_index_option" value="ALTER TABLE t_log ADD INDEX idx_id (id) USING BTREE COMMENT 'idx_id'" />
     <sql-case id="alter_table_add_fulltext_index" value="ALTER TABLE t_log ADD FULLTEXT INDEX idx_column1 (column1)" />
