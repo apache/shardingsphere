@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases db-types="Oracle" >
+    <sql-case id="create_table" value="CREATE TABLE t_log (id int, status varchar(10))" />
+    <sql-case id="create_table_with_primary_key" value="CREATE TABLE C##t_log (id int primary key, status varchar(10))" />
+    <sql-case id="create_table_constraint" value="CREATE TABLE departments_demo (id NUMBER(4) PRIMARY KEY DISABLE, name VARCHAR2(30) CONSTRAINT dept_name_nn NOT NULL, manager_id NUMBER(6), dn VARCHAR2(300))" />
+    
+    
+</sql-cases>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets>
+	<parser-result sql-case-id="create_table">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_log" />
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_primary_key">
+        <tables>
+            <table name="C##t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="C##t_log" />
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar" primary-key-columns="id" />
+    </parser-result>
+
+    <parser-result sql-case-id="create_table_constraint">
+        <tables>
+            <table name="departments_demo" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="departments_demo" />
+        </tokens>
+        <meta column-names="id,name,manager_id,dn" column-types="NUMBER,VARCHAR2,NUMBER,VARCHAR2" primary-key-columns="id" />
+    </parser-result>
+    
+    
+    
+    
+</parser-result-sets>

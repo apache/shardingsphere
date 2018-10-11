@@ -67,8 +67,14 @@ public final class AntlrParserResultSetLoader extends ParserResultSetLoader{
     private Map<String, ParserResult> loadParserResultSet(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
-            for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
-                result.put(each.getSqlCaseId(), each);
+            if(file.isDirectory()) {
+                for (File each : file.listFiles()) {
+                    result.putAll(loadParserResultSet(each));
+                } 
+            }else {
+                for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
+                    result.put(each.getSqlCaseId(), each);
+                }
             }
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);
@@ -85,14 +91,5 @@ public final class AntlrParserResultSetLoader extends ParserResultSetLoader{
     public ParserResult getParserResult(final String sqlCaseId) {
         Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         return parserResultMap.get(sqlCaseId);
-    }
-    
-    /**
-     * Count all parser test cases.
-     *
-     * @return count of all parser test cases
-     */
-    public int countAllParserTestCases() {
-        return parserResultMap.size();
     }
 }
