@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.state.datasource;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -100,6 +101,7 @@ public final class DataSourceService {
      */
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration() {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration();
+        Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
             for (MasterSlaveRuleConfiguration masterSlaveRuleConfig : result.getMasterSlaveRuleConfigs()) {
