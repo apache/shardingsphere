@@ -31,18 +31,18 @@ public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder
     /**
      * Create lexer instance.
      *
-     * @param stream text stream
+     * @param charStream text stream
      * @return antlr lexer instance
      */
     @Override
-    protected Lexer newLexer(final CharStream stream) {
-        return new SQLServerStatementLexer(stream);
+    protected Lexer newLexer(final CharStream charStream) {
+        return new SQLServerStatementLexer(charStream);
     }
 
     /**
      * Create parser instance.
      *
-     * @param stream token stream
+     * @param tokenStream token stream
      * @return antlr parser instance
      */
     @Override

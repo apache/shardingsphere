@@ -31,18 +31,18 @@ public class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
     /**
      * Create lexer instance.
      *
-     * @param stream text stream
+     * @param charStream text stream
      * @return antlr lexer instance
      */
     @Override
-    protected Lexer newLexer(final CharStream stream) {
-        return new MySQLStatementLexer(stream);
+    protected Lexer newLexer(final CharStream charStream) {
+        return new MySQLStatementLexer(charStream);
     }
 
     /**
      * Create parser instance.
      *
-     * @param stream token stream
+     * @param tokenStream token stream
      * @return antlr parser instance
      */
     @Override

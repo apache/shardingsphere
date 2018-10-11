@@ -136,7 +136,7 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
      * Use shardingTableMetaData create SQLStatement.
      *
      * @param shardingTableMetaData table metadata
-     * @return
+     * @return sql statement info
      */
     protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement statement = (AlterTableStatement) newStatement();

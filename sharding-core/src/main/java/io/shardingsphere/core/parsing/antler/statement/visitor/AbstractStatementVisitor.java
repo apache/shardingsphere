@@ -29,8 +29,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public abstract class AbstractStatementVisitor implements StatementVisitor {
     private List<PhraseVisitor> visitors = new ArrayList<>();
 
-    /** Visit ast,generate statement.
+    /** Visit ast, generate statement.
      * @param rootNode root node of ast
+     * @param shardingTableMetaData table metadata
      * @return sql statement
      */
     @Override
@@ -67,7 +68,7 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
     
     /** Use shardingTableMetaData create SQLStatement.
      * @param shardingTableMetaData table metadata
-     * @return
+     * @return sql statement info
      */
     protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         return newStatement();

@@ -34,9 +34,9 @@ public class MySQLAddColumnVisitor extends AddColumnVisitor {
      * @param columnName column name
      */
     @Override
-    protected void postVisitColumnDefinition(final ParseTree rootNode, final SQLStatement statement,
+    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,
                                              final String columnName) {
-        ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) rootNode, columnName);
+        ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) ancestorNode, columnName);
 
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
         if (null != columnPosition) {

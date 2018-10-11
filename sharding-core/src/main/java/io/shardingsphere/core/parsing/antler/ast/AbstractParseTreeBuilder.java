@@ -50,15 +50,15 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
     /**
      * Create lexer instance.
      *
-     * @param stream text stream
+     * @param charStream char stream
      * @return antlr lexer instance
      */
-    protected abstract Lexer newLexer(CharStream stream);
+    protected abstract Lexer newLexer(CharStream charStream);
 
     /**
      * Create parser instance.
      *
-     * @param stream token stream
+     * @param tokenStream token stream
      * @return antlr parser instance
      */
     protected abstract Parser newParser(TokenStream tokenStream);
