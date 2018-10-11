@@ -50,6 +50,7 @@
 1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) Adjust Hint API
 1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) Refine package structure
 1. [ISSUE #1305](https://github.com/sharding-sphere/sharding-sphere/issues/1305) Deprecated and remove sharding-jdbc-transaction-parent module
+1. [ISSUE #1382](https://github.com/sharding-sphere/sharding-sphere/issues/1328) Remove type configuration in Orchestration module
 
 ### Bug Fixes
 
