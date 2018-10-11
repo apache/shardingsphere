@@ -38,6 +38,14 @@ DECRYPT
     : D E C R Y P T
     ;
 
+DEFERRABLE
+    : D E F E R R A B L E
+    ;
+
+DEFERRED
+    : D E F E R R E D
+    ;
+
 DOUBLE
     : D O U B L E
     ;
@@ -58,6 +66,10 @@ END
     : E N D
     ;
 
+EXCEPTIONS
+    : E X C E P T I O N S
+    ;
+
 FOR
     : F O R
     ;
@@ -74,8 +86,20 @@ IDENTIFIED
     : I D E N T I F I E D
     ;
 
+IMMEDIATE
+    : I M M E D I A T E
+    ;
+
+INITIALLY
+    : I N I T I A L L Y
+    ;
+
 INTERVAL
     : I N T E R V A L
+    ;
+
+INTO
+    : I N T O
     ;
 
 INVALIDATE
@@ -110,6 +134,14 @@ NEW
     : N E W
     ;
 
+NORELY
+    : N O R E L Y
+    ;
+
+NOVALIDATE
+    : N O V A L I D A T E
+    ;
+
 OF
     : O F
     ;
@@ -136,6 +168,10 @@ REF
 
 REKEY
     : R E K E Y
+    ;
+
+RELY
+    : R E L Y
     ;
 
 RENAME
@@ -198,6 +234,10 @@ USING
     : U S I N G
     ;
 
+VALIDATE
+    : V A L I D A T E
+    ;
+
 VARYING
     : V A R Y I N G
     ;
@@ -213,4 +253,3 @@ WHEN
 ZONE
     : Z O N E
     ;
-

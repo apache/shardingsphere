@@ -34,10 +34,29 @@ referencesClause
     (ON DELETE (CASCADE | SET NULL))?
     ;
     
-constraintState
-    : usingIndexClause+
+constraintState:
+    (notDeferrable
+    |initiallyClause
+    |( RELY | NORELY )
+    |( usingIndexClause )
+    |( ENABLE | DISABLE )
+    |( VALIDATE | NOVALIDATE )
+    |exceptionsClause
+    )+
     ;
 
+notDeferrable:
+    NOT? DEFERRABLE
+    ;
+    
+initiallyClause:
+    INITIALLY ( IMMEDIATE | DEFERRED )
+    ;
+
+exceptionsClause:
+    EXCEPTIONS INTO  
+    ;
+        
 usingIndexClause
     : USING INDEX
     (  indexName

@@ -94,20 +94,12 @@ DEPENDS
     : D E P E N D S
     ;
 
-DISABLE
-    : D I S A B L E
-    ;
-
 DISTINCT
     : D I S T I N C T
     ;
 
 DOUBLE
     : D O U B L E
-    ;
-
-ENABLE
-    : E N A B L E
     ;
 
 EXCLUDING

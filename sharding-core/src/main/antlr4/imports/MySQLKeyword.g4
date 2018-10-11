@@ -122,10 +122,6 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
-DISABLE
-    : D I S A B L E
-    ;
-
 DISCARD
     : D I S C A R D
     ;
@@ -156,10 +152,6 @@ DYNAMIC
 
 ELSE
     : E L S E
-    ;
-
-ENABLE
-    : E N A B L E
     ;
 
 ENCRYPTION
@@ -557,7 +549,3 @@ WITHOUT
 ZEROFILL
     : Z E R O F I L L
     ;
-
-
-
-

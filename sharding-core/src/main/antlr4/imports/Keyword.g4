@@ -234,8 +234,16 @@ DELETE
     : D E L E T E
     ;
 
+DISABLE
+    : D I S A B L E
+    ;
+
 DROP
     : D R O P
+    ;
+
+ENABLE
+    : E N A B L E
     ;
 
 FOREIGN
