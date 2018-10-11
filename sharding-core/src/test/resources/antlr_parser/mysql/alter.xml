@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="alter_index_rename">
+    <parser-result sql-case-id="mysql_alter_index_rename">
         <tokens>
             <index-token begin-position="12" original-literals="idx_id" />
             <index-token begin-position="29" original-literals="idx_id" />
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="alter_table_drop_index">
-    	<tables>
+    <parser-result sql-case-id="mysql_alter_table_drop_index">
+        <tables>
             <table name="t_log" />
         </tables>
-        
+
         <tokens>
-            <index-token begin-position="29" original-literals="idx_id" />
+            <table-token begin-position="12" original-literals="t_log" />
+            <index-token begin-position="29" original-literals="idx_id" table-name="t_log" />
         </tokens>
     </parser-result>
     

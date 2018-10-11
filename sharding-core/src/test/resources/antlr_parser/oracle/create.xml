@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-	<parser-result sql-case-id="create_table">
+	<parser-result sql-case-id="oracle_create_table">
         <tables>
             <table name="t_log" />
         </tables>
@@ -10,7 +10,7 @@
         <meta column-names="id,status" column-types="int,varchar"/>
     </parser-result>
     
-    <parser-result sql-case-id="create_table_with_primary_key">
+    <parser-result sql-case-id="oracle_create_table_with_primary_key">
         <tables>
             <table name="C##t_log" />
         </tables>
@@ -20,7 +20,7 @@
         <meta column-names="id,status" column-types="int,varchar" primary-key-columns="id" />
     </parser-result>
 
-    <parser-result sql-case-id="create_table_constraint">
+    <parser-result sql-case-id="oracle_create_table_constraint">
         <tables>
             <table name="departments_demo" />
         </tables>

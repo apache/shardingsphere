@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.antler.parser.factory.StatementFactory;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
+import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.parser.antlr.MySQLStatementLexer;
 import io.shardingsphere.parser.antlr.OracleStatementLexer;
 import io.shardingsphere.parser.antlr.PostgreStatementLexer;
@@ -97,8 +98,11 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
     
     @Test
     public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResultSetLoader.getParserResult(sqlCaseId).getParameters());
-        new SQLStatementAssert(StatementFactory.getStatement(databaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, AntlrSQLCasesLoader.getInstance(), AntlrParserResultSetLoader.getInstance()).assertSQLStatement();
+        ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
+        if (parserResult != null) {
+            String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
+            new SQLStatementAssert(StatementFactory.getStatement(databaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, AntlrSQLCasesLoader.getInstance(), AntlrParserResultSetLoader.getInstance()).assertSQLStatement();
+        }
     }
     
     public void execute(Class<?> lexerClass, Class<?> parserClass, CharStream cs) throws Exception {

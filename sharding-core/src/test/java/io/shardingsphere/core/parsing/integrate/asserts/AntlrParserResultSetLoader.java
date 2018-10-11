@@ -89,7 +89,7 @@ public final class AntlrParserResultSetLoader extends ParserResultSetLoader{
      * @return parser assert
      */
     public ParserResult getParserResult(final String sqlCaseId) {
-        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+//        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
         return parserResultMap.get(sqlCaseId);
     }
 }
