@@ -22,6 +22,7 @@ import io.shardingsphere.example.repository.api.repository.OrderRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,34 +39,61 @@ public final class RawOrderRepository implements OrderRepository {
     
     @Override
     public void createTableIfNotExists() {
-        execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
+        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
     public void dropTable() {
-        execute("DROP TABLE t_order");
+        String sql = "DROP TABLE t_order";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
     public void truncateTable() {
-        execute("TRUNCATE TABLE t_order");
+        String sql = "TRUNCATE TABLE t_order";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
     public Long insert(final Order order) {
-        long orderId = -1;
+        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            orderId = insertAndGetGeneratedKey(statement, String.format("INSERT INTO t_order (user_id, status) VALUES (%s, '%s')", order.getUserId(), order.getStatus()));
-            order.setOrderId(orderId);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setLong(1, order.getUserId());
+            preparedStatement.setString(2, order.getStatus());
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    order.setOrderId(resultSet.getLong(1));
+                }
+            }
         } catch (final SQLException ignored) {
         }
-        return orderId;
+        return order.getOrderId();
     }
     
     @Override
     public void delete(final Long id) {
-        execute(String.format("DELETE FROM t_order WHERE order_id = %d", id));
+        String sql = "DELETE FROM t_order WHERE order_id=?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
@@ -73,17 +101,8 @@ public final class RawOrderRepository implements OrderRepository {
         List<Order> result = new LinkedList<>();
         String sql = "SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
         try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
-            result.addAll(getOrders(resultSet));
-        } catch (final SQLException ignored) {
-        }
-        return result;
-    }
-    
-    private List<Order> getOrders(final ResultSet resultSet) {
-        List<Order> result = new LinkedList<>();
-        try {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 Order order = new Order();
                 order.setOrderId(resultSet.getLong(1));
@@ -94,34 +113,5 @@ public final class RawOrderRepository implements OrderRepository {
         } catch (final SQLException ignored) {
         }
         return result;
-    }
-    
-    private long insertAndGetGeneratedKey(final Statement statement, final String sql) throws SQLException {
-        long result = -1;
-        statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-        try (ResultSet resultSet = statement.getGeneratedKeys()) {
-            if (resultSet.next()) {
-                result = resultSet.getLong(1);
-            }
-        }
-        return result;
-    }
-    
-    private void close(final Connection connection, final Statement statement) {
-        if (null != connection && null != statement) {
-            try {
-                connection.close();
-                statement.close();
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    private void execute(final String sql) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-        } catch (final SQLException ignored) {
-        }
     }
 }
