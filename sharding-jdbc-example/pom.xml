@@ -16,5 +16,6 @@
         <module>spring-boot-example</module>
         <module>spring-namespace-example</module>
         <module>transaction-example</module>
+        <module>raw-jdbc-orche-example</module>
     </modules>
 </project>
