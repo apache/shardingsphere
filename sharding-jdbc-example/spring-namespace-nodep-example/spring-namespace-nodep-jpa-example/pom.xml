@@ -5,7 +5,7 @@
         <artifactId>spring-namespace-example</artifactId>
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
-    <artifactId>spring-namespace-jpa-example</artifactId>
+    <artifactId>spring-namespace-nodep-jpa-example</artifactId>
     
     <dependencies>
         <dependency>

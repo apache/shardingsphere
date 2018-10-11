@@ -5,7 +5,7 @@
         <artifactId>spring-boot-example</artifactId>
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
-    <artifactId>spring-boot-data-jpa-example</artifactId>
+    <artifactId>spring-boot-nodep-jpa-example</artifactId>
     
     <dependencies>
         <dependency>

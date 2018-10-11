@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>spring-namespace-mybatis-example</module>
-        <module>spring-namespace-jpa-example</module>
+        <module>spring-namespace-nodep-jpa-example</module>
+        <module>spring-namespace-nodep-mybatis-example</module>
     </modules>
     
     <dependencies>

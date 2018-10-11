@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>api-repository</artifactId>
+            <artifactId>repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
