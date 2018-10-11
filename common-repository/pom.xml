@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>api-repository</module>
+        <module>repository-api</module>
         <module>jdbc-repository</module>
         <module>jpa-repository</module>
         <module>mybatis-repository</module>

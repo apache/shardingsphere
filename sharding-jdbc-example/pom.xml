@@ -12,10 +12,11 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>raw-jdbc-example</module>
-        <module>spring-boot-example</module>
+        <module>raw-jdbc-nodep-example</module>
+        <module>raw-jdbc-orche-example</module>
+        <module>spring-boot-nodep-example</module>
+        <module>spring-boot-orche-example</module>
         <module>spring-namespace-example</module>
         <module>transaction-example</module>
-        <module>raw-jdbc-orche-example</module>
     </modules>
 </project>

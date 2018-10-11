@@ -14,18 +14,11 @@
     </modules>
     
     <dependencies>
-        <!--If you run the examples without using orchestration, please use this artifactId below. otherwise, please use the second one.-->
-        <!--<dependency>-->
-            <!--<groupId>io.shardingsphere</groupId>-->
-            <!--<artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
-            <!--<version>${sharding-sphere.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+            <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
             <version>${sharding-sphere.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP-java7</artifactId>

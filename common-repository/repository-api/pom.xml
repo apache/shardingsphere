@@ -8,5 +8,5 @@
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>api-repository</artifactId>
+    <artifactId>repository-api</artifactId>
 </project>
