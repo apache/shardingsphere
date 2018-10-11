@@ -295,10 +295,8 @@ public final class ConfigurationService {
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         try {
-            MasterSlaveRuleConfiguration result = MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(
+            return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(
                     regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
-            Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
