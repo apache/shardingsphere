@@ -78,8 +78,16 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     private boolean isValidConfiguration() {
+        return isValidRuleConfiguration() || isValidOrchestrationConfiguration();
+    }
+    
+    private boolean isValidRuleConfiguration() {
         return (shardingProperties.getTables().isEmpty() && !Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()))
                 || (!shardingProperties.getTables().isEmpty() && Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()));
+    }
+    
+    private boolean isValidOrchestrationConfiguration() {
+        return !Strings.isNullOrEmpty(orchestrationProperties.getName());
     }
     
     private DataSource createShardingDataSource() throws SQLException {
