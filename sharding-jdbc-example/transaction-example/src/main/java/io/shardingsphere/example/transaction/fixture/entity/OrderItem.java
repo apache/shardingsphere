@@ -49,7 +49,6 @@ public final class OrderItem {
         this.userId = userId;
     }
     
-    
     @Override
     public String toString() {
         return String.format("order_item_id:%s, order_id: %s, user_id: %s", orderItemId, orderId, userId);

@@ -83,12 +83,11 @@ public class TransactionalDao {
             orderItemRepository.insert(item);
             
         }
-        int runtime = orderIds.size() / 0;
         System.out.println(orderItemRepository.selectAll());
         return orderIds;
     }
     
-    public void deleteData(List<Long> orderIds) {
+    public void deleteData(final List<Long> orderIds) {
         System.out.println("3.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);

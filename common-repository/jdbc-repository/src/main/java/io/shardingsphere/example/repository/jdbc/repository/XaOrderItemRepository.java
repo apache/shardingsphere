@@ -117,8 +117,7 @@ public final class XaOrderItemRepository implements OrderItemRepository {
             connection.commit();
         } catch (final Exception ex) {
             rollback(connection);
-        }
-        finally {
+        } finally {
             close(connection, statement);
         }
     }

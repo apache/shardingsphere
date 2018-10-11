@@ -34,7 +34,7 @@ public final class ProxyMain {
     
     private static final int PROXY_PORT = 3307;
     
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         DataSource dataSource = createDataSource();
         new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
     }

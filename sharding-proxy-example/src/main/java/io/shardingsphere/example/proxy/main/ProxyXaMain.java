@@ -34,7 +34,7 @@ public class ProxyXaMain {
     
     private static final int PROXY_PORT = 3307;
     
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         DataSource dataSource = createDataSource();
         new XaDemoService(new XaOrderRepository(dataSource), new XaOrderItemRepository(dataSource)).demo();
     }
