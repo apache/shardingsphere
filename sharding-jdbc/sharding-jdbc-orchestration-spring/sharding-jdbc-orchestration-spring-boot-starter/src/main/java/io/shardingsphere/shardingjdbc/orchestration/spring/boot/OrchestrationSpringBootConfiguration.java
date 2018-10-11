@@ -73,7 +73,13 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
+        Preconditions.checkState(isValidConfiguration(), "The orchestration configuration is invalid, please choose one from Sharding rule and Master-slave rule.");
         return shardingProperties.getTables().isEmpty() ? createMasterSlaveDataSource() : createShardingDataSource();
+    }
+    
+    private boolean isValidConfiguration() {
+        return (shardingProperties.getTables().isEmpty() && !Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()))
+                || (!shardingProperties.getTables().isEmpty() && Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()));
     }
     
     private DataSource createShardingDataSource() throws SQLException {
