@@ -25,7 +25,6 @@ import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemReposito
 import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
@@ -55,7 +54,7 @@ public class ShardingOnlyWithDatabases {
     
     private static DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
@@ -64,7 +63,7 @@ public class ShardingOnlyWithDatabases {
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true, OrchestrationType.SHARDING);
+                "orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
