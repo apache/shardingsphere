@@ -263,7 +263,7 @@ public final class ConfigurationService {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available sharding rule configuration to load.");
+            return new ShardingRuleConfiguration();
         }
     }
     
@@ -300,7 +300,7 @@ public final class ConfigurationService {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available master slave rule configuration to load.");
+            return new MasterSlaveRuleConfiguration();
         }
     }
     
