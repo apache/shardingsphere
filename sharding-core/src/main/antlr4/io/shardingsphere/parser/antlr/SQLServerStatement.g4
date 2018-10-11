@@ -1,6 +1,6 @@
 grammar SQLServerStatement;
 
-import SQLServerCreateIndex, SQLServerAlterIndex, SQLServerDropIndex, SQLServerCreateTable, SQLServerAlterTable, SQLServerDropTable, SQLServerTruncateTable;
+import SQLServerKeyword, Keyword, SQLServerBase, SQLServerCreateIndex, SQLServerAlterIndex, SQLServerDropIndex, SQLServerCreateTable, SQLServerAlterTable, SQLServerDropTable, SQLServerTruncateTable;
 
 execute
     : createIndex

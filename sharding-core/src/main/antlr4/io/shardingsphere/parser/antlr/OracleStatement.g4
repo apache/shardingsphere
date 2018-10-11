@@ -1,6 +1,6 @@
 grammar OracleStatement;
 
-import OracleCreateIndex, OracleAlterIndex, OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable;
+import OracleKeyword, Keyword, OracleBase, OracleCreateIndex, OracleAlterIndex, OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable;
 
 execute
     : createIndex

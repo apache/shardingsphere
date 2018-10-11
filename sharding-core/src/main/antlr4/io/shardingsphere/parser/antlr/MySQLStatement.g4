@@ -1,6 +1,6 @@
 grammar MySQLStatement;
 
-import MySQLBase, MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable;
+import MySQLKeyword, Keyword, MySQLBase, MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable;
 
 execute
     : select
