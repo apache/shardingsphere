@@ -94,6 +94,13 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         return !Strings.isNullOrEmpty(orchestrationProperties.getName());
     }
     
+    private OrchestrationType getOrchestrationType() {
+        if (isValidRuleConfiguration()) {
+            return getOrchestrationTypeByLocal();
+        }
+        return getOrchestrationTypeByRegistry();
+    }
+    
     private OrchestrationType getOrchestrationTypeByRegistry() {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration());
         ConfigurationService configService = orchestrationFacade.getConfigService();
