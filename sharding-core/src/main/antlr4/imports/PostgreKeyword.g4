@@ -34,6 +34,10 @@ CHARACTER
     : C H A R A C T E R
     ;
 
+CLUSTER
+    : C L U S T E R
+    ;
+
 COLLATE
     : C O L L A T E
     ;
@@ -56,6 +60,10 @@ CURRENT
 
 CURRENT_TIMESTAMP
     : C U R R E N T UL_ T I M E S T A M P
+    ;
+
+CURRENT_USER
+    : C U R R E N T UL_ U S E R
     ;
 
 CYCLE
@@ -86,6 +94,10 @@ DEPENDS
     : D E P E N D S
     ;
 
+DISABLE
+    : D I S A B L E
+    ;
+
 DISTINCT
     : D I S T I N C T
     ;
@@ -94,12 +106,24 @@ DOUBLE
     : D O U B L E
     ;
 
+ENABLE
+    : E N A B L E
+    ;
+
 EXCLUDING
     : E X C L U D I N G
     ;
 
+EXTENDED
+    : E X T E N D E D
+    ;
+
 EXTENSION
     : E X T E N S I O N
+    ;
+
+EXTERNAL
+    : E X T E R N A L
     ;
 
 EXTRACT
@@ -116,6 +140,10 @@ FIRST
 
 FOLLOWING
     : F O L L O W I N G
+    ;
+
+FORCE
+    : F O R C E
     ;
 
 FULL
@@ -178,8 +206,20 @@ LAST
     : L A S T
     ;
 
+LEVEL
+    : L E V E L
+    ;
+
 LOCAL
     : L O C A L
+    ;
+
+LOGGED
+    : L O G G E D
+    ;
+
+MAIN
+    : M A I N
     ;
 
 MATCH
@@ -214,6 +254,10 @@ OF
     : O F
     ;
 
+OIDS
+    : O I D S
+    ;
+
 ONLY
     : O N L Y
     ;
@@ -226,8 +270,16 @@ OWNED
     : O W N E D
     ;
 
+OWNER
+    : O W N E R
+    ;
+
 PARTIAL
     : P A R T I A L
+    ;
+
+PLAIN
+    : P L A I N
     ;
 
 PRECEDING
@@ -250,6 +302,14 @@ REPLICA
     : R E P L I C A
     ;
 
+RESET
+    : R E S E T
+    ;
+
+RESTART
+    : R E S T A R T
+    ;
+
 RESTRICT
     : R E S T R I C T
     ;
@@ -258,8 +318,20 @@ ROWS
     : R O W S
     ;
 
+RULE
+    : R U L E
+    ;
+
 SECOND
     : S E C O N D
+    ;
+
+SECURITY
+    : S E C U R I T Y
+    ;
+
+SESSION_USER
+    : S E S S I O N UL_ U S E R
     ;
 
 SIMPLE
@@ -294,6 +366,10 @@ TEMPORARY
     : T E M P O R A R Y
     ;
 
+TRIGGER
+    : T R I G G E R
+    ;
+
 TYPE
     : T Y P E
     ;
@@ -308,6 +384,10 @@ UNLOGGED
 
 UPDATE
     : U P D A T E
+    ;
+
+USER
+    : U S E R
     ;
 
 USING
