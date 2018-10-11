@@ -103,7 +103,6 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private OrchestrationType getOrchestrationTypeByRegistry() {
         OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration());
-        ConfigurationService configService = orchestrationFacade.getConfigService();
         ShardingRuleConfiguration shardingRuleConfiguration = orchestrationFacade.getConfigService().loadShardingRuleConfiguration();
         orchestrationFacade.close();
         if (null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty()) {
