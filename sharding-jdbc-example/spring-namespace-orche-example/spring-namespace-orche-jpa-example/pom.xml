@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>spring-namespace-example</artifactId>
+        <artifactId>spring-namespace-orche-example</artifactId>
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
     <artifactId>spring-namespace-orche-jpa-example</artifactId>
