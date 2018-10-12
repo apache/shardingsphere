@@ -303,7 +303,6 @@ sharding.jdbc.config.masterslave.props.executor.size= #工作线程数量，默�
 
 sharding.jdbc.config.sharding.orchestration.name= #数据治理实例名称
 sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-sharding.jdbc.config.sharding.orchestration.type= #数据源类型，可选值：sharding，masterslave
 sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Zookeeper的命名空间
 sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #等待重试的间隔时间的初始毫秒数，默认1000毫秒
@@ -321,7 +320,6 @@ sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #连接Zookeeper�
 
 sharding.jdbc.config.sharding.orchestration.name= #同Zookeeper
 sharding.jdbc.config.sharding.orchestration.overwrite= #同Zookeeper
-sharding.jdbc.config.sharding.orchestration.type= #同Zookeeper
 sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
 sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #临时节点存活秒数，默认60秒
 sharding.jdbc.config.sharding.orchestration.etcd.timeout-milliseconds= #请求超时毫秒数，默认500毫秒
