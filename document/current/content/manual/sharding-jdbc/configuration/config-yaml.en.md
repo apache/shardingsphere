@@ -177,7 +177,6 @@ shardingRule:
 
 orchestration:
   name: orchestration_ds
-  type: SHARDIN
   overwrite: true
   zookeeper:
     namespace: orchestration
@@ -191,7 +190,6 @@ orchestration:
 
 orchestration:
   name: orchestration_ds
-  type: SHARDIN
   overwrite: true
   etcd:
     serverLists: http://localhost:2379
@@ -297,7 +295,6 @@ masterSlaveRule: #Ignore master slave rule configuration
 orchestration:
   name: #Name of orchestration instance
   overwrite: #Use local configuration to overwrite registry center or not
-  type: #Data source type, values should be: `SHARDING` or `masterslave`type: #Data source type, values should be: `sharding` or `masterslave`
   zookeeper: #Zookeeper configuration
     serverLists: #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
     namespace: #Namespace of zookeeper
@@ -319,7 +316,6 @@ masterSlaveRule: #Ignore master slave rule configuration
 orchestration:
   name: #Same as Zookeeper
   overwrite: #Same as Zookeeper
-  type: #Same as Zookeeper
   etcd: #Etcd configuration
     serverLists: #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
     timeToLiveSeconds: #Time to live of data, default is 60 seconds
