@@ -13,7 +13,7 @@ weight = 1
 
 ## Data structure
 
-Config center is defined in the namespace under `config` node. It mainly includes the data-management related configuration information such as data source, Sharding, Read-write splitting, ConfigMap and configuration of the Properties, stored in a JSON format. You can modify this node to get dynamic configuration management.
+Config center is defined in the namespace under `config` node. It mainly includes the data-management related configuration information such as data source, Sharding, Read-write splitting, ConfigMap and configuration of the Properties, stored in a YAML format. You can modify this node to get dynamic configuration management.
 
 ```
 config
