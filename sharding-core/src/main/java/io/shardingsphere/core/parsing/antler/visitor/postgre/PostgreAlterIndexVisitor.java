@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.antler.visitor.postgre;
 
-import io.shardingsphere.core.parsing.antler.phrase.visitor.IndciesNameVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexesNameVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisitor;
 
 public class PostgreAlterIndexVisitor extends DDLStatementVisitor {
     public PostgreAlterIndexVisitor() {
-        addVisitor(new IndciesNameVisitor());
+        addVisitor(new IndexesNameVisitor());
     }
 }

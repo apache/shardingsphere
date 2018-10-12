@@ -26,9 +26,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
-public class IndciesNameVisitor implements PhraseVisitor {
+public class IndexesNameVisitor implements PhraseVisitor {
 
-    /** Visit indcies name table node.
+    /** Visit indexes name table node.
      * @param ancestorNode ancestor node of ast
      * @param statement sql statement
      */
