@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.CreatePrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.IndciesNameVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -28,6 +29,7 @@ public class CreateTableVisitor extends AbstractStatementVisitor {
         addVisitor(new TableNameVisitor());
         addVisitor(new ColumnDefinitionVisitor());
         addVisitor(new IndciesNameVisitor());
+        addVisitor(new CreatePrimaryKeyVisitor());
     }
 
     /** Create create table statement.

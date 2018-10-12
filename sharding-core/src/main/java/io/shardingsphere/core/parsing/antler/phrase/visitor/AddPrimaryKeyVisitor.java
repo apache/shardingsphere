@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
@@ -45,7 +44,7 @@ public class AddPrimaryKeyVisitor implements PhraseVisitor {
             return;
         }
 
-        ParseTree primaryKeyCtx = TreeUtils.getFirstChildByRuleName(modifyColumnCtx, "primaryKey");
+        ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(modifyColumnCtx, "primaryKey");
         if (null == primaryKeyCtx) {
             return;
         }
