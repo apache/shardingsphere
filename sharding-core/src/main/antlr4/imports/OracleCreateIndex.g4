@@ -17,7 +17,7 @@ tableIndexClause
     ;
 
 indexExprSort
-    : indexExpr ( ASC | DESC )?
+    : indexExpr (ASC | DESC)?
     ;
     
 indexExpr

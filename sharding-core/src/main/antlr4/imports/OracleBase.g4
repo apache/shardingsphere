@@ -7,15 +7,26 @@ ID:
     (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA?)
     |[a-zA-Z_$#0-9]+ DOT ASTERISK
     ;
-    
+
+oracleId
+   : ID
+   | (STRING DOT)* STRING
+   ;
+     
 tableName
-    : ID
-    | STRING
+    : oracleId
     ;
 
+columnName
+    : oracleId
+    ;
+    
+indexName
+    : oracleId
+    ;
+    
 attributeName
-    : ID
-    | STRING
+    : oracleId
     ;
 
 indexTypeName

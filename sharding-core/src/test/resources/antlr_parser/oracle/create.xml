@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets>
-	<parser-result sql-case-id="oracle_create_table">
+<parser-result-sets namespace="oracle.ddl.create">
+	<parser-result sql-case-id="create_table">
         <tables>
             <table name="t_log" />
         </tables>
@@ -10,7 +10,27 @@
         <meta column-names="id,status" column-types="int,varchar"/>
     </parser-result>
     
-    <parser-result sql-case-id="oracle_create_table_with_primary_key">
+    <parser-result sql-case-id="create_table_prefix_space">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="15" original-literals="t_log" />
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_quota">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="&quot;t_log&quot;" />
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_primary_key">
         <tables>
             <table name="C##t_log" />
         </tables>
@@ -20,7 +40,7 @@
         <meta column-names="id,status" column-types="int,varchar" primary-key-columns="id" />
     </parser-result>
 
-    <parser-result sql-case-id="oracle_create_table_constraint">
+    <parser-result sql-case-id="create_table_with_constraint">
         <tables>
             <table name="departments_demo" />
         </tables>
@@ -30,7 +50,121 @@
         <meta column-names="id,name,manager_id,dn" column-types="NUMBER,VARCHAR2,NUMBER,VARCHAR2" primary-key-columns="id" />
     </parser-result>
     
+    <parser-result sql-case-id="create_table_with_many_constraint">
+        <tables>
+            <table name="employees_demo" />
+        </tables>
+        <tokens>
+            <table-token begin-position="15" original-literals="employees_demo" />
+        </tokens>
+        <meta column-names="employee_id,first_name,last_name,email,phone_number,hire_date,job_id,salary,commission_pct,manager_id,department_id,dn"
+         column-types="NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2,DATE,VARCHAR2,NUMBER,NUMBER,NUMBER,NUMBER,VARCHAR2" 
+         primary-key-columns="employee_id" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_global_temporary_table">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="30" original-literals="t_log" />
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar"/>
+    </parser-result>
+    
+     <parser-result sql-case-id="create_table_with_many_primary_key">
+        <tables>
+            <table name="test" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="test" />
+        </tokens>
+        <meta column-names="a,b,c,d" column-types="number,number,number,varchar2" primary-key-columns="a,b,c" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_unique_key">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_log" />
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_foreign_key">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_order_item" />
+            <table-token begin-position="107" original-literals="t_order" />
+        </tokens>
+        <meta column-names="order_item_id,order_id,user_id" column-types="int,int,int"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_exist_index">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_log" />
+            <index-token begin-position="66" original-literals="ind1" table-name="t_log"/>
+        </tokens>
+        <meta column-names="id,status" column-types="int,varchar" />
+    </parser-result>
+    
+    <parser-result sql-case-id="create_table_with_create_index">
+        <tables>
+            <table name="test_uid" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="test_uid" />
+            <index-token begin-position="115" original-literals="uid_test_uid" table-name="test_uid"/>
+            <table-token begin-position="131" original-literals="test_uid" />
+        </tokens>
+        <meta column-names="name" column-types="varchar2" primary-key-columns="NAME"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token begin-position="23" original-literals="t_log" />
+            <index-token begin-position="13" original-literals="idx_id" table-name="t_log"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="create_index_with_quota">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <index-token begin-position="13" original-literals="&quot;idx_id&quot;" table-name="t_log"/>
+            <table-token begin-position="25" original-literals="&quot;t_log&quot;" />
+        </tokens>
+    </parser-result>
     
     
+    <parser-result sql-case-id="create_unique_index">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <index-token begin-position="20" original-literals="uk_id" table-name="t_log"/>
+            <table-token begin-position="29" original-literals="t_log" />
+        </tokens>
+    </parser-result>
     
+    <parser-result sql-case-id="create_composite_index">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+        	<index-token begin-position="13" original-literals="idx_id_status" table-name="t_log"/>
+            <table-token begin-position="30" original-literals="t_log" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>

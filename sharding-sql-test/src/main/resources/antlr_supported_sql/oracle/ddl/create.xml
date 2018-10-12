@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="Oracle" >
-    <sql-case id="oracle_create_table" value="CREATE TABLE t_log (id int, status varchar(10))" />
-    <sql-case id="oracle_create_table_with_primary_key" value="CREATE TABLE C##t_log (id int primary key, status varchar(10))" />
-    <sql-case id="oracle_create_table_constraint" value="CREATE TABLE departments_demo (id NUMBER(4) PRIMARY KEY DISABLE, name VARCHAR2(30) CONSTRAINT dept_name_nn NOT NULL, manager_id NUMBER(6), dn VARCHAR2(300))" />
-    <sql-case id="oracle_create_table_with_back_quota" value="CREATE TABLE `t_log` (`id` int, `status` varchar(10))" />
-    <sql-case id="oracle_create_global_temporary_table" value="CREATE GLOBAL TEMPORARY TABLE t_log(id int, status varchar(10))" />
-    <!--<sql-case id="oracle_create_table_with_primary_key" value="CREATE TABLE t_log (id int, status varchar(10), PRIMARY KEY(id))" />-->
-    <sql-case id="oracle_create_table_with_unique_key" value="CREATE TABLE t_log (id int, status varchar(10), UNIQUE(id))" />
-    <sql-case id="oracle_create_table_with_foreign_key" value="CREATE TABLE t_order_item (order_item_id int, order_id int, user_id int, FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE)" />
-    <sql-case id="oracle_create_table_with_composite_index" value="CREATE TABLE t_log (id int, status varchar(10), INDEX(id, status))" />
-    <sql-case id="oracle_create_table_with_check" value="CREATE TABLE t_log (id int PRIMARY KEY, status varchar(10), check(id > 10))" />
-    <sql-case id="oracle_create_index" value="CREATE INDEX idx_id ON t_log (id)" />
-    <sql-case id="oracle_create_index_with_back_quota" value="CREATE INDEX `idx_id` ON `t_log` (`id`)" />
-    <sql-case id="oracle_create__unique_index" value="CREATE UNIQUE INDEX `uk_id` ON `t_log` (`id`)" />
-    <sql-case id="oracle_create_composite_index" value="CREATE INDEX idx_id_status ON t_log (id, status)" />
+<sql-cases db-types="Oracle" namespace="oracle.ddl.create">
+	<!-- -->
+	<sql-case id="create_table" value="CREATE TABLE t_log (id int, status varchar(10))" />
+	<sql-case id="create_table_prefix_space" value="  CREATE TABLE t_log (id int, status varchar(10))" />
+    <sql-case id="create_table_with_quota" value="CREATE TABLE &quot;t_log&quot; (id int, status varchar(10))" />
+    <sql-case id="create_table_with_primary_key" value="CREATE TABLE C##t_log (id int primary key, status varchar(10))" />
+    <sql-case id="create_table_with_many_primary_key" value="create table test(a number,b number,c number, d varchar2(20), primary key(a,b,c))" />
+    <sql-case id="create_table_with_constraint" value="CREATE TABLE departments_demo (id NUMBER(4) PRIMARY KEY DISABLE, name VARCHAR2(30) CONSTRAINT dept_name_nn NOT NULL, manager_id NUMBER(6), dn VARCHAR2(300))" />
+    <sql-case id="create_table_with_many_constraint" value="CREATE TABLE   employees_demo (employee_id NUMBER(6) PRIMARY KEY , first_name VARCHAR2(20) , last_name  VARCHAR2(25) CONSTRAINT emp_last_name_nn_demo NOT NULL , email  VARCHAR2(25) CONSTRAINT emp_email_nn_demo NOT NULL , phone_number  VARCHAR2(20) , hire_date  DATE DEFAULT SYSDATE CONSTRAINT emp_hire_date_nn_demo NOT NULL , job_id  VARCHAR2(10) CONSTRAINT emp_job_nn_demo NOT NULL , salary  NUMBER(8,2) CONSTRAINT emp_salary_nn_demo NOT NULL , commission_pct NUMBER(2,2) , manager_id NUMBER(6) , department_id NUMBER(4) , dn  VARCHAR2(300), CONSTRAINT emp_salary_min_demo CHECK (salary > 0), CONSTRAINT emp_email_uk_demo UNIQUE (email)) " />
+    <sql-case id="create_global_temporary_table" value="CREATE GLOBAL TEMPORARY TABLE t_log(id int, status varchar(10))" />
+    
+    <sql-case id="create_table_with_unique_key" value="CREATE TABLE t_log (id int, status varchar(10), UNIQUE(id))" />
+    <sql-case id="create_table_with_foreign_key" value="CREATE TABLE t_order_item (order_item_id int, order_id int, user_id int, FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE)" />
+    <sql-case id="create_table_with_exist_index" value="CREATE TABLE t_log (id int, status varchar(10) UNIQUE using INDEX ind1)" />
+    <sql-case id="create_table_with_create_index" value="Create table test_uid(name varchar2(10), constraint TEST_UID_PK PRIMARY KEY(NAME) USING INDEX (Create unique index uid_test_uid on test_uid(name)))" />
+   
+    <sql-case id="create_index" value="CREATE INDEX idx_id ON t_log (id)" />
+    <sql-case id="create_index_with_quota" value="CREATE INDEX &quot;idx_id&quot; ON &quot;t_log&quot; (id)" />
+    <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX uk_id ON t_log (id)" />
+    <sql-case id="create_composite_index" value="CREATE INDEX idx_id_status ON t_log (id, status)" />
 </sql-cases>
