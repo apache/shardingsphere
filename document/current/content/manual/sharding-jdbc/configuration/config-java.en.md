@@ -115,7 +115,7 @@ weight = 1
     DataSource getDataSource() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
@@ -132,7 +132,7 @@ weight = 1
     DataSource getDataSource() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
@@ -294,7 +294,6 @@ Enumeration of properties.
 | --------------- | --------------------------- | ------------------------------------------------------------------- |
 | name            | String                      | Name of orchestration instance                                      |
 | overwrite       | boolean                     | Use local configuration to overwrite registry center or not         |
-| type            | OrchestrationType           | Data source type, values should be: `SHARDING` or `MASTER_SLAVE`    |
 | regCenterConfig | RegistryCenterConfiguration | Registry center configuration                                       |
 
 #### ZookeeperConfiguration
