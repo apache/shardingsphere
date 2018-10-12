@@ -30,7 +30,7 @@ weight = 4
     zkConfig.setNamespace("sharding-sphere-orchestration");
 
     // 配置数据治理
-    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
+    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false);
 
     // 获取数据源对象
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
@@ -43,7 +43,6 @@ weight = 4
 ```yaml
 orchestration:
   name: orchestration-sharding-data-source
-  type: SHARDING
   overwrite: false
   zookeeper:
     serverLists: localhost:2181
@@ -78,7 +77,6 @@ orchestration:
 
 ```properties
 sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
-sharding.jdbc.config.orchestration.type=sharding
 sharding.jdbc.config.orchestration.overwrite=false
 sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
 sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-jdbc-orchestration

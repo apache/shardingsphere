@@ -30,7 +30,7 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     zkConfig.setNamespace("sharding-sphere-orchestration");
 
     // Configure orchestration configuration
-    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
+    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false);
 
     // Get data source
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
@@ -43,7 +43,6 @@ To configure by yaml, similar with the configuration method of java codes:
 ```yaml
 orchestration:
   name: orchestration-sharding-data-source
-  type: SHARDING
   overwrite: false
   zookeeper:
     serverLists: localhost:2181
@@ -78,7 +77,6 @@ orchestration:
 
 ```properties
 sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
-sharding.jdbc.config.orchestration.type=sharding
 sharding.jdbc.config.orchestration.overwrite=false
 sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
 sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestration
