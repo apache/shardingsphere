@@ -129,6 +129,9 @@ public class SQLCasesLoader {
             if(null == each.getDatabaseTypes()) {
                 each.setDatabaseTypes(sqlCases.getDatabaseTypes());
             }
+            if(null != sqlCases.getNamespace()) {
+                each.setId(sqlCases.getNamespace()+"."+each.getId());
+            }
             sqlCaseMap.put(each.getId(), each);
         }
     }

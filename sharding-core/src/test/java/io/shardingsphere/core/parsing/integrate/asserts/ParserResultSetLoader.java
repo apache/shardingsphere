@@ -37,10 +37,10 @@ public class ParserResultSetLoader {
     
     private static final ParserResultSetLoader INSTANCE = new ParserResultSetLoader();
     
-    private final Map<String, ParserResult> parserResultMap;
+    protected Map<String, ParserResult> parserResultMap;
     
     protected ParserResultSetLoader() {
-        parserResultMap = loadParserResultSet();
+        parserResultMap = loadParserResultSet("parser/");
     }
     
     /**
@@ -52,8 +52,8 @@ public class ParserResultSetLoader {
         return INSTANCE;
     }
     
-    private Map<String, ParserResult> loadParserResultSet() {
-        URL url = ParserResultSetLoader.class.getClassLoader().getResource("parser/");
+    protected Map<String, ParserResult> loadParserResultSet(String dirName) {
+        URL url = ParserResultSetLoader.class.getClassLoader().getResource(dirName);
         Preconditions.checkNotNull(url, "Cannot found parser test cases.");
         File[] files = new File(url.getPath()).listFiles();
         Preconditions.checkNotNull(files, "Cannot found parser test cases.");
@@ -64,11 +64,22 @@ public class ParserResultSetLoader {
         return result;
     }
     
-    private Map<String, ParserResult> loadParserResultSet(final File file) {
+    protected Map<String, ParserResult> loadParserResultSet(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
-            for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
-                result.put(each.getSqlCaseId(), each);
+            if(file.isDirectory()) {
+                for (File each : file.listFiles()) {
+                    result.putAll(loadParserResultSet(each));
+                } 
+            }else {
+                ParserResultSet resultSet = (ParserResultSet)JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
+                for (ParserResult each : resultSet.getParserResults()) {
+                    if(null != resultSet.getNamespace()) {
+                        result.put(resultSet.getNamespace()+"."+each.getSqlCaseId(), each);
+                    }else {
+                        result.put(each.getSqlCaseId(), each);
+                    }
+                }
             }
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);

@@ -17,17 +17,6 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts;
 
-import com.google.common.base.Preconditions;
-import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
-import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResultSet;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Parser result set loader.
  *
@@ -37,10 +26,8 @@ public final class AntlrParserResultSetLoader extends ParserResultSetLoader{
     
     private static final AntlrParserResultSetLoader INSTANCE = new AntlrParserResultSetLoader();
     
-    private final Map<String, ParserResult> parserResultMap;
-    
     protected AntlrParserResultSetLoader() {
-        parserResultMap = loadParserResultSet();
+        parserResultMap = loadParserResultSet("antlr_parser/");
     }
     
     /**
@@ -50,46 +37,5 @@ public final class AntlrParserResultSetLoader extends ParserResultSetLoader{
      */
     public static AntlrParserResultSetLoader getInstance() {
         return INSTANCE;
-    }
-    
-    private Map<String, ParserResult> loadParserResultSet() {
-        URL url = AntlrParserResultSetLoader.class.getClassLoader().getResource("antlr_parser/");
-        Preconditions.checkNotNull(url, "Cannot found parser test cases.");
-        File[] files = new File(url.getPath()).listFiles();
-        Preconditions.checkNotNull(files, "Cannot found parser test cases.");
-        Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (File each : files) {
-            result.putAll(loadParserResultSet(each));
-        }
-        return result;
-    }
-    
-    private Map<String, ParserResult> loadParserResultSet(final File file) {
-        Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
-        try {
-            if(file.isDirectory()) {
-                for (File each : file.listFiles()) {
-                    result.putAll(loadParserResultSet(each));
-                } 
-            }else {
-                for (ParserResult each : ((ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file)).getParserResults()) {
-                    result.put(each.getSqlCaseId(), each);
-                }
-            }
-        } catch (JAXBException ex) {
-            throw new RuntimeException(ex);
-        }
-        return result;
-    }
-    
-    /**
-     * Get parser assert.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @return parser assert
-     */
-    public ParserResult getParserResult(final String sqlCaseId) {
-//        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
-        return parserResultMap.get(sqlCaseId);
     }
 }
