@@ -4,12 +4,31 @@ import OracleKeyword,Keyword,Symbol,OracleBase,BaseRule,DataType;
 
 columnDefinition
     : columnName dataType SORT?
-    (DEFAULT expr)?
+    (DEFAULT (ON NULL)? expr | identityClause)?
     (ENCRYPT encryptionSpec)?
     ( 
        inlineConstraint+ 
       | inlineRefConstraint
     )?
+    ;
+
+identityClause
+    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LEFT_PAREN? (identityOptions+)? RIGHT_PAREN?
+    ;
+
+identityOptions
+    : START WITH (NUMBER | LIMIT VALUE)
+    | INCREMENT BY NUMBER
+    | MAXVALUE NUMBER
+    | NOMAXVALUE
+    | MINVALUE NUMBER
+    | NOMINVALUE
+    | CYCLE
+    | NOCYCLE
+    | CACHE NUMBER
+    | NOCACHE
+    | ORDER
+    | NOORDER
     ;
     
 virtualColumnDefinition

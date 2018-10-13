@@ -10,6 +10,10 @@ BITMAP
     : B I T M A P
     ;
 
+CACHE
+    : C A C H E
+    ;
+
 CASE
     : C A S E
     ;
@@ -24,6 +28,10 @@ COMMIT
 
 CONSTRAINTS
     : C O N S T R A I N T S
+    ;
+
+CYCLE
+    : C Y C L E
     ;
 
 DAY
@@ -86,8 +94,16 @@ IDENTIFIED
     : I D E N T I F I E D
     ;
 
+IDENTITY
+    : I D E N T I T Y
+    ;
+
 IMMEDIATE
     : I M M E D I A T E
+    ;
+
+INCREMENT
+    : I N C R E M E N T
     ;
 
 INITIALLY
@@ -118,6 +134,14 @@ LOCAL
     : L O C A L
     ;
 
+MAXVALUE
+    : M A X V A L U E
+    ;
+
+MINVALUE
+    : M I N V A L U E
+    ;
+
 MODIFY
     : M O D I F Y
     ;
@@ -132,6 +156,26 @@ NATIONAL
 
 NEW
     : N E W
+    ;
+
+NOCACHE
+    : N O C A C H E
+    ;
+
+NOCYCLE
+    : N O C Y C L E
+    ;
+
+NOMAXVALUE
+    : N O M A X V A L U E
+    ;
+
+NOMINVALUE
+    : N O M I N V A L U E
+    ;
+
+NOORDER
+    : N O O R D E R
     ;
 
 NORELY
@@ -202,6 +246,10 @@ SORT
     : S O R T
     ;
 
+START
+    : S T A R T
+    ;
+
 SUBSTITUTABLE
     : S U B S T I T U T A B L E
     ;
@@ -236,6 +284,10 @@ USING
 
 VALIDATE
     : V A L I D A T E
+    ;
+
+VALUE
+    : V A L U E
     ;
 
 VARYING
