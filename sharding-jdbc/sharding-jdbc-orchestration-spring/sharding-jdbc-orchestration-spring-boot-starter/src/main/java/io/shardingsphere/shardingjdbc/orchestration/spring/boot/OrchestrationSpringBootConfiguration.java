@@ -46,7 +46,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 /**
  * Orchestration spring boot sharding and master-slave configuration.
  *
