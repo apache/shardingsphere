@@ -112,7 +112,7 @@
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
 
-    <parser-result sql-case-id="create_table_with_inline_constraint">
+    <parser-result sql-case-id="create_table_with_inline_constraints">
         <tables>
             <table name="t_order_item" />
             <table name="t_order" />
@@ -176,7 +176,7 @@
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
 
-    <parser-result sql-case-id="create_table_with_out_of_line_constraint">
+    <parser-result sql-case-id="create_table_with_out_of_line_constraints">
         <tables>
             <table name="t_order_item" />
             <table name="t_order" />

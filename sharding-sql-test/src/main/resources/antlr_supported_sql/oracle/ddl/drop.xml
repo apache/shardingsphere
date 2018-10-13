@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases db-types="Oracle" namespace="oracle.ddl.create">
-    <sql-case id="drop_table" value="DROP TABLE t_log" />
-    <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_log`" />
-    <sql-case id="drop_index" value="DROP INDEX idx_id ON t_log" />
-    <sql-case id="drop_index_with_back_quota" value="DROP INDEX `idx_id` ON `t_log`" />
+    <sql-case id="drop_table" value="DROP TABLE t_order" />
+    <sql-case id="drop_table_with_space" value="    DROP TABLE
+        t_order    " />
+    <sql-case id="drop_table_with_quota" value="DROP TABLE &quot;t_order&quot;" />
+
+    <sql-case id="drop_index" value="DROP INDEX idx_order_id ON t_order" />
+    <sql-case id="drop_index_with_space" value="    DROP INDEX
+        idx_order_id
+    ON
+        t_order    " />
+    <sql-case id="drop_index_with_quota" value="DROP INDEX &quot;idx_order_id&quot; ON &quot;t_order&quot;" />
 </sql-cases>
