@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets>
+<parser-result-sets namespace="mysql.ddl.alter">
     <parser-result sql-case-id="mysql_alter_index_rename">
         <tokens>
             <index-token begin-position="12" original-literals="idx_id" />
