@@ -1,6 +1,6 @@
 grammar OracleCreateIndex;
 
-import OracleKeyword, DataType, Keyword,OracleBase,BaseRule,Symbol;
+import OracleKeyword, Keyword, DataType, OracleBase, BaseRule, Symbol;
 
 createIndex
     : CREATE ( UNIQUE | BITMAP)? INDEX  indexName
