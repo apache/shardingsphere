@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
 import java.util.List;
 
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
@@ -48,7 +49,7 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
                 continue;
             }
 
-            createStatement.getColumnNames().add(column.getName());
+            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.getName()));
             createStatement.getColumnTypes().add(column.getType());
             if (column.isPrimaryKey()) {
                 createStatement.getPrimaryKeyColumns().add(column.getName());
