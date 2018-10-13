@@ -21,7 +21,7 @@
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_on_duplicate_key_update">
-        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="update.xml" />
+        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="insert_on_duplicate_key_update.xml" />
     </dml-test-case>
     
     <!-- TODO fixme -->
