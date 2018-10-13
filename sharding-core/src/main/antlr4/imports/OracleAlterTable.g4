@@ -50,7 +50,7 @@ columnOrVirtualDefinition:
 modifyColumn
     : MODIFY 
     ( 
-        LEFT_PAREN modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN
+        LEFT_PAREN? modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN?
        | modifyColSubstitutable
     )
     ;
