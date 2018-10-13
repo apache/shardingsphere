@@ -196,7 +196,7 @@ public final class GlobalRegistry {
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            entry.getValue().setDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
+            entry.getValue().getBackendDataSource().setAvailableDataSources(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
         }
     }
 }

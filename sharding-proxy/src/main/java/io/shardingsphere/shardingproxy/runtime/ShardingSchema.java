@@ -28,11 +28,8 @@ import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,16 +57,13 @@ public final class ShardingSchema {
     
     private ShardingMetaData metaData;
     
-    @Setter
-    private Collection<String> disabledDataSourceNames = new LinkedList<>();
-    
     public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
         masterSlaveRule = null == rule.getMasterSlaveRule() ? null : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
-        backendDataSource = new JDBCBackendDataSource(this);
+        backendDataSource = new JDBCBackendDataSource(dataSources);
     }
     
     /**
@@ -97,25 +91,5 @@ public final class ShardingSchema {
      */
     public boolean isMasterSlaveOnly() {
         return shardingRule.getTableRules().isEmpty() && null != masterSlaveRule;
-    }
-    
-    /**
-     * Get available data source map.
-     *
-     * @return available data source map
-     */
-    public Map<String, DataSourceParameter> getDataSources() {
-        if (!getDisabledDataSourceNames().isEmpty()) {
-            return getAvailableDataSourceConfigurationMap();
-        }
-        return dataSources;
-    }
-    
-    private Map<String, DataSourceParameter> getAvailableDataSourceConfigurationMap() {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSources);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
     }
 }
