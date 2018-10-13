@@ -1,13 +1,13 @@
 grammar OracleCreateTable;
 
-import OracleKeyword, Keyword, DataType, OracleCreateIndex, OracleTableBase, OracleBase, BaseRule, Symbol;
+import OracleKeyword, Keyword, DataType, OracleCreateIndex, OracleTableBase, DQLBase, OracleBase, BaseRule, Symbol;
 
 createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
     ;
     
 relationalTable
-    : LEFT_PAREN relationalProperties RIGHT_PAREN
+    : (LEFT_PAREN relationalProperties RIGHT_PAREN)?
     (ON COMMIT (DELETE | PRESERVE) ROWS)?
     tableProperties
     ;
@@ -25,6 +25,6 @@ relationalProperty
     
 tableProperties
     : columnProperties?
-    (AS subquery)?
+    (AS unionSelect)?
     ;
     
