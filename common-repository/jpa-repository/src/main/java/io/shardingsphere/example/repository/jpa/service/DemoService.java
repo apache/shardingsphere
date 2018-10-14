@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.repository.jpa.service;
 
-import io.shardingsphere.example.repository.jpa.entity.JPAOrder;
-import io.shardingsphere.example.repository.jpa.entity.JPAOrderItem;
+import io.shardingsphere.example.repository.jpa.entity.OrderEntity;
+import io.shardingsphere.example.repository.jpa.entity.OrderItemEntity;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -37,36 +37,42 @@ public class DemoService {
     private OrderItemRepository orderItemRepository;
     
     public void demo() {
-        List<Long> orderIds = new ArrayList<>(10);
+        List<Long> orderIds = InsertData();
+        printData();
+        deleteData(orderIds);
+        printData();
+    }
+    
+    private List<Long> InsertData() {
         System.out.println("1.Insert--------------");
+        List<Long> result = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            JPAOrder jpaOrder = new JPAOrder();
-            jpaOrder.setUserId(51);
-            jpaOrder.setStatus("INSERT_TEST");
-            orderRepository.insert(jpaOrder);
-            long orderId = jpaOrder.getOrderId();
-            orderIds.add(orderId);
-            
-            JPAOrderItem item = new JPAOrderItem();
-            item.setOrderId(orderId);
+            OrderEntity order = new OrderEntity();
+            order.setUserId(51);
+            order.setStatus("INSERT_TEST");
+            orderRepository.insert(order);
+            OrderItemEntity item = new OrderItemEntity();
+            item.setOrderId(order.getOrderId());
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
             orderItemRepository.insert(item);
+            result.add(order.getOrderId());
         }
-        System.out.println("JPAOrder Data--------------");
-        System.out.println(orderRepository.selectAll());
-        System.out.println("JPAOrderItem Data--------------");
-        System.out.println(orderItemRepository.selectAll());
+        return result;
+    }
+    
+    private void deleteData(final List<Long> orderIds) {
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
         }
-        System.out.println("JPAOrder Data--------------");
+    }
+    
+    private void printData() {
+        System.out.println("Order Data--------------");
         System.out.println(orderRepository.selectAll());
-        System.out.println("JPAOrderItem Data--------------");
+        System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
-        orderItemRepository.dropTable();
-        orderRepository.dropTable();
     }
 }

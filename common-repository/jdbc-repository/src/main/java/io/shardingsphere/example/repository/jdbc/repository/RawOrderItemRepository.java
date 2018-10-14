@@ -88,11 +88,11 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     }
     
     @Override
-    public void delete(final Long id) {
+    public void delete(final Long orderItemId) {
         String sql = "DELETE FROM t_order_item WHERE order_item_id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, orderItemId);
             preparedStatement.executeUpdate(sql);
         } catch (final SQLException ignored) {
         }

@@ -31,46 +31,62 @@ import java.util.List;
 public class DemoService {
     
     @Resource
-    private MybatisOrderRepository mybatisOrderRepository;
+    private MybatisOrderRepository orderRepository;
     
     @Resource
-    private MybatisOrderItemRepository mybatisOrderItemRepository;
+    private MybatisOrderItemRepository orderItemRepository;
     
     public void demo() {
-        mybatisOrderRepository.createTableIfNotExists();
-        mybatisOrderItemRepository.createTableIfNotExists();
-        mybatisOrderRepository.truncateTable();
-        mybatisOrderItemRepository.truncateTable();
-        List<Long> orderIds = new ArrayList<>(10);
+        initTables();
+        List<Long> orderIds = insertData();
+        printData();
+        deleteData(orderIds);
+        printData();
+        cleanTables();
+    }
+    
+    private void initTables() {
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
+        orderRepository.truncateTable();
+        orderItemRepository.truncateTable();
+    }
+    
+    private List<Long> insertData() {
         System.out.println("1.Insert--------------");
+        List<Long> result = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            mybatisOrderRepository.insert(order);
-            long orderId = order.getOrderId();
-            orderIds.add(orderId);
-            
+            orderRepository.insert(order);
             OrderItem item = new OrderItem();
-            item.setOrderId(orderId);
+            item.setOrderId(order.getOrderId());
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
-            mybatisOrderItemRepository.insert(item);
+            orderItemRepository.insert(item);
+            result.add(order.getOrderId());
         }
-        System.out.println("Order Data--------------");
-        System.out.println(mybatisOrderRepository.selectAll());
-        System.out.println("OrderItem Data--------------");
-        System.out.println(mybatisOrderItemRepository.selectAll());
+        return result;
+    }
+    
+    private void deleteData(final List<Long> orderIds) {
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
-            mybatisOrderRepository.delete(each);
-            mybatisOrderItemRepository.delete(each);
+            orderRepository.delete(each);
+            orderItemRepository.delete(each);
         }
+    }
+    
+    private void printData() {
         System.out.println("Order Data--------------");
-        System.out.println(mybatisOrderRepository.selectAll());
+        System.out.println(orderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(mybatisOrderItemRepository.selectAll());
-        mybatisOrderItemRepository.dropTable();
-        mybatisOrderRepository.dropTable();
+        System.out.println(orderItemRepository.selectAll());
+    }
+    
+    private void cleanTables() {
+        orderItemRepository.dropTable();
+        orderRepository.dropTable();
     }
 }

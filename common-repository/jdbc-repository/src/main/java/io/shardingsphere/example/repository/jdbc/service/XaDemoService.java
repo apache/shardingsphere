@@ -27,50 +27,66 @@ import java.util.List;
 
 public class XaDemoService {
     
-    private final XaOrderRepository xaOrderRepository;
+    private final XaOrderRepository orderRepository;
     
-    private final XaOrderItemRepository xaOrderItemRepository;
+    private final XaOrderItemRepository orderItemRepository;
     
-    public XaDemoService(final XaOrderRepository xaOrderRepository, final XaOrderItemRepository xaOrderItemRepository) {
-        this.xaOrderRepository = xaOrderRepository;
-        this.xaOrderItemRepository = xaOrderItemRepository;
+    public XaDemoService(final XaOrderRepository orderRepository, final XaOrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
     }
     
     public void demo() {
-        xaOrderRepository.createTableIfNotExists();
-        xaOrderItemRepository.createTableIfNotExists();
-        xaOrderRepository.truncateTable();
-        xaOrderItemRepository.truncateTable();
-        List<Long> orderIds = new ArrayList<>(10);
+        initTables();
+        List<Long> orderIds = insertData();
+        printData();
+        deleteData(orderIds);
+        printData();
+        cleanTables();
+    }
+    
+    private void initTables() {
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
+        orderRepository.truncateTable();
+        orderItemRepository.truncateTable();
+    }
+    
+    private List<Long> insertData() {
         System.out.println("1.Insert--------------");
+        List<Long> result = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
-            xaOrderRepository.insert(order);
-            long orderId = order.getOrderId();
-            orderIds.add(orderId);
-            
+            orderRepository.insert(order);
             OrderItem item = new OrderItem();
-            item.setOrderId(orderId);
+            item.setOrderId(order.getOrderId());
             item.setUserId(51);
             item.setStatus("INSERT_TEST");
-            xaOrderItemRepository.insert(item);
+            orderItemRepository.insert(item);
+            result.add(order.getOrderId());
         }
-        System.out.println("Order Data--------------");
-        System.out.println(xaOrderRepository.selectAll());
-        System.out.println("OrderItem Data--------------");
-        System.out.println(xaOrderItemRepository.selectAll());
+        return result;
+    }
+    
+    private void deleteData(final List<Long> orderIds) {
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
-            xaOrderRepository.delete(each);
-            xaOrderItemRepository.delete(each);
+            orderRepository.delete(each);
+            orderItemRepository.delete(each);
         }
+    }
+    
+    private void printData() {
         System.out.println("Order Data--------------");
-        System.out.println(xaOrderRepository.selectAll());
+        System.out.println(orderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
-        System.out.println(xaOrderItemRepository.selectAll());
-        xaOrderItemRepository.dropTable();
-        xaOrderRepository.dropTable();
+        System.out.println(orderItemRepository.selectAll());
+    }
+    
+    private void cleanTables() {
+        orderItemRepository.dropTable();
+        orderRepository.dropTable();
     }
 }

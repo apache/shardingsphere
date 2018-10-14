@@ -6,11 +6,11 @@
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
     </resultMap>
-
+    
     <update id="createTableIfNotExists">
         CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));
     </update>
-
+    
     <update id="truncateTable">
         TRUNCATE TABLE t_order;
     </update>
@@ -20,25 +20,14 @@
     </update>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
-        INSERT INTO t_order (
-          user_id, status
-        )
-        VALUES (
-        #{userId,jdbcType=INTEGER},
-        #{status,jdbcType=VARCHAR}
-        )
+        INSERT INTO t_order (user_id, status) VALUES (#{userId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR});
     </insert>
     
     <delete id="delete">
-        DELETE FROM t_order WHERE order_id = #{orderId,jdbcType=INTEGER}
+        DELETE FROM t_order WHERE order_id = #{orderId,jdbcType=INTEGER};
     </delete>
-
+    
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT
-        o.*
-        FROM
-        t_order o, t_order_item i
-        WHERE
-        o.order_id = i.order_id
+        SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id;
     </select>
 </mapper>

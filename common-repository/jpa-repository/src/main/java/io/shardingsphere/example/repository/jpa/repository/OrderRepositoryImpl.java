@@ -50,9 +50,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
     
     @Override
-    public Long insert(final Order entity) {
-        entityManager.persist(entity);
-        return entity.getOrderId();
+    public Long insert(final Order order) {
+        entityManager.persist(order);
+        return order.getOrderId();
     }
     
     @Override

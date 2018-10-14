@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.repository.jpa.entity;
 
-import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.entity.Order;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,18 +27,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "t_order_item")
-public final class JPAOrderItem extends OrderItem {
+@Table(name = "t_order")
+public final class OrderEntity extends Order {
     
     @Id
-    @Column(name = "order_item_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Override
-    public long getOrderItemId() {
-        return super.getOrderItemId();
-    }
-    
     @Column(name = "order_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Override
     public long getOrderId() {
         return super.getOrderId();
@@ -48,5 +42,10 @@ public final class JPAOrderItem extends OrderItem {
     @Override
     public int getUserId() {
         return super.getUserId();
+    }
+    
+    @Column(name = "status")
+    public String getStatus() {
+        return super.getStatus();
     }
 }

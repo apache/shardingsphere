@@ -52,14 +52,14 @@ public final class XaOrderRepository implements OrderRepository {
     }
     
     @Override
-    public Long insert(final Order entity) {
-        insertFailure(entity);
-        return insertSuccess(entity);
+    public Long insert(final Order order) {
+        insertFailure(order);
+        return insertSuccess(order);
     }
     
     @Override
-    public void delete(final Long id) {
-        execute(String.format("DELETE FROM t_order WHERE order_id = %d", id));
+    public void delete(final Long orderId) {
+        execute(String.format("DELETE FROM t_order WHERE order_id = %d", orderId));
     }
     
     @Override
