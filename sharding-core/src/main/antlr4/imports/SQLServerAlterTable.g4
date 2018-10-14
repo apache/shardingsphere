@@ -4,14 +4,16 @@ import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,Bas
 
 alterTable
     : alterTableOp
-    (alterColumn
-    |addColumn
-    |alterDrop
-    |alterCheckConstraint
-    |alterTrigger
-    |alterSwitch
-    |alterSet
-    |tableOption
+    (
+        alterColumn
+        | addColumn
+        | alterDrop
+        | alterCheckConstraint
+        | alterTrigger
+        | alterSwitch
+        | alterSet
+        | tableOption
+        | REBUILD
     )
     ;
     

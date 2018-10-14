@@ -334,6 +334,10 @@ RANGE
     : R A N G E
     ;
 
+REBUILD
+    : R E B U I L D
+    ;
+
 REMOTE_DATA_ARCHIVE
     : R E M O T E UL_ D A T A UL_ A R C H I V E
     ;
