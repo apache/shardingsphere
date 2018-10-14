@@ -9,22 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>raw-jdbc-orche-example</artifactId>
-
+    
     <dependencies>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
-            <version>${sharding-sphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-core</artifactId>
-            <version>${sharding-sphere.version}</version>
-        </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>jdbc-repository</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
         </dependency>
     </dependencies>
 </project>

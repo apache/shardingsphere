@@ -10,32 +10,28 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>spring-namespace-orche-example</artifactId>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>spring-namespace-orche-jpa-example</module>
         <module>spring-namespace-orche-mybatis-example</module>
     </modules>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-spring-namespace</artifactId>
-            <version>${sharding-sphere.version}</version>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
-            <version>${sharding-sphere.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>${spring-framework.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>${spring-framework.version}</version>
         </dependency>
     </dependencies>
 </project>
