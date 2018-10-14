@@ -27,33 +27,21 @@
         </tokens>
     </parser-result>
 
-    <!--<parser-result sql-case-id="drop_index">-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<index-token begin-position="11" original-literals="idx_order_id" table-name="t_order" />-->
-            <!--<table-token begin-position="27" original-literals="t_order" />-->
-        <!--</tokens>-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="drop_index">
+        <tokens>
+            <index-token begin-position="11" original-literals="idx_order_id" />
+        </tokens>
+    </parser-result>
 
-    <!--<parser-result sql-case-id="drop_index_with_space">-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<index-token begin-position="19" original-literals="idx_order_id" table-name="t_order"/>-->
-            <!--<table-token begin-position="47" original-literals="t_order" />-->
-        <!--</tokens>-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="drop_index_with_space">
+        <tokens>
+            <index-token begin-position="23" original-literals="idx_order_id" />
+        </tokens>
+    </parser-result>
 
-    <!--<parser-result sql-case-id="drop_index_with_quota">-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<index-token begin-position="11" original-literals="idx_order_id" table-name="t_order" />-->
-            <!--<table-token begin-position="39" original-literals="t_order" />-->
-        <!--</tokens>-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="drop_index_with_quota">
+        <tokens>
+            <index-token begin-position="11" original-literals="&quot;idx_order_id&quot;" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
