@@ -32,7 +32,7 @@
     <sql-case id="create_table_with_out_of_line_check" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), CONSTRAINT chk_order_id CHECK (id > 0))" />
     <sql-case id="create_table_with_out_of_line_constraints" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE), CHECK (item_id > 0))" />
 
-    <sql-case id="create_table_with_exist_index" value="CREATE TABLE t_order (order_id NUMBER(10) UNIQUE USING INDEX idx_order, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" />
+    <sql-case id="create_table_with_exist_index" value="CREATE TABLE t_order (order_id NUMBER(10) UNIQUE USING INDEX idx_order_id, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" />
     <sql-case id="create_table_with_create_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX (CREATE UNIQUE INDEX uk_order_id ON t_order (order_id)), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" />
 
     <sql-case id="create_table_with_select" value="CREATE TABLE t_order_bak AS SELECT * FROM t_order" />

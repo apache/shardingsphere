@@ -204,7 +204,7 @@
         </tables>
         <tokens>
             <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="61" original-literals="idx_order" table-name="t_order"/>
+            <index-token begin-position="61" original-literals="idx_order_id" table-name="t_order"/>
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
     </parser-result>
