@@ -34,7 +34,3 @@ shardingRule:
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-
-  props:
-    sql.show: true
-#    proxy.transaction.enabled: false
