@@ -21,9 +21,9 @@
     <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order ADD CONSTRAINT uk_order_id UNIQUE (order_id)" />
     <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
     <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" />
-    <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order ADD PRIMARY KEY (order_id) ADD UNIQUE (order_id), CHECK (order_id > 0), ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
+    <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) ADD UNIQUE (order_id), CHECK (order_id > 0), ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
     <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id" />
-    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT fk_order_id" />
+    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT idx_order_id" />
     <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT idx_order_id_bak TO idx_order_id" />
 
     <sql-case id="create_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX idx_order_id" />

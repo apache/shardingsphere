@@ -21,7 +21,7 @@
     <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order ADD CONSTRAINT uk_order_id UNIQUE (order_id)" />
     <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE" />
     <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" />
-    <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" />
+    <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" />
     <sql-case id="alter_table_drop_primary_key" value="ALTER TABLE t_order DROP PRIMARY KEY" />
     <sql-case id="alter_table_drop_unique_key" value="ALTER TABLE t_order DROP UNIQUE (order_id)" />
     <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT idx_order_id" />
