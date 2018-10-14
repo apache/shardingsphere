@@ -54,7 +54,7 @@ nullNotnull
     ;
 
 primaryKey
-	: PRIMARY KEY
+	: PRIMARY? KEY
 	;
 
 matchNone

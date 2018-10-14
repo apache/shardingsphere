@@ -21,15 +21,15 @@ dataTypeOption
     | DEFAULT? defaultValue
     | AUTO_INCREMENT
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
-    | STORAGE (DISK|MEMORY|DEFAULT)
+    | STORAGE (DISK | MEMORY | DEFAULT)
     | referenceDefinition
     ;
 
 dataTypeGeneratedOption
     : nullNotnull
-    | (UNIQUE KEY?)
-    | (PRIMARY? KEY)
-    | (COMMENT STRING)
+    | UNIQUE KEY?
+    | primaryKey
+    | COMMENT STRING
     ;
 
 defaultValue
