@@ -12,6 +12,12 @@
     
     <dependencies>
         <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>repository-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
             <artifactId>hibernate-jpa-2.1-api</artifactId>
         </dependency>
@@ -30,11 +36,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>repository-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
