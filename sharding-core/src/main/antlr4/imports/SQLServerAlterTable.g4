@@ -68,12 +68,12 @@ columnNameWithSortsWithParen
     ;
     
 columnNameWithSort
-    : columnName(ASC | DESC)?
+    : columnName (ASC | DESC)?
     ;
 
 columnIndex 
     : indexWithName
-    ( CLUSTERED | NONCLUSTERED )?  
+    (CLUSTERED | NONCLUSTERED)?
     HASH withBucket  
     ;
         
@@ -91,10 +91,10 @@ columnNameGenerated
 alterDrop
     : DROP 
     (
-        |alterTableDropConstraint
-        |dropColumn
-        |alterDropIndex
-        |(PERIOD FOR SYSTEM_TIME)
+        | alterTableDropConstraint
+        | dropColumn
+        | alterDropIndex
+        | PERIOD FOR SYSTEM_TIME
     )
     ;
     
@@ -113,10 +113,9 @@ dropConstraintWithClause
 
 dropConstraintOption   
     : (   
-        (MAXDOP EQ_OR_ASSIGN NUMBER ) 
-      | (ONLINE EQ_OR_ASSIGN ( ON | OFF ))  
-      | (MOVE TO   
-         ( schemaName LEFT_PAREN columnName RIGHT_PAREN | fileGroup | STRING ) ) 
+          MAXDOP EQ_OR_ASSIGN NUMBER
+          | ONLINE EQ_OR_ASSIGN ( ON | OFF )
+          | MOVE TO (schemaName LEFT_PAREN columnName RIGHT_PAREN | fileGroup | STRING)
     )
     ;  
  
@@ -150,7 +149,7 @@ alterSet
     LEFT_PAREN  
     (
         setFileStreamClause
-        |setSystemVersionClause
+        | setSystemVersionClause
     ) 
     RIGHT_PAREN 
     ; 
@@ -163,7 +162,7 @@ setSystemVersionClause
     : SYSTEM_VERSIONING EQ_OR_ASSIGN   
     (   
         OFF   
-       |alterSetOnClause 
+       | alterSetOnClause
     ) 
     ;
     
@@ -183,8 +182,8 @@ alterSetOnClause
 tableIndex
     : indexWithName 
     (
-      indexNonClusterClause 
-      |indexClusterClause
+        indexNonClusterClause
+        | indexClusterClause
     )
     ;
 
