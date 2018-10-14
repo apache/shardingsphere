@@ -132,25 +132,25 @@
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id" />
     </parser-result>
 
-    <!--<parser-result sql-case-id="create_table_with_out_of_line_primary_key">-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token begin-position="13" original-literals="t_order" />-->
-        <!--</tokens>-->
-        <!--<meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id" />-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="create_table_with_out_of_line_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_order" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id" />
+    </parser-result>
 
-    <!--<parser-result sql-case-id="create_table_with_out_of_line_composite_primary_key">-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token begin-position="13" original-literals="t_order" />-->
-        <!--</tokens>-->
-        <!--<meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id,user_id,status" />-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="create_table_with_out_of_line_composite_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_order" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id,user_id,status" />
+    </parser-result>
 
     <parser-result sql-case-id="create_table_with_out_of_line_unique_key">
         <tables>

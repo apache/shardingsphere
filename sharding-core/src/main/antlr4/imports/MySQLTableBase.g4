@@ -74,7 +74,7 @@ constraintDefinition
     ;
 
 primaryKeyOption
-    : primaryKey indexType? keyPartsWithParen indexOption*
+    : primaryKey indexType? columnList indexOption*
     ;
 
 uniqueOption
