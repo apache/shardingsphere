@@ -36,6 +36,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -196,7 +197,17 @@ public final class GlobalRegistry {
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            entry.getValue().getBackendDataSource().setAvailableDataSources(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(entry.getKey()));
+            entry.getValue().getBackendDataSource().setAvailableDataSources(getDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap(), entry));
         }
     }
+    
+    private Collection<String> getDisabledDataSourceNames(final Map<String, Collection<String>> disabledSchemaDataSourceMap, final Entry<String, ShardingSchema> shardingSchema) {
+        Collection<String> result = new LinkedList<>();
+        if (disabledSchemaDataSourceMap.containsKey(shardingSchema.getKey())) {
+            result.addAll(disabledSchemaDataSourceMap.get(shardingSchema.getKey()));
+        }
+        return result;
+    }
 }
+
+
