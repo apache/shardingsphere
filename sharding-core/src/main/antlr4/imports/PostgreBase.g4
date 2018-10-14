@@ -57,7 +57,7 @@ columnConstraintOption
     | UNIQUE indexParameters
     | primaryKey indexParameters
     | REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)?
-     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? (ON UPDATE action)?
+     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
     ;
 
 checkOption
