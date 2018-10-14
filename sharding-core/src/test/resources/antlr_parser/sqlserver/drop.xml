@@ -27,16 +27,16 @@
         </tokens>
     </parser-result>
 
-    <!--<parser-result sql-case-id="drop_tables">-->
-        <!--<tables>-->
-            <!--<table name="t_order_item" />-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token begin-position="11" original-literals="t_order_item" />-->
-            <!--<table-token begin-position="25" original-literals="t_order" />-->
-        <!--</tokens>-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="drop_tables">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="11" original-literals="t_order_item" />
+            <table-token begin-position="25" original-literals="t_order" />
+        </tokens>
+    </parser-result>
 
     <parser-result sql-case-id="drop_table_if_exists">
         <tables>

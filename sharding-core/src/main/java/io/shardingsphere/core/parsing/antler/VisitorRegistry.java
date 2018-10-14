@@ -56,6 +56,7 @@ public final class VisitorRegistry {
         
         
         visitors.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
+        visitors.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());
         visitors.put(DatabaseType.SQLServer + "AlterIndex", new IndexWithTableStatementVisitor());
         
