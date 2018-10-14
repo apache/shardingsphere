@@ -35,13 +35,19 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     private EntityManager entityManager;
     
     @Override
-    public void createTableIfNotExists() {}
+    public void createTableIfNotExists() {
+        throw new UnsupportedOperationException("createTableIfNotExists for JPA");
+    }
     
     @Override
-    public void truncateTable() {}
+    public void truncateTable() {
+        throw new UnsupportedOperationException("truncateTable for JPA");
+    }
     
     @Override
-    public void dropTable() {}
+    public void dropTable() {
+        throw new UnsupportedOperationException("dropTable for JPA");
+    }
     
     @Override
     public Long insert(final OrderItem entity) {
