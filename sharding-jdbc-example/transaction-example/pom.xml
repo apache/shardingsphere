@@ -10,6 +10,10 @@
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-transaction</artifactId>
         </dependency>
         <dependency>

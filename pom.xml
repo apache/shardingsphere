@@ -22,7 +22,6 @@
         <spring-framework.version>4.3.6.RELEASE</spring-framework.version>
         <spring-boot.version>1.5.0.RELEASE</spring-boot.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
-        <hikari-cp.version>2.4.11</hikari-cp.version>
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -144,19 +143,9 @@
             <version>${commons-dbcp.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java7</artifactId>
-            <version>${hikari-cp.version}</version>
-        </dependency>
-        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql-connector-java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
