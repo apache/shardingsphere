@@ -5,7 +5,7 @@
         <artifactId>sharding-jdbc-example</artifactId>
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
-    <artifactId>raw-jdbc-example</artifactId>
+    <artifactId>raw-jdbc-nodep-example</artifactId>
     
     <dependencies>
         <dependency>
