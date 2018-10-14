@@ -209,5 +209,3 @@ public final class GlobalRegistry {
         return result;
     }
 }
-
-
