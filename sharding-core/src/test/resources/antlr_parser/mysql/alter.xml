@@ -1,21 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets namespace="mysql.ddl.alter">
-    <parser-result sql-case-id="mysql_alter_index_rename">
-        <tokens>
-            <index-token begin-position="12" original-literals="idx_id" />
-            <index-token begin-position="29" original-literals="idx_id" />
-        </tokens>
-    </parser-result>
-    
-    <parser-result sql-case-id="mysql_alter_table_drop_index">
+    <parser-result sql-case-id="alter_table">
         <tables>
-            <table name="t_log" />
+            <table name="t_order" />
         </tables>
-
         <tokens>
-            <table-token begin-position="12" original-literals="t_log" />
-            <index-token begin-position="29" original-literals="idx_id" table-name="t_log" />
+            <table-token begin-position="12" original-literals="t_order" />
         </tokens>
     </parser-result>
-    
+
+    <parser-result sql-case-id="alter_table_with_space">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="24" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="alter_table_with_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="&quot;t_order&quot;" />
+        </tokens>
+    </parser-result>
+
+    <!--<parser-result sql-case-id="alter_table_rename">-->
+        <!--<tables>-->
+            <!--<table name="t_order_bak" />-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token begin-position="12" original-literals="t_order_bak" />-->
+            <!--<table-token begin-position="34" original-literals="t_order" />-->
+        <!--</tokens>-->
+    <!--</parser-result>-->
 </parser-result-sets>

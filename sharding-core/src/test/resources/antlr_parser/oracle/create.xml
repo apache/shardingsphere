@@ -183,9 +183,32 @@
         </tables>
         <tokens>
             <table-token begin-position="13" original-literals="t_order_item" />
-            <table-token begin-position="272" original-literals="t_order" />
+            <table-token begin-position="250" original-literals="t_order" />
         </tokens>
         <meta column-names="item_id,order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="item_id" />
+    </parser-result>
+
+    <parser-result sql-case-id="create_table_with_exist_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_order" />
+            <index-token begin-position="61" original-literals="idx_order" table-name="t_order"/>
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
+    </parser-result>
+
+    <parser-result sql-case-id="create_table_with_create_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_order" />
+            <index-token begin-position="87" original-literals="uk_order_id" table-name="t_order"/>
+            <table-token begin-position="102" original-literals="t_order" />
+        </tokens>
+        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="order_id" />
     </parser-result>
 
     <!--<parser-result sql-case-id="create_table_with_select">-->
@@ -199,29 +222,6 @@
         <!--</tokens>-->
         <!--<meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />-->
     <!--</parser-result>-->
-
-    <parser-result sql-case-id="create_table_with_exist_index">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="61" original-literals="idx_order" table-name="t_order"/>
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" />
-    </parser-result>
-    
-    <parser-result sql-case-id="create_table_with_create_index">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="87" original-literals="uk_id" table-name="t_order"/>
-            <table-token begin-position="96" original-literals="t_order" />
-        </tokens>
-        <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="NUMBER,NUMBER,VARCHAR2,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="order_id" />
-    </parser-result>
     
     <parser-result sql-case-id="create_index">
         <tables>
