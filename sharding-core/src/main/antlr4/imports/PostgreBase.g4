@@ -69,16 +69,19 @@ defaultExpr
     | expr;
 
 sequenceOptions:
-    sequenceOption
-    (START WITH? NUMBER)?
-    (CACHE NUMBER)?
-    (NO? CYCLE)?
+    sequenceOption+
     ;
 
 sequenceOption
-    : (INCREMENT BY? NUMBER)?
-    (MINVALUE NUMBER | NO MINVALUE)?
-    (MAXVALUE NUMBER | NO MAXVALUE)?
+    : START WITH? NUMBER
+    | INCREMENT BY? NUMBER
+    | MAXVALUE NUMBER
+    | NO MAXVALUE
+    | MINVALUE NUMBER
+    | NO MINVALUE
+    | CYCLE
+    | NO CYCLE
+    | CACHE NUMBER
     ;
 
 indexParameters

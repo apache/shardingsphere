@@ -54,13 +54,14 @@ referencesClause
     ;
     
 constraintState:
-    (notDeferrable
-    |initiallyClause
-    |( RELY | NORELY )
-    |( usingIndexClause )
-    |( ENABLE | DISABLE )
-    |( VALIDATE | NOVALIDATE )
-    |exceptionsClause
+    (
+        notDeferrable
+        | initiallyClause
+        | (RELY | NORELY)
+        | usingIndexClause
+        | (ENABLE | DISABLE)
+        | (VALIDATE | NOVALIDATE)
+        | exceptionsClause
     )+
     ;
 
