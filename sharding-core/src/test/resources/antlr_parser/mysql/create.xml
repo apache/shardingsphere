@@ -184,17 +184,17 @@
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
 
-    <!--<parser-result sql-case-id="create_table_with_out_of_line_constraints">-->
-        <!--<tables>-->
-            <!--<table name="t_order_item" />-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token begin-position="13" original-literals="t_order_item" />-->
-            <!--<table-token begin-position="225" original-literals="t_order" />-->
-        <!--</tokens>-->
-        <!--<meta column-names="item_id,order_id,user_id,status,column1,column2,column3" column-types="INT,INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id" />-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="create_table_with_out_of_line_constraints">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="13" original-literals="t_order_item" />
+            <table-token begin-position="225" original-literals="t_order" />
+        </tokens>
+        <meta column-names="item_id,order_id,user_id,status,column1,column2,column3" column-types="INT,INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="item_id" />
+    </parser-result>
 
     <parser-result sql-case-id="create_table_with_out_of_line_index">
         <tables>
