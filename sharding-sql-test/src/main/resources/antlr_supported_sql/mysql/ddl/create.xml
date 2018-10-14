@@ -32,7 +32,6 @@
     <sql-case id="create_table_with_out_of_line_constraints" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, CHECK (item_id > 0))" />
 
     <sql-case id="create_table_with_out_of_line_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX idx_order_id (order_id))" />
-    <sql-case id="create_table_with_out_of_line_fulltext_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), FULLTEXT INDEX idx_column1 (column1))" />
     <sql-case id="create_table_with_out_of_line_composite_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX idx_order_id_user_id_status (order_id, user_id, status))" />
 
     <sql-case id="create_table_select" value="CREATE TABLE t_order_bak AS SELECT * FROM t_order" />

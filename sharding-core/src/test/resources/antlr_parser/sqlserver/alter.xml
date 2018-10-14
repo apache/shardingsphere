@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="sqlserver.ddl.alter">
+    <parser-result sql-case-id="alter_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="alter_table_with_space">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="24" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="alter_table_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="[t_order]" />
+        </tokens>
+    </parser-result>
+</parser-result-sets>
