@@ -1,3 +1,5 @@
+schemaName: sharding_db
+
 dataSources:
   ds_0:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0

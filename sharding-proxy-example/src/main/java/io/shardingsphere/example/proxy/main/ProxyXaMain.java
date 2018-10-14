@@ -20,7 +20,6 @@ package io.shardingsphere.example.proxy.main;
 import io.shardingsphere.example.repository.jdbc.repository.XaOrderItemRepository;
 import io.shardingsphere.example.repository.jdbc.repository.XaOrderRepository;
 import io.shardingsphere.example.repository.jdbc.service.XaDemoService;
-import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
 
@@ -30,21 +29,13 @@ import javax.sql.DataSource;
  * 3. Please make sure sharding-proxy is running before you run this example.
  */
 public class ProxyXaMain {
+    
     private static final String PROXY_IP = "localhost";
     
     private static final int PROXY_PORT = 3307;
     
     public static void main(final String[] args) {
-        DataSource dataSource = createDataSource();
+        DataSource dataSource = DataSourceUtil.createDataSource(PROXY_IP, PROXY_PORT);
         new XaDemoService(new XaOrderRepository(dataSource), new XaOrderItemRepository(dataSource)).demo();
-    }
-    
-    private static DataSource createDataSource() {
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
-        result.setUrl(String.format("jdbc:mysql://%s:%d/sharding_db?useServerPrepStmts=true&cachePrepStmts=true", PROXY_IP, PROXY_PORT));
-        result.setUsername("root");
-        result.setPassword("root");
-        return result;
     }
 }
