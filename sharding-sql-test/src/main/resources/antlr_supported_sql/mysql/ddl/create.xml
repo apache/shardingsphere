@@ -14,6 +14,7 @@
     <sql-case id="create_temporary_table" value="CREATE TEMPORARY TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
     <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
 
+    <sql-case id="create_table_with_default" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
     <sql-case id="create_table_with_increment" value="CREATE TABLE t_order (order_id INT AUTO_INCREMENT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
     <sql-case id="create_table_with_comment" value="CREATE TABLE t_order (order_id INT COMMENT 'order_id', user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
     <sql-case id="create_table_with_generated" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10) GENERATED ALWAYS AS (UPPER(status)), column2 VARCHAR(10), column3 VARCHAR(10))" />
