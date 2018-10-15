@@ -12,8 +12,8 @@ alterSpecifications
 
 alterSpecification
     : tableOptions
-    | ADD COLUMN? (singleColumn | multiColumn)
-    | ADD indexDefinition
+    | addColumn
+    | addIndex
     | addConstraint
     | ALGORITHM EQ_OR_ASSIGN? (DEFAULT | INPLACE|COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
@@ -66,7 +66,15 @@ multiColumn
 addConstraint
     : ADD constraintDefinition
     ;
-
+    
+addIndex
+    : ADD indexDefinition
+    ;
+ 
+addColumn
+    : ADD COLUMN? (singleColumn | multiColumn)
+    ;   
+    
 changeColumn
     : changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;

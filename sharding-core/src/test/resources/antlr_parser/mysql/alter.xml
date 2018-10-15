@@ -18,23 +18,335 @@
         </tokens>
     </parser-result>
 
-    <parser-result sql-case-id="alter_table_with_quota">
+    <parser-result sql-case-id="alter_table_with_back_quota">
         <tables>
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="&quot;t_order&quot;" />
+            <table-token begin-position="12" original-literals="`t_order`" />
         </tokens>
     </parser-result>
 
-    <!--<parser-result sql-case-id="alter_table_rename">-->
-        <!--<tables>-->
-            <!--<table name="t_order_bak" />-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token begin-position="12" original-literals="t_order_bak" />-->
-            <!--<table-token begin-position="34" original-literals="t_order" />-->
-        <!--</tokens>-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="alter_table_rename">
+        <tables>
+            <table name="t_order_bak" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_bak" />
+            <table-token begin-position="34" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<add-columns>
+        		<add-column name="column4" type="VARCHAR" length="10"/>
+        	</add-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_column_with_after">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<add-columns>
+        		<add-column name="column4" type="VARCHAR" length="10"/>
+        	</add-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_columns">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<add-columns>
+        		<add-column name="column4" type="VARCHAR" length="10"/>
+        		<add-column name="column5" type="VARCHAR" length="10"/>
+        		<add-column name="column6" type="VARCHAR" length="10"/>
+        	</add-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_modify_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<update-columns>
+        		<update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
+        	</update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_modify_columns">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<update-columns>
+        		<update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
+        		<update-column origin-column-name="column5" name="column5" type="VARCHAR" length="20"/>
+        		<update-column origin-column-name="column6" name="column6" type="VARCHAR" length="20"/>
+        	</update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table drop-columns="column4"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_columns">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table drop-columns="column4,column5,column6"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_change_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<update-columns>
+        		<update-column origin-column-name="column4_bak" name="column4" type="VARCHAR" length="10"/>
+        	</update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<update-columns>
+        		<update-column origin-column-name="order_id" name="order_id" primary-key="true"/>
+        	</update-columns>
+        </alter-table>
+    </parser-result>
+    
+    
+    <parser-result sql-case-id="alter_table_add_composite_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<update-columns>
+        		<update-column origin-column-name="order_id" name="order_id" primary-key="true"/>
+        		<update-column origin-column-name="user_id" name="user_id" primary-key="true"/>
+        		<update-column origin-column-name="status" name="status" primary-key="true"/>
+        	</update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_unique_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_foreign_key">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token begin-position="86" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_constraints">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token begin-position="113" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table>
+        	<update-columns>
+        		<update-column origin-column-name="order_id" name="order_id" primary-key="true"/>
+        	</update-columns>
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_primary_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <alter-table drop-primary-key="true"/>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_foreign_key">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_constraints">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <alter-table drop-primary-key="true"/>
+    </parser-result>
+    
+    
+    <parser-result sql-case-id="alter_table_add_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="30" original-literals="idx_order_id" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    
+    <parser-result sql-case-id="alter_table_add_fulltext_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="39" original-literals="idx_column1" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_composite_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="30" original-literals="idx_order_id_user_id_status" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_add_indexes">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="30" original-literals="idx_column1" table-name="t_order"/>
+            <index-token begin-position="63" original-literals="idx_column2" table-name="t_order"/>
+            <index-token begin-position="96" original-literals="idx_column3" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    
+    <parser-result sql-case-id="alter_table_drop_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="31" original-literals="idx_order_id" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_drop_indexes">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="31" original-literals="idx_column1" table-name="t_order"/>
+            <index-token begin-position="55" original-literals="idx_column2" table-name="t_order"/>
+            <index-token begin-position="79" original-literals="idx_column3" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_rename_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+            <index-token begin-position="33" original-literals="idx_column1_bak" table-name="t_order"/>
+            <index-token begin-position="52" original-literals="idx_column1" table-name="t_order"/>
+        </tokens>
+    </parser-result>
+    
 </parser-result-sets>
