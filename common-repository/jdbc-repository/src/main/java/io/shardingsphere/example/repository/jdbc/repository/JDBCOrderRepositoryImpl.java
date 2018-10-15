@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.repository.jdbc.repository;
 
-import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.repository.OrderRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,18 +29,17 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class RawOrderItemRepository implements OrderItemRepository {
+public final class JDBCOrderRepositoryImpl implements OrderRepository {
     
     private final DataSource dataSource;
     
-    public RawOrderItemRepository(final DataSource dataSource) {
+    public JDBCOrderRepositoryImpl(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
     
     @Override
     public void createTableIfNotExists() {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order_item "
-                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_item_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -50,7 +49,7 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     
     @Override
     public void dropTable() {
-        String sql = "DROP TABLE t_order_item";
+        String sql = "DROP TABLE t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -60,7 +59,7 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     
     @Override
     public void truncateTable() {
-        String sql = "TRUNCATE TABLE t_order_item";
+        String sql = "TRUNCATE TABLE t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -69,49 +68,47 @@ public final class RawOrderItemRepository implements OrderItemRepository {
     }
     
     @Override
-    public Long insert(final OrderItem orderItem) {
-        String sql = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
+    public Long insert(final Order order) {
+        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, orderItem.getOrderId());
-            preparedStatement.setLong(2, orderItem.getUserId());
-            preparedStatement.setString(3, orderItem.getStatus());
+            preparedStatement.setLong(1, order.getUserId());
+            preparedStatement.setString(2, order.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
-                    orderItem.setOrderItemId(resultSet.getLong(1));
+                    order.setOrderId(resultSet.getLong(1));
                 }
             }
         } catch (final SQLException ignored) {
         }
-        return orderItem.getOrderItemId();
+        return order.getOrderId();
     }
     
     @Override
-    public void delete(final Long orderItemId) {
-        String sql = "DELETE FROM t_order_item WHERE order_item_id=?";
+    public void delete(final Long orderId) {
+        String sql = "DELETE FROM t_order WHERE order_id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, orderItemId);
-            preparedStatement.executeUpdate(sql);
+            preparedStatement.setLong(1, orderId);
+            preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public List<OrderItem> selectAll() {
-        List<OrderItem> result = new LinkedList<>();
-        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
+    public List<Order> selectAll() {
+        List<Order> result = new LinkedList<>();
+        String sql = "SELECT * FROM t_order";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setOrderItemId(resultSet.getLong(1));
-                orderItem.setOrderId(resultSet.getLong(2));
-                orderItem.setUserId(resultSet.getInt(3));
-                orderItem.setStatus(resultSet.getString(4));
-                result.add(orderItem);
+                Order order = new Order();
+                order.setOrderId(resultSet.getLong(1));
+                order.setUserId(resultSet.getInt(2));
+                order.setStatus(resultSet.getString(3));
+                result.add(order);
             }
         } catch (final SQLException ignored) {
         }

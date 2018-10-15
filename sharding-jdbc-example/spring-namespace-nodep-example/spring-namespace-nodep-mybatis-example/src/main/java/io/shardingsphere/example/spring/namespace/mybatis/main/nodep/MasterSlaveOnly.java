@@ -17,7 +17,8 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.main.nodep;
 
-import io.shardingsphere.example.repository.mybatis.service.DemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -28,8 +29,10 @@ public class MasterSlaveOnly {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/masterSlave.xml")) {
-            DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
+            commonService.initEnvironment();
+            commonService.processSuccess();
+            commonService.cleanEnvironment();
         }
     }
 }

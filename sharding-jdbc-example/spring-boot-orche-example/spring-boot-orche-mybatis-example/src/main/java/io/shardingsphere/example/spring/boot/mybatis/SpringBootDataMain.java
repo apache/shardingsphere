@@ -17,7 +17,8 @@
 
 package io.shardingsphere.example.spring.boot.mybatis;
 
-import io.shardingsphere.example.repository.mybatis.service.DemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +34,10 @@ public class SpringBootDataMain {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
-            applicationContext.getBean(DemoService.class).demo();
+            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
+            commonService.initEnvironment();
+            commonService.processSuccess();
+            commonService.cleanEnvironment();
         }
     }
 }

@@ -17,8 +17,9 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.main.orche.etcd;
 
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import io.shardingsphere.example.repository.jpa.service.DemoService;
 
 public class ShardingOnlyWithDatabasesAndTables {
     
@@ -27,8 +28,8 @@ public class ShardingOnlyWithDatabasesAndTables {
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/etcd/cloud/shardingDatabasesTables.xml" : "META-INF/orche/etcd/local/shardingDatabasesTables.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
-            DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            commonService.processSuccess();
         }
     }
 }

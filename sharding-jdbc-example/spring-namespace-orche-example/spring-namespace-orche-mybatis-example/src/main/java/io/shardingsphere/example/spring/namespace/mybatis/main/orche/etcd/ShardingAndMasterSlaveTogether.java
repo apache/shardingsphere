@@ -17,7 +17,8 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.main.orche.etcd;
 
-import io.shardingsphere.example.repository.mybatis.service.DemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /*
@@ -30,8 +31,10 @@ public class ShardingAndMasterSlaveTogether {
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/etcd/cloud/shardingMasterSlave.xml" : "META-INF/orche/etcd/local/shardingMasterSlave.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
-            DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
+            commonService.initEnvironment();
+            commonService.processSuccess();
+            commonService.cleanEnvironment();
         }
     }
 }

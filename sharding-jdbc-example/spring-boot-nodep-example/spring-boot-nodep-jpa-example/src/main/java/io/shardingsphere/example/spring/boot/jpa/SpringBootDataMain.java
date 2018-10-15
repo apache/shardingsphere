@@ -17,7 +17,8 @@
 
 package io.shardingsphere.example.spring.boot.jpa;
 
-import io.shardingsphere.example.repository.jpa.service.DemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -31,7 +32,8 @@ public class SpringBootDataMain {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
-            applicationContext.getBean(DemoService.class).demo();
+            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            commonService.processSuccess();
         }
     }
 }

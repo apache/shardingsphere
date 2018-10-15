@@ -21,9 +21,10 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.example.jdbc.util.DataSourceUtil;
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -36,7 +37,10 @@ public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
+        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
     }
     
     private static DataSource getDataSource() throws SQLException {

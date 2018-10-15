@@ -29,7 +29,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class OrderItemRepositoryImpl implements OrderItemRepository {
+public class JPAOrderItemRepositoryImpl implements OrderItemRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
@@ -57,7 +57,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     
     @Override
     public void delete(final Long orderItemId) {
-        Query query = entityManager.createQuery("DELETE FROM JPAOrderItem i WHERE i.orderItemId = ?1 AND i.userId = 51");
+        Query query = entityManager.createQuery("DELETE FROM OrderItemEntity i WHERE i.orderItemId = ?1 AND i.userId = 51");
         query.setParameter(1, orderItemId);
         query.executeUpdate();
     }
@@ -65,6 +65,6 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @SuppressWarnings("unchecked")
     @Override
     public List<OrderItem> selectAll() {
-        return (List<OrderItem>) entityManager.createQuery("SELECT i FROM JPAOrder o, JPAOrderItem i WHERE o.orderId = i.orderId").getResultList();
+        return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId").getResultList();
     }
 }

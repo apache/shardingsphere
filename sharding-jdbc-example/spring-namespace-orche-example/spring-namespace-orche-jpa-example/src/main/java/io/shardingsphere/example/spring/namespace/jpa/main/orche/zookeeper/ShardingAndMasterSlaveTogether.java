@@ -17,8 +17,9 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.main.orche.zookeeper;
 
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import io.shardingsphere.example.repository.jpa.service.DemoService;
 
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -30,8 +31,8 @@ public class ShardingAndMasterSlaveTogether {
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingMasterSlave.xml" : "META-INF/orche/zookeeper/local/shardingMasterSlave.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
-            DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            commonService.processSuccess();
         }
     }
 }

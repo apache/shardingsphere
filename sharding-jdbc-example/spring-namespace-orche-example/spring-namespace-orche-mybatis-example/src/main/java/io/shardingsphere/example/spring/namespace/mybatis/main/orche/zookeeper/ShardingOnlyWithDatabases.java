@@ -17,7 +17,8 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.main.orche.zookeeper;
 
-import io.shardingsphere.example.repository.mybatis.service.DemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithDatabases {
@@ -27,8 +28,10 @@ public class ShardingOnlyWithDatabases {
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingDatabases.xml" : "META-INF/orche/zookeeper/local/shardingDatabases.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
-            DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
+            commonService.initEnvironment();
+            commonService.processSuccess();
+            commonService.cleanEnvironment();
         }
     }
 }

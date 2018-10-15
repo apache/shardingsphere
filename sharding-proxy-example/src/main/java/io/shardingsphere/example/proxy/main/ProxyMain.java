@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.proxy.main;
 
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 
 import javax.sql.DataSource;
 
@@ -35,6 +35,9 @@ public final class ProxyMain {
     
     public static void main(final String[] args) {
         DataSource dataSource = DataSourceUtil.createDataSource(PROXY_IP, PROXY_PORT);
-        new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
+        RawPojoService pojoService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+        pojoService.initEnvironment();
+        pojoService.processSuccess();
+        pojoService.cleanEnvironment();
     }
 }

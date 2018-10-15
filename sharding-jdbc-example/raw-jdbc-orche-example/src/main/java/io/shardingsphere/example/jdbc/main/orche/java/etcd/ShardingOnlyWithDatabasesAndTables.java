@@ -23,9 +23,10 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.jdbc.fixture.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.jdbc.util.DataSourceUtil;
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
-import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
-import io.shardingsphere.example.repository.jdbc.service.RawDemoService;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
@@ -46,7 +47,10 @@ public class ShardingOnlyWithDatabasesAndTables {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
-        new RawDemoService(new RawOrderRepository(dataSource), new RawOrderItemRepository(dataSource)).demo();
+        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
         ((OrchestrationShardingDataSource) dataSource).close();
     }
     

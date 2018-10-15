@@ -17,16 +17,17 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.main.nodep;
 
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import io.shardingsphere.example.repository.jpa.service.DemoService;
 
 public class MasterSlaveOnly {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/masterSlave.xml")) {
-            DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            commonService.processSuccess();
         }
     }
 }

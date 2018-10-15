@@ -28,6 +28,6 @@
     </delete>
     
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id;
+        SELECT * FROM t_order;
     </select>
 </mapper>
