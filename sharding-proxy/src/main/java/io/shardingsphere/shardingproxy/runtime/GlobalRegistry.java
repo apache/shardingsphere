@@ -213,18 +213,13 @@ public final class GlobalRegistry {
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(entry.getKey(), disabledStateEventBusEvent.getDisabledSchemaDataSourceMap());
+            DisabledStateEventBusEvent disabledEvent = new DisabledStateEventBusEvent(getDisabledDataSourceNames(entry.getKey(), =disabledStateEventBusEvent.getDisabledSchemaDataSourceMap());
             if (entry.getValue().isMasterSlaveOnly()) {
                 renewShardingSchemaWithMasterSlaveRule(entry.getValue(), disabledEvent);
             } else {
                 renewShardingSchemaWithShardingRule(entry.getValue(), disabledEvent);
             }
         }
-    }
-    
-    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(shardingSchemaName, disabledSchemaDataSourceMap);
-        return new DisabledStateEventBusEvent(disabledDataSourceNames);
     }
     
     private Collection<String> getDisabledDataSourceNames(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
