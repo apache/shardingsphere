@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-public final class MasterSlaveRule {
+public class MasterSlaveRule {
     
     private final String name;
     
