@@ -62,7 +62,7 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateKeyColumn() {
-        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", false);
+        Object shardingContext = FieldValueUtil.getFieldValue(shardingDataSource, "shardingContext", true);
         assertNotNull(shardingContext);
         Object shardingRule = FieldValueUtil.getFieldValue(shardingContext, "shardingRule");
         assertNotNull(shardingRule);
