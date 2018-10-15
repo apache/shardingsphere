@@ -103,11 +103,15 @@ public final class GlobalRegistry {
      * @param schemaRules schema rule map
      */
     public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules) {
+    
+    }
+    
+    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules, final boolean isUsingOrchestration) {
         initServerConfiguration(serverConfig);
         for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue()));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingOrchestration));
         }
     }
     
