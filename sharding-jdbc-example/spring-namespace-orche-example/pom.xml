@@ -19,6 +19,12 @@
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
+            <artifactId>common-sharding-algorithm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-spring-namespace</artifactId>
         </dependency>
         <dependency>

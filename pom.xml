@@ -9,6 +9,7 @@
         <module>common-repository</module>
         <module>sharding-jdbc-example</module>
         <module>sharding-proxy-example</module>
+        <module>common-sharding-algorithm</module>
     </modules>
     
     <properties>
@@ -42,6 +43,11 @@
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-core</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>

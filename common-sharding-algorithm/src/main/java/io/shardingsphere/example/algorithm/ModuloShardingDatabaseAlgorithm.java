@@ -15,18 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.fixture.algorithm;
+package io.shardingsphere.example.algorithm;
 
 import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 
-public class ModuloShardingTableAlgorithm implements PreciseShardingAlgorithm<Long> {
+public class ModuloShardingDatabaseAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
     @Override
-    public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Long> shardingValue) {
-        for (String each : tableNames) {
+    public String doSharding(final Collection<String> databaseNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : databaseNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;
             }

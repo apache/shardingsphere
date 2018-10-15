@@ -13,6 +13,11 @@
             <artifactId>jdbc-repository</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>common-sharding-algorithm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>io.shardingsphere</groupId>
