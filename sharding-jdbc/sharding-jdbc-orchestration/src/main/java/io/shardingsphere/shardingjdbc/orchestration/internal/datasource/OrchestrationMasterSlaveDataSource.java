@@ -30,7 +30,7 @@ import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.shardingjdbc.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
