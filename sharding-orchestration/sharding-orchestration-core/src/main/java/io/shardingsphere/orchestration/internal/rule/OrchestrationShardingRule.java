@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.orchestration.internal.rule;
+package io.shardingsphere.orchestration.internal.rule;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
