@@ -34,21 +34,21 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Override
     public void processFailure() {
-        processSuccess();
+        insertData();
         throw new RuntimeException("Exception occur for transaction test.");
     }
     
     private List<Long> insertData() {
         System.out.println("1.Insert--------------");
         List<Long> result = new ArrayList<>(10);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             Order order = newOrder();
-            order.setUserId(1001);
+            order.setUserId(i);
             order.setStatus("INSERT_TEST");
             getOrderRepository().insert(order);
             OrderItem item = newOrderItem();
             item.setOrderId(order.getOrderId());
-            item.setUserId(1001);
+            item.setUserId(i);
             item.setStatus("INSERT_TEST");
             getOrderItemRepository().insert(item);
             result.add(order.getOrderId());
