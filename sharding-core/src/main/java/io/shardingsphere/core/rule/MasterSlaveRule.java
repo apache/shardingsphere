@@ -42,6 +42,8 @@ public class MasterSlaveRule {
     
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    
     public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         Preconditions.checkNotNull(config.getName(), "Master-slave rule name cannot be null.");
         Preconditions.checkNotNull(config.getMasterDataSourceName(), "Master data source name cannot be null.");
@@ -51,6 +53,7 @@ public class MasterSlaveRule {
         masterDataSourceName = config.getMasterDataSourceName();
         slaveDataSourceNames = config.getSlaveDataSourceNames();
         loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : config.getLoadBalanceAlgorithm();
+        masterSlaveRuleConfiguration = config;
     }
     
     /**
