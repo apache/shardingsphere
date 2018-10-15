@@ -112,7 +112,7 @@ public final class GlobalRegistry {
      * @param serverConfig server configuration
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
-     * @param isUsingRegistry is using orchestration or not
+     * @param isUsingRegistry is using registry or not
      */
     public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         initServerConfiguration(serverConfig);
