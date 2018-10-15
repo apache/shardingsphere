@@ -65,6 +65,9 @@
         	<add-columns>
         		<add-column name="column4" type="VARCHAR" length="10"/>
         	</add-columns>
+        	<position-changed-columns>
+        		<position-changed-column start-index="44" column-name="column4" after-column="column3"/>
+        	</position-changed-columns>
         </alter-table>
     </parser-result>
     

@@ -28,9 +28,12 @@ import com.google.common.base.Joiner;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
+import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnDefinition;
+import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnPosition;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedUpdateColumnDefinition;
 import lombok.RequiredArgsConstructor;
 
@@ -58,6 +61,11 @@ public final class AlterTableAssert {
         assertAddColumns(actual, expected.getAddColumns()); 
         
         assertUpdateColumns(actual, expected.getUpdateColumns()); 
+        if(actual instanceof MySQLAlterTableStatement) {
+            MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement)actual;
+            assertColumnPositions(mysqlAlter.getPositionChangedColumns(), expected.getPositionChangedColumns());
+        }
+            
     }
     
     
@@ -89,5 +97,26 @@ public final class AlterTableAssert {
     private void assertUpdateColumnDefinition(final Entry<String, ColumnDefinition> actual, final ExpectedUpdateColumnDefinition expected) {
         assertThat(assertMessage.getFullAssertMessage("Origin column name assertion error: "), actual.getKey(), is(expected.getOriginColumnName()));
         assertColumnDefinition(actual.getValue(), expected);
+    }
+    
+    private void assertColumnPositions(List<ColumnPosition> actual, final List<ExpectedColumnPosition> expected) {
+        if(null == expected) {
+            return;
+        }
+        
+        assertThat(assertMessage.getFullAssertMessage("Alter column position size error: "), actual.size(), is(expected.size()));
+        
+        int count = 0;
+        for (ColumnPosition each : actual) {
+            assertColumnPosition(each, expected.get(count));
+            count++;
+        }
+    }
+    
+    private void assertColumnPosition(final ColumnPosition actual, final ExpectedColumnPosition expected) {
+        assertThat(assertMessage.getFullAssertMessage("Alter column position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
+        assertThat(assertMessage.getFullAssertMessage("Alter column position firstColumn assertion error: "), actual.getFirstColumn(), is(expected.getFirstColumn()));
+        assertThat(assertMessage.getFullAssertMessage("Alter column position afterColumn assertion error: "), actual.getAfterColumn(), is(expected.getAfterColumn()));
     }
 }
