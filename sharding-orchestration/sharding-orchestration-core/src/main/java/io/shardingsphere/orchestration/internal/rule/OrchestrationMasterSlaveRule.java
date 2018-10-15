@@ -17,11 +17,14 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -59,7 +62,20 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      */
     @Subscribe
     public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        disabledDataSourceNames.clear();
-        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledDataSourceNames());
+        if (disabledStateEventBusEvent.getDisabledDataSourceNames().isEmpty()) {
+            disabledDataSourceNames.clear();
+        } else {
+            disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledDataSourceNames());
+        }
+    }
+    
+    private boolean isToRenew(final Collection<String> disabledDataSourceNames) {
+        return Iterators.contains(disabledDataSourceNames.iterator(), new Predicate<String>() {
+            
+            @Override
+            public boolean apply(@Nullable final String input) {
+                return OrchestrationMasterSlaveRule.super.getSlaveDataSourceNames().contains(input);
+            }
+        });
     }
 }
