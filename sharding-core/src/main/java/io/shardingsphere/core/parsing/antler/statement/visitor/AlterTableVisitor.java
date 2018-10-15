@@ -26,7 +26,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.DropColumnVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.RenameTableVisitor;
-import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNamesVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -34,7 +34,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public abstract class AlterTableVisitor extends AbstractStatementVisitor {
 
     public AlterTableVisitor() {
-        addVisitor(new TableNameVisitor());
+        addVisitor(new TableNamesVisitor());
         addVisitor(new RenameTableVisitor());
         addVisitor(new DropColumnVisitor());
     }

@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antler.visitor.sqlserver;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddColumnVisitor;
+import io.shardingsphere.core.parsing.antler.phrase.visitor.ModifyColumnVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerAddIndexVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerAddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerDropIndexVisitor;
@@ -26,6 +27,7 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor
 public class SQLServerAlterTableVisitor extends AlterTableVisitor {
     public SQLServerAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());
+        addVisitor(new ModifyColumnVisitor()); 
         addVisitor(new SQLServerAddIndexVisitor()); 
         addVisitor(new SQLServerDropIndexVisitor());
         addVisitor(new SQLServerAddPrimaryKeyVisitor());

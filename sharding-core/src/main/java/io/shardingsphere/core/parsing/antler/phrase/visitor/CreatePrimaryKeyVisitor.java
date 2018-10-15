@@ -35,7 +35,7 @@ public class CreatePrimaryKeyVisitor implements PhraseVisitor {
             return;
         }
         
-        ParserRuleContext columnListCtx = TreeUtils.getFirstChildByRuleName(primaryKeyCtx.getParent(), "columnList");
+        ParserRuleContext columnListCtx = TreeUtils.getFirstChildByRuleName(primaryKeyCtx.getParent().getParent(), "columnList");
         if (null == columnListCtx) {
             return;
         }
