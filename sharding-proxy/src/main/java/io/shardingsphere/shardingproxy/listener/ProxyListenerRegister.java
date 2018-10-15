@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.listener;
 
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
  * Listener register for Proxy.

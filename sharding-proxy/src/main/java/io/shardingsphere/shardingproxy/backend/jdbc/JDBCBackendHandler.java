@@ -34,9 +34,9 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
-import io.shardingsphere.shardingproxy.config.metadata.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -65,7 +65,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final RuleInstance ruleInstance;
+    private final ShardingSchema shardingSchema;
     
     private final String sql;
     
@@ -79,7 +79,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
-        return ruleInstance == null
+        return shardingSchema == null
                 ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR))
                 : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
@@ -94,12 +94,12 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult);
-        if (!ruleInstance.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+        if (!shardingSchema.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleInstance.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
-                    new ProxyTableMetaDataConnectionManager(ruleInstance.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
-            ruleInstance.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleInstance.getShardingRule()));
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(shardingSchema.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
+                    new ProxyTableMetaDataConnectionManager(shardingSchema.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
+            shardingSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, shardingSchema.getShardingRule()));
         }
         return merge(sqlStatement);
     }
@@ -119,9 +119,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-                ruleInstance.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleInstance.getMetaData().getTable()).merge();
+                shardingSchema.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, shardingSchema.getMetaData().getTable()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(ruleInstance.getSchemaName());
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(shardingSchema.getName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
@@ -144,7 +144,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            each.setName("Tables_in_" + ruleInstance.getSchemaName());
+            each.setName("Tables_in_" + shardingSchema.getName());
         }
     }
     

@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
@@ -55,7 +56,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         super(new OrchestrationFacade(orchestrationConfig));
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
-        Preconditions.checkNotNull(masterSlaveRuleConfig, "Missing the master-slave rule configuration on register center");
+        Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         dataSource = new MasterSlaveDataSource(
                 configService.loadDataSourceMap(), masterSlaveRuleConfig, configService.loadMasterSlaveConfigMap(), configService.loadMasterSlaveProperties());
         initOrchestrationFacade(dataSource);

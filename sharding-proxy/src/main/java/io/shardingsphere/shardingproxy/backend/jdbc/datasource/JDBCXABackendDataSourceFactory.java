@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
+import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -38,18 +39,17 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
         XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
-        Class<XADataSource> xaDataSourceClass = loadClass(XA_DRIVER_CLASS_NAME);
-        return xaTransactionManager.wrapDataSource(xaDataSourceClass.newInstance(), dataSourceName, dataSourceParameter);
+        return xaTransactionManager.wrapDataSource(newXADriverClass(XA_DRIVER_CLASS_NAME), dataSourceName, dataSourceParameter);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> Class<T> loadClass(final String className) throws ClassNotFoundException {
-        Class result;
+    @SneakyThrows
+    private XADataSource newXADriverClass(final String className) {
+        Class<?> result;
         try {
             result = Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (final ClassNotFoundException ignored) {
             result = Class.forName(className);
         }
-        return result;
+        return (XADataSource) result.newInstance();
     }
 }

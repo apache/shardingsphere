@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
 
 /**

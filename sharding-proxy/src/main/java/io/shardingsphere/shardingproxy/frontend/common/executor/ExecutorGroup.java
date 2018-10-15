@@ -20,7 +20,7 @@ package io.shardingsphere.shardingproxy.frontend.common.executor;
 import io.netty.channel.ChannelId;
 import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ExecutorService;

@@ -32,8 +32,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
  * Sharding-Proxy.
