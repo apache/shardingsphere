@@ -3,7 +3,7 @@
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
     <sql-case id="insert_without_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" />
     <sql-case id="insert_with_special_characters" value="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
-    <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert') RETURNING order_id*2 LOG ERRORS INTO TABLE_LOG" db-types="MySQL" />
+    <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id" db-types="PostgreSQL" />
     <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" />
     <sql-case id="insert_without_columns_with_all_placeholders" value="INSERT INTO t_order VALUES (?, ?, ?)" />
     <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
