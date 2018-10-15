@@ -231,14 +231,12 @@ public final class GlobalRegistry {
     }
     
     private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
-        OrchestrationShardingRule orchestrationShardingRule = (OrchestrationShardingRule) shardingSchema.getShardingRule();
-        for (MasterSlaveRule each : orchestrationShardingRule.getMasterSlaveRules()) {
+        for (MasterSlaveRule each : ((OrchestrationShardingRule) shardingSchema.getShardingRule()).getMasterSlaveRules()) {
             ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);
         }
     }
     
     private void renewShardingSchemaWithMasterSlaveRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
-        OrchestrationMasterSlaveRule orchestrationMasterSlaveRule = (OrchestrationMasterSlaveRule) shardingSchema.getMasterSlaveRule();
-        orchestrationMasterSlaveRule.renew(disabledEvent);
+        ((OrchestrationMasterSlaveRule) shardingSchema.getMasterSlaveRule()).renew(disabledEvent);
     }
 }
