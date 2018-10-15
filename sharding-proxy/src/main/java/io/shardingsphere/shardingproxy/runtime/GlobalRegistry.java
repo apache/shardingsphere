@@ -212,8 +212,6 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        
-        
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(entry.getKey(), disabledStateEventBusEvent.getDisabledSchemaDataSourceMap());
             if (entry.getValue().isMasterSlaveOnly()) {
@@ -222,6 +220,19 @@ public final class GlobalRegistry {
                 renewShardingSchemaWithShardingRule(entry.getValue(), disabledEvent);
             }
         }
+    }
+    
+    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(shardingSchemaName, disabledSchemaDataSourceMap);
+        return new DisabledStateEventBusEvent(disabledDataSourceNames);
+    }
+    
+    private Collection<String> getDisabledDataSourceNames(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
+        Collection<String> result = new LinkedList<>();
+        if (disabledSchemaDataSourceMap.containsKey(shardingSchemaName)) {
+            result.addAll(disabledSchemaDataSourceMap.get(shardingSchemaName));
+        }
+        return result;
     }
     
     private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
@@ -234,18 +245,5 @@ public final class GlobalRegistry {
     private void renewShardingSchemaWithMasterSlaveRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
         OrchestrationMasterSlaveRule orchestrationMasterSlaveRule = (OrchestrationMasterSlaveRule) shardingSchema.getMasterSlaveRule();
         orchestrationMasterSlaveRule.renew(disabledEvent);
-    }
-    
-    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(disabledSchemaDataSourceMap, shardingSchemaName);
-        return new DisabledStateEventBusEvent(disabledDataSourceNames);
-    }
-    
-    private Collection<String> getDisabledDataSourceNames(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
-        Collection<String> result = new LinkedList<>();
-        if (disabledSchemaDataSourceMap.containsKey(shardingSchemaName)) {
-            result.addAll(disabledSchemaDataSourceMap.get(shardingSchemaName));
-        }
-        return result;
     }
 }
