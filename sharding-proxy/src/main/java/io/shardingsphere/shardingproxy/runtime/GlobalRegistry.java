@@ -215,7 +215,7 @@ public final class GlobalRegistry {
         
         
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap(), entry.getKey());
+            DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(entry.getKey(), disabledStateEventBusEvent.getDisabledSchemaDataSourceMap());
             if (entry.getValue().isMasterSlaveOnly()) {
                 renewShardingSchemaWithMasterSlaveRule(entry.getValue(), disabledEvent);
             } else {
