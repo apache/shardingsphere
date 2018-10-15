@@ -17,8 +17,10 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.rule;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,5 +50,16 @@ public class OrchestrationMasterSlaveRule extends MasterSlaveRule {
             result.remove(each);
         }
         return result;
+    }
+    
+    /**
+     * Renew disable dataSource names.
+     *
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        disabledDataSourceNames.clear();
+        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledDataSourceNames());
     }
 }
