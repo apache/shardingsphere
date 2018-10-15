@@ -19,13 +19,14 @@ package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.RawOrderItemRepository;
 import io.shardingsphere.example.repository.jdbc.repository.RawOrderRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RawDemoService {
+public class RawDemoService implements CommonService {
     
     private final RawOrderRepository orderRepository;
     
@@ -45,14 +46,16 @@ public class RawDemoService {
         cleanTables();
     }
     
-    private void initTables() {
+    @Override
+    public void initTables() {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
     }
     
-    private List<Long> insertData() {
+    @Override
+    public List<Long> insertData() {
         System.out.println("1.Insert--------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
@@ -70,7 +73,8 @@ public class RawDemoService {
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) {
+    @Override
+    public void deleteData(final List<Long> orderIds) {
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
@@ -78,14 +82,16 @@ public class RawDemoService {
         }
     }
     
-    private void printData() {
+    @Override
+    public void printData() {
         System.out.println("Order Data--------------");
         System.out.println(orderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
     }
     
-    private void cleanTables() {
+    @Override
+    public void cleanTables() {
         orderItemRepository.dropTable();
         orderRepository.dropTable();
     }

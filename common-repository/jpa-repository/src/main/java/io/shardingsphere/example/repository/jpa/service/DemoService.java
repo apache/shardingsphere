@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.repository.jpa.service;
 
+import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jpa.entity.OrderEntity;
 import io.shardingsphere.example.repository.jpa.entity.OrderItemEntity;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DemoService {
+public class DemoService implements CommonService {
     
     @Resource
     private OrderRepository orderRepository;
@@ -37,13 +38,18 @@ public class DemoService {
     private OrderItemRepository orderItemRepository;
     
     public void demo() {
-        List<Long> orderIds = InsertData();
+        List<Long> orderIds = insertData();
         printData();
         deleteData(orderIds);
         printData();
     }
     
-    private List<Long> InsertData() {
+    @Override
+    public void initTables() {
+    }
+    
+    @Override
+    public List<Long> insertData() {
         System.out.println("1.Insert--------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
@@ -61,7 +67,8 @@ public class DemoService {
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) {
+    @Override
+    public void deleteData(final List<Long> orderIds) {
         System.out.println("2.Delete--------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
@@ -69,10 +76,15 @@ public class DemoService {
         }
     }
     
-    private void printData() {
+    @Override
+    public void printData() {
         System.out.println("Order Data--------------");
         System.out.println(orderRepository.selectAll());
         System.out.println("OrderItem Data--------------");
         System.out.println(orderItemRepository.selectAll());
+    }
+    
+    @Override
+    public void cleanTables() {
     }
 }
