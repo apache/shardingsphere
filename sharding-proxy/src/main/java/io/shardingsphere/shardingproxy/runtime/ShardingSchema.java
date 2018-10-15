@@ -76,16 +76,11 @@ public final class ShardingSchema {
                 : new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
     }
     
-    
-    
-    private void initRuleWithoutOrchestration(final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
-        shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
-        masterSlaveRule = null == rule.getMasterSlaveRule() ? null : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
-    }
-    
-    private void initRuleWithOrchestration(final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
-        shardingRule = new OrchestrationShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
-        masterSlaveRule = null == rule.getMasterSlaveRule() ? null : new OrchestrationMasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
+    private MasterSlaveRule getMasterSlaveRule(final YamlRuleConfiguration rule, final boolean isUsingOrchestration) {
+        if (null == rule.getMasterSlaveRule()) {
+            return null;
+        }
+        return isUsingOrchestration ? new OrchestrationMasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration()) : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
     }
     
     /**
