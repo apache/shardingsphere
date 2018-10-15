@@ -63,11 +63,8 @@ public final class ShardingSchema {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
-        if (isUsingOrchestration) {
-            initRuleWithOrchestration(dataSources, rule);
-        } else {
-            initRuleWithoutOrchestration(dataSources, rule);
-        }
+        shardingRule = getShardingRule(rule, isUsingOrchestration);
+        masterSlaveRule = getMasterSlaveRule(rule, isUsingOrchestration);
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
     
