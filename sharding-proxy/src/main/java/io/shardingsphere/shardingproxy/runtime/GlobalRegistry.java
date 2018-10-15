@@ -241,7 +241,7 @@ public final class GlobalRegistry {
         return new DisabledStateEventBusEvent(disabledDataSourceNames);
     }
     
-    private Collection<String> getDisabledDataSourceNames(final Map<String, Collection<String>> disabledSchemaDataSourceMap, final String shardingSchemaName) {
+    private Collection<String> getDisabledDataSourceNames(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
         Collection<String> result = new LinkedList<>();
         if (disabledSchemaDataSourceMap.containsKey(shardingSchemaName)) {
             result.addAll(disabledSchemaDataSourceMap.get(shardingSchemaName));
