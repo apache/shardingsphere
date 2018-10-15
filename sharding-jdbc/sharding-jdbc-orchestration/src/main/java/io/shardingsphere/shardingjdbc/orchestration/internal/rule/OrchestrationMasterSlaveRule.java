@@ -34,4 +34,13 @@ public class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         super(config);
     }
+    
+    @Override
+    public Collection<String> getSlaveDataSourceNames() {
+        Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
+        }
+        return result;
+    }
 }
