@@ -20,6 +20,7 @@ package io.shardingsphere.example.proxy.main;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
 
@@ -34,10 +35,19 @@ public final class ProxyMain {
     private static final int PROXY_PORT = 3307;
     
     public static void main(final String[] args) {
-        DataSource dataSource = DataSourceUtil.createDataSource(PROXY_IP, PROXY_PORT);
+        DataSource dataSource = createDataSource(PROXY_IP, PROXY_PORT);
         RawPojoService pojoService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
         pojoService.initEnvironment();
         pojoService.processSuccess();
         pojoService.cleanEnvironment();
+    }
+    
+    private static DataSource createDataSource(final String ip, final int port) {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
+        result.setUrl(String.format("jdbc:mysql://%s:%d/sharding_db?useServerPrepStmts=true&cachePrepStmts=true", ip, port));
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
 }
