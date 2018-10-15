@@ -24,7 +24,6 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -73,7 +72,7 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
         return Iterators.contains(disabledDataSourceNames.iterator(), new Predicate<String>() {
             
             @Override
-            public boolean apply(@Nullable final String input) {
+            public boolean apply(final String input) {
                 return OrchestrationMasterSlaveRule.super.getSlaveDataSourceNames().contains(input);
             }
         });
