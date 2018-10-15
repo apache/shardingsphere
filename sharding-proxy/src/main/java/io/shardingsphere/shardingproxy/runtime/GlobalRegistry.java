@@ -215,10 +215,9 @@ public final class GlobalRegistry {
         
         
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(disabledStateEventBusEvent, );
+            DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap(), entry.getKey());
             if (entry.getValue().isMasterSlaveOnly()) {
-                OrchestrationMasterSlaveRule orchestrationMasterSlaveRule = (OrchestrationMasterSlaveRule) entry.getValue().getMasterSlaveRule();
-                orchestrationMasterSlaveRule.renew(disabledEvent);
+                renewShardingSchemaWithMasterSlaveRule(entry.getValue(), disabledEvent);
             } else {
                 OrchestrationShardingRule orchestrationShardingRule = (OrchestrationShardingRule) entry.getValue().getShardingRule();
                 for (MasterSlaveRule each : orchestrationShardingRule.getMasterSlaveRules()) {
@@ -228,12 +227,17 @@ public final class GlobalRegistry {
         }
     }
     
-    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent, final String shardingSchemaName) {
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap(), shardingSchemaName);
+    private void renewShardingSchemaWithMasterSlaveRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
+        OrchestrationMasterSlaveRule orchestrationMasterSlaveRule = (OrchestrationMasterSlaveRule) shardingSchema.getMasterSlaveRule();
+        orchestrationMasterSlaveRule.renew(disabledEvent);
+    }
+    
+    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final Map<String, Collection<String>> disabledSchemaDataSourceMap, final String shardingSchemaName) {
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(disabledSchemaDataSourceMap, shardingSchemaName);
         return new DisabledStateEventBusEvent(disabledDataSourceNames);
     }
     
-    private void renewShardingSchema(final ShardingSchema shardingSchema, final Collection<String> disabledSchemaDataSourceNames) {
+    private void renewShardingSchemaWithMasterSlaveRule(final ShardingSchema shardingSchema, final Collection<String> disabledSchemaDataSourceNames) {
     
     }
     
