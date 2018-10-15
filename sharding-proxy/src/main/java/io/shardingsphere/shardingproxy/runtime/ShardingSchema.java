@@ -25,6 +25,8 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
@@ -57,13 +59,28 @@ public final class ShardingSchema {
     
     private ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule, final boolean isUsingOrchestration) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
+        if (isUsingOrchestration) {
+            initRuleWithOrchestration(dataSources, rule);
+        } else {
+            initRuleWithoutOrchestration(dataSources, rule);
+        }
+        backendDataSource = new JDBCBackendDataSource(dataSources);
+    }
+    
+    private ShardingRule getShardingRule(final boolean isUsingOrchestration) {}
+    
+    private void initRuleWithoutOrchestration(final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
         shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
         masterSlaveRule = null == rule.getMasterSlaveRule() ? null : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
-        backendDataSource = new JDBCBackendDataSource(dataSources);
+    }
+    
+    private void initRuleWithOrchestration(final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
+        shardingRule = new OrchestrationShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
+        masterSlaveRule = null == rule.getMasterSlaveRule() ? null : new OrchestrationMasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
     }
     
     /**
