@@ -68,16 +68,16 @@ public final class ShardingSchema {
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
     
-    private ShardingRule getShardingRule(final YamlRuleConfiguration rule, final boolean isUsingOrchestration) {
-        return isUsingOrchestration ? new OrchestrationShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet())
+    private ShardingRule getShardingRule(final YamlRuleConfiguration rule, final boolean isUsingRegistry) {
+        return isUsingRegistry ? new OrchestrationShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet())
                 : new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
     }
     
-    private MasterSlaveRule getMasterSlaveRule(final YamlRuleConfiguration rule, final boolean isUsingOrchestration) {
+    private MasterSlaveRule getMasterSlaveRule(final YamlRuleConfiguration rule, final boolean isUsingRegistry) {
         if (null == rule.getMasterSlaveRule()) {
             return null;
         }
-        return isUsingOrchestration ? new OrchestrationMasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration()) : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
+        return isUsingRegistry ? new OrchestrationMasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration()) : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
     }
     
     /**
