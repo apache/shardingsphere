@@ -53,7 +53,7 @@ tableConstraintUsingIndex
     constraintOptionalParam
     ;
 
- constraintOptionalParam
+constraintOptionalParam
     : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
     ;
 
