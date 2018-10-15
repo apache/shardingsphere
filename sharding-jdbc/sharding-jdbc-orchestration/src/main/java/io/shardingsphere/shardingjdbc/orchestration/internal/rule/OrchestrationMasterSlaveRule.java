@@ -35,6 +35,11 @@ public class OrchestrationMasterSlaveRule extends MasterSlaveRule {
         super(config);
     }
     
+    /**
+     * Get slave data source names.
+     *
+     * @return available slave data source name
+     */
     @Override
     public Collection<String> getSlaveDataSourceNames() {
         Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
