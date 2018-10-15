@@ -43,12 +43,12 @@ public abstract class CommonServiceImpl implements CommonService {
         List<Long> result = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             Order order = newOrder();
-            order.setUserId(51);
+            order.setUserId(1001);
             order.setStatus("INSERT_TEST");
             getOrderRepository().insert(order);
             OrderItem item = newOrderItem();
             item.setOrderId(order.getOrderId());
-            item.setUserId(51);
+            item.setUserId(1001);
             item.setStatus("INSERT_TEST");
             getOrderItemRepository().insert(item);
             result.add(order.getOrderId());

@@ -21,7 +21,7 @@
     </update>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderItemId">
-        INSERT INTO t_order_item (order_id, user_id) VALUES (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER});
+        INSERT INTO t_order_item (order_id, user_id, status) VALUES (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR});
     </insert>
     
     <delete id="delete">
