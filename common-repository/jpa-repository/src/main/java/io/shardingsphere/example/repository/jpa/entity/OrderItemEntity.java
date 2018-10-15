@@ -49,4 +49,10 @@ public final class OrderItemEntity extends OrderItem {
     public int getUserId() {
         return super.getUserId();
     }
+    
+    @Column(name = "status")
+    @Override
+    public String getStatus() {
+        return super.getStatus();
+    }
 }

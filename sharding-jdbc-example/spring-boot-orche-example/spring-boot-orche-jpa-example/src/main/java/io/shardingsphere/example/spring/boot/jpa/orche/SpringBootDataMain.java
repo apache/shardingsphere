@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.spring.boot.jpa;
+package io.shardingsphere.example.spring.boot.jpa.orche;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
