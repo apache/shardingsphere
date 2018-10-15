@@ -34,6 +34,8 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Override
     public void processFailure() {
+        processSuccess();
+        throw new RuntimeException("Exception occur for transaction test.");
     }
     
     private List<Long> insertData() {

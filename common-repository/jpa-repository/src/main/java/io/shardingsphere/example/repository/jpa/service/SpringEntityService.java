@@ -27,8 +27,10 @@ import io.shardingsphere.example.repository.jpa.entity.OrderItemEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 
 @Service
+@Transactional
 public class SpringEntityService extends CommonServiceImpl {
     
     @Resource
