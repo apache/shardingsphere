@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.nodep.util;
+package io.shardingsphere.example.config;
 
 import org.apache.commons.dbcp.BasicDataSource;
 

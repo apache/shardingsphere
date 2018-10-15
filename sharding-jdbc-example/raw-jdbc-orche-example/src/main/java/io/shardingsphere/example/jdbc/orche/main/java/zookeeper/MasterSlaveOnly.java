@@ -18,7 +18,7 @@
 package io.shardingsphere.example.jdbc.orche.main.java.zookeeper;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.example.jdbc.orche.util.DataSourceUtil;
+import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;

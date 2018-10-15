@@ -7,9 +7,9 @@
     
     <modules>
         <module>common-repository</module>
+        <module>example-utility</module>
         <module>sharding-jdbc-example</module>
         <module>sharding-proxy-example</module>
-        <module>common-sharding-algorithm</module>
     </modules>
     
     <properties>

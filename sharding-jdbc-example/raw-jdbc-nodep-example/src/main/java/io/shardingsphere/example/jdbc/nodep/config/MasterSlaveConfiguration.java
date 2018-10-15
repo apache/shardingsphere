@@ -15,14 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.nodep.main.java;
+package io.shardingsphere.example.jdbc.nodep.config;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.example.jdbc.nodep.util.DataSourceUtil;
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.config.DataSourceUtil;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -36,22 +33,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave. 
  */
-public class MasterSlaveOnly {
+public class MasterSlaveConfiguration implements ExampleConfiguration {
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = getDataSource();
-        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
-    }
-    
-    private static DataSource getDataSource() throws SQLException {
+    @Override
+    public DataSource getDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new ConcurrentHashMap<String, Object>(), new Properties());
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
         result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));

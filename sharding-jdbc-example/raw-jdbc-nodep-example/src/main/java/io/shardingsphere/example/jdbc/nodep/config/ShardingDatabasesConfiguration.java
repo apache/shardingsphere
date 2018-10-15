@@ -15,16 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.nodep.main.java;
+package io.shardingsphere.example.jdbc.nodep.config;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.example.jdbc.nodep.util.DataSourceUtil;
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.config.DataSourceUtil;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -33,17 +30,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingOnlyWithDatabases {
+public class ShardingDatabasesConfiguration implements ExampleConfiguration {
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = getDataSource();
-        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
-    }
-    
-    private static DataSource getDataSource() throws SQLException {
+    @Override
+    public  DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());

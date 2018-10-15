@@ -20,7 +20,7 @@ package io.shardingsphere.example.jdbc.orche.main.java.etcd;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.example.jdbc.orche.util.DataSourceUtil;
+import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;

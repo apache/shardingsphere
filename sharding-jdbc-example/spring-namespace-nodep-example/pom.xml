@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>common-sharding-algorithm</artifactId>
+            <artifactId>example-utility</artifactId>
             <version>${project.version}</version>
         </dependency>
         
