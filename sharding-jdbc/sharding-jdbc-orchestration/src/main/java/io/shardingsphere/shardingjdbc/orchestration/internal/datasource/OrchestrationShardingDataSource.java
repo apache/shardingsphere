@@ -25,16 +25,13 @@ import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.rule.OrchestrationShardingRule;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Orchestration sharding datasource.
@@ -91,17 +88,4 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public void renew(final ShardingConfigurationEventBusEvent shardingEvent) throws SQLException {
         dataSource = new ShardingDataSource(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
-    
-    /**
-     * Renew disable dataSource names.
-     *
-     * @param disabledStateEventBusEvent jdbc disabled event bus event
-     * @throws SQLException SQL exception
-     */
-    @Subscribe
-    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) throws SQLException {
-        Map<String, DataSource> newDataSourceMap = getAvailableDataSourceMap(disabledStateEventBusEvent.getDisabledDataSourceNames());
-        dataSource = new ShardingDataSource(newDataSourceMap, dataSource.getShardingContext(), dataSource.getShardingProperties());
-    }
 }
-
