@@ -103,9 +103,17 @@ public final class GlobalRegistry {
      * @param schemaRules schema rule map
      */
     public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules) {
-    
+        init(serverConfig, schemaDataSources, schemaRules, false);
     }
     
+    /**
+     * Initialize proxy context.
+     *
+     * @param serverConfig server configuration
+     * @param schemaDataSources data source map
+     * @param schemaRules schema rule map
+     * @param isUsingOrchestration is using orchestration or not
+     */
     public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules, final boolean isUsingOrchestration) {
         initServerConfiguration(serverConfig);
         for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
@@ -179,7 +187,7 @@ public final class GlobalRegistry {
         shardingSchemas.clear();
         for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
             String schemaName = entry.getKey();
-            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName)));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName), true));
         }
     }
     
