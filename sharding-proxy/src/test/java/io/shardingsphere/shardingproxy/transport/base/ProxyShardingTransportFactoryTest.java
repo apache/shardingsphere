@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +42,8 @@ public class ProxyShardingTransportFactoryTest {
     
     @Before
     public void setUp() {
-        RuleInstance ruleRegistry = mock(RuleInstance.class);
-        GlobalRegistry.getInstance().getRuleInstanceMap().put(schemaName, ruleRegistry);
+        ShardingSchema shardingSchema = mock(ShardingSchema.class);
+        GlobalRegistry.getInstance().getShardingSchemas().put(schemaName, shardingSchema);
     }
     
     @Test
