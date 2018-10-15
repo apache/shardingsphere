@@ -28,6 +28,12 @@ public class ShardingAndMasterSlaveTogether {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingMasterSlave.xml")) {
             CommonService commonService = applicationContext.getBean(SpringEntityService.class);
             commonService.processSuccess();
+            try {
+                commonService.processFailure();
+            } catch (final Exception ex) {
+                System.out.println(ex.getMessage());
+                commonService.printData();
+            }
         }
     }
 }

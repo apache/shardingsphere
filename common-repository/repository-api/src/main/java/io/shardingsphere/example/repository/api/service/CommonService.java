@@ -9,4 +9,6 @@ public interface CommonService {
     void processSuccess();
     
     void processFailure();
+    
+    void printData();
 }

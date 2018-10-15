@@ -34,6 +34,12 @@ public class SpringBootDataMain {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
             CommonService commonService = applicationContext.getBean(SpringEntityService.class);
             commonService.processSuccess();
+            try {
+                commonService.processFailure();
+            } catch (final Exception ex) {
+                System.out.println(ex.getMessage());
+                commonService.printData();
+            }
         }
     }
 }

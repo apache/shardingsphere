@@ -37,6 +37,12 @@ public class SpringBootDataMain {
             CommonService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();
             commonService.processSuccess();
+            try {
+                commonService.processFailure();
+            } catch (final Exception ex) {
+                System.out.println(ex.getMessage());
+                commonService.printData();
+            }
             commonService.cleanEnvironment();
         }
     }
