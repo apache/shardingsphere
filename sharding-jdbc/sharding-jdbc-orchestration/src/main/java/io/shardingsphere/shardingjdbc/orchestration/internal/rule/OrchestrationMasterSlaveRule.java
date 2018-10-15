@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.shardingjdbc.orchestration.internal.rule;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
