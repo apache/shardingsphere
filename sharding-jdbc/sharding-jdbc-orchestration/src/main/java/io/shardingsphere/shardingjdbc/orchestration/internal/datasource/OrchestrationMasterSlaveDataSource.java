@@ -48,7 +48,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig), masterSlaveDataSource.getDataSourceMap());
-        this.dataSource = masterSlaveDataSource;
+        dataSource = masterSlaveDataSource;
         initOrchestrationFacade(dataSource);
     }
     
