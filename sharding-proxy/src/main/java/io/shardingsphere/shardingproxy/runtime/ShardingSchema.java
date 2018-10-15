@@ -71,7 +71,12 @@ public final class ShardingSchema {
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
     
-    private ShardingRule getShardingRule(final boolean isUsingOrchestration) {}
+    private ShardingRule getShardingRule(final YamlRuleConfiguration rule, final boolean isUsingOrchestration) {
+        return isUsingOrchestration ? new OrchestrationShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet())
+                : new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
+    }
+    
+    
     
     private void initRuleWithoutOrchestration(final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule) {
         shardingRule = new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
