@@ -13,7 +13,7 @@ weight = 1
 
 ## 配置中心数据结构
 
-配置中心在定义的命名空间的config下，以JSON格式存储，包括数据源，分库分表，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
+配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，分库分表，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
 
 ```
 config
