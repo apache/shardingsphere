@@ -14,6 +14,7 @@
  * limitations under the License.
  * </p>
  */
+
 package io.shardingsphere.shardingjdbc.orchestration.internal.rule;
 
 import com.google.common.base.Function;
@@ -23,7 +24,6 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 
