@@ -26,7 +26,7 @@ public class ShardingOnlyWithTables {
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
 
     public static void main(final String[] args) {
-        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingTables.xml" : "META-INF/orche/zookeeper/local/shardingTables.xml";
+        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/zookeeper/cloud/shardingTables.xml" : "META-INF/zookeeper/local/shardingTables.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             CommonService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();

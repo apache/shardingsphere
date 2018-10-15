@@ -29,7 +29,7 @@ public class ShardingAndMasterSlaveTogether {
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) {
-        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/etcd/cloud/shardingMasterSlave.xml" : "META-INF/orche/etcd/local/shardingMasterSlave.xml";
+        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/etcd/cloud/shardingMasterSlave.xml" : "META-INF/etcd/local/shardingMasterSlave.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             CommonService commonService = applicationContext.getBean(SpringEntityService.class);
             commonService.processSuccess();

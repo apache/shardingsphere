@@ -72,7 +72,7 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
         String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, order.getUserId());
+            preparedStatement.setInt(1, order.getUserId());
             preparedStatement.setString(2, order.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {

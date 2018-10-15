@@ -26,7 +26,7 @@ public class ShardingOnlyWithDatabases {
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
 
     public static void main(final String[] args) {
-        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/etcd/cloud/shardingDatabases.xml" : "META-INF/orche/etcd/local/shardingDatabases.xml";
+        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/etcd/cloud/shardingDatabases.xml" : "META-INF/etcd/local/shardingDatabases.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             CommonService commonService = applicationContext.getBean(SpringPojoService.class);
             commonService.initEnvironment();

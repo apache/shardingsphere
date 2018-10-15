@@ -74,7 +74,7 @@ public final class JDBCOrderItemRepositoryImpl implements OrderItemRepository {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, orderItem.getOrderId());
-            preparedStatement.setLong(2, orderItem.getUserId());
+            preparedStatement.setInt(2, orderItem.getUserId());
             preparedStatement.setString(3, orderItem.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
