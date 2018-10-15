@@ -17,26 +17,29 @@
 
 package io.shardingsphere.core.parsing.integrate.jaxb.root;
 
-import com.google.common.base.Splitter;
-import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
-import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
-import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
-import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
-import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
-import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
-import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
-import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+
+import com.google.common.base.Splitter;
+
+import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
+import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
+import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
+import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
+import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
+import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
+import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
+import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
+import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -80,6 +83,9 @@ public final class ParserResult {
     
     @XmlElement
     private ExpectedTableMetaData meta;
+    
+    @XmlElement(name = "alter-table")
+    private ExpectedAlterTable alterTable;
     
     /**
      * Get parameters.

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts;
 
+import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.condition.ConditionAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.groupby.GroupByAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.index.IndexAssert;
@@ -24,6 +25,7 @@ import io.shardingsphere.core.parsing.integrate.asserts.item.ItemAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.limit.LimitAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.meta.TableMetaDataAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.orderby.OrderByAssert;
+import io.shardingsphere.core.parsing.integrate.asserts.table.AlterTableAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.table.TableAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.token.TokenAssert;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
@@ -62,22 +64,11 @@ public final class SQLStatementAssert {
     
     private final TableMetaDataAssert metaAssert;
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(SQLCasesLoader.getInstance(),ParserResultSetLoader.getInstance(),sqlCaseId, sqlCaseType);
-        this.actual = actual;
-        final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
-        expected = parserResultSetLoader.getParserResult(sqlCaseId);
-        tableAssert = new TableAssert(assertMessage);
-        conditionAssert = new ConditionAssert(assertMessage);
-        tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
-        indexAssert = new IndexAssert(sqlCaseType, assertMessage);
-        itemAssert = new ItemAssert(assertMessage);
-        groupByAssert = new GroupByAssert(assertMessage);
-        orderByAssert = new OrderByAssert(assertMessage);
-        limitAssert = new LimitAssert(sqlCaseType, assertMessage);
-        metaAssert = new TableMetaDataAssert(assertMessage);
-    }
+    private final AlterTableAssert alterTableAssert;
     
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
+    }
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType,final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader,sqlCaseId, sqlCaseType);
@@ -92,6 +83,7 @@ public final class SQLStatementAssert {
         orderByAssert = new OrderByAssert(assertMessage);
         limitAssert = new LimitAssert(sqlCaseType, assertMessage);
         metaAssert = new TableMetaDataAssert(assertMessage);
+        alterTableAssert = new AlterTableAssert(assertMessage);
     }
     
     /**
@@ -108,6 +100,10 @@ public final class SQLStatementAssert {
         if (actual instanceof CreateTableStatement) {
             assertCreateTableStatement((CreateTableStatement) actual);
         }
+        
+        if (actual instanceof AlterTableStatement) {
+            assertAlterTableStatement((AlterTableStatement) actual);
+        }
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
@@ -119,5 +115,11 @@ public final class SQLStatementAssert {
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {
         metaAssert.assertMeta(actual.getColumnNames(), actual.getColumnTypes(), actual.getPrimaryKeyColumns(), expected.getMeta());
+    }
+    
+    private void assertAlterTableStatement(final AlterTableStatement actual) {
+        if(null != expected.getAlterTable()) {
+            alterTableAssert.assertAlterTable(actual, expected.getAlterTable());
+        }
     }
 }
