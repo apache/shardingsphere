@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.nodep.yaml;
+package io.shardingsphere.example.jdbc.nodep.main.yaml;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
-import io.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -29,10 +29,10 @@ import java.io.File;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class MasterSlaveOnly {
+public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getYamlFile());
         CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
         commonService.initEnvironment();
         commonService.processSuccess();
@@ -40,6 +40,6 @@ public class MasterSlaveOnly {
     }
     
     private static File getYamlFile() {
-        return new File(MasterSlaveOnly.class.getResource("/META-INF/nodep/master-slave.yaml").getFile());
+        return new File(ShardingAndMasterSlaveTogether.class.getResource("/META-INF/sharding-master-slave.yaml").getFile());
     }
 }

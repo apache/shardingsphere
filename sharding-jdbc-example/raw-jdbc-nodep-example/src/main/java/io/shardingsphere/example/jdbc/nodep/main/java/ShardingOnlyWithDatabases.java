@@ -15,14 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.main.nodep.java;
+package io.shardingsphere.example.jdbc.nodep.main.java;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
-import io.shardingsphere.example.jdbc.util.DataSourceUtil;
+import io.shardingsphere.example.jdbc.nodep.util.DataSourceUtil;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -35,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingOnlyWithDatabasesAndTables {
+public class ShardingOnlyWithDatabases {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = getDataSource();
@@ -49,16 +47,13 @@ public class ShardingOnlyWithDatabasesAndTables {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
-        result.setActualDataNodes("demo_ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGeneratorColumnName("order_id");
         return result;
     }
@@ -66,7 +61,6 @@ public class ShardingOnlyWithDatabasesAndTables {
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order_item");
-        result.setActualDataNodes("demo_ds_${0..1}.t_order_item_${[0, 1]}");
         return result;
     }
     
