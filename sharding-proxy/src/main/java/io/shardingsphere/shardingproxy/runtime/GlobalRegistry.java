@@ -26,11 +26,15 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -208,9 +212,29 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
+        
+        
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            entry.getValue().getBackendDataSource().setAvailableDataSources(getDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap(), entry.getKey()));
+            DisabledStateEventBusEvent disabledEvent = getDisabledStateEventBusEvent(disabledStateEventBusEvent, );
+            if (entry.getValue().isMasterSlaveOnly()) {
+                OrchestrationMasterSlaveRule orchestrationMasterSlaveRule = (OrchestrationMasterSlaveRule) entry.getValue().getMasterSlaveRule();
+                orchestrationMasterSlaveRule.renew(disabledEvent);
+            } else {
+                OrchestrationShardingRule orchestrationShardingRule = (OrchestrationShardingRule) entry.getValue().getShardingRule();
+                for (MasterSlaveRule each : orchestrationShardingRule.getMasterSlaveRules()) {
+                    ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);
+                }
+            }
         }
+    }
+    
+    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent, final String shardingSchemaName) {
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap(), shardingSchemaName);
+        return new DisabledStateEventBusEvent(disabledDataSourceNames);
+    }
+    
+    private void renewShardingSchema(final ShardingSchema shardingSchema, final Collection<String> disabledSchemaDataSourceNames) {
+    
     }
     
     private Collection<String> getDisabledDataSourceNames(final Map<String, Collection<String>> disabledSchemaDataSourceMap, final String shardingSchemaName) {
