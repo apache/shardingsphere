@@ -30,7 +30,7 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public class OrchestrationMasterSlaveRule extends MasterSlaveRule {
+public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     
     private final Collection<String> disabledDataSourceNames = new LinkedList<>();
     
