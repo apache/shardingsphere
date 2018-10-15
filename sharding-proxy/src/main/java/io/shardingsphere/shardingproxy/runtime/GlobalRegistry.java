@@ -219,11 +219,15 @@ public final class GlobalRegistry {
             if (entry.getValue().isMasterSlaveOnly()) {
                 renewShardingSchemaWithMasterSlaveRule(entry.getValue(), disabledEvent);
             } else {
-                OrchestrationShardingRule orchestrationShardingRule = (OrchestrationShardingRule) entry.getValue().getShardingRule();
-                for (MasterSlaveRule each : orchestrationShardingRule.getMasterSlaveRules()) {
-                    ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);
-                }
+                renewShardingSchemaWithShardingRule(entry.getValue(), disabledEvent);
             }
+        }
+    }
+    
+    private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
+        OrchestrationShardingRule orchestrationShardingRule = (OrchestrationShardingRule) shardingSchema.getShardingRule();
+        for (MasterSlaveRule each : orchestrationShardingRule.getMasterSlaveRules()) {
+            ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);
         }
     }
     
@@ -232,13 +236,9 @@ public final class GlobalRegistry {
         orchestrationMasterSlaveRule.renew(disabledEvent);
     }
     
-    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final Map<String, Collection<String>> disabledSchemaDataSourceMap, final String shardingSchemaName) {
+    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames(disabledSchemaDataSourceMap, shardingSchemaName);
         return new DisabledStateEventBusEvent(disabledDataSourceNames);
-    }
-    
-    private void renewShardingSchemaWithMasterSlaveRule(final ShardingSchema shardingSchema, final Collection<String> disabledSchemaDataSourceNames) {
-    
     }
     
     private Collection<String> getDisabledDataSourceNames(final Map<String, Collection<String>> disabledSchemaDataSourceMap, final String shardingSchemaName) {
