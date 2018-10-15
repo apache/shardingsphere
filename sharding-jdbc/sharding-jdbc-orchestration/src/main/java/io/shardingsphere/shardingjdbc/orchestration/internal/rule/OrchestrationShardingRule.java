@@ -16,7 +16,11 @@
  */
 package io.shardingsphere.shardingjdbc.orchestration.internal.rule;
 
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Orchestration sharding rule.
@@ -24,4 +28,10 @@ import io.shardingsphere.core.rule.ShardingRule;
  * @author panjuan
  */
 public final class OrchestrationShardingRule extends ShardingRule {
+    
+    private final Collection<String> DisabledDataSourceNames = new LinkedList<>();
+    
+    public OrchestrationShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
+        super(shardingRuleConfig, dataSourceNames);
+    }
 }
