@@ -37,23 +37,25 @@ public class OracleModifyColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        
-        ParserRuleContext modifyColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
+    
+        List<ParserRuleContext> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
                 "modifyColumn");
-        if (null == modifyColumnCtx) {
+        if (null == modifyColumnCtxs) {
             return;
         }
-
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "modifyColProperties");
-        if (null == columnNodes) {
-            return;
-        }
-
-        for (final ParserRuleContext each : columnNodes) {
-            // it`s not columndefinition, but can call this method
-            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
-            if (null != column) {
-                alterStatement.getUpdateColumns().put(column.getName(), column);
+    
+        for (ParserRuleContext modifyColumnCtx : modifyColumnCtxs) {
+            List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, "modifyColProperties");
+            if (null == columnNodes) {
+                return;
+            }
+    
+            for (final ParserRuleContext each : columnNodes) {
+                // it`s not columndefinition, but can call this method
+                ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
+                if (null != column) {
+                    alterStatement.getUpdateColumns().put(column.getName(), column);
+                }
             }
         }
     }
