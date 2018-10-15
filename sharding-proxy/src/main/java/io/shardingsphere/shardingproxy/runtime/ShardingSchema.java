@@ -53,7 +53,7 @@ public final class ShardingSchema {
     
     private final ShardingRule shardingRule;
     
-    private final MasterSlaveRule masterSlaveRule;
+    private final MasterSlaveRule masterSlaveRule;fi
     
     private final JDBCBackendDataSource backendDataSource;
     
