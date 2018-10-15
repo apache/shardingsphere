@@ -46,7 +46,7 @@ periodClause
 tableIndex
     : INDEX indexName 
     (
-          (CLUSTERED | NONCLUSTERED )? columnNameWithSortsWithParen 
+          (CLUSTERED | NONCLUSTERED )? columnList 
          | CLUSTERED COLUMNSTORE 
          | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
          |CLUSTERED COLUMNSTORE (WITH LEFT_PAREN  COMPRESSION_DELAY EQ_OR_ASSIGN (NUMBER MINUTES?) RIGHT_PAREN)?

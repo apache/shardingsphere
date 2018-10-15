@@ -91,7 +91,7 @@ windowFrameFollowing
     | CURRENT ROW  
     ;
 
-columnNameWithSortsWithParen
+columnList
     : LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
     ;
     

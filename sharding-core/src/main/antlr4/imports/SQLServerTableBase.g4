@@ -148,14 +148,14 @@ primaryKeyUnique
     
 diskTablePrimaryConstraintOption    
     : (CLUSTERED | NONCLUSTERED)?   
-    columnNameWithSortsWithParen
+    columnList
     primaryKeyWithClause?
     primaryKeyOnClause?
     ;
 
 memoryTablePrimaryConstraintOption    
     : NONCLUSTERED
-    (columnNameWithSortsWithParen 
+    (columnList 
            | hashWithBucket)
     ;
  
