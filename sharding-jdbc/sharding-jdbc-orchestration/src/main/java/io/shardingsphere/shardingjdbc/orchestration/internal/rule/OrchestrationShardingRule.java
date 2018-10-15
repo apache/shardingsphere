@@ -16,6 +16,7 @@
  */
 package io.shardingsphere.shardingjdbc.orchestration.internal.rule;
 
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -29,9 +30,16 @@ import java.util.LinkedList;
  */
 public final class OrchestrationShardingRule extends ShardingRule {
     
-    private final Collection<String> DisabledDataSourceNames = new LinkedList<>();
+    private final Collection<OrchestrationMasterSlaveRule> masterSlaveRules = new LinkedList<>();
     
     public OrchestrationShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         super(shardingRuleConfig, dataSourceNames);
+        initMasterSlaveRules(shardingRuleConfig);
+    }
+    
+    private void initMasterSlaveRules(final ShardingRuleConfiguration shardingRuleConfig) {
+        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
+            masterSlaveRules.add(new OrchestrationMasterSlaveRule(each));
+        }
     }
 }
