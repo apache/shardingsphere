@@ -37,4 +37,4 @@ chapter = true
  - 请您在开发过程中遵循Sharding-Sphere的[开发规范](/cn/contribute/convention/)。并在准备提交pull request之前完成相应的检查。
  - 完成后，发送一个pull request到sharding-sphere的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
- - 最后，恭喜您已经成为了Sharding的官方贡献者！
+ - 最后，恭喜您已经成为了Sharding-Sphere的官方贡献者！
