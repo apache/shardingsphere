@@ -31,7 +31,7 @@ public class MasterSlaveOnly {
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/etcd/cloud/masterSlave.xml" : "META-INF/etcd/local/masterSlave.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
-            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            CommonService commonService = (CommonService) applicationContext.getBean("springEntityService");
             commonService.processSuccess();
         }
     }
