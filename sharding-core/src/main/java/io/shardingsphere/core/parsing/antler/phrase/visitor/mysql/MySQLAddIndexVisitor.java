@@ -43,8 +43,8 @@ public class MySQLAddIndexVisitor implements PhraseVisitor {
         if (null == addIndexCtxs) {
             return;
         }
-        
-        for(ParserRuleContext each : addIndexCtxs) {
+
+        for (ParserRuleContext each : addIndexCtxs) {
             ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(each,
                     RuleNameConstants.INDEX_NAME);
             if (null != indexNameNode) {

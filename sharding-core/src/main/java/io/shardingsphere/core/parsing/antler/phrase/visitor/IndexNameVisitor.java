@@ -35,11 +35,11 @@ public class IndexNameVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
         ParserRuleContext indexNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
-        if(null == indexNameCtx) {
+        if (null == indexNameCtx) {
             return;
         }
         String tableName = null;
-        if(!ddlStatement.getTables().isEmpty()) {
+        if (!ddlStatement.getTables().isEmpty()) {
             tableName = ddlStatement.getTables().getSingleTableName();
         }
         statement.getSqlTokens().add(VisitorUtils.visitIndex(indexNameCtx, tableName));

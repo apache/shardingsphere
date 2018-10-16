@@ -53,8 +53,7 @@ public final class VisitorRegistry {
         visitors.put(DatabaseType.Oracle + "AlterTable", new OracleAlterTableVisitor());
         visitors.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
         visitors.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
-        
-        
+
         visitors.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
         visitors.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());

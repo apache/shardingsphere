@@ -45,7 +45,7 @@ public class MySQLDropIndexVisitor implements PhraseVisitor {
             return;
         }
 
-        for(ParserRuleContext each : dropIndexDefs) {
+        for (ParserRuleContext each : dropIndexDefs) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;
