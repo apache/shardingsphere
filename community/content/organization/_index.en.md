@@ -7,21 +7,22 @@ chapter = true
 
 ## Project Management Committee (PMC)
 
-As a member of PMC, you **must** contribute and maintain the features or modules, and also take part in project management and building the eco-system. Because of that, you have following rights:
+As a PMC member, you **must** contribute codes and maintain features and modules of the software, as well as participate in the project management and ecosystem construction work. 
+According to the duties you have undertaken, you can acquire the following rights:
 
-1. In charged with responsibility and governance for all projects/repositories in Sharding organization.
+1. Take charge of all the projects/repositories in `Sharding-Sphere` organization and govern them.
 
-1. Edit rights for all repositories.
+1. The right to edit all the repositories.
 
-1. Merge right for pull request.
+1. The right to merge pull request.
 
-1. Vote right for promoting contributor to Committer Team and PMC.
+1. The right to vote for promoting a contributor to be a committer or PMC member.
 
-1. Start a vote for promoting contributor to Committer Team and PMC, pull request or feature discussion.
+1. The right to start a vote for the promotion of a contributor to a committer or PMC member, and the discussion of pull request or feature.
 
-The current Project Management Committee is as follows (in chronological order):
+Current Project Management Committee List (in chronological order) is as follow:
 
-* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java and architect expert, Jingdong
+* 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu) Java and architect expert, JD
 
 * 曹昊, Hao Cao, [@haocao](https://github.com/haocao) Senior Architect, Dangdang
 
@@ -29,37 +30,33 @@ The current Project Management Committee is as follows (in chronological order):
 
 * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) Database and APM expert, Apache SkyWalking(incubator) PMC member
 
-* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) Ex-Director, ele.me
+* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) 2B2C CTO, BeiKe Finance
 
-* 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) Ex-Director, Orange Finance
+* 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) Ex-Director, Bestpay
 
 ## Voting
 
-In various situations the Sharding shall hold a vote. These votes can happen on the phone, email, or via a voting service, when appropriate. Voters can either respond "agree, yes, +1", "disagree, no, -1", or "abstain". A vote passes with two-thirds vote of votes cast. An abstain vote equals not voting at all.
+Sharding-Sphere needs voting under various situations, according to which, votes may be from phone, e-mail or certain voting systems. 
+Voters can reply “agree, yes, +1”, “disagree, no, -1”, or “abstain”. 
+When the “agree” vote takes two-thirds of the total vote, it is passed, whereas the “abstain” vote is equal to not voting at all.
 
 ## Internal Committer
 
-* 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) Senior engineer, Jingdong
+* 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666) Senior engineer, JD
 
-* 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) Senior DBA, Jingdong
+* 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) Senior DBA, JD
 
-* 王凯, Kai Wang, [@oracle219](https://github.com/oracle219) Architect, Dangdang
-
-* 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) Engineer, Dangdang
-
-* 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) Senior engineer, Jingdong
+* 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) Senior engineer, JD
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) QA Engineer, Dangdang
+
+* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) Senior engineer, Bestpay
 
 ## External Committer
 
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) Senior engineer, huimai365
 
-* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) Senior engineer, Orange Finance
-
 ## Mailing List
-
-* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
 
 ## IM
 

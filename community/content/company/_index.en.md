@@ -1,15 +1,15 @@
 +++
 pre = "<b>3. </b>"
-title = "End Users"
+title = "Using Companies"
 weight = 3
 chapter = true
 +++
 
-It's our pleasure if you leave the information of your organization when using Sharding.
+Welcome companies who have used Sharding-Sphere to register here, your support is our biggest encouragement.
 
-Welcome to register by `company` + `homepage` + `company type` [here](https://github.com/sharding-sphere/sharding-sphere/issues/234).
+Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `company type`.
 
-Organizations using Sharding in chronological order.
+The list here will be shown in the registered order.
 
 ## E-commerce
 
@@ -17,44 +17,48 @@ Organizations using Sharding in chronological order.
 * [912688](http://www.912688.com/)
 * [vipshop](http://www.vip.com/)
 * [TCL](http://www.tcl.com/)
-* [nanyiku](http://www.nanyiku.com/)
-* [yiwugou](http://www.yiwugou.com/)
+* [Nanyiku](http://www.nanyiku.com/)
+* [Yiwugou](http://www.yiwugou.com/)
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
-* [imrfresh](https://www.imrfresh.com/)
+* JD’s Big Data and Intelligent Supply Chain Department
+* [Imrfresh](https://www.imrfresh.com/)
+* [Dayi35](https://www.dayi35.com/)
 
 ## FinTech
 
-* [xiaoniu88](https://www.xiaoniu88.com/)
+* [Xiaoniu88](https://www.xiaoniu88.com/)
 * [HUAXIA FINANCE](https://www.huaxiafinance.com/)
-* [niiwoo](https://www.niiwoo.com/)
-* [haier cash](https://www.haiercash.com/)
+* [Niiwoo](https://www.niiwoo.com/)
+* [Haier cash](https://www.haiercash.com/)
 * [51credit](http://www.51credit.com/)
-* [sui](https://www.sui.com/)
-* [mljr](https://www.mljr.com/)
-* [tuandai](https://www.tuandai.com/)
+* [Sui](https://www.sui.com/)
+* [Mljr](https://www.mljr.com/)
+* [Tuandai](https://www.tuandai.com/)
 * [JD Finance](http://jr.jd.com/)
-* [cypfintech](https://www.cypfintech.com/)
+* [Cypfintech](https://www.cypfintech.com/)
 
 ## Information
 
-* [sohu](http://ss.sohu.com/)
-* [auto ifeng](http://auto.ifeng.com/)
-* [tianya](http://www.tianya.cn/)
-* [yiche](http://www.yiche.com/)
-* [baixing](http://www.baixing.com/)
+* [Sohu](http://ss.sohu.com/)
+* [Auto ifeng](http://auto.ifeng.com/)
+* [Tianya](http://www.tianya.cn/)
+* [Yiche](http://www.yiche.com/)
+* [Baixing](http://www.baixing.com/)
+* [Yidianzixun](https://www.yidianzixun.com/)
 
 ## O2O
 
-* [dongfang789](http://www.dongfang789.com/)
-* [zhuanzhuan](http://www.zhuanzhuan.com/)
+* [Dongfang789](http://www.dongfang789.com/)
+* [Zhuanzhuan](http://www.zhuanzhuan.com/)
 * [ChinaRoad](https://660pp.com)
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
+* [DiDi global](https://www.didiglobal.com/)
 
 ## SNS
 
-* [fotoplace](http://www.fotoplace.cc/)
+* [Fotoplace](http://www.fotoplace.cc/)
 
 ## Entertainment
 
@@ -62,29 +66,29 @@ Organizations using Sharding in chronological order.
 * [Totoro live](http://www.tvlongmao.com)
 * [BBGame](http://www.bbgameonline.com/)
 * [500px](https://500px.me/)
-* [bilibili](https://www.bilibili.com/)
+* [Bilibili](https://www.bilibili.com/)
 
-## Smart Device
+## Intelligent Hardware
 
-* [hiveview](http://www.hiveview.com/)
+* [Hiveview](http://www.hiveview.com/)
 * [41soo](http://www.41soo.com/)
 * [CIBN](http://www.91vst.com/)
-* [oppo](http://www.oppo.com/)
-* [iflytek](http://www.iflytek.com/)
+* [Oppo](http://www.oppo.com/)
+* [Iflytek](http://www.iflytek.com/)
 
-## Enterprise
+## Enterprise Service
 
-* [ffzxnet](http://www.ffzxnet.com/)
-* [quandashi](http://www.quandashi.com/)
-* [baichang](http://www.sdbaichang.com/)
-* [zhenxin safe](http://www.zhenxinsafe.com/)
-* [keruyun](http://www.keruyun.com/)
+* [Ffzxnet](http://www.ffzxnet.com/)
+* [Quandashi](http://www.quandashi.com/)
+* [Baichang](http://www.sdbaichang.com/)
+* [Zhenxin safe](http://www.zhenxinsafe.com/)
+* [Keruyun](http://www.keruyun.com/)
 * [CertusNet](http://www.certusnet.com.cn/)
 * [5grain](http://www.5grain.com/)
 * [Ruff](https://ruff.io/)
 * [19pay](http://www.19pay.com.cn/)
-* [chaojilanling](http://www.chaojilanling.cn/)
-* [cloudansys](http://www.cloudansys.com/)
+* [Chaojilanling](http://www.chaojilanling.cn/)
+* [Cloudansys](http://www.cloudansys.com/)
 
 ## Government
 
@@ -92,21 +96,27 @@ Organizations using Sharding in chronological order.
 
 ## Internet Plus
 
-* [trawe](http://www.trawe.cn/)
-* [biechipang](http://www.biechipang.net/)
-* [youxuan](http://www.youx.mobi/)
-* [huochebang](http://www.huochebang.com/)
-* [rabbitpre](http://www.rabbitpre.com/)
+* [Trawe](http://www.trawe.cn/)
+* [Biechipang](http://www.biechipang.net/)
+* [Youxuan](http://www.youx.mobi/)
+* [Huochebang](http://www.huochebang.com/)
+* [Rabbitpre](http://www.rabbitpre.com/)
+* [AreoSpace](http://www.ascf.com.cn/n4194536/)
 
 ## Express
 
-* [zto](http://www.zto.com/)
+* [ZTO Express](http://www.zto.com/)
 
 ## UGC
 
-* [xiachufang](http://www.xiachufang.com/)
+* [Xiachufang](http://www.xiachufang.com/)
 
 ## Manufacturing
 
-* [eeka](http://www.eeka.cn/)
+* [Eeka Fashion](http://www.eeka.cn/)
 * [Lily&Beauty](http://www.lrlz.com/)
+
+## Online Education
+
+* [TAL](http://www.100tal.com/)
+* [KAIKE.LA](http://www.kaike.la/)

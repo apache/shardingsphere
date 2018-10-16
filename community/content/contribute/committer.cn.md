@@ -7,7 +7,7 @@ chapter = true
 ## 成为一个提交者
 
  - 过去的6个月持续的做出贡献
- - 深入理解Sharding核心技术
+ - 深入理解Sharding-Sphere核心技术
  - 遵守开发规范
  - 高质量提交
  - 开启Google 2FA([2FA](/cn/contribute/2fa/))
@@ -27,19 +27,3 @@ chapter = true
  - 对于重要的变更，维护者需要确保它完成
  - 改进流程和工具
  - 重构
- 
-## 当前组件维护者列表
-
- - 张亮, Liang Zhang, [@terrymanu](https://github.com/terrymanu)
- - 曹昊, Hao Cao, [@haocao](https://github.com/haocao)
- - 吴晟, Sheng Wu, [@wu-sheng](https://github.com/wu-sheng)
- - 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily)
- - 张永伦, Yonglun Zhang, [@tuohai666](https://github.com/tuohai666)
- - 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero)
- - 李广云, Guangyun Li, [@guangyun1013](https://github.com/guangyun1013)
- - 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64)
- - 刘泽剑, ZeJian Liu, [@qiankunshe](https://github.com/qiankunshe)
- - 王文斌, Wenbin Wang, [@YunaiV](https://github.com/YunaiV)
- - 朱政科, Zhengke Zhu, [@CharlesMaster](https://github.com/CharlesMaster)
- - 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom)
- - 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu)

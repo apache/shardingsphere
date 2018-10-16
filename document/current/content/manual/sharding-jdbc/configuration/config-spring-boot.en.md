@@ -303,7 +303,6 @@ sharding.jdbc.config.masterslave.props.executor.size= #The number of working thr
 
 sharding.jdbc.config.sharding.orchestration.name= #Name of orchestration instance
 sharding.jdbc.config.sharding.orchestration.overwrite= #Use local configuration to overwrite registry center or not
-sharding.jdbc.config.sharding.orchestration.type= #Data source type, values should be: `sharding` or `masterslave`
 sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Namespace of zookeeper
 sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #Initial milliseconds of waiting for retry, default value is 1000 milliseconds
@@ -321,7 +320,6 @@ sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Connection digest
 
 sharding.jdbc.config.sharding.orchestration.name= #Same as Zookeeper
 sharding.jdbc.config.sharding.orchestration.overwrite= #Same as Zookeeper
-sharding.jdbc.config.sharding.orchestration.type= #Same as Zookeeper
 sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
 sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #Time to live of data, default is 60 seconds
 sharding.jdbc.config.sharding.orchestration.etcd.timeout-milliseconds= #Timeout milliseconds, default is 500 milliseconds

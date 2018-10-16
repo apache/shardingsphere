@@ -112,9 +112,11 @@ weight = 1
 ### Orchestration by Zookeeper
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+    }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
@@ -127,9 +129,11 @@ weight = 1
 ### Orchestration by Etcd
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+    }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
@@ -219,10 +223,11 @@ Subclass of ShardingStrategyConfiguration.
 
 Enumeration of properties.
 
-| *Name*            | *DataType* | *Description*                                           |
-| ----------------- | ---------- | ------------------------------------------------------- |
-| sql.show (?)      | boolean    | To show SQLS or not, default value: false               |
-| executor.size (?) | int        | The number of working threads, default value: CPU count |
+| *Name*                             | *DataType* | *Description*                                                                  |
+| ---------------------------------- | ---------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                       | boolean    | Print SQL parse and rewrite log, default value: false                          |
+| executor.size (?)                  | int        | The number of SQL execution threads, zero means no limit. default value: 0     |
+| max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
 
 #### configMap
 
@@ -289,7 +294,6 @@ Enumeration of properties.
 | --------------- | --------------------------- | ------------------------------------------------------------------- |
 | name            | String                      | Name of orchestration instance                                      |
 | overwrite       | boolean                     | Use local configuration to overwrite registry center or not         |
-| type            | OrchestrationType           | Data source type, values should be: `SHARDING` or `MASTER_SLAVE`    |
 | regCenterConfig | RegistryCenterConfiguration | Registry center configuration                                       |
 
 #### ZookeeperConfiguration

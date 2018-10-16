@@ -4,29 +4,33 @@ title = "Test Engine"
 weight = 6
 +++
 
-Sharding-Sphere provides a perfect test engine. It defines SQL in the form of XML, and each of SQL is driven by an SQL parsing unit test engine and an integration test engine, each of which provides test cases for H2, MySQL, PostgreSQL, SQL server, and Oracle databases.
-The SQL unit test covers SQL placeholders and literal dimensions, and the integration test consists of strategy and JDBC. The strategy in integration test is made up of Sharding, table Sharding, database Sharding, and a Read-write splitting, and the JDBC is made up of Statement and PreparedStatement.
-Therefore, a SQL will drive 5 kinds of databases * 2 kinds of JDBC operation modes + 5 kinds of strategies * 5 kinds of databases * 2 kinds of JDBC operation modes = 60 test cases, in order to achieve high test standard for Sharding-Sphere.
+Sharding-Sphere has provided a full test engine, which defines SQL in the form of XML. 
+Each SQL is driven by an SQL parsing unit test engine and an integration test engine, while each engine runs test cases for H2, MySQL, PostgreSQL, SQLServer and Oracle databases separately.
 
-# Integration test
+The SQL parsing unit test covers both SQL placeholder and literal dimension. 
+Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and read-write split while the latter one includes `Statement` and `PreparedStatement`.
 
-## Test environment
+Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter transmission modes + 5 kinds of databases * 5 kinds of Sharding strategies * 2 kinds of JDBC operation modes = 60 test cases, to enable Sharding-Sphere to achieve the pursuit of high quality.
 
-You need to prepare database environment before performing an integration test:
+# Integration Test
 
-1. Run resources/integrate/schema/manual_schema_create.sql in test database environment to create database (MySQL、PostgreSQL、SQLServer) and Schema（ Only for Oracle）.
+## Test Environment
 
-1. Modify databases in sharding-jdbc/src/test/resources/integrate/env.properties to specify the test databases.
+Since the actual database environment is involved in the integrated test, the following preparation work should be finished before the test:
 
-1. Run All integration tests to get test results.
+1. Run `resources/integrate/schema/manual_schema_create.sql` in the database to be tested. Create databases (MySQL, PostgreSQL and SQLServer) and Schema (only Oracle).
 
-## Notices
+1. Modify databases in `sharding-jdbc/src/test/resources/integrate/env.properties` to appoint the test database to be tested.
 
-1. To test Oracle, please add Oracle driver dependencies to the POM file.
-1. In order to ensure the integrity of the test data, we use 10 splitting-databases and 10 splitting-tables to execute the integration test of Sharding. Therefore it will take a long time to run the test cases.
+1. Run `AllIntegrateTests` to test the result.
 
-# The engine test of SQL parsing
+## Notice
 
-## Test environment
+1. If Oracle needs to be tested, please add Oracle driver dependencies to the pom.xml.
+1. 10 splitting-databases and 10 splitting-tables are used in the integrated test to ensure the test data is full, so it will take a relatively long time to run the test cases.
 
-It is based on SQL parsing, so you do not need to connect to the database and run AllParsingTests directly.
+# SQL Parsing Engine Test
+
+## Test Environment
+
+SQL Parsing Engine Test is the test based on SQL itself, so AllParsingTests can be run directly without connecting to the database.

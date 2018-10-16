@@ -40,7 +40,3 @@ cd ../..
 
 cd ..
 mv community/public/* target/community/
-
-
-
-

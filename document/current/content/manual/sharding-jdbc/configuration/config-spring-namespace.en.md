@@ -364,7 +364,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | ----------------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
 | id                      | Attribute | Spring Bean Id                                                                                             |
 | sharding-column         | Attribute | Name of sharding column                                                                                    |
-| precise-algorithm-ref   | Attribute | Reference of precise algorithm used for `=` and `IN`. This class need to implements RangeShardingAlgorithm |
+| precise-algorithm-ref   | Attribute | Reference of precise algorithm used for `=` and `IN`. This class need to implements PreciseShardingAlgorithm |
 | range-algorithm-ref (?) | Attribute | Reference of range algorithm used for `BETWEEN`. This class need to implements RangeShardingAlgorithm      |
 
 #### \<sharding:complex-strategy />
@@ -432,41 +432,35 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 
 ### Sharding + orchestration
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<sharding:data-source />
+#### \<orchestration:sharding-data-source />
 
-| *Name*              | *Type*    | *Description*                                               |
-| ------------------- | --------- | ----------------------------------------------------------- |
-| id                  | Attribute | Same as sharding                                            |
-| sharding-rule       | Tag       | Same as sharding                                            |
-| props (?)           | Tag       | Same as sharding                                            |
-| config-map (?)      | Tag       | Same as sharding                                            |
-| registry-center-ref | Attribute | Reference of orchestration registry center                  |
-| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+| *Name*                  | *Type*    | *Description*                                                |
+| ----------------------- | --------- | ------------------------------------------------------------ |
+| id                      | Attribute  | ID                                                          |
+| data-source-ref (?)     | Attribute  | The id of data source to be orchestrated                    |
+| registry-center-ref     | Attribute  | The id of registry center                                   |
+| overwrite               | Attribute  | Use local configuration to overwrite registry center or not |
 
 ### Read-write splitting + orchestration
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<master-slave:data-source />
+#### \<orchestration:master-slave-data-source />
 
-| *Name*                  | *Type*    | *Description*                    |
-| ----------------------- | --------- | -------------------------------- |
-| id                      | Attribute | Same as read-write splitting     |
-| master-data-source-name | Attribute | Same as read-write splitting     |
-| slave-data-source-names | Attribute | Same as read-write splitting     |
-| strategy-ref (?)        | Attribute | Same as read-write splitting     |
-| strategy-type (?)       | Attribute | Same as read-write splitting     |
-| config-map (?)          | Tag       | Same as read-write splitting     |
-| registry-center-ref     | Attribute | Same as sharding + orchestration |
-| overwrite               | Attribute | Same as sharding + orchestration |
+| *Name*                  | *Type*    | *Description*                                                |
+| ----------------------- | --------- | ------------------------------------------------------------ |
+| id                      | Attribute  | ID                                                          |
+| data-source-ref (?)     | Attribute  | The id of data source to be orchestrated                    |
+| registry-center-ref     | Attribute  | The id of registry center                                   |
+| overwrite               | Attribute  | Use local configuration to overwrite registry center or not |
 
 ### Orchestration registry center
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
+Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<reg:zookeeper />
+#### \<orchestration:zookeeper />
 
 | *Name*                              | *Type*    | *Description*                                                                   |
 | ----------------------------------- | --------- | ------------------------------------------------------------------------------- |
@@ -480,7 +474,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.
 | connection-timeout-milliseconds (?) | Attribute | Connection timeout milliseconds, default is 15000 milliseconds                  |
 | digest (?)                          | Attribute | Connection digest                                                               |
 
-#### \<reg:etcd />
+#### \<orchestration:etcd />
 
 | *Name*                          | *Type*    | *Description*                                                                            |
 | ------------------------------- | --------- | ---------------------------------------------------------------------------------------- |

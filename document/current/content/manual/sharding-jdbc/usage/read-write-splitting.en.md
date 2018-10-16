@@ -11,7 +11,7 @@ weight = 2
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-jdbc</artifactId>
+    <artifactId>sharding-jdbc-core</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 ```
@@ -168,11 +168,11 @@ sharding.jdbc.config.masterslave.props.sql.show=true
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/masterslave" 
+    xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.io/schema/shardingsphere/masterslave 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/master-slave.xsd 
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd 
                         ">
     <bean id="ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />

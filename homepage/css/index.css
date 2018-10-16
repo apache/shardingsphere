@@ -692,7 +692,7 @@
 .jdbcMsg .l-image .nl-img {height: 120px; width: 120px;}
 .jdbcMsg .l-msg { display: inline-block; vertical-align: middle; }
 .jdbcMsg .l-m-tit { font-size: 26px; letter-spacing: 1.44px; line-height: 50px; }
-.jdbcMsg .l-m-info { margin-top: 10px; font-size: 14px; letter-spacing: 0.64px; line-height: 35px; }
+.jdbcMsg .l-m-info { margin-top: 10px; font-size: 16px; letter-spacing: 0.64px; line-height: 35px; }
 
 .footer .list { height: 200px; background-color: #161616; line-height: 300px; }
 .footer .copyright { clear: both; font-size: 18px; line-height: 18px; color: #fff; text-align: center;}
@@ -702,6 +702,7 @@
 .footer .social a { display: inline-block; background-image: url(../images/social_all.png); background-repeat: no-repeat; background-size: auto; width: 50px; height: 50px; border-radius: 5px; margin-right: 10px; }
 .footer .social a:hover { background-color: #fff; }
 .footer .social a span { position: absolute; display: block; height: 0; overflow: hidden; }
+
 a.twitter { background-position: 0 0; }
 a.twitter:hover { background-position: 0 100%; }
 a.zhihu { background-position: -50px 0; }

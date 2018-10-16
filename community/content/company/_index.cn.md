@@ -5,7 +5,7 @@ weight = 3
 chapter = true
 +++
 
-欢迎采用了Sharding的公司在此登记，您的支持是我们最大的动力。
+欢迎采用了Sharding-Sphere的公司在此登记，您的支持是我们最大的动力。
 
 请按`公司名` + `首页` + `公司类型`的格式在[此处](https://github.com/sharding-sphere/sharding-sphere/issues/234)登记。
 
@@ -21,7 +21,9 @@ chapter = true
 * [义乌购](http://www.yiwugou.com/)
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
+* 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
+* [大易有塑](https://www.dayi35.com/)
 
 ## 互联网金融
 
@@ -43,6 +45,7 @@ chapter = true
 * [天涯社区](http://www.tianya.cn/)
 * [易车网](http://www.yiche.com/)
 * [百姓网](http://www.baixing.com/)
+* [一点资讯](https://www.yidianzixun.com/)
 
 ## O2O
 
@@ -51,6 +54,7 @@ chapter = true
 * [PP停车](https://660pp.com)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
+* [滴滴小桔车服](https://www.didiglobal.com/)
 
 ## 社交平台
 
@@ -97,6 +101,7 @@ chapter = true
 * [YOU选](http://www.youx.mobi/)
 * [货车帮](http://www.huochebang.com/)
 * [兔展](http://www.rabbitpre.com/)
+* [航天长峰](http://www.ascf.com.cn/n4194536/)
 
 ## 物流
 
@@ -110,3 +115,8 @@ chapter = true
 
 * [赢家服饰](http://www.eeka.cn/)
 * [丽人丽妆](http://www.lrlz.com/)
+
+## 在线教育
+
+* [好未来](http://www.100tal.com/)
+* [开课啦](http://www.kaike.la/)

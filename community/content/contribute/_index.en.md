@@ -5,4 +5,7 @@ weight = 2
 chapter = true
 +++
 
-Sharding is a open and active community, we always welcome high-value contributors to build Apache Way together. Before you become a contributor, please read [Contributors' Guide](/en/contribute/contributor/) and [Conventions](/en/contribute/convention/). If you want to be a committer , please read [Committers' Guide](/en/contribute/committer/). Thank you for attend Sharding. 
+Sharding-Sphere is a very open and active community, where excellent contributors of high value are welcomed to join us in the construction of `Apache Way` together. 
+Before becoming a contributor, please read the [Contributors' Guide](/en/contribute/contributor/) and the [Development Norm](/en/contribute/convention/). 
+If you want to be a committer , please read [Committers' Guide](/en/contribute/committer/). 
+Thank you for attend Sharding-Sphere.

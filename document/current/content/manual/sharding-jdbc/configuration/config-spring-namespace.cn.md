@@ -20,23 +20,26 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
-                        http://www.springframework.org/schema/tx/spring-tx.xsd">
-    <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
-    
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://shardingsphere.io/schema/shardingsphere/orchestration
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+    <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="shardingDataSource" />
+        <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.fixture.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -47,36 +50,41 @@ weight = 4
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
-    <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+
+    <bean id="demo_ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
-    
-    <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+
+    <bean id="demo_ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
-    
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
-    
+
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.fixture.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.fixture.algorithm.PreciseModuloTableShardingAlgorithm" />
+
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
-    
-    <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds0,ds1">
+
+    <sharding:data-source id="realShardingDatabasesTablesDataSource">
+        <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
+
+    <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" registry-center-ref="regCenter" overwrite="true" />
 </beans>
+
 ```
 
 ### 读写分离
@@ -89,23 +97,26 @@ weight = 4
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/context 
+       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.io/schema/shardingsphere/masterslave  
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
-    <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
-    
+                        http://shardingsphere.io/schema/shardingsphere/masterslave
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://shardingsphere.io/schema/shardingsphere/orchestration
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+    <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="masterSlaveDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.fixture.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -116,39 +127,35 @@ weight = 4
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
-    <bean id="ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+
+    <bean id="demo_ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
     </bean>
-    
-    <bean id="ds_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+
+    <bean id="demo_ds_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_slave_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
     </bean>
-    
-    <bean id="ds_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_slave1" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+
+    <bean id="demo_ds_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_slave_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
     </bean>
-    
+
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
-    
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
-        <master-slave:props>
-            <prop key="sql.show">${sql_show}</prop>
-            <prop key="executor.size">10</prop>
-            <prop key="foo">bar</prop>
-        </master-slave:props>
-    </master-slave:data-source>
-            
+
+    <master-slave:data-source id="realMasterSlaveDataSource" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" />
+
+    <orchestraion:master-slave-data-source id="masterSlaveDataSource"  data-source-ref="realMasterSlaveDataSource" registry-center-ref="regCenter" overwrite="true" />
 </beans>
+
 ```
 
 ### 数据分片 + 读写分离
@@ -161,26 +168,26 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.io/schema/shardingsphere/masterslave
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
-    <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
-    
+                        http://shardingsphere.io/schema/shardingsphere/orchestration
+                        http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+    <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
+    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa"/>
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="shardingDataSource" />
+        <property name="dataSource" ref="shardingMasterSlaveDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.fixture.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -191,67 +198,77 @@ weight = 4
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
-    
-    <bean id="ds_master0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+
+    <bean id="demo_ds_master_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
 
-    <bean id="ds_master0_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+    <bean id="demo_ds_master_0_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
 
-    <bean id="ds_master0_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave1" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+    <bean id="demo_ds_master_0_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
 
-    <bean id="ds_master1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master1" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+    <bean id="demo_ds_master_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
 
-    <bean id="ds_master1_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+    <bean id="demo_ds_master_1_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
 
-    <bean id="ds_master1_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave1" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
+    <bean id="demo_ds_master_1_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
     </bean>
 
     <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
 
-    <master-slave:data-source id="ds_ms0" master-data-source-name="ds_master0" slave-data-source-names="ds_master0_slave0, ds_master0_slave1" strategy-ref="randomStrategy" />
-    <master-slave:data-source id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_ms_${user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
 
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
-    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
-
-    <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_ms0,ds_ms1">
+    <sharding:data-source id="realShardingMasterSlaveDataSource">
+        <sharding:sharding-rule data-source-names="demo_ds_master_0,demo_ds_master_1,demo_ds_master_0_slave_0, demo_ds_master_0_slave_1,demo_ds_master_1_slave_0, demo_ds_master_1_slave_1">
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="demo_ds_ms_0" master-data-source-name="demo_ds_master_0" slave-data-source-names="demo_ds_master_0_slave_0, demo_ds_master_0_slave_1" strategy-ref="randomStrategy" />
+                <sharding:master-slave-rule id="demo_ds_ms_1" master-data-source-name="demo_ds_master_1" slave-data-source-names="demo_ds_master_1_slave_0, demo_ds_master_1_slave_1" strategy-ref="randomStrategy" />
+            </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_ms_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_ms_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
+
+    <orchestraion:sharding-data-source id="shardingMasterSlaveDataSource" data-source-ref="realShardingMasterSlaveDataSource" registry-center-ref="regCenter" overwrite="true" />
 </beans>
+
 ```
 
 ### 使用Zookeeper的数据治理
@@ -259,23 +276,15 @@ weight = 4
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
-       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:orchestration="http://shardingsphere.io/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
-    
-    <reg:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
-    <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
-    <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
+                           http://shardingsphere.io/schema/shardingsphere/orchestration
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+    <orchestration:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
 </beans>
+
 ```
 
 ### 使用Etcd的数据治理
@@ -284,21 +293,12 @@ weight = 4
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
-       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
+       xmlns:orchestration="http://shardingsphere.io/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
-    
-    <reg:etcd id="regCenter" server-lists="http://localhost:2379" />
-    <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
-    <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
+                           http://shardingsphere.io/schema/shardingsphere/orchestration
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+    <orchestration:etcd id="regCenter" server-lists="http://localhost:2379" timeout-milliseconds="3000" max-retries="3" />
 </beans>
 ```
 
@@ -433,42 +433,35 @@ weight = 4
 
 ### 数据分片 + 数据治理
 
-命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<sharding:data-source />
+#### \<orchestration:sharding-data-source />
 
-| *名称*              | *类型* | *说明*                                                                 |
+| *名称*              | *类型* | *说明*                                                                  |
 | ------------------- | ----- | ---------------------------------------------------------------------- |
-| id                  | 属性  | 配置同数据分片                                                           |
-| sharding-rule       | 标签  | 配置同数据分片                                                           |
-| config-map (?)      | 标签  | 配置同数据分片                                                           |
-| props (?)           | 标签  | 配置同数据分片                                                           |
-| registry-center-ref | 属性  | 数据治理注册中心Bean引用                                                  |
-| overwrite           | 属性  | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
+| id                  | 属性   | ID                                                                      |
+| data-source-ref (?) | 属性   | 被治理的数据库id                                                          |
+| registry-center-ref | 属性   | 注册中心id                                                               |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖    |
 
 ### 读写分离 + 数据治理
 
-命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<master-slave:data-source />
+#### \<orchestration:master-slave-data-source />
 
-| *名称*                  | *类型* | *说明*                 |
-| ----------------------- | ----- | ---------------------- |
-| id                      | 属性  | 配置同读写分离           |
-| master-data-source-name | 属性  | 配置同读写分离           |
-| slave-data-source-names | 属性  | 配置同读写分离           |
-| strategy-ref (?)        | 属性  | 配置同读写分离           |
-| strategy-type (?)       | 属性  | 配置同读写分离           |
-| config-map (?)          | 标签  | 配置同读写分离           |
-| props (?)               | 标签  | 配置同数据分片           |                                               
-| registry-center-ref     | 属性  | 配置同数据分片 + 数据治理 |
-| overwrite               | 属性  | 配置同数据分片 + 数据治理 |
+| *名称*              | *类型* | *说明*                                                                  |
+| ------------------- | ----- | ---------------------------------------------------------------------- |
+| id                  | 属性   | ID                                                                      |
+| data-source-ref (?) | 属性   | 被治理的数据库id                                                          |
+| registry-center-ref | 属性   | 注册中心id                                                               |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖    |
 
 ### 数据治理注册中心
 
-命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
+命名空间：http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<reg:zookeeper />
+#### \<orchestration:zookeeper />
 
 | *名称*                              | *类型* | *说明*                                                                                |
 | ----------------------------------- | ----- | ------------------------------------------------------------------------------------ |
@@ -482,7 +475,7 @@ weight = 4
 | connection-timeout-milliseconds (?) | 属性  | 连接超时毫秒数，默认15000毫秒                                                            |
 | digest (?)                          | 属性  | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                              |
 
-#### \<reg:etcd />
+#### \<orchestration:etcd />
 
 | *名称*                          | *类型* | *说明*                                                                                         |
 | ------------------------------- | ----- | --------------------------------------------------------------------------------------------- |

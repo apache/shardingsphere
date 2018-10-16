@@ -39,3 +39,8 @@ ShardingRuleConfiguration是分库分表配置的核心和入口，它可以包�
 2. 通过Factory对象将Configuration对象转化为Rule对象。
 3. 通过Factory对象将Rule对象与DataSource对象装配。
 4. Sharding-JDBC使用DataSource对象进行分库。
+
+## 使用约定
+
+在`io.shardingsphere.api`和`io.shardingsphere.shardingjdbc.api` 包中的类是面向用户的API，每次修改都会在release notes中明确声明。
+其他包中的类属于内部实现，可能随时进行调整，`请勿直接使用`。

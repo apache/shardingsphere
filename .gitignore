@@ -1,6 +1,9 @@
 # maven ignore
 target/
 
+# hugo ignore
+public/
+
 # eclipse ignore
 .settings/
 .project

@@ -9,7 +9,7 @@ chapter = true
 
 作为PMC成员，你 **必须** 贡献代码并维护软件特性和功能模块，还要参与项目管理和构建生态系统的工作。根据以上所承担的义务, 你会获得如下一系列权限：
 
-1. 主管Sharding组织中所有项目/仓库的责任和治理工作。
+1. 主管Sharding-Sphere组织中所有项目/仓库的责任和治理工作。
 
 1. 所有仓库的编辑权限。
 
@@ -29,13 +29,13 @@ chapter = true
 
 * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) 数据库和APM专家, Apache SkyWalking（孵化器）PMC成员
 
-* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) 高级总监, 饿了么
+* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) 2B2C CTO, 贝壳金服
 
 * 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) 高级总监, 翼支付
 
 ## 投票
 
-Sharding在很多情况下需要投票。选票可以视情况通过手机、电子邮件或某个投票系统产生。投票人可以回复“agree, yes, +1”，“disagree, no, -1”或“弃权”。赞成票占总票数的三分之二即可通过本次投票。弃权票等同于未投票。
+Sharding-Sphere在很多情况下需要投票。选票可以视情况通过手机、电子邮件或某个投票系统产生。投票人可以回复“agree, yes, +1”，“disagree, no, -1”或“弃权”。赞成票占总票数的三分之二即可通过本次投票。弃权票等同于未投票。
 
 ## Internal Committer
 
@@ -43,23 +43,17 @@ Sharding在很多情况下需要投票。选票可以视情况通过手机、电
 
 * 潘娟, Juan Pan, [@tristaZero](https://github.com/tristaZero) 高级DBA, 京东
 
-* 王凯, Kai Wang, [@oracle219](https://github.com/oracle219) 架构师, 当当
-
-* 林嘉琦, Jiaqi Lin, [@chidaodezhongsheng](https://github.com/chidaodezhongsheng) 工程师, 当当
-
 * 赵俊, Jun Zhao, [@cherrylzhao](https://github.com/cherrylzhao) 高级工程师, 京东
 
 * 岳令, Ling Yue, [@ling.yue](https://github.com/yue530tom) 测试工程师, 当当
+
+* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 翼支付
 
 ## External Committer
 
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
 
-* 陈清阳, QingYang Chen, [@beckhampu](https://github.com/beckhampu) 高级工程师, 甜橙金融
-
 ## 邮件列表
-
-* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
 
 ## 即时通信
 

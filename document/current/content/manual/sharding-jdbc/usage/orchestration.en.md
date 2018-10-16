@@ -30,7 +30,7 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     zkConfig.setNamespace("sharding-sphere-orchestration");
 
     // Configure orchestration configuration
-    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false, OrchestrationConfiguration.SHARDING);
+    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false);
 
     // Get data source
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
@@ -43,7 +43,6 @@ To configure by yaml, similar with the configuration method of java codes:
 ```yaml
 orchestration:
   name: orchestration-sharding-data-source
-  type: SHARDING
   overwrite: false
   zookeeper:
     serverLists: localhost:2181
@@ -78,7 +77,6 @@ orchestration:
 
 ```properties
 sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
-sharding.jdbc.config.orchestration.type=sharding
 sharding.jdbc.config.orchestration.overwrite=false
 sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
 sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestration
@@ -88,15 +86,16 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestra
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding
-                        http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                        ">
-    <sharding:data-source id="shardingDatabaseTableDataSource" registry-center-ref="regCenter" />
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+     <import resource="namespace/shardingDataSourceNamespace.xml" />
+     <orchestraion:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+     <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
 </beans>
 ```
 

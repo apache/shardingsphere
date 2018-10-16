@@ -55,8 +55,9 @@
                     <img class="l-img" src="http://ovfqtdb4e.bkt.clouddn.com/homepage/blue-logo.png" alt="">
                     Sharding-Sphere
                 </div>
-                <div class="title">开源&emsp;快速&emsp;共享</div>
-                <div class="msg">Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款产品组成。3款产品提供标准化的数据分片、读写分离、柔性事务和数据治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。</div>
+                <div class="title">开源&emsp;极客&emsp;社区</div>
+                <div class="msg">Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。</div>
+                <div class="msg">Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。</div>
                 <div class="button"><a class="btn" href="http://shardingsphere.io/document/current/cn/" target="_blank">了解更多</a></div>
                 <div class="other">
                     <div class="o-list">
@@ -84,29 +85,9 @@
                         <div class="l-msg">
                             <div class="l-m-tit">数据分片</div>
                             <div class="l-m-info">
-                                <p>分库 + 分表<p>
-                                <p>支持聚合，分组，排序，分页，OR，关联查询等复杂查询语句<p>
-                                <p>支持DML，DDL，TCL以及数据库管理语句<p>
-                                <p>支持=，BETWEEN，IN的分片操作符<p>
-                                <p>自定义的灵活分片策略，支持多分片键共用，支持行表达式<p>
-                                <p>基于Hint的强制路由<p>
-                                <p>分布式主键<p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list">
-                    <div class="w1200">
-                        <div class="l-image">
-                            <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/read-write-splitting.png" class="nl-img" alt="">
-                        </div>
-                        <div class="l-msg">
-                            <div class="l-m-tit">读写分离</div>
-                            <div class="l-m-info">
-                                <p>一主多从的读写分离</p>
-                                <p>同一线程内的数据一致性</p>
-                                <p>支持分库分表与读写分离共同使用</p>
-                                <p>基于Hint的强制主库路由</p>
+                                <p>分库 & 分表</p>
+                                <p>读写分离</p>
+                                <p>分布式主键</p>
                             </div>
                         </div>
                     </div>
@@ -117,10 +98,10 @@
                             <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/base-transaction.png" class="nl-img" alt="">
                         </div>
                         <div class="l-msg">
-                            <div class="l-m-tit">柔性事务</div>
+                            <div class="l-m-tit">分布式事务</div>
                             <div class="l-m-info">
-                                <p>最大努力送达型事务</p>
-                                <p>TCC型事务(TBD)</p>
+                                <p>XA强一致事务</p>
+                                <p>柔性事务</p>
                             </div>
                         </div>
                     </div>
@@ -131,11 +112,13 @@
                             <img src="http://ovfqtdb4e.bkt.clouddn.com/homepage/orchestration.png" class="nl-img" alt="">
                         </div>
                         <div class="l-msg">
-                            <div class="l-m-tit">数据治理</div>
+                            <div class="l-m-tit">数据库治理</div>
                             <div class="l-m-info">
-                                <p>配置中心，配置动态化</p>
-                                <p>客户端熔断</p>
-                                <p>支持Open Tracing协议</p>
+                                <p>配置动态化</p>
+                                <p>熔断 & 禁用</p>
+                                <p>Open Tracing</p>
+                                <p>多数据副本 (规划中)</p>
+                                <p>弹性伸缩 (规划中)</p>
                             </div>
                         </div>
                     </div>
@@ -149,9 +132,8 @@
                             <div class="l-m-tit">兼容性</div>
                             <div class="l-m-info">
                                 <p>Sharding-JDBC兼容所有的Java ORM框架以及数据库连接池</p>
-                                <p>Sharding-JDBC兼容MySQL、PostgreSQL、Oracle和SQLServer数据库</p>
                                 <p>Sharding-Proxy兼容全部异构语言</p>
-                                <p>Sharding-Sidecar在Kubernetes/Mesos环境提供云原生支持(TBD)</p>
+                                <p>Sharding-Sidecar在Kubernetes/Mesos环境提供云原生支持 (规划中)</p>
                             </div>
                         </div>
                     </div>
@@ -180,7 +162,6 @@
                 @Sharding-Sphere
             </div>
         </div>
-        
     </main>
 </footer>
 </html>

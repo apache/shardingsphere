@@ -4,7 +4,46 @@ title = "Hint"
 weight = 3
 +++
 
+## Introduction
+
+Sharding-Sphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
+
+Main usages of Hint:
+
+1. Sharding column does not exist in SQL or tables in databases, but exist in external business logic. Therefore, it is possible to get the sharding result by Hint.
+
+2. Mandatory Master routing strategy based in Hint.
+
 ## Sharding with hint
+
+### configuration
+
+Hint is used for mandatory data sharding, which requires HintManager to be used together with database or table ShardingStrategy. If configuring DatabaseShardingStrategy with hint strategy, HintManager can be used to inject the database sharding value. 
+Similarly, if configuring TableShardingStrategy with hint strategy, you can inject table sharding values using HintManager. Therefore, before Hint is used, Hint sharding strategy needs to be configured.
+
+The code is as follows:
+
+```yaml
+shardingRule:
+  tables:
+   t_order:
+        actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
+        databaseStrategy:
+          hint:
+            algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm
+        tableStrategy:
+          hint:
+            algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: demo_ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  props:
+      sql.show: true
+```
 
 ### Instantiation
 
@@ -17,7 +56,8 @@ HintManager hintManager = HintManager.getInstance();
 - To add Sharding columns and corresponding data of data source by hintManager.addDatabaseShardingValue.
 - To add Sharding columns and corresponding data of table by hintManager.addTableShardingValue.
 
-There are two overload methods of the registration for each kind of sharding, and the shorter method can simplify the sharding injection of the = condition.
+> In the case of sharding databases without sharding tables, you can use `hintManager.setDatabaseShardingValue` method to add sharding value to force routing to only one database. 
+In this way, the SQL parsing and rewriting phases are skipped to improve overall execution efficiency.
 
 ### Clean sharding columns and sharding values
 

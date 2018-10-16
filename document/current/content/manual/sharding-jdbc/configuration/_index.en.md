@@ -61,3 +61,8 @@ The red part of the figure represents internal objects, which are used by Shardi
 1. The Configuration object is transformed into the Rule object through the Factory object.
 1. The Rule object is bound to the DataSource object through the Factory object.
 1. Sharding-JDBC operates Sharding and Read-write splitting on DataSource object.
+
+## Convention
+
+Classes in package `io.shardingsphere.api` and `io.shardingsphere.shardingjdbc.api` is API for end users, every update will declare at release notes.
+Classes in other packages is internal implementation, maybe refactor in anytime, please `DO NOT USE` them.

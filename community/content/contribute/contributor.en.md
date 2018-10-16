@@ -4,37 +4,37 @@ weight = 1
 chapter = true
 +++
 
-You can report a bug, submit a new feature enhancement recommendation, or commit codes by a pull request.
+You can report a bug, submit a new function enhancement recommendation, or submit a development patch about the content above directly.
 
-## Reporting Bugs
+## Submit an Issue
 
- - Before report a bug, please search from google to confirm you cannot find any hint on it.
- - Look [issues List](https://github.com/sharding-sphere/sharding-sphere/issues) to confirm this issue is not a duplicated one.
+ - Before submitting an issue, please go through a comprehensive search to make sure the problem cannot be solved just by searching.
+ - Check the [issue list](https://github.com/sharding-sphere/sharding-sphere/issues) to make sure the problem is not repeated.
  - [Create](https://github.com/sharding-sphere/sharding-sphere/issues/new) a new issue.
- - Define a clear and descriptive title for the issue.
- - If bug reported, please provide information below:
-       - Details for reproduce bug step by step. Include SQL, configuration, expected results, actual results and tracing log.
-       - Sharding and Operation System version.
-       - Source code to reproduce bug on github cna copy the link here.
-       - Stack trace if exception thrown.
-       - Screenshot and animated gif to help bug reproduce if necessary.
-       - Screenshot for CPU, Memory, Network and IO stat if performance issue.
- - If enhancement recommendation reported, please provide information below:
-       - Details for enhancement behaviour.
-       - Explain why this enhancement is general feature for most developers.
-       - List similar features which already available in other product if possible. Both open source and commercial software are available.
- - Assign label after create issue. Label should be bug, enhancement, discussion and so on.
- - Please pay attention on the issue and provide more information during discuss.
- - Please close issue when it is resolved. If you don't close it, we will close it after 3 days。
- - If this issue has new information, please reopen it again. Please note, issue can reopen which only closed by yourself. If the issue is closed by us, you have no permission to reopen any more.
+ - Define the issue with a clear and descriptive title.
+ - If what you submit is a bug, please try to provide the following information:
+       - Detailed descriptions about the procedures to reproduce it, including the SQL used, configuration, the expected result, the actual result and detailed TRACE log.
+       - Sharding-Sphere and the operating system version.
+       - Demo codes to reproduce the problem on github.
+       - Full stack log if exception thrown.
+       - Screenshot or animated gif, if possible, to help in demonstrating the problem production procedure.
+       - Profile screenshot of CPU, memory or network disk IO, if performance problem concerned.
+ - If what you submit is a recommendation, please try to provide the following information:
+       - Detailed descriptions of the behavior mode of enhancement function.
+       - Explanations for why this function is useful to most users, because a new function should be generally applicable.
+       - Similar functions that other database middleware already have, if possible, from both open source software and business software.
+       - Assign appropriate labels after submitting an issue, such as bug, enhancement, discussion, etc.
+       - Please stay focused on the submitted issue and provide further necessary information.
+       - Please close the solved issue. If you do not do that in time, we will close it after 7 days.
+       - Please reopen the issue closed previously, if it has new progress. Please notice that, you have only the right to reopen the issue closed by yourself, but not the one expired and shut down by us.
 
-## Commit pull request
+## Submit Pull Request
 
- - Please choose a interested issue, or create a new issue and then settle a correct label.
- - Reply a deadline message to pickup this issue. 
- - Find a mentor in [Core developers list](/en/organization/), he will give you feedback for design and implements.
- - Fork to your github repo and begin to work.
- - Please follow Sharding's [Development conventions](/en/contribute/convention/), and complete check before pull request submit.
- - Submit a pull request to dev branch when finished, please do not submit pull request to master.
- - Mentor will do code review and discuss some details, include design, implement, performance and code style. Code will be merged until mentor accepted.
- - Finally, congratulations that you have become the official contributor for Sharding!
+ - Please choose the issue to be edited. If it is a new issue discovered or a new function enhancement to offer, please create an issue and set the right label for it.
+ - After choosing the relevant issue, please reply with a deadline to indicate that you are working on it.
+ - Find a mentor from the [developer list](/en/organization/) and he/she will give you feedback about the design and the implementation of function in time.
+ - Fork a branch to your own repo to work.
+ - Please obey the [Development Norm](/en/contribute/convention/) during the process of development and finish the check before submitting the pull request.
+ - Send a pull request to the dev branch rather than the master branch of sharding-sphere after it is finished.
+ - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
+ - At last, congratulate to be an official contributor of Sharding-Sphere!

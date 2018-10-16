@@ -112,9 +112,11 @@ weight = 1
 ### 使用Zookeeper的数据治理
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                     new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING)););
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+    }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
@@ -127,9 +129,11 @@ weight = 1
 ### 使用Etcd的数据治理
 
 ```java
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                 new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false, OrchestrationType.SHARDING));
+    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
+                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+    }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
@@ -266,17 +270,18 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 属性配置项，可以为以下属性。
 
-| *名称*             | *数据类型* | *说明*                      |
-| ----------------- | --------- | --------------------------- |
-| sql.show (?)      | boolean   | 是否开启SQL显示，默认值: false |
-| executor.size (?) | int       | 工作线程数量，默认值: CPU核数  |
+| *名称*                             | *数据类型* | *说明*                                            |
+| ---------------------------------- | --------- | ------------------------------------------------- |
+| sql.show (?)                       | boolean   | 是否打印SQL解析和改写日志，默认值: false              |
+| executor.size (?)                  | int       | 用于SQL执行的工作线程数量，为零则表示无限制。默认值: 0  |
+| max.connections.size.per.query (?) | int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1    |
 
 
 ### 数据治理
 
 #### OrchestrationShardingDataSourceFactory
 
-数据分片 + 数据治理的数据源创建工厂。
+数据分片 + 数据治理的数据源工厂。
 
 | *名称*               | *数据类型*                  | *说明*                      |
 | ------------------- |  ------------------------- | --------------------------- |
@@ -288,7 +293,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 #### OrchestrationMasterSlaveDataSourceFactory
 
-读写分离 + 数据治理的数据源创建工厂。
+读写分离 + 数据治理的数据源工厂。
 
 | *名称*                 | *数据类型*                    | *说明*                         |
 | --------------------- | ---------------------------- | ------------------------------ |
@@ -297,7 +302,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
- 
+
 #### OrchestrationConfiguration
 
 数据治理规则配置对象。
@@ -306,7 +311,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------- | --------------------------- | ---------------------------------------------------------- |
 | name            | String                      | 数据治理实例名称                                             |
 | overwrite       | boolean                     | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准 |
-| type            | OrchestrationType           | 数据源类型，可选值：SHARDING，MASTER_SLAVE                    |
 | regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 
 #### ZookeeperConfiguration

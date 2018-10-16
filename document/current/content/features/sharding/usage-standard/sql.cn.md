@@ -62,6 +62,8 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 由于归并的限制，子查询中包含聚合函数目前无法支持。
 
+不支持包含schema的SQL。因为Sharding-Sphere的理念是像使用一个数据源一样使用多数据源，因此对SQL的访问都是在同一个逻辑schema之上。
+
 ## 示例
 
 ### 支持的SQL
@@ -97,3 +99,4 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION            |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL        |
 | SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号          |
+| SELECT * FROM ds.tbl_name1                                                                  | 包含schema        |
