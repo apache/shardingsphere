@@ -36,7 +36,7 @@ public class SpringBootStarterExample {
         }
     }
     
-    private static void process(ConfigurableApplicationContext applicationContext) {
+    private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
         commonService.processSuccess();
         try {
@@ -47,7 +47,7 @@ public class SpringBootStarterExample {
         }
     }
     
-    private static CommonService getCommonService(ConfigurableApplicationContext applicationContext) {
+    private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {
         return applicationContext.getBean(SpringEntityService.class);
     }
 }
