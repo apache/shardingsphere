@@ -41,14 +41,14 @@ public class MasterSlaveConfiguration extends OrchestrationExampleConfiguration 
     }
     
     @Override
-    protected DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
+    protected DataSource getDataSourceFromRegCenter(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-master-slave-data-source", registryCenterConfig, false));
     }
     
     @Override
-    protected DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    protected DataSource getDataSourceFromLocalConfiguration(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-master-slave-data-source", registryCenterConfig, true);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     

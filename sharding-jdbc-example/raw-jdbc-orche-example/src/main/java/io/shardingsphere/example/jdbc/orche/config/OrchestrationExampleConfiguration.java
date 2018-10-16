@@ -36,14 +36,10 @@ public abstract class OrchestrationExampleConfiguration implements ExampleConfig
     
     @Override
     public final DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+        return loadConfigFromRegCenter ? getDataSourceFromRegCenter(registryCenterConfig) : getDataSourceFromLocalConfiguration(registryCenterConfig);
     }
     
-    protected abstract DataSource getDataSourceFromRegCenter() throws SQLException;
+    protected abstract DataSource getDataSourceFromRegCenter(final RegistryCenterConfiguration registryCenterConfig) throws SQLException;
     
-    protected abstract DataSource getDataSourceFromLocalConfiguration() throws SQLException;
-    
-    protected final RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        return registryCenterConfig;
-    }
+    protected abstract DataSource getDataSourceFromLocalConfiguration(final RegistryCenterConfiguration registryCenterConfig) throws SQLException;
 }
