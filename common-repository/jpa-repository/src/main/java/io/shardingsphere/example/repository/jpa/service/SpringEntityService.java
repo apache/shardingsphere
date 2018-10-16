@@ -17,45 +17,7 @@
 
 package io.shardingsphere.example.repository.jpa.service;
 
-import io.shardingsphere.example.repository.api.entity.Order;
-import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.api.repository.OrderRepository;
-import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
-import io.shardingsphere.example.repository.jpa.entity.OrderEntity;
-import io.shardingsphere.example.repository.jpa.entity.OrderItemEntity;
-import org.springframework.stereotype.Service;
+import io.shardingsphere.example.repository.api.service.CommonService;
 
-import javax.annotation.Resource;
-import javax.transaction.Transactional;
-
-@Service
-@Transactional
-public class SpringEntityService extends CommonServiceImpl {
-    
-    @Resource
-    private OrderRepository orderRepository;
-    
-    @Resource
-    private OrderItemRepository orderItemRepository;
-    
-    @Override
-    protected OrderRepository getOrderRepository() {
-        return orderRepository;
-    }
-    
-    @Override
-    protected OrderItemRepository getOrderItemRepository() {
-        return orderItemRepository;
-    }
-    
-    @Override
-    protected Order newOrder() {
-        return new OrderEntity();
-    }
-    
-    @Override
-    protected OrderItem newOrderItem() {
-        return new OrderItemEntity();
-    }
+public interface SpringEntityService extends CommonService {
 }

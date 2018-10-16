@@ -32,14 +32,22 @@ public class SpringBootDataMain {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
-            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
-            commonService.processSuccess();
-            try {
-                commonService.processFailure();
-            } catch (final Exception ex) {
-                System.out.println(ex.getMessage());
-                commonService.printData();
-            }
+            process(applicationContext);
         }
+    }
+    
+    private static void process(ConfigurableApplicationContext applicationContext) {
+        CommonService commonService = getCommonService(applicationContext);
+        commonService.processSuccess();
+        try {
+            commonService.processFailure();
+        } catch (final Exception ex) {
+            System.out.println(ex.getMessage());
+            commonService.printData();
+        }
+    }
+    
+    private static CommonService getCommonService(ConfigurableApplicationContext applicationContext) {
+        return applicationContext.getBean(SpringEntityService.class);
     }
 }

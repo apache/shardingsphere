@@ -18,7 +18,6 @@
 package io.shardingsphere.example.spring.namespace.jpa.main.orche.etcd;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /*

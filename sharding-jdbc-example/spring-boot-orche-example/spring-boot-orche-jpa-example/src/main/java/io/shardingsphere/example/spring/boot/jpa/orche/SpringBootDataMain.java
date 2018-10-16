@@ -18,7 +18,7 @@
 package io.shardingsphere.example.spring.boot.jpa.orche;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
+import io.shardingsphere.example.repository.jpa.service.SpringEntityServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -32,7 +32,7 @@ public class SpringBootDataMain {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
-            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            CommonService commonService = applicationContext.getBean(SpringEntityServiceImpl.class);
             commonService.processSuccess();
             try {
                 commonService.processFailure();
