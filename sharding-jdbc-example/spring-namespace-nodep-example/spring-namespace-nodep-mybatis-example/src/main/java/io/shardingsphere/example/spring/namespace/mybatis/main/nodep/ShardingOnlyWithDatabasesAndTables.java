@@ -18,7 +18,6 @@
 package io.shardingsphere.example.spring.namespace.mybatis.main.nodep;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

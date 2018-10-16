@@ -17,43 +17,7 @@
 
 package io.shardingsphere.example.repository.mybatis.service;
 
-import io.shardingsphere.example.repository.api.entity.Order;
-import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
-import io.shardingsphere.example.repository.api.repository.OrderRepository;
-import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.shardingsphere.example.repository.api.service.CommonService;
 
-import javax.annotation.Resource;
-
-@Service
-@Transactional
-public class SpringPojoService extends CommonServiceImpl {
-    
-    @Resource
-    private OrderRepository orderRepository;
-    
-    @Resource
-    private OrderItemRepository orderItemRepository;
-    
-    @Override
-    protected OrderRepository getOrderRepository() {
-        return orderRepository;
-    }
-    
-    @Override
-    protected OrderItemRepository getOrderItemRepository() {
-        return orderItemRepository;
-    }
-    
-    @Override
-    protected Order newOrder() {
-        return new Order();
-    }
-    
-    @Override
-    protected OrderItem newOrderItem() {
-        return new OrderItem();
-    }
+public interface SpringPojoService extends CommonService {
 }
