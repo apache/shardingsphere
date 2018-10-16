@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
 public class EtcdShardingMasterSlaveConfiguration extends EtcdExampleConfiguration {
     
     public EtcdShardingMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
@@ -44,8 +47,7 @@ public class EtcdShardingMasterSlaveConfiguration extends EtcdExampleConfigurati
     
     @Override
     protected DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false));
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
     @Override
@@ -57,8 +59,7 @@ public class EtcdShardingMasterSlaveConfiguration extends EtcdExampleConfigurati
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     

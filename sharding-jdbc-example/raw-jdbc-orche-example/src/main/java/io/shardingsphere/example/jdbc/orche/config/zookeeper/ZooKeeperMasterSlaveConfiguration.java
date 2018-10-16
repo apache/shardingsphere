@@ -40,8 +40,7 @@ public class ZooKeeperMasterSlaveConfiguration extends ZooKeeperExampleConfigura
     
     @Override
     protected DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
     @Override
