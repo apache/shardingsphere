@@ -52,7 +52,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingsphere.example.repository.mybatis"/>
+        <property name="basePackage" value="io.shardingsphere.example.repository.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>
