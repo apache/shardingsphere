@@ -208,7 +208,7 @@
         </tables>
         <tokens>
             <table-token begin-position="12" original-literals="t_order_item" />
-            <table-token begin-position="136" original-literals="t_order" />
+            <table-token begin-position="140" original-literals="t_order" />
         </tokens>
 
         <alter-table>

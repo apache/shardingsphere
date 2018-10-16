@@ -50,14 +50,13 @@ public class RenameColumnVisitor implements PhraseVisitor {
 
         String oldName = columnNodes.get(0).getText();
         String newName = columnNodes.get(1).getText();
-        ColumnDefinition oldDefinition = alterStatement.getUpdateColumns().remove(oldName);
+        ColumnDefinition oldDefinition = alterStatement.getUpdateColumns().get(oldName);
         if (null != oldDefinition) {
             oldDefinition.setName(newName);
         } else {
             oldDefinition = new ColumnDefinition(newName, null, null, false);
+            alterStatement.getUpdateColumns().put(oldName, oldDefinition);
         }
-
-        alterStatement.getUpdateColumns().put(oldName, oldDefinition);
     }
 
 }
