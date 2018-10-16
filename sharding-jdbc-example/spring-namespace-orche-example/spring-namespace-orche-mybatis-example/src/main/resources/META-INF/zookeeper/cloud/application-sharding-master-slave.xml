@@ -13,23 +13,23 @@
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.io/schema/shardingsphere/orchestration
                         http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
-    <import resource="classpath*:META-INF/etcd/regCenter.xml" />
+    <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="io.shardingsphere.example.repository.mybatis" />
     
-    <orchestration:sharding-data-source id="shardingDatabasesTablesDataSource" registry-center-ref="regCenter" />
+    <orchestration:sharding-data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter"/>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="shardingDatabasesTablesDataSource" />
+        <property name="dataSource" ref="shardingMasterSlaveDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shardingDatabasesTablesDataSource"/>
+        <property name="dataSource" ref="shardingMasterSlaveDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingsphere.example.repository.mybatis"/>
+        <property name="basePackage" value="io.shardingsphere.example.repository.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>
