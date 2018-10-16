@@ -28,7 +28,7 @@ public class ShardingOnlyWithTables {
     public static void main(final String[] args) {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/etcd/cloud/shardingTables.xml" : "META-INF/orche/etcd/local/shardingTables.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
-            CommonService commonService = applicationContext.getBean(SpringPojoService.class);
+            CommonService commonService = (CommonService) applicationContext.getBean("springPojoService");
             commonService.initEnvironment();
             commonService.processSuccess();
             commonService.cleanEnvironment();
