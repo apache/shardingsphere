@@ -16,7 +16,7 @@
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.io/schema/shardingsphere/orchestration
                         http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
-    <import resource="classpath*:META-INF/etcd/regCenter.xml" />
+    <import resource="classpath*:META-INF/etcd/registry-center.xml" />
     <context:component-scan base-package="io.shardingsphere.example.repository.jpa"/>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
