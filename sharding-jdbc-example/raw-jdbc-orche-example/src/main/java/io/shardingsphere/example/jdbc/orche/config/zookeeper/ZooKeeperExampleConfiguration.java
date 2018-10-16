@@ -17,34 +17,21 @@
 
 package io.shardingsphere.example.jdbc.orche.config.zookeeper;
 
-import io.shardingsphere.example.config.ExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-
-public abstract class ZooKeeperExampleConfiguration implements ExampleConfiguration {
+public abstract class ZooKeeperExampleConfiguration extends RegistryCenterExampleConfiguration {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    private final boolean loadConfigFromRegCenter;
-    
     public ZooKeeperExampleConfiguration(final boolean loadConfigFromRegCenter) {
-        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
+        super(loadConfigFromRegCenter);
     }
     
     @Override
-    public final DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
-    }
-    
-    protected abstract DataSource getDataSourceFromRegCenter() throws SQLException;
-    
-    protected abstract DataSource getDataSourceFromLocalConfiguration() throws SQLException;
-    
     protected RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
