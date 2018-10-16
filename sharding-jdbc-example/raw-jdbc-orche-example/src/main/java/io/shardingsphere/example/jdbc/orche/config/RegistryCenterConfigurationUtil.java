@@ -15,22 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.regcenter;
+package io.shardingsphere.example.jdbc.orche.config;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
-public class ZooKeeperExampleConfiguration implements RegistryCenterExampleConfiguration {
+public class RegistryCenterConfigurationUtil {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    @Override
-    public RegistryCenterConfiguration getConfiguration() {
+    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
+    
+    public static RegistryCenterConfiguration getZooKeeperConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
+        return result;
+    }
+    
+    public static RegistryCenterConfiguration getEtcdConfiguration() {
+        EtcdConfiguration result = new EtcdConfiguration();
+        result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }
 }

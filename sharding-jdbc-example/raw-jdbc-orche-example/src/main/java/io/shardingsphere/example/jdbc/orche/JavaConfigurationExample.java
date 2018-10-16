@@ -18,20 +18,19 @@
 package io.shardingsphere.example.jdbc.orche;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.regcenter.EtcdExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.RegistryCenterConfigurationUtil;
 import io.shardingsphere.example.jdbc.orche.config.type.MasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.type.ShardingDatabasesAndTablesConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.type.ShardingDatabasesConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.type.ShardingMasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.type.ShardingTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.regcenter.ZooKeeperExampleConfiguration;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
@@ -58,21 +57,22 @@ public class JavaConfigurationExample {
     
     private static DataSource getDataSource() throws SQLException {
         ExampleConfiguration exampleConfig;
+        RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
         switch (shardingType) {
             case SHARDING_DATABASES:
-                exampleConfig = new ShardingDatabasesConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
+                exampleConfig = new ShardingDatabasesConfiguration(registryCenterConfig, loadConfigFromRegCenter);
                 break;
             case SHARDING_TABLES:
-                exampleConfig = new ShardingTablesConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
+                exampleConfig = new ShardingTablesConfiguration(registryCenterConfig, loadConfigFromRegCenter);
                 break;
             case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = new ShardingDatabasesAndTablesConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
+                exampleConfig = new ShardingDatabasesAndTablesConfiguration(registryCenterConfig, loadConfigFromRegCenter);
                 break;
             case MASTER_SLAVE:
-                exampleConfig = new MasterSlaveConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
+                exampleConfig = new MasterSlaveConfiguration(registryCenterConfig, loadConfigFromRegCenter);
                 break;
             case SHARDING_MASTER_SLAVE:
-                exampleConfig = new ShardingMasterSlaveConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
+                exampleConfig = new ShardingMasterSlaveConfiguration(registryCenterConfig, loadConfigFromRegCenter);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
@@ -80,8 +80,8 @@ public class JavaConfigurationExample {
         return exampleConfig.getDataSource();
     }
     
-    private static RegistryCenterExampleConfiguration getRegistryCenterExampleConfiguration() {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? new ZooKeeperExampleConfiguration() : new EtcdExampleConfiguration();
+    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
     }
     
     private static void process(final DataSource dataSource) {

@@ -20,8 +20,8 @@ package io.shardingsphere.example.jdbc.orche.config.type;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -36,8 +36,8 @@ import java.util.Properties;
  */
 public class MasterSlaveConfiguration extends OrchestrationExampleConfiguration {
     
-    public MasterSlaveConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
-        super(registryCenterExampleConfig, loadConfigFromRegCenter);
+    public MasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
+        super(registryCenterConfig, loadConfigFromRegCenter);
     }
     
     @Override
@@ -48,8 +48,7 @@ public class MasterSlaveConfiguration extends OrchestrationExampleConfiguration 
     @Override
     protected DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     

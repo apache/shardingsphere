@@ -21,8 +21,8 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -33,8 +33,8 @@ import java.util.Properties;
 
 public class ShardingTablesConfiguration extends OrchestrationExampleConfiguration {
     
-    public ShardingTablesConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
-        super(registryCenterExampleConfig, loadConfigFromRegCenter);
+    public ShardingTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
+        super(registryCenterConfig, loadConfigFromRegCenter);
     }
     
     @Override

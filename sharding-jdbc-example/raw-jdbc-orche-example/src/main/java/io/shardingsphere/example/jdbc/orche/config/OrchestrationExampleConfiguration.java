@@ -18,7 +18,6 @@
 package io.shardingsphere.example.jdbc.orche.config;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
 import javax.sql.DataSource;
@@ -26,12 +25,12 @@ import java.sql.SQLException;
 
 public abstract class OrchestrationExampleConfiguration implements ExampleConfiguration {
     
-    private final RegistryCenterExampleConfiguration registryCenterExampleConfig;
+    private final RegistryCenterConfiguration registryCenterConfig;
     
     private final boolean loadConfigFromRegCenter;
     
-    public OrchestrationExampleConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
-        this.registryCenterExampleConfig = registryCenterExampleConfig;
+    public OrchestrationExampleConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
+        this.registryCenterConfig = registryCenterConfig;
         this.loadConfigFromRegCenter = loadConfigFromRegCenter;
     }
     
@@ -45,6 +44,6 @@ public abstract class OrchestrationExampleConfiguration implements ExampleConfig
     protected abstract DataSource getDataSourceFromLocalConfiguration() throws SQLException;
     
     protected final RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        return registryCenterExampleConfig.getConfiguration();
+        return registryCenterConfig;
     }
 }
