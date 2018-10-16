@@ -23,6 +23,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -38,7 +39,7 @@ public class MySQLDropIndexVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         List<ParserRuleContext> dropIndexDefs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                "dropIndexDef");
+                RuleNameConstants.DROP_INDEX_REF);
 
         if (null == dropIndexDefs) {
             return;

@@ -40,14 +40,14 @@ public class VisitorUtils {
         }
 
         ParserRuleContext columnNameNode = TreeUtils
-                .getFirstChildByRuleName(columnDefinitionNode, "columnName");
+                .getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
 
         if (null == columnNameNode) {
             return null;
         }
 
         ParserRuleContext dataTypeCtx = TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                "dataType");
+                RuleNameConstants.DATA_TYPE);
 
         String typeName = null;
         if (dataTypeCtx != null) {
@@ -57,7 +57,7 @@ public class VisitorUtils {
         Integer length = null;
 
         ParserRuleContext dataTypeLengthCtx = TreeUtils.getFirstChildByRuleName(dataTypeCtx,
-                "dataTypeLength");
+                RuleNameConstants.DATA_TYPE_LENGTH);
 
         if (null != dataTypeLengthCtx) {
             if (dataTypeLengthCtx.getChildCount() >= 3) {
@@ -71,7 +71,7 @@ public class VisitorUtils {
         }
 
         ParserRuleContext primaryKeyNode = TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                "primaryKey");
+                RuleNameConstants.PRIMARY_KEY);
         boolean primaryKey = false;
         if (null != primaryKeyNode) {
             primaryKey = true;
@@ -89,7 +89,7 @@ public class VisitorUtils {
      */
     public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
         ParserRuleContext firstOrAfterColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "firstOrAfterColumn");
+                RuleNameConstants.FIRST_OR_AFTER_COLUMN);
         if (null == firstOrAfterColumnCtx) {
             return null;
         }
@@ -118,7 +118,7 @@ public class VisitorUtils {
      */
     public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
         List<ParserRuleContext> indexNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                "indexName");
+                RuleNameConstants.INDEX_NAME);
         if (null == indexNameCtxs) {
             return null;
         }

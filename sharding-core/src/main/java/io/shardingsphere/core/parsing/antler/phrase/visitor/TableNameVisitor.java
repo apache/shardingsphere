@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
@@ -37,7 +38,7 @@ public class TableNameVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         ParserRuleContext tableNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "tableName");
+                RuleNameConstants.TABLE_NAME);
         if (null != tableNameCtx) {
             String name = tableNameCtx.getText();
             if (null == name) {

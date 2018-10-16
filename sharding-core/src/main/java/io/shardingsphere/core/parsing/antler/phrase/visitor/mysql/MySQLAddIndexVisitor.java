@@ -22,6 +22,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -37,7 +38,7 @@ public class MySQLAddIndexVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         List<ParserRuleContext> addIndexCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                "addIndex");
+                RuleNameConstants.ADD_INDEX);
         
         if (null == addIndexCtxs) {
             return;
@@ -45,7 +46,7 @@ public class MySQLAddIndexVisitor implements PhraseVisitor {
         
         for(ParserRuleContext each : addIndexCtxs) {
             ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(each,
-                    "indexName");
+                    RuleNameConstants.INDEX_NAME);
             if (null != indexNameNode) {
                 statement.getSqlTokens()
                         .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));

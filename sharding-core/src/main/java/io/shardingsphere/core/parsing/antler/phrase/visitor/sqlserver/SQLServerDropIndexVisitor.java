@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -35,10 +36,10 @@ public class SQLServerDropIndexVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         ParserRuleContext indexDefOptionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "alterDropIndex");
+                RuleNameConstants.ALTER_DROP_INDEX);
         if (null != indexDefOptionNode) {
             ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(indexDefOptionNode,
-                    "indexName");
+                    RuleNameConstants.INDEX_NAME);
             if (null != indexNameNode) {
                 statement.getSqlTokens()
                         .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));

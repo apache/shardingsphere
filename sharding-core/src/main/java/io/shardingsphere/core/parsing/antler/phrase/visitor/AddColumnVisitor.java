@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -37,7 +38,7 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParserRuleContext> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "addColumn");
+        List<ParserRuleContext> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
         if (null == addColumnCtxs) {
             return;
         }
@@ -52,7 +53,7 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
      * @param alterStatement alter table statement
      */
     public void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
-        List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, "columnDefinition");
+        List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, RuleNameConstants.COLUMN_DEFINITION);
         if (null == columnDefinitionCtxs) {
             return;
         }

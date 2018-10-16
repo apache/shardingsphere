@@ -23,6 +23,7 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -38,20 +39,20 @@ public class MySQLChangeColumnVisitor implements PhraseVisitor {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
 
         ParserRuleContext changeColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "changeColumn");
+                RuleNameConstants.CHANGE_COLUMN);
         if (null == changeColumnCtx) {
             return;
         }
 
         ParserRuleContext oldColumnCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx,
-                "columnName");
+                RuleNameConstants.COLUMN_NAME);
 
         if (null == oldColumnCtx) {
             return;
         }
 
         ParserRuleContext columnDefinitionCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx,
-                "columnDefinition");
+                RuleNameConstants.COLUMN_DEFINITION);
 
         if (null == columnDefinitionCtx) {
             return;

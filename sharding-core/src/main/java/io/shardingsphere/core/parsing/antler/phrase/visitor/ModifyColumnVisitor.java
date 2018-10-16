@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -40,7 +41,7 @@ public class ModifyColumnVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        List<ParserRuleContext> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "modifyColumn");
+        List<ParserRuleContext> modifyColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN);
         if (null == modifyColumnCtxs) {
             return;
         }

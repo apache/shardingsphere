@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -39,18 +40,18 @@ public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
         ParserRuleContext constraintDefinitionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "addConstraint");
+                RuleNameConstants.ADD_CONSTRAINT);
         if (null == constraintDefinitionNode) {
             return;
         }
 
         ParserRuleContext primaryKeyOptionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                "primaryKeyOption");
+                RuleNameConstants.PRIMARY_KEY_OPTION);
         if (null == primaryKeyOptionNode) {
             return;
         }
 
-        List<ParserRuleContext> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, "keyPart");
+        List<ParserRuleContext> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.KEY_PART);
         if (null == keyPartNodes) {
             return;
         }

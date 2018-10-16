@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -38,25 +39,25 @@ public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
 
-        ParserRuleContext addColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, "addColumn");
+        ParserRuleContext addColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
 
         if (null == addColumnCtx) {
             return;
         }
 
-        ParserRuleContext tableConstraintCtx = TreeUtils.getFirstChildByRuleName(addColumnCtx, "tableConstraint");
+        ParserRuleContext tableConstraintCtx = TreeUtils.getFirstChildByRuleName(addColumnCtx, RuleNameConstants.TABLE_CONSTRAINT);
 
         if (null == tableConstraintCtx) {
             return;
         }
 
         ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(tableConstraintCtx,
-                "primaryKey");
+                RuleNameConstants.PRIMARY_KEY);
         if (null == primaryKeyCtx) {
             return;
         }
 
-        List<ParserRuleContext> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, "columnName");
+        List<ParserRuleContext> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, RuleNameConstants.COLUMN_NAME);
         for (ParseTree columnNameCtx : columnNameCtxs) {
             alterStatement.getUpdateColumns().put(columnNameCtx.getText(),
                     new ColumnDefinition(columnNameCtx.getText(), null, null, true));

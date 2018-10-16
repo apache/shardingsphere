@@ -22,6 +22,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -33,7 +34,7 @@ public class TableNamesVisitor extends TableNameVisitor {
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        List<ParserRuleContext> tableNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, "tableName");
+        List<ParserRuleContext> tableNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
 
         if (null == tableNameCtxs) {
             return;
