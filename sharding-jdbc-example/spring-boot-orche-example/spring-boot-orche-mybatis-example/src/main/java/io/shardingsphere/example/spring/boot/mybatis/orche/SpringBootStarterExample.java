@@ -18,7 +18,7 @@
 package io.shardingsphere.example.spring.boot.mybatis.orche;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.mybatis.service.SpringPojoServiceImpl;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,20 +28,29 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("io.shardingsphere.example.repository.mybatis")
 @MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
 @SpringBootApplication
-public class SpringBootDataMain {
+public class SpringBootStarterExample {
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootDataMain.class, args)) {
-            CommonService commonService = applicationContext.getBean(SpringPojoServiceImpl.class);
-            commonService.initEnvironment();
-            commonService.processSuccess();
-            try {
-                commonService.processFailure();
-            } catch (final Exception ex) {
-                System.out.println(ex.getMessage());
-                commonService.printData();
-            }
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootStarterExample.class, args)) {
+            process(applicationContext);
+        }
+    }
+    
+    private static void process(final ConfigurableApplicationContext applicationContext) {
+        CommonService commonService = getCommonService(applicationContext);
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        try {
+            commonService.processFailure();
+        } catch (final Exception ex) {
+            System.out.println(ex.getMessage());
+            commonService.printData();
+        } finally {
             commonService.cleanEnvironment();
         }
+    }
+    
+    private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {
+        return applicationContext.getBean(SpringPojoService.class);
     }
 }

@@ -3,12 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <!--<settings>-->
-        <!--<setting name="logImpl" value="STDOUT_LOGGING" />-->
-    <!--</settings>-->
-    <typeAliases>
-        <package name="io.shardingsphere.example.repository.mybatis.entity"/>
-    </typeAliases>
     <mappers>
         <mapper resource="META-INF/mappers/OrderMapper.xml"/>
         <mapper resource="META-INF/mappers/OrderItemMapper.xml"/>
