@@ -19,9 +19,11 @@ package io.shardingsphere.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationType;
+import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
@@ -43,7 +45,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 
 /**
  * Orchestration spring boot sharding and master-slave configuration.
@@ -74,9 +75,42 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        OrchestrationType type = orchestrationProperties.getType();
-        Preconditions.checkState(null != type, "Missing the type of datasource configuration in orchestration configuration");
-        return OrchestrationType.SHARDING == type ? createShardingDataSource() : createMasterSlaveDataSource();
+        Preconditions.checkState(isValidConfiguration(), "The orchestration configuration is invalid, please choose one from Sharding rule and Master-slave rule.");
+        return OrchestrationType.SHARDING == getOrchestrationType() ? createShardingDataSource() : createMasterSlaveDataSource();
+    }
+    
+    private boolean isValidConfiguration() {
+        return isValidRuleConfiguration() || isValidOrchestrationConfiguration();
+    }
+    
+    private boolean isValidRuleConfiguration() {
+        return (shardingProperties.getTables().isEmpty() && !Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()))
+                || (!shardingProperties.getTables().isEmpty() && Strings.isNullOrEmpty(masterSlaveProperties.getMasterDataSourceName()));
+    }
+    
+    private boolean isValidOrchestrationConfiguration() {
+        return !Strings.isNullOrEmpty(orchestrationProperties.getName());
+    }
+    
+    private OrchestrationType getOrchestrationType() {
+        if (isValidRuleConfiguration()) {
+            return getOrchestrationTypeByLocal();
+        }
+        return getOrchestrationTypeByRegistry();
+    }
+    
+    private OrchestrationType getOrchestrationTypeByLocal() {
+        return shardingProperties.getTables().isEmpty() ? OrchestrationType.MASTER_SLAVE : OrchestrationType.SHARDING;
+    }
+    
+    private OrchestrationType getOrchestrationTypeByRegistry() {
+        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration());
+        ShardingRuleConfiguration shardingRuleConfiguration = orchestrationFacade.getConfigService().loadShardingRuleConfiguration();
+        orchestrationFacade.close();
+        if (null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty()) {
+            return OrchestrationType.SHARDING;
+        }
+        return OrchestrationType.MASTER_SLAVE;
     }
     
     private DataSource createShardingDataSource() throws SQLException {

@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-public final class MasterSlaveRule {
+public class MasterSlaveRule {
     
     private final String name;
     
@@ -41,6 +41,8 @@ public final class MasterSlaveRule {
     private final Collection<String> slaveDataSourceNames;
     
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         Preconditions.checkNotNull(config.getName(), "Master-slave rule name cannot be null.");
@@ -51,6 +53,7 @@ public final class MasterSlaveRule {
         masterDataSourceName = config.getMasterDataSourceName();
         slaveDataSourceNames = config.getSlaveDataSourceNames();
         loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm() : config.getLoadBalanceAlgorithm();
+        masterSlaveRuleConfiguration = config;
     }
     
     /**

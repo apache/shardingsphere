@@ -22,13 +22,13 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,22 +44,22 @@ import java.util.Map.Entry;
  */
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
-    private final ShardingSchema shardingSchema;
+    private final Map<String, DataSource> dataSources;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> availableDataSources;
     
-    public JDBCBackendDataSource(final ShardingSchema shardingSchema) {
-        this.shardingSchema = shardingSchema;
-        dataSourceMap = createDataSourceMap();
+    public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
+        dataSources = createDataSourceMap(dataSourceParameters);
+        availableDataSources = new LinkedHashMap<>(dataSources);
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
         // TODO getCircuitDataSourceMap if getCircuitBreakerDataSourceNames() is not empty
-        return getNormalDataSourceMap(shardingSchema.getDataSources());
+        return getNormalDataSourceMap(dataSourceParameters);
     }
     
     private Map<String, DataSource> getNormalDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
                 result.put(entry.getKey(), getBackendDataSourceFactory().build(entry.getKey(), entry.getValue()));
@@ -78,6 +78,22 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
                 return new JDBCXABackendDataSourceFactory();
             default:
                 return new JDBCRawBackendDataSourceFactory();
+        }
+    }
+    
+    /**
+     * Set available data sources.
+     *
+     * @param disabledDataSourceNames disabled data source names
+     */
+    public void setAvailableDataSources(final Collection<String> disabledDataSourceNames) {
+        synchronized (availableDataSources) {
+            availableDataSources.clear();
+            for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+                if (!disabledDataSourceNames.contains(entry.getKey())) {
+                    availableDataSources.put(entry.getKey(), entry.getValue());
+                }
+            }
         }
     }
     
@@ -103,7 +119,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        DataSource dataSource = availableDataSources.get(dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(dataSource.getConnection());
         }
@@ -113,18 +129,6 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         synchronized (dataSource) {
             return createConnections(dataSource, connectionSize);
         }
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        return shardingSchema.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : shardingSchema.getDisabledDataSourceNames()) {
-            result.remove(each);
-        }
-        return result;
     }
     
     private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
@@ -141,7 +145,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private void closeOriginalDataSources() {
-        for (DataSource each : dataSourceMap.values()) {
+        for (DataSource each : dataSources.values()) {
             try {
                 Method method = each.getClass().getDeclaredMethod("close");
                 method.invoke(each);

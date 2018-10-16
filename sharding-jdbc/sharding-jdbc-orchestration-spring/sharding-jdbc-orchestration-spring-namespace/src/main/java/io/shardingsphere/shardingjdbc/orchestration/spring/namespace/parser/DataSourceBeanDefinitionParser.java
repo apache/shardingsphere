@@ -65,7 +65,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgValue(element.getAttribute(ID_ATTRIBUTE));
         factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.REG_REF_TAG));
         factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.OVERWRITE_TAG));
-        factory.addConstructorArgValue(orchestrationType);
         return factory.getBeanDefinition();
     }
 }
