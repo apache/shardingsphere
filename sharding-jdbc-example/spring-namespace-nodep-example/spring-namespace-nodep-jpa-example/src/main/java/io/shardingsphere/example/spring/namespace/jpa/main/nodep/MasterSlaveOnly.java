@@ -26,7 +26,7 @@ public class MasterSlaveOnly {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/masterSlave.xml")) {
-            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
+            CommonService commonService = (CommonService) applicationContext.getBean("springEntityService");
             commonService.processSuccess();
             try {
                 commonService.processFailure();
