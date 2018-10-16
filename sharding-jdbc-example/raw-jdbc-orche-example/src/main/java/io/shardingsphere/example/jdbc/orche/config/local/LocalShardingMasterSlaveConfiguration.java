@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.type;
+package io.shardingsphere.example.jdbc.orche.config.local;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
@@ -25,7 +25,7 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.example.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
@@ -38,22 +38,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
-public class ShardingMasterSlaveConfiguration extends OrchestrationExampleConfiguration {
+public class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
-    public ShardingMasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
-        super(registryCenterConfig, loadConfigFromRegCenter);
+    private final RegistryCenterConfiguration registryCenterConfig;
+    
+    public LocalShardingMasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
+        this.registryCenterConfig = registryCenterConfig;
     }
     
     @Override
-    protected DataSource getDataSourceFromRegCenter(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", registryCenterConfig, false));
-    }
-    
-    @Override
-    protected DataSource getDataSourceFromLocalConfiguration(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
+    public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());

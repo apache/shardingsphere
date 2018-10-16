@@ -32,6 +32,9 @@ import io.shardingsphere.example.type.ShardingType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
 public class JavaConfigurationExample {
     
     private static ShardingType type = ShardingType.SHARDING_DATABASES;

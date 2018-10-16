@@ -10,3 +10,5 @@ Please do not use `dev` branch to run your example, example of `dev` branch is n
 
 The manual schema initial script is in `https://github.com/sharding-sphere/sharding-sphere-example/blob/dev/src/resources/manual_schema.sql`, 
 please execute it before you first run the example.
+
+Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.

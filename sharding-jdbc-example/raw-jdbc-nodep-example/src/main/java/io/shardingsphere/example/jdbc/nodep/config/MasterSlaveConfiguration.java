@@ -30,9 +30,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave. 
- */
 public class MasterSlaveConfiguration implements ExampleConfiguration {
     
     @Override

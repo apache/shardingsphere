@@ -18,12 +18,8 @@
 package io.shardingsphere.example.spring.namespace.mybatis.main.orche.zookeeper;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
 public class MasterSlaveOnly {
 
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;

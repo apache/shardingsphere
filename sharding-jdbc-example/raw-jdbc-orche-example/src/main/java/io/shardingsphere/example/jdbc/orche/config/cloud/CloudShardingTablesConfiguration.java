@@ -15,31 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config;
+package io.shardingsphere.example.jdbc.orche.config.cloud;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
+import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public abstract class OrchestrationExampleConfiguration implements ExampleConfiguration {
+public class CloudShardingTablesConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
-    private final boolean loadConfigFromRegCenter;
-    
-    public OrchestrationExampleConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
+    public CloudShardingTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
-        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
     }
     
     @Override
-    public final DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter(registryCenterConfig) : getDataSourceFromLocalConfiguration(registryCenterConfig);
+    public DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", registryCenterConfig, false));
     }
-    
-    protected abstract DataSource getDataSourceFromRegCenter(final RegistryCenterConfiguration registryCenterConfig) throws SQLException;
-    
-    protected abstract DataSource getDataSourceFromLocalConfiguration(final RegistryCenterConfiguration registryCenterConfig) throws SQLException;
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.type;
+package io.shardingsphere.example.jdbc.orche.config.local;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -23,7 +23,7 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
@@ -34,19 +34,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingDatabasesAndTablesConfiguration extends OrchestrationExampleConfiguration {
+public class LocalShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
     
-    public ShardingDatabasesAndTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
-        super(registryCenterConfig, loadConfigFromRegCenter);
+    private final RegistryCenterConfiguration registryCenterConfig;
+    
+    public LocalShardingDatabasesAndTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
+        this.registryCenterConfig = registryCenterConfig;
     }
     
     @Override
-    protected DataSource getDataSourceFromRegCenter(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", registryCenterConfig, false));
-    }
-    
-    @Override
-    protected DataSource getDataSourceFromLocalConfiguration(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
+    public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());

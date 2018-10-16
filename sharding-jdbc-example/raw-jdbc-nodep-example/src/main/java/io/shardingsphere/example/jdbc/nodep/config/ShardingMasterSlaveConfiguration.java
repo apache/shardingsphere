@@ -36,9 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
 public class ShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
     @Override

@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.type;
+package io.shardingsphere.example.jdbc.orche.config.local;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
@@ -31,22 +31,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
-public class MasterSlaveConfiguration extends OrchestrationExampleConfiguration {
+public class LocalMasterSlaveConfiguration implements ExampleConfiguration {
     
-    public MasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig, final boolean loadConfigFromRegCenter) {
-        super(registryCenterConfig, loadConfigFromRegCenter);
+    private final RegistryCenterConfiguration registryCenterConfig;
+    
+    public LocalMasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
+        this.registryCenterConfig = registryCenterConfig;
     }
     
     @Override
-    protected DataSource getDataSourceFromRegCenter(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-master-slave-data-source", registryCenterConfig, false));
-    }
-    
-    @Override
-    protected DataSource getDataSourceFromLocalConfiguration(final RegistryCenterConfiguration registryCenterConfig) throws SQLException {
+    public DataSource getDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-master-slave-data-source", registryCenterConfig, true);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);

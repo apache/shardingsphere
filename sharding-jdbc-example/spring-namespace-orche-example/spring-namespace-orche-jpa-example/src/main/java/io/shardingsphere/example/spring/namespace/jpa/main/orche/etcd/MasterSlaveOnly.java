@@ -20,9 +20,6 @@ package io.shardingsphere.example.spring.namespace.jpa.main.orche.etcd;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
 public class MasterSlaveOnly {
     
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;

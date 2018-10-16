@@ -19,11 +19,16 @@ package io.shardingsphere.example.jdbc.orche;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.RegistryCenterConfigurationUtil;
-import io.shardingsphere.example.jdbc.orche.config.type.MasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.type.ShardingDatabasesAndTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.type.ShardingDatabasesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.type.ShardingMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.type.ShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.cloud.CloudMasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingDatabasesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingMasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalMasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfiguration;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -37,6 +42,9 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.Orchestr
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
 public class JavaConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
@@ -60,19 +68,20 @@ public class JavaConfigurationExample {
         RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
         switch (shardingType) {
             case SHARDING_DATABASES:
-                exampleConfig = new ShardingDatabasesConfiguration(registryCenterConfig, loadConfigFromRegCenter);
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfiguration(registryCenterConfig);
                 break;
             case SHARDING_TABLES:
-                exampleConfig = new ShardingTablesConfiguration(registryCenterConfig, loadConfigFromRegCenter);
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfiguration(registryCenterConfig);
                 break;
             case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = new ShardingDatabasesAndTablesConfiguration(registryCenterConfig, loadConfigFromRegCenter);
+                exampleConfig = loadConfigFromRegCenter
+                        ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfiguration(registryCenterConfig);
                 break;
             case MASTER_SLAVE:
-                exampleConfig = new MasterSlaveConfiguration(registryCenterConfig, loadConfigFromRegCenter);
+                exampleConfig = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
                 break;
             case SHARDING_MASTER_SLAVE:
-                exampleConfig = new ShardingMasterSlaveConfiguration(registryCenterConfig, loadConfigFromRegCenter);
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfiguration(registryCenterConfig);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
