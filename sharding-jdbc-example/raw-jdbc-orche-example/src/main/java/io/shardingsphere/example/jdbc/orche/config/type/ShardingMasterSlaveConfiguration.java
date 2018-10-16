@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.type;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
@@ -25,6 +25,8 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.example.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
+import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
@@ -39,10 +41,10 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class ZooKeeperShardingMasterSlaveConfiguration extends ZooKeeperExampleConfiguration {
+public class ShardingMasterSlaveConfiguration extends OrchestrationExampleConfiguration {
     
-    public ZooKeeperShardingMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
-        super(loadConfigFromRegCenter);
+    public ShardingMasterSlaveConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
+        super(registryCenterExampleConfig, loadConfigFromRegCenter);
     }
     
     @Override

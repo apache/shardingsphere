@@ -15,22 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.etcd;
+package io.shardingsphere.example.jdbc.orche.config.regcenter;
 
-import io.shardingsphere.example.jdbc.orche.config.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 
-public abstract class EtcdExampleConfiguration extends RegistryCenterExampleConfiguration {
+public class EtcdExampleConfiguration implements RegistryCenterExampleConfiguration {
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
-    public EtcdExampleConfiguration(final boolean loadConfigFromRegCenter) {
-        super(loadConfigFromRegCenter);
-    }
-    
     @Override
-    protected RegistryCenterConfiguration getRegistryCenterConfiguration() {
+    public RegistryCenterConfiguration getConfiguration() {
         EtcdConfiguration result = new EtcdConfiguration();
         result.setServerLists(ETCD_CONNECTION_STRING);
         return result;

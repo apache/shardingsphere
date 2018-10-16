@@ -15,11 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.type;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
+import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
@@ -29,15 +32,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ZooKeeperShardingTablesConfiguration extends ZooKeeperExampleConfiguration {
+public class ShardingDatabasesConfiguration extends OrchestrationExampleConfiguration {
     
-    public ZooKeeperShardingTablesConfiguration(final boolean loadConfigFromRegCenter) {
-        super(loadConfigFromRegCenter);
+    public ShardingDatabasesConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
+        super(registryCenterExampleConfig, loadConfigFromRegCenter);
     }
     
     @Override
     protected DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false));
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), false));
     }
     
     @Override
@@ -45,15 +48,14 @@ public class ZooKeeperShardingTablesConfiguration extends ZooKeeperExampleConfig
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), true);
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
-        result.setActualDataNodes("demo_ds.t_order_${[0, 1]}");
         result.setKeyGeneratorColumnName("order_id");
         return result;
     }
@@ -61,13 +63,13 @@ public class ZooKeeperShardingTablesConfiguration extends ZooKeeperExampleConfig
     private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order_item");
-        result.setActualDataNodes("demo_ds.t_order_item_${[0, 1]}");
         return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
+        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
     }
 }

@@ -15,10 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.type;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
+import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 
@@ -32,10 +34,10 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class ZooKeeperMasterSlaveConfiguration extends ZooKeeperExampleConfiguration {
+public class MasterSlaveConfiguration extends OrchestrationExampleConfiguration {
     
-    public ZooKeeperMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
-        super(loadConfigFromRegCenter);
+    public MasterSlaveConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
+        super(registryCenterExampleConfig, loadConfigFromRegCenter);
     }
     
     @Override

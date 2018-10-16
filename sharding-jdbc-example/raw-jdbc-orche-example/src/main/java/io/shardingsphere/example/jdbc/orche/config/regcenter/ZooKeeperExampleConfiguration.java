@@ -15,24 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.regcenter;
 
-import io.shardingsphere.example.jdbc.orche.config.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
-public abstract class ZooKeeperExampleConfiguration extends RegistryCenterExampleConfiguration {
+public class ZooKeeperExampleConfiguration implements RegistryCenterExampleConfiguration {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    public ZooKeeperExampleConfiguration(final boolean loadConfigFromRegCenter) {
-        super(loadConfigFromRegCenter);
-    }
-    
     @Override
-    protected RegistryCenterConfiguration getRegistryCenterConfiguration() {
+    public RegistryCenterConfiguration getConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);

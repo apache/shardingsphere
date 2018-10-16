@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.config.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.type;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -23,6 +23,8 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
+import io.shardingsphere.example.jdbc.orche.config.OrchestrationExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
@@ -32,10 +34,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ZooKeeperShardingDatabasesAndTablesConfiguration extends ZooKeeperExampleConfiguration {
+public class ShardingDatabasesAndTablesConfiguration extends OrchestrationExampleConfiguration {
     
-    public ZooKeeperShardingDatabasesAndTablesConfiguration(final boolean loadConfigFromRegCenter) {
-        super(loadConfigFromRegCenter);
+    public ShardingDatabasesAndTablesConfiguration(final RegistryCenterExampleConfiguration registryCenterExampleConfig, final boolean loadConfigFromRegCenter) {
+        super(registryCenterExampleConfig, loadConfigFromRegCenter);
     }
     
     @Override

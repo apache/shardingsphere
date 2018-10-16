@@ -18,16 +18,14 @@
 package io.shardingsphere.example.jdbc.orche;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.etcd.EtcdMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.etcd.EtcdShardingDatabasesAndTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.etcd.EtcdShardingDatabasesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.etcd.EtcdShardingMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.etcd.EtcdShardingTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.zookeeper.ZooKeeperMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.zookeeper.ZooKeeperShardingDatabasesAndTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.zookeeper.ZooKeeperShardingDatabasesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.zookeeper.ZooKeeperShardingMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.zookeeper.ZooKeeperShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.EtcdExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.type.MasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.RegistryCenterExampleConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.type.ShardingDatabasesAndTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.type.ShardingDatabasesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.type.ShardingMasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.type.ShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.regcenter.ZooKeeperExampleConfiguration;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -62,44 +60,28 @@ public class JavaConfigurationExample {
         ExampleConfiguration exampleConfig;
         switch (shardingType) {
             case SHARDING_DATABASES:
-                if (RegistryCenterType.ZOOKEEPER == registryCenterType) {
-                    exampleConfig = new ZooKeeperShardingDatabasesConfiguration(loadConfigFromRegCenter);
-                } else {
-                    exampleConfig = new EtcdShardingDatabasesConfiguration(loadConfigFromRegCenter);
-                }
+                exampleConfig = new ShardingDatabasesConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
                 break;
             case SHARDING_TABLES:
-                if (RegistryCenterType.ZOOKEEPER == registryCenterType) {
-                    exampleConfig = new ZooKeeperShardingTablesConfiguration(loadConfigFromRegCenter);
-                } else {
-                    exampleConfig = new EtcdShardingTablesConfiguration(loadConfigFromRegCenter);
-                }
+                exampleConfig = new ShardingTablesConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
                 break;
             case SHARDING_DATABASES_AND_TABLES:
-                if (RegistryCenterType.ZOOKEEPER == registryCenterType) {
-                    exampleConfig = new ZooKeeperShardingDatabasesAndTablesConfiguration(loadConfigFromRegCenter);
-                } else {
-                    exampleConfig = new EtcdShardingDatabasesAndTablesConfiguration(loadConfigFromRegCenter);
-                }
+                exampleConfig = new ShardingDatabasesAndTablesConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
                 break;
             case MASTER_SLAVE:
-                if (RegistryCenterType.ZOOKEEPER == registryCenterType) {
-                    exampleConfig = new ZooKeeperMasterSlaveConfiguration(loadConfigFromRegCenter);
-                } else {
-                    exampleConfig = new EtcdMasterSlaveConfiguration(loadConfigFromRegCenter);
-                }
+                exampleConfig = new MasterSlaveConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
                 break;
             case SHARDING_MASTER_SLAVE:
-                if (RegistryCenterType.ZOOKEEPER == registryCenterType) {
-                    exampleConfig = new ZooKeeperShardingMasterSlaveConfiguration(loadConfigFromRegCenter);
-                } else {
-                    exampleConfig = new EtcdShardingMasterSlaveConfiguration(loadConfigFromRegCenter);
-                }
+                exampleConfig = new ShardingMasterSlaveConfiguration(getRegistryCenterExampleConfiguration(), loadConfigFromRegCenter);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
         return exampleConfig.getDataSource();
+    }
+    
+    private static RegistryCenterExampleConfiguration getRegistryCenterExampleConfiguration() {
+        return RegistryCenterType.ZOOKEEPER == registryCenterType ? new ZooKeeperExampleConfiguration() : new EtcdExampleConfiguration();
     }
     
     private static void process(final DataSource dataSource) {
