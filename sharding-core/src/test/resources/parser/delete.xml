@@ -26,13 +26,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="status" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="init" type="String" />
-                </condition>
-            </and-condition>
-        </or-condition>
     </parser-result>
 
     <parser-result sql-case-id="delete_with_special_character_without_sharding_value">
