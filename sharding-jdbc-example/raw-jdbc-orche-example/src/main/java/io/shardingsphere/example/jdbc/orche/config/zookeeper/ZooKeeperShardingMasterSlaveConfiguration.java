@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.java.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.zookeeper;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
@@ -25,15 +25,11 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.example.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -46,33 +42,29 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class ShardingAndMasterSlaveTogether {
+public class ZooKeeperShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    private final boolean loadConfigFromRegCenter;
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = getDataSource();
-        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
-        ((OrchestrationShardingDataSource) dataSource).close();
+    public ZooKeeperShardingMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
+        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
     }
     
-    private static DataSource getDataSource() throws SQLException {
-        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    @Override
+    public DataSource getDataSource() throws SQLException {
+        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
     }
     
-    private static DataSource getDataSourceFromRegCenter() throws SQLException {
+    private DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
@@ -85,7 +77,7 @@ public class ShardingAndMasterSlaveTogether {
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
-    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+    private TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
@@ -93,20 +85,20 @@ public class ShardingAndMasterSlaveTogether {
         return result;
     }
     
-    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+    private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order_item");
         result.setActualDataNodes("ds_${0..1}.t_order_item_${[0, 1]}");
         return result;
     }
     
-    private static List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
+    private List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration("ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
         MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration("ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
         return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap() {
         final Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_master_0", DataSourceUtil.createDataSource("demo_ds_master_0"));
         result.put("demo_ds_master_0_slave_0", DataSourceUtil.createDataSource("demo_ds_master_0_slave_0"));
@@ -117,7 +109,7 @@ public class ShardingAndMasterSlaveTogether {
         return result;
     }
     
-    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);

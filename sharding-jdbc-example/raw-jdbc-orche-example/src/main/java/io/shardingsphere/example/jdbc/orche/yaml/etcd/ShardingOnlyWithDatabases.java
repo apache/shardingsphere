@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.yaml.etcd;
+package io.shardingsphere.example.jdbc.orche.yaml.etcd;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
@@ -27,7 +27,7 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.Orchestr
 import javax.sql.DataSource;
 import java.io.File;
 
-public class ShardingAndMasterSlaveTogether {
+public class ShardingOnlyWithDatabases {
     
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
@@ -41,7 +41,7 @@ public class ShardingAndMasterSlaveTogether {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/etcd/cloud/sharding-master-slave.yaml" : "/META-INF/etcd/local/sharding-master-slave.yaml";
-        return new File(ShardingAndMasterSlaveTogether.class.getResource(path).getFile());
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/etcd/cloud/sharding-databases.yaml" : "/META-INF/etcd/local/sharding-databases.yaml";
+        return new File(ShardingOnlyWithDatabases.class.getResource(path).getFile());
     }
 }

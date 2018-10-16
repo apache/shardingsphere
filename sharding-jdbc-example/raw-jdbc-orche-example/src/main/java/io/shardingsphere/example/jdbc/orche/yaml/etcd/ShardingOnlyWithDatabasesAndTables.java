@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.yaml.etcd;
+package io.shardingsphere.example.jdbc.orche.yaml.etcd;
 
-import io.shardingsphere.example.jdbc.orche.main.yaml.zookeeper.ShardingOnlyWithTables;
+import io.shardingsphere.example.jdbc.orche.yaml.zookeeper.ShardingOnlyWithTables;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;

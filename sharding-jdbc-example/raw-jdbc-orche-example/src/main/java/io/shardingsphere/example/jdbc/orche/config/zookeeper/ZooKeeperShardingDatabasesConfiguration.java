@@ -15,21 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.java.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.zookeeper;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,63 +33,58 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingOnlyWithDatabases {
+public class ZooKeeperShardingDatabasesConfiguration implements ExampleConfiguration {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    private final boolean loadConfigFromRegCenter;
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = getDataSource();
-        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
-        ((OrchestrationShardingDataSource) dataSource).close();
+    public ZooKeeperShardingDatabasesConfiguration(final boolean loadConfigFromRegCenter) {
+        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
     }
     
-    private static DataSource getDataSource() throws SQLException {
-        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    @Override
+    public DataSource getDataSource() throws SQLException {
+        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
     }
     
-    private static DataSource getDataSourceFromRegCenter() throws SQLException {
+    private DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-db-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
-    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+    private TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setKeyGeneratorColumnName("order_id");
         return result;
     }
     
-    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+    private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order_item");
         return result;
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
     }
     
-    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);

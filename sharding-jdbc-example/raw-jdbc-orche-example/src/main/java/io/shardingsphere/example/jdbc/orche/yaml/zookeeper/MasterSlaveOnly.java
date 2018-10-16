@@ -15,33 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.yaml.etcd;
+package io.shardingsphere.example.jdbc.orche.yaml.zookeeper;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
-import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public class ShardingOnlyWithTables {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class MasterSlaveOnly {
     
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
+        DataSource dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
         CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
-        ((OrchestrationShardingDataSource) dataSource).close();
+        ((OrchestrationMasterSlaveDataSource) dataSource).close();
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/etcd/cloud/sharding-tables.yaml" : "/META-INF/etcd/local/sharding-tables.yaml";
-        return new File(ShardingOnlyWithTables.class.getResource(path).getFile());
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/zookeeper/cloud/master-slave.yaml" : "/META-INF/zookeeper/local/master-slave.yaml";
+        return new File(MasterSlaveOnly.class.getResource(path).getFile());
     }
 }

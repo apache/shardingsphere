@@ -15,19 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.java.zookeeper;
+package io.shardingsphere.example.jdbc.orche.config.zookeeper;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,47 +35,43 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class MasterSlaveOnly {
+public class ZooKeeperMasterSlaveConfiguration implements ExampleConfiguration {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
+    private final boolean loadConfigFromRegCenter;
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = getDataSource();
-        CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
-        ((OrchestrationMasterSlaveDataSource) dataSource).close();
+    public ZooKeeperMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
+        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
     }
     
-    private static DataSource getDataSource() throws SQLException {
-        return LOAD_CONFIG_FROM_REG_CENTER ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    @Override
+    public DataSource getDataSource() throws SQLException {
+        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
     }
     
-    private static DataSource getDataSourceFromRegCenter() throws SQLException {
+    private DataSource getDataSourceFromRegCenter() throws SQLException {
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
                 new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private static DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
-    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
+    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
         ZookeeperConfiguration result = new ZookeeperConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
         return result;
     }
     
-    private static Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
         result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));

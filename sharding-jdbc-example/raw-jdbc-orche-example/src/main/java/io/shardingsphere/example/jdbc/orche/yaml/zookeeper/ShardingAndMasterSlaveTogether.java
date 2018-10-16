@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.yaml.zookeeper;
+package io.shardingsphere.example.jdbc.orche.yaml.zookeeper;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
@@ -27,7 +27,10 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.Orchestr
 import javax.sql.DataSource;
 import java.io.File;
 
-public class ShardingOnlyWithDatabases {
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
+public class ShardingAndMasterSlaveTogether {
     
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
@@ -41,7 +44,7 @@ public class ShardingOnlyWithDatabases {
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/zookeeper/cloud/sharding-databases.yaml" : "/META-INF/zookeeper/local/sharding-databases.yaml";
-        return new File(ShardingOnlyWithDatabases.class.getResource(path).getFile());
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/zookeeper/cloud/sharding-master-slave.yaml" : "/META-INF/zookeeper/local/sharding-master-slave.yaml";
+        return new File(ShardingAndMasterSlaveTogether.class.getResource(path).getFile());
     }
 }

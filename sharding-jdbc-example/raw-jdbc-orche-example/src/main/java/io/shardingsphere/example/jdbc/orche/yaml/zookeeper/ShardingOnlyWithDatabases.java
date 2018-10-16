@@ -15,33 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.orche.main.yaml.etcd;
+package io.shardingsphere.example.jdbc.orche.yaml.zookeeper;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
-import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
 import javax.sql.DataSource;
 import java.io.File;
 
-public class MasterSlaveOnly {
+public class ShardingOnlyWithDatabases {
     
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile());
+        DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
         CommonService commonService = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
-        ((OrchestrationMasterSlaveDataSource) dataSource).close();
+        ((OrchestrationShardingDataSource) dataSource).close();
     }
     
     private static File getYamlFile() {
-        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/etcd/cloud/master-slave.yaml" : "/META-INF/etcd/local/master-slave.yaml";
-        return new File(MasterSlaveOnly.class.getResource(path).getFile());
+        String path = LOAD_CONFIG_FROM_REG_CENTER ? "/META-INF/zookeeper/cloud/sharding-databases.yaml" : "/META-INF/zookeeper/local/sharding-databases.yaml";
+        return new File(ShardingOnlyWithDatabases.class.getResource(path).getFile());
     }
 }
