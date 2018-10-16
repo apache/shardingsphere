@@ -211,31 +211,6 @@
         <module name="OuterTypeFilename"/>
         <module name="TodoComment"/>
         <module name="TrailingComment"/>
-        <module name="UncommentedMain">
-            <property name="excludedClasses" value="\.Bootstrap"/>
-        </module>
-        
-        <!-- Javadoc Comments -->
-        <module name="AtclauseOrder">
-            <property name="tagOrder" value="@author, @param, @return, @throws, @deprecated"/>
-        </module>
-        <module name="NonEmptyAtclauseDescription"/>
-        <module name="JavadocParagraph"/>
-        <module name="JavadocStyle"/>
-        <module name="JavadocTagContinuationIndentation"/>
-        <module name="SingleLineJavadoc"/>
-        <module name="SummaryJavadoc"/>
-        <!--
-        <module name="JavadocType">
-            <property name="scope" value="public"/>
-        </module>
-        -->
-        <module name="JavadocMethod">
-            <property name="scope" value="public"/>
-            <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass, Parameterized, Parameters"/>
-            <property name="ignoreMethodNamesRegex" value="^assert.*$|^verify.*$"/>
-            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
-        </module>
         
         <!-- Filters -->
         <module name="SuppressionCommentFilter"/>
