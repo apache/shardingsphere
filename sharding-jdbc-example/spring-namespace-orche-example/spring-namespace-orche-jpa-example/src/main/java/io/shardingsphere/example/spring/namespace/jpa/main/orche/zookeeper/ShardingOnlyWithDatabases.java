@@ -26,7 +26,7 @@ public class ShardingOnlyWithDatabases {
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) {
-        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingDatabases.xml" : "META-INF/orche/zookeeper/local/shardingDatabases.xml";
+        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/zookeeper/cloud/shardingDatabases.xml" : "META-INF/zookeeper/local/shardingDatabases.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             CommonService commonService = (CommonService) applicationContext.getBean("springEntityService");
             commonService.processSuccess();

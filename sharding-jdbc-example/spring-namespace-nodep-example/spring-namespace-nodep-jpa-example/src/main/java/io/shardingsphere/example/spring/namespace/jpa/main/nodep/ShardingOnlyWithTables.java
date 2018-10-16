@@ -25,8 +25,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ShardingOnlyWithTables {
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingDatabases.xml")) {
-            CommonService commonService = (CommonService) applicationContext.getBean("springEntityService");
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/shardingDatabases.xml")) {
+            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
             commonService.processSuccess();
             try {
                 commonService.processFailure();

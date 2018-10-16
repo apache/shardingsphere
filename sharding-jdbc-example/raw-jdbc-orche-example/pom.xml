@@ -16,6 +16,11 @@
             <artifactId>jdbc-repository</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>example-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>io.shardingsphere</groupId>

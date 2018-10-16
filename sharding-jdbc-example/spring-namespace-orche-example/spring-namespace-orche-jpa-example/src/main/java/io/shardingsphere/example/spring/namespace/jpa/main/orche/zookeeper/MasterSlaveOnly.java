@@ -29,7 +29,7 @@ public class MasterSlaveOnly {
     private static final boolean LOAD_CONFIG_FROM_REG_CENTER = false;
     
     public static void main(final String[] args) {
-        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/masterSlave.xml" : "META-INF/orche/zookeeper/local/masterSlave.xml";
+        String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/zookeeper/cloud/masterSlave.xml" : "META-INF/zookeeper/local/masterSlave.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             CommonService commonService = (CommonService) applicationContext.getBean("springEntityService");
             commonService.processSuccess();

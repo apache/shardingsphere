@@ -25,8 +25,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ShardingAndMasterSlaveTogether {
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/nodep/shardingMasterSlave.xml")) {
-            CommonService commonService = (CommonService) applicationContext.getBean("springEntityService");
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/shardingMasterSlave.xml")) {
+            CommonService commonService = applicationContext.getBean(SpringEntityService.class);
             commonService.processSuccess();
             try {
                 commonService.processFailure();
