@@ -20,10 +20,7 @@ package io.shardingsphere.example.jdbc.orche.config.etcd;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -32,32 +29,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class EtcdShardingTablesConfiguration implements ExampleConfiguration {
-    
-    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
-    
-    private final boolean loadConfigFromRegCenter;
+public class EtcdShardingTablesConfiguration extends EtcdExampleConfiguration {
     
     public EtcdShardingTablesConfiguration(final boolean loadConfigFromRegCenter) {
-        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
+        super(loadConfigFromRegCenter);
     }
     
     @Override
-    public DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    protected DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false));
-    }
-    
-    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    @Override
+    protected DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), false);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
@@ -79,12 +68,6 @@ public class EtcdShardingTablesConfiguration implements ExampleConfiguration {
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
-        return result;
-    }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        EtcdConfiguration result = new EtcdConfiguration();
-        result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }
 }

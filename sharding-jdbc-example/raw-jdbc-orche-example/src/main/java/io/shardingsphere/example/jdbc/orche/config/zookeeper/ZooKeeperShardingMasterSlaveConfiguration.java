@@ -25,10 +25,7 @@ import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfigurati
 import io.shardingsphere.example.algorithm.ModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -42,29 +39,19 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class ZooKeeperShardingMasterSlaveConfiguration implements ExampleConfiguration {
-    
-    private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
-    
-    private static final String NAMESPACE = "orchestration-java-demo";
-    
-    private final boolean loadConfigFromRegCenter;
+public class ZooKeeperShardingMasterSlaveConfiguration extends ZooKeeperExampleConfiguration {
     
     public ZooKeeperShardingMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
-        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
+        super(loadConfigFromRegCenter);
     }
     
     @Override
-    public DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    protected DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-master-slave-data-source", getRegistryCenterConfiguration(), false));
-    }
-    
-    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    @Override
+    protected DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
@@ -106,13 +93,6 @@ public class ZooKeeperShardingMasterSlaveConfiguration implements ExampleConfigu
         result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
         result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
         result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
-        return result;
-    }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        result.setNamespace(NAMESPACE);
         return result;
     }
 }

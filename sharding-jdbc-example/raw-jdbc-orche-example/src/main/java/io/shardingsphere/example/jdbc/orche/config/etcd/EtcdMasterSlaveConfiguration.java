@@ -19,10 +19,7 @@ package io.shardingsphere.example.jdbc.orche.config.etcd;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -35,37 +32,23 @@ import java.util.Properties;
 /*
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
-public class EtcdMasterSlaveConfiguration implements ExampleConfiguration {
-    
-    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
-    
-    private final boolean loadConfigFromRegCenter;
+public class EtcdMasterSlaveConfiguration extends EtcdExampleConfiguration {
     
     public EtcdMasterSlaveConfiguration(final boolean loadConfigFromRegCenter) {
-        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
+        super(loadConfigFromRegCenter);
     }
     
     @Override
-    public DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    protected DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-master-slave-data-source", getRegistryCenterConfiguration(), false));
-    }
-    
-    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    @Override
+    protected DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
                 "orchestration-master-slave-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
-    }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        EtcdConfiguration result = new EtcdConfiguration();
-        result.setServerLists(ETCD_CONNECTION_STRING);
-        return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {

@@ -23,10 +23,7 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
-import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -35,37 +32,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ZooKeeperShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
-    
-    private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
-    
-    private static final String NAMESPACE = "orchestration-java-demo";
-    
-    private final boolean loadConfigFromRegCenter;
+public class ZooKeeperShardingDatabasesAndTablesConfiguration extends ZooKeeperExampleConfiguration {
     
     public ZooKeeperShardingDatabasesAndTablesConfiguration(final boolean loadConfigFromRegCenter) {
-        this.loadConfigFromRegCenter = loadConfigFromRegCenter;
+        super(loadConfigFromRegCenter);
     }
     
     @Override
-    public DataSource getDataSource() throws SQLException {
-        return loadConfigFromRegCenter ? getDataSourceFromRegCenter() : getDataSourceFromLocalConfiguration();
+    protected DataSource getDataSourceFromRegCenter() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false));
     }
     
-    private DataSource getDataSourceFromRegCenter() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false));
-    }
-    
-    private DataSource getDataSourceFromLocalConfiguration() throws SQLException {
+    @Override
+    protected DataSource getDataSourceFromLocalConfiguration() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(
-                "orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), false);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", getRegistryCenterConfiguration(), true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
     
@@ -88,13 +74,6 @@ public class ZooKeeperShardingDatabasesAndTablesConfiguration implements Example
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
-        result.setNamespace(NAMESPACE);
         return result;
     }
 }
