@@ -25,6 +25,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
 @ComponentScan("io.shardingsphere.example.repository.jpa")
 @EntityScan(basePackages = "io.shardingsphere.example.repository.jpa.entity")
 @SpringBootApplication

@@ -23,6 +23,9 @@ import io.shardingsphere.example.type.ShardingType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/*
+ * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+ */
 public class SpringNamespaceExample {
     
     private static ShardingType type = ShardingType.SHARDING_DATABASES;
