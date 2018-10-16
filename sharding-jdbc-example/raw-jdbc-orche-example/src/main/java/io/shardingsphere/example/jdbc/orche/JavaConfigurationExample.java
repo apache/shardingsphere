@@ -107,14 +107,18 @@ public class JavaConfigurationExample {
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
+        closeDataSource(dataSource);
+    }
+    
+    private static CommonService getCommonService(final DataSource dataSource) {
+        return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+    }
+    
+    private static void closeDataSource(final DataSource dataSource) {
         if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
             ((OrchestrationMasterSlaveDataSource) dataSource).close();
         } else {
             ((OrchestrationShardingDataSource) dataSource).close();
         }
-    }
-    
-    private static CommonService getCommonService(final DataSource dataSource) {
-        return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
     }
 }
