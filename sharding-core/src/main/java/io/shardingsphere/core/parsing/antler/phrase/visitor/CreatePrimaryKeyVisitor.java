@@ -27,15 +27,24 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
 
 public class CreatePrimaryKeyVisitor implements PhraseVisitor {
 
+    /**
+     * Visit ast.
+     * 
+     * @param ancestorNode
+     *            ancestor node of ast
+     * @param statement
+     *            sql statement
+     */
     @Override
-    public void visit(ParserRuleContext ancestorNode, SQLStatement statement) {
-        CreateTableStatement createStatement = (CreateTableStatement)statement;
+    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+        CreateTableStatement createStatement = (CreateTableStatement) statement;
         ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, "primaryKey");
         if (null == primaryKeyCtx) {
             return;
         }
-        
-        ParserRuleContext columnListCtx = TreeUtils.getFirstChildByRuleName(primaryKeyCtx.getParent().getParent(), "columnList");
+
+        ParserRuleContext columnListCtx = TreeUtils.getFirstChildByRuleName(primaryKeyCtx.getParent().getParent(),
+                "columnList");
         if (null == columnListCtx) {
             return;
         }
@@ -44,9 +53,9 @@ public class CreatePrimaryKeyVisitor implements PhraseVisitor {
         if (null == columnNodes) {
             return;
         }
-        
+
         for (final ParserRuleContext each : columnNodes) {
-            if(!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
+            if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
                 createStatement.getPrimaryKeyColumns().add(each.getText());
             }
         }
