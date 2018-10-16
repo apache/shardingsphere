@@ -29,7 +29,7 @@ chapter = true
 
 * 高洪涛, Hongtao Gao, [@hanahmily](https://github.com/hanahmily) 数据库和APM专家, Apache SkyWalking（孵化器）PMC成员
 
-* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) CTO, 贝壳金服
+* 史海峰, Haifeng Shi, [@PegasusS](https://github.com/PegasusS) 2B2C CTO, 贝壳金服
 
 * 张小虎, Xiaohu Zhang, [@pottieva](https://github.com/pottieva) 高级总监, 翼支付
 
@@ -54,8 +54,6 @@ Sharding-Sphere在很多情况下需要投票。选票可以视情况通过手�
 * 马晓光, Xiaoguang Ma, [@ma-xiao-guang-64](https://github.com/ma-xiao-guang-64) 高级工程师, 惠买集团
 
 ## 邮件列表
-
-* [Google Groups](mailto:sharding+subscribe@googlegroups.com)
 
 ## 即时通信
 
