@@ -26,7 +26,7 @@
             <xsd:complexContent>
                 <xsd:extension base="beans:identifiedType">
                     <xsd:attribute name="server-lists" type="xsd:string" use="required" />
-                    <xsd:attribute name="namespace" type="xsd:string" use="required" />
+                    <xsd:attribute name="namespace" type="xsd:string" />
                     <xsd:attribute name="digest" type="xsd:string" />
                     <xsd:attribute name="operation-timeout-milliseconds" type="xsd:string" />
                     <xsd:attribute name="max-retries" type="xsd:string" />
