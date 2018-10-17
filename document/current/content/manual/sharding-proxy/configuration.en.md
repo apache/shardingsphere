@@ -209,7 +209,7 @@ shardingRule:
 
 ## Global configuration example
 
-### Orchestration by ZooKeeper
+### Orchestration by Registry
 
 ```yaml
 #Ignore data sources, sharding and read-write splitting configuration
@@ -217,21 +217,9 @@ shardingRule:
 orchestration:
   name: orchestration_ds
   overwrite: true
-  zookeeper:
+  registry:
     namespace: orchestration
     serverLists: localhost:2181
-```
-
-### Orchestration by Etcd
-
-```yaml
-#Ignore data sources, sharding and read-write splitting configuration
-
-orchestration:
-  name: orchestration_ds
-  overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
 ```
 
 ### Authentication
@@ -283,11 +271,7 @@ masterSlaveRule: #Ignore read-write splitting rule configuration, same as Shardi
 
 ## Global configuration reference
 
-### Orchestration by Zookeeper
-
-Same as configuration of Sharding-JDBC.
-
-### Orchestration by Etcd
+### Orchestration by Registry
 
 Same as configuration of Sharding-JDBC.
 
