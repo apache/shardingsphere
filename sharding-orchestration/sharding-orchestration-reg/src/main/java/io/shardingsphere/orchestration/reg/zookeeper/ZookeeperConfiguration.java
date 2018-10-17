@@ -38,41 +38,36 @@ public final class ZookeeperConfiguration implements RegistryCenterConfiguration
     private String serverLists;
     
     /**
-     * Namespace of zookeeper.
+     * Namespace of registry center.
      */
     private String namespace;
     
     /**
-     * Base sleep time milliseconds.
+     * Digest for registry center.
+     *
+     * <p>Default is not need digest.</p>
      */
-    private int baseSleepTimeMilliseconds = 1000;
+    private String digest;
     
     /**
-     * Max sleep time milliseconds.
+     * Operation timeout time in milliseconds.
      */
-    private int maxSleepTimeMilliseconds = 3000;
+    private int operationTimeoutMilliseconds;
     
     /**
-     * Max retries.
+     * Max number of times to retry.
      */
     private int maxRetries = 3;
     
     /**
-     * Session timeout milliseconds.
+     * Time interval in milliseconds on each retry.
      */
-    private int sessionTimeoutMilliseconds;
+    private int retryIntervalMilliseconds = 1000;
     
     /**
-     * Connection timeout milliseconds.
+     * Time to live in seconds of ephemeral keys.
      */
-    private int connectionTimeoutMilliseconds;
-    
-    /**
-     * Digest for zookeeper.
-     * 
-     * <p>Default is not need digest</p>
-     */
-    private String digest;
+    private int timeToLiveSeconds = 60;
     
     /**
      * RegCenter for zookeeper.

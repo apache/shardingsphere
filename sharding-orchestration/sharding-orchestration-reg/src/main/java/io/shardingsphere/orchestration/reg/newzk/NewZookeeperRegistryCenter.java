@@ -64,8 +64,8 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
     
     private ClientFactory buildClientFactory(final ZookeeperConfiguration zkConfig) {
         ClientFactory result = new ClientFactory();
-        result.setClientNamespace(zkConfig.getNamespace()).newClient(zkConfig.getServerLists(), zkConfig.getSessionTimeoutMilliseconds())
-                .setRetryPolicy(new DelayRetryPolicy(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()));
+        result.setClientNamespace(zkConfig.getNamespace()).newClient(zkConfig.getServerLists(), zkConfig.getTimeToLiveSeconds() * 1000)
+                .setRetryPolicy(new DelayRetryPolicy(zkConfig.getRetryIntervalMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getRetryIntervalMilliseconds()));
         if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {
             result.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8), ZooDefs.Ids.CREATOR_ALL_ACL);
         }
@@ -76,9 +76,9 @@ public final class NewZookeeperRegistryCenter implements RegistryCenter {
         IClient result = null;
         try {
             // TODO There is a bug when the start time is very short, and I haven't found the reason yet
-            // result = clientFactory.start(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
+            // result = clientFactory.start(zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
             result = clientFactory.start();
-            if (!result.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+            if (!result.blockUntilConnected(zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
                 result.close();
                 throw new KeeperException.OperationTimeoutException();
             }

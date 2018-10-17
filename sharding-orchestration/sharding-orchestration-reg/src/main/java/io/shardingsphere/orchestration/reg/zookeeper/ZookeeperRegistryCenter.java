@@ -65,13 +65,13 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
     private CuratorFramework buildCuratorClient(final ZookeeperConfiguration zkConfig) {
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                 .connectString(zkConfig.getServerLists())
-                .retryPolicy(new ExponentialBackoffRetry(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()))
+                .retryPolicy(new ExponentialBackoffRetry(zkConfig.getRetryIntervalMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries()))
                 .namespace(zkConfig.getNamespace());
-        if (0 != zkConfig.getSessionTimeoutMilliseconds()) {
-            builder.sessionTimeoutMs(zkConfig.getSessionTimeoutMilliseconds());
+        if (0 != zkConfig.getTimeToLiveSeconds()) {
+            builder.sessionTimeoutMs(zkConfig.getTimeToLiveSeconds() * 1000);
         }
-        if (0 != zkConfig.getConnectionTimeoutMilliseconds()) {
-            builder.connectionTimeoutMs(zkConfig.getConnectionTimeoutMilliseconds());
+        if (0 != zkConfig.getOperationTimeoutMilliseconds()) {
+            builder.connectionTimeoutMs(zkConfig.getOperationTimeoutMilliseconds());
         }
         if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {
             builder.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8))
@@ -94,7 +94,7 @@ public final class ZookeeperRegistryCenter implements RegistryCenter {
     private void initCuratorClient(final ZookeeperConfiguration zkConfig) {
         client.start();
         try {
-            if (!client.blockUntilConnected(zkConfig.getMaxSleepTimeMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+            if (!client.blockUntilConnected(zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();
             }

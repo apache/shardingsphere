@@ -32,11 +32,11 @@ public final class EtcdRegistryCenterBeanDefinitionParserTag {
     
     public static final String SERVER_LISTS_TAG = "server-lists";
     
-    public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
+    public static final String OPERATION_TIMEOUT_MILLISECONDS_TAG = "operation-timeout-milliseconds";
     
-    public static final String TIMEOUT_MILLISECONDS_TAG = "timeout-milliseconds";
+    public static final String MAX_RETRIES_TAG = "max-retries";
     
     public static final String RETRY_INTERVAL_MILLISECONDS_TAG = "retry-interval-milliseconds";
     
-    public static final String MAX_RETRIES_TAG = "max-retries";
+    public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
 }

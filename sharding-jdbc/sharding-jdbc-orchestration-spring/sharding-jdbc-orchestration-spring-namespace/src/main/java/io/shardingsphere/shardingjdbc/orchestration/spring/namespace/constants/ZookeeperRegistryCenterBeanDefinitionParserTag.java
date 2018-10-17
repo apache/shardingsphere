@@ -34,15 +34,13 @@ public final class ZookeeperRegistryCenterBeanDefinitionParserTag {
     
     public static final String NAMESPACE_TAG = "namespace";
     
-    public static final String BASE_SLEEP_TIME_MILLISECONDS_TAG = "base-sleep-time-milliseconds";
+    public static final String DIGEST_TAG = "digest";
     
-    public static final String MAX_SLEEP_TIME_MILLISECONDS_TAG = "max-sleep-time-milliseconds";
+    public static final String OPERATION_TIMEOUT_MILLISECONDS_TAG = "operation-timeout-milliseconds";
     
     public static final String MAX_RETRIES_TAG = "max-retries";
     
-    public static final String SESSION_TIMEOUT_MILLISECONDS_TAG = "session-timeout-milliseconds";
+    public static final String RETRY_INTERVAL_MILLISECONDS_TAG = "retry-interval-milliseconds";
     
-    public static final String CONNECTION_TIMEOUT_MILLISECONDS_TAG = "connection-timeout-milliseconds";
-    
-    public static final String DIGEST_TAG = "digest";
+    public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
 }

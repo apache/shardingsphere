@@ -38,22 +38,22 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
     private String serverLists;
     
     /**
-     * Time to live seconds of ephemeral keys.
+     * Operation timeout time in milliseconds.
      */
-    private int timeToLiveSeconds = 60;
+    private int operationTimeoutMilliseconds = 500;
     
     /**
-     * Timeout when calling a etcd method in milliseconds.
+     * Max number of times to retry.
      */
-    private int timeoutMilliseconds = 500;
+    private int maxRetries = 3;
     
     /**
-     * Maximal retries when calling a etcd method.
+     * Time interval in milliseconds on each retry.
      */
     private int retryIntervalMilliseconds = 200;
     
     /**
-     * Maximal retries when calling a etcd method.
+     * Time to live in seconds of ephemeral keys.
      */
-    private int maxRetries = 3;
+    private int timeToLiveSeconds = 60;
 }
