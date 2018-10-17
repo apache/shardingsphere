@@ -37,6 +37,7 @@ The list here will be shown in the registered order.
 * [Tuandai](https://www.tuandai.com/)
 * [JD Finance](http://jr.jd.com/)
 * [Cypfintech](https://www.cypfintech.com/)
+* [Ppdai](https://www.ppdai.com/)
 
 ## Information
 
