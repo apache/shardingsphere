@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.reg.etcd.internal.watcher;
 import etcdserverpb.Rpc;
 import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;
-import io.shardingsphere.orchestration.reg.exception.RegException;
+import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,7 @@ public final class EtcdWatchStreamObserver implements StreamObserver<WatchRespon
     @Override
     public void onError(final Throwable throwable) {
         // TODO retry watch later
-        throw new RegException(new Exception(throwable));
+        throw new RegistryCenterException(new Exception(throwable));
     }
     
     @Override

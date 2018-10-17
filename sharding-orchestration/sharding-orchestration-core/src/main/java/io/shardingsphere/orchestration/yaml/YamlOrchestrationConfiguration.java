@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.yaml;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration;
+import io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 

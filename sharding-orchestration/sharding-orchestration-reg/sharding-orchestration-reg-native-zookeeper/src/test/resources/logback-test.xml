@@ -8,7 +8,7 @@
     <logger name="io.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="io.shardingsphere.orchestration.reg.newzk.client.retry.RetryCallable" level="error" additivity="false">
+    <logger name="io.shardingsphere.orchestration.reg.zookeeper.client.retry.RetryCallable" level="error" additivity="false">
         <appender-ref ref="console"/>
     </logger>
     

@@ -37,7 +37,7 @@ import io.shardingsphere.orchestration.reg.etcd.internal.channel.EtcdChannelFact
 import io.shardingsphere.orchestration.reg.etcd.internal.keepalive.KeepAlive;
 import io.shardingsphere.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingsphere.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
-import io.shardingsphere.orchestration.reg.exception.RegException;
+import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 import mvccpb.Kv.KeyValue;
 
@@ -144,7 +144,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     public void persistEphemeral(final String key, final String value) {
         final Optional<Long> leaseId = lease();
         if (!leaseId.isPresent()) {
-            throw new RegException("Unable to set up heat beat for key %s", key);
+            throw new RegistryCenterException("Unable to set up heat beat for key %s", key);
         }
         final PutRequest request = PutRequest.newBuilder().setPrevKv(true).setLease(leaseId.get()).setKey(ByteString.copyFromUtf8(key)).setValue(ByteString.copyFromUtf8(value)).build();
         etcdRetryEngine.execute(new Callable<Void>() {

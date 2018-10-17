@@ -10,9 +10,9 @@
       "type": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "name": "sharding.jdbc.config.orchestration.zookeeper",
-      "type": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration"
+      "type": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration"
     },
     {
       "sourceType": "io.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfiguration",
@@ -111,46 +111,46 @@
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "name": "sharding.jdbc.config.orchestration.zookeeper.server-lists",
       "description": "Zookeeper server list.\n \n <p>Include ip address and port, multiple servers split by comma. Etc: {@code host1:2181,host2:2181}<\/p>.",
       "type": "java.lang.String"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "name": "sharding.jdbc.config.orchestration.zookeeper.namespace",
       "description": "Namespace of registry center.",
       "type": "java.lang.String"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "name": "sharding.jdbc.config.orchestration.zookeeper.digest",
       "description": "Digest for registry center.\n \n <p>Default is not need digest<\/p>.",
       "type": "java.lang.String"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "defaultValue": 0,
       "name": "sharding.jdbc.config.orchestration.zookeeper.operation-timeout-milliseconds",
       "description": "Operation timeout time in milliseconds.",
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "defaultValue": 3,
       "name": "sharding.jdbc.config.orchestration.zookeeper.max-retries",
       "description": "Max number of times to retry.",
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "defaultValue": 1000,
       "name": "sharding.jdbc.config.orchestration.zookeeper.retry-interval-milliseconds",
       "description": "Time interval in milliseconds on each retry.",
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
       "defaultValue": 0,
       "name": "sharding.jdbc.config.orchestration.zookeeper.time-to-live-seconds",
       "description": "Time to live in seconds of ephemeral keys.",

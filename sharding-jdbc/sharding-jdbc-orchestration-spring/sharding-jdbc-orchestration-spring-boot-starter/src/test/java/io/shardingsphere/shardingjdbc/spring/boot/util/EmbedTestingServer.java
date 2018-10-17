@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.spring.boot.util;
 
-import io.shardingsphere.orchestration.reg.exception.RegExceptionHandler;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.NativeZookeeperExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.curator.test.TestingServer;
@@ -44,7 +44,7 @@ public final class EmbedTestingServer {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
+            NativeZookeeperExceptionHandler.handleException(ex);
         } finally {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 
@@ -53,7 +53,7 @@ public final class EmbedTestingServer {
                     try {
                         testingServer.close();
                     } catch (final IOException ex) {
-                        RegExceptionHandler.handleException(ex);
+                        NativeZookeeperExceptionHandler.handleException(ex);
                     }
                 }
             });

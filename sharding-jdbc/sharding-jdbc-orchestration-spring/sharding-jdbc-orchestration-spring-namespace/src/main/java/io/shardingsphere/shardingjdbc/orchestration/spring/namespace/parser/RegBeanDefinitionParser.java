@@ -19,7 +19,7 @@ package io.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration;
+import io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration;
 import io.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EtcdRegistryCenterBeanDefinitionParserTag;
 import io.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ZookeeperRegistryCenterBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;

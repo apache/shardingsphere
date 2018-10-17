@@ -24,7 +24,7 @@ import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.exception.RegExceptionHandler;
+import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.Callable;
@@ -60,8 +60,7 @@ public final class EtcdRetryEngine {
         try {
             return Optional.fromNullable(retryer.call(callable));
         } catch (final ExecutionException | RetryException ex) {
-            RegExceptionHandler.handleException(ex);
-            return Optional.absent();
+            throw new RegistryCenterException(ex);
         }
     }
 }
