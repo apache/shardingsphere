@@ -30,6 +30,6 @@ shardingRule:
 orchestration:
   name: demo_yaml_ds_sharding
   overwrite: true
-  zookeeper:
-    namespace: orchestration-yaml-demo
+  registry:
     serverLists: localhost:2181
+    namespace: orchestration-yaml-demo

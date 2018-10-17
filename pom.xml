@@ -83,6 +83,16 @@
                 <artifactId>sharding-transaction</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-orchestration-reg-etcd</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework</groupId>

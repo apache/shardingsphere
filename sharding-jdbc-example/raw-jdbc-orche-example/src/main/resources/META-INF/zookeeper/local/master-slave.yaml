@@ -23,6 +23,6 @@ masterSlaveRule:
 orchestration:
   name: demo_yaml_ds_ms
   overwrite: true
-  zookeeper:
-    namespace: orchestration-yaml-demo
+  registry:
     serverLists: localhost:2181
+    namespace: orchestration-yaml-demo

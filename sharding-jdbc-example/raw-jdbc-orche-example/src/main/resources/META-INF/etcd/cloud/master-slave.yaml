@@ -1,5 +1,5 @@
 orchestration:
   name: demo_yaml_ds_ms
   overwrite: false
-  etcd:
+  registry:
     serverLists: http://localhost:2379

@@ -25,6 +25,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+/*
+ * 1. Please make sure sharding-orchestration-reg-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
+ * 2. Please make sure sharding-orchestration-reg-etcd in your pom if registryCenterType = RegistryCenterType.ETCD.
+ */
 @ComponentScan("io.shardingsphere.example.repository.mybatis")
 @MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
 @SpringBootApplication

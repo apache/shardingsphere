@@ -23,5 +23,5 @@ masterSlaveRule:
 orchestration:
   name: demo_yaml_ds_ms
   overwrite: true
-  etcd:
+  registry:
     serverLists: http://localhost:2379

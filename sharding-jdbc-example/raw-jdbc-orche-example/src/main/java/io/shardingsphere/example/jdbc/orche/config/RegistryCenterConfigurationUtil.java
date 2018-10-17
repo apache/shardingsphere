@@ -18,8 +18,6 @@
 package io.shardingsphere.example.jdbc.orche.config;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
 
 public class RegistryCenterConfigurationUtil {
     
@@ -30,14 +28,14 @@ public class RegistryCenterConfigurationUtil {
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
     public static RegistryCenterConfiguration getZooKeeperConfiguration() {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration();
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
         return result;
     }
     
     public static RegistryCenterConfiguration getEtcdConfiguration() {
-        EtcdConfiguration result = new EtcdConfiguration();
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration();
         result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }
