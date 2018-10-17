@@ -170,7 +170,7 @@ shardingRule:
     sql.show: true
 ```
 
-### Orchestration by Zookeeper
+### Orchestration by Registry
 
 ```yaml
 #Ignore sharding and master-slave configuration
@@ -178,21 +178,9 @@ shardingRule:
 orchestration:
   name: orchestration_ds
   overwrite: true
-  zookeeper:
+  registry:
     namespace: orchestration
     serverLists: localhost:2181
-```
-
-### Orchestration by Etcd
-
-```yaml
-#Ignore sharding and master-slave configuration
-
-orchestration:
-  name: orchestration_ds
-  overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
 ```
 
 ## Configuration reference
@@ -285,7 +273,7 @@ masterSlaveRule:
     keyx: valuex
 ```
 
-### Orchestration by Zookeeper
+### Orchestration by Registry
 
 ```yaml
 dataSources: #Ignore data sources configuration
@@ -295,32 +283,14 @@ masterSlaveRule: #Ignore master slave rule configuration
 orchestration:
   name: #Name of orchestration instance
   overwrite: #Use local configuration to overwrite registry center or not
-  zookeeper: #Zookeeper configuration
-    serverLists: #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
-    namespace: #Namespace of zookeeper
-    digest: #Digest for zookeeper. Default is not need digest.
+  registry: #Registry configuration
+    serverLists: #Registry servers list, multiple split as comma. Example: host1:2181,host2:2181
+    namespace: #Namespace of Registry
+    digest: #Digest for Registry. Default is not need digest.
     operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is no timeout
     maxRetries: #Max number of times to retry, default value is 3
     retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 1000 milliseconds
     timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default value is 60 seconds
-```
-
-### Orchestration by Etcd
-
-```yaml
-dataSources: #Ignore data sources configuration
-shardingRule: #Ignore sharding rule configuration
-masterSlaveRule: #Ignore master slave rule configuration
-
-orchestration:
-  name: #Same as Zookeeper
-  overwrite: #Same as Zookeeper
-  etcd: #Etcd configuration
-    serverLists: #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
-    operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is 500 milliseconds
-    maxRetries: #Max number of times to retry, default value is 3
-    retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 200 milliseconds
-    timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default is 60 seconds
 ```
 
 ## Yaml syntax
