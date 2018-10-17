@@ -66,6 +66,10 @@ public class SQLCasesLoader {
         return INSTANCE;
     }
     
+    public void switchSQLCase(final String path) {
+        supportedSQLCaseMap = loadSQLCases(path);
+    }
+    
     protected static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         try {
