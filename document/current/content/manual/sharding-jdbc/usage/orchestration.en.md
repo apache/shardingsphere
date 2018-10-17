@@ -16,6 +16,18 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+</dependency>
+<!--<dependency>-->
+    <!--<groupId>io.shardingsphere</groupId>-->
+    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
+<!--</dependency>-->
 ```
 
 ### Configure orchestration with java
@@ -25,12 +37,12 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     // ...
 
     // Configure registry center of Zookeeper
-    ZookeeperConfiguration zkConfig = new ZookeeperConfiguration();
-    zkConfig.setServerLists("localhost:2181");
-    zkConfig.setNamespace("sharding-sphere-orchestration");
+    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+    regConfig.setServerLists("localhost:2181");
+    regConfig.setNamespace("sharding-sphere-orchestration");
 
     // Configure orchestration configuration
-    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", zkConfig, false);
+    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
 
     // Get data source
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
@@ -44,9 +56,9 @@ To configure by yaml, similar with the configuration method of java codes:
 orchestration:
   name: orchestration-sharding-data-source
   overwrite: false
-  zookeeper:
+  registry:
     serverLists: localhost:2181
-    namespace: sharding-jdbc-orchestration
+    namespace: sharding-sphere-orchestration
 ```
 
 ```java
@@ -64,6 +76,18 @@ orchestration:
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+</dependency>
+<!--<dependency>-->
+    <!--<groupId>io.shardingsphere</groupId>-->
+    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
+<!--</dependency>-->
 
 <!-- for spring namespace -->
 <dependency>
@@ -71,6 +95,18 @@ orchestration:
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+</dependency>
+<!--<dependency>-->
+    <!--<groupId>io.shardingsphere</groupId>-->
+    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
+<!--</dependency>-->
 ```
 
 ### Configure orchestration with spring boot
@@ -78,8 +114,8 @@ orchestration:
 ```properties
 sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
 sharding.jdbc.config.orchestration.overwrite=false
-sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
-sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestration
+sharding.jdbc.config.orchestration.registry.server-lists=localhost:2181
+sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestration
 ```
 
 ### Configure orchestration with spring namespace
@@ -94,7 +130,7 @@ sharding.jdbc.config.orchestration.zookeeper.namespace=sharding-sphere-orchestra
                            http://shardingsphere.io/schema/shardingsphere/orchestration
                            http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
      <import resource="namespace/shardingDataSourceNamespace.xml" />
-     <orchestraion:zookeeper id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
+     <orchestraion:registry-center id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
      <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
 </beans>
 ```
