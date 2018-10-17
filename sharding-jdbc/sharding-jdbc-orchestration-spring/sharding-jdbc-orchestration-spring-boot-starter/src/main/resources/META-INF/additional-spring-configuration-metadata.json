@@ -5,14 +5,9 @@
       "type": "io.shardingsphere.shardingjdbc.orchestration.spring.boot.OrchestrationSpringBootConfiguration"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration",
-      "name": "sharding.jdbc.config.orchestration.etcd",
-      "type": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration"
-    },
-    {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "name": "sharding.jdbc.config.orchestration.zookeeper",
-      "type": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration"
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "name": "sharding.jdbc.config.orchestration.registry",
+      "type": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration"
     },
     {
       "sourceType": "io.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfiguration",
@@ -77,82 +72,48 @@
       "sourceType": "io.shardingsphere.shardingjdbc.util.DataSourceUtil"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration",
-      "name": "sharding.jdbc.config.orchestration.etcd.server-lists",
-      "description": "Etcd server list.\n \n <p>Include ip address and port, multiple servers split by comma. Etc: {@code http:\/\/host1:2379,http:\/\/host2:2379}<\/p>.",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "name": "sharding.jdbc.config.orchestration.registry.server-lists",
+      "description": "Registry center server list.",
       "type": "java.lang.String"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration",
-      "defaultValue": 500,
-      "name": "sharding.jdbc.config.orchestration.etcd.operation-timeout-milliseconds",
-      "description": "Operation timeout time in milliseconds.",
-      "type": "java.lang.Integer"
-    },
-    {
-      "sourceType": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration",
-      "defaultValue": 3,
-      "name": "sharding.jdbc.config.orchestration.etcd.max-retries",
-      "description": "Max number of times to retry.",
-      "type": "java.lang.Integer"
-    },
-    {
-      "sourceType": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration",
-      "defaultValue": 200,
-      "name": "sharding.jdbc.config.orchestration.etcd.retry-interval-milliseconds",
-      "description": "Time interval in milliseconds on each retry.",
-      "type": "java.lang.Integer"
-    },
-    {
-      "sourceType": "io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration",
-      "defaultValue": 60,
-      "name": "sharding.jdbc.config.orchestration.etcd.time-to-live-seconds",
-      "description": "Time to live in seconds of ephemeral keys.",
-      "type": "java.lang.Integer"
-    },
-    {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "name": "sharding.jdbc.config.orchestration.zookeeper.server-lists",
-      "description": "Zookeeper server list.\n \n <p>Include ip address and port, multiple servers split by comma. Etc: {@code host1:2181,host2:2181}<\/p>.",
-      "type": "java.lang.String"
-    },
-    {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "name": "sharding.jdbc.config.orchestration.zookeeper.namespace",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "name": "sharding.jdbc.config.orchestration.registry.namespace",
       "description": "Namespace of registry center.",
       "type": "java.lang.String"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "name": "sharding.jdbc.config.orchestration.zookeeper.digest",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "name": "sharding.jdbc.config.orchestration.registry.digest",
       "description": "Digest for registry center.\n \n <p>Default is not need digest<\/p>.",
       "type": "java.lang.String"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "defaultValue": 0,
-      "name": "sharding.jdbc.config.orchestration.zookeeper.operation-timeout-milliseconds",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "defaultValue": 500,
+      "name": "sharding.jdbc.config.orchestration.registry.operation-timeout-milliseconds",
       "description": "Operation timeout time in milliseconds.",
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
       "defaultValue": 3,
-      "name": "sharding.jdbc.config.orchestration.zookeeper.max-retries",
+      "name": "sharding.jdbc.config.orchestration.registry.max-retries",
       "description": "Max number of times to retry.",
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "defaultValue": 1000,
-      "name": "sharding.jdbc.config.orchestration.zookeeper.retry-interval-milliseconds",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "defaultValue": 500,
+      "name": "sharding.jdbc.config.orchestration.registry.retry-interval-milliseconds",
       "description": "Time interval in milliseconds on each retry.",
       "type": "java.lang.Integer"
     },
     {
-      "sourceType": "io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration",
-      "defaultValue": 0,
-      "name": "sharding.jdbc.config.orchestration.zookeeper.time-to-live-seconds",
+      "sourceType": "io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "defaultValue": 500,
+      "name": "sharding.jdbc.config.orchestration.registry.time-to-live-seconds",
       "description": "Time to live in seconds of ephemeral keys.",
       "type": "java.lang.Integer"
     },

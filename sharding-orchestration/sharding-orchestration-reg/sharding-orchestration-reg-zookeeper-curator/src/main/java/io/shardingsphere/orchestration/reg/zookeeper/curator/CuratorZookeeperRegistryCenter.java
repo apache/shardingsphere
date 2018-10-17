@@ -20,6 +20,7 @@ package io.shardingsphere.orchestration.reg.zookeeper.curator;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.apache.curator.framework.CuratorFramework;
@@ -52,28 +53,29 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     
-    private final CuratorFramework client;
-    
     private final Map<String, TreeCache> caches = new HashMap<>();
     
-    public CuratorZookeeperRegistryCenter(final CuratorZookeeperConfiguration zkConfig) {
-        client = buildCuratorClient(zkConfig);
-        initCuratorClient(zkConfig);
+    private CuratorFramework client;
+    
+    @Override
+    public void init(final RegistryCenterConfiguration config) {
+        client = buildCuratorClient(config);
+        initCuratorClient(config);
     }
     
-    private CuratorFramework buildCuratorClient(final CuratorZookeeperConfiguration zkConfig) {
+    private CuratorFramework buildCuratorClient(final RegistryCenterConfiguration config) {
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
-                .connectString(zkConfig.getServerLists())
-                .retryPolicy(new ExponentialBackoffRetry(zkConfig.getRetryIntervalMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries()))
-                .namespace(zkConfig.getNamespace());
-        if (0 != zkConfig.getTimeToLiveSeconds()) {
-            builder.sessionTimeoutMs(zkConfig.getTimeToLiveSeconds() * 1000);
+                .connectString(config.getServerLists())
+                .retryPolicy(new ExponentialBackoffRetry(config.getRetryIntervalMilliseconds(), config.getMaxRetries(), config.getRetryIntervalMilliseconds() * config.getMaxRetries()))
+                .namespace(config.getNamespace());
+        if (0 != config.getTimeToLiveSeconds()) {
+            builder.sessionTimeoutMs(config.getTimeToLiveSeconds() * 1000);
         }
-        if (0 != zkConfig.getOperationTimeoutMilliseconds()) {
-            builder.connectionTimeoutMs(zkConfig.getOperationTimeoutMilliseconds());
+        if (0 != config.getOperationTimeoutMilliseconds()) {
+            builder.connectionTimeoutMs(config.getOperationTimeoutMilliseconds());
         }
-        if (!Strings.isNullOrEmpty(zkConfig.getDigest())) {
-            builder.authorization("digest", zkConfig.getDigest().getBytes(Charsets.UTF_8))
+        if (!Strings.isNullOrEmpty(config.getDigest())) {
+            builder.authorization("digest", config.getDigest().getBytes(Charsets.UTF_8))
                     .aclProvider(new ACLProvider() {
                         
                         @Override
@@ -90,10 +92,10 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
         return builder.build();
     }
     
-    private void initCuratorClient(final CuratorZookeeperConfiguration zkConfig) {
+    private void initCuratorClient(final RegistryCenterConfiguration config) {
         client.start();
         try {
-            if (!client.blockUntilConnected(zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+            if (!client.blockUntilConnected(config.getRetryIntervalMilliseconds() * config.getMaxRetries(), TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();
             }

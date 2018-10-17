@@ -21,6 +21,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
@@ -51,16 +52,16 @@ import java.util.concurrent.TimeUnit;
  */
 public final class NativeZookeeperRegistryCenter implements RegistryCenter {
     
-    private final IClient client;
+    private final Map<String, PathTree> caches = new HashMap<>();
     
-    private final Map<String, PathTree> caches;
+    private IClient client;
     
-    public NativeZookeeperRegistryCenter(final NativeZookeeperConfiguration zkConfig) {
-        client = initClient(buildClientFactory(zkConfig), zkConfig);
-        caches = new HashMap<>();
+    @Override
+    public void init(final RegistryCenterConfiguration config) {
+        client = initClient(buildClientFactory(config), config);
     }
     
-    private ClientFactory buildClientFactory(final NativeZookeeperConfiguration config) {
+    private ClientFactory buildClientFactory(final RegistryCenterConfiguration config) {
         ClientFactory result = new ClientFactory();
         result.setClientNamespace(config.getNamespace()).newClient(config.getServerLists(), config.getTimeToLiveSeconds() * 1000)
                 .setRetryPolicy(new DelayRetryPolicy(config.getRetryIntervalMilliseconds(), config.getMaxRetries(), config.getRetryIntervalMilliseconds()));
@@ -70,13 +71,13 @@ public final class NativeZookeeperRegistryCenter implements RegistryCenter {
         return result;
     }
     
-    private IClient initClient(final ClientFactory clientFactory, final NativeZookeeperConfiguration zkConfig) {
+    private IClient initClient(final ClientFactory clientFactory, final RegistryCenterConfiguration config) {
         IClient result = null;
         try {
             // TODO There is a bug when the start time is very short, and I haven't found the reason yet
-            // result = clientFactory.start(zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS);
+            // result = clientFactory.start(config.getRetryIntervalMilliseconds() * config.getMaxRetries(), TimeUnit.MILLISECONDS);
             result = clientFactory.start();
-            if (!result.blockUntilConnected(zkConfig.getRetryIntervalMilliseconds() * zkConfig.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+            if (!result.blockUntilConnected(config.getRetryIntervalMilliseconds() * config.getMaxRetries(), TimeUnit.MILLISECONDS)) {
                 result.close();
                 throw new KeeperException.OperationTimeoutException();
             }

@@ -30,12 +30,6 @@ import io.shardingsphere.orchestration.internal.state.datasource.DataSourceServi
 import io.shardingsphere.orchestration.internal.state.instance.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter;
-import io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.NativeZookeeperConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.NativeZookeeperRegistryCenter;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 /**
  * Orchestration service facade.
@@ -70,7 +65,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     private final RegistryCenter regCenter;
     
     public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig) {
-        regCenter = createRegistryCenter(orchestrationConfig.getRegCenterConfig());
+        regCenter = loadRegistryCenter(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
@@ -78,18 +73,20 @@ public final class OrchestrationFacade implements AutoCloseable {
         listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter);
     }
     
-    private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
+    private RegistryCenter loadRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        if (regCenterConfig instanceof CuratorZookeeperConfiguration) {
-            return new CuratorZookeeperRegistryCenter((CuratorZookeeperConfiguration) regCenterConfig);
+        RegistryCenter result = null;
+        int count = 0;
+        for (RegistryCenter each : ServiceLoader.load(RegistryCenter.class)) {
+            result = each;
+            count++;
         }
-        if (regCenterConfig instanceof NativeZookeeperConfiguration) {
-            return new NativeZookeeperRegistryCenter((NativeZookeeperConfiguration) regCenterConfig);
+        Preconditions.checkNotNull(result, "Cannot load implementation class for `RegistryCenter`");
+        if (1 != count) {
+            log.warn("Find more than one RegistryCenter implementation class, use `{}` now", result.getClass().getName());
         }
-        if (regCenterConfig instanceof EtcdConfiguration) {
-            return new EtcdRegistryCenter((EtcdConfiguration) regCenterConfig);
-        }
-        throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
+        result.init(regCenterConfig);
+        return result;
     }
     
     /**

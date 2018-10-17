@@ -21,16 +21,20 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Etcd registry center parser tag constants.
+ * Registry center parser tag constants.
  *
- * @author zhangliang
+ * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EtcdRegistryCenterBeanDefinitionParserTag {
+public final class RegistryCenterBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "etcd";
+    public static final String ROOT_TAG = "registry-center";
     
     public static final String SERVER_LISTS_TAG = "server-lists";
+    
+    public static final String NAMESPACE_TAG = "namespace";
+    
+    public static final String DIGEST_TAG = "digest";
     
     public static final String OPERATION_TIMEOUT_MILLISECONDS_TAG = "operation-timeout-milliseconds";
     

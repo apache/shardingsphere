@@ -17,59 +17,50 @@
 
 package io.shardingsphere.orchestration.reg.api;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Registry center configuration.
  *
  * @author zhangliang
  */
-public interface RegistryCenterConfiguration {
+@Getter
+@Setter
+public final class RegistryCenterConfiguration {
     
     /**
-     * Get server list of registry center.
-     * 
-     * @return server list of registry center
+     * Server list of registry center.
      */
-    String getServerLists();
+    private String serverLists;
     
     /**
-     * Get namespace of registry center.
-     * 
-     * @return namespace of registry center
+     * Namespace of registry center.
      */
-    String getNamespace();
+    private String namespace;
     
     /**
-     * Get digest of registry center.
-     * 
-     * @return digest of registry center
+     * Digest of registry center.
      */
-    String getDigest();
+    private String digest;
     
     /**
-     * Get operation timeout time in milliseconds.
-     * 
-     * @return operation timeout time in milliseconds
+     * Operation timeout time in milliseconds.
      */
-    int getOperationTimeoutMilliseconds();
+    private int operationTimeoutMilliseconds = 500;
     
     /**
-     * Get max number of times to retry.
-     * 
-     * @return max number of times to retry
+     * Max number of times to retry.
      */
-    int getMaxRetries();
+    private int maxRetries = 3;
     
     /**
-     * Get time interval in milliseconds on each retry.
-     * 
-     * @return time interval in milliseconds on each retry
+     * Time interval in milliseconds on each retry.
      */
-    int getRetryIntervalMilliseconds();
+    private int retryIntervalMilliseconds = 500;
     
     /**
-     * Get time to live in seconds of ephemeral keys.
-     * 
-     * @return time to live in seconds of ephemeral keys
+     * Time to live in seconds of ephemeral keys.
      */
-    int getTimeToLiveSeconds();
+    private int timeToLiveSeconds = 60;
 }

@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.reg.etcd;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import com.google.protobuf.ByteString;
 import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;
@@ -33,6 +34,7 @@ import etcdserverpb.WatchGrpc;
 import etcdserverpb.WatchGrpc.WatchStub;
 import io.grpc.Channel;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.internal.channel.EtcdChannelFactory;
 import io.shardingsphere.orchestration.reg.etcd.internal.keepalive.KeepAlive;
 import io.shardingsphere.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
@@ -57,26 +59,27 @@ import java.util.concurrent.TimeoutException;
  */
 public final class EtcdRegistryCenter implements RegistryCenter {
     
-    private final EtcdConfiguration etcdConfig;
+    private RegistryCenterConfiguration config;
     
-    private final EtcdRetryEngine etcdRetryEngine;
+    private EtcdRetryEngine etcdRetryEngine;
     
-    private final KVFutureStub kvStub;
+    private KVFutureStub kvStub;
     
-    private final LeaseFutureStub leaseStub;
+    private LeaseFutureStub leaseStub;
     
-    private final WatchStub watchStub;
+    private WatchStub watchStub;
     
-    private final KeepAlive keepAlive;
+    private KeepAlive keepAlive;
     
-    public EtcdRegistryCenter(final EtcdConfiguration etcdConfig) {
-        this.etcdConfig = etcdConfig;
-        etcdRetryEngine = new EtcdRetryEngine(etcdConfig);
-        Channel channel = EtcdChannelFactory.getInstance(Arrays.asList(etcdConfig.getServerLists().split(",")));
+    @Override
+    public void init(final RegistryCenterConfiguration config) {
+        this.config = config;
+        etcdRetryEngine = new EtcdRetryEngine(config);
+        Channel channel = EtcdChannelFactory.getInstance(Splitter.on(',').trimResults().splitToList(config.getServerLists()));
         kvStub = KVGrpc.newFutureStub(channel);
         leaseStub = LeaseGrpc.newFutureStub(channel);
         watchStub = WatchGrpc.newStub(channel);
-        keepAlive = new KeepAlive(channel, etcdConfig.getTimeToLiveSeconds());
+        keepAlive = new KeepAlive(channel, config.getTimeToLiveSeconds());
     }
     
     @Override
@@ -86,7 +89,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
             
             @Override
             public String call() throws InterruptedException, ExecutionException, TimeoutException {
-                RangeResponse response = kvStub.range(request).get(etcdConfig.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                RangeResponse response = kvStub.range(request).get(config.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return response.getKvsCount() > 0 ? response.getKvs(0).getValue().toStringUtf8() : null;
             }
         }).orNull();
@@ -110,7 +113,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
             
             @Override
             public List<String> call() throws InterruptedException, ExecutionException, TimeoutException {
-                RangeResponse response = kvStub.range(request).get(etcdConfig.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                RangeResponse response = kvStub.range(request).get(config.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 List<String> result = new ArrayList<>();
                 for (KeyValue each : response.getKvsList()) {
                     String childFullPath = each.getKey().toStringUtf8();
@@ -129,7 +132,7 @@ public final class EtcdRegistryCenter implements RegistryCenter {
             
             @Override
             public Void call() throws InterruptedException, ExecutionException, TimeoutException {
-                kvStub.put(request).get(etcdConfig.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                kvStub.put(request).get(config.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return null;
             }
         });
@@ -151,19 +154,19 @@ public final class EtcdRegistryCenter implements RegistryCenter {
             
             @Override
             public Void call() throws InterruptedException, ExecutionException, TimeoutException {
-                kvStub.put(request).get(etcdConfig.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
+                kvStub.put(request).get(config.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS);
                 return null;
             }
         });
     }
     
     private Optional<Long> lease() {
-        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(etcdConfig.getTimeToLiveSeconds()).build();
+        final LeaseGrantRequest request = LeaseGrantRequest.newBuilder().setTTL(config.getTimeToLiveSeconds()).build();
         return etcdRetryEngine.execute(new Callable<Long>() {
             
             @Override
             public Long call() throws InterruptedException, ExecutionException, TimeoutException {
-                long leaseId = leaseStub.leaseGrant(request).get(etcdConfig.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
+                long leaseId = leaseStub.leaseGrant(request).get(config.getOperationTimeoutMilliseconds(), TimeUnit.MILLISECONDS).getID();
                 keepAlive.heartbeat(leaseId);
                 return leaseId;
             }

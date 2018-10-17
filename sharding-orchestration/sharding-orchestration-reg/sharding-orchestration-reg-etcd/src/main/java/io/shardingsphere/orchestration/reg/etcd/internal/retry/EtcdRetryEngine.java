@@ -23,7 +23,7 @@ import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Optional;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public final class EtcdRetryEngine {
     
-    private final EtcdConfiguration etcdConfig;
+    private final RegistryCenterConfiguration config;
     
     /**
      * Retry to execute callable command.
@@ -54,8 +54,8 @@ public final class EtcdRetryEngine {
                 .retryIfExceptionOfType(TimeoutException.class)
                 .retryIfExceptionOfType(ExecutionException.class)
                 .retryIfExceptionOfType(InterruptedException.class)
-                .withWaitStrategy(WaitStrategies.fixedWait(etcdConfig.getRetryIntervalMilliseconds(), TimeUnit.MILLISECONDS))
-                .withStopStrategy(StopStrategies.stopAfterAttempt(etcdConfig.getMaxRetries()))
+                .withWaitStrategy(WaitStrategies.fixedWait(config.getRetryIntervalMilliseconds(), TimeUnit.MILLISECONDS))
+                .withStopStrategy(StopStrategies.stopAfterAttempt(config.getMaxRetries()))
                 .build();
         try {
             return Optional.fromNullable(retryer.call(callable));

@@ -29,6 +29,13 @@ import java.util.List;
 public interface RegistryCenter extends AutoCloseable {
     
     /**
+     * Initialize registry center.
+     * 
+     * @param config registry center configuration
+     */
+    void init(RegistryCenterConfiguration config);
+    
+    /**
      * Get data from registry center.
      * 
      * <p>Maybe use cache if existed.</p>
