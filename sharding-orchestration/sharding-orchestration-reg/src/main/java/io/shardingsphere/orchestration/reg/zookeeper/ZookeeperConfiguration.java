@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Zookeeper based registry center configuration.
+ * Registry center configuration for zookeeper.
  * 
  * @author zhangliang
  */
@@ -37,36 +37,19 @@ public final class ZookeeperConfiguration implements RegistryCenterConfiguration
      */
     private String serverLists;
     
-    /**
-     * Namespace of registry center.
-     */
     private String namespace;
     
     /**
-     * Digest for registry center.
-     *
-     * <p>Default is not need digest.</p>
+     * Default is not need digest.
      */
     private String digest;
     
-    /**
-     * Operation timeout time in milliseconds.
-     */
     private int operationTimeoutMilliseconds;
     
-    /**
-     * Max number of times to retry.
-     */
     private int maxRetries = 3;
     
-    /**
-     * Time interval in milliseconds on each retry.
-     */
     private int retryIntervalMilliseconds = 1000;
     
-    /**
-     * Time to live in seconds of ephemeral keys.
-     */
     private int timeToLiveSeconds = 60;
     
     /**

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Etcd configuration.
+ * Registry center configuration for etcd.
  *
  * @author junxiong
  */
@@ -37,23 +37,21 @@ public final class EtcdConfiguration implements RegistryCenterConfiguration {
      */
     private String serverLists;
     
-    /**
-     * Operation timeout time in milliseconds.
-     */
     private int operationTimeoutMilliseconds = 500;
     
-    /**
-     * Max number of times to retry.
-     */
     private int maxRetries = 3;
     
-    /**
-     * Time interval in milliseconds on each retry.
-     */
     private int retryIntervalMilliseconds = 200;
     
-    /**
-     * Time to live in seconds of ephemeral keys.
-     */
     private int timeToLiveSeconds = 60;
+    
+    @Override
+    public String getNamespace() {
+        throw new UnsupportedOperationException("Cannot support namespace on ETCD");
+    }
+    
+    @Override
+    public String getDigest() {
+        throw new UnsupportedOperationException("Cannot support digest on ETCD");
+    }
 }

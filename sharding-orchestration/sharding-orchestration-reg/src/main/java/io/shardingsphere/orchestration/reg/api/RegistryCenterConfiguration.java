@@ -23,4 +23,53 @@ package io.shardingsphere.orchestration.reg.api;
  * @author zhangliang
  */
 public interface RegistryCenterConfiguration {
+    
+    /**
+     * Get server list of registry center.
+     * 
+     * @return server list of registry center
+     */
+    String getServerLists();
+    
+    /**
+     * Get namespace of registry center.
+     * 
+     * @return namespace of registry center
+     */
+    String getNamespace();
+    
+    /**
+     * Get digest of registry center.
+     * 
+     * @return digest of registry center
+     */
+    String getDigest();
+    
+    /**
+     * Get operation timeout time in milliseconds.
+     * 
+     * @return operation timeout time in milliseconds
+     */
+    int getOperationTimeoutMilliseconds();
+    
+    /**
+     * Get max number of times to retry.
+     * 
+     * @return max number of times to retry
+     */
+    int getMaxRetries();
+    
+    /**
+     * Get time interval in milliseconds on each retry.
+     * 
+     * @return time interval in milliseconds on each retry
+     */
+    int getRetryIntervalMilliseconds();
+    
+    /**
+     * Get time to live in seconds of ephemeral keys.
+     * 
+     * @return time to live in seconds of ephemeral keys
+     */
+    int getTimeToLiveSeconds();
 }
