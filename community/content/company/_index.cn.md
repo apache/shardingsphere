@@ -37,6 +37,7 @@ chapter = true
 * [团贷网](https://www.tuandai.com/)
 * [京东金融](http://jr.jd.com/)
 * [策赢平台](https://www.cypfintech.com/)
+* [拍拍贷](https://www.ppdai.com)
 
 ## 信息资讯
 
