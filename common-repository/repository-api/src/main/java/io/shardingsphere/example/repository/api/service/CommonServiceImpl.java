@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional
 public abstract class CommonServiceImpl implements CommonService {
     
     @Override
@@ -26,6 +25,7 @@ public abstract class CommonServiceImpl implements CommonService {
         getOrderItemRepository().dropTable();
     }
     
+    @Transactional
     @Override
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
@@ -36,6 +36,7 @@ public abstract class CommonServiceImpl implements CommonService {
         System.out.println("-------------- Process Success Finish --------------");
     }
     
+    @Transactional
     @Override
     public void processFailure() {
         System.out.println("-------------- Process Failure Begin ---------------");
