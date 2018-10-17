@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MasterSlaveConfiguration implements ExampleConfiguration {
+public final class MasterSlaveConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {

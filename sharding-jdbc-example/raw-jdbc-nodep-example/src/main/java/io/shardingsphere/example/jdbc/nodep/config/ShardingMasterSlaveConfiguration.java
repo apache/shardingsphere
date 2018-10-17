@@ -36,10 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingMasterSlaveConfiguration implements ExampleConfiguration {
+public final class ShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
     @Override
-    public  DataSource getDataSource() throws SQLException {
+    public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());

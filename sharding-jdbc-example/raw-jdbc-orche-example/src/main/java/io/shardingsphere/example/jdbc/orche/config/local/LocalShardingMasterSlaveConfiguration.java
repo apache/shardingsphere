@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
+public final class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     

@@ -25,7 +25,7 @@ import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlave
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class CloudMasterSlaveConfiguration implements ExampleConfiguration {
+public final class CloudMasterSlaveConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     

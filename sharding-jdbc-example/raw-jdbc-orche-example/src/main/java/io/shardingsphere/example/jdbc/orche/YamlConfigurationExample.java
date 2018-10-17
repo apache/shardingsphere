@@ -55,8 +55,8 @@ public class YamlConfigurationExample {
     }
     
     private static DataSource getDataSource() throws IOException, SQLException {
-        return ShardingType.MASTER_SLAVE == shardingType ? 
-                YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile()) : YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
+        return ShardingType.MASTER_SLAVE == shardingType
+                ? YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile()) : YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
     }
     
     private static File getYamlFile() {

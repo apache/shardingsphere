@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class LocalMasterSlaveConfiguration implements ExampleConfiguration {
+public final class LocalMasterSlaveConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
