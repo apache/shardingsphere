@@ -79,6 +79,7 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
         CodePointCharStream cs = CharStreams.fromString(sql);
         switch (databaseType) {
+            case H2:
             case MySQL:
                 execute(MySQLStatementLexer.class, MySQLStatementAdvancedParser.class,  cs);
                 break;
@@ -101,7 +102,11 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
         ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
         if (parserResult != null) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
-            new SQLStatementAssert(StatementFactory.getStatement(databaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, AntlrSQLCasesLoader.getInstance(), AntlrParserResultSetLoader.getInstance()).assertSQLStatement();
+            DatabaseType execDatabaseType = databaseType;
+            if(DatabaseType.H2 == databaseType) {
+                execDatabaseType = DatabaseType.MySQL;
+            }
+            new SQLStatementAssert(StatementFactory.getStatement(execDatabaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
         }
     }
     

@@ -38,7 +38,7 @@ public class IndexNameVisitor implements PhraseVisitor {
         if (null == indexNameCtx) {
             return;
         }
-        String tableName = null;
+        String tableName = "";
         if (!ddlStatement.getTables().isEmpty()) {
             tableName = ddlStatement.getTables().getSingleTableName();
         }
