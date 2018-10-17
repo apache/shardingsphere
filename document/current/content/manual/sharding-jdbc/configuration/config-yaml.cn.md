@@ -298,12 +298,11 @@ orchestration:
   zookeeper: #Zookeeper注册中心配置
     serverLists: #连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
     namespace: #Zookeeper的命名空间
-    baseSleepTimeMilliseconds: #等待重试的间隔时间的初始毫秒数，默认1000毫秒
-    maxSleepTimeMilliseconds: #等待重试的间隔时间的最大毫秒数，默认3000毫秒
-    maxRetries: #连接失败后的最大重试次数，默认3次
-    sessionTimeoutMilliseconds: #会话超时毫秒数，默认60000毫秒
-    connectionTimeoutMilliseconds: #连接超时毫秒数，默认15000毫秒
     digest: #连接Zookeeper的权限令牌。缺省为不需要权限验证
+    operationTimeoutMilliseconds: #操作超时的毫秒数，默认无超时时间
+    maxRetries: #连接失败后的最大重试次数，默认3次
+    retryIntervalMilliseconds: #重试间隔毫秒数，默认1000毫秒
+    timeToLiveSeconds: #临时节点存活秒数，默认60秒
 ```
 
 ### 使用Etcd的数据治理
@@ -318,71 +317,10 @@ orchestration:
   overwrite: #同Zookeeper
   etcd: #Etcd注册中心配置
     serverLists: #连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
-    timeToLiveSeconds: #临时节点存活秒数，默认60秒
-    timeoutMilliseconds: #请求超时毫秒数，默认500毫秒
+    operationTimeoutMilliseconds: #操作超时的毫秒数，默认1000毫秒
+    maxRetries: #连接失败后的最大重试次数，默认3次
     retryIntervalMilliseconds: #重试间隔毫秒数，默认200毫秒
-    maxRetries: #请求失败后的最大重试次数，默认3次
-```
-
-## 柔性事务
-
-### 异步作业Yaml配置
-
-```yaml
-#目标数据库的数据源
-targetDataSource:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
-    username: root
-    password:
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
-    username: root
-    password:
-
-#事务日志的数据源
-transactionLogDataSource:
-  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trans_log
-    username: root
-    password:
-
-#注册中心配置
-zkConfig:
-  #注册中心的连接地址
-  connectionString: localhost:2181
-  
-  #作业的命名空间
-  namespace: Best-Efforts-Delivery-Job
-  
-  #注册中心的等待重试的间隔时间的初始值
-  baseSleepTimeMilliseconds: 1000
-  
-  #注册中心的等待重试的间隔时间的最大值
-  maxSleepTimeMilliseconds: 3000
-  
-  #注册中心的最大重试次数
-  maxRetries: 3
-
-#作业配置
-jobConfig:
-  #作业名称
-  name: bestEffortsDeliveryJob
-  
-  #触发作业的cron表达式
-  cron: 0/5 * * * * ?
-  
-  #每次作业获取的事务日志最大数量
-  transactionLogFetchDataCount: 100
-  
-  #事务送达的最大尝试次数
-  maxDeliveryTryTimes: 3
-  
-  #执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
-  maxDeliveryTryDelayMillis: 60000
+    timeToLiveSeconds: #临时节点存活秒数，默认60秒
 ```
 
 ## Yaml语法说明

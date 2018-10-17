@@ -321,21 +321,20 @@ RegistryCenterConfiguration的实现类，用于配置Zookeeper注册中心。
 | --------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
 | serverLists                       | String     | 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
 | namespace                         | String     | Zookeeper的命名空间                                                                    |
-| baseSleepTimeMilliseconds (?)     | int        | 等待重试的间隔时间的初始毫秒数，默认1000毫秒                                               |
-| maxSleepTimeMilliseconds (?)      | int        | 等待重试的间隔时间的最大毫秒数，默认3000毫秒                                               |
+| digest (?)                        | String     | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                             |
+| operationTimeoutMilliseconds (?)  | int        | 操作超时的毫秒数，默认无超时时间                                                          |
 | maxRetries (?)                    | int        | 连接失败后的最大重试次数，默认3次                                                         |
-| sessionTimeoutMilliseconds (?)    | int        | 会话超时毫秒数，默认60000毫秒                                                            |
-| connectionTimeoutMilliseconds (?) | int        | 连接超时毫秒数，默认15000毫秒                                                            |
-| digest (?)                        | String     | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                              |
+| retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认1000毫秒                                                             |
+| timeToLiveSeconds (?)             | int        | 临时节点存活秒数，默认60秒                                                               |
 
 #### EtcdConfiguration
 
 RegistryCenterConfiguration的实现类，用于配置Etcd注册中心。
 
-| *名称*                         | *数据类型* | *说明*                                                                                          |
-| ----------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| serverLists                   | String     | 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379 |
-| timeToLiveSeconds (?)         | int        | 临时节点存活秒数，默认60秒                                                                        |
-| timeoutMilliseconds (?)       | int        | 请求超时毫秒数，默认500毫秒                                                                       |
-| retryIntervalMilliseconds (?) | int        | 重试间隔毫秒数，默认200毫秒                                                                       |
-| maxRetries (?)                | int        | 请求失败后的最大重试次数，默认3次                                                                  |
+| *名称*                             | *数据类型* | *说明*                                                                                          |
+| --------------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| serverLists                       | String     | 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379 |
+| operationTimeoutMilliseconds (?)  | int        | 请求超时毫秒数，默认500毫秒                                                                       |
+| maxRetries (?)                    | int        | 请求失败后的最大重试次数，默认3次                                                                  |
+| retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认200毫秒                                                                       |
+| timeToLiveSeconds (?)             | int        | 临时节点存活秒数，默认60秒                                                                        |

@@ -462,50 +462,24 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestr
 
 #### \<orchestration:zookeeper />
 
-| *Name*                              | *Type*    | *Description*                                                                   |
-| ----------------------------------- | --------- | ------------------------------------------------------------------------------- |
-| id                                  | Attribute | Spring Bean Id of registry center                                               |
-| server-lists                        | Attribute | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
-| namespace                           | Attribute | Namespace of zookeeper                                                          |
-| base-sleep-time-milliseconds (?)    | Attribute | Initial milliseconds of waiting for retry, default value is 1000 milliseconds   |
-| max-sleep-time-milliseconds (?)     | Attribute | Maximum milliseconds of waiting for retry, default value is 3000 milliseconds   |
-| max-retries (?)                     | Attribute | Max retries times if connect failure, default value is 3                        |
-| session-timeout-milliseconds (?)    | Attribute | Session timeout milliseconds, default is 60000 milliseconds                     |
-| connection-timeout-milliseconds (?) | Attribute | Connection timeout milliseconds, default is 15000 milliseconds                  |
-| digest (?)                          | Attribute | Connection digest                                                               |
+| *Name*                             | *Type*    | *Description*                                                                   |
+| ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
+| id                                 | Attribute | Spring Bean Id of registry center                                               |
+| server-lists                       | Attribute | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
+| namespace                          | Attribute | Namespace of zookeeper                                                          |
+| digest (?)                         | Attribute | Digest for zookeeper. Default is not need digest                                |
+| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is no timeout             |
+| max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                |
+| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 1000 milliseconds |
+| time-to-live-seconds (?)           | Attribute | Time to live in seconds of ephemeral keys, default value is 60 seconds          |
 
 #### \<orchestration:etcd />
 
-| *Name*                          | *Type*    | *Description*                                                                            |
-| ------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
-| id                              | Attribute | Spring Bean Id of registry center                                                        |
-| server-lists                    | Attribute | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
-| time-to-live-seconds (?)        | Attribute | Time to live of data, default is 60 seconds                                              |
-| timeout-milliseconds (?)        | Attribute | Timeout milliseconds, default is 500 milliseconds                                        |
-| max-retries (?)                 | Attribute | Milliseconds of retry interval, default is 200 milliseconds                              |
-| retry-interval-milliseconds (?) | Attribute | Max retries times if request failure, default value is 3                                 |
-
-### B.A.S.E Transaction
-
-#### SoftTransactionConfiguration Configuration
-
-For configuring transaction manager.
-
-| *Name*                              | *Type*                                    | *Required* | *Default* | *Info*                                                                                                                                       |
-| ----------------------------------- | ----------------------------------------- | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| shardingDataSource                  | ShardingDataSource                        | Y          |           | The data source of transaction manager                                                                                                       |
-| syncMaxDeliveryTryTimes             | int                                       | N          | 3         | The maximum number of attempts to send transactions                                                                                          |
-| storageType                         | enum                                      | N          | RDB       | The storage type of transaction logs, The options are RDB(creating tables automatically) or MEMORY                                           |
-| transactionLogDataSource            | DataSource                                | N          | null      | The data source to store the transaction log. if storageType is RDB, this item is required                                                   |
-| bestEffortsDeliveryJobConfiguration | NestedBestEffortsDeliveryJobConfiguration | N          | null      | The config of embedded asynchronous jobs for the Best-Effort-Delivery transaction, please refer to NestedBestEffortsDeliveryJobConfiguration |
-
-#### NestedBestEffortsDeliveryJobConfiguration Configuration (developing environment only)
-
-It is for configuring embedded asynchronous jobs for development environment only. The production environment should adopt the deployed discrete jobs.
-
-| *Name*                         | *Type* | *Required* | *Default*                 | *Info*                                                                                                                                                                      |
-| ------------------------------ | ------ | ---------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| zookeeperPort                  | int    | N          | 4181                      | The port of the embedded registry                                                                                                                                           |
-| zookeeperDataDir               | String | N          | target/test_zk_data/nano/ | The data directory of the embedded registry                                                                                                                                 |
-| asyncMaxDeliveryTryTimes       | int    | N          | 3                         | The maximum number of attempts to send transactions asynchronously                                                                                                          |
-| asyncMaxDeliveryTryDelayMillis | long   | N          | 60000                     | The number of delayed milliseconds to execute asynchronous transactions. The transactions whose creating time earlier than this value will be executed by asynchronous jobs |
+| *Name*                             | *Type*    | *Description*                                                                            |
+| ---------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
+| id                                 | Attribute | Spring Bean Id of registry center                                                        |
+| server-lists                       | Attribute | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
+| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 milliseconds                |
+| max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                         |
+| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 200 milliseconds           |
+| time-to-live-seconds (?)           | Attribute | Time to live in seconds of ephemeral keys, default value is 60 seconds                   |

@@ -268,7 +268,6 @@ weight = 4
 
     <orchestraion:sharding-data-source id="shardingMasterSlaveDataSource" data-source-ref="realShardingMasterSlaveDataSource" registry-center-ref="regCenter" overwrite="true" />
 </beans>
-
 ```
 
 ### 使用Zookeeper的数据治理
@@ -282,9 +281,8 @@ weight = 4
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.io/schema/shardingsphere/orchestration
                            http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
-    <orchestration:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3" />
+    <orchestration:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" operation-timeout-milliseconds="1000" max-retries="3" />
 </beans>
-
 ```
 
 ### 使用Etcd的数据治理
@@ -298,7 +296,7 @@ weight = 4
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.io/schema/shardingsphere/orchestration
                            http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
-    <orchestration:etcd id="regCenter" server-lists="http://localhost:2379" timeout-milliseconds="3000" max-retries="3" />
+    <orchestration:etcd id="regCenter" server-lists="http://localhost:2379" operation-timeout-milliseconds="3000" max-retries="3" />
 </beans>
 ```
 
@@ -437,12 +435,12 @@ weight = 4
 
 #### \<orchestration:sharding-data-source />
 
-| *名称*              | *类型* | *说明*                                                                  |
-| ------------------- | ----- | ---------------------------------------------------------------------- |
-| id                  | 属性   | ID                                                                      |
-| data-source-ref (?) | 属性   | 被治理的数据库id                                                          |
-| registry-center-ref | 属性   | 注册中心id                                                               |
-| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖    |
+| *名称*              | *类型* | *说明*                                                                    |
+| ------------------- | ----- | ------------------------------------------------------------------------ |
+| id                  | 属性   | ID                                                                       |
+| data-source-ref (?) | 属性   | 被治理的数据库id                                                           |
+| registry-center-ref | 属性   | 注册中心id                                                                |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。  缺省为不覆盖 |
 
 ### 读写分离 + 数据治理
 
@@ -452,10 +450,10 @@ weight = 4
 
 | *名称*              | *类型* | *说明*                                                                  |
 | ------------------- | ----- | ---------------------------------------------------------------------- |
-| id                  | 属性   | ID                                                                      |
-| data-source-ref (?) | 属性   | 被治理的数据库id                                                          |
-| registry-center-ref | 属性   | 注册中心id                                                               |
-| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖    |
+| id                  | 属性   | ID                                                                     |
+| data-source-ref (?) | 属性   | 被治理的数据库id                                                         |
+| registry-center-ref | 属性   | 注册中心id                                                              |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 ### 数据治理注册中心
 
@@ -468,45 +466,19 @@ weight = 4
 | id                                  | 属性  | 注册中心的Spring Bean Id                                                               |
 | server-lists                        | 属性  | 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
 | namespace                           | 属性  | Zookeeper的命名空间                                                                    |
-| base-sleep-time-milliseconds (?)    | 属性  | 等待重试的间隔时间的初始毫秒数，默认1000毫秒                                               |
-| max-sleep-time-milliseconds (?)     | 属性  | 等待重试的间隔时间的最大毫秒数，默认3000毫秒                                               |
+| digest (?)                          | 属性  | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                             |
+| operation-timeout-milliseconds (?)  | 属性  | 操作超时的毫秒数，默认无超时时间                                                          |
 | max-retries (?)                     | 属性  | 连接失败后的最大重试次数，默认3次                                                         |
-| session-timeout-milliseconds (?)    | 属性  | 会话超时毫秒数，默认60000毫秒                                                            |
-| connection-timeout-milliseconds (?) | 属性  | 连接超时毫秒数，默认15000毫秒                                                            |
-| digest (?)                          | 属性  | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                              |
+| retry-interval-milliseconds (?)     | 属性  | 重试间隔毫秒数，默认1000毫秒                                                             |
+| time-to-live-seconds (?)            | 属性  | 临时节点存活秒数，默认60秒                                                               |
 
 #### \<orchestration:etcd />
 
-| *名称*                          | *类型* | *说明*                                                                                         |
-| ------------------------------- | ----- | --------------------------------------------------------------------------------------------- |
-| id                              | 属性  | 注册中心的Spring Bean Id                                                                        |
-| server-lists                    | 属性  | 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379 |
-| time-to-live-seconds (?)        | 属性  | 临时节点存活秒数，默认60秒                                                                        |
-| timeout-milliseconds (?)        | 属性  | 请求超时毫秒数，默认500毫秒                                                                       |
-| max-retries (?)                 | 属性  | 重试间隔毫秒数，默认200毫秒                                                                       |
-| retry-interval-milliseconds (?) | 属性  | 请求失败后的最大重试次数，默认3次                                                                  |
-
-### 柔性事务
-
-#### SoftTransactionConfiguration配置
-
-用于配置事务管理器。
-
-| *名称*                              | *类型*                                     | *必填* | *默认值* | *说明*                                                                                     |
-| ---------------------------------- | ------------------------------------------ | ------ | ------- | ----------------------------------------------------------------------------------------- |
-| shardingDataSource                 | ShardingDataSource                         | 是     |         | 事务管理器管理的数据源                                                                       |
-| syncMaxDeliveryTryTimes            | int                                        | 否     | 3       | 同步的事务送达的最大尝试次数                                                                  |
-| storageType                        | enum                                       | 否     | RDB     | 事务日志存储类型。可选值: RDB,MEMORY。使用RDB类型将自动建表                                     |
-| transactionLogDataSource           | DataSource                                 | 否     | null    | 存储事务日志的数据源，如果storageType为RDB则必填                                               |
-| bestEffortsDeliveryJobConfiguration| NestedBestEffortsDeliveryJobConfiguration  | 否     | null    | 最大努力送达型内嵌异步作业配置对象。如需使用，请参考NestedBestEffortsDeliveryJobConfiguration配置 |
-
-#### NestedBestEffortsDeliveryJobConfiguration配置 (仅开发环境)
-
-用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。
-
-| *名称*                              | *类型*                      | *必填* | *默认值*                   | *说明*                                                           |
-| ---------------------------------- | --------------------------- | ------ | ------------------------- | --------------------------------------------------------------- |
-| zookeeperPort                      | int                         | 否     | 4181                      | 内嵌的注册中心端口号                                               |
-| zookeeperDataDir                   | String                      | 否     | target/test_zk_data/nano/ | 内嵌的注册中心的数据存放目录                                        |
-| asyncMaxDeliveryTryTimes           | int                         | 否     | 3                         | 异步的事务送达的最大尝试次数                                        |
-| asyncMaxDeliveryTryDelayMillis     | long                        | 否     | 60000                     | 执行异步送达事务的延迟毫秒数，早于此间隔时间的入库事务才会被异步作业执行  |
+| *名称*                             | *类型* | *说明*                                                                                         |
+| ---------------------------------- | ----- | --------------------------------------------------------------------------------------------- |
+| id                                 | 属性  | 注册中心的Spring Bean Id                                                                        |
+| server-lists                       | 属性  | 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379 |
+| operation-timeout-milliseconds (?) | 属性  | 请求超时毫秒数，默认500毫秒                                                                       |
+| max-retries (?)                    | 属性  | 请求失败后的最大重试次数，默认3次                                                                  |
+| retry-interval-milliseconds (?)    | 属性  | 重试间隔毫秒数，默认200毫秒                                                                       |
+| time-to-live-seconds (?)           | 属性  | 临时节点存活秒数，默认60秒                                                                        |

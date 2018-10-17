@@ -298,12 +298,11 @@ orchestration:
   zookeeper: #Zookeeper configuration
     serverLists: #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
     namespace: #Namespace of zookeeper
-    baseSleepTimeMilliseconds: #Initial milliseconds of waiting for retry, default value is 1000 milliseconds
-    maxSleepTimeMilliseconds: #Maximum milliseconds of waiting for retry, default value is 3000 milliseconds
-    maxRetries: #Max retries times if connect failure, default value is 3
-    sessionTimeoutMilliseconds: #Session timeout milliseconds, default is 60000 milliseconds
-    connectionTimeoutMilliseconds: #Connection timeout milliseconds, default is 15000 milliseconds
-    digest: #Connection digest
+    digest: #Digest for zookeeper. Default is not need digest.
+    operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is no timeout
+    maxRetries: #Max number of times to retry, default value is 3
+    retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 1000 milliseconds
+    timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default value is 60 seconds
 ```
 
 ### Orchestration by Etcd
@@ -318,71 +317,10 @@ orchestration:
   overwrite: #Same as Zookeeper
   etcd: #Etcd configuration
     serverLists: #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
-    timeToLiveSeconds: #Time to live of data, default is 60 seconds
-    timeoutMilliseconds: #Timeout milliseconds, default is 500 milliseconds
-    retryIntervalMilliseconds: #Milliseconds of retry interval, default is 200 milliseconds
-    maxRetries: #Max retries times if request failure, default value is 3
-```
-
-## B.A.S.E Transaction
-
-### Yaml configuration of asynchronous jobs
-
-```yaml
-#The target data source
-targetDataSource:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
-    username: root
-    password:
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
-    username: root
-    password:
-
-#The data source of transaction logs
-transactionLogDataSource:
-  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trans_log
-    username: root
-    password:
-
-#The registry configuration
-zkConfig:
-  #The url of the registry
-  connectionString: localhost:2181
-  
-  #The namespace of jobs
-  namespace: Best-Efforts-Delivery-Job
-  
-  #The initial value of the retry interval to connect to the registry
-  baseSleepTimeMilliseconds: 1000
-  
-  #The max value of the retry interval to connect to the registry
-  maxSleepTimeMilliseconds: 3000
-  
-  #The max number of retry to connect to the registry
-  maxRetries: 3
-
-#The job configuration
-jobConfig:
-  #The job name
-  name: bestEffortsDeliveryJob
-  
-  #The cron expression to trigger jobs
-  cron: 0/5 * * * * ?
-  
-  #The max number of transaction logs for each assignment
-  transactionLogFetchDataCount: 100
-  
-  #The max number of retry to send the transactions
-  maxDeliveryTryTimes: 3
-  
-  #The number of delayed milliseconds to execute asynchronous transactions. The transactions whose creating time earlier than this value will be executed by asynchronous jobs.
-  maxDeliveryTryDelayMillis: 60000
+    operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is 500 milliseconds
+    maxRetries: #Max number of times to retry, default value is 3
+    retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 200 milliseconds
+    timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default is 60 seconds
 ```
 
 ## Yaml syntax

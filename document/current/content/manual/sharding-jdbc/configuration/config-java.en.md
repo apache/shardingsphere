@@ -300,25 +300,24 @@ Enumeration of properties.
 
 Subclass of RegistryCenterConfiguration.
 
-| *Name*                            | *DataType* | *Description*                                                                   |
-| --------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| serverLists                       | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
-| namespace                         | String     | Namespace of zookeeper                                                          |
-| baseSleepTimeMilliseconds (?)     | int        | Initial milliseconds of waiting for retry, default value is 1000 milliseconds   |
-| maxSleepTimeMilliseconds (?)      | int        | Maximum milliseconds of waiting for retry, default value is 3000 milliseconds   |
-| maxRetries (?)                    | int        | Max retries times if connect failure, default value is 3                        |
-| sessionTimeoutMilliseconds (?)    | int        | Session timeout milliseconds, default value is 60000 milliseconds               |
-| connectionTimeoutMilliseconds (?) | int        | Connection timeout milliseconds, default value is 15000 milliseconds            |
-| digest (?)                        | String     | Connection digest                                                               |
+| *Name*                            | *DataType* | *Description*                                                                    |
+| --------------------------------- | ---------- | -------------------------------------------------------------------------------- |
+| serverLists                       | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181  |
+| namespace                         | String     | Namespace of zookeeper                                                           |
+| digest (?)                        | String     | Digest for Zookeeper. Default is not need digest.                                |
+| operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default is not timeout.                  |
+| maxRetries (?)                    | int        | Max number of times to retry. Default value is 3                                 |
+| retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 1000 milliseconds. |
+| timeToLiveSeconds (?)             | int        | Time to live in seconds of ephemeral keys. Default value is 60 seconds.          |
 
 #### EtcdConfiguration
 
 Subclass of RegistryCenterConfiguration.
 
-| *Name*                        | *DataType* | *Description*                                                                            |
-| ----------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
-| serverLists                   | String     | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
-| timeToLiveSeconds (?)         | int        | Time to live of data, default is 60 seconds                                              |
-| timeoutMilliseconds (?)       | int        | Timeout milliseconds, default is 500 milliseconds                                        |
-| retryIntervalMilliseconds (?) | int        | Milliseconds of retry interval, default is w00 milliseconds                              |
-| maxRetries (?)                | int        | Max retries times if request failure, default value is 3                                 |
+| *Name*                            | *DataType* | *Description*                                                                            |
+| --------------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| serverLists                       | String     | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
+| operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default is 500 milliseconds.                     |
+| maxRetries (?)                    | int        | Max number of times to retry. Default value is 3                                         |
+| retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 200 milliseconds.          |
+| timeToLiveSeconds (?)             | int        | Time to live in seconds of ephemeral keys. Default value is 60 seconds.                  |
