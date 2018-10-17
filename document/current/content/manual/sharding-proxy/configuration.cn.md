@@ -187,7 +187,7 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds${user_id % 2}
+      algorithmExpression: ms_ds${user_id % 2}
   
   defaultTableStrategy:
     none:
