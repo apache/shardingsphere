@@ -36,7 +36,7 @@ weight = 4
     // 省略配置dataSourceMap以及shardingRuleConfig
     // ...
 
-    // 配置基于Zookeeper的注册中心
+    // 配置基于Registry的注册中心
     RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
     regConfig.setServerLists("localhost:2181");
     regConfig.setNamespace("sharding-sphere-orchestration");
