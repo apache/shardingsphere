@@ -284,9 +284,9 @@ Enumeration of properties.
 
 | *Name*                            | *DataType* | *Description*                                                                    |
 | --------------------------------- | ---------- | -------------------------------------------------------------------------------- |
-| serverLists                       | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181  |
-| namespace                         | String     | Namespace of zookeeper                                                           |
-| digest (?)                        | String     | Digest for Zookeeper. Default is not need digest.                                |
+| serverLists                       | String     | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
+| namespace                         | String     | Namespace of Registry                                                           |
+| digest (?)                        | String     | Digest for Registry. Default is not need digest.                                |
 | operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default is not timeout.                  |
 | maxRetries (?)                    | int        | Max number of times to retry. Default value is 3                                 |
 | retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 1000 milliseconds. |
