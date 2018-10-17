@@ -29,6 +29,11 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
