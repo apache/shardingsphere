@@ -123,14 +123,14 @@ dataSources:
 shardingRule:  
   tables:
     t_order: 
-      actualDataNodes: ds${0..1}.t_order${0..1}
+      actualDataNodes: ms_ds${0..1}.t_order${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds${0..1}.t_order_item${0..1}
+      actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
