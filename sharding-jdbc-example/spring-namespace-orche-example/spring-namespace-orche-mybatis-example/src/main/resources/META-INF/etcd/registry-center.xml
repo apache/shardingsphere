@@ -6,5 +6,5 @@
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.io/schema/shardingsphere/orchestration
                            http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
-    <orchestraion:etcd id="regCenter" server-lists="http://localhost:2379" timeout-milliseconds="3000" max-retries="3" />
+    <orchestraion:etcd id="regCenter" server-lists="http://localhost:2379" operation-timeout-milliseconds="3000" max-retries="3" />
 </beans>
