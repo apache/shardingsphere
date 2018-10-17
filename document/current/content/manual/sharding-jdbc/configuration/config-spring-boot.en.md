@@ -128,7 +128,7 @@ sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=mas
 sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
-### Orchestration by Zookeeper
+### Orchestration by orchestration
 
 ```properties
 sharding.jdbc.datasource.names=ds,ds0,ds1
@@ -164,47 +164,8 @@ sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=orde
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
 sharding.jdbc.config.orchestration.overwrite=true
-sharding.jdbc.config.orchestration.zookeeper.namespace=orchestration-spring-boot-sharding-test
-sharding.jdbc.config.orchestration.zookeeper.server-lists=localhost:2181
-```
-
-### Orchestration by Etcd
-
-```properties
-sharding.jdbc.datasource.names=ds,ds0,ds1
-sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds.driver-class-name=org.h2.Driver
-sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/ds
-sharding.jdbc.datasource.ds.username=root
-sharding.jdbc.datasource.ds.password=
-
-sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
-sharding.jdbc.datasource.ds0.username=root
-sharding.jdbc.datasource.ds0.password=
-
-sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
-sharding.jdbc.datasource.ds1.username=root
-sharding.jdbc.datasource.ds1.password=
-
-sharding.jdbc.config.sharding.default-data-source-name=ds
-sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
-sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
-
-sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
-sharding.jdbc.config.orchestration.overwrite=true
-sharding.jdbc.config.orchestration.etcd.server-lists=localhost:2379
+sharding.jdbc.config.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
+sharding.jdbc.config.orchestration.registry.server-lists=localhost:2181
 ```
 
 ## Configuration reference
@@ -296,32 +257,19 @@ sharding.jdbc.config.masterslave.props.sql.show= #To show SQLS or not, default v
 sharding.jdbc.config.masterslave.props.executor.size= #The number of working threads, default value: CPU count
 ```
 
-### Orchestration by Zookeeper
+### Orchestration by Registry
 
 ```properties
 #Ignore data sources, sharding and read-write splitting configuration
 
 sharding.jdbc.config.sharding.orchestration.name= #Name of orchestration instance
 sharding.jdbc.config.sharding.orchestration.overwrite= #Use local configuration to overwrite registry center or not
-sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
-sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Namespace of zookeeper
-sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Digest for zookeeper. Default is not need digest.
-sharding.jdbc.config.sharding.orchestration.zookeeper.operation-timeout-milliseconds= #Operation timeout time in milliseconds, default value is no timeout
-sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #Max number of times to retry, default value is 3
-sharding.jdbc.config.sharding.orchestration.zookeeper.retry-interval-milliseconds= #Time interval in milliseconds on each retry, default value is 1000 milliseconds
-sharding.jdbc.config.sharding.orchestration.zookeeper.time-to-live-seconds= #Time to live in seconds of ephemeral keys, default value is 60 seconds
+sharding.jdbc.config.sharding.orchestration.registry.server-lists= #Rgistry servers list, multiple split as comma. Example: host1:2181,host2:2181
+sharding.jdbc.config.sharding.orchestration.registry.namespace= #Namespace of registry
+sharding.jdbc.config.sharding.orchestration.registry.digest= #Digest for registry. Default is not need digest.
+sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseconds= #Operation timeout time in milliseconds, default value is no timeout
+sharding.jdbc.config.sharding.orchestration.registry.max-retries= #Max number of times to retry, default value is 3
+sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #Time interval in milliseconds on each retry, default value is 1000 milliseconds
+sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #Time to live in seconds of ephemeral keys, default value is 60 seconds
 ```
 
-### Orchestration by Etcd
-
-```properties
-#Ignore data sources, sharding and read-write splitting configuration
-
-sharding.jdbc.config.sharding.orchestration.name= #Same as Zookeeper
-sharding.jdbc.config.sharding.orchestration.overwrite= #Same as Zookeeper
-sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
-sharding.jdbc.config.sharding.orchestration.etcd.operation-timeout-milliseconds= #Same as Zookeeper, default value is 500 milliseconds
-sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #Same as Zookeeper
-sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #Same as Zookeeper, default value is 200 milliseconds
-sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #Same as Zookeeper
-```
