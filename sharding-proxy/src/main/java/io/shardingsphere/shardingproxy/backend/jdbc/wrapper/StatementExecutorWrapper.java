@@ -70,7 +70,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
-    public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
+    public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
         return connection.createStatement();
     }
     
