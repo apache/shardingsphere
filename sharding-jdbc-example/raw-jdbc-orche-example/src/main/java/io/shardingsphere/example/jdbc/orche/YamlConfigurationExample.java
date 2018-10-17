@@ -46,8 +46,8 @@ public class YamlConfigurationExample {
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
-//    private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
-    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
+    private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
+//    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
