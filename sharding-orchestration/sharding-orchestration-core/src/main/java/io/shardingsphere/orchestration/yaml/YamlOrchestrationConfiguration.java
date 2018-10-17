@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.yaml;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +38,7 @@ public class YamlOrchestrationConfiguration {
     
     private EtcdConfiguration etcd;
     
-    private ZookeeperConfiguration zookeeper;
+    private CuratorZookeeperConfiguration zookeeper;
     
     private boolean overwrite;
     

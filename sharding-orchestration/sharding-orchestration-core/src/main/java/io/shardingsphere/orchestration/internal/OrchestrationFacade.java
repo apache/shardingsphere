@@ -32,8 +32,9 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter;
+import io.shardingsphere.orchestration.reg.newzk.NativeZookeeperConfiguration;
 import io.shardingsphere.orchestration.reg.newzk.NewZookeeperRegistryCenter;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.orchestration.reg.zookeeper.CuratorZookeeperConfiguration;
 import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.Getter;
@@ -79,21 +80,16 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        if (regCenterConfig instanceof ZookeeperConfiguration) {
-            return getZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
+        if (regCenterConfig instanceof CuratorZookeeperConfiguration) {
+            return new ZookeeperRegistryCenter((CuratorZookeeperConfiguration) regCenterConfig);
+        }
+        if (regCenterConfig instanceof NativeZookeeperConfiguration) {
+            return new NewZookeeperRegistryCenter((NativeZookeeperConfiguration) regCenterConfig);
         }
         if (regCenterConfig instanceof EtcdConfiguration) {
             return new EtcdRegistryCenter((EtcdConfiguration) regCenterConfig);
         }
         throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
-    }
-    
-    private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig) {
-        if (regCenterConfig.isUseNative()) {
-            return new NewZookeeperRegistryCenter(regCenterConfig);
-        } else {
-            return new ZookeeperRegistryCenter(regCenterConfig);
-        }
     }
     
     /**
