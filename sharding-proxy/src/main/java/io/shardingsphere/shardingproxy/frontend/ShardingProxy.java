@@ -41,6 +41,7 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
  * @author zhangliang
  * @author xiaoyu
  * @author wangkai
+ * @author panjuan
  */
 public final class ShardingProxy {
     
