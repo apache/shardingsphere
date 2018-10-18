@@ -15,16 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.rewrite;
+package io.shardingsphere.core.rewrite;
 
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
-import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,8 +40,6 @@ public final class MasterSlaveSQLRewriteEngine {
     
     private final String originalSQL;
     
-    private final SQLStatement sqlStatement;
-    
     private final List<SQLToken> sqlTokens;
     
     private final ShardingMetaData metaData;
@@ -51,13 +49,12 @@ public final class MasterSlaveSQLRewriteEngine {
      * 
      * @param masterSlaveRule master slave rule
      * @param originalSQL original SQL
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param metaData meta data
      */
     public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingMetaData metaData) {
         this.masterSlaveRule = masterSlaveRule;
         this.originalSQL = originalSQL;
-        this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
         this.metaData = metaData;
     }
@@ -71,7 +68,7 @@ public final class MasterSlaveSQLRewriteEngine {
         if (sqlTokens.isEmpty()) {
             return originalSQL;
         }
-        SQLBuilder result = new SQLBuilder(null);
+        SQLBuilder result = new SQLBuilder(Collections.emptyList());
         int count = 0;
         for (SQLToken each : sqlTokens) {
             if (0 == count) {
