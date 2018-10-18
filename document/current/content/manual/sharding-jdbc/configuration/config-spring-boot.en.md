@@ -305,12 +305,11 @@ sharding.jdbc.config.sharding.orchestration.name= #Name of orchestration instanc
 sharding.jdbc.config.sharding.orchestration.overwrite= #Use local configuration to overwrite registry center or not
 sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Namespace of zookeeper
-sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #Initial milliseconds of waiting for retry, default value is 1000 milliseconds
-sharding.jdbc.config.sharding.orchestration.zookeeper.max-sleep-time-milliseconds= #Maximum milliseconds of waiting for retry, default value is 3000 milliseconds
-sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #Max retries times if connect failure, default value is 3
-sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #Session timeout milliseconds, default value is 60000 milliseconds
-sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #Connection timeout milliseconds, default value is 15000 milliseconds
-sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Connection digest
+sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Digest for zookeeper. Default is not need digest.
+sharding.jdbc.config.sharding.orchestration.zookeeper.operation-timeout-milliseconds= #Operation timeout time in milliseconds, default value is no timeout
+sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #Max number of times to retry, default value is 3
+sharding.jdbc.config.sharding.orchestration.zookeeper.retry-interval-milliseconds= #Time interval in milliseconds on each retry, default value is 1000 milliseconds
+sharding.jdbc.config.sharding.orchestration.zookeeper.time-to-live-seconds= #Time to live in seconds of ephemeral keys, default value is 60 seconds
 ```
 
 ### Orchestration by Etcd
@@ -321,8 +320,8 @@ sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #Connection digest
 sharding.jdbc.config.sharding.orchestration.name= #Same as Zookeeper
 sharding.jdbc.config.sharding.orchestration.overwrite= #Same as Zookeeper
 sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379
-sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #Time to live of data, default is 60 seconds
-sharding.jdbc.config.sharding.orchestration.etcd.timeout-milliseconds= #Timeout milliseconds, default is 500 milliseconds
-sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #Milliseconds of retry interval, default is w00 milliseconds
-sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #Max retries times if request failure, default value is 3
+sharding.jdbc.config.sharding.orchestration.etcd.operation-timeout-milliseconds= #Same as Zookeeper, default value is 500 milliseconds
+sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #Same as Zookeeper
+sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #Same as Zookeeper, default value is 200 milliseconds
+sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #Same as Zookeeper
 ```

@@ -305,12 +305,11 @@ sharding.jdbc.config.sharding.orchestration.name= #数据治理实例名称
 sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
 sharding.jdbc.config.sharding.orchestration.zookeeper.server-lists= #连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.zookeeper.namespace= #Zookeeper的命名空间
-sharding.jdbc.config.sharding.orchestration.zookeeper.base-sleep-time-milliseconds= #等待重试的间隔时间的初始毫秒数，默认1000毫秒
-sharding.jdbc.config.sharding.orchestration.zookeeper.max-sleep-time-milliseconds= #等待重试的间隔时间的最大毫秒数，默认3000毫秒
-sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #连接失败后的最大重试次数，默认3次
-sharding.jdbc.config.sharding.orchestration.zookeeper.session-timeout-milliseconds= #会话超时毫秒数，默认60000毫秒
-sharding.jdbc.config.sharding.orchestration.zookeeper.connection-timeout-milliseconds= #连接超时毫秒数，默认15000毫秒
 sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #连接Zookeeper的权限令牌。缺省为不需要权限验证
+sharding.jdbc.config.sharding.orchestration.zookeeper.operation-timeout-milliseconds= #操作超时的毫秒数，默认无超时时间
+sharding.jdbc.config.sharding.orchestration.zookeeper.max-retries= #连接失败后的最大重试次数，默认3次
+sharding.jdbc.config.sharding.orchestration.zookeeper.retry-interval-milliseconds= #重试间隔毫秒数，默认1000毫秒
+sharding.jdbc.config.sharding.orchestration.zookeeper.time-to-live-seconds= #临时节点存活秒数，默认60秒
 ```
 
 ### 使用Etcd的数据治理
@@ -321,8 +320,8 @@ sharding.jdbc.config.sharding.orchestration.zookeeper.digest= #连接Zookeeper�
 sharding.jdbc.config.sharding.orchestration.name= #同Zookeeper
 sharding.jdbc.config.sharding.orchestration.overwrite= #同Zookeeper
 sharding.jdbc.config.sharding.orchestration.etcd.server-lists= #连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
-sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #临时节点存活秒数，默认60秒
-sharding.jdbc.config.sharding.orchestration.etcd.timeout-milliseconds= #请求超时毫秒数，默认500毫秒
-sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #重试间隔毫秒数，默认200毫秒
-sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #请求失败后的最大重试次数，默认3次
+sharding.jdbc.config.sharding.orchestration.etcd.operation-timeout-milliseconds= #同Zookeeper，默认500毫秒
+sharding.jdbc.config.sharding.orchestration.etcd.max-retries= #同Zookeeper
+sharding.jdbc.config.sharding.orchestration.etcd.retry-interval-milliseconds= #同Zookeeper，默认200毫秒
+sharding.jdbc.config.sharding.orchestration.etcd.time-to-live-seconds= #同Zookeeper
 ```
