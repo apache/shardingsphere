@@ -75,14 +75,14 @@ public final class MasterSlaveSQLRewriteEngine {
                 result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
             }
             if (each instanceof SchemaToken) {
-                appendSchemaPlaceholder(originalSQL, result, (SchemaToken) each, count, sqlTokens);
+                appendSchemaPlaceholder(originalSQL, result, (SchemaToken) each, count);
             }
             count++;
         }
         return result.toSQL(masterSlaveRule, metaData.getDataSource());
     }
     
-    private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count, final List<SQLToken> sqlTokens) {
+    private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), null));
         int beginPosition = schemaToken.getBeginPosition() + schemaToken.getOriginalLiterals().length();
         int endPosition = sqlTokens.size() - 1 == count ? sql.length() : sqlTokens.get(count + 1).getBeginPosition();
