@@ -108,7 +108,6 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             lexerEngine.nextToken();
-            lexerEngine.nextToken();
             result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
         }
         return result;

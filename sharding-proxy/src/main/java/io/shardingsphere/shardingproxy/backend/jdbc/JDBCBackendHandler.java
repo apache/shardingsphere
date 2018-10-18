@@ -139,7 +139,10 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            each.setName("Tables_in_" + shardingSchema.getName());
+            if (each.getName().startsWith("Tables_in_")) {
+                each.setName("Tables_in_" + shardingSchema.getName());
+                break;
+            }
         }
     }
     
