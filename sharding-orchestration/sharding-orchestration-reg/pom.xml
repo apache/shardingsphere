@@ -14,7 +14,6 @@
     <modules>
         <module>sharding-orchestration-reg-api</module>
         <module>sharding-orchestration-reg-zookeeper-curator</module>
-        <module>sharding-orchestration-reg-native-zookeeper</module>
         <module>sharding-orchestration-reg-etcd</module>
     </modules>
 </project>
