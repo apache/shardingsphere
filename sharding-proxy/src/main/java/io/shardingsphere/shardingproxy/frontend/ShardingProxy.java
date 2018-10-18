@@ -54,10 +54,6 @@ public final class ShardingProxy {
     
     private EventLoopGroup userGroup;
     
-    public ShardingProxy() {
-        GLOBAL_REGISTRY.initShardingMetaData(backendExecutorContext.getExecuteEngine());
-    }
-    
     /**
      * Start Sharding-Proxy.
      *
