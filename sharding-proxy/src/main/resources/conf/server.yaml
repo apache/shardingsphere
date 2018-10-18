@@ -7,9 +7,9 @@
 #orchestration:
 #  name: orchestration_ds
 #  overwrite: true
-#  zookeeper:
-#    namespace: orchestration
+#  registry:
 #    serverLists: localhost:2181
+#    namespace: orchestration
 #
 #authentication:
 #  username: root

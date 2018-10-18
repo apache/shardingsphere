@@ -46,9 +46,8 @@ public final class ShardingConfigurationLoaderTest {
     private void assertOrchestrationConfiguration(final YamlOrchestrationConfiguration actual) {
         assertThat(actual.getName(), is("orchestration_ds"));
         assertTrue(actual.isOverwrite());
-        assertThat(actual.getZookeeper().getNamespace(), is("orchestration"));
-        assertThat(actual.getZookeeper().getServerLists(), is("localhost:2181"));
-        assertNull(actual.getEtcd());
+        assertThat(actual.getRegistry().getNamespace(), is("orchestration"));
+        assertThat(actual.getRegistry().getServerLists(), is("localhost:2181"));
     }
     
     private void assertShardingRuleConfiguration(final ProxyYamlRuleConfiguration actual) {

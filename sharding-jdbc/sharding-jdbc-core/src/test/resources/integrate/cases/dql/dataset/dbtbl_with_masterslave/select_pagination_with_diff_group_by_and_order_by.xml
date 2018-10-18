@@ -2,14 +2,5 @@
     <metadata>
         <column name="user_id" />
     </metadata>
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
-    <row values="19" />
+    <row values="10" />
 </dataset>

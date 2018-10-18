@@ -35,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -72,8 +73,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     @Override
-    public Statement createStatement(final Connection connection, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
-        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+    public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
+        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
+        List<Object> parameters = getRoutedParameters(sqlUnit);
         for (int i = 0; i < parameters.size(); i++) {
             result.setObject(i + 1, parameters.get(i));
         }
@@ -83,5 +85,13 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
+    }
+    
+    private List<Object> getRoutedParameters(final SQLUnit sqlUnit) {
+        List<Object> result = new LinkedList<>();
+        for (List<Object> each : sqlUnit.getParameterSets()) {
+            result.addAll(each);
+        }
+        return result;
     }
 }

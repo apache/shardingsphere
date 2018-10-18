@@ -9,7 +9,6 @@
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-opentracing</artifactId>
-    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>

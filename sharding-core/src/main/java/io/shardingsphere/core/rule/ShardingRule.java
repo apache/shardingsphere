@@ -47,7 +47,7 @@ import java.util.TreeSet;
  * @author panjuan
  */
 @Getter
-public final class ShardingRule {
+public class ShardingRule {
     
     private final ShardingRuleConfiguration shardingRuleConfig;
     

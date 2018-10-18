@@ -27,8 +27,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -57,14 +55,6 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
         this.orchestrationFacade = orchestrationFacade;
         this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSourceMap();
         ShardingEventBusInstance.getInstance().register(this);
-    }
-    
-    protected final Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
     }
     
     /**

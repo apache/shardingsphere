@@ -19,8 +19,8 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 /**
  * Sharding router factory.
  * 
- * @author zhangiang
+ * @author zhangliang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
