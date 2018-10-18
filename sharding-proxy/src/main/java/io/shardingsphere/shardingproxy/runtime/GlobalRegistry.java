@@ -148,12 +148,7 @@ public final class GlobalRegistry {
         authentication = serverConfig.getAuthentication();
     }
     
-    /**
-     * Initialize sharding meta data.
-     *
-     * @param executeEngine sharding execute engine
-     */
-    public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
+    private void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
         for (ShardingSchema each : shardingSchemas.values()) {
             each.initShardingMetaData(executeEngine);
         }
