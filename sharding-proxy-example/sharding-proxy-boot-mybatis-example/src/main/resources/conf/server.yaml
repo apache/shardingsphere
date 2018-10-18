@@ -1,0 +1,24 @@
+######################################################################################################
+# 
+# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# 
+######################################################################################################
+
+#orchestration:
+#  name: orchestration_ds
+#  overwrite: true
+#  zookeeper:
+#    namespace: orchestration
+#    serverLists: localhost:2181
+#
+authentication:
+  username: root
+  password: root
+
+props:
+  max.connections.size.per.query: 1
+  acceptor.size: 16  # The default value is available processors count * 2.
+  executor.size: 16  # Infinite by default.
+  proxy.transaction.enabled: true
+  proxy.opentracing.enabled: false
+  sql.show: true
