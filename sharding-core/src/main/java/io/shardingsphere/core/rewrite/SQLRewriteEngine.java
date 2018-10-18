@@ -20,6 +20,7 @@ package io.shardingsphere.core.rewrite;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
@@ -38,7 +39,6 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -50,10 +50,7 @@ import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -74,9 +71,9 @@ public final class SQLRewriteEngine {
     
     private final DatabaseType databaseType;
     
-    private final List<SQLToken> sqlTokens = new LinkedList<>();
-    
     private final SQLStatement sqlStatement;
+    
+    private final List<SQLToken> sqlTokens;
     
     private final ShardingConditions shardingConditions;
     
@@ -98,9 +95,9 @@ public final class SQLRewriteEngine {
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
+        sqlTokens = sqlStatement.getSQLTokens();
         this.shardingConditions = shardingConditions;
         this.parameters = parameters;
-        sqlTokens.addAll(sqlStatement.getSqlTokens());
     }
     
     /**
@@ -116,7 +113,6 @@ public final class SQLRewriteEngine {
             return result;
         }
         int count = 0;
-        sortByBeginPosition();
         for (SQLToken each : sqlTokens) {
             if (0 == count) {
                 result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
@@ -145,16 +141,6 @@ public final class SQLRewriteEngine {
             count++;
         }
         return result;
-    }
-    
-    private void sortByBeginPosition() {
-        Collections.sort(sqlTokens, new Comparator<SQLToken>() {
-            
-            @Override
-            public int compare(final SQLToken o1, final SQLToken o2) {
-                return o1.getBeginPosition() - o2.getBeginPosition();
-            }
-        });
     }
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {

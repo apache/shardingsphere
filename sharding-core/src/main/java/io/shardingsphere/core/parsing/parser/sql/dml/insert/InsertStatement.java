@@ -61,12 +61,12 @@ public final class InsertStatement extends DMLStatement {
      * @return items token list.
      */
     public List<ItemsToken> getItemsTokens() {
-        List<ItemsToken> itemsTokens = new ArrayList<>();
-        for (SQLToken each : getSqlTokens()) {
+        List<ItemsToken> result = new ArrayList<>();
+        for (SQLToken each : getSQLTokens()) {
             if (each instanceof ItemsToken) {
-                itemsTokens.add((ItemsToken) each);
+                result.add((ItemsToken) each);
             }
         }
-        return itemsTokens;
+        return result;
     }
 }

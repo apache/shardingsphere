@@ -91,13 +91,13 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             lexerEngine.nextToken();
-            result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+            result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
         }
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(DefaultKeyword.LIKE)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
             String literals = lexerEngine.getCurrentToken().getLiterals();
-            result.getSqlTokens().add(new TableToken(beginPosition, 0, literals));
+            result.addSQLToken(new TableToken(beginPosition, 0, literals));
             result.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
         }
         return result;
@@ -108,7 +108,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             lexerEngine.nextToken();
-            result.getSqlTokens().add(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+            result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
         }
         return result;
     }
@@ -119,7 +119,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
         }
         return result;
     }
@@ -136,7 +136,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.getSqlTokens().add(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
         }
         return result;
     }

@@ -77,7 +77,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForValue) {
             selectStatement.increaseParametersIndex();
         } else {
-            selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
+            selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
         }
         Limit limit = new Limit(DatabaseType.MySQL);
         limit.setRowCount(new LimitValue(value, valueIndex, false));
@@ -104,12 +104,12 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForValue) {
             selectStatement.increaseParametersIndex();
         } else {
-            selectStatement.getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
+            selectStatement.addSQLToken(new OffsetToken(valueBeginPosition, value));
         }
         if (isParameterForRowCount) {
             selectStatement.increaseParametersIndex();
         } else {
-            selectStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
+            selectStatement.addSQLToken(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
         Limit result = new Limit(DatabaseType.MySQL);
         result.setRowCount(new LimitValue(rowCountValue, rowCountIndex, false));
@@ -136,12 +136,12 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForOffset) {
             selectStatement.increaseParametersIndex();
         } else {
-            selectStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetValue));
         }
         if (isParameterForValue) {
             selectStatement.increaseParametersIndex();
         } else {
-            selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
+            selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(DatabaseType.MySQL);
         result.setRowCount(new LimitValue(value, index, false));

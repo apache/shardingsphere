@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,7 +41,7 @@ final class TableTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertTableTokens(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertTableTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         List<TableToken> tableTokens = getTableTokens(actual);
         assertThat(assertMessage.getFullAssertMessage("Table tokens size error: "), tableTokens.size(), is(expected.getTableTokens().size()));
         int count = 0;
@@ -55,7 +56,7 @@ final class TableTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Table tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
     }
     
-    private List<TableToken> getTableTokens(final List<SQLToken> actual) {
+    private List<TableToken> getTableTokens(final Collection<SQLToken> actual) {
         List<TableToken> result = new ArrayList<>(actual.size());
         for (SQLToken each : actual) {
             if (each instanceof TableToken) {
