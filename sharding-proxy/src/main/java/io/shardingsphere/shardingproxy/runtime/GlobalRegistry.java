@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Global registry.
  *
  * @author chenqingyang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
