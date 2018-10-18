@@ -105,7 +105,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData, final String tableName, final Optional<Column> generateKeyColumn) {
         int count = 0;
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
-        insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, "("));
+        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, "("));
         ItemsToken columnsToken = new ItemsToken(beginPosition);
         columnsToken.setFirstOfItemsSpecial(true);
         Collection<Column> result = new LinkedList<>();
@@ -119,8 +119,8 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 count++;
             }
         }
-        insertStatement.getSqlTokens().add(columnsToken);
-        insertStatement.getSqlTokens().add(new InsertColumnToken(beginPosition, ")"));
+        insertStatement.addSQLToken(columnsToken);
+        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
         insertStatement.setColumnsListLastPosition(beginPosition);
         return result;
     }

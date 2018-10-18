@@ -35,6 +35,7 @@ import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBu
 import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
+import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Global registry.
  *
  * @author chenqingyang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -125,6 +127,7 @@ public final class GlobalRegistry {
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
+        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     private void initServerConfiguration(final YamlServerConfiguration serverConfig) {
@@ -146,12 +149,7 @@ public final class GlobalRegistry {
         authentication = serverConfig.getAuthentication();
     }
     
-    /**
-     * Initialize sharding meta data.
-     *
-     * @param executeEngine sharding execute engine
-     */
-    public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
+    private void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
         for (ShardingSchema each : shardingSchemas.values()) {
             each.initShardingMetaData(executeEngine);
         }
@@ -193,6 +191,7 @@ public final class GlobalRegistry {
             String schemaName = entry.getKey();
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName), true));
         }
+        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     /**

@@ -103,7 +103,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         }
         if (isSingleTableOnly || shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
         } else {
             aliasExpressionParser.parseTableAlias();
@@ -125,7 +125,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 Preconditions.checkState(!Symbol.RIGHT_PAREN.getLiterals().equals(literals), "There is an error in the vicinity of the force index syntax.");
                 if (shardingRule.isLogicIndex(literals, tableName)) {
                     int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
-                    sqlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+                    sqlStatement.addSQLToken(new IndexToken(beginPosition, literals, tableName));
                 }
                 lexerEngine.nextToken();
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
@@ -192,7 +192,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             literals = lexerEngine.getCurrentToken().getLiterals();
             lexerEngine.nextToken();
         }
-        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }

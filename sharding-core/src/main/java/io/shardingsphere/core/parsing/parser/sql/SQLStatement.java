@@ -53,11 +53,18 @@ public interface SQLStatement {
     Conditions getConditions();
     
     /**
-     * Get SQL Tokens.
-     * 
-     * @return SQL Tokens
+     * Add SQL token.
+     *
+     * @param sqlToken SQL token
      */
-    List<SQLToken> getSqlTokens();
+    void addSQLToken(SQLToken sqlToken);
+    
+    /**
+     * Get SQL tokens.
+     * 
+     * @return SQL tokens
+     */
+    List<SQLToken> getSQLTokens();
     
     /**
      * Get index of parameters.

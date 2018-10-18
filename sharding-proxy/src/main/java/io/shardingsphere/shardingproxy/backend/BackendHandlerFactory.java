@@ -129,12 +129,11 @@ public final class BackendHandlerFactory {
     }
     
     private static Optional<String> getSchema(final SQLStatement sqlStatement) {
-        if (!sqlStatement.getSqlTokens().isEmpty()
+        List<SQLToken> sqlTokens = sqlStatement.getSQLTokens();
+        if (!sqlTokens.isEmpty()
                 && (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowColumnsStatement
                 || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement)) {
-            LinkedList<SQLToken> sqlTokens = new LinkedList<>();
-            sqlTokens.addAll(sqlStatement.getSqlTokens());
-            return Optional.of(((SchemaToken) sqlTokens.getLast()).getSchemaName());
+            return Optional.of(((SchemaToken) new LinkedList<>(sqlTokens).getLast()).getSchemaName());
         }
         return Optional.absent();
     }
