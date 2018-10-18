@@ -1,10 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-sphere</artifactId>
     <version>3.0.0.M5-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
     
     <modules>
         <module>sharding-core</module>
@@ -36,7 +38,8 @@
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.4</atomikos.version>
-
+        
+        <zookeeper.version>3.4.6</zookeeper.version>
         <curator.version>2.10.0</curator.version>
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
@@ -153,6 +156,11 @@
                 <version>${atomikos.version}</version>
             </dependency>
             
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>

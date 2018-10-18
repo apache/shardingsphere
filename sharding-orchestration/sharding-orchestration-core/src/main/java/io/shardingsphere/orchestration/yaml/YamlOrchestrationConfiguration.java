@@ -19,8 +19,7 @@ package io.shardingsphere.orchestration.yaml;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,9 +35,7 @@ public class YamlOrchestrationConfiguration {
     
     private String name;
     
-    private EtcdConfiguration etcd;
-    
-    private ZookeeperConfiguration zookeeper;
+    private RegistryCenterConfiguration registry;
     
     private boolean overwrite;
     
@@ -48,7 +45,7 @@ public class YamlOrchestrationConfiguration {
      * @return orchestration master-slave rule configuration from yaml
      */
     public OrchestrationConfiguration getOrchestrationConfiguration() {
-        Preconditions.checkState(null == etcd || null == zookeeper, "Can't config both zookeeper and etcd as registry center!");
-        return new OrchestrationConfiguration(getName(), null != etcd ? etcd : zookeeper, overwrite);
+        Preconditions.checkState(null != registry, "Registry center must be required!");
+        return new OrchestrationConfiguration(getName(), registry, overwrite);
     }
 }

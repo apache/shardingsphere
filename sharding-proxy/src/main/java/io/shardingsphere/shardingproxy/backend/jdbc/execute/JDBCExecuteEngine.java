@@ -183,7 +183,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         @Override
         public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-            Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
+            Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit(), isReturnGeneratedKeys);
             if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
                 statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
             }
