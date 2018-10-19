@@ -252,7 +252,7 @@ weight = 4
 </beans>
 ```
 
-### 使用Registry的数据治理
+### 数据治理
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -432,9 +432,9 @@ weight = 4
 | ----------------------------------- | ----- | ------------------------------------------------------------------------------------ |
 | id                                  | 属性  | 注册中心的Spring Bean Id                                                               |
 | server-lists                        | 属性  | 连接Registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
-| namespace                           | 属性  | Registry的命名空间                                                                    |
+| namespace (?)                       | 属性  | Registry的命名空间                                                                    |
 | digest (?)                          | 属性  | 连接Registry的权限令牌。缺省为不需要权限验证                                             |
-| operation-timeout-milliseconds (?)  | 属性  | 操作超时的毫秒数，默认无超时时间                                                          |
+| operation-timeout-milliseconds (?)  | 属性  | 操作超时的毫秒数，默认500毫秒                                                         |
 | max-retries (?)                     | 属性  | 连接失败后的最大重试次数，默认3次                                                         |
-| retry-interval-milliseconds (?)     | 属性  | 重试间隔毫秒数，默认1000毫秒                                                             |
+| retry-interval-milliseconds (?)     | 属性  | 重试间隔毫秒数，默认500毫秒                                                             |
 | time-to-live-seconds (?)            | 属性  | 临时节点存活秒数，默认60秒                                                               |
