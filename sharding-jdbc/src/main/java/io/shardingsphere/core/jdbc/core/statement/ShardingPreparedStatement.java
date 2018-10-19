@@ -17,9 +17,23 @@
 
 package io.shardingsphere.core.jdbc.core.statement;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
+
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.type.batch.BatchPreparedStatementExecutor;
@@ -41,7 +55,9 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.event.EventMergeType;
 import io.shardingsphere.core.merger.event.ResultSetMergeEvent;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
+import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -54,19 +70,6 @@ import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import io.shardingsphere.core.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * PreparedStatement that support sharding.
@@ -249,9 +252,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private void refreshTableMetaData() {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(), 
-                    connection.getShardingContext().getExecutorEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(connection.getShardingContext().getDataSourceMap()));
-            connection.getShardingContext().getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
+            
+            if(routeResult.getSqlStatement() instanceof CreateTableStatement) {
+                CreateTableStatement createStatement = (CreateTableStatement)routeResult.getSqlStatement();
+                connection.getShardingContext().getMetaData().getTable().put(logicTableName, createStatement.getTableMetaData());
+            }else if(routeResult.getSqlStatement() instanceof AlterTableStatement) {
+                AlterTableStatement alterStatement = (AlterTableStatement)routeResult.getSqlStatement();
+                connection.getShardingContext().getMetaData().getTable().put(logicTableName, alterStatement.getTableMetaData());
+            }else {
+                TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(), 
+                        connection.getShardingContext().getExecutorEngine().getExecutorService(), new JDBCTableMetaDataConnectionManager(connection.getShardingContext().getDataSourceMap()));
+                connection.getShardingContext().getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
+            }
         }
     }
     

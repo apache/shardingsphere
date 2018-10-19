@@ -17,11 +17,13 @@
 
 package io.shardingsphere.core.parsing.parser.sql.ddl.create.table;
 
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import lombok.Getter;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Create table statement.
@@ -29,6 +31,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
+@Setter
 public final class CreateTableStatement extends DDLStatement {
     
     private final List<String> columnNames = new LinkedList<>();
@@ -36,4 +39,6 @@ public final class CreateTableStatement extends DDLStatement {
     private final List<String> columnTypes = new LinkedList<>();
     
     private final List<String> primaryKeyColumns = new LinkedList<>();
+    
+    private TableMetaData tableMetaData;
 }

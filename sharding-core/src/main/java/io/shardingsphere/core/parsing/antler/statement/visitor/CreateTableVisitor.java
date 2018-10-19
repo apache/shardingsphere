@@ -17,6 +17,11 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.CreatePrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexesNameVisitor;
@@ -38,5 +43,27 @@ public class CreateTableVisitor extends AbstractStatementVisitor {
     @Override
     protected SQLStatement newStatement() {
         return new CreateTableStatement();
+    }
+    
+    /** process after visit.
+     * @param statement sql statement
+     */
+    protected void postVisit(final SQLStatement statement) {
+        CreateTableStatement createStatement = (CreateTableStatement)statement;
+        List<ColumnMetaData> newColumnMeta = new LinkedList<>();
+        int pos = 0;
+        List<String> columnTypes = createStatement.getColumnTypes();
+        List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
+        for(String each : createStatement.getColumnNames()) {
+            String type = null;
+            
+            if(columnTypes.size() > pos) {
+                type = columnTypes.get(pos);
+            }
+            
+            newColumnMeta.add(new ColumnMetaData(each,type,primaryKeyColumns.contains(each)));
+        }
+        
+        createStatement.setTableMetaData(new TableMetaData(newColumnMeta));
     }
 }
