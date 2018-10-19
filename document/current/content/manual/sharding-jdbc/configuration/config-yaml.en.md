@@ -170,7 +170,7 @@ shardingRule:
     sql.show: true
 ```
 
-### Orchestration by Registry
+### Orchestration
 
 ```yaml
 #Ignore sharding and master-slave configuration
@@ -273,7 +273,7 @@ masterSlaveRule:
     keyx: valuex
 ```
 
-### Orchestration by Registry
+### Orchestration
 
 ```yaml
 dataSources: #Ignore data sources configuration
@@ -287,9 +287,9 @@ orchestration:
     serverLists: #Registry servers list, multiple split as comma. Example: host1:2181,host2:2181
     namespace: #Namespace of Registry
     digest: #Digest for Registry. Default is not need digest.
-    operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is no timeout
+    operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is 500 milliseconds
     maxRetries: #Max number of times to retry, default value is 3
-    retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 1000 milliseconds
+    retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 500 milliseconds
     timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default value is 60 seconds
 ```
 
