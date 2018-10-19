@@ -39,11 +39,15 @@ public class StatementFactory {
      */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
             final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
-
-        ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(dbType, tokenType, shardingRule, sql);
+        DatabaseType execDbType = dbType;
+        if(DatabaseType.H2 == execDbType) {
+            execDbType = DatabaseType.MySQL;
+        }
+        
+        ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(execDbType, tokenType, shardingRule, sql);
         if (rootNode != null) {
             String commandName = getCommandName(rootNode);
-            StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, commandName);
+            StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(execDbType, commandName);
             if (null != visitor) {
                 return visitor.visit(rootNode, shardingTableMetaData);
             }

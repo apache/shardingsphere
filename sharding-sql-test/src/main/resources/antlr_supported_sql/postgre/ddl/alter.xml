@@ -14,7 +14,7 @@
     <sql-case id="alter_table_alter_columns" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20), ALTER column5 TYPE VARCHAR(20), ALTER column6 TYPE VARCHAR(20)" />
     <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP column4" />
     <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" />
-    <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME column4_bak TO column4" />
+    <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME user_id TO column4" />
 
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
     <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order add status int,ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" />

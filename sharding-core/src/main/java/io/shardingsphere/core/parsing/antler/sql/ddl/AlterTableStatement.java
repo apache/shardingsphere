@@ -49,8 +49,8 @@ public class AlterTableStatement extends DDLStatement {
     private TableMetaData tableMetaData;
     
     /**Get column definition.
-     * @param columnName
-     * @return
+     * @param columnName column name
+     * @return column definition
      */
     public ColumnDefinition getColumnDefinitionByName(final String columnName) {
         ColumnDefinition columnDefinition = getExistColumn(columnName);

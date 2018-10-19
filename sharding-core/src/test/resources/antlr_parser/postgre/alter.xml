@@ -138,7 +138,7 @@
 
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4_bak" name="column4" />
+                <update-column origin-column-name="user_id" name="column4" type="int"/>
             </update-columns>
         </alter-table>
     </parser-result>

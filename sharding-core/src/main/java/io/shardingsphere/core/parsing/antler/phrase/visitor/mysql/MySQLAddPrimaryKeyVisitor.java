@@ -61,6 +61,7 @@ public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {
                 updateColumn.setPrimaryKey(true);
+                alterStatement.getUpdateColumns().put(columnName, updateColumn);
             }
         }
     }

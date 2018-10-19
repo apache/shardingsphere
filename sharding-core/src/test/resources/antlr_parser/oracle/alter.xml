@@ -139,9 +139,9 @@
 
         <alter-table>
         	<update-columns>
-        		<update-column origin-column-name="user_id" name="column4"/>
+        		<update-column origin-column-name="user_id" type="int" name="column4"/>
         	</update-columns>
-        	<new-meta column-names="order_id,column4,status" column-types="int,VARCHAR,int" primary-key-columns="order_id"/>
+        	<new-meta column-names="order_id,column4,status" column-types="int,int,int" primary-key-columns="order_id"/>
         </alter-table>
     </parser-result>
 
