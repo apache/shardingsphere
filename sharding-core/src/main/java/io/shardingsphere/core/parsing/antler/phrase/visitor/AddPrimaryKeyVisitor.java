@@ -54,17 +54,14 @@ public class AddPrimaryKeyVisitor implements PhraseVisitor {
         if (null == columnNodes) {
             return;
         }
+        
         for (final ParserRuleContext each : columnNodes) {
             String columnName = each.getText();
-            ColumnDefinition updateColumn = alterStatement.getUpdateColumns().get(columnName);
-            if (null == updateColumn) {
-                updateColumn = new ColumnDefinition(columnName, null, null, true);
-                alterStatement.getUpdateColumns().put(columnName, updateColumn);
-            } else {
+            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
+            if (null != updateColumn) {
                 updateColumn.setPrimaryKey(true);
+                alterStatement.getUpdateColumns().put(columnName, updateColumn);
             }
-            alterStatement.getUpdateColumns().put(columnName, new ColumnDefinition(columnName, null, null, true));
         }
     }
-
 }

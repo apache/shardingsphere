@@ -61,6 +61,9 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
         for (ParserRuleContext columnDefinitionCtx : columnDefinitionCtxs) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
             if (null != column) {
+                if(null != alterStatement.getExistColumn(column.getName())) {
+                    return;
+                }
                 alterStatement.getAddColumns().add(column);
                 postVisitColumnDefinition(addColumnCtx, alterStatement, column.getName());
             }

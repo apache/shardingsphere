@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
+import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnPosition;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedUpdateColumnDefinition;
@@ -39,5 +40,8 @@ public class ExpectedAlterTable {
     @XmlElementWrapper(name = "position-changed-columns")
     @XmlElement(name = "position-changed-column")
     private List<ExpectedColumnPosition> positionChangedColumns = new ArrayList<>();
+    
+    @XmlElement(name = "new-meta")
+    private ExpectedTableMetaData newMeta;
     
 }

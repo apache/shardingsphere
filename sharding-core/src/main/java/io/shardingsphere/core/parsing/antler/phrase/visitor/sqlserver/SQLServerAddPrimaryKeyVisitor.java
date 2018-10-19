@@ -58,9 +58,15 @@ public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
         }
 
         List<ParserRuleContext> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, RuleNameConstants.COLUMN_NAME);
-        for (ParseTree columnNameCtx : columnNameCtxs) {
-            alterStatement.getUpdateColumns().put(columnNameCtx.getText(),
-                    new ColumnDefinition(columnNameCtx.getText(), null, null, true));
+        for (ParseTree each : columnNameCtxs) {
+            String columnName = each.getText();
+            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
+            if (null != updateColumn) {
+                updateColumn.setPrimaryKey(true);
+            }else {
+                updateColumn = new ColumnDefinition(each.getText(), null, null, true);
+            }
+            alterStatement.getUpdateColumns().put(columnName, updateColumn);
         }
     }
 }

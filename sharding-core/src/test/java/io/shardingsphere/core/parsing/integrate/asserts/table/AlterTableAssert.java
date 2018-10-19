@@ -18,19 +18,24 @@
 package io.shardingsphere.core.parsing.integrate.asserts.table;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import com.google.common.base.Joiner;
 
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
+import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnPosition;
@@ -57,10 +62,15 @@ public final class AlterTableAssert {
         assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDropColumns()), is(expected.getDropColumns()));
         assertSame(assertMessage.getFullAssertMessage("Drop primary key assertion error: "), Boolean.valueOf(actual.isDropPrimaryKey()), Boolean.valueOf(expected.isDropPrimaryKey()));
         
-        assertThat(assertMessage.getFullAssertMessage("Rename table name assertion error: "), actual.getNewTableName(), is(expected.getNewTableName()));
+        assertThat(assertMessage.getFullAssertMessage("Rename new table name assertion error: "), actual.getNewTableName(), is(expected.getNewTableName()));
         assertAddColumns(actual, expected.getAddColumns()); 
         
         assertUpdateColumns(actual, expected.getUpdateColumns()); 
+        
+        if(null != expected.getNewMeta()) {
+            assertNewMeta(actual.getTableMetaData(), expected.getNewMeta());
+        }
+        
         if(actual instanceof MySQLAlterTableStatement) {
             MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement)actual;
             assertColumnPositions(mysqlAlter.getPositionChangedColumns(), expected.getPositionChangedColumns());
@@ -80,8 +90,8 @@ public final class AlterTableAssert {
     
     private void assertColumnDefinition(final ColumnDefinition actual, final ExpectedColumnDefinition expected) {
         assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getType(), is(expected.getType()));
-        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getLength(), is(expected.getLength()));
+        assertThat(assertMessage.getFullAssertMessage("Column "+actual.getName()+" type assertion error: "), actual.getType(), is(expected.getType()));
+        assertThat(assertMessage.getFullAssertMessage("Column "+actual.getName()+" length assertion error: "), actual.getLength(), is(expected.getLength()));
     }
     
     
@@ -114,9 +124,33 @@ public final class AlterTableAssert {
     }
     
     private void assertColumnPosition(final ColumnPosition actual, final ExpectedColumnPosition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Alter column position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column position firstColumn assertion error: "), actual.getFirstColumn(), is(expected.getFirstColumn()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column position afterColumn assertion error: "), actual.getAfterColumn(), is(expected.getAfterColumn()));
+        assertThat(assertMessage.getFullAssertMessage("Alter column ["+actual.getColumnName()+"]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getFullAssertMessage("Alter column ["+actual.getColumnName()+"]position firstColumn assertion error: "), actual.getFirstColumn(), is(expected.getFirstColumn()));
+        assertThat(assertMessage.getFullAssertMessage("Alter column ["+actual.getColumnName()+"]position afterColumn assertion error: "), actual.getAfterColumn(), is(expected.getAfterColumn()));
+    }
+    
+    public void assertNewMeta(final TableMetaData actual, final ExpectedTableMetaData expected) {
+        assertFalse(assertMessage.getFullAssertMessage("Table new mata should exist: "), actual == null);
+        
+        List<String> columnNames = new ArrayList<>();
+        List<String> columnTypes = new ArrayList<>();
+        List<String> primaryColumns = new ArrayList<>();
+        for(ColumnMetaData each :actual.getColumnMetaData()) {
+            columnNames.add(each.getColumnName());
+            columnTypes.add(each.getColumnType());
+            if(each.isPrimaryKey()) {
+                primaryColumns.add(each.getColumnName());
+            }
+        }
+        
+        assertFalse(assertMessage.getFullAssertMessage("Table new mata columnNames should exist: "), columnNames.isEmpty());
+        assertFalse(assertMessage.getFullAssertMessage("Table new mata columnTypes should exist: "), columnTypes.isEmpty());
+        
+        assertFalse(assertMessage.getFullAssertMessage("Column names should exist: "), columnNames.isEmpty());
+        assertThat(assertMessage.getFullAssertMessage("Column names assertion error: "), Joiner.on(",").join(columnNames), is(expected.getColumnNames()));
+        assertFalse(assertMessage.getFullAssertMessage("Column types should exist: "), columnTypes.isEmpty());
+        assertThat(assertMessage.getFullAssertMessage("Column types assertion error: "), Joiner.on(",").join(columnTypes), is(expected.getColumnTypes()));
+        assertThat(assertMessage.getFullAssertMessage("Column primary key columns assertion error: "), Joiner.on(",").join(primaryColumns), is(expected.getPrimaryKeyColumns()));
     }
 }
