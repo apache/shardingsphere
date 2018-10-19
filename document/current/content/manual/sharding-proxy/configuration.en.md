@@ -209,7 +209,7 @@ shardingRule:
 
 ## Global configuration example
 
-### Orchestration by Registry
+### Orchestration
 
 ```yaml
 #Ignore data sources, sharding and read-write splitting configuration
@@ -271,7 +271,7 @@ masterSlaveRule: #Ignore read-write splitting rule configuration, same as Shardi
 
 ## Global configuration reference
 
-### Orchestration by Registry
+### Orchestration
 
 Same as configuration of Sharding-JDBC.
 
