@@ -166,7 +166,7 @@ shardingRule:
     sql.show: true
 ```
 
-### 使用Registry的数据治理
+### 数据治理
 
 ```yaml
 #省略数据分片和读写分离配置
@@ -273,7 +273,7 @@ masterSlaveRule:
     executor.size: #工作线程数量，默认值: CPU核数
 ```
 
-### 使用Registry的数据治理
+### 数据治理
 
 ```yaml
 dataSources: #省略数据源配置
@@ -287,9 +287,9 @@ orchestration:
     serverLists: #连接Registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
     namespace: #Registry的命名空间
     digest: #连接Registry的权限令牌。缺省为不需要权限验证
-    operationTimeoutMilliseconds: #操作超时的毫秒数，默认无超时时间
+    operationTimeoutMilliseconds: #操作超时的毫秒数，默认500毫秒
     maxRetries: #连接失败后的最大重试次数，默认3次
-    retryIntervalMilliseconds: #重试间隔毫秒数，默认1000毫秒
+    retryIntervalMilliseconds: #重试间隔毫秒数，默认500毫秒
     timeToLiveSeconds: #临时节点存活秒数，默认60秒
 ```
 
