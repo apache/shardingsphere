@@ -257,7 +257,7 @@ sharding.jdbc.config.masterslave.props.sql.show= #To show SQLS or not, default v
 sharding.jdbc.config.masterslave.props.executor.size= #The number of working threads, default value: CPU count
 ```
 
-### Orchestration by Registry
+### Orchestration
 
 ```properties
 #Ignore data sources, sharding and read-write splitting configuration
@@ -267,9 +267,9 @@ sharding.jdbc.config.sharding.orchestration.overwrite= #Use local configuration 
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #Rgistry servers list, multiple split as comma. Example: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.registry.namespace= #Namespace of registry
 sharding.jdbc.config.sharding.orchestration.registry.digest= #Digest for registry. Default is not need digest.
-sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseconds= #Operation timeout time in milliseconds, default value is no timeout
+sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseconds= #Operation timeout time in milliseconds, default value is 500 milliseconds
 sharding.jdbc.config.sharding.orchestration.registry.max-retries= #Max number of times to retry, default value is 3
-sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #Time interval in milliseconds on each retry, default value is 1000 milliseconds
+sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #Time interval in milliseconds on each retry, default value is 500 milliseconds
 sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #Time to live in seconds of ephemeral keys, default value is 60 seconds
 ```
 
