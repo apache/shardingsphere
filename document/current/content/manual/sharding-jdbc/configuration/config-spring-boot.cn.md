@@ -113,7 +113,7 @@ sharding.jdbc.datasource.master1slave1.password=
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
 sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
 
-sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=dsr$->{0..1}.t_order$->{0..1}
+sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
