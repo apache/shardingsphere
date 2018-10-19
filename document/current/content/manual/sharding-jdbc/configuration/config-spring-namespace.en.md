@@ -252,7 +252,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 </beans>
 ```
 
-### Orchestration by Registry
+### Orchestration
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -441,9 +441,9 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestr
 | ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
 | id                                 | Attribute | Spring Bean Id of registry center                                               |
 | server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181 |
-| namespace                          | Attribute | Namespace of Registry                                                          |
+| namespace (?)                      | Attribute | Namespace of Registry                                                          |
 | digest (?)                         | Attribute | Digest for Registry. Default is not need digest                                |
-| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is no timeout             |
+| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 60 seconds           |
 | max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                |
-| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 1000 milliseconds |
+| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 500 milliseconds |
 | time-to-live-seconds (?)           | Attribute | Time to live in seconds of ephemeral keys, default value is 60 seconds          |
