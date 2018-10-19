@@ -128,7 +128,7 @@ sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=mas
 sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
-### 使用registry的数据治理
+### 数据治理
 
 ```properties
 sharding.jdbc.datasource.names=ds,ds0,ds1
@@ -257,7 +257,7 @@ sharding.jdbc.config.masterslave.props.sql.show= #是否开启SQL显示，默认
 sharding.jdbc.config.masterslave.props.executor.size= #工作线程数量，默认值: CPU核数
 ```
 
-### 使用registry进行数据治理
+### 数据治理
 
 ```properties
 #省略数据源、数据分片和读写分离配置
@@ -267,8 +267,8 @@ sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #连接registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.registry.namespace= #registry的命名空间
 sharding.jdbc.config.sharding.orchestration.registry.digest= #连接registry的权限令牌。缺省为不需要权限验证
-sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseconds= #操作超时的毫秒数，默认无超时时间
+sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseconds= #操作超时的毫秒数，默认500毫秒
 sharding.jdbc.config.sharding.orchestration.registry.max-retries= #连接失败后的最大重试次数，默认3次
-sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #重试间隔毫秒数，默认1000毫秒
+sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #重试间隔毫秒数，默认500毫秒
 sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #临时节点存活秒数，默认60秒
 ```
