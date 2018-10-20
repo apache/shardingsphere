@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.operation;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.KeeperException;
 
@@ -30,7 +30,7 @@ public final class DeleteCurrentOperation extends BaseOperation {
     
     private final String key;
     
-    public DeleteCurrentOperation(final IProvider provider, final String key) {
+    public DeleteCurrentOperation(final IZookeeperProvider provider, final String key) {
         super(provider);
         this.key = key;
     }

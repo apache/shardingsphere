@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.operation;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.BaseOperation;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -35,7 +35,7 @@ public final class CreateCurrentOperation extends BaseOperation {
     
     private final CreateMode createMode;
     
-    public CreateCurrentOperation(final IProvider provider, final String key, final String value, final CreateMode createMode) {
+    public CreateCurrentOperation(final IZookeeperProvider provider, final String key, final String value, final CreateMode createMode) {
         super(provider);
         this.key = key;
         this.value = value;

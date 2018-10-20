@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.Connection;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,11 +31,11 @@ import org.apache.zookeeper.KeeperException;
 @Getter(value = AccessLevel.PROTECTED)
 public abstract class RetryCallable {
     
-    private final IProvider provider;
+    private final IZookeeperProvider provider;
     
     private final DelayPolicyExecutor delayPolicyExecutor;
     
-    public RetryCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+    public RetryCallable(final IZookeeperProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         this.provider = provider;
         delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
     }

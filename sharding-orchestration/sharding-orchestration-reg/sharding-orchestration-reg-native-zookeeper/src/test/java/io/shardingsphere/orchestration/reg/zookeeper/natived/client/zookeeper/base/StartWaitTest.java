@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.util.EmbedTestingServer;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.ClientContext;
 import org.junit.Assert;
@@ -36,7 +36,7 @@ public class StartWaitTest {
     
     @Test
     public void assertStart() throws IOException, InterruptedException {
-        IClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
+        IZookeeperClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
         Assert.assertTrue(testClient.start(10000, TimeUnit.MILLISECONDS));
         testClient.close();
     }

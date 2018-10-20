@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.cache;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.util.EmbedTestingServer;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.ClientFactory;
@@ -43,7 +43,7 @@ public class PathTreeTest extends BaseTest {
     
     private PathTree pathTree;
     
-    private IClient testClient;
+    private IZookeeperClient testClient;
     
     @Before
     public void start() throws IOException, InterruptedException {

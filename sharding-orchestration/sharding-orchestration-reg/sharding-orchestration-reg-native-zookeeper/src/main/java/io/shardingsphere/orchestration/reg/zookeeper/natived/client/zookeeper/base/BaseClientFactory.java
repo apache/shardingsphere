@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.ZookeeperEventListener;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -60,7 +60,7 @@ public abstract class BaseClientFactory {
      * @throws IOException IO Exception
      * @throws InterruptedException InterruptedException
      */
-    public IClient start() throws IOException, InterruptedException {
+    public IZookeeperClient start() throws IOException, InterruptedException {
         prepareClient();
         client.start();
         return client;
@@ -76,7 +76,7 @@ public abstract class BaseClientFactory {
      * @throws InterruptedException interrupted exception
      * @throws KeeperException operation timeout exception
      */
-    public IClient start(final int waitingTime, final TimeUnit timeUnit) throws IOException, InterruptedException, KeeperException {
+    public IZookeeperClient start(final int waitingTime, final TimeUnit timeUnit) throws IOException, InterruptedException, KeeperException {
         prepareClient();
         if (!client.start(waitingTime, timeUnit)) {
             client.close();

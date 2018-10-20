@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.operation;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.BaseOperation;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
@@ -31,7 +31,7 @@ public final class DeleteAllChildrenOperation extends BaseOperation {
     
     private final String key;
     
-    public DeleteAllChildrenOperation(final IProvider provider, final String key) {
+    public DeleteAllChildrenOperation(final IZookeeperProvider provider, final String key) {
         super(provider);
         this.key = key;
     }

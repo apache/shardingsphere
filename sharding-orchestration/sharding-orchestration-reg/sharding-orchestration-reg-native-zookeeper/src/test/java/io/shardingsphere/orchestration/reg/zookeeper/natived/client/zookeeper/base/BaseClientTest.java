@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.util.EmbedTestingServer;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
 @Getter
 public abstract class BaseClientTest extends BaseTest {
     
-    private IClient testClient;
+    private IZookeeperClient testClient;
     
     @Before
     public void start() throws IOException, InterruptedException {
@@ -63,11 +63,11 @@ public abstract class BaseClientTest extends BaseTest {
         getZooKeeper(testClient);
     }
     
-    protected final ZooKeeper getZooKeeper(final IClient client) {
+    protected final ZooKeeper getZooKeeper(final IZookeeperClient client) {
         return ((BaseClient) client).getHolder().getZooKeeper();
     }
     
-    protected abstract IClient createClient(ClientFactory creator) throws IOException, InterruptedException;
+    protected abstract IZookeeperClient createClient(ClientFactory creator) throws IOException, InterruptedException;
     
     @After
     public void stop() {
@@ -82,14 +82,14 @@ public abstract class BaseClientTest extends BaseTest {
         assertNull(getZooKeeper(testClient).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
     }
     
-    protected final void createRoot(final IClient client) throws KeeperException, InterruptedException {
+    protected final void createRoot(final IZookeeperClient client) throws KeeperException, InterruptedException {
         ((BaseClient) client).createNamespace();
         assertNotNull(getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
         ((BaseClient) client).deleteNamespace();
         assertNull(getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false));
     }
     
-    protected final void createChild(final IClient client) throws KeeperException, InterruptedException {
+    protected final void createChild(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
         assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
@@ -97,7 +97,7 @@ public abstract class BaseClientTest extends BaseTest {
         assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false));
     }
     
-    protected final void deleteBranch(final IClient client) throws KeeperException, InterruptedException {
+    protected final void deleteBranch(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String keyB = "a/b/bb";
         String valueB = "bbb11";
         client.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
@@ -117,18 +117,18 @@ public abstract class BaseClientTest extends BaseTest {
         assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
     }
     
-    protected final void isExisted(final IClient client) throws KeeperException, InterruptedException {
+    protected final void isExisted(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "", CreateMode.PERSISTENT);
         assertTrue(isExisted(key, client));
         client.deleteCurrentBranch(key);
     }
     
-    private boolean isExisted(final String key, final IClient client) throws KeeperException, InterruptedException {
+    private boolean isExisted(final String key, final IZookeeperClient client) throws KeeperException, InterruptedException {
         return client.checkExists(key);
     }
     
-    protected final void get(final IClient client) throws KeeperException, InterruptedException {
+    protected final void get(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String value = "bbb11";
         client.createAllNeedPath("a/b", value, CreateMode.PERSISTENT);
         String key = "a";
@@ -138,7 +138,7 @@ public abstract class BaseClientTest extends BaseTest {
         client.deleteCurrentBranch("a/b");
     }
     
-    protected final void asyncGet(final IClient client) throws KeeperException, InterruptedException {
+    protected final void asyncGet(final IZookeeperClient client) throws KeeperException, InterruptedException {
         final CountDownLatch ready = new CountDownLatch(1);
         String key = "a/b";
         String value = "bbb11";
@@ -155,11 +155,11 @@ public abstract class BaseClientTest extends BaseTest {
         client.deleteCurrentBranch("a/b");
     }
     
-    private String getDirectly(final String key, final IClient client) throws KeeperException, InterruptedException {
+    private String getDirectly(final String key, final IZookeeperClient client) throws KeeperException, InterruptedException {
         return new String(client.getData(key));
     }
     
-    protected final void getChildrenKeys(final IClient client) throws KeeperException, InterruptedException {
+    protected final void getChildrenKeys(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String key = "a/b";
         String current = "a";
         client.createAllNeedPath(key, "", CreateMode.PERSISTENT);
@@ -174,7 +174,7 @@ public abstract class BaseClientTest extends BaseTest {
         client.deleteCurrentBranch(key);
     }
     
-    protected final void persist(final IClient client) throws KeeperException, InterruptedException {
+    protected final void persist(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String key = "a";
         String value = "aa";
         String newValue = "aaa";
@@ -191,11 +191,11 @@ public abstract class BaseClientTest extends BaseTest {
         client.deleteCurrentBranch(key);
     }
     
-    private void updateWithCheck(final String key, final String value, final IClient client) throws KeeperException, InterruptedException {
+    private void updateWithCheck(final String key, final String value, final IZookeeperClient client) throws KeeperException, InterruptedException {
         client.update(key, value);
     }
     
-    protected final void persistEphemeral(final IClient client) throws KeeperException, InterruptedException {
+    protected final void persistEphemeral(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         String value = "b1b";
         client.createAllNeedPath(key, value, CreateMode.PERSISTENT);
@@ -211,7 +211,7 @@ public abstract class BaseClientTest extends BaseTest {
         client.deleteCurrentBranch(key);
     }
     
-    protected final void delAllChildren(final IClient client) throws KeeperException, InterruptedException {
+    protected final void delAllChildren(final IZookeeperClient client) throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         client.createAllNeedPath(key, "bb", CreateMode.PERSISTENT);
         key = "a/c/cc";
@@ -223,7 +223,7 @@ public abstract class BaseClientTest extends BaseTest {
         ((BaseClient) client).deleteNamespace();
     }
     
-    protected final void watch(final IClient client) throws KeeperException, InterruptedException {
+    protected final void watch(final IZookeeperClient client) throws KeeperException, InterruptedException {
         List<String> actual = new ArrayList<>();
         final ZookeeperEventListener zookeeperEventListener = buildListener(client, actual);
         
@@ -261,7 +261,7 @@ public abstract class BaseClientTest extends BaseTest {
         client.unregisterWatch(zookeeperEventListener.getKey());
     }
     
-    protected final void watchRegister(final IClient client) throws KeeperException, InterruptedException {
+    protected final void watchRegister(final IZookeeperClient client) throws KeeperException, InterruptedException {
         List<String> actual = new ArrayList<>();
         
         final ZookeeperEventListener zookeeperEventListener = buildListener(client, actual);
@@ -292,7 +292,7 @@ public abstract class BaseClientTest extends BaseTest {
         client.unregisterWatch(zookeeperEventListener.getKey());
     }
     
-    private ZookeeperEventListener buildListener(final IClient client, final List<String> actual) {
+    private ZookeeperEventListener buildListener(final IZookeeperClient client, final List<String> actual) {
         return new ZookeeperEventListener(null) {
             
             @Override
@@ -314,7 +314,7 @@ public abstract class BaseClientTest extends BaseTest {
         };
     }
     
-    protected final void close(final IClient client) {
+    protected final void close(final IZookeeperClient client) {
         client.close();
         assertThat(getZooKeeper(client).getState(), is(ZooKeeper.States.CLOSED));
     }

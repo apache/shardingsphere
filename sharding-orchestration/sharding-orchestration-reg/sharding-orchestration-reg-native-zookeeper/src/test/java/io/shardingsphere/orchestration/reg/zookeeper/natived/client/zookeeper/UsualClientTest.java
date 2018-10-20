@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.BaseClientTest;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.TestSupport;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 public class UsualClientTest extends BaseClientTest {
     
     @Override
-    protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
+    protected IZookeeperClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         return creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
                 .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
     }

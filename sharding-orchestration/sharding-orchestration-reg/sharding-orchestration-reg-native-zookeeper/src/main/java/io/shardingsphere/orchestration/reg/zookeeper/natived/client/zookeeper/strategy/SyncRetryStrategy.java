@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.DelayRetryPolicy;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.RetryCallable;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.RetryResultCallable;
@@ -39,7 +39,7 @@ public class SyncRetryStrategy extends UsualStrategy {
     
     private final DelayRetryPolicy delayRetryPolicy;
     
-    public SyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+    public SyncRetryStrategy(final IZookeeperProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider);
         this.delayRetryPolicy = null == delayRetryPolicy ? DelayRetryPolicy.defaultDelayPolicy() : delayRetryPolicy;
     }

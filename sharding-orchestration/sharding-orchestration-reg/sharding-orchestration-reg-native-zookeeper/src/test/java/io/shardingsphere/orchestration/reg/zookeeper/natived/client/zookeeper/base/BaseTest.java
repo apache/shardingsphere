@@ -17,16 +17,16 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import org.apache.zookeeper.KeeperException;
 
 public class BaseTest {
     
-    protected final void createRootOnly(final IClient client) throws KeeperException, InterruptedException {
+    protected final void createRootOnly(final IZookeeperClient client) throws KeeperException, InterruptedException {
         ((BaseClient) client).createNamespace();
     }
     
-    protected final void deleteRoot(final IClient client) throws KeeperException, InterruptedException {
+    protected final void deleteRoot(final IZookeeperClient client) throws KeeperException, InterruptedException {
         ((BaseClient) client).deleteNamespace();
     }
     

@@ -18,11 +18,11 @@
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy;
 
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.ContentionCallback;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.ITransactionProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperTransactionProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.election.LeaderElection;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider.BaseProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider.BaseZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.transaction.ZooKeeperTransaction;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -38,7 +38,7 @@ import java.util.Stack;
  */
 public final class TransactionContendStrategy extends ContentionStrategy {
     
-    public TransactionContendStrategy(final ITransactionProvider provider) {
+    public TransactionContendStrategy(final IZookeeperTransactionProvider provider) {
         super(provider);
     }
     
@@ -54,7 +54,7 @@ public final class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseZookeeperProvider) getProvider()).getRootNode(), ((BaseZookeeperProvider) getProvider()).getHolder());
                 createBegin(key, value, createMode, transaction);
                 transaction.commit();
             }
@@ -70,7 +70,7 @@ public final class TransactionContendStrategy extends ContentionStrategy {
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZooKeeperTransaction transaction) throws KeeperException, InterruptedException {
         if (!key.contains(ZookeeperConstants.PATH_SEPARATOR)) {
-            ((ITransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
+            ((IZookeeperTransactionProvider) getProvider()).createInTransaction(key, value, createMode, transaction);
             return;
         }
         List<String> nodes = getProvider().getNecessaryPaths(key);
@@ -79,9 +79,9 @@ public final class TransactionContendStrategy extends ContentionStrategy {
                 continue;
             }
             if (i == nodes.size() - 1) {
-                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
+                ((IZookeeperTransactionProvider) getProvider()).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
-                ((ITransactionProvider) getProvider()).createInTransaction(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode, transaction);
+                ((IZookeeperTransactionProvider) getProvider()).createInTransaction(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode, transaction);
             }
         }
     }
@@ -92,7 +92,7 @@ public final class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseZookeeperProvider) getProvider()).getRootNode(), ((BaseZookeeperProvider) getProvider()).getHolder());
                 deleteChildren(getProvider().getRealPath(key), true, transaction);
                 transaction.commit();
             }
@@ -119,7 +119,7 @@ public final class TransactionContendStrategy extends ContentionStrategy {
             
             @Override
             public void action() throws KeeperException, InterruptedException {
-                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseProvider) getProvider()).getRootNode(), ((BaseProvider) getProvider()).getHolder());
+                ZooKeeperTransaction transaction = new ZooKeeperTransaction(((BaseZookeeperProvider) getProvider()).getRootNode(), ((BaseZookeeperProvider) getProvider()).getHolder());
                 deleteBranch(getProvider().getRealPath(key), transaction);
                 transaction.commit();
             }

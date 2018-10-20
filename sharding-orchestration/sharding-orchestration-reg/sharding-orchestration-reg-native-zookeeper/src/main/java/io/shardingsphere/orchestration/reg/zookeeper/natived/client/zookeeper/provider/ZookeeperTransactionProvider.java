@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.ITransactionProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperTransactionProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.Holder;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.transaction.BaseTransaction;
@@ -32,9 +32,9 @@ import java.util.List;
  *
  * @author lidongbo
  */
-public final class TransactionProvider extends BaseProvider implements ITransactionProvider {
+public final class ZookeeperTransactionProvider extends BaseZookeeperProvider implements IZookeeperTransactionProvider {
     
-    public TransactionProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
+    public ZookeeperTransactionProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
         super(rootNode, holder, watched, authorities);
     }
     

@@ -17,15 +17,15 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider.BaseProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider.BaseZookeeperProvider;
 import org.apache.zookeeper.KeeperException;
 
 public abstract class TestResultCallable<T> extends RetryResultCallable<T> {
     
     private int count;
     
-    public TestResultCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+    public TestResultCallable(final IZookeeperProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider, delayRetryPolicy);
     }
     
@@ -35,8 +35,8 @@ public abstract class TestResultCallable<T> extends RetryResultCallable<T> {
             count++;
 
             // need dependent zk beat version
-            //((BaseProvider)getProvider()).getHolder().getZooKeeper().getTestable().injectSessionExpiration();
-            ((BaseProvider) getProvider()).getHolder().close();
+            //((BaseZookeeperProvider)getProvider()).getHolder().getZooKeeper().getTestable().injectSessionExpiration();
+            ((BaseZookeeperProvider) getProvider()).getHolder().close();
         }
         test();
     }

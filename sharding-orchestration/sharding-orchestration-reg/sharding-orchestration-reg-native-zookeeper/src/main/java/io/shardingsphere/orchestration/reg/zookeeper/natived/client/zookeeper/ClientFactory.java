@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.DelayRetryPolicy;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
@@ -60,7 +60,7 @@ public final class ClientFactory extends BaseClientFactory {
     * This client is not perhaps the client.
     */
     synchronized BaseClientFactory newClientByOriginal(final boolean closeOriginal) {
-        IClient oldClient = getClient();
+        IZookeeperClient oldClient = getClient();
         setClient(new UsualClient(getContext()));
         if (closeOriginal) {
             oldClient.close();
@@ -123,7 +123,7 @@ public final class ClientFactory extends BaseClientFactory {
     }
     
     @Override
-    public IClient start() throws IOException, InterruptedException {
+    public IZookeeperClient start() throws IOException, InterruptedException {
         ((ClientContext) getContext()).setDelayRetryPolicy(delayRetryPolicy);
         ((ClientContext) getContext()).setClientFactory(this);
         return super.start();

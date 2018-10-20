@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.election.LeaderElection;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
@@ -44,7 +44,7 @@ import java.util.Stack;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class BaseProvider implements IProvider {
+public class BaseZookeeperProvider implements IZookeeperProvider {
     
     @Getter
     private final String rootNode;

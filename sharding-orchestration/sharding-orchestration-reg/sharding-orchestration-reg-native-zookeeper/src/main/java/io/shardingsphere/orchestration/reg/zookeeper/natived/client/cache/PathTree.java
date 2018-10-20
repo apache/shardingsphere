@@ -19,8 +19,8 @@ package io.shardingsphere.orchestration.reg.zookeeper.natived.client.cache;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.ZookeeperEventListener;
@@ -46,9 +46,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public final class PathTree implements AutoCloseable {
     
-    private final IClient client;
+    private final IZookeeperClient client;
     
-    private final IProvider provider;
+    private final IZookeeperProvider provider;
     
     private final AtomicReference<PathNode> rootNode = new AtomicReference<>();
     
@@ -66,7 +66,7 @@ public final class PathTree implements AutoCloseable {
     
     private boolean closed;
     
-    public PathTree(final String root, final IClient client) {
+    public PathTree(final String root, final IZookeeperClient client) {
         rootNode.set(new PathNode(root));
         status = PathStatus.RELEASE;
         // TODO consider whether to use a new client alternative to the current

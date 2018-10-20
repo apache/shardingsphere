@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ import java.util.List;
 @Slf4j
 public class UsualStrategy extends BaseStrategy {
     
-    public UsualStrategy(final IProvider provider) {
+    public UsualStrategy(final IZookeeperProvider provider) {
         super(provider);
     }
     

@@ -18,11 +18,11 @@
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper;
 
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IExecStrategy;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.ITransactionProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperTransactionProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.BaseClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base.BaseContext;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider.TransactionProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.provider.ZookeeperTransactionProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.ClientContext;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.StrategyType;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy.AsyncRetryStrategy;
@@ -70,7 +70,7 @@ public class UsualClient extends BaseClient {
             return;
         }
         
-        ITransactionProvider provider = new TransactionProvider(getRootNode(), getHolder(), ZookeeperConstants.WATCHED, getAuthorities());
+        IZookeeperTransactionProvider provider = new ZookeeperTransactionProvider(getRootNode(), getHolder(), ZookeeperConstants.WATCHED, getAuthorities());
         switch (strategyType) {
             case USUAL:
                 execStrategy = new UsualStrategy(provider);

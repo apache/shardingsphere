@@ -24,14 +24,14 @@ import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.tr
  *
  * @author lidongbo
  */
-public interface IExecStrategy extends IAction, IGroupAction {
+public interface IExecStrategy extends IZookeeperAction, IGroupAction {
     
     /**
      * Get provider.
      *
      * @return provider
      */
-    IProvider getProvider();
+    IZookeeperProvider getProvider();
     
     /**
      * Create zookeeper transaction.

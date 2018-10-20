@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
@@ -31,7 +31,7 @@ import org.apache.zookeeper.KeeperException;
 @Slf4j
 public abstract class ClientTask implements Runnable {
     
-    private final IProvider provider;
+    private final IZookeeperProvider provider;
     
     /**
      * Run.
@@ -40,7 +40,7 @@ public abstract class ClientTask implements Runnable {
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    public abstract void run(IProvider provider) throws KeeperException, InterruptedException;
+    public abstract void run(IZookeeperProvider provider) throws KeeperException, InterruptedException;
     
     @Override
     public final void run() {

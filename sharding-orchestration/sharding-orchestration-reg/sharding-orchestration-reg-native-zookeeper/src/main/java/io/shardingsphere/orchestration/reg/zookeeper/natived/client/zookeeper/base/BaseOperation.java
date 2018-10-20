@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.DelayPolicyExecutor;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.Connection;
 import lombok.Getter;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseOperation implements Delayed {
     
     @Getter
-    private final IProvider provider;
+    private final IZookeeperProvider provider;
     
     @Setter
     private DelayPolicyExecutor delayPolicyExecutor;

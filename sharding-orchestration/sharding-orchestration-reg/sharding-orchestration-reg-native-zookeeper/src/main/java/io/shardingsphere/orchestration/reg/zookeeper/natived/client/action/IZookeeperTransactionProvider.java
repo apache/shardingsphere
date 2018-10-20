@@ -25,7 +25,7 @@ import org.apache.zookeeper.CreateMode;
  *
  * @author lidongbo
  */
-public interface ITransactionProvider extends IProvider {
+public interface IZookeeperTransactionProvider extends IZookeeperProvider {
     
     /**
      * Only create target node in transaction.

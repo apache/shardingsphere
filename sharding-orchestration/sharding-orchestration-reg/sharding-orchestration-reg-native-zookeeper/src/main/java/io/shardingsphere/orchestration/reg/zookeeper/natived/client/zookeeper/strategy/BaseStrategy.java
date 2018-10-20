@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy;
 
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IExecStrategy;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.transaction.BaseTransaction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import org.apache.zookeeper.KeeperException;
 public abstract class BaseStrategy implements IExecStrategy {
     
     @Getter
-    private final IProvider provider;
+    private final IZookeeperProvider provider;
     
     @Override
     public final String getDataString(final String key) throws KeeperException, InterruptedException {

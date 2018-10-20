@@ -17,19 +17,22 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.action;
 
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.election.LeaderElection;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 
 import java.util.List;
+import java.util.Stack;
 
 /**
- * The basic actions of the client.
+ * Provider API.
  *
  * @author lidongbo
  */
-public interface IAction {
+public interface IZookeeperProvider {
     
     /**
      * Get string type data.
@@ -56,7 +59,7 @@ public interface IAction {
      *
      * @param key key
      * @param callback callback
-     * @param ctx context
+     * @param ctx ctx
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
@@ -66,28 +69,28 @@ public interface IAction {
      * Check exist.
      *
      * @param key key
-     * @return exist or not
+     * @return exist
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    boolean checkExists(String key) throws KeeperException, InterruptedException;
+    boolean exists(String key) throws KeeperException, InterruptedException;
     
     /**
      * Check exist.
      *
      * @param key key
      * @param watcher watcher
-     * @return exist or not
+     * @return exist
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    boolean checkExists(String key, Watcher watcher) throws KeeperException, InterruptedException;
+    boolean exists(String key, Watcher watcher) throws KeeperException, InterruptedException;
     
     /**
      * Get children's keys.
      *
      * @param key key
-     * @return children keys
+     * @return exist
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
@@ -98,21 +101,22 @@ public interface IAction {
      *
      * @param key key
      * @param value value
-     * @param createMode createMode
+     * @param createMode create mode
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    void createCurrentOnly(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
+    void create(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
     
     /**
      * Update.
      *
      * @param key key
      * @param value value
+     * @return is success
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    void update(String key, String value) throws KeeperException, InterruptedException;
+    boolean update(String key, String value) throws KeeperException, InterruptedException;
     
     /**
      * Only delete target node..
@@ -121,16 +125,61 @@ public interface IAction {
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    void deleteOnlyCurrent(String key) throws KeeperException, InterruptedException;
+    void delete(String key) throws KeeperException, InterruptedException;
     
     /**
-     * Only delete target node..
+     * Only delete target node.
      *
      * @param key key
      * @param callback callback
-     * @param ctx context
+     * @param ctx ctx
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
      */
-    void deleteOnlyCurrent(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException;
+    void delete(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException;
+    
+    /**
+     * Get real path with root.
+     *
+     * @param path path
+     * @return real path
+     */
+    String getRealPath(String path);
+    
+    /**
+     * Get path nodes that needed create.
+     *
+     * @param key key
+     * @return all path nodes
+     */
+    List<String> getNecessaryPaths(String key);
+    
+    /**
+     * Get path nodes that needed delete.
+     *
+     * @param key key
+     * @return all path nodes
+     */
+    Stack<String> getDeletingPaths(String key);
+    
+    /**
+     * Contention exec.
+     *
+     * @param election election
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException InterruptedException
+     */
+    void executeContention(LeaderElection election) throws KeeperException, InterruptedException;
+    
+    /**
+     * Reset connection.
+     */
+    void resetConnection();
+    
+    /**
+     * Create zookeeper transaction.
+     *
+     * @return zookeeper transaction
+     */
+    BaseTransaction transaction();
 }

@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.base;
 
 import com.google.common.base.Strings;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.StrategyType;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * @author lidongbo
  */
 @Slf4j
-public abstract class BaseClient implements IClient {
+public abstract class BaseClient implements IZookeeperClient {
     
     private static final int CIRCLE_WAIT = 30;
     

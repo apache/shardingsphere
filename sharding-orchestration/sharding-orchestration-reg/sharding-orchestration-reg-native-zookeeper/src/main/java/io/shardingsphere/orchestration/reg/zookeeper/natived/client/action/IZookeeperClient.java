@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author lidongbo
  */
-public interface IClient extends IAction, IGroupAction {
+public interface IZookeeperClient extends IZookeeperAction, IGroupAction {
     
     /**
      * Start.

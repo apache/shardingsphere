@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.DelayRetryPolicy;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.TestCallable;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.TestResultCallable;
@@ -45,11 +45,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class SyncRetryStrategyTest extends UsualClientTest {
     
-    private IProvider provider;
+    private IZookeeperProvider provider;
     
     @Override
-    protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
-        final IClient client = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
+    protected IZookeeperClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
+        final IZookeeperClient client = creator.setClientNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL)
                 .newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).start();
         client.useExecStrategy(StrategyType.SYNC_RETRY);
         provider = client.getExecStrategy().getProvider();

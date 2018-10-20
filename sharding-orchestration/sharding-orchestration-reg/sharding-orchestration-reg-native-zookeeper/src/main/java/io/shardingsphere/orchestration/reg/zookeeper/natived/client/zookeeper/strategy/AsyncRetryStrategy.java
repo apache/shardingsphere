@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.AsyncRetryCenter;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.DelayRetryPolicy;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.operation.CreateAllNeedOperation;
@@ -39,7 +39,7 @@ import org.apache.zookeeper.KeeperException;
 @Slf4j
 public final class AsyncRetryStrategy extends SyncRetryStrategy {
     
-    public AsyncRetryStrategy(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+    public AsyncRetryStrategy(final IZookeeperProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         super(provider, delayRetryPolicy);
         AsyncRetryCenter.INSTANCE.init(getDelayRetryPolicy());
         AsyncRetryCenter.INSTANCE.start();

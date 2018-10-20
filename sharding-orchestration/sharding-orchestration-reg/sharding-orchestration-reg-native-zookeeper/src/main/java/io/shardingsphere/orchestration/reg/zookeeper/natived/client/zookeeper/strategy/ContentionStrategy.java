@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.strategy;
 
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.ContentionCallback;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.election.LeaderElection;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
@@ -38,7 +38,7 @@ import java.util.Stack;
 @Slf4j
 public class ContentionStrategy extends UsualStrategy {
     
-    public ContentionStrategy(final IProvider provider) {
+    public ContentionStrategy(final IZookeeperProvider provider) {
         super(provider);
     }
     

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.natived.client.election;
 
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IProvider;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperProvider;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.PathUtil;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.zookeeper.section.WatcherCreator;
@@ -48,7 +48,7 @@ public abstract class LeaderElection {
      * @throws KeeperException zookeeper exception
      * @throws InterruptedException interrupted exception
     */
-    public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
+    public void executeContention(final String nodeBeContend, final IZookeeperProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
         String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
@@ -79,7 +79,7 @@ public abstract class LeaderElection {
         }
     }
     
-    private boolean contend(final String node, final IProvider provider, final ZookeeperEventListener zookeeperEventListener) throws KeeperException, InterruptedException {
+    private boolean contend(final String node, final IZookeeperProvider provider, final ZookeeperEventListener zookeeperEventListener) throws KeeperException, InterruptedException {
         boolean result = false;
         try {
             // TODO EPHEMERAL_SEQUENTIAL check index value

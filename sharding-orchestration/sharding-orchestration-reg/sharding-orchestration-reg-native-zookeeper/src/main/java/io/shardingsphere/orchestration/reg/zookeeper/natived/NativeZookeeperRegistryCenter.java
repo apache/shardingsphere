@@ -24,7 +24,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
-import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IClient;
+import io.shardingsphere.orchestration.reg.zookeeper.natived.client.action.IZookeeperClient;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.cache.PathTree;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.retry.DelayRetryPolicy;
 import io.shardingsphere.orchestration.reg.zookeeper.natived.client.utility.ZookeeperConstants;
@@ -54,7 +54,7 @@ public final class NativeZookeeperRegistryCenter implements RegistryCenter {
     
     private final Map<String, PathTree> caches = new HashMap<>();
     
-    private IClient client;
+    private IZookeeperClient client;
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
@@ -71,8 +71,8 @@ public final class NativeZookeeperRegistryCenter implements RegistryCenter {
         return result;
     }
     
-    private IClient initClient(final ClientFactory clientFactory, final RegistryCenterConfiguration config) {
-        IClient result = null;
+    private IZookeeperClient initClient(final ClientFactory clientFactory, final RegistryCenterConfiguration config) {
+        IZookeeperClient result = null;
         try {
             // TODO There is a bug when the start time is very short, and I haven't found the reason yet
             // result = clientFactory.start(config.getRetryIntervalMilliseconds() * config.getMaxRetries(), TimeUnit.MILLISECONDS);
