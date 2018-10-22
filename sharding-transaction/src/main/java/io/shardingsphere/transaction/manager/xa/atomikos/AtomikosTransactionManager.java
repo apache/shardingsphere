@@ -45,12 +45,14 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     private static final UserTransactionManager USER_TRANSACTION_MANAGER = new UserTransactionManager();
     
-    static {
-        try {
-            USER_TRANSACTION_MANAGER.init();
-        } catch (final SystemException ex) {
-            throw new ShardingException(ex);
-        }
+    @Override
+    public void init() throws Exception {
+        USER_TRANSACTION_MANAGER.init();
+    }
+
+    @Override
+    public void destroy() {
+        USER_TRANSACTION_MANAGER.close();
     }
     
     @Override
