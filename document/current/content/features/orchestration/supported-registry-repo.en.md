@@ -21,6 +21,8 @@ Please use Etcd V3 and above. Please reference [official website](https://coreos
 
 Sharding-Sphere loads the registry by using SPI for database orchestration to do circuit breaking and disable databases. Currently, Sharding-Sphere supports two popular registries, Zookeeper and Etcd. In addition, you can use other third-party registries and inject them into Sharding-Sphere via SPI for database orchestration.
 
+When you need to use the Sharding-Sphere built-in registry implementation solutions, Maven artifactId should be added to introduce the corresponding registry implementation solution for databases orchestration.
+
 当您需要使用Sharding-Sphere内置的注册中心实现方案时，需要加入对应的Maven坐标，以引入对应的注册中心实现方案，达到数据库治理的目的。
 
 ## Zookeeper
