@@ -9,11 +9,11 @@ Config center and orchestration registry center can use one of below.
 
 ## Zookeeper
 
-Please use Zookeeper 3.4.6 and above. Please reference [official website](https://zookeeper.apache.org/).
+Please use Zookeeper 3.4.6 and above, and refer to [official website](https://zookeeper.apache.org/).
 
 ## Etcd
 
-Please use Etcd V3 and above. Please reference [official website](https://coreos.com/etcd/docs/latest).
+Please use Etcd V3 and above, and refer to [official website](https://coreos.com/etcd/docs/latest).
 
 
 ## SPI
