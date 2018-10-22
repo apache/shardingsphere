@@ -35,7 +35,7 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     // Configure dataSourceMap and shardingRuleConfig
     // ...
 
-    // Configure registry center of Registry
+    // Configure registry center of registry
     RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
     regConfig.setServerLists("localhost:2181");
     regConfig.setNamespace("sharding-sphere-orchestration");
