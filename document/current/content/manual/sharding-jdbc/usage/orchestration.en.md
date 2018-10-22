@@ -80,12 +80,14 @@ orchestration:
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
@@ -101,12 +103,14 @@ orchestration:
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
