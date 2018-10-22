@@ -303,9 +303,9 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 | *名称*                             | *数据类型* | *说明*                                                                                 |
 | --------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
-| serverLists                       | String     | 连接Registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
-| namespace (?)                     | String     | Registry的命名空间                                                                    |
-| digest (?)                        | String     | 连接Registry的权限令牌。缺省为不需要权限验证                                             |
+| serverLists                       | String     | 连接registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| namespace (?)                     | String     | registry的命名空间                                                                    |
+| digest (?)                        | String     | 连接registry的权限令牌。缺省为不需要权限验证                                             |
 | operationTimeoutMilliseconds (?)  | int        | 操作超时的毫秒数，默认500毫秒                                                         |
 | maxRetries (?)                    | int        | 连接失败后的最大重试次数，默认3次                                                         |
 | retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认500毫秒                                                             |
