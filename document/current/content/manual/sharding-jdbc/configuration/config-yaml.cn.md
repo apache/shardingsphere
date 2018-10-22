@@ -283,10 +283,10 @@ masterSlaveRule: #省略读写分离规则配置
 orchestration:
   name: #数据治理实例名称
   overwrite: #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-  registry: #registry注册中心配置
-    serverLists: #连接registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
-    namespace: #registry的命名空间
-    digest: #连接registry的权限令牌。缺省为不需要权限验证
+  registry: #注册中心配置
+    serverLists: #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+    namespace: #注册中心的命名空间
+    digest: #连接注册中心的权限令牌。缺省为不需要权限验证
     operationTimeoutMilliseconds: #操作超时的毫秒数，默认500毫秒
     maxRetries: #连接失败后的最大重试次数，默认3次
     retryIntervalMilliseconds: #重试间隔毫秒数，默认500毫秒
