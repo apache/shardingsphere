@@ -17,13 +17,13 @@ weight = 4
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--若使用zookeeper作为注册中心，请引入以下依赖：-->
+<!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 
-<!--若使用etcd作为注册中心，请引入以下依赖：-->
+<!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
@@ -77,13 +77,13 @@ orchestration:
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--若使用zookeeper作为注册中心，请引入以下依赖：-->
+<!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 
-<!--若使用etcd作为注册中心，请引入以下依赖：-->
+<!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
@@ -98,18 +98,17 @@ orchestration:
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--若使用zookeeper作为注册中心，请引入以下依赖：-->
+<!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 
-<!--若使用etcd作为注册中心，请引入以下依赖：-->
+<!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
 </dependency>
-
 ```
 
 ### 基于Spring boot的规则配置
