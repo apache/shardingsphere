@@ -285,7 +285,7 @@ orchestration:
   overwrite: #Use local configuration to overwrite registry center or not
   registry: #Registry configuration
     serverLists: #Registry servers list, multiple split as comma. Example: host1:2181,host2:2181
-    namespace: #Namespace of Registry
+    namespace: #Namespace of registry
     digest: #Digest for Registry. Default is not need digest.
     operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is 500 milliseconds
     maxRetries: #Max number of times to retry, default value is 3
