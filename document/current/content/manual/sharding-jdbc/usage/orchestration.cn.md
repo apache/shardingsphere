@@ -76,29 +76,40 @@ orchestration:
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+
+<!--若使用zookeeper作为注册中心，请引入以下依赖：-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-<!--<dependency>-->
-    <!--<groupId>io.shardingsphere</groupId>-->
-    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
-<!--</dependency>-->
 
+<!--若使用etcd作为注册中心，请引入以下依赖：-->
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+</dependency>
+```
+
+```xml
 <!-- for spring namespace -->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+
+<!--若使用zookeeper作为注册中心，请引入以下依赖：-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-<!--<dependency>-->
-    <!--<groupId>io.shardingsphere</groupId>-->
-    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
-<!--</dependency>-->
+
+<!--若使用etcd作为注册中心，请引入以下依赖：-->
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+</dependency>
+
 ```
 
 ### 基于Spring boot的规则配置
