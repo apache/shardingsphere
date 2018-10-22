@@ -51,7 +51,7 @@ public class ModifyColumnVisitor implements PhraseVisitor {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
                 alterStatement.getUpdateColumns().put(column.getName(), column);
-                postVisitColumnDefinition(ancestorNode, statement, column.getName());
+                postVisitColumnDefinition(each, statement, column.getName());
             }
         }
     }
