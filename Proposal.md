@@ -225,7 +225,7 @@ Travis
 
 ## Affiliations
 
-- Jingdong: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao
+- JD: Liang Zhang, Yonglun Zhang, Juan Pan, Jun Zhao
 - Dangdang: Hao Cao, Ling Yue
 - CHINA TELECOM Bestpay: QingYang Chen
 - Individuals: Sheng Wu, Hongtao Gao, Xiaoguang Ma
@@ -236,6 +236,7 @@ Travis
 
 ### Mentors
 
+- Craig L Russell (clr at apache dot org)
 - Benjamin Hindman (benh at apache dot org)
 - Willem Ning Jiang (ningjiang at apache dot org)
 
