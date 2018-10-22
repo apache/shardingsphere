@@ -285,8 +285,8 @@ Enumeration of properties.
 | *Name*                            | *DataType* | *Description*                                                                    |
 | --------------------------------- | ---------- | -------------------------------------------------------------------------------- |
 | serverLists                       | String     | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
-| namespace (?)                     | String     | Namespace of Registry                                                           |
-| digest (?)                        | String     | Digest for Registry. Default is not need digest.                                |
+| namespace (?)                     | String     | Namespace of registry                                                           |
+| digest (?)                        | String     | Digest for registry. Default is not need digest.                                |
 | operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default value is 500 milliseconds.                  |
 | maxRetries (?)                    | int        | Max number of times to retry. Default value is 3                                 |
 | retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 500 milliseconds. |
