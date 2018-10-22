@@ -187,7 +187,7 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds${user_id % 2}
+      algorithmExpression: ms_ds${user_id % 2}
   
   defaultTableStrategy:
     none:
@@ -216,7 +216,7 @@ shardingRule:
 
 Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
 
-### 使用Zookeeper的数据治理
+### 数据治理
 
 ```yaml
 #省略数据分片和读写分离配置
@@ -224,21 +224,9 @@ Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公�
 orchestration:
   name: orchestration_ds
   overwrite: true
-  zookeeper:
+  registry:
     namespace: orchestration
     serverLists: localhost:2181
-```
-
-### 使用Etcd的数据治理
-
-```yaml
-#省略数据分片和读写分离配置
-
-orchestration:
-  name: orchestration_ds
-  overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
 ```
 
 ### 认证信息
@@ -290,11 +278,7 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 
 ## 全局配置项说明
 
-### 使用Zookeeper的数据治理
-
-与Sharding-JDBC配置一致。
-
-### 使用Etcd的数据治理
+### 数据治理
 
 与Sharding-JDBC配置一致。
 

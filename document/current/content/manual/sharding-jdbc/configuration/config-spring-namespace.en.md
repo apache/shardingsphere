@@ -146,7 +146,6 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                 <prop key="foo">bar</prop>
             </master-slave:props>
     </master-slave:data-source>
-    
 </beans>
 ```
 
@@ -253,7 +252,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 </beans>
 ```
 
-### Orchestration by Zookeeper
+### Orchestration
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -271,31 +270,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                            http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
                            http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
-    <reg:zookeeper id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
-    <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
-    <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
-</beans>
-```
-
-### Orchestration by Etcd
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
-       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
-    
-    <reg:etcd id="regCenter" server-lists="http://localhost:2379" />
+    <reg:registry-center id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
     <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
 </beans>
@@ -460,26 +435,15 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestr
 
 Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<orchestration:zookeeper />
+#### \<orchestration:registry-center />
 
 | *Name*                             | *Type*    | *Description*                                                                   |
 | ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
 | id                                 | Attribute | Spring Bean Id of registry center                                               |
-| server-lists                       | Attribute | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181 |
-| namespace                          | Attribute | Namespace of zookeeper                                                          |
-| digest (?)                         | Attribute | Digest for zookeeper. Default is not need digest                                |
-| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is no timeout             |
+| server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181 |
+| namespace (?)                      | Attribute | Namespace of registry                                                          |
+| digest (?)                         | Attribute | Digest for registry. Default is not need digest                                |
+| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 seconds           |
 | max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                |
-| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 1000 milliseconds |
+| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 500 milliseconds |
 | time-to-live-seconds (?)           | Attribute | Time to live in seconds of ephemeral keys, default value is 60 seconds          |
-
-#### \<orchestration:etcd />
-
-| *Name*                             | *Type*    | *Description*                                                                            |
-| ---------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
-| id                                 | Attribute | Spring Bean Id of registry center                                                        |
-| server-lists                       | Attribute | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
-| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 milliseconds                |
-| max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                         |
-| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 200 milliseconds           |
-| time-to-live-seconds (?)           | Attribute | Time to live in seconds of ephemeral keys, default value is 60 seconds                   |

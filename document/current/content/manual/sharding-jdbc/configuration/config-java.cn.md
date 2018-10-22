@@ -109,7 +109,7 @@ weight = 1
     }
 ```
 
-### 使用Zookeeper的数据治理
+### 数据治理
 
 ```java
     DataSource getDataSource() throws SQLException {
@@ -119,26 +119,10 @@ weight = 1
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        result.setServerLists("localhost:2181");
-        result.setNamespace("orchestration-demo");
-        return result;
-    }
-```
-
-### 使用Etcd的数据治理
-
-```java
-    DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
-    }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        EtcdConfiguration result = new EtcdConfiguration();
-        result.setServerLists("http://localhost:2379");
-        return result;
+        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+        regConfig.setServerLists("localhost:2181");
+        regConfig.setNamespace("sharding-sphere-orchestration");
+        return regConfig;
     }
 ```
 
@@ -313,28 +297,16 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | overwrite       | boolean                     | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准 |
 | regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 
-#### ZookeeperConfiguration
+#### RegistryCenterConfiguration
 
-RegistryCenterConfiguration的实现类，用于配置Zookeeper注册中心。
+用于配置注册中心。
 
 | *名称*                             | *数据类型* | *说明*                                                                                 |
 | --------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
-| serverLists                       | String     | 连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
-| namespace                         | String     | Zookeeper的命名空间                                                                    |
-| digest (?)                        | String     | 连接Zookeeper的权限令牌。缺省为不需要权限验证                                             |
-| operationTimeoutMilliseconds (?)  | int        | 操作超时的毫秒数，默认无超时时间                                                          |
+| serverLists                       | String     | 连接registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| namespace (?)                     | String     | registry的命名空间                                                                    |
+| digest (?)                        | String     | 连接registry的权限令牌。缺省为不需要权限验证                                             |
+| operationTimeoutMilliseconds (?)  | int        | 操作超时的毫秒数，默认500毫秒                                                         |
 | maxRetries (?)                    | int        | 连接失败后的最大重试次数，默认3次                                                         |
-| retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认1000毫秒                                                             |
+| retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认500毫秒                                                             |
 | timeToLiveSeconds (?)             | int        | 临时节点存活秒数，默认60秒                                                               |
-
-#### EtcdConfiguration
-
-RegistryCenterConfiguration的实现类，用于配置Etcd注册中心。
-
-| *名称*                             | *数据类型* | *说明*                                                                                          |
-| --------------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| serverLists                       | String     | 连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379 |
-| operationTimeoutMilliseconds (?)  | int        | 请求超时毫秒数，默认500毫秒                                                                       |
-| maxRetries (?)                    | int        | 请求失败后的最大重试次数，默认3次                                                                  |
-| retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认200毫秒                                                                       |
-| timeToLiveSeconds (?)             | int        | 临时节点存活秒数，默认60秒                                                                        |

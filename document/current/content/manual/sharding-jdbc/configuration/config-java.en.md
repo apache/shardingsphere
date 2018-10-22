@@ -109,7 +109,7 @@ weight = 1
     }
 ```
 
-### Orchestration by Zookeeper
+### Orchestration
 
 ```java
     DataSource getDataSource() throws SQLException {
@@ -119,28 +119,12 @@ weight = 1
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        ZookeeperConfiguration result = new ZookeeperConfiguration();
-        result.setServerLists("localhost:2181");
-        result.setNamespace("orchestration-demo");
-        return result;
+        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+        regConfig.setServerLists("localhost:2181");
+        regConfig.setNamespace("sharding-sphere-orchestration");
+        return regConfig;
     }
-```
-
-### Orchestration by Etcd
-
-```java
-    DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
-                createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
-    }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        EtcdConfiguration result = new EtcdConfiguration();
-        result.setServerLists("http://localhost:2379");
-        return result;
-    }
-```
+``````
 
 ## Configuration reference
 
@@ -296,28 +280,14 @@ Enumeration of properties.
 | overwrite       | boolean                     | Use local configuration to overwrite registry center or not         |
 | regCenterConfig | RegistryCenterConfiguration | Registry center configuration                                       |
 
-#### ZookeeperConfiguration
-
-Subclass of RegistryCenterConfiguration.
+#### RegistryCenterConfiguration
 
 | *Name*                            | *DataType* | *Description*                                                                    |
 | --------------------------------- | ---------- | -------------------------------------------------------------------------------- |
-| serverLists                       | String     | Zookeeper servers list, multiple split as comma. Example: host1:2181,host2:2181  |
-| namespace                         | String     | Namespace of zookeeper                                                           |
-| digest (?)                        | String     | Digest for Zookeeper. Default is not need digest.                                |
-| operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default is not timeout.                  |
+| serverLists                       | String     | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
+| namespace (?)                     | String     | Namespace of registry                                                           |
+| digest (?)                        | String     | Digest for registry. Default is not need digest.                                |
+| operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default value is 500 milliseconds.                  |
 | maxRetries (?)                    | int        | Max number of times to retry. Default value is 3                                 |
-| retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 1000 milliseconds. |
+| retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 500 milliseconds. |
 | timeToLiveSeconds (?)             | int        | Time to live in seconds of ephemeral keys. Default value is 60 seconds.          |
-
-#### EtcdConfiguration
-
-Subclass of RegistryCenterConfiguration.
-
-| *Name*                            | *DataType* | *Description*                                                                            |
-| --------------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
-| serverLists                       | String     | Etcd servers list, multiple split as comma. Example: http://host1:2379,http://host2:2379 |
-| operationTimeoutMilliseconds (?)  | int        | Operation timeout time in milliseconds. Default is 500 milliseconds.                     |
-| maxRetries (?)                    | int        | Max number of times to retry. Default value is 3                                         |
-| retryIntervalMilliseconds (?)     | int        | Time interval in milliseconds on each retry. Default value is 200 milliseconds.          |
-| timeToLiveSeconds (?)             | int        | Time to live in seconds of ephemeral keys. Default value is 60 seconds.                  |

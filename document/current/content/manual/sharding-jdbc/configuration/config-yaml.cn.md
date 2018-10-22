@@ -119,14 +119,14 @@ dataSources:
 shardingRule:  
   tables:
     t_order: 
-      actualDataNodes: ds${0..1}.t_order${0..1}
+      actualDataNodes: ms_ds${0..1}.t_order${0..1}
       tableStrategy: 
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGeneratorColumnName: order_id
     t_order_item:
-      actualDataNodes: ds${0..1}.t_order_item${0..1}
+      actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
         inline:
           shardingColumn: order_id
@@ -138,7 +138,7 @@ shardingRule:
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
-      algorithmExpression: ds${user_id % 2}
+      algorithmExpression: ms_ds${user_id % 2}
   
   defaultTableStrategy:
     none:
@@ -166,7 +166,7 @@ shardingRule:
     sql.show: true
 ```
 
-### 使用Zookeeper的数据治理
+### 数据治理
 
 ```yaml
 #省略数据分片和读写分离配置
@@ -174,21 +174,9 @@ shardingRule:
 orchestration:
   name: orchestration_ds
   overwrite: true
-  zookeeper:
+  registry:
     namespace: orchestration
     serverLists: localhost:2181
-```
-
-### 使用Etcd的数据治理
-
-```yaml
-#省略数据分片和读写分离配置
-
-orchestration:
-  name: orchestration_ds
-  overwrite: true
-  etcd:
-    serverLists: http://localhost:2379
 ```
 
 ## 配置项说明
@@ -285,7 +273,7 @@ masterSlaveRule:
     executor.size: #工作线程数量，默认值: CPU核数
 ```
 
-### 使用Zookeeper的数据治理
+### 数据治理
 
 ```yaml
 dataSources: #省略数据源配置
@@ -295,31 +283,13 @@ masterSlaveRule: #省略读写分离规则配置
 orchestration:
   name: #数据治理实例名称
   overwrite: #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-  zookeeper: #Zookeeper注册中心配置
-    serverLists: #连接Zookeeper服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
-    namespace: #Zookeeper的命名空间
-    digest: #连接Zookeeper的权限令牌。缺省为不需要权限验证
-    operationTimeoutMilliseconds: #操作超时的毫秒数，默认无超时时间
+  registry: #registry注册中心配置
+    serverLists: #连接registry服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+    namespace: #registry的命名空间
+    digest: #连接registry的权限令牌。缺省为不需要权限验证
+    operationTimeoutMilliseconds: #操作超时的毫秒数，默认500毫秒
     maxRetries: #连接失败后的最大重试次数，默认3次
-    retryIntervalMilliseconds: #重试间隔毫秒数，默认1000毫秒
-    timeToLiveSeconds: #临时节点存活秒数，默认60秒
-```
-
-### 使用Etcd的数据治理
-
-```yaml
-dataSources: #省略数据源配置
-shardingRule: #省略分片规则配置
-masterSlaveRule: #省略读写分离规则配置
-
-orchestration:
-  name: #同Zookeeper
-  overwrite: #同Zookeeper
-  etcd: #Etcd注册中心配置
-    serverLists: #连接Etcd服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: http://host1:2379,http://host2:2379
-    operationTimeoutMilliseconds: #操作超时的毫秒数，默认1000毫秒
-    maxRetries: #连接失败后的最大重试次数，默认3次
-    retryIntervalMilliseconds: #重试间隔毫秒数，默认200毫秒
+    retryIntervalMilliseconds: #重试间隔毫秒数，默认500毫秒
     timeToLiveSeconds: #临时节点存活秒数，默认60秒
 ```
 
