@@ -38,9 +38,9 @@ Sharding-Sphere adopts [Apache Curator](http://curator.apache.org/) as Zookeeper
 
 ## Etcd
 
-Sharding-Sphere adopts [Etcd](https://coreos.com/etcd/) as Etcd implementation solution. 请使用Etcd V3及其以上版本，详情请参见[官方网站](https://coreos.com/etcd/docs/latest)。
+Sharding-Sphere adopts [Etcd](https://coreos.com/etcd/) as Etcd implementation solution. Please use Etcd V3 and above, and refer to [official website](https://coreos.com/etcd/docs/latest).
 
-### Maven坐标
+### Maven
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
