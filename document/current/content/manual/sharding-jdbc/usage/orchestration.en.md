@@ -18,10 +18,6 @@ Use orchestration feature need indicate a registry center. Configuration will sa
 </dependency>
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-</dependency>
-<dependency>
-    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 <!--<dependency>-->
@@ -78,10 +74,6 @@ orchestration:
 </dependency>
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-</dependency>
-<dependency>
-    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 <!--<dependency>-->
@@ -94,10 +86,6 @@ orchestration:
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
-</dependency>
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
 </dependency>
 <dependency>
     <groupId>io.shardingsphere</groupId>
