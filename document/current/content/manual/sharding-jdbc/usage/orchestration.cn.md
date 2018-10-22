@@ -16,14 +16,18 @@ weight = 4
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+
+<!--若使用zookeeper作为注册中心，请引入以下依赖：-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-<!--<dependency>-->
-    <!--<groupId>io.shardingsphere</groupId>-->
-    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
-<!--</dependency>-->
+
+<!--若使用etcd作为注册中心，请引入以下依赖：-->
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+</dependency>
 ```
 
 ### 基于Java编码的规则配置
