@@ -23,8 +23,6 @@ Sharding-Sphere loads the registry by using SPI for database orchestration to do
 
 When you need to use the Sharding-Sphere built-in registry implementation solutions, Maven artifactId should be added to introduce the corresponding registry implementation solution for databases orchestration.
 
-当您需要使用Sharding-Sphere内置的注册中心实现方案时，需要加入对应的Maven坐标，以引入对应的注册中心实现方案，达到数据库治理的目的。
-
 ## Zookeeper
 
 Sharding-Sphere官方使用[Apache Curator](http://curator.apache.org/)作为Zookeeper的实现方案。请使用Zookeeper 3.4.6及其以上版本，详情请参见[官方网站](https://zookeeper.apache.org/)。
