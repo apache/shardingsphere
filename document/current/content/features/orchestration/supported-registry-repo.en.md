@@ -19,7 +19,7 @@ Please use Etcd V3 and above. Please reference [official website](https://coreos
 ## SPI
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) is an API intended to be implemented or extended by a third party. It can be used to enable framework extension and replaceable components.
 
-Sharding-Sphere在数据库治理模块使用SPI方式载入注册中心，进行实例熔断和数据库禁用。目前，Sharding-Sphere内部支持Zookeeper和Etcd两种常用的注册中心。此外，您可以使用其他第三方注册中心，并通过SPI的方式注入到Sharding-Sphere，从而使用该注册中心，实现数据库治理功能。
+Sharding-Sphere loads the registry by using SPI for database orchestration to do circuit breaking and disable databases. Currently, Sharding-Sphere supports two popular registries, Zookeeper and Etcd. In addition, you can use other third-party registries and inject them into Sharding-Sphere via SPI for database orchestration.
 
 当您需要使用Sharding-Sphere内置的注册中心实现方案时，需要加入对应的Maven坐标，以引入对应的注册中心实现方案，达到数据库治理的目的。
 
