@@ -25,9 +25,9 @@ When you need to use the Sharding-Sphere built-in registry implementation soluti
 
 ## Zookeeper
 
-Sharding-Sphere adopts [Apache Curator](http://curator.apache.org/) as Zookeeper implementation solution. 请使用Zookeeper 3.4.6及其以上版本，详情请参见[官方网站](https://zookeeper.apache.org/)。
+Sharding-Sphere adopts [Apache Curator](http://curator.apache.org/) as Zookeeper implementation solution. Please use Zookeeper 3.4.6 and above, and refer to [official website](https://zookeeper.apache.org/).
 
-### Maven坐标
+### Maven
 
 ```xml
 <dependency>
