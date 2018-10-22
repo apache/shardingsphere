@@ -103,7 +103,7 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
         if (parserResult != null) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
             DatabaseType execDatabaseType = databaseType;
-            if(DatabaseType.H2 == databaseType) {
+            if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
             new SQLStatementAssert(StatementFactory.getStatement(execDatabaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
