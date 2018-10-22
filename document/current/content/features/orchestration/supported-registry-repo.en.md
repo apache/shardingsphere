@@ -22,6 +22,7 @@ Sharding-Sphere adopts [Apache Curator](http://curator.apache.org/) as Zookeeper
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
 
@@ -34,5 +35,6 @@ Sharding-Sphere adopts [Etcd](https://coreos.com/etcd/) as Etcd implementation s
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
+    <version>${sharding-sphere.version}</version>
 </dependency>
 ```
