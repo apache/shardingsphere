@@ -16,14 +16,17 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+<!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-<!--<dependency>-->
-    <!--<groupId>io.shardingsphere</groupId>-->
-    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
-<!--</dependency>-->
+
+<!--If you want to use etcd, please use the artifactId below.-->
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+</dependency>
 ```
 
 ### Configure orchestration with java
