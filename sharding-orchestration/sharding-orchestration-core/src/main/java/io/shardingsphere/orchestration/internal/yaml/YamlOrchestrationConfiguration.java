@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.yaml;
+package io.shardingsphere.orchestration.internal.yaml;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -40,12 +40,12 @@ public class YamlOrchestrationConfiguration {
     private boolean overwrite;
     
     /**
-     * Get orchestration master-slave rule configuration from yaml.
+     * Get orchestration configuration from yaml.
      *
-     * @return orchestration master-slave rule configuration from yaml
+     * @return orchestration configuration from yaml
      */
     public OrchestrationConfiguration getOrchestrationConfiguration() {
         Preconditions.checkState(null != registry, "Registry center must be required!");
-        return new OrchestrationConfiguration(getName(), registry, overwrite);
+        return new OrchestrationConfiguration(name, registry, overwrite);
     }
 }
