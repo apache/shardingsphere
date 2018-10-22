@@ -124,7 +124,7 @@ weight = 1
         regConfig.setNamespace("sharding-sphere-orchestration");
         return regConfig;
     }
-``````
+```
 
 ## Configuration reference
 
