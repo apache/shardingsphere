@@ -23,6 +23,17 @@ datasources
     ├──ds1
     ├──....
 ```
+Sharding-Proxy support multiple logic schema,so the name of the datasources child node is in the form of schema_name.data_source_name.
+```
+instances
+    ├──your_instance_ip_a@-@your_instance_pid_x
+    ├──your_instance_ip_b@-@your_instance_pid_y
+    ├──....
+datasources
+    ├──sharding_db.ds0
+    ├──sharding_db.ds1
+    ├──....
+```
 
 ### state/instances
 

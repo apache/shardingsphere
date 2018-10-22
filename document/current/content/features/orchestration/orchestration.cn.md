@@ -23,7 +23,17 @@ datasources
     ├──ds1
     ├──....
 ```
-
+Sharding-Proxy支持多逻辑数据源,因此datasources子节点的名称采用schema_name.data_source_name的形式。
+```
+instances
+    ├──your_instance_ip_a@-@your_instance_pid_x
+    ├──your_instance_ip_b@-@your_instance_pid_y
+    ├──....
+datasources
+    ├──sharding_db.ds0
+    ├──sharding_db.ds1
+    ├──....
+```
 ### state/instances
 
 数据库访问对象运行实例信息，子节点是当前运行实例的标识。运行实例标识由运行服务器的IP地址和PID构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
