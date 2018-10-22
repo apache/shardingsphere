@@ -5,7 +5,6 @@ title = "支持的注册中心"
 weight = 3
 +++
 
-
 ## SPI
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html)是一种为了被第三方实现或扩展的API。它可以用于实现框架扩展或组件替换。
 
