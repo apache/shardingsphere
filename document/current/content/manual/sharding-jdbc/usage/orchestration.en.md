@@ -75,29 +75,39 @@ orchestration:
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+
+<!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-<!--<dependency>-->
-    <!--<groupId>io.shardingsphere</groupId>-->
-    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
-<!--</dependency>-->
 
+<!--If you want to use etcd, please use the artifactId below.-->
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+</dependency>
+```
+
+```xml
 <!-- for spring namespace -->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+
+<!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
-<!--<dependency>-->
-    <!--<groupId>io.shardingsphere</groupId>-->
-    <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
-<!--</dependency>-->
+
+<!--If you want to use etcd, please use the artifactId below.-->
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+</dependency>
 ```
 
 ### Configure orchestration with spring boot
