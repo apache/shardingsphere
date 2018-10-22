@@ -77,7 +77,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         removeUnnecessaryToken(insertStatement);
         insertStatement.setGenerateKeyColumnIndex(-1);
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        insertStatement.getSqlTokens().add(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
+        insertStatement.addSQLToken(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
         int count = 0;
@@ -111,7 +111,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {
-        Iterator<SQLToken> sqlTokens = insertStatement.getSqlTokens().iterator();
+        Iterator<SQLToken> sqlTokens = insertStatement.getSQLTokens().iterator();
         while (sqlTokens.hasNext()) {
             SQLToken sqlToken = sqlTokens.next();
             if (sqlToken instanceof InsertColumnToken || sqlToken instanceof ItemsToken) {

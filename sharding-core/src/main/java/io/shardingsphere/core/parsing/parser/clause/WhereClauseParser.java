@@ -294,7 +294,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1, includeRowCount));
-            selectStatement.getSqlTokens().add(new RowCountToken(endPosition - String.valueOf(rowCount).length(), rowCount));
+            selectStatement.addSQLToken(new RowCountToken(endPosition - String.valueOf(rowCount).length(), rowCount));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), includeRowCount));
         }
@@ -308,7 +308,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setOffset(new LimitValue(offset, -1, includeOffset));
-            selectStatement.getSqlTokens().add(new OffsetToken(
+            selectStatement.addSQLToken(new OffsetToken(
                     lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(offset).length() - lexerEngine.getCurrentToken().getLiterals().length(), offset));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), includeOffset));

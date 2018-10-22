@@ -21,11 +21,13 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.context.condition.Conditions;
 import io.shardingsphere.core.parsing.parser.context.table.Tables;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,13 +48,20 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Conditions conditions = new Conditions();
     
+    @Getter(AccessLevel.NONE)
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     private int parametersIndex;
     
     @Override
-    public final SQLType getType() {
-        return type;
+    public final void addSQLToken(final SQLToken sqlToken) {
+        sqlTokens.add(sqlToken);
+    }
+    
+    @Override
+    public final List<SQLToken> getSQLTokens() {
+        Collections.sort(sqlTokens);
+        return sqlTokens;
     }
     
     @Override

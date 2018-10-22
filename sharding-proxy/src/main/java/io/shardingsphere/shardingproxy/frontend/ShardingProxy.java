@@ -41,6 +41,7 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
  * @author zhangliang
  * @author xiaoyu
  * @author wangkai
+ * @author panjuan
  */
 public final class ShardingProxy {
     
@@ -53,10 +54,6 @@ public final class ShardingProxy {
     private EventLoopGroup workerGroup;
     
     private EventLoopGroup userGroup;
-    
-    public ShardingProxy() {
-        GLOBAL_REGISTRY.initShardingMetaData(backendExecutorContext.getExecuteEngine());
-    }
     
     /**
      * Start Sharding-Proxy.

@@ -15,19 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.rewrite;
+package io.shardingsphere.core.rewrite;
 
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
-import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,9 +40,7 @@ public final class MasterSlaveSQLRewriteEngine {
     
     private final String originalSQL;
     
-    private final List<SQLToken> sqlTokens = new LinkedList<>();
-    
-    private final SQLStatement sqlStatement;
+    private final List<SQLToken> sqlTokens;
     
     private final ShardingMetaData metaData;
     
@@ -54,15 +49,14 @@ public final class MasterSlaveSQLRewriteEngine {
      * 
      * @param masterSlaveRule master slave rule
      * @param originalSQL original SQL
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @param metaData meta data
      */
     public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingMetaData metaData) {
         this.masterSlaveRule = masterSlaveRule;
         this.originalSQL = originalSQL;
-        this.sqlStatement = sqlStatement;
+        sqlTokens = sqlStatement.getSQLTokens();
         this.metaData = metaData;
-        sqlTokens.addAll(sqlStatement.getSqlTokens());
     }
     
     /**
@@ -71,39 +65,27 @@ public final class MasterSlaveSQLRewriteEngine {
      * @return SQL
      */
     public String rewrite() {
-        if (sqlStatement.getSqlTokens().isEmpty()) {
+        if (sqlTokens.isEmpty()) {
             return originalSQL;
         }
-        SQLBuilder result = new SQLBuilder(null);
+        SQLBuilder result = new SQLBuilder(Collections.emptyList());
         int count = 0;
-        sortByBeginPosition();
-        for (SQLToken each : sqlStatement.getSqlTokens()) {
+        for (SQLToken each : sqlTokens) {
             if (0 == count) {
                 result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
             }
             if (each instanceof SchemaToken) {
-                appendSchemaPlaceholder(originalSQL, result, (SchemaToken) each, count, sqlStatement.getSqlTokens());
+                appendSchemaPlaceholder(originalSQL, result, (SchemaToken) each, count);
             }
             count++;
         }
         return result.toSQL(masterSlaveRule, metaData.getDataSource());
     }
     
-    private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count, final List<SQLToken> sqlTokens) {
+    private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), null));
         int beginPosition = schemaToken.getBeginPosition() + schemaToken.getOriginalLiterals().length();
         int endPosition = sqlTokens.size() - 1 == count ? sql.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.appendLiterals(sql.substring(beginPosition, endPosition));
     }
-    
-    private void sortByBeginPosition() {
-        Collections.sort(sqlTokens, new Comparator<SQLToken>() {
-            
-            @Override
-            public int compare(final SQLToken o1, final SQLToken o2) {
-                return o1.getBeginPosition() - o2.getBeginPosition();
-            }
-        });
-    }
-    
 }
