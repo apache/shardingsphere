@@ -128,7 +128,7 @@ sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=mas
 sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
-### Orchestration by orchestration
+### Orchestration
 
 ```properties
 sharding.jdbc.datasource.names=ds,ds0,ds1
