@@ -5,17 +5,6 @@ title = "Supported Registry Centers"
 weight = 3
 +++
 
-Config center and orchestration registry center can use one of below.
-
-## Zookeeper
-
-Please use Zookeeper 3.4.6 and above, and refer to [official website](https://zookeeper.apache.org/).
-
-## Etcd
-
-Please use Etcd V3 and above, and refer to [official website](https://coreos.com/etcd/docs/latest).
-
-
 ## SPI
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) is an API intended to be implemented or extended by a third party. It can be used to enable framework extension and replaceable components.
 
