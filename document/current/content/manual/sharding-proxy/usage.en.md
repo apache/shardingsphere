@@ -5,7 +5,7 @@ title = "User Manual"
 weight = 1
 +++
 
-1. Download the latest version of Sharding-Proxy from https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.M4.tar.gz
+1. Download the latest version of Sharding-Proxy from https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz
 1. If using docker，execute command `docker pull shardingsphere/sharding-proxy` to get image. More details please reference[Docker Image](/en/manual/sharding-proxy/docker/).
 1. Modify the `conf/server.yaml` and `conf/config-xxx.yaml` file after decompression, and configure the sharding rule and master-slave rule. Please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
 1. Run `bin/start.sh` on Linux, or `bin/start.bat` on Windows to start Sharding-Proxy. If you want to set port and configuration file, please refer to [quick-start](/en/quick-start/sharding-proxy-quick-start/).
