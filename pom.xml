@@ -7,6 +7,7 @@
     <artifactId>sharding-sphere</artifactId>
     <version>3.0.0</version>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
         <module>sharding-core</module>
