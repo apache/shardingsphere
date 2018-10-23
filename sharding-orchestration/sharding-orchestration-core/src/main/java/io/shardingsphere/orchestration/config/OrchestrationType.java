@@ -25,5 +25,5 @@ package io.shardingsphere.orchestration.config;
  */
 public enum OrchestrationType {
     
-    SHARDING, MASTER_SLAVE
+    SHARDING, MASTER_SLAVE, PROXY
 }

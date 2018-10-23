@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,7 +41,7 @@ final class SchemaTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertSchemaTokens(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertSchemaTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         List<SchemaToken> schemaTokens = getSchemaTokens(actual);
         assertThat(assertMessage.getFullAssertMessage("Schema tokens size error: "), schemaTokens.size(), is(expected.getSchemaTokens().size()));
         int count = 0;
@@ -56,7 +57,7 @@ final class SchemaTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Schema tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
     }
     
-    private List<SchemaToken> getSchemaTokens(final List<SQLToken> actual) {
+    private List<SchemaToken> getSchemaTokens(final Collection<SQLToken> actual) {
         List<SchemaToken> result = new ArrayList<>(actual.size());
         for (SQLToken each : actual) {
             if (each instanceof SchemaToken) {

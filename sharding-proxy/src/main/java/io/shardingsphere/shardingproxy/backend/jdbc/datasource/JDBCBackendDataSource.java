@@ -18,19 +18,17 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
-import lombok.Getter;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,30 +42,27 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
-    private final RuleRegistry ruleRegistry;
+    private final Map<String, DataSource> dataSources;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> availableDataSources;
     
-    public JDBCBackendDataSource(final RuleRegistry ruleRegistry) {
-        this.ruleRegistry = ruleRegistry;
-        dataSourceMap = createDataSourceMap();
+    public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
+        dataSources = createDataSourceMap(dataSourceParameters);
+        availableDataSources = new LinkedHashMap<>(dataSources);
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = ProxyContext.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = ruleRegistry.getDataSources();
-        // TODO getCircuitDataSourceMap if RuleRegistry.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
-        return getNormalDataSourceMap(transactionType, dataSourceParameters);
+    private Map<String, DataSource> createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
+        // TODO getCircuitDataSourceMap if getCircuitBreakerDataSourceNames() is not empty
+        return getNormalDataSourceMap(dataSourceParameters);
     }
     
-    private Map<String, DataSource> getNormalDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
+    private Map<String, DataSource> getNormalDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
-                result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+                result.put(entry.getKey(), getBackendDataSourceFactory().build(entry.getKey(), entry.getValue()));
             // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -77,12 +72,28 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return result;
     }
     
-    private JDBCBackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
-        switch (transactionType) {
+    private JDBCBackendDataSourceFactory getBackendDataSourceFactory() {
+        switch (GlobalRegistry.getInstance().getTransactionType()) {
             case XA:
                 return new JDBCXABackendDataSourceFactory();
             default:
                 return new JDBCRawBackendDataSourceFactory();
+        }
+    }
+    
+    /**
+     * Set available data sources.
+     *
+     * @param disabledDataSourceNames disabled data source names
+     */
+    public void setAvailableDataSources(final Collection<String> disabledDataSourceNames) {
+        synchronized (availableDataSources) {
+            availableDataSources.clear();
+            for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+                if (!disabledDataSourceNames.contains(entry.getKey())) {
+                    availableDataSources.put(entry.getKey(), entry.getValue());
+                }
+            }
         }
     }
     
@@ -108,7 +119,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        DataSource dataSource = availableDataSources.get(dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(dataSource.getConnection());
         }
@@ -118,18 +129,6 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         synchronized (dataSource) {
             return createConnections(dataSource, connectionSize);
         }
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        return ruleRegistry.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : ruleRegistry.getDisabledDataSourceNames()) {
-            result.remove(each);
-        }
-        return result;
     }
     
     private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
@@ -146,7 +145,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private void closeOriginalDataSources() {
-        for (DataSource each : dataSourceMap.values()) {
+        for (DataSource each : dataSources.values()) {
             try {
                 Method method = each.getClass().getDeclaredMethod("close");
                 method.invoke(each);

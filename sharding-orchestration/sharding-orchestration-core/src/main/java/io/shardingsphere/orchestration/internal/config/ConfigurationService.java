@@ -259,13 +259,11 @@ public final class ConfigurationService {
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
         try {
-            ShardingRuleConfiguration result = ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
-            Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "No available sharding rule configuration to load.");
-            return result;
+            return ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH)));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available sharding rule configuration to load.");
+            return new ShardingRuleConfiguration();
         }
     }
     
@@ -297,14 +295,12 @@ public final class ConfigurationService {
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
         try {
-            MasterSlaveRuleConfiguration result = MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(
+            return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(
                     regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
-            Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available master slave rule configuration to load.");
+            return new MasterSlaveRuleConfiguration();
         }
     }
     
@@ -357,7 +353,7 @@ public final class ConfigurationService {
     public YamlServerConfiguration loadYamlServerConfiguration() {
         try {
             YamlServerConfiguration result = ProxyConfigurationConverter.proxyServerConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH)));
-            Preconditions.checkState(!Strings.isNullOrEmpty(result.getProxyAuthority().getUsername()), "Authority configuration is invalid.");
+            Preconditions.checkState(!Strings.isNullOrEmpty(result.getAuthentication().getUsername()), "Authority configuration is invalid.");
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

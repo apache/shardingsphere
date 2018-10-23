@@ -22,11 +22,9 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
-import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
@@ -36,10 +34,9 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.ProxyTableMetaDataConnectionManager;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -66,11 +63,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
     
-    private static final ProxyContext PROXY_CONTEXT = ProxyContext.getInstance();
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final FrontendHandler frontendHandler;
-    
-    private final RuleRegistry ruleRegistry;
+    private final ShardingSchema shardingSchema;
     
     private final String sql;
     
@@ -84,15 +79,12 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
-        return ruleRegistry == null 
-                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) 
+        return shardingSchema == null
+                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR))
                 : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
-        if (routeResult.getSqlStatement() != null && routeResult.getSqlStatement() instanceof UseStatement) {
-            return handleUseStatement((UseStatement) routeResult.getSqlStatement(), frontendHandler);
-        }
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
         }
@@ -102,18 +94,18 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult);
-        if (!ruleRegistry.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
+        if (!shardingSchema.isMasterSlaveOnly() && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
             String logicTableName = sqlStatement.getTables().getSingleTableName();
             // TODO refresh table meta data by SQL parse result
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(ruleRegistry.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
-                    new ProxyTableMetaDataConnectionManager(ruleRegistry.getBackendDataSource()), PROXY_CONTEXT.getMaxConnectionsSizePerQuery());
-            ruleRegistry.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ruleRegistry.getShardingRule()));
+            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(shardingSchema.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
+                    new ProxyTableMetaDataConnectionManager(shardingSchema.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
+            shardingSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, shardingSchema.getShardingRule()));
         }
         return merge(sqlStatement);
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
-        return TransactionType.XA == ProxyContext.getInstance().getTransactionType() && SQLType.DDL == sqlType
+        return TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
     }
     
@@ -122,11 +114,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-                ruleRegistry.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, ruleRegistry.getMetaData().getTable()).merge();
-        if (mergedResult instanceof ShowDatabasesMergedResult) {
-            mergedResult = new ShowDatabasesMergedResult(PROXY_CONTEXT.getSchemaNames());
-        } else if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(ruleRegistry.getSchemaName());
+                shardingSchema.getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, shardingSchema.getMetaData().getTable()).merge();
+        if (mergedResult instanceof ShowTablesMergedResult) {
+            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(shardingSchema.getName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
@@ -149,7 +139,10 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
         for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
-            each.setName("Tables_in_" + ruleRegistry.getSchemaName());
+            if (each.getName().startsWith("Tables_in_")) {
+                each.setName("Tables_in_" + shardingSchema.getName());
+                break;
+            }
         }
     }
     

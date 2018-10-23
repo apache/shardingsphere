@@ -17,24 +17,19 @@
 
 package io.shardingsphere.orchestration.internal;
 
-import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.ListenerFactory;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.internal.state.instance.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter;
-import io.shardingsphere.orchestration.reg.newzk.NewZookeeperRegistryCenter;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +50,8 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
     
+    private final RegistryCenter regCenter;
+    
     private final boolean isOverwrite;
     
     @Getter
@@ -66,34 +63,13 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final ListenerFactory listenerManager;
     
-    private final RegistryCenter regCenter;
-    
     public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig) {
-        regCenter = createRegistryCenter(orchestrationConfig.getRegCenterConfig());
+        regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
         listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter);
-    }
-    
-    private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
-        Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        if (regCenterConfig instanceof ZookeeperConfiguration) {
-            return getZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
-        }
-        if (regCenterConfig instanceof EtcdConfiguration) {
-            return new EtcdRegistryCenter((EtcdConfiguration) regCenterConfig);
-        }
-        throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
-    }
-    
-    private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig) {
-        if (regCenterConfig.isUseNative()) {
-            return new NewZookeeperRegistryCenter(regCenterConfig);
-        } else {
-            return new ZookeeperRegistryCenter(regCenterConfig);
-        }
     }
     
     /**
@@ -104,8 +80,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param configMap config map
      * @param props sharding properties
      */
-    public void init(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-                     final Map<String, Object> configMap, final Properties props) {
+    public void init(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
@@ -144,11 +119,32 @@ public final class OrchestrationFacade implements AutoCloseable {
         listenerManager.initProxyListeners();
     }
     
+    /**
+     * Initialize for proxy orchestration.
+     *
+     *@param orchestrationType orchestration type
+     */
+    public void init(final OrchestrationType orchestrationType) {
+        switch (orchestrationType) {
+            case MASTER_SLAVE:
+                listenerManager.initMasterSlaveListeners();
+                break;
+            case SHARDING:
+                listenerManager.initShardingListeners();
+                break;
+            case PROXY:
+                listenerManager.initProxyListeners();
+                break;
+            default:
+                throw new UnsupportedOperationException(orchestrationType.name());
+        }
+    }
+    
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getValue() instanceof MasterSlaveDataSource) {
                 MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource));
+                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource.getMasterSlaveRule()));
             }
         }
     }
@@ -166,10 +162,9 @@ public final class OrchestrationFacade implements AutoCloseable {
         return result;
     }
     
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveDataSource masterSlaveDataSource) {
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveRule masterSlaveRule) {
         return new MasterSlaveRuleConfiguration(
-                masterSlaveDataSource.getMasterSlaveRule().getName(), masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName(), 
-                masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames(), masterSlaveDataSource.getMasterSlaveRule().getLoadBalanceAlgorithm());
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
     }
     
     @Override

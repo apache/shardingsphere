@@ -24,7 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         RandomGeneratorTest.class, 
-        AuthorityHandlerTest.class, 
+        AuthenticationHandlerTest.class,
         AuthPluginDataTest.class, 
         ConnectionIdGeneratorTest.class, 
         HandshakePacketTest.class, 

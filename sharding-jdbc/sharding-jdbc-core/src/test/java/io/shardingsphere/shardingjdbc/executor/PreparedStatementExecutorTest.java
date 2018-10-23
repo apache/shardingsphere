@@ -71,7 +71,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     @Test
-    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException{
+    public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getInt(1)).thenReturn(1);

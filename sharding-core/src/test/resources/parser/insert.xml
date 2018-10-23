@@ -93,8 +93,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="33" original-literals="`t_order`" />
-            <insert-values-token begin-position="84" table-name="t_order"/>
+            <table-token begin-position="33" original-literals="t_order" />
+            <insert-values-token begin-position="76" table-name="t_order"/>
         </tokens>
         <or-condition>
             <and-condition>

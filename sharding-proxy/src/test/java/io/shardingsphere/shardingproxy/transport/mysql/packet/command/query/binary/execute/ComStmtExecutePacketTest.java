@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -64,7 +64,7 @@ public final class ComStmtExecutePacketTest {
     
     @Before
     public void setUp() {
-        setProxyContextNIOConfig();
+        setNIOConfig();
     }
     
     @Before
@@ -74,10 +74,10 @@ public final class ComStmtExecutePacketTest {
     }
     
     @SneakyThrows
-    private void setProxyContextNIOConfig() {
-        Field field = ProxyContext.class.getDeclaredField("useNIO");
+    private void setNIOConfig() {
+        Field field = GlobalRegistry.class.getDeclaredField("useNIO");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), true);
+        field.set(GlobalRegistry.getInstance(), true);
     }
     
     @Test

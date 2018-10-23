@@ -27,9 +27,9 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -70,7 +70,7 @@ public final class ComStmtPreparePacketTest {
     
     @Before
     public void setUp() {
-        setProxyContextRuleRegistryMap();
+        setShardingSchemaMap();
         setFrontendHandlerSchema();
     }
     
@@ -81,15 +81,15 @@ public final class ComStmtPreparePacketTest {
     }
     
     @SneakyThrows
-    private void setProxyContextRuleRegistryMap() {
-        RuleRegistry ruleRegistry = mock(RuleRegistry.class);
+    private void setShardingSchemaMap() {
+        ShardingSchema shardingSchema = mock(ShardingSchema.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
-        when(ruleRegistry.getMetaData()).thenReturn(metaData);
-        Map<String, RuleRegistry> ruleRegistryMap = new HashMap<>();
-        ruleRegistryMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleRegistry);
-        Field field = ProxyContext.class.getDeclaredField("ruleRegistryMap");
+        when(shardingSchema.getMetaData()).thenReturn(metaData);
+        Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
+        shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
+        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), ruleRegistryMap);
+        field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
     private void setFrontendHandlerSchema() {

@@ -17,26 +17,45 @@
 
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
+import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.CollectionNode;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * Sharding or master-slave rule config representer.
+ * Default configuration representer.
  *
  * @author panjuan
  */
 public class DefaultConfigurationRepresenter extends Representer {
     
-    public DefaultConfigurationRepresenter() {
-        super();
-        this.nullRepresenter = new DefaultConfigurationRepresenter.NullRepresent();
+    @Override
+    protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
+        NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+        return isUnwantedNodeTuple(tuple.getValueNode()) ? null : tuple;
     }
     
-    private class NullRepresent implements Represent {
-        public Node representData(final Object data) {
-            return representScalar(Tag.NULL, "");
-        }
+    private boolean isUnwantedNodeTuple(final Node valueNode) {
+        return isNullNode(valueNode) || isEmptyCollectionNode(valueNode);
+    }
+    
+    private boolean isNullNode(final Node valueNode) {
+        return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private boolean isEmptyCollectionNode(final Node valueNode) {
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode) || isEmptyMappingNode(valueNode));
+    }
+    
+    private boolean isEmptySequenceNode(final Node valueNode) {
+        return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
+    }
+    
+    private boolean isEmptyMappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
     }
 }

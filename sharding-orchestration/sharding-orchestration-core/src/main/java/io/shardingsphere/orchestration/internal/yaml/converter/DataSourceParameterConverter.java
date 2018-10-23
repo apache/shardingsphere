@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.yaml.converter;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
+import io.shardingsphere.orchestration.internal.yaml.representer.DataSourceParameterRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
@@ -33,7 +33,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceParameterConverter {
     
-    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DataSourceParameterRepresenter());
     
     /**
      * Convert schema data source parameter map to Yaml string.

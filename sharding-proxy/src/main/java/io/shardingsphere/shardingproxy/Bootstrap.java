@@ -21,14 +21,15 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyConfiguration;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlConfigurationLoader;
+import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
+import io.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -57,13 +58,13 @@ public final class Bootstrap {
      * @throws IOException IO exception
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
-        ProxyConfiguration proxyConfig = new ProxyYamlConfigurationLoader().load();
+        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load();
         int port = getPort(args);
         new ProxyListenerRegister().register();
-        if (null == proxyConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(proxyConfig.getServerConfiguration(), proxyConfig.getRuleConfigurationMap(), port);
+        if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
+            startWithoutRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
         } else {
-            startWithRegistryCenter(proxyConfig.getServerConfiguration(), proxyConfig.getRuleConfigurationMap(), port);
+            startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
         }
     }
     
@@ -80,33 +81,40 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(
             final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        ProxyContext.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
+        GlobalRegistry.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         initOpenTracing();
         new ShardingProxy().start(port);
     }
     
     private static void startWithRegistryCenter(
             final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
+        
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration())) {
-            if (!ruleConfigs.isEmpty()) {
-                orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
-            }
-            ProxyContext.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
-                    orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration());
+            initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
+            GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
+                    orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
     }
     
+    private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
+        if (ruleConfigs.isEmpty()) {
+            orchestrationFacade.init(OrchestrationType.PROXY);
+        } else {
+            orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
+        }
+    }
+    
     private static void initOpenTracing() {
-        if (ProxyContext.getInstance().isOpenTracingEnable()) {
+        if (GlobalRegistry.getInstance().isOpenTracingEnable()) {
             ShardingTracer.init();
         }
     }
     
     private static YamlServerConfiguration getYamlServerConfiguration(final ProxyYamlServerConfiguration serverConfig) {
         YamlServerConfiguration result = new YamlServerConfiguration();
-        result.setProxyAuthority(serverConfig.getProxyAuthority());
+        result.setAuthentication(serverConfig.getAuthentication());
         result.setProps(serverConfig.getProps());
         return result;
     }

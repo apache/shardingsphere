@@ -51,9 +51,9 @@ import io.shardingsphere.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
+import io.shardingsphere.core.util.SQLLogger;
 import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.parsing.SPIParsingHook;
-import io.shardingsphere.core.util.SQLLogger;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -63,7 +63,7 @@ import java.util.List;
 /**
  * Sharding router with parse.
  *
- * @author zhangiang
+ * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */

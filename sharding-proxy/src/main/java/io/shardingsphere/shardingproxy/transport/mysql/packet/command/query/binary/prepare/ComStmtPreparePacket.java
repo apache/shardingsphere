@@ -23,9 +23,9 @@ import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
@@ -61,8 +61,8 @@ public final class ComStmtPreparePacket implements CommandPacket {
         this.sequenceId = sequenceId;
         this.frontendHandler = frontendHandler;
         sql = payload.readStringEOF();
-        RuleRegistry ruleRegistry = ProxyContext.getInstance().getRuleRegistry(frontendHandler.getCurrentSchema());
-        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleRegistry.getShardingRule(), ruleRegistry.getMetaData().getTable());
+        ShardingSchema shardingSchema = GlobalRegistry.getInstance().getShardingSchema(frontendHandler.getCurrentSchema());
+        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingSchema.getShardingRule(), shardingSchema.getMetaData().getTable());
     }
     
     @Override

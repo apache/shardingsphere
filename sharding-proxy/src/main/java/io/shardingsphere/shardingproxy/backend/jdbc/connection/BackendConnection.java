@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,7 +44,7 @@ public final class BackendConnection implements AutoCloseable {
     
     @Getter
     @Setter
-    private RuleRegistry ruleRegistry;
+    private ShardingSchema shardingSchema;
     
     private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
     
@@ -71,7 +71,7 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        List<Connection> result = ruleRegistry.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
+        List<Connection> result = shardingSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
         cachedConnections.addAll(result);
         return result;
     }
