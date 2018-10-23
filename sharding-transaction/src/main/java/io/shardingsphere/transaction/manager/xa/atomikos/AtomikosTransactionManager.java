@@ -26,6 +26,7 @@ import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
+import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -110,6 +111,17 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);
         result.setXaProperties(xaProperties);
+        return result;
+    }
+    
+    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
+        BasicManagedDataSource result = new BasicManagedDataSource();
+        result.setTransactionManager(USER_TRANSACTION_MANAGER);
+        result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
+        result.setXADataSource(xaDataSource.getClass().getName());
+        Properties xaProperties = getMySQLXAProperties(dataSourceParameter);
+        PropertyUtils.setProperties(xaDataSource, xaProperties);
+        result.setXaDataSourceInstance(xaDataSource);
         return result;
     }
     
