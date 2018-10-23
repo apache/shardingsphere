@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>spring-namespace-orche-example</artifactId>
-        <version>3.0.0.M5-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
     <artifactId>spring-namespace-orche-mybatis-example</artifactId>
     
