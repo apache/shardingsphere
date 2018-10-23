@@ -44,10 +44,4 @@ public final class MasterSlaveRuleConfiguration {
     private Collection<String> slaveDataSourceNames;
     
     private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
-    
-    public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
-        this.name = name;
-        this.masterDataSourceName = masterDataSourceName;
-        this.slaveDataSourceNames = slaveDataSourceNames;
-    }
 }

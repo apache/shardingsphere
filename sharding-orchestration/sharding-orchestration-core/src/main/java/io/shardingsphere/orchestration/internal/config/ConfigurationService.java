@@ -294,14 +294,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        try {
-            return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(
-                    regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return new MasterSlaveRuleConfiguration();
-        }
+        return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH)));
     }
     
     /**

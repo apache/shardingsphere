@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.api;
 
 import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -49,7 +50,8 @@ public final class MasterSlaveDataSourceFactoryTest {
         properties.setProperty("sql.show", "true");
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds")), configMap, properties), instanceOf(MasterSlaveDataSource.class));
+                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+                configMap, properties), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
     
@@ -64,7 +66,7 @@ public final class MasterSlaveDataSourceFactoryTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1")),
+                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
                 configMap, properties), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
     }
