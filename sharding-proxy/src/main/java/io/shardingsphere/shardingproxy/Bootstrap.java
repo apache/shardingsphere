@@ -99,10 +99,10 @@ public final class Bootstrap {
     }
     
     private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
-        if (!ruleConfigs.isEmpty()) {
-            orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
-        } else {
+        if (ruleConfigs.isEmpty()) {
             orchestrationFacade.init(OrchestrationType.PROXY);
+        } else {
+            orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         }
     }
     
