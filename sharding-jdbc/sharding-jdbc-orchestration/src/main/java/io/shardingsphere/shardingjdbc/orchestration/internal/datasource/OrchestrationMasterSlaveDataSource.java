@@ -25,6 +25,7 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
@@ -58,7 +59,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         dataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadMasterSlaveConfigMap(),
                 new ShardingProperties(configService.loadMasterSlaveProperties()));
-        initOrchestrationFacade(dataSource);
+        getOrchestrationFacade().init(OrchestrationType.MASTER_SLAVE);
     }
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {

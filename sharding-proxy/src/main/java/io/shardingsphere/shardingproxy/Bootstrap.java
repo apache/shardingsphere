@@ -21,6 +21,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
+import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import io.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
@@ -87,14 +88,21 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(
             final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
+        
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration())) {
-            if (!ruleConfigs.isEmpty()) {
-                orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
-            }
+            initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
+        }
+    }
+    
+    private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
+        if (ruleConfigs.isEmpty()) {
+            orchestrationFacade.init(OrchestrationType.PROXY);
+        } else {
+            orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         }
     }
     
