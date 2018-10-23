@@ -137,6 +137,10 @@ public final class OrchestrationFacade implements AutoCloseable {
         listenerManager.initProxyListeners();
     }
     
+    /**
+     * Initialize for proxy orchestration.
+     *
+     */
     public void init() {
         listenerManager.initProxyListeners();
     }
