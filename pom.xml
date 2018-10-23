@@ -608,6 +608,8 @@
                             <exclude>authpb/*.class</exclude>
                             <exclude>mvccpb/*.class</exclude>
                             <exclude>etcdserverpb/*.class</exclude>
+                            <exclude>io/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
+                            <exclude>io/shardingsphere/orchestration/reg/etcd/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
