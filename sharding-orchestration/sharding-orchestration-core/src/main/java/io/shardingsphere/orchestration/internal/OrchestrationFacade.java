@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal;
 
 import com.google.common.base.Preconditions;
+import com.sun.istack.internal.Nullable;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -143,7 +144,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      *
      *@param orchestrationType orchestration type
      */
-    public void init(final OrchestrationType orchestrationType) {
+    public void init(final @Nullable OrchestrationType orchestrationType) {
         switch (orchestrationType) {
             case MASTER_SLAVE:
                 listenerManager.initMasterSlaveListeners();
