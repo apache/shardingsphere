@@ -50,11 +50,6 @@ public final class XATransactionManagerSPILoader {
         if (xaTransactionManagers.hasNext()) {
             log.warn("There are more than one transaction mangers existing, chosen first one by default.");
         }
-        try {
-            result.init();
-        } catch (Exception e) {
-            log.warn("Can not initialize " + result);
-        }
         return result;
     }
     
