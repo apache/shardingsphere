@@ -141,6 +141,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
+     *@param orchestrationType orchestration type
      */
     public void init(final OrchestrationType orchestrationType) {
         switch (orchestrationType) {
