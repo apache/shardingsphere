@@ -137,6 +137,10 @@ public final class OrchestrationFacade implements AutoCloseable {
         listenerManager.initProxyListeners();
     }
     
+    public void init() {
+        listenerManager.initProxyListeners();
+    }
+    
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getValue() instanceof MasterSlaveDataSource) {
