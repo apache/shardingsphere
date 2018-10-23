@@ -101,7 +101,7 @@ public final class Bootstrap {
         if (!ruleConfigs.isEmpty()) {
             orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         } else {
-            orchestrationFacade.init();
+            orchestrationFacade.init(null);
         }
     }
     
