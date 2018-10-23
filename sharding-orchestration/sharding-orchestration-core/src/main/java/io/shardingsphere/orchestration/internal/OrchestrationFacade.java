@@ -24,6 +24,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.ListenerFactory;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
@@ -141,8 +142,18 @@ public final class OrchestrationFacade implements AutoCloseable {
      * Initialize for proxy orchestration.
      *
      */
-    public void init() {
-        listenerManager.initProxyListeners();
+    public void init(final OrchestrationType orchestrationType) {
+        switch (orchestrationType) {
+            case MASTER_SLAVE:
+                listenerManager.initMasterSlaveListeners();
+                break;
+            case SHARDING:
+                listenerManager.initShardingListeners();
+                break;
+            default:
+                listenerManager.initProxyListeners();
+                break;
+        }
     }
     
     private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
