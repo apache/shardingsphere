@@ -20,19 +20,19 @@ weight = 1
 
 ### Zookeeper
 
-1. Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照配置规则进行注册中心的配置，即可使用。
+1. Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照[配置规则](/cn/manual/sharding-proxy/configuration/)进行注册中心的配置，即可使用。
 
 ### Etcd
 
 1. 将Sharding-Proxy的lib目录下的`sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}`文件删除。
 1. Maven仓库下载Etcd解决方案的[最新稳定版](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/3.0.0/sharding-orchestration-reg-etcd-3.0.0.jar)jar包。
 1. 将下载下来的jar包放到Sharding-Proxy的lib目录下。
-1. 按照配置规则进行注册中心的配置，即可使用。
+1. 按照[配置规则](/cn/manual/sharding-proxy/configuration/)进行注册中心的配置，即可使用。
 
 ### 其他第三方注册中心
 
 1. 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。
-1. 按照配置规则进行注册中心的配置，即可使用。
+1. 按照[配置规则](/cn/manual/sharding-proxy/configuration/)进行注册中心的配置，即可使用。
 
 ## 注意事项
 
