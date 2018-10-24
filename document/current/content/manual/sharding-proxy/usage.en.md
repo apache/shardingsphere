@@ -14,7 +14,13 @@ weight = 1
 1. Connect to it by means of any client tools, e.g. `mysql -u root -h 127.0.0.1 -P 3307`
 
 
+## Registry usage
 
+## Zookeeper
+
+## Etcd
+
+## Others
 
 ## Notices
 
