@@ -20,9 +20,11 @@ If you want to use the Orchestration for Sharding-Proxy, the registry is necessa
 
 ## Zookeeper
 
-
+1. Sharding-Proxy provides Zookeeper registry by default. You only need to configure the registry for use.
 
 ## Etcd
+
+
 
 ## Others
 
