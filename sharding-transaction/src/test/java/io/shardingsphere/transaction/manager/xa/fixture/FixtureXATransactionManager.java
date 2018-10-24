@@ -26,15 +26,6 @@ import javax.sql.XADataSource;
 import javax.transaction.Status;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    public void destroy() {
-
-    }
     
     @Override
     public void begin(final XATransactionEvent transactionEvent) {

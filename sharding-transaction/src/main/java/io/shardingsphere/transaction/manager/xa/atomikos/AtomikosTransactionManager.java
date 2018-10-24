@@ -21,12 +21,19 @@ import com.atomikos.beans.PropertyUtils;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.manager.xa.AbstractXATransactionManager;
+import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.UserTransaction;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -34,7 +41,7 @@ import java.util.Properties;
  *
  * @author zhaojun
  */
-public final class AtomikosTransactionManager extends AbstractXATransactionManager {
+public final class AtomikosTransactionManager implements XATransactionManager {
     
     private static final UserTransactionManager USER_TRANSACTION_MANAGER = new UserTransactionManager();
     
@@ -47,10 +54,41 @@ public final class AtomikosTransactionManager extends AbstractXATransactionManag
     public void destroy() {
         USER_TRANSACTION_MANAGER.close();
     }
-
+    
     @Override
-    public UserTransaction getUserTransaction() {
-        return USER_TRANSACTION_MANAGER;
+    public void begin(final XATransactionEvent event) throws SQLException {
+        try {
+            USER_TRANSACTION_MANAGER.begin();
+        } catch (final SystemException | NotSupportedException ex) {
+            throw new SQLException(ex);
+        }
+    }
+    
+    @Override
+    public void commit(final XATransactionEvent event) throws SQLException {
+        try {
+            USER_TRANSACTION_MANAGER.commit();
+        } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
+            throw new SQLException(ex);
+        }
+    }
+    
+    @Override
+    public void rollback(final XATransactionEvent event) throws SQLException {
+        try {
+            USER_TRANSACTION_MANAGER.rollback();
+        } catch (final SystemException ex) {
+            throw new SQLException(ex);
+        }
+    }
+    
+    @Override
+    public int getStatus() throws SQLException {
+        try {
+            return USER_TRANSACTION_MANAGER.getStatus();
+        } catch (final SystemException ex) {
+            throw new SQLException(ex);
+        }
     }
     
     @Override
