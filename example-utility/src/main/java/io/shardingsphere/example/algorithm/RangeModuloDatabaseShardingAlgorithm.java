@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.example.jdbc.fixture.algorithm;
+package io.shardingsphere.example.algorithm;
 
 import com.google.common.collect.Range;
 import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
