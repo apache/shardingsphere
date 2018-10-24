@@ -96,4 +96,4 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 ## 规划线路图
 
-![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_cn_v2.png)
+![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_cn_v4.png)
