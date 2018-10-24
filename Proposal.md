@@ -234,6 +234,8 @@ Travis
 
 ### Champion
 
+- Roman Shaposhnik (rvs at apache dot org)
+
 ### Mentors
 
 - Craig L Russell (clr at apache dot org)
