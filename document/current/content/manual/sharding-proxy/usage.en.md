@@ -20,11 +20,14 @@ If you want to use the Orchestration for Sharding-Proxy, the registry is necessa
 
 ## Zookeeper
 
-1. Sharding-Proxy provides Zookeeper registry by default. You only need to configure the registry for use.
+1. Sharding-Proxy provides Zookeeper registry by default. You only need to configure the registry.
 
 ## Etcd
 
-
+1. Delete ` Sharding - orchestration - reg - zookeeper curator - ${Sharding - sphere. Version} ` in the lib directory of Sharding-Proxy.
+1. Download Etcd solution from Maven repository, here is [the latest version] (http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/3.0.0/sharding-orchestration-reg-etcd-3.0.0.jar).
+1. Put the downloaded jar package in the lib directory of Sharding-Proxy.
+1. Configure the registry according to the configuration rules.
 
 ## Others
 
