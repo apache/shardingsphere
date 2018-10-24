@@ -16,25 +16,10 @@ When you need to use the Sharding-Sphere built-in registry implementation soluti
 
 Sharding-Sphere adopts [Apache Curator](http://curator.apache.org/) as Zookeeper implementation solution. Please use Zookeeper 3.4.6 and above, and refer to [official website](https://zookeeper.apache.org/).
 
-### Maven
-
-```xml
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
-```
-
 ## Etcd
 
 Sharding-Sphere adopts [Etcd](https://coreos.com/etcd/) as Etcd implementation solution. Please use Etcd V3 and above, and refer to [official website](https://coreos.com/etcd/docs/latest).
 
-### Maven
-```xml
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
-```
+## Others
+
+Please implement the logic coding using SPI.
