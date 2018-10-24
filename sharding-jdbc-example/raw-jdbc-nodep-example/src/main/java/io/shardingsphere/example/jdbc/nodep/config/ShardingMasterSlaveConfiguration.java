@@ -23,7 +23,7 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.example.algorithm.ModuloShardingDatabaseAlgorithm;
+import io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
@@ -45,7 +45,7 @@ public final class ShardingMasterSlaveConfiguration implements ExampleConfigurat
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());

@@ -22,7 +22,7 @@ import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorith
 
 import java.util.Collection;
 
-public class ModuloShardingDatabaseAlgorithm implements PreciseShardingAlgorithm<Integer> {
+public class PreciseModuloShardingDatabaseAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
     @Override
     public String doSharding(final Collection<String> databaseNames, final PreciseShardingValue<Integer> shardingValue) {

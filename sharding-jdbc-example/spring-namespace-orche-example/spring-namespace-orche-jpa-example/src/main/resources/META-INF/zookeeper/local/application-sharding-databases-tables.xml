@@ -52,7 +52,7 @@
         <property name="maxActive" value="16"/>
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.ModuloShardingDatabaseAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm" />
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
