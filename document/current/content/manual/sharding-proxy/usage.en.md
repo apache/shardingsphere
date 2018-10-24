@@ -24,14 +24,14 @@ If you want to use the orchestration for Sharding-Proxy, the registry is necessa
 
 ## Etcd
 
-1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}` in the lib directory of Sharding-Proxy.
-1. Download Etcd solution jar from Maven repository, here is [the latest version](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/3.0.0/sharding-orchestration-reg-etcd-3.0.0.jar).
+1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` in the lib directory of Sharding-Proxy.
+1. Download Etcd solution jar from Maven repository, here is [the latest version](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/).
 1. Put the downloaded jar package in the lib directory of Sharding-Proxy.
 1. Configure the registry according to [the registry configuration](/en/manual/sharding-proxy/configuration/).
 
 ## Others
 
-1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}` in the lib directory of Sharding-Proxy.
+1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` in the lib directory of Sharding-Proxy.
 1. Implement the logic coding using SPI to create jar package, and put it in the lib directory of Sharding-Proxy.
 1. Configure the registry according to [the registry configuration](/en/manual/sharding-proxy/configuration/).
 
