@@ -99,13 +99,13 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertGetStatusWithoutException() throws SQLException, SystemException {
+    public void assertGetStatusWithoutException() throws Exception {
         when(userTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
         assertThat(new AtomikosTransactionManager().getStatus(), is(Status.STATUS_ACTIVE));
     }
     
     @Test(expected = SQLException.class)
-    public void assertGetStatusWithException() throws SQLException, SystemException {
+    public void assertGetStatusWithException() throws Exception {
         when(userTransactionManager.getStatus()).thenThrow(SystemException.class);
         new AtomikosTransactionManager().getStatus();
     }
