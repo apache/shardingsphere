@@ -16,7 +16,7 @@ weight = 1
 
 ## Registry usage
 
-If you want to use the orchestration for Sharding-Proxy, the registry is necessary. Please refer to [Supported Registry Centers](/cn/features/orchestration/supported-registry-repo/) for more detail.
+If you want to use the orchestration for Sharding-Proxy, the registry is necessary. Please refer to [Supported Registry Centers](/en/features/orchestration/supported-registry-repo/) for more detail.
 
 ## Zookeeper
 
