@@ -22,7 +22,6 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
@@ -44,12 +43,11 @@ import java.util.Properties;
 public final class AtomikosTransactionManager implements XATransactionManager {
     
     private static final UserTransactionManager USER_TRANSACTION_MANAGER = new UserTransactionManager();
-    
-    @Override
-    public void init() throws Exception {
+
+    public AtomikosTransactionManager() throws Exception {
         USER_TRANSACTION_MANAGER.init();
     }
-
+    
     @Override
     public void destroy() {
         USER_TRANSACTION_MANAGER.close();

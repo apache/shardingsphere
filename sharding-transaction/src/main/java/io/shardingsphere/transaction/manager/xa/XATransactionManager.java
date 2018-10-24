@@ -32,11 +32,6 @@ import javax.sql.XADataSource;
 public interface XATransactionManager extends ShardingTransactionManager<XATransactionEvent> {
 
     /**
-     * initialize the transaction manager
-     */
-    void init() throws Exception;
-
-    /**
      * destroy the transaction manager and could be helpful with shutdown gracefully
      */
     void destroy();
