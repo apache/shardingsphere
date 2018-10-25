@@ -41,14 +41,14 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemeName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:mysql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:mysql:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
     public MySQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
-            hostName = matcher.group(1);
-            port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
-            schemeName = matcher.group(3);
+            hostName = matcher.group(2);
+            port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
+            schemeName = matcher.group(4);
         } else {
             throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
@@ -57,5 +57,14 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
         return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
+    }
+    
+    public static void main(String[] args) {
+//        String url = "jdbc:mysql:aurora://YYY-aurora.ggg.com:3306/SomeDBName";
+        String url = "jdbc:mysql://YYY-aurora.ggg.com:3306/SomeDBName";
+        MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(url);
+        System.out.println(metaData.getHostName());
+        System.out.println(metaData.getPort());
+        System.out.println(metaData.getSchemeName());
     }
 }
