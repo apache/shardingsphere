@@ -101,8 +101,6 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         switch (dataSourceParameter.getProxyDatasourceType()) {
             case DBCP2:
                 return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
-            case ATOMIKOS:
-                return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
             default:
                 return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
         }
