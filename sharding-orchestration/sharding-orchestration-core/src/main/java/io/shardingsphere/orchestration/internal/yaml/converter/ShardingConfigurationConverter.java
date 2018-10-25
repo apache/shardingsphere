@@ -25,7 +25,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 /**
@@ -47,8 +46,7 @@ public final class ShardingConfigurationConverter {
      */
     public static String shardingRuleConfigToYaml(final ShardingRuleConfiguration shardingRuleConfiguration) {
         Yaml yaml = new Yaml(new ShardingConfigurationRepresenter());
-        YamlShardingRuleConfiguration yamlShardingRuleConfiguration = new YamlShardingRuleConfiguration(shardingRuleConfiguration, new HashMap<String, Object>(), new Properties());
-        return yaml.dumpAsMap(yamlShardingRuleConfiguration);
+        return yaml.dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfiguration));
     }
     
     /**

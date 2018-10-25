@@ -51,7 +51,7 @@ public final class Bootstrap {
     private static final int DEFAULT_PORT = 3307;
     
     /**
-     * Main Entrance.
+     * Main entrance.
      *
      * @param args startup arguments
      * @throws InterruptedException interrupted exception
@@ -98,7 +98,8 @@ public final class Bootstrap {
         }
     }
     
-    private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
+    private static void initOrchestrationFacade(
+            final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (ruleConfigs.isEmpty()) {
             orchestrationFacade.init(OrchestrationType.PROXY);
         } else {

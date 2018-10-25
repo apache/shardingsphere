@@ -25,7 +25,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -48,9 +47,7 @@ public class MasterSlaveConfigurationConverter {
      */
     public static String masterSlaveRuleConfigToYaml(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
         Yaml yaml = new Yaml(new MasterSlaveConfigurationRepresenter());
-        YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration =
-                new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration, new HashMap<String, Object>(), new Properties());
-        return yaml.dumpAsMap(yamlMasterSlaveRuleConfiguration);
+        return yaml.dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration));
     }
     
     /**

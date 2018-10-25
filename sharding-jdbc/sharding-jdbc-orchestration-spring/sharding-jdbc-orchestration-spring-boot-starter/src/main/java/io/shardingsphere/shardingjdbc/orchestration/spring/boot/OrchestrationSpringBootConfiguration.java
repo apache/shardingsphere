@@ -28,6 +28,8 @@ import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootConfigMapConfigurationProperties;
+import io.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -53,7 +55,10 @@ import java.util.Map;
  * @author panjuan
  */
 @Configuration
-@EnableConfigurationProperties({SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class})
+@EnableConfigurationProperties({
+        SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
+        SpringBootConfigMapConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class, 
+        SpringBootOrchestrationConfigurationProperties.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
@@ -63,6 +68,12 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Autowired
     private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    
+    @Autowired
+    private SpringBootConfigMapConfigurationProperties configMapProperties;
+    
+    @Autowired
+    private SpringBootPropertiesConfigurationProperties propProperties;
     
     @Autowired
     private SpringBootOrchestrationConfigurationProperties orchestrationProperties;
@@ -118,7 +129,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
             return new OrchestrationShardingDataSource(orchestrationProperties.getOrchestrationConfiguration());
         }
         ShardingDataSource shardingDataSource = new ShardingDataSource(
-                dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), shardingProperties.getConfigMap(), shardingProperties.getProps());
+                dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), configMapProperties.getConfigMap(), propProperties.getProps());
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationProperties.getOrchestrationConfiguration());
     }
     
@@ -127,7 +138,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
             return new OrchestrationMasterSlaveDataSource(orchestrationProperties.getOrchestrationConfiguration());
         }
         MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
+                dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), configMapProperties.getConfigMap(), propProperties.getProps());
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationProperties.getOrchestrationConfiguration());
     }
     
