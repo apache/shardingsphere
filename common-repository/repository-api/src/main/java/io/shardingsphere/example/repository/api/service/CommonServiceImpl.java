@@ -74,11 +74,14 @@ public abstract class CommonServiceImpl implements CommonService {
     @Override
     public void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        System.out.println(getOrderRepository().selectAll());
+        for (Object each : getOrderRepository().selectAll()) {
+            System.out.println(each);
+        }
         System.out.println("---------------------------- Print OrderItem Data -------------------");
-        System.out.println(getOrderItemRepository().selectAll());
+        for (Object each : getOrderItemRepository().selectAll()) {
+            System.out.println(each);
+        }
     }
-    
     protected abstract OrderRepository getOrderRepository();
     
     protected abstract OrderItemRepository getOrderItemRepository();
