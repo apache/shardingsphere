@@ -58,13 +58,4 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
         return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();
     }
-    
-    public static void main(String[] args) {
-//        String url = "jdbc:mysql:aurora://YYY-aurora.ggg.com:3306/SomeDBName";
-        String url = "jdbc:mysql://YYY-aurora.ggg.com:3306/SomeDBName";
-        MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(url);
-        System.out.println(metaData.getHostName());
-        System.out.println(metaData.getPort());
-        System.out.println(metaData.getSchemeName());
-    }
 }
