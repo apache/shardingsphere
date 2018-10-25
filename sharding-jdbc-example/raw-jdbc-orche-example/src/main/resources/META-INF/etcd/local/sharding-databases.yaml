@@ -29,8 +29,8 @@ shardingRule:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
 
-  props:
-    sql.show: true
+props:
+  sql.show: true
 
 orchestration:
   name: demo_yaml_ds_sharding
