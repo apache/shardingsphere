@@ -24,12 +24,14 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.SneakyThrows;
+import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -115,9 +117,11 @@ public final class AtomikosTransactionManagerTest {
         XADataSource xaDataSource = mock(XADataSource.class);
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setMaximumPoolSize(10);
-        AtomikosDataSourceBean actual = (AtomikosDataSourceBean) new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
-        assertAtomikosDataSourceBean(xaDataSource, actual);
-        assertThat(actual.getXaProperties(), is(new Properties()));
+        DataSource actual = new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        assertDataSourceBean(xaDataSource, actual);
+        if (actual instanceof AtomikosDataSourceBean) {
+            assertThat(((AtomikosDataSourceBean) actual).getXaProperties(), is(new Properties()));
+        }
     }
     
     @Test
@@ -128,30 +132,41 @@ public final class AtomikosTransactionManagerTest {
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setUrl("db:url");
         dataSourceParameter.setMaximumPoolSize(10);
-        AtomikosDataSourceBean actual = (AtomikosDataSourceBean) new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
-        assertAtomikosDataSourceBean(xaDataSource, actual);
-        assertThat(actual.getXaProperties().getProperty("user"), is("root"));
-        assertThat(actual.getXaProperties().getProperty("password"), is("root"));
-        assertThat(actual.getXaProperties().getProperty("URL"), is("db:url"));
-        assertThat(actual.getXaProperties().getProperty("pinGlobalTxToPhysicalConnection"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("autoReconnect"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("prepStmtCacheSize"), is("250"));
-        assertThat(actual.getXaProperties().getProperty("prepStmtCacheSqlLimit"), is("2048"));
-        assertThat(actual.getXaProperties().getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("cacheResultSetMetadata"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getXaProperties().getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
-        assertThat(actual.getXaProperties().getProperty("netTimeoutForStreamingResults"), is("0"));
+        DataSource actual = new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        assertDataSourceBean(xaDataSource, actual);
+        if (actual instanceof AtomikosDataSourceBean) {
+            AtomikosDataSourceBean atomikosDataSourceBean = (AtomikosDataSourceBean) actual;
+            assertThat(atomikosDataSourceBean.getXaDataSource(), is(xaDataSource));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("user"), is("root"));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("password"), is("root"));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("URL"), is("db:url"));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("pinGlobalTxToPhysicalConnection"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("autoReconnect"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("prepStmtCacheSize"), is("250"));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("prepStmtCacheSqlLimit"), is("2048"));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("cacheResultSetMetadata"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
+            assertThat(atomikosDataSourceBean.getXaProperties().getProperty("netTimeoutForStreamingResults"), is("0"));
+        }
     }
     
-    private void assertAtomikosDataSourceBean(final XADataSource xaDataSource, final AtomikosDataSourceBean actual) {
-        assertThat(actual.getUniqueResourceName(), is("ds_name"));
-        assertThat(actual.getMaxPoolSize(), is(10));
-        assertThat(actual.getTestQuery(), is("SELECT 1"));
-        assertThat(actual.getXaDataSource(), is(xaDataSource));
+    private void assertDataSourceBean(final XADataSource xaDataSource, final DataSource actual) {
+        if (actual instanceof AtomikosDataSourceBean) {
+            AtomikosDataSourceBean atomikosDataSourceBean = (AtomikosDataSourceBean) actual;
+            assertThat(atomikosDataSourceBean.getUniqueResourceName(), is("ds_name"));
+            assertThat(atomikosDataSourceBean.getMaxPoolSize(), is(10));
+            assertThat(atomikosDataSourceBean.getTestQuery(), is("SELECT 1"));
+        }
+        if (actual instanceof BasicManagedDataSource) {
+            BasicManagedDataSource basicManagedDataSource = (BasicManagedDataSource) actual;
+            assertThat(basicManagedDataSource.getMaxTotal(), is(10));
+            assertThat(basicManagedDataSource.getXaDataSourceInstance(), is(xaDataSource));
+        }
     }
 }

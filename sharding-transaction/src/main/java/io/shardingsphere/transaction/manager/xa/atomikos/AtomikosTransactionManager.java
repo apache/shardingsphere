@@ -26,7 +26,7 @@ import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
+import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -93,7 +93,8 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
-        return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
+        return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
+//        return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
     }
     
     private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
@@ -119,7 +120,13 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         result.setTransactionManager(USER_TRANSACTION_MANAGER);
         result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
         result.setXADataSource(xaDataSource.getClass().getName());
-        Properties xaProperties = getMySQLXAProperties(dataSourceParameter);
+        Properties xaProperties;
+        // TODO zhaojun: generic data source properties, can use MySQL only for now
+        if (xaDataSource.getClass().getName().equals("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource")) {
+            xaProperties = getMySQLXAProperties(dataSourceParameter);
+        } else {
+            xaProperties = new Properties();
+        }
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSourceInstance(xaDataSource);
         return result;
