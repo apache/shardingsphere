@@ -30,9 +30,9 @@ import javax.sql.XADataSource;
  * @author zhangliang
  */
 public interface XATransactionManager extends ShardingTransactionManager<XATransactionEvent> {
-
+    
     /**
-     * destroy the transaction manager and could be helpful with shutdown gracefully
+     * destroy the transaction manager and could be helpful with shutdown gracefully.
      */
     void destroy();
 
