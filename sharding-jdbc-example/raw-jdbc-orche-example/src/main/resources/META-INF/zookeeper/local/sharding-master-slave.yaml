@@ -63,9 +63,9 @@ shardingRule:
       masterDataSourceName: ds_master_1
       slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
       loadBalanceAlgorithmType: ROUND_ROBIN
-  
-  props:
-    sql.show: true
+
+props:
+  sql.show: true
 
 orchestration:
   name: demo_yaml_ds_sharding_ms

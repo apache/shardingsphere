@@ -20,5 +20,5 @@ masterSlaveRule:
   masterDataSourceName: ds_master
   slaveDataSourceNames: [ds_slave_0, ds_slave_1]
 
-  props:
-    sql.show: true
+props:
+  sql.show: true
