@@ -28,11 +28,11 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.spi.xa.XABackendDataSourceFactory;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,9 +94,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     public final ShardingConnection getConnection() {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
-                synchronized (xaDataSourceMap) {
-                    // TODO post createXaDatasource event, then return DataSource
-                    xaDataSourceMap = new HashMap<>();
+                synchronized (this) {
+                    xaDataSourceMap = new XABackendDataSourceFactory().build(dataSourceMap);
                 }
             }
             return new ShardingConnection(xaDataSourceMap, shardingContext);
