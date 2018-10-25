@@ -60,7 +60,7 @@
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <hikari-cp.version>2.4.11</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-        <tomcat.commons-dbcp2.version>2.2.0</tomcat.commons-dbcp2.version>
+        <tomcat.commons-dbcp2.version>9.0.11</tomcat.commons-dbcp2.version>
         <commons-pool.version>1.6</commons-pool.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
