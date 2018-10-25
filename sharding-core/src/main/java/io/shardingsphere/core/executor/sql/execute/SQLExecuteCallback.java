@@ -74,7 +74,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
-        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getDatabaseMetaData().getURL());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         for (List<Object> each : parameterSets) {
             // TODO remove after BED removed
