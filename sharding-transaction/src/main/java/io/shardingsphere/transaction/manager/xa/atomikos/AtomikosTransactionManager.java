@@ -93,8 +93,14 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
-        return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
-//        return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
+        switch (dataSourceParameter.getProxyDatasourceType()) {
+            case DBCP2:
+                return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
+            case ATOMIKOS:
+                return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
+            default:
+                return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
+        }
     }
     
     private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
