@@ -106,7 +106,7 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
     }
     
     private List<Order> selectAllRange() {
-        String sql = "SELECT * FROM t_order WHERE user_id BETWEEN 6 AND 10";
+        String sql = "SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 300000000000000000";
         return getOrders(sql);
     }
     
