@@ -100,8 +100,25 @@ public final class JDBCOrderItemRepositoryImpl implements OrderItemRepository {
     
     @Override
     public List<OrderItem> selectAll(boolean isRangeSharding) {
-        List<OrderItem> result = new LinkedList<>();
+        if (isRangeSharding) {
+            return selectAllRange();
+        } else {
+            return selectAllPrecise();
+        }
+    }
+    
+    private List<OrderItem> selectAllRange() {
+        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.user_id BETWEEN 1 AND 5";
+        return getOrderItems(sql);
+    }
+    
+    private List<OrderItem> selectAllPrecise() {
         String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
+        return getOrderItems(sql);
+    }
+    
+    private List<OrderItem> getOrderItems(String sql) {
+        List<OrderItem> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
