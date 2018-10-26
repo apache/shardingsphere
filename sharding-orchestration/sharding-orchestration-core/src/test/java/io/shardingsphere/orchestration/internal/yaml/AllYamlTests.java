@@ -15,18 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal;
+package io.shardingsphere.orchestration.internal.yaml;
 
-import io.shardingsphere.orchestration.internal.config.ConfigurationNodeTest;
-import io.shardingsphere.orchestration.internal.yaml.AllYamlTests;
+import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenterTest;
+import io.shardingsphere.orchestration.internal.yaml.representer.SimpleTypeRepresenterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllYamlTests.class, 
-        ConfigurationNodeTest.class
+        DefaultRepresenterTest.class,
+        SimpleTypeRepresenterTest.class
 })
-public final class AllInternalTests {
+public final class AllYamlTests {
 }
