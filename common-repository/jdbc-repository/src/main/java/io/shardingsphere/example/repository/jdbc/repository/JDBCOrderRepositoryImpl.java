@@ -97,7 +97,7 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
     }
     
     @Override
-    public List<Order> selectAll() {
+    public List<Order> selectAll(boolean isRangeSharding) {
         List<Order> result = new LinkedList<>();
         String sql = "SELECT * FROM t_order";
         try (Connection connection = dataSource.getConnection();

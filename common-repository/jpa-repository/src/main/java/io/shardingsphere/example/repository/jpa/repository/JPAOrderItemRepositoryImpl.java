@@ -64,7 +64,7 @@ public class JPAOrderItemRepositoryImpl implements OrderItemRepository {
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<OrderItem> selectAll() {
+    public List<OrderItem> selectAll(boolean isRangeSharding) {
         return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId").getResultList();
     }
 }

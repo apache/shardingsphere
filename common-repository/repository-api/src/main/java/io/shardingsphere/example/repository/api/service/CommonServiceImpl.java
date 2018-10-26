@@ -74,11 +74,11 @@ public abstract class CommonServiceImpl implements CommonService {
     @Override
     public void printData(boolean isRangeSharding) {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : getOrderRepository().selectAll()) {
+        for (Object each : getOrderRepository().selectAll(isRangeSharding)) {
             System.out.println(each);
         }
         System.out.println("---------------------------- Print OrderItem Data -------------------");
-        for (Object each : getOrderItemRepository().selectAll()) {
+        for (Object each : getOrderItemRepository().selectAll(isRangeSharding)) {
             System.out.println(each);
         }
     }
