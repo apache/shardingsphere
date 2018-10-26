@@ -18,15 +18,12 @@
 package io.shardingsphere.transaction.manager.xa.atomikos;
 
 import com.atomikos.beans.PropertyException;
-import com.atomikos.beans.PropertyUtils;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.google.common.base.Optional;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.manager.xa.XADataSourceWrapper;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -36,7 +33,6 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Atomikos XA transaction manager.
@@ -46,7 +42,9 @@ import java.util.Properties;
 public final class AtomikosTransactionManager implements XATransactionManager {
     
     private static final UserTransactionManager USER_TRANSACTION_MANAGER = new UserTransactionManager();
-
+    
+    private final XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(USER_TRANSACTION_MANAGER);
+    
     public AtomikosTransactionManager() {
         try {
             USER_TRANSACTION_MANAGER.init();
@@ -97,68 +95,11 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
-        switch (dataSourceParameter.getProxyDatasourceType()) {
-            case DBCP2:
-                return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
-            default:
-                return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
+    public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+        try {
+            return xaDataSourceWrapper.wrap(xaDataSource, dataSourceName, dataSourceParameter);
+        } catch (PropertyException ex) {
+            throw new ShardingException("Failed to wrap XADataSource to transactional datasource pool", ex);
         }
-    }
-    
-    private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
-        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
-        result.setUniqueResourceName(dataSourceName);
-        result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
-        result.setTestQuery("SELECT 1");
-        Properties xaProperties;
-        // TODO zhaojun: generic data source properties, can use MySQL only for now
-        if (xaDataSource.getClass().getName().equals("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource")) {
-            xaProperties = getMySQLXAProperties(dataSourceParameter);
-        } else {
-            xaProperties = new Properties();
-        }
-        PropertyUtils.setProperties(xaDataSource, xaProperties);
-        result.setXaDataSource(xaDataSource);
-        result.setXaProperties(xaProperties);
-        return result;
-    }
-    
-    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
-        BasicManagedDataSource result = new BasicManagedDataSource();
-        result.setTransactionManager(USER_TRANSACTION_MANAGER);
-        result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
-        result.setXADataSource(xaDataSource.getClass().getName());
-        Properties xaProperties;
-        // TODO zhaojun: generic data source properties, can use MySQL only for now
-        if (xaDataSource.getClass().getName().equals("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource")) {
-            xaProperties = getMySQLXAProperties(dataSourceParameter);
-        } else {
-            xaProperties = new Properties();
-        }
-        PropertyUtils.setProperties(xaDataSource, xaProperties);
-        result.setXaDataSourceInstance(xaDataSource);
-        return result;
-    }
-    
-    private Properties getMySQLXAProperties(final DataSourceParameter dataSourceParameter) {
-        Properties result = new Properties();
-        result.setProperty("user", dataSourceParameter.getUsername());
-        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("URL", dataSourceParameter.getUrl());
-        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
-        result.setProperty("autoReconnect", Boolean.TRUE.toString());
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "250");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
-        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
-        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        result.setProperty("netTimeoutForStreamingResults", "0");
-        return result;
     }
 }
