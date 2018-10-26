@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 
 public class XABackendDataSourceConvertTest {
     
-    private XABackendDataSourceFactory xaBackendDataSourceFactory = new XABackendDataSourceFactory();
+    private XABackendDataSourceFactory xaBackendDataSourceFactory = XABackendDataSourceFactory.getInstance();
     
     @Test
     public void assertGetXATransactionalDataSourceSuccess() {

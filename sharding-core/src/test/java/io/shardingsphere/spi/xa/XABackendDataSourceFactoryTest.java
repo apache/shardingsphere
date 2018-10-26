@@ -30,7 +30,7 @@ import static org.hamcrest.core.Is.is;
 
 public class XABackendDataSourceFactoryTest {
     
-    private XABackendDataSourceFactory xaBackendDataSourceFactory = new XABackendDataSourceFactory();
+    private XABackendDataSourceFactory xaBackendDataSourceFactory = XABackendDataSourceFactory.getInstance();
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
     

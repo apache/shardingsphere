@@ -37,9 +37,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XABackendDataSourceFactory implements BackendDataSourceFactory {
     
-    private static final XABackendDataSourceFactory INSTANCE = new XABackendDataSourceFactory();
-    
     private static final NewInstanceServiceLoader<BackendDataSourceFactory> SERVICE_LOADER = NewInstanceServiceLoader.load(BackendDataSourceFactory.class);
+    
+    private static final XABackendDataSourceFactory INSTANCE = new XABackendDataSourceFactory();
     
     private final Collection<BackendDataSourceFactory> backendDataSourceFactories = SERVICE_LOADER.newServiceInstances();
     
