@@ -23,6 +23,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 
 import javax.sql.DataSource;
@@ -35,7 +36,7 @@ import java.util.Properties;
  *
  * @author zhaojun
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class XADataSourceWrapper {
     
     private final TransactionManager transactionManager;

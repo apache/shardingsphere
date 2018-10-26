@@ -19,6 +19,8 @@ package io.shardingsphere.transaction.manager.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.sql.XADataSource;
 
@@ -27,6 +29,7 @@ import javax.sql.XADataSource;
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class XADatasourceFactory {
     
     private static final String XA_MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";

@@ -20,6 +20,8 @@ package io.shardingsphere.spi.xa;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -32,6 +34,7 @@ import java.util.Map;
  * @author zhaojun
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XABackendDataSourceFactory implements BackendDataSourceFactory {
     
     private static final NewInstanceServiceLoader<BackendDataSourceFactory> SERVICE_LOADER = NewInstanceServiceLoader.load(BackendDataSourceFactory.class);
