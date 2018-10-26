@@ -19,6 +19,9 @@ package io.shardingsphere.example.jdbc.orche.config.local;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
+import io.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -45,6 +48,7 @@ public final class LocalShardingTablesConfigurationPrecise implements ExampleCon
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", registryCenterConfig, true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
     }
