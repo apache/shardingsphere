@@ -28,8 +28,8 @@ import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.representer.DataSourceRepresenter;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
+import io.shardingsphere.orchestration.internal.yaml.representer.SimpleTypeRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
 
@@ -94,8 +94,7 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source configuration for orchestration.");
-            regCenter.persist(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), 
-                    new Yaml(new DataSourceRepresenter(dataSourceMap.values().iterator().next().getClass())).dumpAsMap(dataSourceMap));
+            regCenter.persist(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new SimpleTypeRepresenter("loginTimeout")).dumpAsMap(dataSourceMap));
         }
     }
     

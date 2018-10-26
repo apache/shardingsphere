@@ -27,7 +27,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * Default representer.
+ * Default yaml representer.
  *
  * @author panjuan
  * @author zhangliang
