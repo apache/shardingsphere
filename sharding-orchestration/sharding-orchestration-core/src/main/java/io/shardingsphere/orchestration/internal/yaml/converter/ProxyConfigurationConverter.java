@@ -19,7 +19,7 @@ package io.shardingsphere.orchestration.internal.yaml.converter;
 
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
+import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
@@ -34,7 +34,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyConfigurationConverter {
     
-    private static final Yaml YAML = new Yaml(new DefaultConfigurationRepresenter());
+    private static final Yaml YAML = new Yaml(new DefaultRepresenter());
     
     /**
      * Convert schema sharding rule configuration map to yaml string.

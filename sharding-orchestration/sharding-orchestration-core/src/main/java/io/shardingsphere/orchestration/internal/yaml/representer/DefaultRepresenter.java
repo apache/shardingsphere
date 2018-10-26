@@ -27,11 +27,11 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * Default configuration representer.
+ * Default representer.
  *
  * @author panjuan
  */
-public class DefaultConfigurationRepresenter extends Representer {
+public class DefaultRepresenter extends Representer {
     
     @Override
     protected final NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {

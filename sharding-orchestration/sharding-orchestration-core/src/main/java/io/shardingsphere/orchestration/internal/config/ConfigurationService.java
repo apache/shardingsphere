@@ -25,14 +25,15 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.converter.CommonConfigurationConverter;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceParameterConverter;
-import io.shardingsphere.orchestration.internal.yaml.converter.MasterSlaveConfigurationConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.ProxyConfigurationConverter;
-import io.shardingsphere.orchestration.internal.yaml.converter.ShardingConfigurationConverter;
+import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -106,14 +107,14 @@ public final class ConfigurationService {
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasRuleConfiguration()) {
             Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "No available sharding rule configuration for orchestration.");
-            regCenter.persist(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), ShardingConfigurationConverter.shardingRuleConfigToYaml(shardingRuleConfig));
+            regCenter.persist(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig)));
         }
     }
     
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasRuleConfiguration()) {
             Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(), "No available master slave configuration for orchestration.");
-            regCenter.persist(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), MasterSlaveConfigurationConverter.masterSlaveRuleConfigToYaml(masterSlaveRuleConfig));
+            regCenter.persist(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig)));
         }
     }
     
@@ -123,7 +124,7 @@ public final class ConfigurationService {
     
     private void persistConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !hasConfigMap()) {
-            regCenter.persist(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), CommonConfigurationConverter.configMapToYaml(configMap));
+            regCenter.persist(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new DefaultRepresenter()).dumpAsMap(configMap));
         }
     }
     
@@ -133,7 +134,7 @@ public final class ConfigurationService {
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasProperties()) {
-            regCenter.persist(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), CommonConfigurationConverter.propertiesToYaml(props));
+            regCenter.persist(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new DefaultRepresenter()).dumpAsMap(props));
         }
     }
     
@@ -239,7 +240,8 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return ShardingConfigurationConverter.shardingRuleConfigFromYaml(regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        return new Yaml(new DefaultRepresenter()).loadAs(
+                regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)), YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
     }
     
     /**
@@ -248,7 +250,8 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return MasterSlaveConfigurationConverter.masterSlaveRuleConfigFromYaml(regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        return new Yaml(new DefaultRepresenter()).loadAs(
+                regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)), YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
     }
     
     /**
@@ -259,7 +262,7 @@ public final class ConfigurationService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadConfigMap() {
         String data = regCenter.getDirectly(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : CommonConfigurationConverter.configMapFromYaml(data);
+        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : (Map<String, Object>) new Yaml(new DefaultRepresenter()).load(data);
     }
     
     /**
@@ -269,7 +272,7 @@ public final class ConfigurationService {
      */
     public Properties loadProperties() {
         String data = regCenter.getDirectly(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new Properties() : CommonConfigurationConverter.propertiesFromYaml(data);
+        return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml(new DefaultRepresenter()).loadAs(data, Properties.class);
     }
     
     /**
