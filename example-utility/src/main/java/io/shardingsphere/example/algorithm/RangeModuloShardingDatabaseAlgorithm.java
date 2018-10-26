@@ -29,19 +29,19 @@ public class RangeModuloShardingDatabaseAlgorithm implements RangeShardingAlgori
     @Override
     public Collection<String> doSharding(final Collection<String> databaseNames, final RangeShardingValue<Integer> shardingValue) {
         LinkedHashSet<String> result = new LinkedHashSet<>();
-        if (Range.closed(1, 10).encloses(shardingValue.getValueRange())) {
+        if (Range.closed(1, 5).encloses(shardingValue.getValueRange())) {
             for (String each : databaseNames) {
                 if (each.endsWith("0")) {
                     result.add(each);
                 }
             }
-        } else if (Range.closed(11, 20).encloses(shardingValue.getValueRange())) {
+        } else if (Range.closed(6, 10).encloses(shardingValue.getValueRange())) {
             for (String each : databaseNames) {
                 if (each.endsWith("1")) {
                     result.add(each);
                 }
             }
-        } else if (Range.closed(1, 20).encloses(shardingValue.getValueRange())) {
+        } else if (Range.closed(1, 10).encloses(shardingValue.getValueRange())) {
             result.addAll(databaseNames);
         } else {
             throw new UnsupportedOperationException();
