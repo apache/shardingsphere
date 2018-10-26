@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import io.shardingsphere.core.constant.ShardingConstant;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +28,22 @@ public final class ConfigurationNodeTest {
     private final ConfigurationNode configurationNode = new ConfigurationNode("test");
     
     @Test
-    public void assertIsShardingRuleNodePath() {
-        assertThat(configurationNode.getFullPath(ConfigurationNode.RULE_NODE_PATH), is("/test/config/%s/rule"));
+    public void assertGetDataSourcePath() {
+        assertThat(configurationNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/sharding_db/datasource"));
+    }
+    
+    @Test
+    public void assertGetRulePath() {
+        assertThat(configurationNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/sharding_db/rule"));
+    }
+    
+    @Test
+    public void assertGetConfigMapPath() {
+        assertThat(configurationNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/sharding_db/configmap"));
+    }
+    
+    @Test
+    public void assertGetPropsPath() {
+        assertThat(configurationNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/sharding_db/props"));
     }
 }

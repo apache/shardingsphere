@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -28,29 +29,70 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ConfigurationNode {
     
-    public static final String ROOT = "config";
-    
+    @Deprecated
     public static final String PROXY_NODE = "proxy";
     
-    public static final String DATA_SOURCE_NODE_PATH = ROOT + "/%s/datasource";
+    private static final String ROOT = "config";
     
-    public static final String RULE_NODE_PATH = ROOT + "/%s/rule";
+    private static final String DATA_SOURCE_NODE = "datasource";
     
-    public static final String CONFIG_MAP_NODE_PATH = ROOT + "/%s/configmap";
+    private static final String RULE_NODE = "rule";
     
-    public static final String PROPS_NODE_PATH = ROOT + "/%s/props";
+    private static final String CONFIG_MAP_NODE = "configmap";
     
-    public static final String SERVER_NODE_PATH = ROOT + "/%s/server";
+    private static final String PROPS_NODE = "props";
+    
+    @Deprecated
+    private static final String SERVER_NODE = "server";
     
     private final String name;
     
     /**
-     * Get node full path.
+     * Get data source path.
      *
-     * @param node node name
-     * @return node full path
+     * @param schemaName schema name
+     * @return data source path
      */
-    public String getFullPath(final String node) {
-        return String.format("/%s/%s", name, node);
+    public String getDataSourcePath(final String schemaName) {
+        return getFullPath(schemaName, DATA_SOURCE_NODE);
+    }
+    
+    /**
+     * Get rule path.
+     * 
+     * @param schemaName schema name
+     * @return rule path
+     */
+    public String getRulePath(final String schemaName) {
+        return getFullPath(schemaName, RULE_NODE);
+    }
+    
+    /**
+     * Get config map path.
+     *
+     * @param schemaName schema name
+     * @return config map path
+     */
+    public String getConfigMapPath(final String schemaName) {
+        return getFullPath(schemaName, CONFIG_MAP_NODE);
+    }
+    
+    /**
+     * Get props path.
+     *
+     * @param schemaName schema name
+     * @return props path
+     */
+    public String getPropsPath(final String schemaName) {
+        return getFullPath(schemaName, PROPS_NODE);
+    }
+    
+    @Deprecated
+    public String getServerPath(final String schemaName) {
+        return getFullPath(schemaName, SERVER_NODE);
+    }
+    
+    private String getFullPath(final String schemaName, final String node) {
+        return Joiner.on("/").join("", name, ROOT, schemaName, node);
     }
 }

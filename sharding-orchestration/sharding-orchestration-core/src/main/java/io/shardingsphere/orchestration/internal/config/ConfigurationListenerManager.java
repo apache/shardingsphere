@@ -57,14 +57,14 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        watchSharding(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchSharding(String.format(ConfigurationNode.RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchSharding(String.format(ConfigurationNode.PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        // TODO watch config map
     }
     
-    private void watchSharding(final String node) {
-        String cachePath = configNode.getFullPath(node);
-        regCenter.watch(cachePath, new EventListener() {
+    private void watchSharding(final String path) {
+        regCenter.watch(path, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -80,14 +80,14 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        watchMasterSlave(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchMasterSlave(String.format(ConfigurationNode.RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchMasterSlave(String.format(ConfigurationNode.PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        // TODO watch config map
     }
     
-    private void watchMasterSlave(final String node) {
-        String cachePath = configNode.getFullPath(node);
-        regCenter.watch(cachePath, new EventListener() {
+    private void watchMasterSlave(final String path) {
+        regCenter.watch(path, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -102,14 +102,13 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        watchProxy(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ConfigurationNode.PROXY_NODE));
-        watchProxy(String.format(ConfigurationNode.RULE_NODE_PATH, ConfigurationNode.PROXY_NODE));
-        watchProxy(String.format(ConfigurationNode.SERVER_NODE_PATH, ConfigurationNode.PROXY_NODE));
+        watchProxy(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE));
+        watchProxy(configNode.getRulePath(ConfigurationNode.PROXY_NODE));
+        watchProxy(configNode.getPropsPath(ConfigurationNode.PROXY_NODE));
     }
     
-    private void watchProxy(final String node) {
-        String cachePath = configNode.getFullPath(node);
-        regCenter.watch(cachePath, new EventListener() {
+    private void watchProxy(final String path) {
+        regCenter.watch(path, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
