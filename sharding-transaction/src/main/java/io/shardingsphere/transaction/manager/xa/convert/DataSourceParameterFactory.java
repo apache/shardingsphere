@@ -39,6 +39,7 @@ public class DataSourceParameterFactory {
             case HIKARI:
             case DRUID:
             case DBCP:
+            case DBCP_TOMCAT:
                 return new DBCPConverter(dataSource).convertTo();
             default:
                 return null;

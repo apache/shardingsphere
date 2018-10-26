@@ -37,6 +37,9 @@ public final class DBCPConverter implements Converter {
     @Override
     public DataSourceParameter convertTo() {
         DataSourceParameter result = new DataSourceParameter();
+        result.setUsername((String) dataSourceReflector.invoke("getUsername"));
+        result.setUrl((String) dataSourceReflector.invoke("getUrl"));
+        result.setPassword((String) dataSourceReflector.invoke("getPassword"));
         result.setMaximumPoolSize((Integer) dataSourceReflector.invoke("getMaxTotal"));
         return result;
     }
