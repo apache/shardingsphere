@@ -17,13 +17,35 @@
 
 package io.shardingsphere.transaction.manager.xa.convert;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * DataSource pool type enum.
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 public enum PoolType {
     
-    HIKARI, DRUID, DBCP
+    HIKARI("com.zaxxer.hikari.HikariDataSource"),
+    DRUID(""),
+    DBCP("org.apache.commons.dbcp2.BasicDataSource");
+    
+    private final String className;
+    
+    /**
+     * Find pool type by class name.
+     *
+     * @param className class name
+     * @return pool type
+     */
+    public static PoolType find(final String className) {
+        for (PoolType each : PoolType.values()) {
+            if (className.equals(each.className)) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException(String.format("Cannot find pool type of [%s]", className));
+    }
 }
 

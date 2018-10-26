@@ -28,8 +28,6 @@ import javax.sql.DataSource;
  */
 public class DataSourceParameterFactory {
     
-    private final static String BasicDataSource = "org.apache.commons.dbcp2.BasicDataSource";
-    
     /**
      * Create datasource parameter.
      *
@@ -37,7 +35,7 @@ public class DataSourceParameterFactory {
      * @return datasource parameter
      */
     public static DataSourceParameter build(final DataSource dataSource) {
-        switch (getPoolType(dataSource)) {
+        switch (PoolType.find(dataSource.getClass().getName())) {
             case HIKARI:
             case DRUID:
             case DBCP:
@@ -45,10 +43,5 @@ public class DataSourceParameterFactory {
             default:
                 return null;
         }
-    }
-    
-    private static PoolType getPoolType(final DataSource dataSource) {
-        
-        return null;
     }
 }
