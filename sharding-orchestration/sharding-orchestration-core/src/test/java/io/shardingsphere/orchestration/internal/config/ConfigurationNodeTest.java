@@ -28,6 +28,6 @@ public final class ConfigurationNodeTest {
     
     @Test
     public void assertIsShardingRuleNodePath() {
-        assertThat(configurationNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), is("/test/config/%s/rule"));
+        assertThat(configurationNode.getFullPath(ConfigurationNode.RULE_NODE_PATH), is("/test/config/%s/rule"));
     }
 }

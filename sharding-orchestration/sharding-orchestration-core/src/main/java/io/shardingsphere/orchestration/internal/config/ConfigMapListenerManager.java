@@ -46,7 +46,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        String cachePath = configNode.getFullPath(String.format(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        String cachePath = configNode.getFullPath(String.format(ConfigurationNode.CONFIG_MAP_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
@@ -61,7 +61,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        String cachePath = configNode.getFullPath(String.format(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        String cachePath = configNode.getFullPath(String.format(ConfigurationNode.CONFIG_MAP_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
         regCenter.watch(cachePath, new EventListener() {
             
             @Override

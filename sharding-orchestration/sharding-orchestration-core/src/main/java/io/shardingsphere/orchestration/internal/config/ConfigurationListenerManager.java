@@ -58,8 +58,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
     @Override
     public void watchSharding() {
         watchSharding(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchSharding(String.format(ConfigurationNode.SHARDING_RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchSharding(String.format(ConfigurationNode.SHARDING_PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(String.format(ConfigurationNode.RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(String.format(ConfigurationNode.PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     private void watchSharding(final String node) {
@@ -81,8 +81,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
     @Override
     public void watchMasterSlave() {
         watchMasterSlave(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchMasterSlave(String.format(ConfigurationNode.SHARDING_RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchMasterSlave(String.format(ConfigurationNode.SHARDING_PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(String.format(ConfigurationNode.RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(String.format(ConfigurationNode.PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     private void watchMasterSlave(final String node) {
@@ -102,9 +102,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        watchProxy(ConfigurationNode.PROXY_DATA_SOURCE_NODE_PATH);
-        watchProxy(ConfigurationNode.PROXY_RULE_NODE_PATH);
-        watchProxy(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH);
+        watchProxy(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ConfigurationNode.PROXY_NODE));
+        watchProxy(String.format(ConfigurationNode.RULE_NODE_PATH, ConfigurationNode.PROXY_NODE));
+        watchProxy(String.format(ConfigurationNode.SERVER_NODE_PATH, ConfigurationNode.PROXY_NODE));
     }
     
     private void watchProxy(final String node) {
