@@ -19,7 +19,7 @@ package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfiguration;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfiguration;
@@ -51,7 +51,7 @@ public class JavaConfigurationExample {
         ExampleConfiguration exampleConfig;
         switch (type) {
             case SHARDING_DATABASES:
-                exampleConfig = new ShardingDatabasesConfiguration();
+                exampleConfig = new ShardingDatabasesConfigurationPrecise();
                 break;
             case SHARDING_TABLES:
                 exampleConfig = new ShardingTablesConfiguration();
