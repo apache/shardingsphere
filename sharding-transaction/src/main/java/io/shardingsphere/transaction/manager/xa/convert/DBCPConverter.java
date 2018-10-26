@@ -18,18 +18,36 @@
 package io.shardingsphere.transaction.manager.xa.convert;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Convert implement of Commons DBCP.
  *
  * @author zhaojun
  */
-public final class DBCPConverter implements Convertor {
+@AllArgsConstructor
+public final class DBCPConverter implements Converter {
+    
+    private final DataSource dataSource;
     
     @Override
-    public DataSourceParameter convertTo(DataSource dataSource) {
+    public DataSourceParameter convertTo() {
+        DataSourceParameter result = new DataSourceParameter();
+        Class clazz = dataSource.getClass();
+        result.setMaximumPoolSize((Integer) reflectInvoke(clazz, "getMaxTotal"));
+        
         return null;
+    }
+    
+    @SneakyThrows
+    private Object reflectInvoke(final Class clazz, final String methodName) {
+        Method method = clazz.getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        return method.invoke(dataSource);
     }
 }

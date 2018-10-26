@@ -19,21 +19,18 @@ package io.shardingsphere.transaction.manager.xa.convert;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 
-import javax.sql.DataSource;
-
 /**
  * Convert interface.
  *
  * @author zhaojun
  */
-public interface Convertor {
+public interface Converter {
     
     /**
      * Get the DataSource pool property, then convert to datasource parameter.
      *
-     * @param dataSource datasource
      * @return dataSource parameter
      */
-    DataSourceParameter convertTo(DataSource dataSource);
+    DataSourceParameter convertTo();
 }
 
