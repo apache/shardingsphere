@@ -31,11 +31,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalShardingTablesConfiguration implements ExampleConfiguration {
+public final class LocalShardingTablesConfigurationPrecise implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
-    public LocalShardingTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
+    public LocalShardingTablesConfigurationPrecise(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
     }
     
