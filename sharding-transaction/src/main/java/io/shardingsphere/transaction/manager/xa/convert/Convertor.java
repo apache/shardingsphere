@@ -15,13 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.xa;
+package io.shardingsphere.transaction.manager.xa.convert;
+
+import io.shardingsphere.core.rule.DataSourceParameter;
+
+import javax.sql.DataSource;
 
 /**
- * Get property of common datasource pool then convert to {@code DataSourceParameter}.
+ * Convert interface.
  *
  * @author zhaojun
  */
-public class DataSourceParameterFactory {
-
+public interface Convertor {
+    
+    /**
+     * Get the DataSource pool property, then convert to datasource parameter.
+     *
+     * @param dataSource datasource
+     * @return dataSource parameter
+     */
+    DataSourceParameter convertTo(DataSource dataSource);
 }
+

@@ -15,15 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.xa;
+package io.shardingsphere.transaction.manager.xa.convert;
+
+import io.shardingsphere.core.rule.DataSourceParameter;
 
 /**
- * DataSource pool type enum.
+ * Get property of common datasource pool then convert to {@code DataSourceParameter}.
  *
  * @author zhaojun
  */
-public enum PoolType {
+public class DataSourceParameterFactory {
     
-    HIKARI, DRUID, DBCP
+    /**
+     * Create datasource parameter.
+     *
+     * @param poolType pool type
+     * @return datasource parameter
+     */
+    public static DataSourceParameter build(final PoolType poolType) {
+        
+        switch (poolType) {
+            case HIKARI:
+            case DRUID:
+            default:
+                return null;
+        }
+    }
 }
-
