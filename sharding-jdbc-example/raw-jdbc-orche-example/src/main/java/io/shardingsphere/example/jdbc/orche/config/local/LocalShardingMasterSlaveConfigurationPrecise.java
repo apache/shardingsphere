@@ -38,11 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalShardingMasterSlaveConfiguration implements ExampleConfiguration {
+public final class LocalShardingMasterSlaveConfigurationPrecise implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
-    public LocalShardingMasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
+    public LocalShardingMasterSlaveConfigurationPrecise(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
     }
     
