@@ -34,11 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
+public final class LocalShardingDatabasesAndTablesConfigurationPrecise implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
-    public LocalShardingDatabasesAndTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
+    public LocalShardingDatabasesAndTablesConfigurationPrecise(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
     }
     
