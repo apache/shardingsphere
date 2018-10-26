@@ -17,13 +17,13 @@ weight = 4
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use zookeeper, please use the artifactId below.-->
+<!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 
-<!--If you want to use etcd, please use the artifactId below.-->
+<!--若使用etcd, 请下面Maven坐标-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
@@ -77,14 +77,14 @@ orchestration:
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use zookeeper, please use the artifactId below.-->
+<!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use etcd, please use the artifactId below.-->
+<!--若使用etcd, 请加入下面Maven坐标-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
@@ -100,14 +100,14 @@ orchestration:
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use zookeeper, please use the artifactId below.-->
+<!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
-<!--If you want to use etcd, please use the artifactId below.-->
+<!--若使用etcd, 请加入下面Maven坐标-->
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
