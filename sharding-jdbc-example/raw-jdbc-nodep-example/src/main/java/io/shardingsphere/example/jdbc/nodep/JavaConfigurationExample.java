@@ -46,11 +46,11 @@ public class JavaConfigurationExample {
 //    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
-//    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
+//    private static boolean IS_RANGE_SHARDING = true;
+    private static boolean IS_RANGE_SHARDING = false;
     
     public static void main(final String[] args) throws SQLException {
-        process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
+        process(IS_RANGE_SHARDING ? getDataSourceRange() : getDataSourcePrecise());
     }
     
     private static DataSource getDataSourcePrecise() throws SQLException {
@@ -104,7 +104,7 @@ public class JavaConfigurationExample {
     private static void process(final DataSource dataSource) {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        commonService.processSuccess();
+        commonService.processSuccess(IS_RANGE_SHARDING);
         commonService.cleanEnvironment();
     }
     
