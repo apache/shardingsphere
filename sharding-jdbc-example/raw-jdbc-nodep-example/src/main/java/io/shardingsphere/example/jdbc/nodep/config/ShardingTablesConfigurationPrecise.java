@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingTablesConfiguration implements ExampleConfiguration {
+public final class ShardingTablesConfigurationPrecise implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {

@@ -22,7 +22,7 @@ import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -54,7 +54,7 @@ public class JavaConfigurationExample {
                 exampleConfig = new ShardingDatabasesConfigurationPrecise();
                 break;
             case SHARDING_TABLES:
-                exampleConfig = new ShardingTablesConfiguration();
+                exampleConfig = new ShardingTablesConfigurationPrecise();
                 break;
             case SHARDING_DATABASES_AND_TABLES:
                 exampleConfig = new ShardingDatabasesAndTablesConfigurationPrecise();
