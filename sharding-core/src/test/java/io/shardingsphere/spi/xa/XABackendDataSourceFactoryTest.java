@@ -18,6 +18,7 @@
 package io.shardingsphere.spi.xa;
 
 
+import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -35,7 +36,7 @@ public class XABackendDataSourceFactoryTest {
     
     @Test
     public void createBackendDatasourceSuccess() {
-        Map<String, DataSource> backendDatasourceMap = xaBackendDataSourceFactory.build(dataSourceMap, );
+        Map<String, DataSource> backendDatasourceMap = xaBackendDataSourceFactory.build(dataSourceMap, DatabaseType.MySQL);
         assertThat(backendDatasourceMap.size(), is(2));
     }
     
