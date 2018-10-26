@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.yaml.converter;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
-import io.shardingsphere.orchestration.internal.yaml.representer.MasterSlaveConfigurationRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
@@ -42,8 +41,7 @@ public class MasterSlaveConfigurationConverter {
      * @return master slave rule configuration string
      */
     public static String masterSlaveRuleConfigToYaml(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        Yaml yaml = new Yaml(new MasterSlaveConfigurationRepresenter());
-        return yaml.dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration));
+        return YAML.dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration));
     }
     
     /**

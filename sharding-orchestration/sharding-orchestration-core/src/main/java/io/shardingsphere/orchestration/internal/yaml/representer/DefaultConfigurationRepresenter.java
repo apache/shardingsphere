@@ -34,7 +34,7 @@ import org.yaml.snakeyaml.representer.Representer;
 public class DefaultConfigurationRepresenter extends Representer {
     
     @Override
-    protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
+    protected final NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         return isUnwantedNodeTuple(tuple.getValueNode()) ? null : tuple;
     }

@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.yaml.converter;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultConfigurationRepresenter;
-import io.shardingsphere.orchestration.internal.yaml.representer.ShardingConfigurationRepresenter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
@@ -38,12 +37,11 @@ public final class ShardingConfigurationConverter {
     /**
      * Convert sharding rule configuration to yaml string.
      *
-     * @param shardingRuleConfiguration sharding rule configuration
+     * @param shardingRuleConfig sharding rule configuration
      * @return sharding rule configuration string
      */
-    public static String shardingRuleConfigToYaml(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        Yaml yaml = new Yaml(new ShardingConfigurationRepresenter());
-        return yaml.dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfiguration));
+    public static String shardingRuleConfigToYaml(final ShardingRuleConfiguration shardingRuleConfig) {
+        return YAML.dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig));
     }
     
     /**
