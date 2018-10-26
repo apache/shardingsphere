@@ -17,6 +17,7 @@
 
 package io.shardingsphere.spi.xa;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +39,10 @@ public final class XABackendDataSourceFactory implements BackendDataSourceFactor
     private final Collection<BackendDataSourceFactory> backendDataSourceFactories = SERVICE_LOADER.newServiceInstances();
     
     @Override
-    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap) {
+    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, DatabaseType databaseType) {
         if (backendDataSourceFactories.isEmpty()) {
             throw new ShardingException("Please make XA DatasourceFactory SPI available.");
         }
-        return backendDataSourceFactories.iterator().next().build(dataSourceMap);
+        return backendDataSourceFactories.iterator().next().build(dataSourceMap, databaseType);
     }
 }

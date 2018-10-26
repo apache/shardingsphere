@@ -18,6 +18,7 @@
 package io.shardingsphere.spi.xa;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.shardingsphere.core.constant.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import java.util.Map;
 public final class FixedBackendDataSourceFactory implements BackendDataSourceFactory {
     
     @Override
-    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap) {
+    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds1", new HikariDataSource());
         result.put("ds2", new HikariDataSource());

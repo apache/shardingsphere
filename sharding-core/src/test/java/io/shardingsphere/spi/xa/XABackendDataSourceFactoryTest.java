@@ -35,7 +35,7 @@ public class XABackendDataSourceFactoryTest {
     
     @Test
     public void createBackendDatasourceSuccess() {
-        Map<String, DataSource> backendDatasourceMap = xaBackendDataSourceFactory.build(dataSourceMap);
+        Map<String, DataSource> backendDatasourceMap = xaBackendDataSourceFactory.build(dataSourceMap, );
         assertThat(backendDatasourceMap.size(), is(2));
     }
     

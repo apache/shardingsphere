@@ -95,7 +95,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
                 synchronized (this) {
-                    xaDataSourceMap = new XABackendDataSourceFactory().build(dataSourceMap);
+                    xaDataSourceMap = new XABackendDataSourceFactory().build(dataSourceMap, super.getDatabaseType());
                 }
             }
             return new ShardingConnection(xaDataSourceMap, shardingContext);

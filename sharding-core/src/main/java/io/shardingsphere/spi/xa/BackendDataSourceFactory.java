@@ -17,6 +17,8 @@
 
 package io.shardingsphere.spi.xa;
 
+import io.shardingsphere.core.constant.DatabaseType;
+
 import javax.sql.DataSource;
 import java.util.Map;
 
@@ -31,8 +33,9 @@ public interface BackendDataSourceFactory {
      * Build backend datasource by datasource map.
      *
      * @param dataSourceMap datasource map
+     * @param databaseType
      * @return backend datasource map
      */
-    Map<String, DataSource> build(Map<String, DataSource> dataSourceMap);
+    Map<String, DataSource> build(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
 }
 
