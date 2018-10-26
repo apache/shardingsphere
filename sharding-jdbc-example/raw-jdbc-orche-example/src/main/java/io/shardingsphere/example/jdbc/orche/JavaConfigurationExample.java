@@ -25,10 +25,10 @@ import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingDatabasesC
 import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingMasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingTablesConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfigurationPrecise;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -70,20 +70,20 @@ public class JavaConfigurationExample {
         RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
         switch (shardingType) {
             case SHARDING_DATABASES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfiguration(registryCenterConfig);
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfigurationPrecise(registryCenterConfig);
                 break;
             case SHARDING_TABLES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfiguration(registryCenterConfig);
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfigurationPrecise(registryCenterConfig);
                 break;
             case SHARDING_DATABASES_AND_TABLES:
                 exampleConfig = loadConfigFromRegCenter
-                        ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfiguration(registryCenterConfig);
+                        ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfigurationPrecise(registryCenterConfig);
                 break;
             case MASTER_SLAVE:
                 exampleConfig = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
                 break;
             case SHARDING_MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfiguration(registryCenterConfig);
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfigurationPrecise(registryCenterConfig);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
