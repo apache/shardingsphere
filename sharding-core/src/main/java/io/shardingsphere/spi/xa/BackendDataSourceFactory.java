@@ -15,36 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.spi.xa;
 
-import io.shardingsphere.core.constant.transaction.ProxyDatasourceType;
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingsphere.core.constant.DatabaseType;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Data source parameters.
+ * Backend datasource Factory.
  *
- * @author zhangyonglun
+ * @author zhaojun
  */
-@Getter
-@Setter
-public final class DataSourceParameter {
+public interface BackendDataSourceFactory {
     
-    private ProxyDatasourceType proxyDatasourceType = ProxyDatasourceType.ATOMIKOS;
-    
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private boolean autoCommit;
-    
-    private long connectionTimeout;
-    
-    private long idleTimeout;
-    
-    private long maxLifetime;
-    
-    private int maximumPoolSize;
+    /**
+     * Build backend datasource by datasource map.
+     *
+     * @param dataSourceMap datasource map
+     * @param databaseType
+     * @return backend datasource map
+     */
+    Map<String, DataSource> build(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
 }
+

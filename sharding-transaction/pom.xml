@@ -35,6 +35,12 @@
             <artifactId>transactions-jdbc</artifactId>
         </dependency>
 
+        <!-- using ManagedDatasource to integrate with transaction manager -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-dbcp</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

@@ -1,1 +1,2 @@
-io.shardingsphere.transaction.manager.xa.fixture.FixtureXATransactionManager
+io.shardingsphere.transaction.manager.xa.atomikos.AtomikosTransactionManager
+

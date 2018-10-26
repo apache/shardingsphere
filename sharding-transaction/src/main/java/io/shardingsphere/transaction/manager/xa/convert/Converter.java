@@ -15,36 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.transaction.manager.xa.convert;
 
-import io.shardingsphere.core.constant.transaction.ProxyDatasourceType;
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
 /**
- * Data source parameters.
+ * Convert interface.
  *
- * @author zhangyonglun
+ * @author zhaojun
  */
-@Getter
-@Setter
-public final class DataSourceParameter {
+public interface Converter {
     
-    private ProxyDatasourceType proxyDatasourceType = ProxyDatasourceType.ATOMIKOS;
-    
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private boolean autoCommit;
-    
-    private long connectionTimeout;
-    
-    private long idleTimeout;
-    
-    private long maxLifetime;
-    
-    private int maximumPoolSize;
+    /**
+     * Get the DataSource pool property, then convert to datasource parameter.
+     *
+     * @return dataSource parameter
+     */
+    DataSourceParameter convertTo();
 }
+

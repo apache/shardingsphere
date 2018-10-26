@@ -42,21 +42,23 @@ public final class XATransactionManagerSPILoader {
     }
     
     private XATransactionManager load() {
-        XATransactionManager xaTransactionManager = null;
+        XATransactionManager result = null;
         try {
             Iterator<XATransactionManager> xaTransactionManagers = ServiceLoader.load(XATransactionManager.class).iterator();
             if (xaTransactionManagers.hasNext()) {
-                xaTransactionManager = xaTransactionManagers.next();
+                result = xaTransactionManagers.next();
             } else {
-                xaTransactionManager =  new AtomikosTransactionManager();
+                result = new AtomikosTransactionManager();
             }
             if (xaTransactionManagers.hasNext()) {
                 log.warn("There are more than one transaction mangers existing, chosen first one by default.");
             }
-        } catch (Exception e) {
-            log.warn("Can not initialize the xaTransaction manager failed with " + e);
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Can not initialize the xaTransaction manager failed with " + ex);
         }
-        return xaTransactionManager;
+        return result;
     }
     
     /**

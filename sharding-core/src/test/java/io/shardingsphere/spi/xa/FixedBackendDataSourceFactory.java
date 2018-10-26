@@ -15,18 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.xa;
+package io.shardingsphere.spi.xa;
 
-import io.shardingsphere.transaction.manager.xa.atomikos.AtomikosTransactionManager;
-import org.junit.Test;
+import com.zaxxer.hikari.HikariDataSource;
+import io.shardingsphere.core.constant.DatabaseType;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class XATransactionManagerSPILoaderTest {
+public final class FixedBackendDataSourceFactory implements BackendDataSourceFactory {
     
-    @Test
-    public void assertGerInstanceWithSPI() {
-        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
+    @Override
+    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, DatabaseType databaseType) {
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds1", new HikariDataSource());
+        result.put("ds2", new HikariDataSource());
+        return result;
     }
 }

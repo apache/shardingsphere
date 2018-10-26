@@ -15,36 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
-
-import io.shardingsphere.core.constant.transaction.ProxyDatasourceType;
-import lombok.Getter;
-import lombok.Setter;
+package io.shardingsphere.core.constant.transaction;
 
 /**
- * Data source parameters.
+ * Proxy datasource type which support XA transaction manager.
  *
- * @author zhangyonglun
+ * @author zhaojun
  */
-@Getter
-@Setter
-public final class DataSourceParameter {
+public enum ProxyDatasourceType {
     
-    private ProxyDatasourceType proxyDatasourceType = ProxyDatasourceType.ATOMIKOS;
-    
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private boolean autoCommit;
-    
-    private long connectionTimeout;
-    
-    private long idleTimeout;
-    
-    private long maxLifetime;
-    
-    private int maximumPoolSize;
+    ATOMIKOS, DBCP2
 }
