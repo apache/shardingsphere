@@ -19,10 +19,14 @@ package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -42,12 +46,14 @@ public class JavaConfigurationExample {
 //    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static boolean isRangeSharding = true;
+    private static boolean isRangeSharding = false;
     
     public static void main(final String[] args) throws SQLException {
-        process(getDataSource());
+        process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
     }
     
-    private static DataSource getDataSource() throws SQLException {
+    private static DataSource getDataSourcePrecise() throws SQLException {
         ExampleConfiguration exampleConfig;
         switch (type) {
             case SHARDING_DATABASES:
@@ -64,6 +70,30 @@ public class JavaConfigurationExample {
                 break;
             case SHARDING_MASTER_SLAVE:
                 exampleConfig = new ShardingMasterSlaveConfigurationPrecise();
+                break;
+            default:
+                throw new UnsupportedOperationException(type.name());
+        }
+        return exampleConfig.getDataSource();
+    }
+    
+    private static DataSource getDataSourceRange() throws SQLException {
+        ExampleConfiguration exampleConfig;
+        switch (type) {
+            case SHARDING_DATABASES:
+                exampleConfig = new ShardingDatabasesConfigurationRange();
+                break;
+            case SHARDING_TABLES:
+                exampleConfig = new ShardingTablesConfigurationRange();
+                break;
+            case SHARDING_DATABASES_AND_TABLES:
+                exampleConfig = new ShardingDatabasesAndTablesConfigurationRange();
+                break;
+            case MASTER_SLAVE:
+                exampleConfig = new MasterSlaveConfiguration();
+                break;
+            case SHARDING_MASTER_SLAVE:
+                exampleConfig = new ShardingMasterSlaveConfigurationRange();
                 break;
             default:
                 throw new UnsupportedOperationException(type.name());
