@@ -44,7 +44,7 @@
         <property name="maxActive" value="16"/>
     </bean>
     
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm" />
     
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     <sharding:data-source id="realShardingTableDataSource" >

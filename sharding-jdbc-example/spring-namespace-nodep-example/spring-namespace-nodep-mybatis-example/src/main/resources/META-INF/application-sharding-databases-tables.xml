@@ -29,7 +29,7 @@
     </bean>
 
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.algorithm.ModuloShardingTableAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
