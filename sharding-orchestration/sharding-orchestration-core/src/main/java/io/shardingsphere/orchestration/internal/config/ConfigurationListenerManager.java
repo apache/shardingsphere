@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
@@ -57,8 +58,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
     @Override
     public void watchSharding() {
         watchSharding(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        watchSharding(ConfigurationNode.SHARDING_RULE_NODE_PATH);
-        watchSharding(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
+        watchSharding(String.format(ConfigurationNode.SHARDING_RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(String.format(ConfigurationNode.SHARDING_PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     private void watchSharding(final String node) {
@@ -80,8 +81,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
     @Override
     public void watchMasterSlave() {
         watchMasterSlave(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
-        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH);
+        watchMasterSlave(String.format(ConfigurationNode.SHARDING_RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(String.format(ConfigurationNode.SHARDING_PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     private void watchMasterSlave(final String node) {

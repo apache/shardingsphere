@@ -21,7 +21,6 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import io.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
@@ -98,10 +97,10 @@ public final class Bootstrap {
         }
     }
     
-    private static void initOrchestrationFacade(
-            final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
+    private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig, 
+                                                final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (ruleConfigs.isEmpty()) {
-            orchestrationFacade.init(OrchestrationType.PROXY);
+            orchestrationFacade.getListenerManager().initProxyListeners();
         } else {
             orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         }

@@ -24,10 +24,10 @@ import static org.junit.Assert.assertThat;
 
 public final class ConfigurationNodeTest {
     
-    private final ConfigurationNode configurationNode = new ConfigurationNode("test_job");
+    private final ConfigurationNode configurationNode = new ConfigurationNode("test");
     
     @Test
     public void assertIsShardingRuleNodePath() {
-        assertThat(configurationNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), is("/test_job/config/sharding/rule"));
+        assertThat(configurationNode.getFullPath(ConfigurationNode.SHARDING_RULE_NODE_PATH), is("/test/config/%s/rule"));
     }
 }

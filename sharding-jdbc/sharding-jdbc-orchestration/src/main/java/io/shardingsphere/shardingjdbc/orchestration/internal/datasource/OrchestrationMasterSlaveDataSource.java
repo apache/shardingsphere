@@ -25,13 +25,12 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -57,9 +56,9 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
         Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        dataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadMasterSlaveConfigMap(),
-                new ShardingProperties(configService.loadMasterSlaveProperties()));
-        getOrchestrationFacade().init(OrchestrationType.MASTER_SLAVE);
+        dataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), 
+                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadMasterSlaveConfigMap(), new ShardingProperties(configService.loadMasterSlaveProperties()));
+        getOrchestrationFacade().getListenerManager().initMasterSlaveListeners();
     }
     
     private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {

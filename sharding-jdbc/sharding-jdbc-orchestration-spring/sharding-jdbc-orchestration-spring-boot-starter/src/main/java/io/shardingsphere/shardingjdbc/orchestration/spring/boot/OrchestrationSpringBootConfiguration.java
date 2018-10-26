@@ -19,10 +19,8 @@ package io.shardingsphere.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -87,7 +85,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public DataSource dataSource() throws SQLException {
         Preconditions.checkState(isValidConfiguration(), "The orchestration configuration is invalid, please choose one from Sharding rule and Master-slave rule.");
-        return OrchestrationType.SHARDING == getOrchestrationType() ? createShardingDataSource() : createMasterSlaveDataSource();
+        return isSharding() ? createShardingDataSource() : createMasterSlaveDataSource();
     }
     
     private boolean isValidConfiguration() {
@@ -103,25 +101,22 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         return !Strings.isNullOrEmpty(orchestrationProperties.getName());
     }
     
-    private OrchestrationType getOrchestrationType() {
-        if (isValidRuleConfiguration()) {
-            return getOrchestrationTypeByLocal();
-        }
-        return getOrchestrationTypeByRegistry();
+    private boolean isSharding() {
+        return isValidRuleConfiguration() ? isShardingByLocal() : isShardingByRegistry();
     }
     
-    private OrchestrationType getOrchestrationTypeByLocal() {
-        return shardingProperties.getTables().isEmpty() ? OrchestrationType.MASTER_SLAVE : OrchestrationType.SHARDING;
+    private boolean isShardingByLocal() {
+        return !shardingProperties.getTables().isEmpty();
     }
     
-    private OrchestrationType getOrchestrationTypeByRegistry() {
-        OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration());
-        ShardingRuleConfiguration shardingRuleConfiguration = orchestrationFacade.getConfigService().loadShardingRuleConfiguration();
-        orchestrationFacade.close();
-        if (null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty()) {
-            return OrchestrationType.SHARDING;
+    private boolean isShardingByRegistry() {
+        // TODO add get type in OrchestrationFacade & ConfigService
+        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration())) {
+            orchestrationFacade.getConfigService().loadShardingRuleConfiguration();
+        } catch (final Exception ex) {
+            return false;
         }
-        return OrchestrationType.MASTER_SLAVE;
+        return true;
     }
     
     private DataSource createShardingDataSource() throws SQLException {

@@ -22,13 +22,12 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -57,7 +56,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
         dataSource = new ShardingDataSource(configService.loadDataSourceMap(),
                 new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadShardingConfigMap(), configService.loadShardingProperties());
-        getOrchestrationFacade().init(OrchestrationType.SHARDING);
+        getOrchestrationFacade().getListenerManager().initShardingListeners();
     }
     
     private void initOrchestrationFacade(final ShardingDataSource shardingDataSource) {
