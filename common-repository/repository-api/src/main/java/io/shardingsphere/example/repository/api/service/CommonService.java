@@ -6,7 +6,7 @@ public interface CommonService {
     
     void cleanEnvironment();
     
-    void processSuccess();
+    void processSuccess(boolean isRangeSharding);
     
     void processFailure();
     
