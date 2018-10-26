@@ -27,22 +27,22 @@ import java.util.LinkedHashSet;
 public class RangeModuloShardingDatabaseAlgorithm implements RangeShardingAlgorithm<Integer> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> tableNames, final RangeShardingValue<Integer> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> databaseNames, final RangeShardingValue<Integer> shardingValue) {
         LinkedHashSet<String> result = new LinkedHashSet<>();
         if (Range.closed(1, 10).encloses(shardingValue.getValueRange())) {
-            for (String each : tableNames) {
+            for (String each : databaseNames) {
                 if (each.endsWith("0")) {
                     result.add(each);
                 }
             }
         } else if (Range.closed(11, 20).encloses(shardingValue.getValueRange())) {
-            for (String each : tableNames) {
+            for (String each : databaseNames) {
                 if (each.endsWith("1")) {
                     result.add(each);
                 }
             }
         } else if (Range.closed(1, 20).encloses(shardingValue.getValueRange())) {
-            result.addAll(tableNames);
+            result.addAll(databaseNames);
         } else {
             throw new UnsupportedOperationException();
         }
