@@ -41,13 +41,13 @@ import java.sql.SQLException;
  */
 public class JavaConfigurationExample {
     
-//    private static ShardingType type = ShardingType.SHARDING_DATABASES;
+    private static ShardingType type = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType type = ShardingType.SHARDING_TABLES;
 //    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
-    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
-    private static boolean IS_RANGE_SHARDING = true;
-//    private static boolean IS_RANGE_SHARDING = false;
+//    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static boolean IS_RANGE_SHARDING = true;
+    private static boolean IS_RANGE_SHARDING = false;
     
     public static void main(final String[] args) throws SQLException {
         process(IS_RANGE_SHARDING ? getDataSourceRange() : getDataSourcePrecise());
@@ -105,7 +105,7 @@ public class JavaConfigurationExample {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess(IS_RANGE_SHARDING);
-//        commonService.cleanEnvironment();
+        commonService.cleanEnvironment();
     }
     
     private static CommonService getCommonService(final DataSource dataSource) {
