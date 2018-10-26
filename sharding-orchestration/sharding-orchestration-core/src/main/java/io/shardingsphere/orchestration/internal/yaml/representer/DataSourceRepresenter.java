@@ -18,9 +18,9 @@
 package io.shardingsphere.orchestration.internal.yaml.representer;
 
 import com.google.common.collect.Sets;
-import lombok.SneakyThrows;
 import org.yaml.snakeyaml.introspector.Property;
 
+import java.beans.IntrospectionException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -93,9 +93,8 @@ public final class DataSourceRepresenter extends DefaultRepresenter {
         return void.class == clazz || Void.class == clazz;
     }
     
-    @SneakyThrows
     @Override
-    protected Set<Property> getProperties(final Class<?> type) {
+    protected Set<Property> getProperties(final Class<?> type) throws IntrospectionException {
         Set<Property> result = new LinkedHashSet<>(propertyNames.size(), 1);
         for (Property each : super.getProperties(type)) {
             if (propertyNames.contains(each.getName())) {

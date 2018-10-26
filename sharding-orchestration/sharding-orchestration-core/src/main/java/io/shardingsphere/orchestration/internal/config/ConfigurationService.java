@@ -28,8 +28,8 @@ import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.ProxyConfigurationConverter;
+import io.shardingsphere.orchestration.internal.yaml.representer.DataSourceRepresenter;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
@@ -95,7 +95,8 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source configuration for orchestration.");
-            regCenter.persist(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
+            regCenter.persist(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), 
+                    new Yaml(new DataSourceRepresenter(dataSourceMap.values().iterator().next().getClass())).dumpAsMap(dataSourceMap));
         }
     }
     
@@ -200,9 +201,10 @@ public final class ConfigurationService {
      *
      * @return data source configuration map
      */
+    @SuppressWarnings("unchecked")
     public Map<String, DataSource> loadDataSourceMap() {
         try {
-            Map<String, DataSource> result = DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+            Map<String, DataSource> result = (Map<String, DataSource>) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME)));
             Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
             return result;
             // CHECKSTYLE:OFF
@@ -220,8 +222,8 @@ public final class ConfigurationService {
     @SuppressWarnings("unchecked")
     public Map<String, Map<String, DataSourceParameter>> loadProxyDataSources() {
         try {
-            Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = (Map<String, Map<String, DataSourceParameter>>) new Yaml(
-                    new DefaultRepresenter()).load(regCenter.getDirectly(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE)));
+            Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = 
+                    (Map<String, Map<String, DataSourceParameter>>) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE)));
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration to load.");
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), "No available data source configuration.");
@@ -240,8 +242,7 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration() {
-        return new Yaml(new DefaultRepresenter()).loadAs(
-                regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)), YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
+        return new Yaml().loadAs(regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)), YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
     }
     
     /**
@@ -250,8 +251,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration() {
-        return new Yaml(new DefaultRepresenter()).loadAs(
-                regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)), YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+        return new Yaml().loadAs(regCenter.getDirectly(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)), YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
     }
     
     /**
@@ -262,7 +262,7 @@ public final class ConfigurationService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadConfigMap() {
         String data = regCenter.getDirectly(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : (Map<String, Object>) new Yaml(new DefaultRepresenter()).load(data);
+        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : (Map<String, Object>) new Yaml().load(data);
     }
     
     /**
@@ -272,7 +272,7 @@ public final class ConfigurationService {
      */
     public Properties loadProperties() {
         String data = regCenter.getDirectly(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml(new DefaultRepresenter()).loadAs(data, Properties.class);
+        return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml().loadAs(data, Properties.class);
     }
     
     /**
