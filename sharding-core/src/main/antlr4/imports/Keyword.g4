@@ -50,10 +50,6 @@ DESC
     : D E S C
     ;
 
-DIV
-    : D I V
-    ;
-
 ESCAPE
     : E S C A P E
     ;
@@ -218,6 +214,14 @@ COLUMN
     : C O L U M N
     ;
 
+COMMIT
+    : C O M M I T
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
+
 CONSTRAINT
     : C O N S T R A I N T
     ;
@@ -258,6 +262,14 @@ INDEX
     : I N D E X
     ;
 
+ISOLATION
+    : I S O L A T I O N
+    ;
+
+LEVEL
+    : L E V E L
+    ;
+
 NO
     : N O
     ;
@@ -266,8 +278,24 @@ ON
     : O N
     ;
 
+READ
+    : R E A D
+    ;
+
 REFERENCES
     : R E F E R E N C E S
+    ;
+
+ROLLBACK
+    : R O L L B A C K
+    ;
+
+SERIALIZABLE
+    : S E R I A L I Z A B L E
+    ;
+
+START
+    : S T A R T
     ;
 
 TABLE
@@ -278,6 +306,10 @@ TO
     : T O
     ;
 
+TRANSACTION
+    : T R A N S A C T I O N
+    ;
+
 TRUNCATE
     : T R U N C A T E
     ;
@@ -286,6 +318,12 @@ UNIQUE
     : U N I Q U E
     ;
 
+WORK
+    : W O R K
+    ;
+
 YEAR
     : Y E A R
     ;
+
+

@@ -10,6 +10,10 @@ ARRAY
     : A R R A Y
     ;
 
+BEGIN
+    : B E G I N
+    ;
+
 BIT
     : B I T
     ;
@@ -32,6 +36,10 @@ CAST
 
 CHARACTER
     : C H A R A C T E R
+    ;
+
+CHARACTERISTICS
+    : C H A R A C T E R I S T I C S
     ;
 
 CLUSTER
@@ -198,10 +206,6 @@ LAST
     : L A S T
     ;
 
-LEVEL
-    : L E V E L
-    ;
-
 LOCAL
     : L O C A L
     ;
@@ -282,12 +286,20 @@ PRECISION
     : P R E C I S I O N
     ;
 
+PREPARED
+    : P R E P A R E D
+    ;
+
 RANGE
     : R A N G E
     ;
 
 RENAME
     : R E N A M E
+    ;
+
+REPEATABLE
+    : R E P E A T A B L E
     ;
 
 REPLICA
@@ -314,12 +326,20 @@ RULE
     : R U L E
     ;
 
+SAVEPOINT
+    : S A V E P O I N T
+    ;
+
 SECOND
     : S E C O N D
     ;
 
 SECURITY
     : S E C U R I T Y
+    ;
+
+SESSION
+    : S E S S I O N
     ;
 
 SESSION_USER
@@ -330,12 +350,12 @@ SIMPLE
     : S I M P L E
     ;
 
-SPGIST
-    : S P G I S T
+SNAPSHOT
+    : S N A P S H O T
     ;
 
-START
-    : S T A R T
+SPGIST
+    : S P G I S T
     ;
 
 STATISTICS
@@ -368,6 +388,10 @@ TYPE
 
 UNBOUNDED
     : U N B O U N D E D
+    ;
+
+UNCOMMITTED
+    : U N C O M M I T T E D
     ;
 
 UNLOGGED
@@ -404,6 +428,10 @@ WITHIN
 
 WITHOUT
     : W I T H O U T
+    ;
+
+WRITE
+    : W R I T E
     ;
 
 ZONE

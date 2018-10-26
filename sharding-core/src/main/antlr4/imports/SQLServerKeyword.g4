@@ -30,6 +30,10 @@ AUTO
     : A U T O
     ;
 
+BEGIN
+    : B E G I N
+    ;
+
 BLOCKERS
     : B L O C K E R S
     ;
@@ -100,6 +104,10 @@ DAY
 
 DAYS
     : D A Y S
+    ;
+
+DELAYED_DURABILITY
+    : D E L A Y E D UL_ D U R A B I L I T Y
     ;
 
 DETERMINISTIC
@@ -230,6 +238,10 @@ LOCK_ESCALATION
     : L O C K UL_ E S C A L A T I O N
     ;
 
+MARK
+    : M A R K
+    ;
+
 MASKED
     : M A S K E D
     ;
@@ -342,6 +354,10 @@ REMOTE_DATA_ARCHIVE
     : R E M O T E UL_ D A T A UL_ A R C H I V E
     ;
 
+REPEATABLE
+    : R E P E A T A B L E
+    ;
+
 REPLICATE
     : R E P L I C A T E
     ;
@@ -370,6 +386,10 @@ ROWS
     : R O W S
     ;
 
+SAVE
+    : S A V E
+    ;
+
 SCHEMA_AND_DATA
     : S C H E M A UL_ A N D UL_ D A T A
     ;
@@ -382,16 +402,16 @@ SELF
     : S E L F
     ;
 
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
 SORT_IN_TEMPDB
     : S O R T UL_ I N UL_ T E M P D B
     ;
 
 SPARSE
     : S P A R S E
-    ;
-
-START
-    : S T A R T
     ;
 
 STATISTICS_INCREMENTAL
@@ -418,12 +438,20 @@ TEXTIMAGE_ON
     : T E X T I M A G E UL_ O N
     ;
 
+TRAN
+    : T R A N
+    ;
+
 TRIGGER
     : T R I G G E R
     ;
 
 UNBOUNDED
     : U N B O U N D E D
+    ;
+
+UNCOMMITTED
+    : U N C O M M I T T E D
     ;
 
 UPDATE
@@ -453,3 +481,4 @@ YEARS
 ZONE
     : Z O N E
     ;
+

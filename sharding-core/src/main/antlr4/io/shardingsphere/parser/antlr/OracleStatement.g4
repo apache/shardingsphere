@@ -1,6 +1,9 @@
 grammar OracleStatement;
 
-import OracleKeyword, Keyword, OracleBase, OracleCreateIndex, OracleAlterIndex, OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable;
+import OracleKeyword, Keyword, OracleBase, OracleCreateIndex, OracleAlterIndex
+       , OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable
+       , OracleTCLStatement
+       ;
 
 execute
     : createIndex
@@ -10,5 +13,9 @@ execute
     | alterTable
     | dropTable
     | truncateTable
+    | setTransaction
+    | commit
+    | rollback
+    | savepoint
     ;
  

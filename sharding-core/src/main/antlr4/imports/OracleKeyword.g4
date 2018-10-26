@@ -6,6 +6,10 @@ AT
     : A T
     ;
 
+BATCH
+    : B A T C H
+    ;
+
 BITMAP
     : B I T M A P
     ;
@@ -22,8 +26,8 @@ CHECKPOINT
     : C H E C K P O I N T
     ;
 
-COMMIT
-    : C O M M I T
+COMMENT
+    : C O M M E N T
     ;
 
 CONSTRAINTS
@@ -150,6 +154,10 @@ MONTH
     : M O N T H
     ;
 
+NAME
+    : N A M E
+    ;
+
 NATIONAL
     : N A T I O N A L
     ;
@@ -184,6 +192,10 @@ NORELY
 
 NOVALIDATE
     : N O V A L I D A T E
+    ;
+
+NOWAIT
+    : N O W A I T
     ;
 
 OF
@@ -234,6 +246,10 @@ SALT
     : S A L T
     ;
 
+SAVEPOINT
+    : S A V E P O I N T
+    ;
+
 SCOPE
     : S C O P E
     ;
@@ -242,12 +258,16 @@ SECOND
     : S E C O N D
     ;
 
+SEGMENT
+    : S E G M E N T
+    ;
+
 SORT
     : S O R T
     ;
 
-START
-    : S T A R T
+SQLRF
+    : S Q L R F
     ;
 
 SUBSTITUTABLE
@@ -278,6 +298,10 @@ UNUSED
     : U N U S E D
     ;
 
+USE
+    : U S E
+    ;
+
 USING
     : U S I N G
     ;
@@ -298,8 +322,16 @@ VIRTUAL
     : V I R T U A L
     ;
 
+WAIT
+    : W A I T
+    ;
+
 WHEN
     : W H E N
+    ;
+
+WRITE
+    : W R I T E
     ;
 
 ZONE

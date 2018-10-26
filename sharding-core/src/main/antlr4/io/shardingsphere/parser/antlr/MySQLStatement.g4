@@ -1,6 +1,9 @@
 grammar MySQLStatement;
 
-import MySQLKeyword, Keyword, MySQLBase, MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable;
+import MySQLKeyword, Keyword, MySQLBase, MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex
+       , MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable
+       , MySQLTCLStatement
+       ;
 
 execute
     : select
@@ -13,5 +16,10 @@ execute
     | alterTable
     | dropTable
     | truncateTable
+    | setTransaction
+    | commit
+    | rollback
+    | savepoint
+    | beginWork
     ;
  

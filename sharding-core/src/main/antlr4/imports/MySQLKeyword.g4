@@ -26,12 +26,20 @@ AVG_ROW_LENGTH
     : A V G UL_ R O W UL_ L E N G T H
     ;
 
+BEGIN
+    : B E G I N
+    ;
+
 BTREE
     : B T R E E
     ;
 
 CASE
     : C A S E
+    ;
+
+CHAIN
+    : C H A I N
     ;
 
 CHANGE
@@ -88,6 +96,10 @@ COMPRESSION
 
 CONNECTION
     : C O N N E C T I O N
+    ;
+
+CONSISTENT
+    : C O N S I S T E N T
     ;
 
 CONVERT
@@ -196,6 +208,10 @@ FULL
 
 FULLTEXT
     : F U L L T E X T
+    ;
+
+GLOBAL
+    : G L O B A L
     ;
 
 HASH
@@ -326,6 +342,10 @@ ONLINE
     : O N L I N E
     ;
 
+ONLY
+    : O N L Y
+    ;
+
 OPTIMIZE
     : O P T I M I Z E
     ;
@@ -378,6 +398,10 @@ REDUNDANT
     : R E D U N D A N T
     ;
 
+RELEASE
+    : R E L E A S E
+    ;
+
 REMOVE
     : R E M O V E
     ;
@@ -392,6 +416,10 @@ REORGANIZE
 
 REPAIR
     : R E P A I R
+    ;
+
+REPEATABLE
+    : R E P E A T A B L E
     ;
 
 REPLACE
@@ -410,12 +438,24 @@ ROW_FORMAT
     : R O W UL_ F O R M A T
     ;
 
+SAVEPOINT
+    : S A V E P O I N T
+    ;
+
+SESSION
+    : S E S S I O N
+    ;
+
 SHARED
     : S H A R E D
     ;
 
 SIMPLE
     : S I M P L E
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
     ;
 
 SPATIAL
@@ -502,6 +542,10 @@ THEN
     : T H E N
     ;
 
+UNCOMMITTED
+    : U N C O M M I T T E D
+    ;
+
 UNSIGNED
     : U N S I G N E D
     ;
@@ -544,6 +588,10 @@ WHEN
 
 WITHOUT
     : W I T H O U T
+    ;
+
+WRITE
+    : W R I T E
     ;
 
 ZEROFILL
