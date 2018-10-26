@@ -23,6 +23,7 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.hamcrest.MatcherAssert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -40,6 +41,11 @@ import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveDataSourceFactoryTest {
     
+    @Before
+    public void setUp() {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+    }
+    
     @Test
     public void assertCreateDataSourceForSingleSlave() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
@@ -52,7 +58,7 @@ public final class MasterSlaveDataSourceFactoryTest {
         assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
                 new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
                 configMap, properties), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
     
     @Test
@@ -68,6 +74,6 @@ public final class MasterSlaveDataSourceFactoryTest {
         assertThat(MasterSlaveDataSourceFactory.createDataSource(
                 dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
                 configMap, properties), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
 }

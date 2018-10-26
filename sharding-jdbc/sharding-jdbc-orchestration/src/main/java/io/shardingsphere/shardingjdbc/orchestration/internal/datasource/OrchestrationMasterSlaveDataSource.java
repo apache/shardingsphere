@@ -47,7 +47,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig), masterSlaveDataSource.getDataSourceMap());
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(), new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
-                ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties());
+                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties());
         initOrchestrationFacade(dataSource);
     }
     
@@ -66,7 +66,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
         getOrchestrationFacade().init(masterSlaveDataSource.getDataSourceMap(), 
-                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
+                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
     }
     
     @Override
@@ -93,6 +93,6 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) throws SQLException {
         dataSource.close();
         dataSource = new MasterSlaveDataSource(
-                masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
+                masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
     }
 }

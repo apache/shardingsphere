@@ -52,8 +52,8 @@ public final class ConfigMapListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ConfigMapContext.getInstance().getShardingConfig().clear();
-                    ConfigMapContext.getInstance().getShardingConfig().putAll(configService.loadConfigMap());
+                    ConfigMapContext.getInstance().getConfigMap().clear();
+                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
                 }
             }
         });
@@ -67,8 +67,8 @@ public final class ConfigMapListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
-                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configService.loadConfigMap());
+                    ConfigMapContext.getInstance().getConfigMap().clear();
+                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
                 }
             }
         });

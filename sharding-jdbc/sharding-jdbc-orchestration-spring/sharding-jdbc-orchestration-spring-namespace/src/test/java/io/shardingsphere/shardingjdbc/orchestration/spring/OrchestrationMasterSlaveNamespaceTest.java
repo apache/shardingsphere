@@ -48,6 +48,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        ConfigMapContext.getInstance().getConfigMap().clear();
     }
     
     @Test
@@ -89,7 +90,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
         Object masterSlaveDataSource = applicationContext.getBean("configMapDataSourceOrchestration");
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         assertThat(masterSlaveDataSource, instanceOf(OrchestrationMasterSlaveDataSource.class));
     }
     
