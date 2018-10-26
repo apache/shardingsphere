@@ -30,6 +30,7 @@ import org.yaml.snakeyaml.representer.Representer;
  * Default representer.
  *
  * @author panjuan
+ * @author zhangliang
  */
 public class DefaultRepresenter extends Representer {
     

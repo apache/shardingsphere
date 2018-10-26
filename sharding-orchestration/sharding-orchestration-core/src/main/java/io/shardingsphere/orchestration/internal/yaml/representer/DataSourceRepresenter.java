@@ -20,10 +20,6 @@ package io.shardingsphere.orchestration.internal.yaml.representer;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -35,35 +31,22 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public final class DataSourceRepresenter extends Representer {
+public final class DataSourceRepresenter extends DefaultRepresenter {
     
-    private static Collection<Class<?>> generalClassType;
+    private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
     
-    private static Collection<String> eliminatedPropertyNames;
+    private static final Collection<String> SKIPPED_PROPERTY_NAMES;
     
     private final Collection<String> propertyNames;
     
     static {
-        generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
-        eliminatedPropertyNames = Sets.newHashSet("loginTimeout");
+        GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+        SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
     
     public DataSourceRepresenter(final Class<?> clazz) {
         super();
-        nullRepresenter = new NullRepresent();
         propertyNames = getPropertyNames(clazz);
-    }
-    
-    @SneakyThrows
-    @Override
-    protected Set<Property> getProperties(final Class<?> type) {
-        Set<Property> result = new LinkedHashSet<>();
-        for (Property each : super.getProperties(type)) {
-            if (propertyNames.contains(each.getName())) {
-                result.add(each);
-            }
-        }
-        return result;
     }
     
     private Set<String> getPropertyNames(final Class<?> clazz) {
@@ -83,7 +66,7 @@ public final class DataSourceRepresenter extends Representer {
     private Set<String> getPairedGetterMethodNames(final Set<String> getterMethodNames, final Set<String> setterMethodNames) {
         Set<String> result = new LinkedHashSet<>();
         for (String each : getterMethodNames) {
-            if (setterMethodNames.contains(each) && !eliminatedPropertyNames.contains(each)) {
+            if (setterMethodNames.contains(each) && !SKIPPED_PROPERTY_NAMES.contains(each)) {
                 result.add(each);
             }
         }
@@ -95,7 +78,6 @@ public final class DataSourceRepresenter extends Representer {
     }
     
     private boolean isGetterMethod(final Method method) {
-      
         return method.getName().startsWith("get") && 0 == method.getParameterTypes().length && isGeneralClassType(method.getReturnType());
     }
     
@@ -104,17 +86,22 @@ public final class DataSourceRepresenter extends Representer {
     }
     
     private boolean isGeneralClassType(final Class<?> clazz) {
-        return generalClassType.contains(clazz);
-        
+        return GENERAL_CLASS_TYPE.contains(clazz);
     }
     
     private boolean isVoid(final Class<?> clazz) {
         return void.class == clazz || Void.class == clazz;
     }
     
-    private class NullRepresent implements Represent {
-        public Node representData(final Object data) {
-            return representScalar(Tag.NULL, "");
+    @SneakyThrows
+    @Override
+    protected Set<Property> getProperties(final Class<?> type) {
+        Set<Property> result = new LinkedHashSet<>(propertyNames.size(), 1);
+        for (Property each : super.getProperties(type)) {
+            if (propertyNames.contains(each.getName())) {
+                result.add(each);
+            }
         }
+        return result;
     }
 }

@@ -29,7 +29,6 @@ import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceConverter;
-import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceParameterConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.ProxyConfigurationConverter;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -163,7 +162,7 @@ public final class ConfigurationService {
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), String.format("No available data source configuration in `%s` for orchestration.", entry.getKey()));
             }
-            regCenter.persist(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE), DataSourceParameterConverter.dataSourceParameterMapToYaml(schemaDataSourceMap));
+            regCenter.persist(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE), new Yaml(new DefaultRepresenter()).dumpAsMap(schemaDataSourceMap));
         }
     }
     
@@ -218,10 +217,11 @@ public final class ConfigurationService {
      *
      * @return data sources map
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Map<String, DataSourceParameter>> loadProxyDataSources() {
         try {
-            Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = DataSourceParameterConverter.dataSourceParameterMapFromYaml(
-                    regCenter.getDirectly(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE)));
+            Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = (Map<String, Map<String, DataSourceParameter>>) new Yaml(
+                    new DefaultRepresenter()).load(regCenter.getDirectly(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE)));
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration to load.");
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), "No available data source configuration.");
