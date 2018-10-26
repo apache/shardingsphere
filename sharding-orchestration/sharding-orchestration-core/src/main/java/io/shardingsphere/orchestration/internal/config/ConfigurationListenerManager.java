@@ -57,7 +57,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        watchSharding(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchSharding(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
         watchSharding(String.format(ConfigurationNode.SHARDING_RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
         watchSharding(String.format(ConfigurationNode.SHARDING_PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
@@ -80,7 +80,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        watchMasterSlave(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchMasterSlave(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
         watchMasterSlave(String.format(ConfigurationNode.SHARDING_RULE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
         watchMasterSlave(String.format(ConfigurationNode.SHARDING_PROPS_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME));
     }
@@ -102,7 +102,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        watchProxy(ConfigurationNode.DATA_SOURCE_NODE_PATH);
+        watchProxy(ConfigurationNode.PROXY_DATA_SOURCE_NODE_PATH);
         watchProxy(ConfigurationNode.PROXY_RULE_NODE_PATH);
         watchProxy(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH);
     }

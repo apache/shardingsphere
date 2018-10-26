@@ -78,12 +78,13 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration()) {
             Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source configuration for orchestration.");
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
+            regCenter.persist(
+                    configNode.getFullPath(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME)), DataSourceConverter.dataSourceMapToYaml(dataSourceMap));
         }
     }
     
     private boolean hasDataSourceConfiguration() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+        return !Strings.isNullOrEmpty(regCenter.get(String.format(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), ShardingConstant.LOGIC_SCHEMA_NAME)));
     }
     
     private void persistShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
@@ -179,13 +180,17 @@ public final class ConfigurationService {
     }
     
     private void persistProxyDataSourceParameterConfiguration(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasDataSourceConfiguration()) {
+        if (isOverwrite || !hasProxyDataSourceConfiguration()) {
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration for orchestration.");
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), String.format("No available data source configuration in `%s` for orchestration.", entry.getKey()));
             }
-            regCenter.persist(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(schemaDataSourceMap));
+            regCenter.persist(configNode.getFullPath(ConfigurationNode.PROXY_DATA_SOURCE_NODE_PATH), DataSourceParameterConverter.dataSourceParameterMapToYaml(schemaDataSourceMap));
         }
+    }
+    
+    private boolean hasProxyDataSourceConfiguration() {
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getFullPath(ConfigurationNode.PROXY_DATA_SOURCE_NODE_PATH)));
     }
     
     private boolean hasProxyRuleConfig() {
@@ -220,7 +225,8 @@ public final class ConfigurationService {
      */
     public Map<String, DataSource> loadDataSourceMap() {
         try {
-            Map<String, DataSource> result = DataSourceConverter.dataSourceMapFromYaml(regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+            Map<String, DataSource> result = DataSourceConverter.dataSourceMapFromYaml(
+                    regCenter.getDirectly(configNode.getFullPath(String.format(ConfigurationNode.DATA_SOURCE_NODE_PATH, ShardingConstant.LOGIC_SCHEMA_NAME))));
             Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
             return result;
             // CHECKSTYLE:OFF
@@ -238,7 +244,7 @@ public final class ConfigurationService {
     public Map<String, Map<String, DataSourceParameter>> loadProxyDataSources() {
         try {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = DataSourceParameterConverter.dataSourceParameterMapFromYaml(
-                    regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.DATA_SOURCE_NODE_PATH)));
+                    regCenter.getDirectly(configNode.getFullPath(ConfigurationNode.PROXY_DATA_SOURCE_NODE_PATH)));
             Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration to load.");
             for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
                 Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), "No available data source configuration.");

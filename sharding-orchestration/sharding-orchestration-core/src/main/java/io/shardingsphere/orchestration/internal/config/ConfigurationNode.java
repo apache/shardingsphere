@@ -32,11 +32,13 @@ public final class ConfigurationNode {
     
     public static final String PROXY_NODE_PATH = ROOT + "/proxy";
     
-    public static final String DATA_SOURCE_NODE_PATH = ROOT + "/datasource";
-    
     public static final String RULE_NODE_PATH = "/rule";
     
     public static final String SERVER_CONFIG_NODE_PATH = "/server";
+    
+    public static final String PROXY_DATA_SOURCE_NODE_PATH = ROOT + "/datasource";
+    
+    public static final String DATA_SOURCE_NODE_PATH = ROOT + "/%s/datasource";
     
     public static final String SHARDING_RULE_NODE_PATH = ROOT + "/%s/rule";
     
