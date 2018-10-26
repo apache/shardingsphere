@@ -22,30 +22,14 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import javax.sql.DataSource;
 
 /**
- * Get property of common datasource pool then convert to {@code DataSourceParameter}.
+ * Convert implement of Commons DBCP.
  *
  * @author zhaojun
  */
-public class DataSourceParameterFactory {
+public final class DBCPConverter implements Convertor {
     
-    /**
-     * Create datasource parameter.
-     *
-     * @param dataSource data source
-     * @return datasource parameter
-     */
-    public static DataSourceParameter build(final DataSource dataSource) {
-        switch (getPoolType(dataSource)) {
-            case HIKARI:
-            case DRUID:
-            case DBCP:
-                return new DBCPConverter().convertTo(dataSource);
-            default:
-                return null;
-        }
-    }
-    
-    private static PoolType getPoolType(final DataSource dataSource) {
+    @Override
+    public DataSourceParameter convertTo(DataSource dataSource) {
         return null;
     }
 }

@@ -44,7 +44,6 @@ public interface XATransactionManager extends ShardingTransactionManager<XATrans
      * @param dataSourceName data source name
      * @param dataSourceParameter data source parameter
      * @return XA data source
-     * @throws Exception if can not wrap the data source
      */
-    DataSource wrapDataSource(XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
+    DataSource wrapDataSource(XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter);
 }
