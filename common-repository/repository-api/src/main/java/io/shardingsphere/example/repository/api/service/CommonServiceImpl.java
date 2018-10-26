@@ -27,12 +27,12 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Transactional
     @Override
-    public void processSuccess() {
+    public void processSuccess(boolean isRangeSharding) {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
-        printData();
+        printData(isRangeSharding);
         deleteData(orderIds);
-        printData();
+        printData(isRangeSharding);
         System.out.println("-------------- Process Success Finish --------------");
     }
     
@@ -72,7 +72,7 @@ public abstract class CommonServiceImpl implements CommonService {
     }
     
     @Override
-    public void printData() {
+    public void printData(boolean isRangeSharding) {
         System.out.println("---------------------------- Print Order Data -----------------------");
         for (Object each : getOrderRepository().selectAll()) {
             System.out.println(each);

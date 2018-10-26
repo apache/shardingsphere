@@ -43,7 +43,7 @@ public class SpringBootStarterExample {
             commonService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            commonService.printData();
+            commonService.printData(false);
         }
     }
     
