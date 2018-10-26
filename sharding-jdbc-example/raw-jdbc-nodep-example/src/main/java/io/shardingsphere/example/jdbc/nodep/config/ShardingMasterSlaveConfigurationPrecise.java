@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingMasterSlaveConfiguration implements ExampleConfiguration {
+public final class ShardingMasterSlaveConfigurationPrecise implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {

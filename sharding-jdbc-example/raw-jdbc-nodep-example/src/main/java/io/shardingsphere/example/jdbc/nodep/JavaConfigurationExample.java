@@ -21,7 +21,7 @@ import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfiguration;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
@@ -63,7 +63,7 @@ public class JavaConfigurationExample {
                 exampleConfig = new MasterSlaveConfiguration();
                 break;
             case SHARDING_MASTER_SLAVE:
-                exampleConfig = new ShardingMasterSlaveConfiguration();
+                exampleConfig = new ShardingMasterSlaveConfigurationPrecise();
                 break;
             default:
                 throw new UnsupportedOperationException(type.name());
