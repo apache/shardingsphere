@@ -57,7 +57,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
         Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         dataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), 
-                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadMasterSlaveConfigMap(), new ShardingProperties(configService.loadMasterSlaveProperties()));
+                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadConfigMap(), new ShardingProperties(configService.loadProperties()));
         getOrchestrationFacade().getListenerManager().initMasterSlaveListeners();
     }
     

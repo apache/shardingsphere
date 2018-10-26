@@ -71,7 +71,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
                     ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(dataSourceMap,
-                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
+                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
@@ -93,7 +93,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadMasterSlaveProperties());
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }

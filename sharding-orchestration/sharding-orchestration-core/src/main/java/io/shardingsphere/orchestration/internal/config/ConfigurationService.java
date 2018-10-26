@@ -26,6 +26,7 @@ import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
+import io.shardingsphere.orchestration.internal.yaml.converter.CommonConfigurationConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.DataSourceParameterConverter;
 import io.shardingsphere.orchestration.internal.yaml.converter.MasterSlaveConfigurationConverter;
@@ -34,7 +35,6 @@ import io.shardingsphere.orchestration.internal.yaml.converter.ShardingConfigura
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,8 +71,25 @@ public final class ConfigurationService {
             final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(dataSourceMap, isOverwrite);
         persistShardingRuleConfiguration(shardingRuleConfig, isOverwrite);
-        persistShardingConfigMap(configMap, isOverwrite);
-        persistShardingProperties(props, isOverwrite);
+        persistConfigMap(configMap, isOverwrite);
+        persistProperties(props, isOverwrite);
+    }
+    
+    /**
+     * Persist master-slave configuration.
+     *
+     * @param dataSourceMap data source map
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param configMap config map
+     * @param props props
+     * @param isOverwrite is overwrite registry center's configuration
+     */
+    public void persistMasterSlaveConfiguration(final Map<String, DataSource> dataSourceMap,
+                                                final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
+        persistDataSourceConfiguration(dataSourceMap, isOverwrite);
+        persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig, isOverwrite);
+        persistConfigMap(configMap, isOverwrite);
+        persistProperties(props, isOverwrite);
     }
     
     private void persistDataSourceConfiguration(final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
@@ -93,47 +110,6 @@ public final class ConfigurationService {
         }
     }
     
-    private boolean hasRuleConfiguration() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)));
-    }
-    
-    private void persistShardingConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasShardingConfigMap()) {
-            regCenter.persist(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), ShardingConfigurationConverter.configMapToYaml(configMap));
-        }
-    }
-    
-    private boolean hasShardingConfigMap() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME)));
-    }
-    
-    private void persistShardingProperties(final Properties props, final boolean isOverwrite) {
-        if (isOverwrite || !hasShardingProperties()) {
-            regCenter.persist(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), ShardingConfigurationConverter.propertiesToYaml(props));
-        }
-    }
-    
-    private boolean hasShardingProperties() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME)));
-    }
-    
-    /**
-     * Persist master-slave configuration.
-     *
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap config map
-     * @param props props
-     * @param isOverwrite is overwrite registry center's configuration
-     */
-    public void persistMasterSlaveConfiguration(final Map<String, DataSource> dataSourceMap, 
-                                                final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceConfiguration(dataSourceMap, isOverwrite);
-        persistMasterSlaveRuleConfiguration(masterSlaveRuleConfig, isOverwrite);
-        persistMasterSlaveConfigMap(configMap, isOverwrite);
-        persistMasterSlaveProperties(props, isOverwrite);
-    }
-    
     private void persistMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasRuleConfiguration()) {
             Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(), "No available master slave configuration for orchestration.");
@@ -141,19 +117,27 @@ public final class ConfigurationService {
         }
     }
     
-    private void persistMasterSlaveConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasShardingConfigMap()) {
-            regCenter.persist(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), MasterSlaveConfigurationConverter.configMapToYaml(configMap));
+    private boolean hasRuleConfiguration() {
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+    }
+    
+    private void persistConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
+        if (isOverwrite || !hasConfigMap()) {
+            regCenter.persist(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), CommonConfigurationConverter.configMapToYaml(configMap));
         }
     }
     
-    private void persistMasterSlaveProperties(final Properties props, final boolean isOverwrite) {
-        if (isOverwrite || !hasMasterSlaveProperties()) {
-            regCenter.persist(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), MasterSlaveConfigurationConverter.propertiesToYaml(props));
+    private boolean hasConfigMap() {
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+    }
+    
+    private void persistProperties(final Properties props, final boolean isOverwrite) {
+        if (isOverwrite || !hasProperties()) {
+            regCenter.persist(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), CommonConfigurationConverter.propertiesToYaml(props));
         }
     }
     
-    private boolean hasMasterSlaveProperties() {
+    private boolean hasProperties() {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME)));
     }
     
@@ -259,27 +243,6 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load sharding config map.
-     *
-     * @return sharding config map
-     */
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> loadShardingConfigMap() {
-        String data = regCenter.getDirectly(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new HashMap<String, Object>() : ShardingConfigurationConverter.configMapFromYaml(data);
-    }
-    
-    /**
-     * Load sharding properties configuration.
-     *
-     * @return sharding properties
-     */
-    public Properties loadShardingProperties() {
-        String data = regCenter.getDirectly(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new Properties() : ShardingConfigurationConverter.propertiesFromYaml(data);
-    }
-    
-    /**
      * Load master-slave rule configuration.
      *
      * @return master-slave rule configuration
@@ -289,24 +252,24 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load master-slave config map.
+     * Load config map.
      *
-     * @return master-slave config map
+     * @return config map
      */
     @SuppressWarnings("unchecked")
-    public Map<String, Object> loadMasterSlaveConfigMap() {
+    public Map<String, Object> loadConfigMap() {
         String data = regCenter.getDirectly(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : MasterSlaveConfigurationConverter.configMapFromYaml(data);
+        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : CommonConfigurationConverter.configMapFromYaml(data);
     }
     
     /**
-     * Load sharding properties configuration.
+     * Load properties configuration.
      *
-     * @return sharding properties
+     * @return properties
      */
-    public Properties loadMasterSlaveProperties() {
+    public Properties loadProperties() {
         String data = regCenter.getDirectly(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        return Strings.isNullOrEmpty(data) ? new Properties() : MasterSlaveConfigurationConverter.propertiesFromYaml(data);
+        return Strings.isNullOrEmpty(data) ? new Properties() : CommonConfigurationConverter.propertiesFromYaml(data);
     }
     
     /**

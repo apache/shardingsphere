@@ -53,7 +53,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getShardingConfig().clear();
-                    ConfigMapContext.getInstance().getShardingConfig().putAll(configService.loadShardingConfigMap());
+                    ConfigMapContext.getInstance().getShardingConfig().putAll(configService.loadConfigMap());
                 }
             }
         });
@@ -68,7 +68,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
-                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configService.loadMasterSlaveConfigMap());
+                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configService.loadConfigMap());
                 }
             }
         });

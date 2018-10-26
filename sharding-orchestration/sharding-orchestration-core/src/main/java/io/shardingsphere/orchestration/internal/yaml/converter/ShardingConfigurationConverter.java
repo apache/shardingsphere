@@ -25,14 +25,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.Map;
-import java.util.Properties;
 /**
  * Sharding configuration converter.
  *
  * @author panjuan
  */
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingConfigurationConverter {
     
@@ -57,46 +54,5 @@ public final class ShardingConfigurationConverter {
      */
     public static ShardingRuleConfiguration shardingRuleConfigFromYaml(final String shardingRuleConfigYamlString) {
         return YAML.loadAs(shardingRuleConfigYamlString, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
-    }
-    
-    /**
-     * Convert config map to yaml string.
-     *
-     * @param configMap config map
-     * @return config map string
-     */
-    public static String configMapToYaml(final Map<String, Object> configMap) {
-        return YAML.dumpAsMap(configMap);
-    }
-    
-    /**
-     * Convert config map string to config map.
-     *
-     * @param configMapYamlString config map string
-     * @return config map
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> configMapFromYaml(final String configMapYamlString) {
-        return (Map<String, Object>) YAML.load(configMapYamlString);
-    }
-    
-    /**
-     * Convert properties to properties string.
-     *
-     * @param props properties
-     * @return properties string
-     */
-    public static String propertiesToYaml(final Properties props) {
-        return YAML.dumpAsMap(props);
-    }
-    
-    /**
-     * Convert properties yaml string to properties.
-     *
-     * @param propertiesYamlString properties yaml string
-     * @return properties
-     */
-    public static Properties propertiesFromYaml(final String propertiesYamlString) {
-        return YAML.loadAs(propertiesYamlString, Properties.class);
     }
 }
