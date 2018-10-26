@@ -37,15 +37,26 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XABackendDataSourceFactory implements BackendDataSourceFactory {
     
+    private static final XABackendDataSourceFactory INSTANCE = new XABackendDataSourceFactory();
+    
     private static final NewInstanceServiceLoader<BackendDataSourceFactory> SERVICE_LOADER = NewInstanceServiceLoader.load(BackendDataSourceFactory.class);
     
     private final Collection<BackendDataSourceFactory> backendDataSourceFactories = SERVICE_LOADER.newServiceInstances();
     
     @Override
-    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, DatabaseType databaseType) {
+    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         if (backendDataSourceFactories.isEmpty()) {
             throw new ShardingException("Please make XA DatasourceFactory SPI available.");
         }
         return backendDataSourceFactories.iterator().next().build(dataSourceMap, databaseType);
+    }
+    
+    /**
+     * Get XA backend datasource factory instance.
+     *
+     * @return XA backend datasource factory
+     */
+    public static XABackendDataSourceFactory getInstance() {
+        return INSTANCE;
     }
 }
