@@ -29,9 +29,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ConfigurationNode {
     
-    @Deprecated
-    public static final String PROXY_NODE = "proxy";
-    
     private static final String ROOT = "config";
     
     private static final String DATA_SOURCE_NODE = "datasource";
@@ -86,8 +83,12 @@ public final class ConfigurationNode {
     }
     
     @Deprecated
-    public String getServerPath(final String schemaName) {
-        return getFullPath(schemaName, SERVER_NODE);
+    public String getServerPath() {
+        return getFullPath(SERVER_NODE);
+    }
+    
+    public String getRootPath() {
+        return Joiner.on("/").join("", name, ROOT);
     }
     
     private String getFullPath(final String schemaName, final String node) {

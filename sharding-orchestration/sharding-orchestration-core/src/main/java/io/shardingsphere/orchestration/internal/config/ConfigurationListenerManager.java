@@ -105,8 +105,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        watchProxy(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE));
-        watchProxy(configNode.getRulePath(ConfigurationNode.PROXY_NODE));
+        watchProxy(configNode.getDataSourcePath(shardingSchemaName));
+        watchProxy(configNode.getRulePath(shardingSchemaName));
         watchProxy(configNode.getPropsPath());
     }
     

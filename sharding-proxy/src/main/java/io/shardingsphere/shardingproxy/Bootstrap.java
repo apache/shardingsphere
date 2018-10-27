@@ -33,7 +33,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +64,7 @@ public final class Bootstrap {
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
         } else {
-            startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
+            startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
     }
     
@@ -86,10 +86,10 @@ public final class Bootstrap {
         new ShardingProxy().start(port);
     }
     
-    private static void startWithRegistryCenter(
-            final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
+    private static void startWithRegistryCenter(final ProxyYamlServerConfiguration serverConfig, 
+                                                final Collection<String> shardingSchemaNames, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         // TODO replace proxy to real sharding schema
-        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), Collections.singletonList("proxy"))) {
+        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
                     orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration(), true);
