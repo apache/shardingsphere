@@ -34,7 +34,7 @@ import io.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration.Sp
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.util.PropertyUtil;
 import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -58,24 +58,20 @@ import java.util.Map;
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
         SpringBootConfigMapConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class, 
         SpringBootOrchestrationConfigurationProperties.class})
+@RequiredArgsConstructor
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    @Autowired
-    private SpringBootShardingRuleConfigurationProperties shardingProperties;
+    private final SpringBootShardingRuleConfigurationProperties shardingProperties;
     
-    @Autowired
-    private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
-    @Autowired
-    private SpringBootConfigMapConfigurationProperties configMapProperties;
+    private final SpringBootConfigMapConfigurationProperties configMapProperties;
     
-    @Autowired
-    private SpringBootPropertiesConfigurationProperties propProperties;
+    private final SpringBootPropertiesConfigurationProperties propProperties;
     
-    @Autowired
-    private SpringBootOrchestrationConfigurationProperties orchestrationProperties;
+    private final SpringBootOrchestrationConfigurationProperties orchestrationProperties;
     
     /**
      * Get data source bean.
