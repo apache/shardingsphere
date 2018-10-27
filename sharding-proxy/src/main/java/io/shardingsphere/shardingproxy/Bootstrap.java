@@ -96,8 +96,14 @@ public final class Bootstrap {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
             Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
             for (String each : orchestrationFacade.getConfigService().getShardingSchemaNames()) {
-                schemaDataSourceParameterMap.put(each, orchestrationFacade.getConfigService().loadProxyDataSources(each));
-                schemaRules.put(each, orchestrationFacade.getConfigService().loadProxyConfiguration(each));
+                schemaDataSourceParameterMap.put(each, orchestrationFacade.getConfigService().loadDataSourceParameters(each));
+                YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
+                if (orchestrationFacade.getConfigService().isShardingRule(each)) {
+                    yamlRuleConfig.setShardingRule(orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
+                } else {
+                    yamlRuleConfig.setMasterSlaveRule(orchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
+                }
+                schemaRules.put(each, yamlRuleConfig);
             }
             GlobalRegistry.getInstance().init(
                     schemaDataSourceParameterMap, schemaRules, orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadProperties(), true);
@@ -133,8 +139,8 @@ public final class Bootstrap {
         Map<String, YamlRuleConfiguration> result = new HashMap<>();
         for (Entry<String, ProxyYamlRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
-            yamlRuleConfig.setShardingRule(entry.getValue().getShardingRule());
-            yamlRuleConfig.setMasterSlaveRule(entry.getValue().getMasterSlaveRule());
+            yamlRuleConfig.setShardingRule(null == entry.getValue().getShardingRule() ? null : entry.getValue().getShardingRule().getShardingRuleConfiguration());
+            yamlRuleConfig.setMasterSlaveRule(null == entry.getValue().getMasterSlaveRule() ? null : entry.getValue().getMasterSlaveRule().getMasterSlaveRuleConfiguration());
             result.put(entry.getKey(), yamlRuleConfig);
         }
         return result;
