@@ -25,6 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        YamlOrchestrationConfigurationTest.class, 
         DefaultRepresenterTest.class,
         SimpleTypeRepresenterTest.class
 })
