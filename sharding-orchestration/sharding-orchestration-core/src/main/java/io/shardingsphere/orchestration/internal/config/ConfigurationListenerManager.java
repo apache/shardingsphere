@@ -59,7 +59,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     public void watchSharding() {
         watchSharding(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME));
         watchSharding(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchSharding(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(configNode.getPropsPath());
         // TODO watch config map
     }
     
@@ -82,7 +82,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     public void watchMasterSlave() {
         watchMasterSlave(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME));
         watchMasterSlave(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchMasterSlave(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(configNode.getPropsPath());
         // TODO watch config map
     }
     
@@ -104,7 +104,7 @@ public final class ConfigurationListenerManager implements ListenerManager {
     public void watchProxy() {
         watchProxy(configNode.getDataSourcePath(ConfigurationNode.PROXY_NODE));
         watchProxy(configNode.getRulePath(ConfigurationNode.PROXY_NODE));
-        watchProxy(configNode.getPropsPath(ConfigurationNode.PROXY_NODE));
+        watchProxy(configNode.getPropsPath());
     }
     
     private void watchProxy(final String path) {

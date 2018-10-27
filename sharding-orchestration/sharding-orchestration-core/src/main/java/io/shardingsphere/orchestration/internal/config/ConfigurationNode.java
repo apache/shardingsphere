@@ -70,21 +70,19 @@ public final class ConfigurationNode {
     /**
      * Get config map path.
      *
-     * @param schemaName schema name
      * @return config map path
      */
-    public String getConfigMapPath(final String schemaName) {
-        return getFullPath(schemaName, CONFIG_MAP_NODE);
+    public String getConfigMapPath() {
+        return getFullPath(CONFIG_MAP_NODE);
     }
     
     /**
      * Get props path.
      *
-     * @param schemaName schema name
      * @return props path
      */
-    public String getPropsPath(final String schemaName) {
-        return getFullPath(schemaName, PROPS_NODE);
+    public String getPropsPath() {
+        return getFullPath(PROPS_NODE);
     }
     
     @Deprecated
@@ -94,5 +92,9 @@ public final class ConfigurationNode {
     
     private String getFullPath(final String schemaName, final String node) {
         return Joiner.on("/").join("", name, ROOT, schemaName, node);
+    }
+    
+    private String getFullPath(final String node) {
+        return Joiner.on("/").join("", name, ROOT, node);
     }
 }

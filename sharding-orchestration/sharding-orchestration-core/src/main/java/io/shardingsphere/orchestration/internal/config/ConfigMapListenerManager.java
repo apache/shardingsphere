@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.config;
 
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
@@ -46,7 +45,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        String cachePath = configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME);
+        String cachePath = configNode.getConfigMapPath();
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
@@ -61,7 +60,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        String cachePath = configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME);
+        String cachePath = configNode.getConfigMapPath();
         regCenter.watch(cachePath, new EventListener() {
             
             @Override

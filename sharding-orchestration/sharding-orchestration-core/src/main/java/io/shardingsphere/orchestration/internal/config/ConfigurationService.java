@@ -122,22 +122,22 @@ public final class ConfigurationService {
     
     private void persistConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !hasConfigMap()) {
-            regCenter.persist(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new DefaultRepresenter()).dumpAsMap(configMap));
+            regCenter.persist(configNode.getConfigMapPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(configMap));
         }
     }
     
     private boolean hasConfigMap() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getConfigMapPath()));
     }
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasProperties()) {
-            regCenter.persist(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME), new Yaml(new DefaultRepresenter()).dumpAsMap(props));
+            regCenter.persist(configNode.getPropsPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(props));
         }
     }
     
     private boolean hasProperties() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath()));
     }
     
     /**
@@ -268,7 +268,7 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadConfigMap() {
-        String data = regCenter.getDirectly(configNode.getConfigMapPath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        String data = regCenter.getDirectly(configNode.getConfigMapPath());
         return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : (Map) new Yaml().load(data);
     }
     
@@ -278,7 +278,7 @@ public final class ConfigurationService {
      * @return properties
      */
     public Properties loadProperties() {
-        String data = regCenter.getDirectly(configNode.getPropsPath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        String data = regCenter.getDirectly(configNode.getPropsPath());
         return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml().loadAs(data, Properties.class);
     }
     
