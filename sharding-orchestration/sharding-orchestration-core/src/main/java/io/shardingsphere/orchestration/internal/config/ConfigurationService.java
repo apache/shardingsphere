@@ -234,6 +234,16 @@ public final class ConfigurationService {
     }
     
     /**
+     * Adjust is sharding rule or master-slave rule.
+     * 
+     * @param shardingSchemaName sharding schema name
+     * @return is sharding rule or not
+     */
+    public boolean isShardingRule(final String shardingSchemaName) {
+        return regCenter.getDirectly(shardingSchemaName).contains("tables:\n");
+    }
+    
+    /**
      * Load sharding rule configuration.
      *
      * @return sharding rule configuration

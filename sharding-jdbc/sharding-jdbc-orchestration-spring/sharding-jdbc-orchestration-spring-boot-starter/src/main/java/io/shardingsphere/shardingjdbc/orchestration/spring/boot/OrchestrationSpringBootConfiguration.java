@@ -19,6 +19,7 @@ package io.shardingsphere.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
@@ -85,7 +86,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public DataSource dataSource() throws SQLException {
         Preconditions.checkState(isValidConfiguration(), "The orchestration configuration is invalid, please choose one from Sharding rule and Master-slave rule.");
-        return isSharding() ? createShardingDataSource() : createMasterSlaveDataSource();
+        return isShardingRule() ? createShardingDataSource() : createMasterSlaveDataSource();
     }
     
     private boolean isValidConfiguration() {
@@ -101,22 +102,18 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         return !Strings.isNullOrEmpty(orchestrationProperties.getName());
     }
     
-    private boolean isSharding() {
-        return isValidRuleConfiguration() ? isShardingByLocal() : isShardingByRegistry();
+    private boolean isShardingRule() {
+        return isValidRuleConfiguration() ? isShardingRuleByLocal() : isShardingRuleByRegistry();
     }
     
-    private boolean isShardingByLocal() {
+    private boolean isShardingRuleByLocal() {
         return !shardingProperties.getTables().isEmpty();
     }
     
-    private boolean isShardingByRegistry() {
-        // TODO add get type in OrchestrationFacade & ConfigService
+    private boolean isShardingRuleByRegistry() {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration())) {
-            orchestrationFacade.getConfigService().loadShardingRuleConfiguration();
-        } catch (final Exception ex) {
-            return false;
+            return orchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME);
         }
-        return true;
     }
     
     private DataSource createShardingDataSource() throws SQLException {
