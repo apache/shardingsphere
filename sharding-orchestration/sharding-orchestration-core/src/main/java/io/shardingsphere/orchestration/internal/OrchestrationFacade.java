@@ -122,7 +122,9 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param schemaRuleMap schema rule map
      */
     public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap) {
-        configService.persistProxyConfiguration(serverConfig, schemaDataSourceMap, schemaRuleMap, isOverwrite);
+        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
+            configService.persistProxyConfiguration(serverConfig, entry.getKey(), schemaDataSourceMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
+        }
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initProxyListeners();

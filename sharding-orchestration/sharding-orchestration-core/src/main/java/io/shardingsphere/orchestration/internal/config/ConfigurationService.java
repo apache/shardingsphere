@@ -146,23 +146,23 @@ public final class ConfigurationService {
      * Persist proxy configuration.
      *
      * @param serverConfig server configuration
-     * @param schemaDataSourceMap schema data source map
-     * @param schemaRuleMap schema rule map
+     * @param shardingSchemaName sharding schema name
+     * @param dataSourceParameterMap data source parameter map
+     * @param ruleConfig rule configuration
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistProxyConfiguration(final YamlServerConfiguration serverConfig, 
-                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap, final boolean isOverwrite) {
-        persistProxyDataSourceParameterConfiguration(schemaDataSourceMap, isOverwrite);
-        persistProxyRuleConfiguration(schemaRuleMap, isOverwrite);
+    public void persistProxyConfiguration(final YamlServerConfiguration serverConfig, final String shardingSchemaName, 
+                                          final Map<String, DataSourceParameter> dataSourceParameterMap, final YamlRuleConfiguration ruleConfig, final boolean isOverwrite) {
+        persistProxyDataSourceParameterConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
+        persistProxyRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistProxyServerConfiguration(serverConfig, isOverwrite);
     }
     
-    private void persistProxyDataSourceParameterConfiguration(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final boolean isOverwrite) {
-        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
-            if (isOverwrite || !hasProxyDataSourceConfiguration(entry.getKey())) {
-                Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), String.format("No available data source configuration in `%s` for orchestration.", entry.getKey()));
-                regCenter.persist(configNode.getDataSourcePath(entry.getKey()), new Yaml(new DefaultRepresenter()).dumpAsMap(schemaDataSourceMap));
-            }
+    private void persistProxyDataSourceParameterConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
+        if (isOverwrite || !hasProxyDataSourceConfiguration(shardingSchemaName)) {
+            Preconditions.checkState(null != dataSourceParameterMap && !dataSourceParameterMap.isEmpty(), 
+                    String.format("No available data source configuration in `%s` for orchestration.", dataSourceParameterMap));
+            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceParameterMap));
         }
     }
     
@@ -170,13 +170,11 @@ public final class ConfigurationService {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
     }
     
-    private void persistProxyRuleConfiguration(final Map<String, YamlRuleConfiguration> schemaRuleMap, final boolean isOverwrite) {
-        for (Entry<String, YamlRuleConfiguration> entry : schemaRuleMap.entrySet()) {
-            if (isOverwrite || !hasProxyRuleConfig(entry.getKey())) {
-                Preconditions.checkState(null != entry.getValue().getShardingRule() || null != entry.getValue().getMasterSlaveRule(),
-                        String.format("No available proxy rule configuration in `%s` for Orchestration.", entry.getKey()));
-                regCenter.persist(configNode.getRulePath(entry.getKey()), new Yaml(new DefaultRepresenter()).dumpAsMap(schemaRuleMap));
-            }
+    private void persistProxyRuleConfiguration(final String shardingSchemaName, final YamlRuleConfiguration ruleConfig, final boolean isOverwrite) {
+        if (isOverwrite || !hasProxyRuleConfig(shardingSchemaName)) {
+            Preconditions.checkState(null != ruleConfig.getShardingRule() || null != ruleConfig.getMasterSlaveRule(),
+                    String.format("No available proxy rule configuration in `%s` for Orchestration.", shardingSchemaName));
+            regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(ruleConfig));
         }
     }
     
