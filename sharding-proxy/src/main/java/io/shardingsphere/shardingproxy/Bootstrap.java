@@ -35,6 +35,7 @@ import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -88,11 +89,15 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(final ProxyYamlServerConfiguration serverConfig, 
                                                 final Collection<String> shardingSchemaNames, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        // TODO replace proxy to real sharding schema
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
-            GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), 
-                    orchestrationFacade.getConfigService().loadProxyDataSources(), orchestrationFacade.getConfigService().loadProxyConfiguration(), true);
+            Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
+            Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
+            for (String each : orchestrationFacade.getConfigService().getShardingSchemaNames()) {
+                schemaDataSourceParameterMap.put(each, orchestrationFacade.getConfigService().loadProxyDataSources(each));
+                schemaRules.put(each, orchestrationFacade.getConfigService().loadProxyConfiguration(each));
+            }
+            GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), schemaDataSourceParameterMap, schemaRules, true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }

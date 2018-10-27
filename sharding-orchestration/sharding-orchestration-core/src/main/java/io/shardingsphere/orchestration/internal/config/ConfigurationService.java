@@ -35,8 +35,8 @@ import org.yaml.snakeyaml.Yaml;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -85,7 +85,7 @@ public final class ConfigurationService {
      * @param props props
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistMasterSlaveConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap,
+    public void persistMasterSlaveConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap, 
                                                 final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceMap, isOverwrite);
         persistMasterSlaveRuleConfiguration(shardingSchemaName, masterSlaveRuleConfig, isOverwrite);
@@ -172,7 +172,7 @@ public final class ConfigurationService {
     
     private void persistProxyRuleConfiguration(final String shardingSchemaName, final YamlRuleConfiguration ruleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasProxyRuleConfig(shardingSchemaName)) {
-            Preconditions.checkState(null != ruleConfig.getShardingRule() || null != ruleConfig.getMasterSlaveRule(),
+            Preconditions.checkState(null != ruleConfig.getShardingRule() || null != ruleConfig.getMasterSlaveRule(), 
                     String.format("No available proxy rule configuration in `%s` for Orchestration.", shardingSchemaName));
             regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(ruleConfig));
         }
@@ -214,29 +214,19 @@ public final class ConfigurationService {
     /**
      * Load data sources.
      *
+     * @param shardingSchemaName sharding schema name
      * @return data sources map
      */
     @SuppressWarnings("unchecked")
-    public Map<String, Map<String, DataSourceParameter>> loadProxyDataSources() {
-        try {
-            // TODO spit data source
-            Collection<String> shardingSchemaNames = regCenter.getChildrenKeys(configNode.getRootPath());
-            Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaNames.iterator().next())));
-            Preconditions.checkState(null != schemaDataSourceMap && !schemaDataSourceMap.isEmpty(), "No available schema data source configuration to load.");
-            for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
-                Preconditions.checkState(null != entry.getValue() || !entry.getValue().isEmpty(), "No available data source configuration.");
-            }
-            return schemaDataSourceMap;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available data source configuration to load.");
-        }
+    public Map<String, DataSourceParameter> loadProxyDataSources(final String shardingSchemaName) {
+        Map<String, DataSourceParameter> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
+        Preconditions.checkState(null != result && !result.isEmpty(), "No available schema data source configuration to load.");
+        return result;
     }
     
     /**
      * Adjust is sharding rule or master-slave rule.
-     * 
+     *
      * @param shardingSchemaName sharding schema name
      * @return is sharding rule or not
      */
@@ -288,29 +278,17 @@ public final class ConfigurationService {
     /**
      * Load proxy configuration.
      *
+     * @param shardingSchemaName sharding schema name
      * @return proxy configuration
      */
     @SuppressWarnings("unchecked")
-    public Map<String, YamlRuleConfiguration> loadProxyConfiguration() {
-        try {
-            // TODO spit config
-            Collection<String> shardingSchemaNames = regCenter.getChildrenKeys(configNode.getRootPath());
-            Map<String, YamlRuleConfiguration> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getRulePath(shardingSchemaNames.iterator().next())));
-            Preconditions.checkState(null != result && !result.isEmpty(), "No available schema sharding rule configuration to load.");
-            for (Entry<String, YamlRuleConfiguration> entry : result.entrySet()) {
-                Preconditions.checkState(null != entry.getValue().getShardingRule() || null != entry.getValue().getMasterSlaveRule(), "Sharding rule or Master slave rule can not be both null.");
-            }
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available proxy rule configuration to load.");
-        }
+    public YamlRuleConfiguration loadProxyConfiguration(final String shardingSchemaName) {
+        return new Yaml().loadAs(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlRuleConfiguration.class);
     }
     
     /**
      * Load yaml server configuration.
-     * 
+     *
      * @return server configuration for yaml
      */
     public YamlServerConfiguration loadYamlServerConfiguration() {
@@ -323,5 +301,21 @@ public final class ConfigurationService {
             // CHECKSTYLE:ON
             throw new ShardingConfigurationException("No available proxy server configuration to load.");
         }
+    }
+    
+    /**
+     * Get all sharding schema names.
+     * 
+     * @return all sharding schema names
+     */
+    public Collection<String> getShardingSchemaNames() {
+        Collection<String> children = regCenter.getChildrenKeys(configNode.getRootPath());
+        Collection<String> result = new LinkedList<>();
+        for (String each : children) {
+            if (!"configmap".equals(each) && !"props".equals(each) && !"server".equals(each)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }

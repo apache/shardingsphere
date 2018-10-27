@@ -85,7 +85,10 @@ public final class DataSourceService {
      * @return available data source parameters
      */
     public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
-        Map<String, Map<String, DataSourceParameter>> result = configService.loadProxyDataSources();
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
+        for (String each : configService.getShardingSchemaNames()) {
+            result.put(each, configService.loadProxyDataSources(each));
+        }
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
         for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
@@ -136,7 +139,10 @@ public final class DataSourceService {
      * @return available yaml proxy configuration
      */
     public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
-        Map<String, YamlRuleConfiguration> schemaRuleMap = configService.loadProxyConfiguration();
+        Map<String, YamlRuleConfiguration> schemaRuleMap = new LinkedHashMap<>();
+        for (String each : configService.getShardingSchemaNames()) {
+            schemaRuleMap.put(each, configService.loadProxyConfiguration(each));
+        }
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
         for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
