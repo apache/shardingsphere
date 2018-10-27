@@ -23,6 +23,9 @@ import io.shardingsphere.orchestration.internal.state.datasource.DataSourceListe
 import io.shardingsphere.orchestration.internal.state.instance.InstanceListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Registry center's listener factory.
  *
@@ -31,7 +34,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
  */
 public final class ListenerFactory {
     
-    private final ConfigurationListenerManager configurationListenerManager;
+    private final Collection<ConfigurationListenerManager> configurationListenerManagers = new LinkedList<>();
     
     private final InstanceListenerManager instanceListenerManager;
     
@@ -39,8 +42,10 @@ public final class ListenerFactory {
     
     private final DataSourceListenerManager dataSourceListenerManager;
     
-    public ListenerFactory(final String name, final RegistryCenter regCenter) {
-        configurationListenerManager = new ConfigurationListenerManager(name, regCenter);
+    public ListenerFactory(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
+        for (String each : shardingSchemaNames) {
+            configurationListenerManagers.add(new ConfigurationListenerManager(name, regCenter, each));
+        }
         instanceListenerManager = new InstanceListenerManager(name, regCenter);
         configMapListenerManager = new ConfigMapListenerManager(name, regCenter);
         dataSourceListenerManager = new DataSourceListenerManager(name, regCenter);
@@ -51,7 +56,9 @@ public final class ListenerFactory {
      * 
      */
     public void initShardingListeners() {
-        configurationListenerManager.watchSharding();
+        for (ConfigurationListenerManager each : configurationListenerManagers) {
+            each.watchSharding();
+        }
         instanceListenerManager.watchSharding();
         dataSourceListenerManager.watchSharding();
         configMapListenerManager.watchSharding();
@@ -62,7 +69,9 @@ public final class ListenerFactory {
      *
      */
     public void initMasterSlaveListeners() {
-        configurationListenerManager.watchMasterSlave();
+        for (ConfigurationListenerManager each : configurationListenerManagers) {
+            each.watchMasterSlave();
+        }
         instanceListenerManager.watchMasterSlave();
         dataSourceListenerManager.watchMasterSlave();
         configMapListenerManager.watchMasterSlave();
@@ -73,7 +82,9 @@ public final class ListenerFactory {
      *
      */
     public void initProxyListeners() {
-        configurationListenerManager.watchProxy();
+        for (ConfigurationListenerManager each : configurationListenerManagers) {
+            each.watchProxy();
+        }
         instanceListenerManager.watchProxy();
         dataSourceListenerManager.watchProxy();
         configMapListenerManager.watchProxy();

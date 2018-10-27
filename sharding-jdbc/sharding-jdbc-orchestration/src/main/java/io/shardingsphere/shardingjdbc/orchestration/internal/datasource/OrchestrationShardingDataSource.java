@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
@@ -31,6 +32,7 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 
 /**
@@ -43,24 +45,25 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     private ShardingDataSource dataSource;
     
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig), shardingDataSource.getDataSourceMap());
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
         dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
         initOrchestrationFacade(dataSource);
     }
     
     public OrchestrationShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig));
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
-        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration();
+        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        dataSource = new ShardingDataSource(configService.loadDataSourceMap(),
-                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceMap().keySet()), configService.loadConfigMap(), configService.loadProperties());
+        dataSource = new ShardingDataSource(configService.loadDataSourceMap(ShardingConstant.LOGIC_SCHEMA_NAME),
+                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceMap(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()), 
+                configService.loadConfigMap(), configService.loadProperties());
         getOrchestrationFacade().getListenerManager().initShardingListeners();
     }
     
     private void initOrchestrationFacade(final ShardingDataSource shardingDataSource) {
-        getOrchestrationFacade().init(shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
     }
     

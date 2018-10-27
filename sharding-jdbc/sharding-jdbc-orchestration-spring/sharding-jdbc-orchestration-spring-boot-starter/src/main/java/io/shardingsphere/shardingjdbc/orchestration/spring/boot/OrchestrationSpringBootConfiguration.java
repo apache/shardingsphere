@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -107,7 +108,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     private boolean isShardingRuleByRegistry() {
-        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(orchestrationProperties.getOrchestrationConfiguration())) {
+        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(
+                orchestrationProperties.getOrchestrationConfiguration(), Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
             return orchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME);
         }
     }

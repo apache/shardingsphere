@@ -67,10 +67,11 @@ public final class DataSourceService {
     /**
      * Get available data sources.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available data sources
      */
-    public Map<String, DataSource> getAvailableDataSources() {
-        Map<String, DataSource> result = configService.loadDataSourceMap();
+    public Map<String, DataSource> getAvailableDataSources(final String shardingSchemaName) {
+        Map<String, DataSource> result = configService.loadDataSourceMap(shardingSchemaName);
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
             result.remove(each);
@@ -84,24 +85,25 @@ public final class DataSourceService {
      * @return available data source parameters
      */
     public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
-        Map<String, Map<String, DataSourceParameter>> schemaDatasources = configService.loadProxyDataSources();
+        Map<String, Map<String, DataSourceParameter>> result = configService.loadProxyDataSources();
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
         for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
-                schemaDatasources.get(each.getKey()).remove(disabledDataSourceName);
+                result.get(each.getKey()).remove(disabledDataSourceName);
             }
             
         }
-        return schemaDatasources;
+        return result;
     }
     
     /**
      * Get available sharding rule configuration.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available sharding rule configuration
      */
-    public ShardingRuleConfiguration getAvailableShardingRuleConfiguration() {
-        ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration();
+    public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
+        ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
@@ -115,10 +117,11 @@ public final class DataSourceService {
     /**
      * Get available master-slave rule configuration.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available master-slave rule configuration
      */
-    public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration() {
-        MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration();
+    public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
+        MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {

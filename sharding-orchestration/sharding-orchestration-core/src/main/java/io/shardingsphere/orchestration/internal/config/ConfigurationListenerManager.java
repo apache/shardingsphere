@@ -44,21 +44,24 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final RegistryCenter regCenter;
     
+    private final String shardingSchemaName;
+    
     private final ConfigurationService configService;
     
     private final DataSourceService dataSourceService;
     
-    public ConfigurationListenerManager(final String name, final RegistryCenter regCenter) {
+    public ConfigurationListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
+        this.shardingSchemaName = shardingSchemaName;
         configService = new ConfigurationService(name, regCenter);
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
     public void watchSharding() {
-        watchSharding(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchSharding(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchSharding(configNode.getDataSourcePath(shardingSchemaName));
+        watchSharding(configNode.getRulePath(shardingSchemaName));
         watchSharding(configNode.getPropsPath());
         // TODO watch config map
     }
@@ -69,9 +72,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
+                    Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources(shardingSchemaName);
                     ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(dataSourceMap,
-                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadProperties());
+                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceMap.keySet()), configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
@@ -92,8 +95,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadProperties());
+                    MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(shardingSchemaName),
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
