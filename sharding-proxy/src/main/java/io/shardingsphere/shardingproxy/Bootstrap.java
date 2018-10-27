@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingproxy;
 
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Sharding-Proxy Bootstrap.
@@ -63,7 +64,8 @@ public final class Bootstrap {
         int port = getPort(args);
         new ProxyListenerRegister().register();
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap(), port);
+            startWithoutRegistryCenter(
+                    shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
@@ -81,8 +83,8 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(
-            final ProxyYamlServerConfiguration serverConfig, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        GlobalRegistry.getInstance().init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
+            final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final Authentication authentication, final Properties prop, final int port) throws InterruptedException {
+        GlobalRegistry.getInstance().init(getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, prop);
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -97,7 +99,8 @@ public final class Bootstrap {
                 schemaDataSourceParameterMap.put(each, orchestrationFacade.getConfigService().loadProxyDataSources(each));
                 schemaRules.put(each, orchestrationFacade.getConfigService().loadProxyConfiguration(each));
             }
-            GlobalRegistry.getInstance().init(orchestrationFacade.getConfigService().loadYamlServerConfiguration(), schemaDataSourceParameterMap, schemaRules, true);
+            GlobalRegistry.getInstance().init(
+                    schemaDataSourceParameterMap, schemaRules, orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadProperties(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
@@ -108,7 +111,7 @@ public final class Bootstrap {
         if (ruleConfigs.isEmpty()) {
             orchestrationFacade.getListenerManager().initProxyListeners();
         } else {
-            orchestrationFacade.init(getYamlServerConfiguration(serverConfig), getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
+            orchestrationFacade.init(getSchemaDataSourceMap(ruleConfigs), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getProps());
         }
     }
     
@@ -116,13 +119,6 @@ public final class Bootstrap {
         if (GlobalRegistry.getInstance().isOpenTracingEnable()) {
             ShardingTracer.init();
         }
-    }
-    
-    private static YamlServerConfiguration getYamlServerConfiguration(final ProxyYamlServerConfiguration serverConfig) {
-        YamlServerConfiguration result = new YamlServerConfiguration();
-        result.setAuthentication(serverConfig.getAuthentication());
-        result.setProps(serverConfig.getProps());
-        return result;
     }
     
     private static Map<String, Map<String, DataSourceParameter>> getSchemaDataSourceMap(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {

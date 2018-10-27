@@ -17,13 +17,14 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Proxy configuration event bus event.
@@ -34,9 +35,11 @@ import java.util.Map;
 @Getter
 public final class ProxyConfigurationEventBusEvent {
     
-    private final YamlServerConfiguration serverConfiguration;
-    
     private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
     
     private final Map<String, YamlRuleConfiguration> schemaRuleMap;
+    
+    private final Authentication authentication;
+    
+    private final Properties props;
 }

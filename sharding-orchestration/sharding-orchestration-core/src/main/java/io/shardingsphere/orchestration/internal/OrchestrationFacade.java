@@ -19,10 +19,10 @@ package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.ListenerFactory;
@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -117,13 +118,16 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param serverConfig server configuration
      * @param schemaDataSourceMap schema data source map
      * @param schemaRuleMap schema rule map
+     * @param authentication authentication
+     * @param prop properties
      */
-    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap) {
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, 
+                     final Map<String, YamlRuleConfiguration> schemaRuleMap, final Authentication authentication, final Properties prop) {
         for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
-            configService.persistProxyConfiguration(serverConfig, entry.getKey(), schemaDataSourceMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
+            configService.persistProxyConfiguration(entry.getKey(), schemaDataSourceMap.get(entry.getKey()), 
+                    schemaRuleMap.get(entry.getKey()), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
         }
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();

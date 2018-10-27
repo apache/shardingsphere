@@ -38,6 +38,11 @@ public final class ConfigurationNodeTest {
     }
     
     @Test
+    public void assertGetAuthenticationPath() {
+        assertThat(configurationNode.getAuthenticationPath(), is("/test/config/authentication"));
+    }
+    
+    @Test
     public void assertGetConfigMapPath() {
         assertThat(configurationNode.getConfigMapPath(), is("/test/config/configmap"));
     }

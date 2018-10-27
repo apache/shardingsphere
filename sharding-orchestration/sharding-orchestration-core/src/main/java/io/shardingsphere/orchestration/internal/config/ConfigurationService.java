@@ -22,10 +22,10 @@ import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import io.shardingsphere.orchestration.internal.yaml.representer.SimpleTypeRepresenter;
@@ -145,51 +145,47 @@ public final class ConfigurationService {
     /**
      * Persist proxy configuration.
      *
-     * @param serverConfig server configuration
      * @param shardingSchemaName sharding schema name
      * @param dataSourceParameterMap data source parameter map
      * @param ruleConfig rule configuration
+     * @param authentication authentication
+     * @param configMap config map
+     * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistProxyConfiguration(final YamlServerConfiguration serverConfig, final String shardingSchemaName, 
-                                          final Map<String, DataSourceParameter> dataSourceParameterMap, final YamlRuleConfiguration ruleConfig, final boolean isOverwrite) {
+    public void persistProxyConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final YamlRuleConfiguration ruleConfig, 
+                                          final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
         persistProxyDataSourceParameterConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
         persistProxyRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
-        persistProxyServerConfiguration(serverConfig, isOverwrite);
+        persistAuthentication(authentication, isOverwrite);
+        persistConfigMap(configMap, isOverwrite);
+        persistProperties(props, isOverwrite);
     }
     
     private void persistProxyDataSourceParameterConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasProxyDataSourceConfiguration(shardingSchemaName)) {
+        if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceParameterMap && !dataSourceParameterMap.isEmpty(), 
                     String.format("No available data source configuration in `%s` for orchestration.", dataSourceParameterMap));
             regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceParameterMap));
         }
     }
     
-    private boolean hasProxyDataSourceConfiguration(final String shardingSchemaName) {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
-    }
-    
     private void persistProxyRuleConfiguration(final String shardingSchemaName, final YamlRuleConfiguration ruleConfig, final boolean isOverwrite) {
-        if (isOverwrite || !hasProxyRuleConfig(shardingSchemaName)) {
+        if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != ruleConfig.getShardingRule() || null != ruleConfig.getMasterSlaveRule(), 
                     String.format("No available proxy rule configuration in `%s` for Orchestration.", shardingSchemaName));
             regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(ruleConfig));
         }
     }
     
-    private boolean hasProxyRuleConfig(final String shardingSchemaName) {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getRulePath(shardingSchemaName)));
-    }
-    
-    private boolean hasProxyServerConfig() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getServerPath()));
-    }
-    
-    private void persistProxyServerConfiguration(final YamlServerConfiguration serverConfig, final boolean isOverwrite) {
-        if (isOverwrite || !hasProxyServerConfig()) {
-            regCenter.persist(configNode.getServerPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(serverConfig));
+    private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
+        if (isOverwrite || !hasAuthentication()) {
+            regCenter.persist(configNode.getAuthenticationPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(authentication));
         }
+    }
+    
+    private boolean hasAuthentication() {
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath()));
     }
     
     /**
@@ -287,20 +283,14 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load yaml server configuration.
+     * Load authentication.
      *
-     * @return server configuration for yaml
+     * @return authentication
      */
-    public YamlServerConfiguration loadYamlServerConfiguration() {
-        try {
-            YamlServerConfiguration result = new Yaml().loadAs(regCenter.getDirectly(configNode.getServerPath()), YamlServerConfiguration.class);
-            Preconditions.checkState(!Strings.isNullOrEmpty(result.getAuthentication().getUsername()), "Authority configuration is invalid.");
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available proxy server configuration to load.");
-        }
+    public Authentication loadAuthentication() {
+        Authentication result = new Yaml().loadAs(regCenter.getDirectly(configNode.getAuthenticationPath()), Authentication.class);
+        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
+        return result;
     }
     
     /**
@@ -312,7 +302,7 @@ public final class ConfigurationService {
         Collection<String> children = regCenter.getChildrenKeys(configNode.getRootPath());
         Collection<String> result = new LinkedList<>();
         for (String each : children) {
-            if (!"configmap".equals(each) && !"props".equals(each) && !"server".equals(each)) {
+            if (!"configmap".equals(each) && !"props".equals(each) && !"authentication".equals(each)) {
                 result.add(each);
             }
         }

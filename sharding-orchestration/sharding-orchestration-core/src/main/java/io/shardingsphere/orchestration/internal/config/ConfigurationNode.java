@@ -35,12 +35,11 @@ public final class ConfigurationNode {
     
     private static final String RULE_NODE = "rule";
     
+    private static final String AUTHENTICATION_NODE = "authentication";
+    
     private static final String CONFIG_MAP_NODE = "configmap";
     
     private static final String PROPS_NODE = "props";
-    
-    @Deprecated
-    private static final String SERVER_NODE = "server";
     
     private final String name;
     
@@ -65,6 +64,15 @@ public final class ConfigurationNode {
     }
     
     /**
+     * Get authentication path.
+     *
+     * @return authentication path
+     */
+    public String getAuthenticationPath() {
+        return getFullPath(AUTHENTICATION_NODE);
+    }
+    
+    /**
      * Get config map path.
      *
      * @return config map path
@@ -82,11 +90,11 @@ public final class ConfigurationNode {
         return getFullPath(PROPS_NODE);
     }
     
-    @Deprecated
-    public String getServerPath() {
-        return getFullPath(SERVER_NODE);
-    }
-    
+    /**
+     * Get root path.
+     * 
+     * @return root path
+     */
     public String getRootPath() {
         return Joiner.on("/").join("", name, ROOT);
     }
