@@ -30,4 +30,8 @@
     <select id="selectAll" resultMap="baseResultMap">
         SELECT * FROM t_order;
     </select>
+    
+    <select id="selectRange" resultMap="baseResultMap">
+        SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 400000000000000000
+    </select>
 </mapper>
