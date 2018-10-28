@@ -27,12 +27,12 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Transactional
     @Override
-    public void processSuccess() {
+    public void processSuccess(boolean isRangeSharding) {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
-        printData();
+        printData(isRangeSharding);
         deleteData(orderIds);
-        printData();
+        printData(isRangeSharding);
         System.out.println("-------------- Process Success Finish --------------");
     }
     
@@ -72,11 +72,34 @@ public abstract class CommonServiceImpl implements CommonService {
     }
     
     @Override
-    public void printData() {
+    public void printData(boolean isRangeSharding) {
+        if (isRangeSharding) {
+            printDataRange();
+        } else {
+            printDataAll();
+        }
+    }
+    
+    private void printDataRange() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        System.out.println(getOrderRepository().selectAll());
+        for (Object each : getOrderRepository().selectRange()) {
+            System.out.println(each);
+        }
         System.out.println("---------------------------- Print OrderItem Data -------------------");
-        System.out.println(getOrderItemRepository().selectAll());
+        for (Object each : getOrderItemRepository().selectRange()) {
+            System.out.println(each);
+        }
+    }
+    
+    private void printDataAll() {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (Object each : getOrderRepository().selectAll()) {
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (Object each : getOrderItemRepository().selectAll()) {
+            System.out.println(each);
+        }
     }
     
     protected abstract OrderRepository getOrderRepository();

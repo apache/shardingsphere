@@ -6,9 +6,9 @@ public interface CommonService {
     
     void cleanEnvironment();
     
-    void processSuccess();
+    void processSuccess(boolean isRangeSharding);
     
     void processFailure();
     
-    void printData();
+    void printData(boolean isRangeSharding);
 }

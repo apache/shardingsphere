@@ -88,7 +88,7 @@ public class YamlConfigurationExample {
     private static void process(final DataSource dataSource) {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        commonService.processSuccess();
+        commonService.processSuccess(false);
         commonService.cleanEnvironment();
         closeDataSource(dataSource);
     }

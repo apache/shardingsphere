@@ -31,4 +31,8 @@
     <select id="selectAll" resultMap="baseResultMap">
         SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id;
     </select>
+    
+    <select id="selectRange" resultMap="baseResultMap">
+        SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id BETWEEN 1 AND 5
+    </select>
 </mapper>

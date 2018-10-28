@@ -100,8 +100,18 @@ public final class JDBCOrderItemRepositoryImpl implements OrderItemRepository {
     
     @Override
     public List<OrderItem> selectAll() {
-        List<OrderItem> result = new LinkedList<>();
         String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
+        return getOrderItems(sql);
+    }
+    
+    @Override
+    public List<OrderItem> selectRange() {
+        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id BETWEEN 1 AND 5";
+        return getOrderItems(sql);
+    }
+    
+    private List<OrderItem> getOrderItems(String sql) {
+        List<OrderItem> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {

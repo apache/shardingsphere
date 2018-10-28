@@ -30,25 +30,44 @@ public class SpringNamespaceExample {
 //    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static boolean IS_RANGE_SHARDING = true;
+    private static boolean IS_RANGE_SHARDING = false;
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(IS_RANGE_SHARDING ? getApplicationFileRange() : getApplicationFilePrecise())) {
             process(applicationContext);
         }
     }
     
-    private static String getApplicationFile() {
+    private static String getApplicationFilePrecise() {
         switch (type) {
             case SHARDING_DATABASES:
-                return "META-INF/application-sharding-databases.xml";
+                return "META-INF/application-sharding-databases-precise.xml";
             case SHARDING_TABLES:
-                return "META-INF/application-sharding-tables.xml";
+                return "META-INF/application-sharding-tables-precise.xml";
             case SHARDING_DATABASES_AND_TABLES:
-                return "META-INF/application-sharding-databases-tables.xml";
+                return "META-INF/application-sharding-databases-tables-precise.xml";
             case MASTER_SLAVE:
                 return "META-INF/application-master-slave.xml";
             case SHARDING_MASTER_SLAVE:
-                return "META-INF/application-sharding-master-slave.xml";
+                return "META-INF/application-sharding-master-slave-precise.xml";
+            default:
+                throw new UnsupportedOperationException(type.name());
+        }
+    }
+    
+    private static String getApplicationFileRange() {
+        switch (type) {
+            case SHARDING_DATABASES:
+                return "META-INF/application-sharding-databases-range.xml";
+            case SHARDING_TABLES:
+                return "META-INF/application-sharding-tables-range.xml";
+            case SHARDING_DATABASES_AND_TABLES:
+                return "META-INF/application-sharding-databases-tables-range.xml";
+            case MASTER_SLAVE:
+                return "META-INF/application-master-slave.xml";
+            case SHARDING_MASTER_SLAVE:
+                return "META-INF/application-sharding-master-slave-range.xml";
             default:
                 throw new UnsupportedOperationException(type.name());
         }
@@ -56,12 +75,12 @@ public class SpringNamespaceExample {
     
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
-        commonService.processSuccess();
+        commonService.processSuccess(IS_RANGE_SHARDING);
         try {
             commonService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            commonService.printData();
+            commonService.printData(IS_RANGE_SHARDING);
         }
     }
     

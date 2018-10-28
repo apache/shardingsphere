@@ -98,8 +98,18 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
     
     @Override
     public List<Order> selectAll() {
-        List<Order> result = new LinkedList<>();
         String sql = "SELECT * FROM t_order";
+        return getOrders(sql);
+    }
+    
+    @Override
+    public List<Order> selectRange() {
+        String sql = "SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 400000000000000000";
+        return getOrders(sql);
+    }
+    
+    private List<Order> getOrders(String sql) {
+        List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {

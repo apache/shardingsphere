@@ -67,4 +67,10 @@ public class JPAOrderItemRepositoryImpl implements OrderItemRepository {
     public List<OrderItem> selectAll() {
         return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId").getResultList();
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<OrderItem> selectRange() {
+        return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId AND o.userId BETWEEN 1 AND 5").getResultList();
+    }
 }

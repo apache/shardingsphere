@@ -67,4 +67,10 @@ public class JPAOrderRepositoryImpl implements OrderRepository {
     public List<Order> selectAll() {
         return (List<Order>) entityManager.createQuery("SELECT o FROM OrderEntity o").getResultList();
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Order> selectRange() {
+        return (List<Order>) entityManager.createQuery("SELECT o FROM OrderEntity o WHERE orderId BETWEEN 200000000000000000 AND 400000000000000000").getResultList();
+    }
 }

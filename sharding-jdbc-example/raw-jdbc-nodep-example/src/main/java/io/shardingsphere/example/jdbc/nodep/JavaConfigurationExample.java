@@ -19,10 +19,14 @@ package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfiguration;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -42,28 +46,54 @@ public class JavaConfigurationExample {
 //    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static boolean IS_RANGE_SHARDING = true;
+    private static boolean IS_RANGE_SHARDING = false;
     
     public static void main(final String[] args) throws SQLException {
-        process(getDataSource());
+        process(IS_RANGE_SHARDING ? getDataSourceRange() : getDataSourcePrecise());
     }
     
-    private static DataSource getDataSource() throws SQLException {
+    private static DataSource getDataSourcePrecise() throws SQLException {
         ExampleConfiguration exampleConfig;
         switch (type) {
             case SHARDING_DATABASES:
-                exampleConfig = new ShardingDatabasesConfiguration();
+                exampleConfig = new ShardingDatabasesConfigurationPrecise();
                 break;
             case SHARDING_TABLES:
-                exampleConfig = new ShardingTablesConfiguration();
+                exampleConfig = new ShardingTablesConfigurationPrecise();
                 break;
             case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = new ShardingDatabasesAndTablesConfiguration();
+                exampleConfig = new ShardingDatabasesAndTablesConfigurationPrecise();
                 break;
             case MASTER_SLAVE:
                 exampleConfig = new MasterSlaveConfiguration();
                 break;
             case SHARDING_MASTER_SLAVE:
-                exampleConfig = new ShardingMasterSlaveConfiguration();
+                exampleConfig = new ShardingMasterSlaveConfigurationPrecise();
+                break;
+            default:
+                throw new UnsupportedOperationException(type.name());
+        }
+        return exampleConfig.getDataSource();
+    }
+    
+    private static DataSource getDataSourceRange() throws SQLException {
+        ExampleConfiguration exampleConfig;
+        switch (type) {
+            case SHARDING_DATABASES:
+                exampleConfig = new ShardingDatabasesConfigurationRange();
+                break;
+            case SHARDING_TABLES:
+                exampleConfig = new ShardingTablesConfigurationRange();
+                break;
+            case SHARDING_DATABASES_AND_TABLES:
+                exampleConfig = new ShardingDatabasesAndTablesConfigurationRange();
+                break;
+            case MASTER_SLAVE:
+                exampleConfig = new MasterSlaveConfiguration();
+                break;
+            case SHARDING_MASTER_SLAVE:
+                exampleConfig = new ShardingMasterSlaveConfigurationRange();
                 break;
             default:
                 throw new UnsupportedOperationException(type.name());
@@ -74,7 +104,7 @@ public class JavaConfigurationExample {
     private static void process(final DataSource dataSource) {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        commonService.processSuccess();
+        commonService.processSuccess(IS_RANGE_SHARDING);
         commonService.cleanEnvironment();
     }
     
