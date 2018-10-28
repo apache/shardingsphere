@@ -29,7 +29,7 @@ public class RangeModuloShardingTableAlgorithm implements RangeShardingAlgorithm
     @Override
     public Collection<String> doSharding(final Collection<String> tableNames, final RangeShardingValue<Long> shardingValue) {
         LinkedHashSet<String> result = new LinkedHashSet<>();
-        if (Range.closed(200000000000000000L, 300000000000000000L).encloses(shardingValue.getValueRange())) {
+        if (Range.closed(200000000000000000L, 400000000000000000L).encloses(shardingValue.getValueRange())) {
             for (String each : tableNames) {
                 if (each.endsWith("0")) {
                     result.add(each);
