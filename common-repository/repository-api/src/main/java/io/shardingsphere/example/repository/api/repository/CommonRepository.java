@@ -31,5 +31,7 @@ public interface CommonRepository<T> {
     
     void delete(Long id);
     
-    List<T> selectAll(boolean isRangeSharding);
+    List<T> selectAll();
+    
+    List<T> selectRange();
 }
