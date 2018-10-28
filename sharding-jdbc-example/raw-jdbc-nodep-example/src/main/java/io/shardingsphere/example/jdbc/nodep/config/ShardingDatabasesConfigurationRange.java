@@ -19,12 +19,9 @@ package io.shardingsphere.example.jdbc.nodep.config;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
-import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm;
-import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
 import io.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm;
-import io.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
