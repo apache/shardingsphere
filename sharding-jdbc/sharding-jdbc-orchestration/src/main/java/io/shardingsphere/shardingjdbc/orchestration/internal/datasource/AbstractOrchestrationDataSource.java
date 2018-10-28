@@ -52,9 +52,9 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
     }
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(orchestrationFacade.getConfigService().loadDataSourceMap(ShardingConstant.LOGIC_SCHEMA_NAME).values());
+        super(orchestrationFacade.getConfigService().loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME).values());
         this.orchestrationFacade = orchestrationFacade;
-        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSourceMap(ShardingConstant.LOGIC_SCHEMA_NAME);
+        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME);
         ShardingEventBusInstance.getInstance().register(this);
     }
     

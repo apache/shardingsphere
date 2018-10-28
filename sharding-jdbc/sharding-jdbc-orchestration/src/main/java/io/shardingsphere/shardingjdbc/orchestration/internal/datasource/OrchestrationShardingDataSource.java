@@ -56,8 +56,8 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
         ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        dataSource = new ShardingDataSource(configService.loadDataSourceMap(ShardingConstant.LOGIC_SCHEMA_NAME),
-                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceMap(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()), 
+        dataSource = new ShardingDataSource(configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME),
+                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()), 
                 configService.loadConfigMap(), configService.loadProperties());
         getOrchestrationFacade().getListenerManager().initShardingListeners();
     }

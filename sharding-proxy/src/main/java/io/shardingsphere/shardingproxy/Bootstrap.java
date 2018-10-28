@@ -95,7 +95,7 @@ public final class Bootstrap {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
             Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
-            for (String each : orchestrationFacade.getConfigService().getShardingSchemaNames()) {
+            for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
                 schemaDataSourceParameterMap.put(each, orchestrationFacade.getConfigService().loadDataSourceParameters(each));
                 YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
                 if (orchestrationFacade.getConfigService().isShardingRule(each)) {

@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
@@ -133,15 +132,14 @@ public final class ConfigurationService {
     
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source configuration for orchestration.");
+            Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
             regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new SimpleTypeRepresenter("loginTimeout")).dumpAsMap(dataSourceMap));
         }
     }
     
     private void persistDataSourceParameterConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceParameterMap && !dataSourceParameterMap.isEmpty(),
-                    String.format("No available data source configuration in `%s` for orchestration.", dataSourceParameterMap));
+            Preconditions.checkState(null != dataSourceParameterMap && !dataSourceParameterMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
             regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceParameterMap));
         }
     }
@@ -152,14 +150,16 @@ public final class ConfigurationService {
     
     private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "No available sharding rule configuration for orchestration.");
+            Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), 
+                    "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
             regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig)));
         }
     }
     
     private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
         if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(), "No available master slave configuration for orchestration.");
+            Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(), 
+                    "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
             regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig)));
         }
     }
@@ -175,7 +175,7 @@ public final class ConfigurationService {
     }
     
     private boolean hasAuthentication() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath()));
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getAuthenticationPath()));
     }
     
     private void persistConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
@@ -199,22 +199,16 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load data source configuration.
+     * Load data sources.
      *
      * @param shardingSchemaName sharding schema name
-     * @return data source configuration map
+     * @return data sources map
      */
     @SuppressWarnings("unchecked")
-    public Map<String, DataSource> loadDataSourceMap(final String shardingSchemaName) {
-        try {
-            Map<String, DataSource> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
-            Preconditions.checkState(null != result && !result.isEmpty(), "No available data source configuration to load.");
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new ShardingConfigurationException("No available data source configuration to load.");
-        }
+    public Map<String, DataSource> loadDataSources(final String shardingSchemaName) {
+        Map<String, DataSource> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
+        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
+        return result;
     }
     
     /**
@@ -226,7 +220,7 @@ public final class ConfigurationService {
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceParameter> loadDataSourceParameters(final String shardingSchemaName) {
         Map<String, DataSourceParameter> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
-        Preconditions.checkState(null != result && !result.isEmpty(), "No available schema data source configuration to load.");
+        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
         return result;
     }
     
@@ -261,6 +255,17 @@ public final class ConfigurationService {
     }
     
     /**
+     * Load authentication.
+     *
+     * @return authentication
+     */
+    public Authentication loadAuthentication() {
+        Authentication result = new Yaml().loadAs(regCenter.getDirectly(configNode.getAuthenticationPath()), Authentication.class);
+        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
+        return result;
+    }
+    
+    /**
      * Load config map.
      *
      * @return config map
@@ -282,22 +287,11 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load authentication.
-     *
-     * @return authentication
-     */
-    public Authentication loadAuthentication() {
-        Authentication result = new Yaml().loadAs(regCenter.getDirectly(configNode.getAuthenticationPath()), Authentication.class);
-        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
-        return result;
-    }
-    
-    /**
      * Get all sharding schema names.
      * 
      * @return all sharding schema names
      */
-    public Collection<String> getShardingSchemaNames() {
+    public Collection<String> getAllShardingSchemaNames() {
         return regCenter.getChildrenKeys(configNode.getSchemaPath());
     }
 }

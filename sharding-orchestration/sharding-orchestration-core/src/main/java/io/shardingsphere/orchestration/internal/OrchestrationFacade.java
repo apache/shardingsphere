@@ -72,7 +72,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
         if (shardingSchemaNames.isEmpty()) {
-            listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, configService.getShardingSchemaNames());
+            listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames());
         } else {
             listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
         }

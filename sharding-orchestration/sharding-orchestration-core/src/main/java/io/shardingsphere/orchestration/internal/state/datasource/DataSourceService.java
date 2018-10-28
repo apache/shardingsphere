@@ -71,7 +71,7 @@ public final class DataSourceService {
      * @return available data sources
      */
     public Map<String, DataSource> getAvailableDataSources(final String shardingSchemaName) {
-        Map<String, DataSource> result = configService.loadDataSourceMap(shardingSchemaName);
+        Map<String, DataSource> result = configService.loadDataSources(shardingSchemaName);
         Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
         for (String each : disabledDataSourceNames) {
             result.remove(each);
@@ -86,7 +86,7 @@ public final class DataSourceService {
      */
     public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
         Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : configService.getShardingSchemaNames()) {
+        for (String each : configService.getAllShardingSchemaNames()) {
             result.put(each, configService.loadDataSourceParameters(each));
         }
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
@@ -140,7 +140,7 @@ public final class DataSourceService {
      */
     public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
         Map<String, YamlRuleConfiguration> schemaRuleMap = new LinkedHashMap<>();
-        for (String each : configService.getShardingSchemaNames()) {
+        for (String each : configService.getAllShardingSchemaNames()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
             if (configService.isShardingRule(each)) {
                 yamlRuleConfig.setShardingRule(configService.loadShardingRuleConfiguration(each));
