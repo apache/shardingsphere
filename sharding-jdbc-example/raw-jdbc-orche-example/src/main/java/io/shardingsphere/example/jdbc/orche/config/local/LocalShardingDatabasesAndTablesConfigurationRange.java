@@ -19,7 +19,6 @@ package io.shardingsphere.example.jdbc.orche.config.local;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
-import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
