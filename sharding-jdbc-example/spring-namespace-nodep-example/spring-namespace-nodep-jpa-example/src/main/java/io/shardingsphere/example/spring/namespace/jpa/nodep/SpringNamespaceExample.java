@@ -30,8 +30,8 @@ public class SpringNamespaceExample {
 //    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
-    private static boolean IS_RANGE_SHARDING = true;
-//    private static boolean IS_RANGE_SHARDING = false;
+//    private static boolean IS_RANGE_SHARDING = true;
+    private static boolean IS_RANGE_SHARDING = false;
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(IS_RANGE_SHARDING ? getApplicationFileRange() : getApplicationFilePrecise())) {
