@@ -64,19 +64,13 @@ public class JPAOrderItemRepositoryImpl implements OrderItemRepository {
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<OrderItem> selectAll(boolean isRangeSharding) {
-        if (isRangeSharding) {
-            return selectAllRange();
-        } else {
-            return selectAllPrecise();
-        }
-    }
-    
-    private List<OrderItem> selectAllPrecise() {
+    public List<OrderItem> selectAll() {
         return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId").getResultList();
     }
     
-    private List<OrderItem> selectAllRange() {
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<OrderItem> selectRange() {
         return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId AND o.userId BETWEEN 1 AND 5").getResultList();
     }
 }
