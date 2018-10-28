@@ -27,7 +27,7 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Transactional
     @Override
-    public void processSuccess(boolean isRangeSharding) {
+    public void processSuccess(final boolean isRangeSharding) {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(isRangeSharding);
@@ -72,7 +72,7 @@ public abstract class CommonServiceImpl implements CommonService {
     }
     
     @Override
-    public void printData(boolean isRangeSharding) {
+    public void printData(final boolean isRangeSharding) {
         if (isRangeSharding) {
             printDataRange();
         } else {

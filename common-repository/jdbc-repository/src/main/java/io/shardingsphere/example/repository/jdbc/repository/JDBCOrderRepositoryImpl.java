@@ -108,7 +108,7 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
         return getOrders(sql);
     }
     
-    private List<Order> getOrders(String sql) {
+    private List<Order> getOrders(final String sql) {
         List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);

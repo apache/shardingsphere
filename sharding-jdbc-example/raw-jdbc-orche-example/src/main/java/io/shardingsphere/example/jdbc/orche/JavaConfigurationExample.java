@@ -58,8 +58,9 @@ public class JavaConfigurationExample {
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
-//    private static boolean IS_RANGE_SHARDING = true;
-    private static boolean IS_RANGE_SHARDING = false;
+    
+//    private static boolean isRangeSharding = true;
+    private static boolean isRangeSharding = false;
     
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
@@ -68,7 +69,7 @@ public class JavaConfigurationExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws SQLException {
-        process(IS_RANGE_SHARDING ? getDataSourceRange() : getDataSourcePrecise());
+        process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
     }
     
     private static DataSource getDataSourcePrecise() throws SQLException {
@@ -130,7 +131,7 @@ public class JavaConfigurationExample {
     private static void process(final DataSource dataSource) {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        commonService.processSuccess(IS_RANGE_SHARDING);
+        commonService.processSuccess(isRangeSharding);
         commonService.cleanEnvironment();
         closeDataSource(dataSource);
     }

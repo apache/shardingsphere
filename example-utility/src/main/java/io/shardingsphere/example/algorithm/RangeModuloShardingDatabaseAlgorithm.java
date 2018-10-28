@@ -23,12 +23,13 @@ import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class RangeModuloShardingDatabaseAlgorithm implements RangeShardingAlgorithm<Integer> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> databaseNames, final RangeShardingValue<Integer> shardingValue) {
-        LinkedHashSet<String> result = new LinkedHashSet<>();
+        Set<String> result = new LinkedHashSet<>();
         if (Range.closed(1, 5).encloses(shardingValue.getValueRange())) {
             for (String each : databaseNames) {
                 if (each.endsWith("0")) {
