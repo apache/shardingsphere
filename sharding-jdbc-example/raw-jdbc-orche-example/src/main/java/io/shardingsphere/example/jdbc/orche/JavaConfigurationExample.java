@@ -26,9 +26,13 @@ import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingMasterSlav
 import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingTablesConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalMasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfigurationRange;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfigurationRange;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfigurationRange;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfigurationPrecise;
+import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfigurationRange;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
@@ -54,6 +58,8 @@ public class JavaConfigurationExample {
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static boolean IS_RANGE_SHARDING = true;
+    private static boolean IS_RANGE_SHARDING = false;
     
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
@@ -62,10 +68,10 @@ public class JavaConfigurationExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws SQLException {
-        process(getDataSource());
+        process(IS_RANGE_SHARDING ? getDataSourceRange() : getDataSourcePrecise());
     }
     
-    private static DataSource getDataSource() throws SQLException {
+    private static DataSource getDataSourcePrecise() throws SQLException {
         ExampleConfiguration exampleConfig;
         RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
         switch (shardingType) {
@@ -91,6 +97,32 @@ public class JavaConfigurationExample {
         return exampleConfig.getDataSource();
     }
     
+    private static DataSource getDataSourceRange() throws SQLException {
+        ExampleConfiguration exampleConfig;
+        RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
+        switch (shardingType) {
+            case SHARDING_DATABASES:
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfigurationRange(registryCenterConfig);
+                break;
+            case SHARDING_TABLES:
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfigurationRange(registryCenterConfig);
+                break;
+            case SHARDING_DATABASES_AND_TABLES:
+                exampleConfig = loadConfigFromRegCenter
+                    ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfigurationRange(registryCenterConfig);
+                break;
+            case MASTER_SLAVE:
+                exampleConfig = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
+                break;
+            case SHARDING_MASTER_SLAVE:
+                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfigurationRange(registryCenterConfig);
+                break;
+            default:
+                throw new UnsupportedOperationException(shardingType.name());
+        }
+        return exampleConfig.getDataSource();
+    }
+    
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
     }
@@ -98,7 +130,7 @@ public class JavaConfigurationExample {
     private static void process(final DataSource dataSource) {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        commonService.processSuccess();
+        commonService.processSuccess(IS_RANGE_SHARDING);
         commonService.cleanEnvironment();
         closeDataSource(dataSource);
     }
