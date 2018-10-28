@@ -16,27 +16,25 @@
     
     <bean id="demo_ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
+        <property name="url" value="jdbc:mysql://10.222.16.12:3306/demo_ds_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
     <bean id="demo_ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
+        <property name="url" value="jdbc:mysql://10.222.16.12:3306/demo_ds_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm" />
-    
-    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
