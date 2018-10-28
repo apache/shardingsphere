@@ -35,7 +35,7 @@
     
     <bean id="demo_ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://10.222.16.12:3306/demo_ds_0"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maxActive" value="16"/>
@@ -43,7 +43,7 @@
     
     <bean id="demo_ds_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://10.222.16.12:3306/demo_ds_1"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
         <property name="maxActive" value="16"/>
