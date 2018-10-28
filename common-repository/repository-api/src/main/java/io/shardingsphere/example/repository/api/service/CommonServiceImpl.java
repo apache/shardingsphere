@@ -73,15 +73,35 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Override
     public void printData(boolean isRangeSharding) {
+        if (isRangeSharding) {
+            printDataRange();
+        } else {
+            printDataAll();
+        }
+    }
+    
+    private void printDataRange() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : getOrderRepository().selectAll(isRangeSharding)) {
+        for (Object each : getOrderRepository().selectRange()) {
             System.out.println(each);
         }
         System.out.println("---------------------------- Print OrderItem Data -------------------");
-        for (Object each : getOrderItemRepository().selectAll(isRangeSharding)) {
+        for (Object each : getOrderItemRepository().selectRange()) {
             System.out.println(each);
         }
     }
+    
+    private void printDataAll() {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (Object each : getOrderRepository().selectAll()) {
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (Object each : getOrderItemRepository().selectAll()) {
+            System.out.println(each);
+        }
+    }
+    
     protected abstract OrderRepository getOrderRepository();
     
     protected abstract OrderItemRepository getOrderItemRepository();
