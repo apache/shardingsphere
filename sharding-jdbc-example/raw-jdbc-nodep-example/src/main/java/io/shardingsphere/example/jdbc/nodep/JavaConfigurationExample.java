@@ -19,9 +19,9 @@ package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.config.ExampleConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
