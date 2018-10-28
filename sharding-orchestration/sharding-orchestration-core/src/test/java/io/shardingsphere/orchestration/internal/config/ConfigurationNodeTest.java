@@ -28,13 +28,18 @@ public final class ConfigurationNodeTest {
     private final ConfigurationNode configurationNode = new ConfigurationNode("test");
     
     @Test
+    public void assertGetSchemaPath() {
+        assertThat(configurationNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/schema/sharding_db/rule"));
+    }
+    
+    @Test
     public void assertGetDataSourcePath() {
-        assertThat(configurationNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/sharding_db/datasource"));
+        assertThat(configurationNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/schema/sharding_db/datasource"));
     }
     
     @Test
     public void assertGetRulePath() {
-        assertThat(configurationNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/sharding_db/rule"));
+        assertThat(configurationNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/schema/sharding_db/rule"));
     }
     
     @Test

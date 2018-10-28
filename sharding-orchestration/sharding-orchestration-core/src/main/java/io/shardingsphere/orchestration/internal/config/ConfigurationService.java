@@ -34,7 +34,6 @@ import org.yaml.snakeyaml.Yaml;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -299,13 +298,6 @@ public final class ConfigurationService {
      * @return all sharding schema names
      */
     public Collection<String> getShardingSchemaNames() {
-        Collection<String> children = regCenter.getChildrenKeys(configNode.getRootPath());
-        Collection<String> result = new LinkedList<>();
-        for (String each : children) {
-            if (!"configmap".equals(each) && !"props".equals(each) && !"authentication".equals(each)) {
-                result.add(each);
-            }
-        }
-        return result;
+        return regCenter.getChildrenKeys(configNode.getSchemaPath());
     }
 }

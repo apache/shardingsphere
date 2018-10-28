@@ -31,6 +31,8 @@ public final class ConfigurationNode {
     
     private static final String ROOT = "config";
     
+    private static final String SCHEMA_NODE = "schema";
+    
     private static final String DATA_SOURCE_NODE = "datasource";
     
     private static final String RULE_NODE = "rule";
@@ -42,6 +44,15 @@ public final class ConfigurationNode {
     private static final String PROPS_NODE = "props";
     
     private final String name;
+    
+    /**
+     * Get schema path.
+     *
+     * @return schema path
+     */
+    public String getSchemaPath() {
+        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE);
+    }
     
     /**
      * Get data source path.
@@ -90,17 +101,8 @@ public final class ConfigurationNode {
         return getFullPath(PROPS_NODE);
     }
     
-    /**
-     * Get root path.
-     * 
-     * @return root path
-     */
-    public String getRootPath() {
-        return Joiner.on("/").join("", name, ROOT);
-    }
-    
     private String getFullPath(final String schemaName, final String node) {
-        return Joiner.on("/").join("", name, ROOT, schemaName, node);
+        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE, schemaName, node);
     }
     
     private String getFullPath(final String node) {
