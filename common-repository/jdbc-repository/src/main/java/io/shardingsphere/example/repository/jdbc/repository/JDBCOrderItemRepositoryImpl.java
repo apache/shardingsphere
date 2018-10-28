@@ -108,7 +108,7 @@ public final class JDBCOrderItemRepositoryImpl implements OrderItemRepository {
     }
     
     private List<OrderItem> selectAllRange() {
-        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.user_id BETWEEN 1 AND 5";
+        String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.user_id BETWEEN 1 AND 5";
         return getOrderItems(sql);
     }
     
