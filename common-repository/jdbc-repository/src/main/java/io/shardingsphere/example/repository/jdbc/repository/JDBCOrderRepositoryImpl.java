@@ -97,21 +97,14 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
     }
     
     @Override
-    public List<Order> selectAll(boolean isRangeSharding) {
-        if (isRangeSharding) {
-            return selectAllRange();
-        } else {
-            return selectAllPrecise();
-        }
-    }
-    
-    private List<Order> selectAllRange() {
-        String sql = "SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 400000000000000000";
+    public List<Order> selectAll() {
+        String sql = "SELECT * FROM t_order";
         return getOrders(sql);
     }
     
-    private List<Order> selectAllPrecise() {
-        String sql = "SELECT * FROM t_order";
+    @Override
+    public List<Order> selectRange() {
+        String sql = "SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 400000000000000000";
         return getOrders(sql);
     }
     
