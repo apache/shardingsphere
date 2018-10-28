@@ -47,15 +47,13 @@
         <property name="password" value=""/>
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm" />
-    
-    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseShardingStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" generate-key-column-name="order_id" />
+                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
