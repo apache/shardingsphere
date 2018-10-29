@@ -22,7 +22,7 @@ package io.shardingsphere.core.constant.transaction;
  *
  * @author zhaojun
  */
-public enum ProxyDataSourceType {
+public enum ProxyPoolType {
     
     VENDOR, DBCP2
 }
