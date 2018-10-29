@@ -33,7 +33,7 @@ public class XAPropertyFactory {
             case MySQL:
                 return new MysqlXAPropertyFactory(dataSourceParameter).build();
             default:
-                return null;
+                return new Properties();
         }
     }
 }

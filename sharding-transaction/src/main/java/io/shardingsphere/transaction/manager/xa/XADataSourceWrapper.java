@@ -22,6 +22,8 @@ import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.manager.xa.property.XADatabaseType;
+import io.shardingsphere.transaction.manager.xa.property.XAPropertyFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 
@@ -63,13 +65,7 @@ public class XADataSourceWrapper {
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         result.setTestQuery("SELECT 1");
-        Properties xaProperties;
-        // TODO zhaojun: generic data source properties, can use MySQL only for now
-        if (xaDataSource.getClass().getName().equals("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource")) {
-            xaProperties = getMySQLXAProperties(dataSourceParameter);
-        } else {
-            xaProperties = new Properties();
-        }
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);
         result.setXaProperties(xaProperties);
@@ -81,36 +77,9 @@ public class XADataSourceWrapper {
         result.setTransactionManager(transactionManager);
         result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
         result.setXADataSource(xaDataSource.getClass().getName());
-        Properties xaProperties;
-        // TODO zhaojun: generic data source properties, can use MySQL only for now
-        if (xaDataSource.getClass().getName().equals("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource")) {
-            xaProperties = getMySQLXAProperties(dataSourceParameter);
-        } else {
-            xaProperties = new Properties();
-        }
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSourceInstance(xaDataSource);
-        return result;
-    }
-    
-    private Properties getMySQLXAProperties(final DataSourceParameter dataSourceParameter) {
-        Properties result = new Properties();
-        result.setProperty("user", dataSourceParameter.getUsername());
-        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("URL", dataSourceParameter.getUrl());
-        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
-        result.setProperty("autoReconnect", Boolean.TRUE.toString());
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "250");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
-        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
-        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        result.setProperty("netTimeoutForStreamingResults", "0");
         return result;
     }
 }
