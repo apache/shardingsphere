@@ -36,8 +36,32 @@ public class XABackendDataSourceConvertTest {
     private XABackendDataSourceFactory xaBackendDataSourceFactory = XABackendDataSourceFactory.getInstance();
     
     @Test
-    public void assertGetXATransactionalDataSourceSuccess() {
+    public void getMysqlXATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.MySQL);
+        assertThat(xaDataSourceMap.size(), is(2));
+        assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+        assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+    }
+    
+    @Test
+    public void getH2XATransactionalDataSourceSuccess() {
+        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.H2);
+        assertThat(xaDataSourceMap.size(), is(2));
+        assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+        assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+    }
+    
+    @Test
+    public void getPGXATransactionalDataSourceSuccess() {
+        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.PostgreSQL);
+        assertThat(xaDataSourceMap.size(), is(2));
+        assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+        assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+    }
+    
+    @Test
+    public void getMSXATransactionalDataSourceSuccess() {
+        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.SQLServer);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
