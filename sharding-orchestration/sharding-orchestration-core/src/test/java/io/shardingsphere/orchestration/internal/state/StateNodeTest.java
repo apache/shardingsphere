@@ -15,9 +15,17 @@ package io.shardingsphere.orchestration.internal.state;/*
  * </p>
  */
 
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class StateNodeTest {
     
     private StateNode stateNode = new StateNode("test");
     
-    
+    @Test
+    public void assertGetDataSourcesNodeFullPath() {
+        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/name/datasources"));
+    }
 }
