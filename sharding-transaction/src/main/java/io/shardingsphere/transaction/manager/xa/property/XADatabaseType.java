@@ -29,15 +29,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum XADatabaseType {
     
-    H2("H2"),
+    H2("org.h2.jdbcx.JdbcDataSource"),
     
     MySQL("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
     
-    Oracle("Oracle"),
+    Oracle("oracle.jdbc.xa.client.OracleXADataSource"),
     
-    SQLServer("Microsoft SQL Server"),
+    SQLServer("com.microsoft.sqlserver.jdbc.SQLServerXADataSource"),
     
-    PostgreSQL("PostgreSQL");
+    PostgreSQL("org.postgresql.xa.PGXADataSource");
     
     private final String className;
     
