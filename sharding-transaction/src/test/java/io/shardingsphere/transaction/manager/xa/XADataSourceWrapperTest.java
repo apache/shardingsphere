@@ -43,9 +43,11 @@ public class XADataSourceWrapperTest {
     private TransactionManager transactionManager =
         ((XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA)).getUnderlyingTransactionManager();
     
-    private XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
+    private final XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
     
-    private DataSourceParameter parameter = new DataSourceParameter();
+    private final DataSourceParameter parameter = new DataSourceParameter();
+    
+    private final XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(transactionManager);
     
     @Before
     public void setup() {
@@ -57,7 +59,6 @@ public class XADataSourceWrapperTest {
     
     @Test
     public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
-        XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(transactionManager);
         parameter.setProxyDatasourceType(ProxyPoolType.VENDOR);
         AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) xaDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
@@ -72,7 +73,6 @@ public class XADataSourceWrapperTest {
     
     @Test
     public void assertWrapToTomcatDBCP() throws PropertyException, IllegalAccessException {
-        XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(transactionManager);
         parameter.setProxyDatasourceType(ProxyPoolType.TOMCAT_DBCP2);
         BasicManagedDataSource targetDataSource = (BasicManagedDataSource) xaDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(BasicManagedDataSource.class));
@@ -83,6 +83,4 @@ public class XADataSourceWrapperTest {
         assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "password"), Is.<Object>is(parameter.getPassword()));
         assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "url"), Is.<Object>is(parameter.getUrl()));
     }
-    
-    
 }
