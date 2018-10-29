@@ -17,10 +17,13 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
+import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
+import org.h2.jdbcx.JdbcDataSource;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.postgresql.xa.PGXADataSource;
 
 import javax.sql.XADataSource;
 
@@ -31,6 +34,7 @@ public class XADataSourceFactoryTest {
     @Test
     public void assertCreateH2XADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.H2);
+        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(JdbcDataSource.class));
     }
     
     @Test
@@ -42,10 +46,12 @@ public class XADataSourceFactoryTest {
     @Test
     public void assertCreatePGXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.PostgreSQL);
+        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(PGXADataSource.class));
     }
     
     @Test
-    public void assertCreateMSSQLXADataSource() {
+    public void assertCreateMSXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.SQLServer);
+        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(SQLServerXADataSource.class));
     }
 }
