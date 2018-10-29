@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class XABackendDataSourceConvert implements BackendDataSourceFactory {
+public final class XABackendDataSourceConverter implements BackendDataSourceFactory {
     
     private static XATransactionManager XA_MANAGER = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
     
