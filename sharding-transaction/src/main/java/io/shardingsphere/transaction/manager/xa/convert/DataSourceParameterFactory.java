@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.manager.xa.convert;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 
