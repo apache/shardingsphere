@@ -17,11 +17,23 @@
 
 package io.shardingsphere.transaction.manager.xa.property;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
+
+import java.util.Properties;
+
 /**
  * XA property factory.
  *
  * @author zhaojun
  */
 public class XAPropertyFactory {
-
+    
+    public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
+        switch (xaDatabaseType) {
+            case MySQL:
+                return new MysqlXAPropertyFactory(dataSourceParameter).build();
+            default:
+                return null;
+        }
+    }
 }
