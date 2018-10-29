@@ -15,38 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.xa.convert;
+package io.shardingsphere.transaction.manager.xa.property;
 
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
- * Get property of common datasource pool then convert to {@code DataSourceParameter}.
+ * XA property factory.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataSourceParameterFactory {
+public class XAPropertyFactory {
     
     /**
-     * Create datasource parameter.
+     * Create XA properties using datasource parameter.
      *
-     * @param dataSource data source
-     * @return datasource parameter
+     * @param xaDatabaseType XA database type
+     * @param dataSourceParameter datasource parameter
+     * @return XA properties
      */
-    public static DataSourceParameter build(final DataSource dataSource) {
-        switch (PoolType.find(dataSource.getClass().getName())) {
-            case HIKARI:
-            case DRUID:
-            case DBCP:
-            case DBCP_TOMCAT:
-                return new DBCPTomcatConverter(dataSource).convertTo();
+    public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
+        switch (xaDatabaseType) {
+            case MySQL:
+                return new MysqlXAPropertyFactory(dataSourceParameter).build();
             default:
-                return null;
+                return new Properties();
         }
     }
 }

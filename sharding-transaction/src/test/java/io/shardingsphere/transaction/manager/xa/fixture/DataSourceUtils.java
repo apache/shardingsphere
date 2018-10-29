@@ -15,38 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.xa.convert;
+package io.shardingsphere.transaction.manager.xa.fixture;
 
 import io.shardingsphere.core.constant.PoolType;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 
-/**
- * Get property of common datasource pool then convert to {@code DataSourceParameter}.
- *
- * @author zhaojun
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataSourceParameterFactory {
+public class DataSourceUtils {
     
-    /**
-     * Create datasource parameter.
-     *
-     * @param dataSource data source
-     * @return datasource parameter
-     */
-    public static DataSourceParameter build(final DataSource dataSource) {
-        switch (PoolType.find(dataSource.getClass().getName())) {
-            case HIKARI:
-            case DRUID:
-            case DBCP:
+    public static DataSource build(final PoolType poolType) {
+        switch (poolType) {
             case DBCP_TOMCAT:
-                return new DBCPTomcatConverter(dataSource).convertTo();
+                return newBasicDataSource();
             default:
                 return null;
         }
+    }
+    
+    private static BasicDataSource newBasicDataSource() {
+        BasicDataSource result = new BasicDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306");
+        result.setMaxTotal(10);
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
 }

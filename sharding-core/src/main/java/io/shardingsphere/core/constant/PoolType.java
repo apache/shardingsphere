@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.xa.convert;
+package io.shardingsphere.core.constant;
 
 import lombok.RequiredArgsConstructor;
 

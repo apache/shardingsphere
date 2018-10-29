@@ -42,13 +42,15 @@ public final class DataSourceReflector {
      * Invoke specified method by reflect.
      *
      * @param methodName method name
+     * @param type result type
      * @param args parameters
+     * @param <T> generic result type
      * @return invoke value
      */
     @SneakyThrows
-    public Object invoke(final String methodName, final Object... args) {
+    public <T> T invoke(final String methodName, final Class<T> type, final Object... args) {
         Method method = clazz.getDeclaredMethod(methodName);
         method.setAccessible(true);
-        return method.invoke(dataSource, args);
+        return (T) method.invoke(dataSource, args);
     }
 }

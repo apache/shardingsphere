@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.xa.convert;
 
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 import javax.sql.DataSource;
@@ -26,21 +27,22 @@ import javax.sql.DataSource;
  *
  * @author zhaojun
  */
-public final class DBCPConverter implements Converter {
+public final class DBCPTomcatConverter implements Converter {
     
-    private final DataSourceReflector dataSourceReflector;
+    private final DataSourceReflector reflector;
     
-    public DBCPConverter(final DataSource dataSource) {
-        dataSourceReflector = new DataSourceReflector(dataSource);
+    public DBCPTomcatConverter(final DataSource dataSource) {
+        reflector = new DataSourceReflector(dataSource);
     }
     
     @Override
     public DataSourceParameter convertTo() {
         DataSourceParameter result = new DataSourceParameter();
-        result.setUsername((String) dataSourceReflector.invoke("getUsername"));
-        result.setUrl((String) dataSourceReflector.invoke("getUrl"));
-        result.setPassword((String) dataSourceReflector.invoke("getPassword"));
-        result.setMaximumPoolSize((Integer) dataSourceReflector.invoke("getMaxTotal"));
+        result.setOriginPoolType(PoolType.DBCP_TOMCAT);
+        result.setUsername(reflector.invoke("getUsername", String.class));
+        result.setUrl(reflector.invoke("getUrl", String.class));
+        result.setPassword(reflector.invoke("getPassword", String.class));
+        result.setMaximumPoolSize(reflector.invoke("getMaxTotal", Integer.class));
         return result;
     }
 }

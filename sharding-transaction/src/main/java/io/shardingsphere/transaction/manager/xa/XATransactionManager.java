@@ -17,12 +17,13 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
+import javax.transaction.TransactionManager;
 
 /**
  * XA transaction manager.
@@ -46,4 +47,11 @@ public interface XATransactionManager extends ShardingTransactionManager<XATrans
      * @return XA data source
      */
     DataSource wrapDataSource(XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter);
+    
+    /**
+     * Get transaction manager for vendor provided.
+     *
+     * @return transaction manager
+     */
+    TransactionManager getUnderlyingTransactionManager();
 }

@@ -17,7 +17,8 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.core.constant.transaction.ProxyDatasourceType;
+import io.shardingsphere.core.constant.PoolType;
+import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,7 +31,9 @@ import lombok.Setter;
 @Setter
 public final class DataSourceParameter {
     
-    private ProxyDatasourceType proxyDatasourceType = ProxyDatasourceType.ATOMIKOS;
+    private PoolType originPoolType;
+    
+    private ProxyPoolType proxyDatasourceType = ProxyPoolType.VENDOR;
     
     private String url;
     
