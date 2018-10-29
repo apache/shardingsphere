@@ -38,7 +38,6 @@ import javax.transaction.SystemException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -112,20 +111,16 @@ public final class AtomikosTransactionManagerTest {
         new AtomikosTransactionManager().getStatus();
     }
     
-    @Test
-    public void assertWrapDataSourceForOtherDataSource() throws Exception {
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertWrapDataSourceForOtherDataSource() {
         XADataSource xaDataSource = mock(XADataSource.class);
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setMaximumPoolSize(10);
-        DataSource actual = new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
-        assertDataSourceBean(xaDataSource, actual);
-        if (actual instanceof AtomikosDataSourceBean) {
-            assertThat(((AtomikosDataSourceBean) actual).getXaProperties(), is(new Properties()));
-        }
+        new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }
     
     @Test
-    public void assertWrapDataSourceForMySQL() throws Exception {
+    public void assertWrapDataSourceForMySQL() {
         XADataSource xaDataSource = new MysqlXADataSource();
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setUsername("root");
