@@ -76,6 +76,35 @@ public final class SQLExecuteCallbackFactory {
         };
     }
     
+    /**
+     * Get batch SQLExecuteCallBack.
+     *
+     * @param databaseType      types of database
+     * @param sqlType           types of sql
+     * @param isExceptionThrown is exception thrown
+     * @return batch SQLExecuteCallBack
+     */
+    public static SQLExecuteCallback<int[]> getBatchPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        if (isSagaTransaction(sqlType)) {
+            return getSagaBatchSQLExecuteCallback(databaseType, sqlType, isExceptionThrown);
+        }
+        return new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown) {
+            @Override
+            protected int[] executeSQL(StatementExecuteUnit statementExecuteUnit) throws SQLException {
+                return statementExecuteUnit.getStatement().executeBatch();
+            }
+        };
+    }
+    
+    private static SQLExecuteCallback<int[]> getSagaBatchSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        return new SagaSQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown) {
+            @Override
+            protected int[] executeResult() {
+                return null;
+            }
+        };
+    }
+    
     private static SQLExecuteCallback<Integer> getSagaUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
         return new SagaSQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
             @Override
