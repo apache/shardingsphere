@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.manager.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.transaction.manager.xa.property.XADatabaseType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -32,8 +33,6 @@ import javax.sql.XADataSource;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class XADataSourceFactory {
     
-    private static final String XA_MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
-    
     /**
      * Create XA DataSource instance.
      *
@@ -44,7 +43,7 @@ public class XADataSourceFactory {
         
         switch (databaseType) {
             case MySQL:
-                return newInstance(XA_MYSQL_DRIVER_CLASS_NAME);
+                return newInstance(XADatabaseType.MySQL.getClassName());
             default:
                 throw new UnsupportedOperationException(String.format("Database [%s] Cannot support XA.", databaseType));
         }
