@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.manager.xa;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -34,8 +33,8 @@ import org.junit.Test;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
-import java.lang.reflect.Field;
 
+import static io.shardingsphere.transaction.manager.xa.fixture.ReflectiveUtis.getProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -85,24 +84,5 @@ public class XADataSourceWrapperTest {
         assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "url"), Is.<Object>is(parameter.getUrl()));
     }
     
-    private Object getProperty(final Object target, final String fieldName) throws IllegalAccessException {
-        Field field = getField(target, fieldName);
-        Preconditions.checkNotNull(field);
-        field.setAccessible(true);
-        return field.get(target);
-    }
     
-    private Field getField(final Object target, final String fieldName) {
-        Class clazz = target.getClass();
-        while (clazz != null) {
-            try {
-                return clazz.getDeclaredField(fieldName);
-            // CHECKSTYLE:OFF
-            } catch (Exception ex) {
-            }
-            // CHECKSTYLE:ON
-            clazz = clazz.getSuperclass();
-        }
-        return null;
-    }
 }
