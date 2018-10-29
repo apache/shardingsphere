@@ -24,6 +24,7 @@ import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
+import javax.transaction.TransactionManager;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
@@ -50,6 +51,11 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     
     @Override
     public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+        return null;
+    }
+    
+    @Override
+    public TransactionManager getUnderlyingTransactionManager() {
         return null;
     }
 }

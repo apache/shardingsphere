@@ -32,6 +32,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import java.sql.SQLException;
 
 /**
@@ -101,5 +102,10 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         } catch (PropertyException ex) {
             throw new ShardingException("Failed to wrap XADataSource to transactional datasource pool", ex);
         }
+    }
+    
+    @Override
+    public TransactionManager getUnderlyingTransactionManager() {
+        return USER_TRANSACTION_MANAGER;
     }
 }
