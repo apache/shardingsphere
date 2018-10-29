@@ -28,19 +28,19 @@ import javax.sql.DataSource;
  */
 public final class DBCPConverter implements Converter {
     
-    private final DataSourceReflector dataSourceReflector;
+    private final DataSourceReflector reflector;
     
     public DBCPConverter(final DataSource dataSource) {
-        dataSourceReflector = new DataSourceReflector(dataSource);
+        reflector = new DataSourceReflector(dataSource);
     }
     
     @Override
     public DataSourceParameter convertTo() {
         DataSourceParameter result = new DataSourceParameter();
-        result.setUsername((String) dataSourceReflector.invoke("getUsername"));
-        result.setUrl((String) dataSourceReflector.invoke("getUrl"));
-        result.setPassword((String) dataSourceReflector.invoke("getPassword"));
-        result.setMaximumPoolSize((Integer) dataSourceReflector.invoke("getMaxTotal"));
+        result.setUsername(reflector.invoke("getUsername", String.class));
+        result.setUrl(reflector.invoke("getUrl", String.class));
+        result.setPassword(reflector.invoke("getPassword", String.class));
+        result.setMaximumPoolSize(reflector.invoke("getMaxTotal", Integer.class));
         return result;
     }
 }
