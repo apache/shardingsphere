@@ -17,29 +17,29 @@
 
 package io.shardingsphere.orchestration.internal;
 
-import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.ListenerFactory;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.internal.state.instance.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.ServiceLoader;
 
 /**
  * Orchestration service facade.
@@ -51,6 +51,8 @@ import java.util.ServiceLoader;
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
     
+    private final RegistryCenter regCenter;
+    
     private final boolean isOverwrite;
     
     @Getter
@@ -60,49 +62,37 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final DataSourceService dataSourceService;
     
+    @Getter
     private final ListenerFactory listenerManager;
     
-    private final RegistryCenter regCenter;
-    
-    public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig) {
-        regCenter = loadRegistryCenter(orchestrationConfig.getRegCenterConfig());
+    public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
+        regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
-        listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter);
-    }
-    
-    private RegistryCenter loadRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
-        Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        RegistryCenter result = null;
-        int count = 0;
-        for (RegistryCenter each : ServiceLoader.load(RegistryCenter.class)) {
-            result = each;
-            count++;
+        if (shardingSchemaNames.isEmpty()) {
+            listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames());
+        } else {
+            listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
         }
-        Preconditions.checkNotNull(result, "Cannot load implementation class for `RegistryCenter`");
-        if (1 != count) {
-            log.warn("Find more than one RegistryCenter implementation class, use `{}` now", result.getClass().getName());
-        }
-        result.init(regCenterConfig);
-        return result;
     }
     
     /**
      * Initialize for sharding orchestration.
      *
+     * @param shardingSchemaName sharding schema name
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param configMap config map
      * @param props sharding properties
      */
-    public void init(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-                     final Map<String, Object> configMap, final Properties props) {
+    public void init(final String shardingSchemaName, 
+                     final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
             reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
         }
-        configService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props, isOverwrite);
+        configService.persistConfiguration(shardingSchemaName, getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners();
@@ -111,13 +101,15 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for master-slave orchestration.
      * 
+     * @param shardingSchemaName sharding schema name
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
      * @param props properties
      */
-    public void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
-        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
+    public void init(final String shardingSchemaName,
+                     final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
+        configService.persistConfiguration(shardingSchemaName, dataSourceMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners();
@@ -126,12 +118,23 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param serverConfig server configuration
      * @param schemaDataSourceMap schema data source map
      * @param schemaRuleMap schema rule map
+     * @param authentication authentication
+     * @param prop properties
      */
-    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap) {
-        configService.persistProxyConfiguration(serverConfig, schemaDataSourceMap, schemaRuleMap, isOverwrite);
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, 
+                     final Map<String, YamlRuleConfiguration> schemaRuleMap, final Authentication authentication, final Properties prop) {
+        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
+            YamlRuleConfiguration yamlRuleConfig = schemaRuleMap.get(entry.getKey());
+            if (null == yamlRuleConfig.getShardingRule()) {
+                configService.persistConfiguration(
+                        entry.getKey(), schemaDataSourceMap.get(entry.getKey()), yamlRuleConfig.getMasterSlaveRule(), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
+            } else {
+                configService.persistConfiguration(
+                        entry.getKey(), schemaDataSourceMap.get(entry.getKey()), yamlRuleConfig.getShardingRule(), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
+            }
+        }
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initProxyListeners();
@@ -141,7 +144,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (entry.getValue() instanceof MasterSlaveDataSource) {
                 MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource));
+                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource.getMasterSlaveRule()));
             }
         }
     }
@@ -159,10 +162,9 @@ public final class OrchestrationFacade implements AutoCloseable {
         return result;
     }
     
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveDataSource masterSlaveDataSource) {
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveRule masterSlaveRule) {
         return new MasterSlaveRuleConfiguration(
-                masterSlaveDataSource.getMasterSlaveRule().getName(), masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName(), 
-                masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames(), masterSlaveDataSource.getMasterSlaveRule().getLoadBalanceAlgorithm());
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
     }
     
     @Override

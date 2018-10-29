@@ -15,15 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.config;
+package io.shardingsphere.shardingjdbc.spring.boot.common;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Properties;
 
 /**
- * Orchestration type.
+ * Properties configuration properties.
  *
  * @author zhangliang
- * @author panjuan
  */
-public enum OrchestrationType {
+@ConfigurationProperties(prefix = "sharding.jdbc.config")
+@Getter
+@Setter
+public class SpringBootPropertiesConfigurationProperties {
     
-    SHARDING, MASTER_SLAVE
+    private Properties props = new Properties();
 }

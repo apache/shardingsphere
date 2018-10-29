@@ -15,24 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.core.yaml.other;
+package io.shardingsphere.orchestration.internal.yaml.representer.fixture;
 
-import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.Collection;
 
-/**
- * Server configuration for yaml.
- *
- * @author chenqingyang
- */
 @Getter
 @Setter
-public final class YamlServerConfiguration {
+public final class SimpleTypeRepresenterFixture {
     
-    private Authentication authentication = new Authentication();
+    private boolean booleanValue;
     
-    private Properties props = new Properties();
+    private Boolean booleanObjectValue = Boolean.TRUE;
+    
+    private int intValue;
+    
+    private Integer integerObjectValue = 10;
+    
+    private long longValue;
+    
+    private Long longObjectValue = 10L;
+    
+    private String string = "value";
+    
+    private Collection<String> collection = Arrays.asList("value1", "value2");
+    
+    private String skippedProperty = "skipped";
 }

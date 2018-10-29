@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -58,8 +59,9 @@ public final class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap(), new Properties());
+        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, 
+                new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+                Collections.<String, Object>emptyMap(), new Properties());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     

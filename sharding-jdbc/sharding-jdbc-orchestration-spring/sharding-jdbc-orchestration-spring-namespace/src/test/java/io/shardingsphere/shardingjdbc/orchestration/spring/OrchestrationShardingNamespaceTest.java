@@ -54,6 +54,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        ConfigMapContext.getInstance().getConfigMap().clear();
     }
     
     @Test
@@ -139,7 +140,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
         assertTrue((boolean) FieldValueUtil.getFieldValue(shardingContext, "showSQL"));
         ShardingProperties shardingProperties = (ShardingProperties) FieldValueUtil.getFieldValue(dataSource, "shardingProperties", false);

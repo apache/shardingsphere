@@ -1,3 +1,5 @@
+## 3.0.1
+
 ## 3.0.0
 
 ### 里程碑
@@ -18,7 +20,7 @@
 1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) 支持XA事务
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) 支持登录认证
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) 支持注册中心进行治理
-1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) 主持多Schema
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) 支持多逻辑数据库
 
 ### 功能提升
 

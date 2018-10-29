@@ -56,6 +56,7 @@ public class OrchestrationSpringBootShardingTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        ConfigMapContext.getInstance().getConfigMap().clear();
     }
     
     @Test
@@ -69,7 +70,7 @@ public class OrchestrationSpringBootShardingTest {
         assertTrue(shardingContext.isShowSQL());
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         ShardingProperties shardingProperties = getFieldValue("shardingProperties", ShardingDataSource.class, shardingDataSource);
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));

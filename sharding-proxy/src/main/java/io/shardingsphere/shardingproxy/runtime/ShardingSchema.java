@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -24,7 +25,6 @@ import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
@@ -59,25 +59,26 @@ public final class ShardingSchema {
     
     private ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final YamlRuleConfiguration rule, final boolean isUsingRegistry) {
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, 
+                          final ShardingRuleConfiguration shardingRule, final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
-        shardingRule = getShardingRule(rule, isUsingRegistry);
-        masterSlaveRule = getMasterSlaveRule(rule, isUsingRegistry);
+        this.shardingRule = getShardingRule(shardingRule, isUsingRegistry);
+        this.masterSlaveRule = getMasterSlaveRule(masterSlaveRule, isUsingRegistry);
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
     
-    private ShardingRule getShardingRule(final YamlRuleConfiguration rule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet())
-                : new ShardingRule(null == rule.getShardingRule() ? new ShardingRuleConfiguration() : rule.getShardingRule().getShardingRuleConfiguration(), dataSources.keySet());
+    private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
+        return isUsingRegistry ? new OrchestrationShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet())
+                : new ShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet());
     }
     
-    private MasterSlaveRule getMasterSlaveRule(final YamlRuleConfiguration rule, final boolean isUsingRegistry) {
-        if (null == rule.getMasterSlaveRule()) {
+    private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
+        if (null == masterSlaveRule) {
             return null;
         }
-        return isUsingRegistry ? new OrchestrationMasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration()) : new MasterSlaveRule(rule.getMasterSlaveRule().getMasterSlaveRuleConfiguration());
+        return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
     }
     
     /**

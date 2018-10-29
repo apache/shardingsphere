@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -68,7 +69,8 @@ public final class ShardingDataSourceTest {
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
         MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, 
-                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap(), new Properties());
+                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+                Collections.<String, Object>emptyMap(), new Properties());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);

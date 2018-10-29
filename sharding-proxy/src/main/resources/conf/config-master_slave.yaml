@@ -12,7 +12,7 @@
 #
 #dataSources:
 #  master_ds:
-#    url: jdbc:mysql://127.0.0.1:3306/master_ds?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_master?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true
@@ -21,7 +21,7 @@
 #    maxLifetime: 1800000
 #    maximumPoolSize: 50
 #  slave_ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/slave_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_slave_0?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true
@@ -30,7 +30,7 @@
 #    maxLifetime: 1800000
 #    maximumPoolSize: 50
 #  slave_ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/slave_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_slave_0?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
 #    autoCommit: true

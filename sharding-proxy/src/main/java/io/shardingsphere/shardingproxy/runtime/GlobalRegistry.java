@@ -28,7 +28,6 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
@@ -104,35 +103,39 @@ public final class GlobalRegistry {
     /**
      * Initialize proxy context.
      *
-     * @param serverConfig server configuration
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
+     * @param authentication authentication
+     * @param props properties
      */
-    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules) {
-        init(serverConfig, schemaDataSources, schemaRules, false);
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
+                     final Map<String, YamlRuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
+        init(schemaDataSources, schemaRules, authentication, props, false);
     }
     
     /**
      * Initialize proxy context.
      *
-     * @param serverConfig server configuration
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
+     * @param authentication authentication
+     * @param props properties
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, YamlRuleConfiguration> schemaRules, final boolean isUsingRegistry) {
-        initServerConfiguration(serverConfig);
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
+                     final Map<String, YamlRuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
+        initServerConfiguration(authentication, props);
         for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
+            shardingSchemas.put(schemaName, 
+                    new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue().getShardingRule(), entry.getValue().getMasterSlaveRule(), isUsingRegistry));
         }
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
-    private void initServerConfiguration(final YamlServerConfiguration serverConfig) {
-        Properties properties = serverConfig.getProps();
-        ShardingProperties shardingProperties = new ShardingProperties(null == properties ? new Properties() : properties);
+    private void initServerConfiguration(final Authentication authentication, final Properties props) {
+        ShardingProperties shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? getTransactionType(shardingProperties) : TransactionType.LOCAL;
@@ -146,7 +149,7 @@ public final class GlobalRegistry {
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-        authentication = serverConfig.getAuthentication();
+        this.authentication = authentication;
     }
     
     private void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
@@ -182,14 +185,15 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final ProxyConfigurationEventBusEvent proxyConfigurationEventBusEvent) {
-        initServerConfiguration(proxyConfigurationEventBusEvent.getServerConfiguration());
+        initServerConfiguration(proxyConfigurationEventBusEvent.getAuthentication(), proxyConfigurationEventBusEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
         shardingSchemas.clear();
         for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
             String schemaName = entry.getKey();
-            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName), true));
+            YamlRuleConfiguration yamlRuleConfig = proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName);
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), yamlRuleConfig.getShardingRule(), yamlRuleConfig.getMasterSlaveRule(), true));
         }
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }

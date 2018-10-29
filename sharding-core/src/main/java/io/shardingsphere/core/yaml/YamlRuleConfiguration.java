@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.yaml;
 
-import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,9 +29,11 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Deprecated
+// TODO to be removed
 public final class YamlRuleConfiguration {
     
-    private YamlShardingRuleConfiguration shardingRule;
+    private ShardingRuleConfiguration shardingRule;
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    private MasterSlaveRuleConfiguration masterSlaveRule;
 }

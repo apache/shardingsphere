@@ -1,3 +1,5 @@
+## 3.0.1
+
 ## 3.0.0
 
 ### Milestones
@@ -18,7 +20,7 @@
 1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) Support XA transaction
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support registry center
-1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) Support multiple database schema
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) Support multiple logic databases
 
 ### Enhancements
 
