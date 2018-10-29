@@ -17,6 +17,35 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
-public class XADataSourceFactoryTest {
+import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
+import io.shardingsphere.core.constant.DatabaseType;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
+import javax.sql.XADataSource;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public class XADataSourceFactoryTest {
+    
+    @Test
+    public void assertCreateH2XADataSource() {
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.H2);
+    }
+    
+    @Test
+    public void assertCreateMysqlXADataSource() {
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
+        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(MysqlXADataSource.class));
+    }
+    
+    @Test
+    public void assertCreatePGXADataSource() {
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.PostgreSQL);
+    }
+    
+    @Test
+    public void assertCreateMSSQLXADataSource() {
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.SQLServer);
+    }
 }
