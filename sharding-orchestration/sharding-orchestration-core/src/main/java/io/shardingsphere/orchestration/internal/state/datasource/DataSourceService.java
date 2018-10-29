@@ -23,7 +23,6 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.state.StateNode;
 import io.shardingsphere.orchestration.internal.state.StateNodeStatus;
@@ -36,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Data source service.
@@ -137,32 +135,6 @@ public final class DataSourceService {
         }
         for (String each : disabledDataSourceNames) {
             result.getSlaveDataSourceNames().remove(each);
-        }
-        return result;
-    }
-    
-    /**
-     * Get available proxy rule configuration.
-     *
-     * @return available yaml proxy configuration
-     */
-    public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
-        Map<String, YamlRuleConfiguration> result = new LinkedHashMap<>();
-        for (String each : configService.getAllShardingSchemaNames()) {
-            YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
-            if (configService.isShardingRule(each)) {
-                yamlRuleConfig.setShardingRule(configService.loadShardingRuleConfiguration(each));
-            } else {
-                yamlRuleConfig.setMasterSlaveRule(configService.loadMasterSlaveRuleConfiguration(each));
-            }
-        }
-        Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
-        for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
-            for (String disabledDataSourceName : each.getValue()) {
-                if (null != result.get(each.getKey()).getMasterSlaveRule()) {
-                    result.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
-                }
-            }
         }
         return result;
     }
