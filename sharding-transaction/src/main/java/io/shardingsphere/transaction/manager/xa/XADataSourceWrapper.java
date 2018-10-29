@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.manager.xa;
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.property.XADatabaseType;
 import io.shardingsphere.transaction.manager.xa.property.XAPropertyFactory;
