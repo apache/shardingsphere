@@ -64,6 +64,7 @@ public class XADataSourceWrapper {
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
         result.setTestQuery("SELECT 1");
+        result.setXaDataSourceClassName(xaDataSource.getClass().getName());
         Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);

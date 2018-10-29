@@ -17,5 +17,59 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
+import com.atomikos.beans.PropertyException;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.transaction.ProxyPoolType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.xa.property.XADatabaseType;
+import org.hamcrest.Matchers;
+import org.hamcrest.core.Is;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.sql.XADataSource;
+import javax.transaction.TransactionManager;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 public class XADataSourceWrapperTest {
+    
+    private TransactionManager transactionManager =
+        ((XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA)).getUnderlyingTransactionManager();
+    
+    private XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
+    
+    private DataSourceParameter parameter = new DataSourceParameter();
+    
+    @Before
+    public void setup() {
+        parameter.setUsername("root");
+        parameter.setPassword("root");
+        parameter.setUrl("db:url");
+        parameter.setMaximumPoolSize(10);
+    }
+    
+    @Test
+    public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
+        XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(transactionManager);
+        parameter.setProxyDatasourceType(ProxyPoolType.VENDOR);
+        AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) xaDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
+        assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
+        assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
+        assertThat(targetDataSource.getXaDataSourceClassName(), is(XADatabaseType.MySQL.getClassName()));
+        assertThat(targetDataSource.getUniqueResourceName(), is("ds1"));
+        assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaximumPoolSize()));
+        assertThat(targetDataSource.getXaProperties().get("user"), Is.<Object>is(parameter.getUsername()));
+        assertThat(targetDataSource.getXaProperties().get("password"), Is.<Object>is(parameter.getPassword()));
+        assertThat(targetDataSource.getXaProperties().get("URL"), Is.<Object>is(parameter.getUrl()));
+    }
+    
+    @Test
+    public void assertWrapToTomcatDBCP() {
+    
+    }
 }
