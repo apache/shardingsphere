@@ -17,5 +17,35 @@
 
 package io.shardingsphere.transaction.manager.xa.convert;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
+import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
+import org.junit.Test;
+
 public class DataSourceParameterFactoryTest {
+    
+    @Test
+    public void assertBuildParameterFromHikari() {
+    }
+    
+    @Test
+    public void assertBuildParameterFromDruid() {
+    }
+    
+    @Test
+    public void assertBuildParameterFromDBCPTomcat() {
+        DataSourceParameter dataSourceParameter = DataSourceParameterFactory.build(newBasicDataSource());
+    }
+    
+    @Test
+    public void assertBuildParameterFromDBCP2() {
+    }
+    
+    private BasicDataSource newBasicDataSource() {
+        BasicDataSource result = new BasicDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306");
+        result.setMaxTotal(10);
+        result.setUsername("root");
+        result.setPassword("");
+        return result;
+    }
 }
