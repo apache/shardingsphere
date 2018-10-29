@@ -190,11 +190,9 @@ public final class GlobalRegistry {
             entry.getValue().getBackendDataSource().close();
         }
         shardingSchemas.clear();
-        for (Entry<String, Map<String, DataSourceParameter>> entry : proxyConfigurationEventBusEvent.getSchemaDataSourceMap().entrySet()) {
-            String schemaName = entry.getKey();
-            YamlRuleConfiguration yamlRuleConfig = proxyConfigurationEventBusEvent.getSchemaRuleMap().get(schemaName);
-            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, entry.getValue(), yamlRuleConfig.getShardingRule(), yamlRuleConfig.getMasterSlaveRule(), true));
-        }
+        YamlRuleConfiguration yamlRuleConfig = proxyConfigurationEventBusEvent.getRuleConfig();
+        shardingSchemas.put(proxyConfigurationEventBusEvent.getSchemaName(), new ShardingSchema(proxyConfigurationEventBusEvent.getSchemaName(), 
+                proxyConfigurationEventBusEvent.getDataSourceMap(), yamlRuleConfig.getShardingRule(), yamlRuleConfig.getMasterSlaveRule(), true));
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     

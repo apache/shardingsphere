@@ -35,9 +35,11 @@ import java.util.Properties;
 @Getter
 public final class ProxyConfigurationEventBusEvent {
     
-    private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
+    private final String schemaName;
     
-    private final Map<String, YamlRuleConfiguration> schemaRuleMap;
+    private final Map<String, DataSourceParameter> dataSourceMap;
+    
+    private final YamlRuleConfiguration ruleConfig;
     
     private final Authentication authentication;
     

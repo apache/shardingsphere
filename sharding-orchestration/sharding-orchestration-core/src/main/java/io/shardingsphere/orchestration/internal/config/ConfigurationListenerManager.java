@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
@@ -83,8 +82,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        watchMasterSlave(configNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME));
-        watchMasterSlave(configNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME));
+        watchMasterSlave(configNode.getDataSourcePath(shardingSchemaName));
+        watchMasterSlave(configNode.getRulePath(shardingSchemaName));
         watchMasterSlave(configNode.getPropsPath());
         // TODO watch config map
     }
@@ -116,8 +115,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(dataSourceService.getProxyAvailableDataSourceParameters(), 
-                            dataSourceService.getAvailableYamlProxyConfiguration(), configService.loadAuthentication(), configService.loadProperties()));
+                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceParameters(shardingSchemaName), 
+                            dataSourceService.getAvailableYamlProxyConfiguration().get(shardingSchemaName), configService.loadAuthentication(), configService.loadProperties()));
                 }
             }
         });

@@ -73,7 +73,10 @@ public final class DataSourceService {
      */
     public Map<String, DataSource> getAvailableDataSources(final String shardingSchemaName) {
         Map<String, DataSource> result = configService.loadDataSources(shardingSchemaName);
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        if (null == disabledDataSourceNames) {
+            return result;
+        }
         for (String each : disabledDataSourceNames) {
             result.remove(each);
         }
@@ -81,21 +84,19 @@ public final class DataSourceService {
     }
     
     /**
-     * Get proxy available data source parameters.
+     * Get available data source parameters.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available data source parameters
      */
-    public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : configService.getAllShardingSchemaNames()) {
-            result.put(each, configService.loadDataSourceParameters(each));
+    public Map<String, DataSourceParameter> getAvailableDataSourceParameters(final String shardingSchemaName) {
+        Map<String, DataSourceParameter> result = configService.loadDataSourceParameters(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        if (null == disabledDataSourceNames) {
+            return result;
         }
-        Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
-        for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
-            for (String disabledDataSourceName : each.getValue()) {
-                result.get(each.getKey()).remove(disabledDataSourceName);
-            }
-            
+        for (String each : disabledDataSourceNames) {
+            result.remove(each);
         }
         return result;
     }
