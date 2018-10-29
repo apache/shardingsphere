@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.rule;
 
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.constant.transaction.ProxyDataSourceType;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class DataSourceParameter {
+    
+    private PoolType originPoolType;
     
     private ProxyDataSourceType proxyDatasourceType = ProxyDataSourceType.VENDOR;
     
