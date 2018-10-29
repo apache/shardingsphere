@@ -34,7 +34,7 @@ import org.junit.Test;
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
-import static io.shardingsphere.transaction.manager.xa.fixture.ReflectiveUtis.getProperty;
+import static io.shardingsphere.transaction.manager.xa.fixture.ReflectiveUtils.getProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 

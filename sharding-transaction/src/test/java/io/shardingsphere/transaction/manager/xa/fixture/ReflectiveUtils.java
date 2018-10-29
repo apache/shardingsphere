@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 
 import java.lang.reflect.Field;
 
-public class ReflectiveUtis {
+public class ReflectiveUtils {
     
     public static Object getProperty(final Object target, final String fieldName) throws IllegalAccessException {
         Field field = getField(target, fieldName);
