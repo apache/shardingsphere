@@ -44,6 +44,14 @@ public class XADataSourceFactory {
         switch (databaseType) {
             case MySQL:
                 return newInstance(XADatabaseType.MySQL.getClassName());
+            case H2:
+                return newInstance(XADatabaseType.H2.getClassName());
+            case Oracle:
+                return newInstance(XADatabaseType.Oracle.getClassName());
+            case SQLServer:
+                return newInstance(XADatabaseType.SQLServer.getClassName());
+            case PostgreSQL:
+                return newInstance(XADatabaseType.PostgreSQL.getClassName());
             default:
                 throw new UnsupportedOperationException(String.format("Database [%s] Cannot support XA.", databaseType));
         }
