@@ -17,9 +17,13 @@
 
 package io.shardingsphere.transaction.manager.xa.convert;
 
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
+import io.shardingsphere.transaction.manager.xa.fixture.DataSourceUtils;
 import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class DataSourceParameterFactoryTest {
     
@@ -33,19 +37,16 @@ public class DataSourceParameterFactoryTest {
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
-        DataSourceParameter dataSourceParameter = DataSourceParameterFactory.build(newBasicDataSource());
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP_TOMCAT));
+        assertThat(parameter.getOriginPoolType(), is(PoolType.DBCP_TOMCAT));
+        assertThat(parameter.getUrl(), is("jdbc:mysql://localhost:3306"));
+        assertThat(parameter.getUsername(), is("root"));
+        assertThat(parameter.getPassword(), is("root"));
+        assertThat(parameter.getMaximumPoolSize(), is(10));
     }
     
     @Test
     public void assertBuildParameterFromDBCP2() {
     }
     
-    private BasicDataSource newBasicDataSource() {
-        BasicDataSource result = new BasicDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306");
-        result.setMaxTotal(10);
-        result.setUsername("root");
-        result.setPassword("");
-        return result;
-    }
 }
