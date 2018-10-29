@@ -17,5 +17,58 @@
 
 package io.shardingsphere.transaction.manager.xa.property;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class XAPropertyFactoryTest {
+    
+    private DataSourceParameter dataSourceParameter;
+    
+    @Before
+    public void setup() {
+        dataSourceParameter = new DataSourceParameter();
+        dataSourceParameter.setUrl("jdbc:mysql://127.0.0.1:3306/demo");
+        dataSourceParameter.setUsername("root");
+        dataSourceParameter.setPassword("root");
+        dataSourceParameter.setMaximumPoolSize(100);
+    }
+    
+    @Test
+    public void assertGetMysqlXAProperties() {
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.MySQL, dataSourceParameter);
+        assertThat(xaProperties.getProperty("user"), is("root"));
+        assertThat(xaProperties.getProperty("password"), is("root"));
+        assertThat(xaProperties.getProperty("URL"), is("jdbc:mysql://127.0.0.1:3306/demo"));
+        assertThat(xaProperties.getProperty("pinGlobalTxToPhysicalConnection"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("autoReconnect"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("prepStmtCacheSize"), is("250"));
+        assertThat(xaProperties.getProperty("prepStmtCacheSqlLimit"), is("2048"));
+        assertThat(xaProperties.getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("cacheResultSetMetadata"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+        assertThat(xaProperties.getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
+        assertThat(xaProperties.getProperty("netTimeoutForStreamingResults"), is("0"));
+    }
+    
+    @Test
+    public void assertGetH2XAProperties() {
+    }
+    
+    @Test
+    public void assertGetPGXAProperties() {
+    }
+    
+    @Test
+    public void assertGetSQLServerXAProperties() {
+    }
 }
