@@ -4,54 +4,73 @@ title = "Sharding"
 weight = 2
 +++
 
-## Sharding Column
+## Sharding Key
 
-The sharding field. e.g. To split tables by using modulo operation for the mantissa of the order ID, the sharding column is order ID. It also supports multiple sharding columns. Notice: If there is no sharding column in query SQL, all tables will be route to all data nodes which is in poor performance.
+The database field used in sharding refers to the key field in horizontal sharding of the database (table). 
+For example, in last number modulo of order ID sharding, order ID is taken as the sharding key. 
+The full route executed when there is no sharding field in SQL has a poor performance but supports multiple sharding fields.
 
 ## Sharding Algorithm
 
-Supporting =, BETWEEN and IN algorithms. Sharding algorithm currently need to be implemented by users. There are 4 types of sharding algorithms.
+The sharding of data can be achieved by sharding algorithms through `=`, `BETWEEN` and `IN`. 
+Highly flexible, the sharding algorithm needs to be implemented by developers themselves.
 
-- Precise sharding algorithm
+Currently, 4 kinds of sharding algorithms are available. 
+Since the sharding algorithm and the achievement of business are highly correlated, instead of providing built-in sharding algorithms, 
+it extracts all kinds of situations by sharding strategies to provide higher abstraction and the interface for developers to implement sharding algorithm by themselves.
 
-PreciseShardingAlgorithm, used to single sharding column deal with `=` and `IN` in SQL, use with StandardShardingStrategy together.
+- Precise Sharding Algorithm
 
-- Range sharding algorithm
+`PreciseShardingAlgorithm` is to process the sharding case in which single sharding key `=` and `IN` are used, together with `StandardShardingStrategy`.
 
-RangeShardingAlgorithm, used to single sharding column deal with `BETWEEN AND` in SQL, use with StandardShardingStrategy together.
+- Range Sharding Algorithm
 
-- Complex keys sharding algorithm
+`RangeShardingAlgorithm` is to process the sharding case in which single sharding key `BETWEEN AND` is used, together with `StandardShardingStrategy`.
 
-ComplexKeysShardingAlgorithm, used to multiple sharding columns deal with `=`, `IN` and `BETWEEN AND`, use with ComplexShardingStrategy together.
+- Complex Keys Sharding Algorithm
 
-- Hint sharding algorithm
+`ComplexKeysShardingAlgorithm` is to process the sharding case in which multiple sharding keys are used, together with `ComplexShardingStrategy`. 
+It has a relatively complex logic that requires developers to deal by themselves.
+ 
+- Hint Sharding Algorithm
 
-HintShardingAlgorithm, used to hint sharding, use with HintShardingStrategy together.
+`HintShardingAlgorithm` is to process the sharding case in which Hint is used, together with `HintShardingStrategy`.
 
 ## Sharding Strategy
 
-Include sharding columns and sharding algorithms. There are 5 types of sharding strategies.
+It includes the sharding key and the sharding algorithm, and the latter one is extracted out for its independence. 
+Only sharding key + sharding algorithm, i.e., the sharding strategy, can be used in sharding operation. For now, 5 kinds of sharding strategies are available.
 
-- Standard sharding strategy
+- Standard Sharding Strategy
 
-Support `=`, `IN` and `BETWEEN AND` in SQL with single sharding column. It provide PreciseShardingAlgorithm and RangeShardingAlgorithm, PreciseShardingAlgorithm is required, used to deal with `=` and `IN`. RangeShardingAlgorithm is optional, used to deal with `BETWEEN AND`, if absent, `BETWEEN AND` will not trigger sharding, just route to all data nodes.
+`StandardShardingStrategy` provides support for the sharding operation of `=`, `IN` and `BETWEEN AND` in SQL. 
+`StandardShardingStrategy` only supports single sharding keys and provides two sharding algorithms of `PreciseShardingAlgorithm` and `RangeShardingAlgorithm`. 
+`PreciseShardingAlgorithm` is compulsory and used to operate the sharding of `=` and `IN`. 
+`RangeShardingAlgorithm` is optional and used to operate the sharding of `BETWEEN AND`. 
+`BETWEEN AND` in SQL will operate by way of all data node route without the configuration of `RangeShardingAlgorithm`.
 
-- Complex sharding strategy
+- Complex Sharding Strategy
 
-Support `=`, `IN` and `BETWEEN AND` in SQL with multiple sharding columns. Because of complicated with multiple sharding columns, end users need to process by themselves.
+`ComplexShardingStrategy` provides support for the sharding operation of `=`, `IN` and `BETWEEN AND` in SQL. 
+`ComplexShardingStrategy` supports multiple sharding keys, but since their relationships are so complex that there is not too much encapsulation, 
+the combination of sharding keys and sharding operators are in the algorithm interface and achieved by developers with the most flexibility.
 
-- Inline sharding strategy
+- Inline Sharding Strategy
 
-Use groovy expression, supporting  `=` and `IN` sharding in SQL, for single sharding column only. For simple sharding algorithm, use inline expression it best practice to avoid java codes. For example: `t_user${u_id % 8}` means table t_user sharding by u_id, the result of table appendix is u_id mod 8, name of actual tables are from `t_user0` to `t_user7`.
+Using Groovy expressions, `InlineShardingStrategy` provides single-key support for the sharding operation of `=` and `IN` in SQL. 
+Simple sharding algorithms can be used through a simple configuration to avoid laborious Java code developments. 
+For example, `t_user${u_id % 8}` means table t_user is divided into 8 tables according to u_id, with table names from t_user0 to t_user7.
 
-- Hint sharding strategy
+- Hint Sharding Strategy
 
-Use hint but not SQL to indicate sharding result.
+`HintShardingStrategy` refers to the sharding strategy by Hint rather than SQL parsing.
 
 - None sharding strategy
 
-Do not sharding.
+`NoneShardingStrategy` refers to the strategy with no sharding.
 
 ## SQL Hint
 
-In some cases that ShardingColumn is decided by business conditions, not by certain SQL, then you can use SQL Hint to flexibly achieve injection of ShardingColumn. e.g. If you want to split database according to the employees' ID, but ID column not exists in tables, then you can use SQL Hint to do data sharding. ThreadLocal or SQL annotations(TO DO) method can be used to make SQL Hint.
+In the case that the `ShardingColumn` is not decided by SQL but other outer conditions, SQL Hint can be used flexibly to inject `ShardingColumn`. 
+For example, in the internal system, databases are divided according to the staff’s ID, but this column does not exist in the database. 
+SQL Hint can be used by two ways, Java API and SQL comment (to be finished).
