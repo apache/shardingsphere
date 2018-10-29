@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.manager.xa.property;
 
-import io.shardingsphere.transaction.manager.xa.convert.PoolType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -43,7 +42,7 @@ public enum XADatabaseType {
     private final String className;
     
     /**
-     * Find pool type by class name.
+     * Find XA database type by class name.
      *
      * @param className class name
      * @return pool type

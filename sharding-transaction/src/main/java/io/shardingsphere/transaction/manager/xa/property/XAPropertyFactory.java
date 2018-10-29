@@ -18,6 +18,8 @@
 package io.shardingsphere.transaction.manager.xa.property;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Properties;
 
@@ -26,8 +28,16 @@ import java.util.Properties;
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class XAPropertyFactory {
     
+    /**
+     * Create XA properties using datasource parameter.
+     *
+     * @param xaDatabaseType XA database type
+     * @param dataSourceParameter datasource parameter
+     * @return XA properties
+     */
     public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
         switch (xaDatabaseType) {
             case MySQL:

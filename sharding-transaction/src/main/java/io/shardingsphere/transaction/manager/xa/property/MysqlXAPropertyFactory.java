@@ -33,6 +33,11 @@ public class MysqlXAPropertyFactory {
     
     private final DataSourceParameter dataSourceParameter;
     
+    /**
+     * Build Mysql XA properties.
+     *
+     * @return Mysql XA properties
+     */
     public Properties build() {
         Properties result = new Properties();
         result.setProperty("user", dataSourceParameter.getUsername());
