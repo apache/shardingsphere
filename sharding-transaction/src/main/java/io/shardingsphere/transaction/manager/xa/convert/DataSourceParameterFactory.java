@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.xa.convert;
 
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
