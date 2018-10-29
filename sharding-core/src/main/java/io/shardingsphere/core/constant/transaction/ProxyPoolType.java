@@ -24,5 +24,5 @@ package io.shardingsphere.core.constant.transaction;
  */
 public enum ProxyPoolType {
     
-    VENDOR, DBCP2
+    VENDOR, TOMCAT_DBCP2
 }

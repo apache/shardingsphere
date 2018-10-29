@@ -19,12 +19,14 @@ package io.shardingsphere.transaction.manager.xa;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.xa.property.XADatabaseType;
+import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;
@@ -32,6 +34,7 @@ import org.junit.Test;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
+import java.lang.reflect.Field;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -69,7 +72,37 @@ public class XADataSourceWrapperTest {
     }
     
     @Test
-    public void assertWrapToTomcatDBCP() {
+    public void assertWrapToTomcatDBCP() throws PropertyException, IllegalAccessException {
+        XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(transactionManager);
+        parameter.setProxyDatasourceType(ProxyPoolType.TOMCAT_DBCP2);
+        BasicManagedDataSource targetDataSource = (BasicManagedDataSource) xaDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
+        assertThat(targetDataSource, Matchers.instanceOf(BasicManagedDataSource.class));
+        assertThat(targetDataSource.getXaDataSourceInstance(), is(xaDataSource));
+        assertThat(targetDataSource.getXADataSource(), is(XADatabaseType.MySQL.getClassName()));
+        assertThat(targetDataSource.getMaxTotal(), is(parameter.getMaximumPoolSize()));
+        assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "user"), Is.<Object>is(parameter.getUsername()));
+        assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "password"), Is.<Object>is(parameter.getPassword()));
+        assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "url"), Is.<Object>is(parameter.getUrl()));
+    }
     
+    private Object getProperty(final Object target, final String fieldName) throws IllegalAccessException {
+        Field field = getField(target, fieldName);
+        Preconditions.checkNotNull(field);
+        field.setAccessible(true);
+        return field.get(target);
+    }
+    
+    private Field getField(final Object target, final String fieldName) {
+        Class clazz = target.getClass();
+        while (clazz != null) {
+            try {
+                return clazz.getDeclaredField(fieldName);
+            // CHECKSTYLE:OFF
+            } catch (Exception ex) {
+            }
+            // CHECKSTYLE:ON
+            clazz = clazz.getSuperclass();
+        }
+        return null;
     }
 }

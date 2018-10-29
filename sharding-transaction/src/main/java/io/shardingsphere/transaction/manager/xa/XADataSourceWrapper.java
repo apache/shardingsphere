@@ -52,7 +52,7 @@ public class XADataSourceWrapper {
      */
     public DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
         switch (dataSourceParameter.getProxyDatasourceType()) {
-            case DBCP2:
+            case TOMCAT_DBCP2:
                 return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
             default:
                 return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
