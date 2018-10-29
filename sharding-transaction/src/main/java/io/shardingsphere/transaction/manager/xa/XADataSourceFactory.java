@@ -30,7 +30,7 @@ import javax.sql.XADataSource;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class XADatasourceFactory {
+public class XADataSourceFactory {
     
     private static final String XA_MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
     

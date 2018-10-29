@@ -35,7 +35,7 @@ public final class XABackendDataSourceConverter implements BackendDataSourceFact
     public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = XA_MANAGER.wrapDataSource(XADatasourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
+            DataSource dataSource = XA_MANAGER.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
             result.put(entry.getKey(), dataSource);
         }
         return result;
