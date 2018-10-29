@@ -21,7 +21,7 @@ public abstract class CommonServiceImpl implements CommonService {
     
     @Override
     public void cleanEnvironment() {
-        getOrderItemRepository().dropTable();
+        getOrderRepository().dropTable();
         getOrderItemRepository().dropTable();
     }
     
