@@ -6,7 +6,7 @@ weight = 1
 
 ## 逻辑表
 
-对于水平拆分的数据库(表)的同一类表的总称。例：订单数据根据主键尾数拆分为10张表,分别是t_order_0到t_order_9，他们的逻辑表名为t_order。
+对于水平拆分的数据库(表)的同一类表的总称。例：订单数据根据主键尾数拆分为10张表，分别是t_order_0到t_order_9，他们的逻辑表名为t_order。
 
 ## 真实表
 
@@ -43,9 +43,6 @@ SELECT i.* FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE
 
 SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
 ```
-
-其中表t_order在FROM的最左侧，Sharding-Sphere将会以它作为本次查询的主表。所有路由计算将会只使用主表的分片策略，那么t_order_item表的分片计算将会使用t_order的条件。
-
 
 其中t_order在FROM的最左侧，Sharding-Sphere将会以它作为整个绑定表的主表。所有路由计算将会只使用主表的策略，那么t_order_item表的分片计算将会使用t_order的条件。故绑定表之间的分区键要完全相同。
 
