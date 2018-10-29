@@ -5,11 +5,11 @@ weight = 1
 chapter = true
 +++
 
-## Navigation
+## Overview
 
-This section mainly introduces core concept for Sharding-Sphere, includes:
+This chapter is to introduce core concepts of data sharding, including:
 
-* SQL core concept
-* Sharding core concept
-* Configuration core concept
-* Core process
+- Core concepts of SQL
+- Core concepts of sharding
+- Core concepts of configuration
+- Core process
