@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
@@ -139,7 +140,7 @@ public final class DataSourceService {
      * @return available yaml proxy configuration
      */
     public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
-        Map<String, YamlRuleConfiguration> schemaRuleMap = new LinkedHashMap<>();
+        Map<String, YamlRuleConfiguration> result = new LinkedHashMap<>();
         for (String each : configService.getAllShardingSchemaNames()) {
             YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
             if (configService.isShardingRule(each)) {
@@ -151,12 +152,12 @@ public final class DataSourceService {
         Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
         for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
             for (String disabledDataSourceName : each.getValue()) {
-                if (null != schemaRuleMap.get(each.getKey()).getMasterSlaveRule()) {
-                    schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
+                if (null != result.get(each.getKey()).getMasterSlaveRule()) {
+                    result.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
                 }
             }
         }
-        return schemaRuleMap;
+        return result;
     }
     
     /**
@@ -177,26 +178,33 @@ public final class DataSourceService {
     }
     
     /**
-     * Get proxy disabled data source names.
+     * Get disabled data source names.
      *
      * @return disabled data source names
      */
     public Map<String, Collection<String>> getProxyDisabledDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        List<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        Collection<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
         for (String each : schemaDataSources) {
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
-                int pos = each.indexOf(".");
-                String schema = each.substring(0, pos);
-                String datasource = each.substring(pos + 1);
-                if (!result.containsKey(schema)) {
-                    result.put(schema, new LinkedList<String>());
-                }
-                result.get(schema).add(datasource);
+            if (!StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
+                continue;
             }
+            String schemaName;
+            String dataSourceName;
+            if (each.contains(".")) {
+                int position = each.indexOf(".");
+                schemaName = each.substring(0, position);
+                dataSourceName = each.substring(position + 1);
+            } else {
+                schemaName = ShardingConstant.LOGIC_SCHEMA_NAME;
+                dataSourceName = each;
+            }
+            if (!result.containsKey(schemaName)) {
+                result.put(schemaName, new LinkedList<String>());
+            }
+            result.get(schemaName).add(dataSourceName);
         }
         return result;
     }
-    
 }
