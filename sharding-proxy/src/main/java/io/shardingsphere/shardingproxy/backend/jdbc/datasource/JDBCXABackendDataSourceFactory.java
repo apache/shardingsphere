@@ -18,11 +18,10 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.xa.XADataSourceFactory;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
+import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 
 import javax.sql.DataSource;
 
@@ -36,7 +35,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
+        XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
         return xaTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.MySQL), dataSourceName, dataSourceParameter);
     }
 }
