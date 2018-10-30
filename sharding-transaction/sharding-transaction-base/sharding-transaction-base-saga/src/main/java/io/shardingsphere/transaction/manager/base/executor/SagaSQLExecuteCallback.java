@@ -20,19 +20,16 @@ package io.shardingsphere.transaction.manager.base.executor;
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.manager.base.BASETransactionManager;
+import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
 
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
- * Saga transaction sql exeucte callback.
+ * Saga transaction sql execute callback.
  *
  * @author yangyi
  */
@@ -44,7 +41,7 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
     
     public SagaSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
         super(databaseType, sqlType, isExceptionThrown);
-        this.transactionId = ((BASETransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE)).getTransactionId();
+        this.transactionId = SagaTransactionManager.getInstance().getTransactionId();
         shardingEventBus.post(new SagaSQLExecutionEvent(null, transactionId));
     }
     
