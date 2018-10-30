@@ -19,11 +19,10 @@ package io.shardingsphere.transaction.listener.xa;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.listener.ShardingTransactionListenerAdapter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 
 import java.sql.SQLException;
 
@@ -31,10 +30,11 @@ import java.sql.SQLException;
  * XA transaction listener.
  *
  * @author zhangliang
+ * @author zhaojun
  */
 public final class XATransactionListener extends ShardingTransactionListenerAdapter<XATransactionEvent> {
     
-    private final ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
+    private final ShardingTransactionManager shardingTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Subscribe
     @AllowConcurrentEvents
