@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Sharding router for hint database only.
  * 
- * @author zhangiang
+ * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor

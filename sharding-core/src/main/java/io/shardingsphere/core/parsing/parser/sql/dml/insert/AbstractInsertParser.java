@@ -87,7 +87,7 @@ public abstract class AbstractInsertParser implements SQLParser {
             } else {
                 ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
                 columnsToken.getItems().add(generateKeyColumn.get().getName());
-                insertStatement.getSqlTokens().add(columnsToken);
+                insertStatement.addSQLToken(columnsToken);
             }
         }
     }

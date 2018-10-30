@@ -17,7 +17,11 @@
     </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_multiple_values">
-        <assertion expected-data-file="insert_for_order_1_2.xml" />
+        <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
+    </dml-test-case>
+    
+    <dml-test-case sql-case-id="insert_on_duplicate_key_update">
+        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="insert_on_duplicate_key_update.xml" />
     </dml-test-case>
     
     <!-- TODO fixme -->
@@ -70,14 +74,13 @@
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
     </dml-test-case>
     
-    <!-- TODO parse generator context for insert set -->
-    <!--<dml-test-case sql-case-id="insert_without_generate_key_column">-->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
-    <!--</dml-test-case>-->
-    <!---->
-    <!--<dml-test-case sql-case-id="insert_set_without_generate_key_column">-->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />-->
-    <!--</dml-test-case>-->
+    <dml-test-case sql-case-id="insert_without_generate_key_column">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
+
+    <dml-test-case sql-case-id="insert_set_without_generate_key_column">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    </dml-test-case>
     
     <dml-test-case sql-case-id="insert_with_batch">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
@@ -142,7 +145,7 @@
     </dml-test-case>
     
     <dml-test-case sql-case-id="delete_with_special_character_without_sharding_value">
-        <assertion expected-data-file="delete_with_special_character_without_sharding_value.xml" />
+        <assertion expected-data-file="delete_without_sharding_value.xml" />
     </dml-test-case>
 
     <dml-test-case sql-case-id="delete_with_special_comments_without_sharding_value">

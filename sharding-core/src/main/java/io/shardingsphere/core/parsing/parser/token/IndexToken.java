@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.token;
 
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -27,17 +26,19 @@ import lombok.ToString;
  *
  * @author caohao
  */
-@RequiredArgsConstructor
 @ToString
-public final class IndexToken implements SQLToken {
-    
-    @Getter
-    private final int beginPosition;
+public final class IndexToken extends SQLToken {
     
     @Getter
     private final String originalLiterals;
     
     private final String tableName;
+    
+    public IndexToken(final int beginPosition, final String originalLiterals, final String tableName) {
+        super(beginPosition);
+        this.originalLiterals = originalLiterals;
+        this.tableName = tableName;
+    }
     
     /**
      * Get index name.

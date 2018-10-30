@@ -83,7 +83,7 @@ public final class SQLStatementAssert {
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         conditionAssert.assertOrCondition(actual.getConditions().getOrCondition(), expected.getOrCondition());
-        tokenAssert.assertTokens(actual.getSqlTokens(), expected.getTokens());
+        tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);

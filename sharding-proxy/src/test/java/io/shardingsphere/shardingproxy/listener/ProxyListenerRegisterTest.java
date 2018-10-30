@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.listener;
 
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,19 +35,19 @@ public final class ProxyListenerRegisterTest {
     private final ProxyListenerRegister proxyListenerRegister = new ProxyListenerRegister();
     
     @Mock
-    private ProxyContext proxyContext;
+    private GlobalRegistry globalRegistry;
     
     @Before
     @SneakyThrows
     public void setUp() {
-        Field field = ProxyListenerRegister.class.getDeclaredField("proxyContext");
+        Field field = ProxyListenerRegister.class.getDeclaredField("globalRegistry");
         field.setAccessible(true);
-        field.set(proxyListenerRegister, proxyContext);
+        field.set(proxyListenerRegister, globalRegistry);
     }
     
     @Test
     public void assertRegister() {
         proxyListenerRegister.register();
-        verify(proxyContext).register();
+        verify(globalRegistry).register();
     }
 }

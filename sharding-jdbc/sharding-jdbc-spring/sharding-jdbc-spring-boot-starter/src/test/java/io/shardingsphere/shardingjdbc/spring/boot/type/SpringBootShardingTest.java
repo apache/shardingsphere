@@ -24,6 +24,7 @@ import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -51,6 +52,11 @@ public class SpringBootShardingTest {
     @Resource
     private DataSource dataSource;
     
+    @BeforeClass
+    public static void setUp() {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+    }
+    
     @Test
     public void assertWithShardingDataSource() {
         assertThat(dataSource, instanceOf(ShardingDataSource.class));
@@ -61,7 +67,7 @@ public class SpringBootShardingTest {
         assertTrue(shardingContext.isShowSQL());
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         ShardingProperties shardingProperties = getFieldValue("shardingProperties", ShardingDataSource.class, dataSource);
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));

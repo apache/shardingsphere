@@ -21,11 +21,13 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import io.shardingsphere.shardingjdbc.spring.boot.common.SpringBootConfigMapConfigurationProperties;
+import io.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import io.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import io.shardingsphere.shardingjdbc.spring.boot.util.PropertyUtil;
 import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -43,14 +45,20 @@ import java.util.Map;
  * @author caohao
  */
 @Configuration
-@EnableConfigurationProperties({SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class})
+@EnableConfigurationProperties({
+        SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class, 
+        SpringBootConfigMapConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class
+})
+@RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
-    @Autowired
-    private SpringBootShardingRuleConfigurationProperties shardingProperties;
+    private final SpringBootShardingRuleConfigurationProperties shardingProperties;
     
-    @Autowired
-    private SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
+    
+    private final SpringBootConfigMapConfigurationProperties configMapProperties;
+    
+    private final SpringBootPropertiesConfigurationProperties propMapProperties;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
@@ -63,9 +71,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Bean
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 
-                ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(), shardingProperties.getProps())
+                ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps())
                 : MasterSlaveDataSourceFactory.createDataSource(
-                        dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
+                        dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps());
     }
     
     @Override

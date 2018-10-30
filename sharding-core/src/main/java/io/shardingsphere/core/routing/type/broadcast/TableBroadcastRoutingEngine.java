@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Broadcast routing engine for tables.
@@ -68,8 +70,9 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private IndexToken getIndexToken() {
-        Preconditions.checkState(1 == sqlStatement.getSqlTokens().size());
-        return (IndexToken) sqlStatement.getSqlTokens().get(0);
+        List<SQLToken> sqlTokens = sqlStatement.getSQLTokens();
+        Preconditions.checkState(1 == sqlTokens.size());
+        return (IndexToken) sqlTokens.get(0);
     }
     
     private Collection<TableUnit> getAllTableUnits(final String logicTableName) {

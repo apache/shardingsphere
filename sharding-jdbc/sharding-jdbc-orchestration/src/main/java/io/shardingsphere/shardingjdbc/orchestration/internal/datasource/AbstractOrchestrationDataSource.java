@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
@@ -27,8 +28,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -53,18 +52,10 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
     }
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(orchestrationFacade.getConfigService().loadDataSourceMap().values());
+        super(orchestrationFacade.getConfigService().loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME).values());
         this.orchestrationFacade = orchestrationFacade;
-        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSourceMap();
+        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME);
         ShardingEventBusInstance.getInstance().register(this);
-    }
-    
-    protected final Map<String, DataSource> getAvailableDataSourceMap(final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
-        return result;
     }
     
     /**

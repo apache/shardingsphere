@@ -26,7 +26,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
- * 获取真实本机网络的服务.
+ * IP utilities.
  * 
  * @author caohao
  */
@@ -36,15 +36,14 @@ public final class IpUtils {
     private static volatile String cachedIpAddress;
     
     /**
-     * 获取本机IP地址.
+     * Get localhost IP address.
      * 
      * <p>
-     * 有限获取外网IP地址.
-     * 也有可能是链接着路由器的最终IP地址.
-     * 如果发生异常返回UnknownIP.
+     * It maybe get IP address of router.
+     * Return unknown IP if exception occur. 
      * </p>
      * 
-     * @return 本机IP地址
+     * @return IP address of localhost 
      */
     public static String getIp() {
         if (null != cachedIpAddress) {
