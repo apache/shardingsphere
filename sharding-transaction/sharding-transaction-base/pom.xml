@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
     <parent>
         <artifactId>sharding-transaction</artifactId>
         <groupId>io.shardingsphere</groupId>
         <version>3.0.0.M5-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
     <artifactId>sharding-transaction-base</artifactId>
-    <packaging>pom</packaging>
+
     <modules>
         <module>sharding-transaction-base-saga</module>
     </modules>
@@ -22,4 +22,5 @@
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
+
 </project>
