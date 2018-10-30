@@ -15,33 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.listener;
+package io.shardingsphere.core.config;
 
-/**
- * Registry center's listener manager.
- *
- * @author caohao
- * @author panjuan
- */
-public interface ListenerManager {
-    
-    /**
-     * Start sharding change listener.
-     *
-     */
-    void watchSharding();
-    
-    
-    /**
-     * Start master-slave change listener.
-     *
-     */
-    void watchMasterSlave();
-    
-    /**
-     * Start proxy change listener.
-     *
-     */
-    @Deprecated
-    void watchProxy();
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+@RunWith(Suite.class)
+@SuiteClasses(DataSourceConfigurationTest.class)
+public final class AllConfigTests {
 }
