@@ -22,13 +22,13 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -37,19 +37,22 @@ import java.util.Map.Entry;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class DataSourceConfiguration {
     
     private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
     
+    private static final Collection<String> SKIPPED_PROPERTY_NAMES;
+    
     static {
         GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+        SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
     
-    private final String dataSourceClassName;
+    private String dataSourceClassName;
     
-    private final Map<String, Object> properties;
+    private Map<String, Object> properties;
     
     /**
      * Get data source configuration.
@@ -58,22 +61,27 @@ public final class DataSourceConfiguration {
      * @return data source configuration
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
-        Map<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new LinkedHashMap<>();
         try {
             for (Method each : findAllGetterMethods(dataSource)) {
                 String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(3));
-                properties.put(propertyName, each.invoke(dataSource));
+                if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
+                    properties.put(propertyName, each.invoke(dataSource));
+                }
             }
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingConfigurationException(ex);
         }
-        return new DataSourceConfiguration(dataSource.getClass().getName(), properties);
+        DataSourceConfiguration result = new DataSourceConfiguration();
+        result.setDataSourceClassName(dataSource.getClass().getName());
+        result.setProperties(properties);
+        return result;
     }
     
     private static Collection<Method> findAllGetterMethods(final DataSource dataSource) {
         Collection<Method> result = new HashSet<>();
         for (Method each : dataSource.getClass().getMethods()) {
-            if (each.getName().startsWith("get") && 0 == each.getParameterTypes().length && GENERAL_CLASS_TYPE.contains(each.getReturnType())) {
+            if (each.getName().startsWith("get") && 0 == each.getParameterTypes().length) {
                 result.add(each);
             }
         }
@@ -90,6 +98,9 @@ public final class DataSourceConfiguration {
             DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
             Method[] methods = result.getClass().getMethods();
             for (Entry<String, Object> entry : properties.entrySet()) {
+                if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
+                    continue;
+                }
                 Method setterMethod = findSetterMethodByName(methods, entry.getKey());
                 if (null != setterMethod) {
                     setterMethod.invoke(result, entry.getValue());
