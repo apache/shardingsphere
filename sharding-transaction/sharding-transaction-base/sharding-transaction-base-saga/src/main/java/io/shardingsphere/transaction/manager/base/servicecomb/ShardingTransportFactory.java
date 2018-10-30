@@ -21,8 +21,6 @@ import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.apache.servicecomb.saga.transports.TransportFactory;
 
-import java.sql.Connection;
-
 /**
  * Extend interface for service comb saga TransportFactory.
  *

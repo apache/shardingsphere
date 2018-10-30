@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.revert;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -29,14 +28,14 @@ import java.util.List;
 public final class EmptyRevertEngine implements RevertEngine {
     
     @Override
-    public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) throws SQLException {
+    public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) {
         RevertResult result = new RevertResult();
         result.setRevertSQL("");
         return result;
     }
     
     @Override
-    public RevertResult revert(final String datasource, final String sql, final Object[] params) throws SQLException {
+    public RevertResult revert(final String datasource, final String sql, final Object[] params) {
         RevertResult result = new RevertResult();
         result.setRevertSQL("");
         return result;
