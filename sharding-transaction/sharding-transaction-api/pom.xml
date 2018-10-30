@@ -11,10 +11,5 @@
 
     <artifactId>sharding-transaction-api</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>sharding-transaction-xa-api</module>
-        <module>sharding-transaction-base-api</module>
-    </modules>
-
 
 </project>
