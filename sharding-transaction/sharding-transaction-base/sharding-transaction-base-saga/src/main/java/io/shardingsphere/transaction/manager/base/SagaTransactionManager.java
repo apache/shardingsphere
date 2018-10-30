@@ -33,11 +33,13 @@ import java.util.UUID;
  */
 public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionEvent> {
     
-    private static final ThreadLocal<String> TRANSACTION_IDS = new ThreadLocal<String>();
+    private static final SagaTransactionManager INSTANCE = new SagaTransactionManager();
+    
+    private static final ThreadLocal<String> TRANSACTION_IDS = new ThreadLocal<>();
     
     private final SagaExecutionComponent coordinator;
     
-    public SagaTransactionManager() {
+    private SagaTransactionManager() {
         this.coordinator = SagaExecutionComponentHolder.getInstance().getSagaExecutionComponent();
     }
     
@@ -72,5 +74,14 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public String getTransactionId() {
         return TRANSACTION_IDS.get();
+    }
+    
+    /**
+     * Get saga transaction manager instance.
+     *
+     * @return saga transaction manager
+     */
+    public static SagaTransactionManager getInstance() {
+        return INSTANCE;
     }
 }
