@@ -30,14 +30,17 @@ import java.util.List;
 
 public class SagaDefinitionBuilderTest {
     
-    private SagaDefinitionBuilder builder;
-    
     private static final String DS_0 = "ds_0";
+    
     private static final String DS_1 = "ds_1";
     
     private static final String EXAMPLE_INSERT_SQL = "INSERT INTO TABLE ds_0.tb_0 (id, value) VALUES (?, ?)";
+    
     private static final String EXAMPLE_DELETE_SQL = "DELETE FROM ds_0.tb_0 WHERE id=?";
+    
     private static final String EXAMPLE_UPDATE_SQL = "UPDATE ds_1.tb_1 SET value=? where id=?";
+    
+    private SagaDefinitionBuilder builder;
     
     private static final List<List<Object>> INSERT_PARAMS = new ArrayList<List<Object>>() {{
         add(new ArrayList<Object>() {{

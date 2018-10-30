@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.revert;
 
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class EmptyRevertEngineTest {
     private final EmptyRevertEngine revertEngine = new EmptyRevertEngine();
     
     @Test
-    public void assertEmptyResult() throws SQLException {
+    public void assertEmptyResult() {
         RevertResult result = revertEngine.revert("", "", Collections.<List<Object>>emptyList());
         assertThat(result.getRevertSQL(), is(""));
         assertThat(result.getRevertSQLParams().size(), is(0));

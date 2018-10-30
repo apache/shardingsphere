@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class SagaTransactionManagerTest {
     
-    private final SagaTransactionManager transactionManager = new SagaTransactionManager();
+    private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
     
     @Mock
     private SagaExecutionComponent coordinator;
@@ -70,7 +70,7 @@ public final class SagaTransactionManagerTest {
     @Test
     public void assertRollback() {
         transactionManager.rollback(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
-        assertThat( null == transactionManager.getTransactionId(), is(true));
+        assertThat(null == transactionManager.getTransactionId(), is(true));
     }
     
     @Test
