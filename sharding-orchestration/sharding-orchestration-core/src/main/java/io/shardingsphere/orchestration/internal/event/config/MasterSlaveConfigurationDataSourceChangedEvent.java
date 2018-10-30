@@ -17,29 +17,28 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
-import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Proxy configuration event bus event.
+ * Master slave configuration data source changed event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfigurationEventBusEvent {
+public final class MasterSlaveConfigurationDataSourceChangedEvent {
     
-    private final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap;
+    private final String schemaName;
     
-    private final Map<String, YamlRuleConfiguration> schemaRuleMap;
+    private final Map<String, DataSource> dataSourceMap;
     
-    private final Authentication authentication;
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
     private final Properties props;
 }
