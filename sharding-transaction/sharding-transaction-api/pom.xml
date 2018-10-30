@@ -9,5 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sharding-transaction-spi</artifactId>
+    <artifactId>sharding-transaction-api</artifactId>
+
+
 </project>
