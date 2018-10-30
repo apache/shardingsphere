@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.CreateTableVisito
 import io.shardingsphere.core.parsing.antler.statement.visitor.IndexWithTableStatementVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.OnlySingleTableVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.StatementVisitor;
+import io.shardingsphere.core.parsing.antler.statement.visitor.TCLStatementVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.OnlyMultiTableVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.mysql.MySQLAlterTableVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.oracle.OracleAlterIndexVisitor;
@@ -40,30 +41,8 @@ public final class VisitorRegistry {
     private Map<String, StatementVisitor> visitors = new HashMap<String, StatementVisitor>();
 
     private VisitorRegistry() {
-        visitors.put("CreateTable", new CreateTableVisitor());
-        visitors.put("DropTable", new OnlySingleTableVisitor());
-        visitors.put("TruncateTable", new OnlySingleTableVisitor());
-        
-        visitors.put("CreateIndex", new IndexWithTableStatementVisitor());
-        
-        visitors.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
-        visitors.put(DatabaseType.MySQL + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.MySQL + "DropIndex", new IndexWithTableStatementVisitor());
-        
-        visitors.put(DatabaseType.Oracle + "AlterTable", new OracleAlterTableVisitor());
-        visitors.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
-        visitors.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
-
-        visitors.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
-        visitors.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());
-        visitors.put(DatabaseType.SQLServer + "AlterIndex", new IndexWithTableStatementVisitor());
-        
-        visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreAlterTableVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "DropIndex", new IndexWithTableStatementVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "AlterIndex", new PostgreAlterIndexVisitor());
+        registerDDLVisitor();
+        registerTCLVisitor();
     }
 
     /**
@@ -89,5 +68,47 @@ public final class VisitorRegistry {
         }
 
         return visitors.get(commandName);
+    }
+    
+    /**
+     * Register ddl statement visitor
+     */
+    private void registerDDLVisitor() {
+        visitors.put("CreateTable", new CreateTableVisitor());
+        visitors.put("DropTable", new OnlySingleTableVisitor());
+        visitors.put("TruncateTable", new OnlySingleTableVisitor());
+        
+        visitors.put("CreateIndex", new IndexWithTableStatementVisitor());
+        
+        visitors.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
+        visitors.put(DatabaseType.MySQL + "DropTable", new OnlyMultiTableVisitor());
+        visitors.put(DatabaseType.MySQL + "DropIndex", new IndexWithTableStatementVisitor());
+        
+        visitors.put(DatabaseType.Oracle + "AlterTable", new OracleAlterTableVisitor());
+        visitors.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
+        visitors.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
+
+        visitors.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
+        visitors.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
+        visitors.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());
+        visitors.put(DatabaseType.SQLServer + "AlterIndex", new IndexWithTableStatementVisitor());
+        
+        visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreAlterTableVisitor());
+        visitors.put(DatabaseType.PostgreSQL + "DropTable", new OnlyMultiTableVisitor());
+        visitors.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
+        visitors.put(DatabaseType.PostgreSQL + "DropIndex", new IndexWithTableStatementVisitor());
+        visitors.put(DatabaseType.PostgreSQL + "AlterIndex", new PostgreAlterIndexVisitor());
+    }
+    
+    /**
+     * Register tcl statement visitor
+     */
+    private void registerTCLVisitor() {
+        visitors.put("SetTransaction", new TCLStatementVisitor());
+        visitors.put("Commit", new TCLStatementVisitor());
+        visitors.put("Rollback", new TCLStatementVisitor());
+        visitors.put("Savepoint", new TCLStatementVisitor());
+        visitors.put("BeginWork", new TCLStatementVisitor());
+        visitors.put(DatabaseType.MySQL + "SetVariable", new TCLStatementVisitor());
     }
 }

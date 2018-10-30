@@ -42,6 +42,7 @@ SINGLE_QUOTA: '\'';
 BACK_QUOTA: '`';
 UL_: '_';
 QUESTION: '?' ;
+AT_:'@';
 
 fragment A: [Aa];
 fragment B: [Bb];

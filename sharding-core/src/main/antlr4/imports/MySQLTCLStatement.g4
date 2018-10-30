@@ -62,3 +62,16 @@ rollback
 savepoint
     : SAVEPOINT ID 
     ;
+
+//set-variable.html
+setVariable
+    : SET assignment (COMMA assignment)*
+    ;
+
+assignment
+    : variable EQ_OR_ASSIGN expr
+    ;
+
+variable
+    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
+    ;   

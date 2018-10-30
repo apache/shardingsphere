@@ -378,6 +378,14 @@ PASSWORD
     : P A S S W O R D
     ;
 
+PERSIST
+    : P E R S I S T
+    ;
+
+PERSIST_ONLY
+    : P E R S I S T UL_ O N L Y
+    ;
+
 PRECISION
     : P R E C I S I O N
     ;

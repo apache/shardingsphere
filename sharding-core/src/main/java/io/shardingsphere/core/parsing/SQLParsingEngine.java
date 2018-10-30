@@ -30,6 +30,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -67,12 +68,15 @@ public final class SQLParsingEngine {
         SQLParser parser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
         Token currentToken = lexerEngine.getCurrentToken();
         if (firstToken != currentToken) {
-            if(DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
+            if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
                 result = StatementFactory.getStatement(dbType, firstToken.getType(), shardingRule, sql, shardingTableMetaData);
-            }else {
+            } else {
                 result = parser.parse();
             }
-        }else {
+        } else if (TCLStatement.isTCL(firstToken.getType())) {
+            result = StatementFactory.getStatement(dbType, firstToken.getType(), shardingRule, sql,
+                    shardingTableMetaData);
+        } else {
             result = parser.parse();
         }
         

@@ -21,5 +21,6 @@ execute
     | rollback
     | savepoint
     | beginWork
+    | setVariable
     ;
  
