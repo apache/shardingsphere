@@ -22,6 +22,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -42,6 +43,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     private final Map<String, DataSource> dataSources;

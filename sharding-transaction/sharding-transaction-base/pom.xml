@@ -7,7 +7,7 @@
     <parent>
         <artifactId>sharding-transaction</artifactId>
         <groupId>io.shardingsphere</groupId>
-        <version>3.0.0.M5-SNAPSHOT</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-base</artifactId>
 

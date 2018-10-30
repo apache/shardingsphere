@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.transaction.manager.base.servicecomb.ShardingTransportFactory;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 
@@ -33,7 +33,7 @@ public final class ProxyShardingTransportFactory implements ShardingTransportFac
     
     @Override
     public void cacheTransport(final SagaTransactionEvent event) {
-        transports.set(new ProxySQLTransport(ProxyContext.getInstance().getRuleRegistry(event.getProxySchema()).getBackendDataSource()));
+        transports.set(new ProxySQLTransport(GlobalRegistry.getInstance().getShardingSchema(event.getProxySchema()).getBackendDataSource()));
     }
     
     @Override

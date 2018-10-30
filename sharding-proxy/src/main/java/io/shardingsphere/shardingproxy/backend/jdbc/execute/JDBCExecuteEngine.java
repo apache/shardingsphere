@@ -114,7 +114,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        boolean isBASETransaction = TransactionType.BASE == ProxyContext.getInstance().getTransactionType()
+        boolean isBASETransaction = TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType()
                 && sqlType == SQLType.DML
                 && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
         SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown)
