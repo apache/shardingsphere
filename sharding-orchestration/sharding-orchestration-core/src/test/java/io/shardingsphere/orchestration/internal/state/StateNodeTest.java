@@ -26,6 +26,10 @@ public final class StateNodeTest {
     
     @Test
     public void assertGetDataSourcesNodeFullPath() {
-        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/name/datasources"));
+        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/test/state/datasources"));
+    }
+    
+    public void assertGetInstancesNodeFullPath() {
+        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/instances/testId"));
     }
 }
