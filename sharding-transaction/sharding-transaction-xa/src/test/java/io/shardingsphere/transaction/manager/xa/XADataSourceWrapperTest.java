@@ -21,11 +21,11 @@ import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.xa.fixture.ReflectiveUtils;
 import io.shardingsphere.transaction.manager.xa.property.XADatabaseType;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;
@@ -34,14 +34,13 @@ import org.junit.Test;
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
-import static io.shardingsphere.transaction.manager.xa.fixture.ReflectiveUtils.getProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class XADataSourceWrapperTest {
     
     private TransactionManager transactionManager =
-        ((XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA)).getUnderlyingTransactionManager();
+        XATransactionManagerSPILoader.getInstance().getTransactionManager().getUnderlyingTransactionManager();
     
     private final XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
     
@@ -79,8 +78,8 @@ public class XADataSourceWrapperTest {
         assertThat(targetDataSource.getXaDataSourceInstance(), is(xaDataSource));
         assertThat(targetDataSource.getXADataSource(), is(XADatabaseType.MySQL.getClassName()));
         assertThat(targetDataSource.getMaxTotal(), is(parameter.getMaximumPoolSize()));
-        assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "user"), Is.<Object>is(parameter.getUsername()));
-        assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "password"), Is.<Object>is(parameter.getPassword()));
-        assertThat(getProperty(targetDataSource.getXaDataSourceInstance(), "url"), Is.<Object>is(parameter.getUrl()));
+        MatcherAssert.assertThat(ReflectiveUtils.getProperty(targetDataSource.getXaDataSourceInstance(), "user"), Is.<Object>is(parameter.getUsername()));
+        MatcherAssert.assertThat(ReflectiveUtils.getProperty(targetDataSource.getXaDataSourceInstance(), "password"), Is.<Object>is(parameter.getPassword()));
+        MatcherAssert.assertThat(ReflectiveUtils.getProperty(targetDataSource.getXaDataSourceInstance(), "url"), Is.<Object>is(parameter.getUrl()));
     }
 }
