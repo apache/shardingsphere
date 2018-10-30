@@ -1,4 +1,4 @@
-package io.shardingsphere.orchestration.internal.state;/*
+/*
  * Copyright 2016-2018 shardingsphere.io.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,8 @@ package io.shardingsphere.orchestration.internal.state;/*
  * limitations under the License.
  * </p>
  */
+
+package io.shardingsphere.orchestration.internal.state;
 
 import org.junit.Test;
 
