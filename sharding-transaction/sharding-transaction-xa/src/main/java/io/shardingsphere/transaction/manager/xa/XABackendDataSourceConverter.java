@@ -18,9 +18,7 @@
 package io.shardingsphere.transaction.manager.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.spi.xa.BackendDataSourceFactory;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
 import io.shardingsphere.transaction.manager.xa.convert.DataSourceParameterFactory;
 
 import javax.sql.DataSource;
@@ -29,7 +27,7 @@ import java.util.Map;
 
 public final class XABackendDataSourceConverter implements BackendDataSourceFactory {
     
-    private static XATransactionManager XA_MANAGER = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
+    private static XATransactionManager XA_MANAGER = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Override
     public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
