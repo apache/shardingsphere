@@ -28,6 +28,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -52,6 +53,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShardingDataSourceTest {
+    
+    @After
+    public void teardown() {
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+    }
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
