@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.orchestration.internal.uilt;
+package io.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
