@@ -53,7 +53,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
         dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
-        initOrchestrationFacade(dataSource);
+        initOrchestrationFacade();
     }
     
     public OrchestrationShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
@@ -67,9 +67,9 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         getOrchestrationFacade().getListenerManager().initShardingListeners();
     }
     
-    private void initOrchestrationFacade(final ShardingDataSource shardingDataSource) {
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurationMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
-                ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
+    private void initOrchestrationFacade() {
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurationMap(), dataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
