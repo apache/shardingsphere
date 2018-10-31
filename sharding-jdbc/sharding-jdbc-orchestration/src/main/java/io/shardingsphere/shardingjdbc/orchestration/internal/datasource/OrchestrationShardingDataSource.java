@@ -17,10 +17,13 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
@@ -30,10 +33,12 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Orchestration sharding datasource.
@@ -63,8 +68,18 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     private void initOrchestrationFacade(final ShardingDataSource shardingDataSource) {
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurationMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
+    }
+    
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
+        return Maps.transformValues(dataSource.getDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+        
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
     }
     
     @Override
