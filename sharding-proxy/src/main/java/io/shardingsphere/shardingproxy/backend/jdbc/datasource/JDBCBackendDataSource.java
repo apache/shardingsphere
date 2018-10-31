@@ -48,11 +48,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     @Getter
     private final Map<String, DataSource> dataSources;
     
-    private final Map<String, DataSource> availableDataSources;
-    
     public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
         dataSources = createDataSourceMap(dataSourceParameters);
-        availableDataSources = new LinkedHashMap<>(dataSources);
     }
     
     private Map<String, DataSource> createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -80,22 +77,6 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
                 return new JDBCXABackendDataSourceFactory();
             default:
                 return new JDBCRawBackendDataSourceFactory();
-        }
-    }
-    
-    /**
-     * Set available data sources.
-     *
-     * @param disabledDataSourceNames disabled data source names
-     */
-    public void setAvailableDataSources(final Collection<String> disabledDataSourceNames) {
-        synchronized (availableDataSources) {
-            availableDataSources.clear();
-            for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-                if (!disabledDataSourceNames.contains(entry.getKey())) {
-                    availableDataSources.put(entry.getKey(), entry.getValue());
-                }
-            }
         }
     }
     
