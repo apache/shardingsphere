@@ -177,7 +177,7 @@ public final class Bootstrap {
         }
         return result;
     }
-
+    
     private static Map<String, YamlRuleConfiguration> getRuleConfiguration(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
         Map<String, YamlRuleConfiguration> result = new HashMap<>();
         for (Entry<String, ProxyYamlRuleConfiguration> entry : localRuleConfigs.entrySet()) {
