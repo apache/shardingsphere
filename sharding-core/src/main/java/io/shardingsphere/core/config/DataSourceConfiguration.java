@@ -38,6 +38,7 @@ import java.util.Map.Entry;
  * Data source configuration.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -88,7 +89,7 @@ public final class DataSourceConfiguration {
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration();
-        result.setDataSourceClassName("HikariDataSource");
+        result.setDataSourceClassName("com.zaxxer.hikari.HikariDataSource");
         result.setProperties(new LinkedHashMap<String, Object>());
         for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
             try {
