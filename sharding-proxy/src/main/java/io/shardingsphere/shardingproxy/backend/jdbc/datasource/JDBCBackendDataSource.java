@@ -139,6 +139,16 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return result;
     }
     
+    /**
+     * Get data source by data source name.
+     *
+     * @param dataSourceName data source name
+     * @return data source
+     */
+    public DataSource getDataSource(final String dataSourceName) {
+        return dataSources.get(dataSourceName);
+    }
+    
     @Override
     public void close() {
         closeOriginalDataSources();
