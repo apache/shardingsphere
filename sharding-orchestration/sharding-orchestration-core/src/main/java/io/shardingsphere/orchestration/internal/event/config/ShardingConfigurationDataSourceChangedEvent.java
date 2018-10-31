@@ -17,11 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ public final class ShardingConfigurationDataSourceChangedEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurationMap;
     
     private final ShardingRule shardingRule;
     
