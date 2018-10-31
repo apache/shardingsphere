@@ -23,7 +23,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import io.shardingsphere.shardingjdbc.orchestration.internal.uilt.DataSourceConverter;
+import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 
