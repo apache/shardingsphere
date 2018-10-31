@@ -11,10 +11,6 @@
     </parent>
     <artifactId>sharding-transaction-base</artifactId>
 
-    <modules>
-        <module>sharding-transaction-base-saga</module>
-    </modules>
-
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
