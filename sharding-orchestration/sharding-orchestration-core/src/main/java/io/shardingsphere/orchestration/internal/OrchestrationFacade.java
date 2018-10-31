@@ -28,14 +28,11 @@ import io.shardingsphere.orchestration.internal.listener.ListenerFactory;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.internal.state.instance.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -134,19 +131,6 @@ public final class OrchestrationFacade implements AutoCloseable {
         instanceStateService.persistProxyInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initProxyListeners();
-    }
-    
-    private Map<String, DataSource> getActualDataSourceMapForMasterSlave(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getValue() instanceof MasterSlaveDataSource) {
-                MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                result.putAll(masterSlaveDataSource.getAllDataSources());
-            } else {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
     }
     
     @Override
