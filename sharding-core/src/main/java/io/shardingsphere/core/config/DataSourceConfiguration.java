@@ -80,6 +80,12 @@ public final class DataSourceConfiguration {
         return result;
     }
     
+    /**
+     * Get data source configuration.
+     *
+     * @param dataSourceParameter data source parameter
+     * @return data source configuration
+     */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration();
         result.setDataSourceClassName("HikariDataSource");
