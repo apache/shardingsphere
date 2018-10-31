@@ -89,6 +89,7 @@ public final class DataSourceConfiguration {
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration();
         result.setDataSourceClassName("HikariDataSource");
+        result.setProperties(new LinkedHashMap<String, Object>());
         for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
