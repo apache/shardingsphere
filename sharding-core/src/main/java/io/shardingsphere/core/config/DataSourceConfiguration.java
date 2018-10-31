@@ -80,6 +80,19 @@ public final class DataSourceConfiguration {
         return result;
     }
     
+    public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+        DataSourceConfiguration result = new DataSourceConfiguration();
+        result.setDataSourceClassName("HikariDataSource");
+        for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                result.getProperties().put(each.getName(), each.get(dataSourceParameter));
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
+    }
+    
     private static Collection<Method> findAllGetterMethods(final DataSource dataSource) {
         Collection<Method> result = new HashSet<>();
         for (Method each : dataSource.getClass().getMethods()) {
