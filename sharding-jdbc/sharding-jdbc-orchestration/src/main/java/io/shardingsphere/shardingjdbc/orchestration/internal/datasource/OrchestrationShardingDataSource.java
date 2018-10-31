@@ -32,6 +32,7 @@ import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurati
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.internal.uilt.DataSourceConverter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -61,25 +62,15 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
         ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        dataSource = new ShardingDataSource(configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME),
-                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()), 
+        dataSource = new ShardingDataSource(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME),
+                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()),
                 configService.loadConfigMap(), configService.loadProperties());
         getOrchestrationFacade().getListenerManager().initShardingListeners();
     }
     
     private void initOrchestrationFacade() {
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurationMap(), dataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap()), dataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
-    }
-    
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
-        return Maps.transformValues(dataSource.getDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
-        
-            @Override
-            public DataSourceConfiguration apply(final DataSource input) {
-                return DataSourceConfiguration.getDataSourceConfiguration(input);
-            }
-        });
     }
     
     @Override
