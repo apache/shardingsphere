@@ -36,7 +36,7 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataSourceParameterConverter {
+public class DataSourceConverter {
     
     /**
      * Get data source parameter map.
