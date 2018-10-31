@@ -17,11 +17,14 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -33,9 +36,11 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRul
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * Orchestration master-slave datasource.
@@ -70,6 +75,16 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
         getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveDataSource.getDataSourceMap(), 
                 masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
+    }
+    
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
+        return Maps.transformValues(dataSource.getDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
     }
     
     @Override
