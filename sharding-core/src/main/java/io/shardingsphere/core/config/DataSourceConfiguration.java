@@ -21,10 +21,12 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -120,5 +122,17 @@ public final class DataSourceConfiguration {
             }
         }
         return null;
+    }
+    
+    public DataSourceParameter createDataSourceParameter() {
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                each.set(result, properties.get(each.getName()));
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
     }
 }
