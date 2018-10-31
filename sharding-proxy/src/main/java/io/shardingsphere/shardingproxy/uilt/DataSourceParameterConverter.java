@@ -17,8 +17,15 @@
 
 package io.shardingsphere.shardingproxy.uilt;
 
+import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source parameter converter.
@@ -27,4 +34,24 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataSourceParameterConverter {
+    
+    public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
+        Map<String, DataSourceParameter> result = new HashMap<>(dataSourceConfigurationMap.size(), 1);
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
+            result.put(entry.getKey(), getDataSourceParameter(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static DataSourceParameter getDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
+    }
 }
