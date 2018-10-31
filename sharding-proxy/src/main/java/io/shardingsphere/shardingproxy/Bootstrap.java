@@ -18,8 +18,6 @@
 package io.shardingsphere.shardingproxy;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
@@ -103,7 +101,7 @@ public final class Bootstrap {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
             Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
             for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
-                schemaDataSourceParameterMap.put(each, orchestrationFacade.getConfigService().loadDataSourceConfigurations(each));
+                schemaDataSourceParameterMap.put(each, getSchemaDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
                 YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
                 if (orchestrationFacade.getConfigService().isShardingRule(each)) {
                     yamlRuleConfig.setShardingRule(orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
@@ -167,7 +165,6 @@ public final class Bootstrap {
         }
         return result;
     }
-    
     
     private static DataSourceParameter getDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
         DataSourceParameter result = new DataSourceParameter();
