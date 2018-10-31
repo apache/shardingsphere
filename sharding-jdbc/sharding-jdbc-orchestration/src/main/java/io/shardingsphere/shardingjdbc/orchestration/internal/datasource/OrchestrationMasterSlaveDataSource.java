@@ -56,7 +56,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(), 
                 new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
                 ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties());
-        initOrchestrationFacade(dataSource);
+        initOrchestrationFacade();
     }
     
     public OrchestrationMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
@@ -69,12 +69,12 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         getOrchestrationFacade().getListenerManager().initMasterSlaveListeners();
     }
     
-    private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
-        MasterSlaveRule masterSlaveRule = masterSlaveDataSource.getMasterSlaveRule();
+    private void initOrchestrationFacade() {
+        MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
         getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurationMap(),
-                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
+                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
