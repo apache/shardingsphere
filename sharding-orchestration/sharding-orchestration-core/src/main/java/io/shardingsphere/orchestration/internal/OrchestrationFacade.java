@@ -83,7 +83,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      * Initialize for sharding orchestration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceConfigurationMap data source map
+     * @param dataSourceConfigurationMap data source configuration map
      * @param shardingRuleConfig sharding rule configuration
      * @param configMap config map
      * @param props sharding properties
@@ -103,7 +103,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      * Initialize for master-slave orchestration.
      * 
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceConfigurationMap data source map
+     * @param dataSourceConfigurationMap data source configuration map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
      * @param props properties
