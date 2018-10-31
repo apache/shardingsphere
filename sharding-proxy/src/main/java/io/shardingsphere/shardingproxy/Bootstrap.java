@@ -30,7 +30,7 @@ import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.uilt.DataSourceConverter;
+import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
