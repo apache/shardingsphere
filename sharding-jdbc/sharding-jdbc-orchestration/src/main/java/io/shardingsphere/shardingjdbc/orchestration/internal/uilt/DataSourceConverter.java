@@ -34,6 +34,12 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataSourceConverter {
     
+    /**
+     * Get data source map
+     *
+     * @param dataSourceConfigurationMap data source configuration map
+     * @return data source map
+     */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         return Maps.transformValues(dataSourceConfigurationMap, new Function<DataSourceConfiguration, DataSource>() {
         
@@ -44,6 +50,12 @@ public class DataSourceConverter {
         });
     }
     
+    /**
+     * Get data source configuration map.
+     *
+     * @param dataSourceMap data source map
+     * @return data source configuration map
+     */
     public Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
         return Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
             
