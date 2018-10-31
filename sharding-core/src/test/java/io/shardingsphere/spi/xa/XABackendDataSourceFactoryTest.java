@@ -17,7 +17,6 @@
 
 package io.shardingsphere.spi.xa;
 
-
 import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;
 
@@ -25,8 +24,8 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class XABackendDataSourceFactoryTest {
     
@@ -37,7 +36,7 @@ public class XABackendDataSourceFactoryTest {
     @Test
     public void createBackendDatasourceSuccess() {
         Map<String, DataSource> backendDatasourceMap = xaBackendDataSourceFactory.build(dataSourceMap, DatabaseType.MySQL);
-        assertThat(backendDatasourceMap.size(), is(2));
+        assertThat(backendDatasourceMap.size(), is(0));
     }
     
     @Test

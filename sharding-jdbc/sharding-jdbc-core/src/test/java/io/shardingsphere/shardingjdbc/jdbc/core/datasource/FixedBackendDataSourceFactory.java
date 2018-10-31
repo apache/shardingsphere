@@ -24,14 +24,20 @@ import io.shardingsphere.spi.xa.BackendDataSourceFactory;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public final class FixedBackendDataSourceFactory implements BackendDataSourceFactory {
     
     @Override
-    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, DatabaseType databaseType) {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds1", new HikariDataSource());
-        result.put("ds2", new HikariDataSource());
+    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+        Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            HikariDataSource dataSource = new HikariDataSource();
+            dataSource.setJdbcUrl("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+            dataSource.setDriverClassName(org.h2.Driver.class.getName());
+            dataSource.setUsername("sa");
+            result.put(entry.getKey(), dataSource);
+        }
         return result;
     }
 }
