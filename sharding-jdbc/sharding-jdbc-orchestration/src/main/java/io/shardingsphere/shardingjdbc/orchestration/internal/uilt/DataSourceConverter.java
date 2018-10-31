@@ -35,7 +35,7 @@ import java.util.Map;
 public class DataSourceConverter {
     
     /**
-     * Get data source map
+     * Get data source map.
      *
      * @param dataSourceConfigurationMap data source configuration map
      * @return data source map
