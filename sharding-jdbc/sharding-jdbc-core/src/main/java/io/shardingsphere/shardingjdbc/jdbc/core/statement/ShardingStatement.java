@@ -17,14 +17,24 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
+import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -39,13 +49,6 @@ import io.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
 import io.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import lombok.Getter;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Statement that support sharding.
@@ -255,11 +258,20 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private void refreshTableMetaData() throws SQLException {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(),
-                    connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
-                    connection.getShardingContext().getMaxConnectionsSizePerQuery());
-            connection.getShardingContext().getMetaData().getTable().put(
-                    logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
+            
+            if(routeResult.getSqlStatement() instanceof CreateTableStatement) {
+                CreateTableStatement createStatement = (CreateTableStatement)routeResult.getSqlStatement();
+                connection.getShardingContext().getMetaData().getTable().put(logicTableName, createStatement.getTableMetaData());
+            }else if(routeResult.getSqlStatement() instanceof AlterTableStatement) {
+                AlterTableStatement alterStatement = (AlterTableStatement)routeResult.getSqlStatement();
+                connection.getShardingContext().getMetaData().getTable().put(logicTableName, alterStatement.getTableMetaData());
+            }else {
+                TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(),
+                        connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
+                        connection.getShardingContext().getMaxConnectionsSizePerQuery());
+                connection.getShardingContext().getMetaData().getTable().put(
+                        logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));            
+            }
         }
     }
     
