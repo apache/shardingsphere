@@ -90,7 +90,7 @@ public final class SQLExecuteCallbackFactory {
         }
         return new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown) {
             @Override
-            protected int[] executeSQL(StatementExecuteUnit statementExecuteUnit) throws SQLException {
+            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 return statementExecuteUnit.getStatement().executeBatch();
             }
         };
