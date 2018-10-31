@@ -94,8 +94,8 @@ public final class Bootstrap {
     private static void startWithRegistryCenter(final ProxyYamlServerConfiguration serverConfig, 
                                                 final Collection<String> shardingSchemaNames, final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
-            initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
+            initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
             for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
                 schemaDataSourceParameterMap.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
@@ -119,7 +119,7 @@ public final class Bootstrap {
         if (ruleConfigs.isEmpty()) {
             orchestrationFacade.getListenerManager().initProxyListeners();
         } else {
-            orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs.keySet()), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getProps());
+            orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getProps());
         }
     }
     
@@ -129,10 +129,10 @@ public final class Bootstrap {
         }
     }
     
-    private static Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Collection<String> schemaNames) {
+    private static Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, ProxyYamlRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
-        for (String each : schemaNames) {
-            result.put(each, DataSourceConverter.getDataSourceConfigurationMap(GlobalRegistry.getInstance().getShardingSchema(each).getBackendDataSource().getDataSources()));
+        for (Entry<String, ProxyYamlRuleConfiguration> entry : ruleConfigs.entrySet()) {
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(entry.getValue().getDataSources()));
         }
         return result;
     }
