@@ -31,7 +31,7 @@ import java.util.LinkedList;
 /**
  * Sharding with master-slave router interface.
  * 
- * @author zhangiang
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingMasterSlaveRouter {

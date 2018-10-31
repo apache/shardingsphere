@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -28,47 +29,83 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ConfigurationNode {
     
-    public static final String ROOT = "config";
+    private static final String ROOT = "config";
     
-    public static final String PROXY_NODE_PATH = ROOT + "/proxy";
+    private static final String SCHEMA_NODE = "schema";
     
-    public static final String DATA_SOURCE_NODE_PATH = ROOT + "/datasource";
+    private static final String DATA_SOURCE_NODE = "datasource";
     
-    public static final String SHARDING_NODE_PATH = ROOT + "/sharding";
+    private static final String RULE_NODE = "rule";
     
-    public static final String MASTER_SLAVE_NODE_PATH = ROOT + "/masterslave";
+    private static final String AUTHENTICATION_NODE = "authentication";
     
-    public static final String RULE_NODE_PATH = "/rule";
+    private static final String CONFIG_MAP_NODE = "configmap";
     
-    public static final String SERVER_CONFIG_NODE_PATH = "/server";
-    
-    public static final String CONFIG_MAP_NODE_PATH = "/configmap";
-    
-    public static final String SHARDING_RULE_NODE_PATH = SHARDING_NODE_PATH + RULE_NODE_PATH;
-    
-    public static final String SHARDING_CONFIG_MAP_NODE_PATH = SHARDING_NODE_PATH + CONFIG_MAP_NODE_PATH;
-    
-    public static final String SHARDING_PROPS_NODE_PATH = SHARDING_NODE_PATH + "/props";
-    
-    public static final String MASTER_SLAVE_RULE_NODE_PATH = MASTER_SLAVE_NODE_PATH + RULE_NODE_PATH;
-    
-    public static final String MASTER_SLAVE_CONFIG_MAP_NODE_PATH = MASTER_SLAVE_NODE_PATH + CONFIG_MAP_NODE_PATH;
-    
-    public static final String MASTER_SLAVE_PROPS_NODE_PATH = MASTER_SLAVE_NODE_PATH + "/props";
-    
-    public static final String PROXY_RULE_NODE_PATH = PROXY_NODE_PATH + RULE_NODE_PATH;
-    
-    public static final String PROXY_SERVER_CONFIG_NODE_PATH = PROXY_NODE_PATH + SERVER_CONFIG_NODE_PATH;
+    private static final String PROPS_NODE = "props";
     
     private final String name;
     
     /**
-     * Get node full path.
+     * Get schema path.
      *
-     * @param node node name
-     * @return node full path
+     * @return schema path
      */
-    public String getFullPath(final String node) {
-        return String.format("/%s/%s", name, node);
+    public String getSchemaPath() {
+        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE);
+    }
+    
+    /**
+     * Get data source path.
+     *
+     * @param schemaName schema name
+     * @return data source path
+     */
+    public String getDataSourcePath(final String schemaName) {
+        return getFullPath(schemaName, DATA_SOURCE_NODE);
+    }
+    
+    /**
+     * Get rule path.
+     * 
+     * @param schemaName schema name
+     * @return rule path
+     */
+    public String getRulePath(final String schemaName) {
+        return getFullPath(schemaName, RULE_NODE);
+    }
+    
+    /**
+     * Get authentication path.
+     *
+     * @return authentication path
+     */
+    public String getAuthenticationPath() {
+        return getFullPath(AUTHENTICATION_NODE);
+    }
+    
+    /**
+     * Get config map path.
+     *
+     * @return config map path
+     */
+    public String getConfigMapPath() {
+        return getFullPath(CONFIG_MAP_NODE);
+    }
+    
+    /**
+     * Get props path.
+     *
+     * @return props path
+     */
+    public String getPropsPath() {
+        return getFullPath(PROPS_NODE);
+    }
+    
+    private String getFullPath(final String schemaName, final String node) {
+        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE, schemaName, node);
+    }
+    
+    private String getFullPath(final String node) {
+        return Joiner.on("/").join("", name, ROOT, node);
     }
 }

@@ -63,7 +63,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         super(dataSourceMap.values());
         checkDataSourceType(dataSourceMap);
         if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getShardingConfig().putAll(configMap);
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.dataSourceMap = dataSourceMap;
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);

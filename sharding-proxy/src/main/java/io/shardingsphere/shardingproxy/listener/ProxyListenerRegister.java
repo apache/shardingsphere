@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.listener;
 
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
  * Listener register for Proxy.
@@ -28,13 +28,13 @@ import io.shardingsphere.shardingproxy.config.ProxyContext;
  */
 public final class ProxyListenerRegister {
     
-    private final ProxyContext proxyContext = ProxyContext.getInstance();
+    private final GlobalRegistry globalRegistry = GlobalRegistry.getInstance();
     
     /**
      * Register all listeners.
      */
     public void register() {
         ShardingBootstrap.init();
-        proxyContext.register();
+        globalRegistry.register();
     }
 }

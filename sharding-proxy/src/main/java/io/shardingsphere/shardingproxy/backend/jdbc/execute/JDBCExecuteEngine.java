@@ -45,14 +45,14 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.unit.Execut
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.unit.ExecuteResponseUnit;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.JDBCExecutorWrapper;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
 import io.shardingsphere.transaction.manager.base.executor.SagaSQLExecuteCallback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -99,9 +99,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        int maxConnectionsSizePerQuery = ProxyContext.getInstance().getMaxConnectionsSizePerQuery();
+        int maxConnectionsSizePerQuery = GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery();
         ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
-        sqlExecutePrepareTemplate = TransactionType.XA == ProxyContext.getInstance().getTransactionType()
+        sqlExecutePrepareTemplate = TransactionType.XA == GlobalRegistry.getInstance().getTransactionType()
                 ? new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery, executeEngine);
         sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     }
@@ -114,9 +114,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        boolean isBASETransaction = TransactionType.BASE == ProxyContext.getInstance().getTransactionType()
+        boolean isBASETransaction = TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType()
                 && sqlType == SQLType.DML
-                && Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.BASE).getStatus();
+                && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
         SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown)
                 : new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
         SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
@@ -192,7 +192,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         
         @Override
         public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-            Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit().getSql(), isReturnGeneratedKeys);
+            Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit(), isReturnGeneratedKeys);
             if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
                 statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
             }

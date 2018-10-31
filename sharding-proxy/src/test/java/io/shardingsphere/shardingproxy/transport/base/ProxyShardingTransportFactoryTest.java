@@ -18,15 +18,19 @@
 package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
-import io.shardingsphere.shardingproxy.config.RuleRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -42,8 +46,8 @@ public class ProxyShardingTransportFactoryTest {
     
     @Before
     public void setUp() {
-        RuleRegistry ruleRegistry = mock(RuleRegistry.class);
-        ProxyContext.getInstance().getRuleRegistryMap().put(schemaName, ruleRegistry);
+        ShardingSchema shardingSchema = mock(ShardingSchema.class);
+        GlobalRegistry.getInstance().getShardingSchemas().put(schemaName, shardingSchema);
     }
     
     @Test

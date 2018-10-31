@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -41,7 +41,7 @@ final class IndexTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertIndexToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertIndexToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<IndexToken> indexToken = getIndexToken(actual);
         if (indexToken.isPresent()) {
             assertIndexToken(indexToken.get(), expected.getIndexToken());
@@ -56,7 +56,7 @@ final class IndexTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Index token table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
     }
     
-    private Optional<IndexToken> getIndexToken(final List<SQLToken> actual) {
+    private Optional<IndexToken> getIndexToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof IndexToken) {
                 return Optional.of((IndexToken) each);

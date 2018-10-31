@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.wrapper;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.routing.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,12 +45,12 @@ public interface JDBCExecutorWrapper {
      * Create statement.
      * 
      * @param connection connection
-     * @param sql SQL
+     * @param sqlUnit sql unit
      * @param isReturnGeneratedKeys is return generated keys
      * @return statement
      * @throws SQLException SQL exception
      */
-    Statement createStatement(Connection connection, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    Statement createStatement(Connection connection, SQLUnit sqlUnit, boolean isReturnGeneratedKeys) throws SQLException;
     
     /**
      * Execute SQL.

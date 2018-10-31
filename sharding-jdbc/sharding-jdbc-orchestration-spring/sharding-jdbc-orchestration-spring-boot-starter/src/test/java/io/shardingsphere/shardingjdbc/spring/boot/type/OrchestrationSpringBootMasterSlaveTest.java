@@ -53,6 +53,7 @@ public class OrchestrationSpringBootMasterSlaveTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        ConfigMapContext.getInstance().getConfigMap().clear();
     }
     
     @Test
@@ -70,6 +71,6 @@ public class OrchestrationSpringBootMasterSlaveTest {
         configMap.put("key1", "value1");
         configMap.put("key2", "value1");
         configMap.put("username", "root");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
 }

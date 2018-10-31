@@ -19,7 +19,6 @@ package io.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationType;
 import io.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -37,13 +36,10 @@ import org.w3c.dom.Element;
  */
 public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    private OrchestrationType orchestrationType;
-    
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        setOrchestrationType(element);
-        BeanDefinitionBuilder factory = OrchestrationType.SHARDING == orchestrationType ? BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class)
-                : BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
+        BeanDefinitionBuilder factory = ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(element.getLocalName())
+                ? BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingDataSource.class) : BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringMasterSlaveDataSource.class);
         configureFactory(element, factory);
         return factory.getBeanDefinition();
     }
@@ -56,16 +52,11 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         factory.addConstructorArgValue(getOrchestrationConfiguration(element));
     }
     
-    private void setOrchestrationType(final Element element) {
-        orchestrationType = ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(element.getLocalName()) ? OrchestrationType.SHARDING : OrchestrationType.MASTER_SLAVE;
-    }
-    
     private BeanDefinition getOrchestrationConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ID_ATTRIBUTE));
         factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.REG_REF_TAG));
         factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.OVERWRITE_TAG));
-        factory.addConstructorArgValue(orchestrationType);
         return factory.getBeanDefinition();
     }
 }

@@ -54,7 +54,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
@@ -65,7 +65,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
                                  final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
         if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = masterSlaveRule;

@@ -3,10 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sharding-transaction-api</module>
+        <module>sharding-transaction-xa</module>
+        <module>sharding-transaction-base</module>
+    </modules>
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0.M5-SNAPSHOT</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction</artifactId>
     <name>${project.artifactId}</name>
@@ -16,29 +22,6 @@
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-core</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jdbc</artifactId>
-        </dependency>
-
-        <!-- using ManagedDatasource to integrate with transaction manager -->
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-dbcp</artifactId>
         </dependency>
 
         <dependency>
@@ -58,19 +41,5 @@
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.servicecomb.saga</groupId>
-            <artifactId>saga-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicecomb.saga</groupId>
-            <artifactId>saga-format</artifactId>
-        </dependency>
     </dependencies>
 </project>

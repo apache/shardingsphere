@@ -19,8 +19,8 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ini
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.shardingproxy.config.ProxyContext;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
@@ -58,9 +58,9 @@ public final class ComInitDbPacketTest {
     public void setUp() {
         List<String> schemaNames = new ArrayList<>(1);
         schemaNames.add(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Field field = ProxyContext.class.getDeclaredField("schemaNames");
+        Field field = GlobalRegistry.class.getDeclaredField("schemaNames");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), schemaNames);
+        field.set(GlobalRegistry.getInstance(), schemaNames);
     }
     
     @Test
