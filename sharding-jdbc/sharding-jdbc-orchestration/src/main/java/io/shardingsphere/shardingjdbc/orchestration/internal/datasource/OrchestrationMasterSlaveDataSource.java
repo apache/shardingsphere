@@ -73,7 +73,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         MasterSlaveRule masterSlaveRule = masterSlaveDataSource.getMasterSlaveRule();
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveDataSource.getDataSourceMap(), 
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurationMap(),
                 masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
     }
     
