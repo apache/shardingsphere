@@ -37,7 +37,7 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRul
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
-import io.shardingsphere.shardingproxy.uilt.DataSourceConverter;
+import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
