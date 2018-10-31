@@ -24,7 +24,6 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -260,21 +259,6 @@ public final class ConfigurationServiceTest {
     private DataSource createDataSource(final String name) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setUrl("jdbc:mysql://localhost:3306/" + name);
-        result.setUsername("root");
-        result.setPassword("root");
-        return result;
-    }
-    
-    private Map<String, DataSourceParameter> createDataSourceParameterMap() {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", createDataSourceParameter("ds_0"));
-        result.put("ds_1", createDataSourceParameter("ds_1"));
-        return result;
-    }
-    
-    private DataSourceParameter createDataSourceParameter(final String name) {
-        DataSourceParameter result = new DataSourceParameter();
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
