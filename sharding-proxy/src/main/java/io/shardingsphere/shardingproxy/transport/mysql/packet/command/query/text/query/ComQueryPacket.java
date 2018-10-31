@@ -22,12 +22,14 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.revert.ProxyRevertEngine;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -38,7 +40,9 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
+import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,16 +67,20 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
+    private final String currentSchema;
+    
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
         backendHandler = BackendHandlerFactory.createBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
+        currentSchema = frontendHandler.getCurrentSchema();
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         backendHandler = null;
+        currentSchema = null;
     }
     
     @Override
@@ -94,6 +102,14 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
         }
+        if (TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType() && isInBASETransaction(operationType.get())) {
+            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(operationType.get(), currentSchema));
+            if (TransactionOperationType.BEGIN == operationType.get()) {
+                RevertEngineHolder.getInstance().setRevertEngine(new ProxyRevertEngine(GlobalRegistry.getInstance().getShardingSchema(currentSchema).getBackendDataSource().getDataSources()));
+            } else {
+                RevertEngineHolder.getInstance().remove();
+            }
+        }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready 
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
     }
@@ -101,7 +117,12 @@ public final class ComQueryPacket implements QueryCommandPacket {
     private boolean isInTransaction(final TransactionOperationType operationType) throws SQLException {
         // TODO zhaojun: research why rollback call twice here
         return TransactionOperationType.ROLLBACK != operationType
-                || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
+                || Status.STATUS_NO_TRANSACTION != XATransactionManagerSPILoader.getInstance().getTransactionManager().getStatus();
+    }
+    
+    private boolean isInBASETransaction(final TransactionOperationType operationType) {
+        return TransactionOperationType.BEGIN == operationType
+            || Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
     }
     
     @Override

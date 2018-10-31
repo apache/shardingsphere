@@ -3,6 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sharding-transaction-api</module>
+        <module>sharding-transaction-xa</module>
+        <module>sharding-transaction-base</module>
+    </modules>
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
@@ -17,27 +23,23 @@
             <artifactId>sharding-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jta</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jdbc</artifactId>
-        </dependency>
-        
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

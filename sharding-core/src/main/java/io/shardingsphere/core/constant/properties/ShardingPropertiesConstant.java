@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.constant.properties;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -67,6 +68,26 @@ public enum ShardingPropertiesConstant {
     MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
     
     PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Transaction type of proxy.
+     *
+     * <p>
+     * LOCAL:
+     * Sharding-Sphere will run with LOCAL transaction.
+     * </p>
+     *
+     * <p>
+     * XA:
+     * Sharding-Sphere will run with XA transaction.
+     * </p>
+     *
+     * <p>
+     * BASE:
+     * Sharding-Sphere will run with BASE transaction.
+     * </p>
+     */
+    PROXY_TRANSACTION_TYPE("proxy.transaction.type", TransactionType.LOCAL.name(), String.class),
     
     PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
