@@ -3,12 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>sharding-transaction-api</module>
-        <module>sharding-transaction-xa</module>
-        <module>sharding-transaction-base</module>
-    </modules>
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
@@ -16,6 +10,13 @@
     </parent>
     <artifactId>sharding-transaction</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>sharding-transaction-api</module>
+        <module>sharding-transaction-xa</module>
+        <module>sharding-transaction-base</module>
+    </modules>
     
     <dependencies>
         <dependency>
@@ -23,7 +24,7 @@
             <artifactId>sharding-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -40,6 +41,5 @@
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
-
     </dependencies>
 </project>

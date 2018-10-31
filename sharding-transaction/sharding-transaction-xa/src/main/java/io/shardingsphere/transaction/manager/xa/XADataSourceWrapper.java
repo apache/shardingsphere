@@ -37,7 +37,7 @@ import java.util.Properties;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class XADataSourceWrapper {
+public final class XADataSourceWrapper {
     
     private final TransactionManager transactionManager;
     
@@ -59,6 +59,17 @@ public class XADataSourceWrapper {
         }
     }
     
+    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
+        BasicManagedDataSource result = new BasicManagedDataSource();
+        result.setTransactionManager(transactionManager);
+        result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
+        result.setXADataSource(xaDataSource.getClass().getName());
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
+        PropertyUtils.setProperties(xaDataSource, xaProperties);
+        result.setXaDataSourceInstance(xaDataSource);
+        return result;
+    }
+    
     private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
@@ -69,17 +80,6 @@ public class XADataSourceWrapper {
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);
         result.setXaProperties(xaProperties);
-        return result;
-    }
-    
-    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
-        BasicManagedDataSource result = new BasicManagedDataSource();
-        result.setTransactionManager(transactionManager);
-        result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
-        result.setXADataSource(xaDataSource.getClass().getName());
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
-        PropertyUtils.setProperties(xaDataSource, xaProperties);
-        result.setXaDataSourceInstance(xaDataSource);
         return result;
     }
 }

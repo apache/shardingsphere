@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Backend datasource Factory.
+ * Backend data source factory.
  *
  * @author zhaojun
  */
@@ -32,7 +32,7 @@ public interface BackendDataSourceFactory {
     /**
      * Build backend datasource by datasource map.
      *
-     * @param dataSourceMap datasource map
+     * @param dataSourceMap data source map
      * @param databaseType database type
      * @return backend datasource map
      */

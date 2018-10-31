@@ -31,7 +31,7 @@ import javax.sql.XADataSource;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class XADataSourceFactory {
+public final class XADataSourceFactory {
     
     /**
      * Create XA DataSource instance.
@@ -40,7 +40,6 @@ public class XADataSourceFactory {
      * @return XA DataSource instance
      */
     public static XADataSource build(final DatabaseType databaseType) {
-        
         switch (databaseType) {
             case MySQL:
                 return newInstance(XADatabaseType.MySQL.getClassName());
@@ -65,13 +64,13 @@ public class XADataSourceFactory {
         } catch (final ClassNotFoundException ignored) {
             try {
                 xaDataSourceClass = Class.forName(className);
-            } catch (ClassNotFoundException ex) {
+            } catch (final ClassNotFoundException ex) {
                 throw new ShardingException(String.format("Failed to load [%s]", className));
             }
         }
         try {
             return (XADataSource) xaDataSourceClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
+        } catch (final InstantiationException | IllegalAccessException ex) {
             throw new ShardingException(String.format("Failed to instance [%s]", className));
         }
     }
