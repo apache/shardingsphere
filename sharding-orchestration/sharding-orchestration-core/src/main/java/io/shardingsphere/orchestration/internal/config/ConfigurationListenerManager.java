@@ -20,10 +20,8 @@ package io.shardingsphere.orchestration.internal.config;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationDataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationDataSourceParameterChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationDataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationDataSourceParameterChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -73,8 +71,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     Map<String, DataSourceConfiguration> availableDataSourceConfigurations = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
-                    ShardingConfigurationDataSourceChangedEvent shardingEvent = new ShardingConfigurationDataSourceChangedEvent(shardingSchemaName, availableDataSourceConfigurations,
-                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), availableDataSourceConfigurations.keySet()), configService.loadProperties());
+                    ShardingConfigurationChangedEvent shardingEvent = new ShardingConfigurationChangedEvent(
+                            shardingSchemaName, availableDataSourceConfigurations, new ShardingRule(
+                                    dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), availableDataSourceConfigurations.keySet()), null, configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
@@ -95,9 +94,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    MasterSlaveConfigurationDataSourceChangedEvent masterSlaveEvent = new MasterSlaveConfigurationDataSourceChangedEvent(shardingSchemaName, 
+                    MasterSlaveConfigurationChangedEvent masterSlaveEvent = new MasterSlaveConfigurationChangedEvent(shardingSchemaName, 
                             dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), configService.loadProperties());
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), null, configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
@@ -119,13 +118,13 @@ public final class ConfigurationListenerManager implements ListenerManager {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (configService.isShardingRule(shardingSchemaName)) {
                         Map<String, DataSourceConfiguration> dataSourceParameterMap = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
-                        ShardingConfigurationDataSourceParameterChangedEvent shardingEvent = new ShardingConfigurationDataSourceParameterChangedEvent(
+                        ShardingConfigurationChangedEvent shardingEvent = new ShardingConfigurationChangedEvent(
                                 shardingSchemaName, dataSourceParameterMap,
                                 new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceParameterMap.keySet()), 
                                 configService.loadAuthentication(), configService.loadProperties());
                         ShardingEventBusInstance.getInstance().post(shardingEvent);
                     } else {
-                        MasterSlaveConfigurationDataSourceParameterChangedEvent masterSlaveEvent = new MasterSlaveConfigurationDataSourceParameterChangedEvent(
+                        MasterSlaveConfigurationChangedEvent masterSlaveEvent = new MasterSlaveConfigurationChangedEvent(
                                 shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName),
                                 dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName),
                                 configService.loadAuthentication(), configService.loadProperties());

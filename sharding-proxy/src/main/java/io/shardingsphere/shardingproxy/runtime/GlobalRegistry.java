@@ -28,8 +28,8 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationDataSourceParameterChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationDataSourceParameterChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
@@ -186,7 +186,7 @@ public final class GlobalRegistry {
      * @param shardingEvent sharding event.
      */
     @Subscribe
-    public void renew(final ShardingConfigurationDataSourceParameterChangedEvent shardingEvent) {
+    public void renew(final ShardingConfigurationChangedEvent shardingEvent) {
         initServerConfiguration(shardingEvent.getAuthentication(), shardingEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
@@ -203,7 +203,7 @@ public final class GlobalRegistry {
      * @param masterSlaveEvent master-slave event.
      */
     @Subscribe
-    public void renew(final MasterSlaveConfigurationDataSourceParameterChangedEvent masterSlaveEvent) {
+    public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) {
         initServerConfiguration(masterSlaveEvent.getAuthentication(), masterSlaveEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
