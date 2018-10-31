@@ -33,6 +33,6 @@ public final class StateNodeTest {
     
     @Test
     public void assertGetInstancesNodeFullPath() {
-        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/instances/testId"));
+        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
     }
 }
