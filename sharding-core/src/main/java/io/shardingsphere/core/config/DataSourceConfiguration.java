@@ -124,6 +124,11 @@ public final class DataSourceConfiguration {
         return null;
     }
     
+    /**
+     * Create data source parameter.
+     *
+     * @return data source parameter
+     */
     public DataSourceParameter createDataSourceParameter() {
         DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
