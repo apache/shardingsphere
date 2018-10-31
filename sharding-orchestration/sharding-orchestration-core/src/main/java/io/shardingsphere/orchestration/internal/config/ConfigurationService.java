@@ -17,22 +17,18 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,15 +56,15 @@ public final class ConfigurationService {
      * Persist sharding configuration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceMap data source map
+     * @param dataSourceConfigurationMap data source configuration map
      * @param shardingRuleConfig sharding rule configuration
      * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurationMap,
                                      final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceConfiguration(shardingSchemaName, dataSourceMap, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurationMap, isOverwrite);
         persistShardingRuleConfiguration(shardingSchemaName, shardingRuleConfig, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
@@ -78,15 +74,15 @@ public final class ConfigurationService {
      * Persist master-slave configuration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceMap data source map
+     * @param dataSourceConfigurationMap data source configuration map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
      * @param props props
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurationMap,
                                      final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceConfiguration(shardingSchemaName, dataSourceMap, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurationMap, isOverwrite);
         persistMasterSlaveRuleConfiguration(shardingSchemaName, masterSlaveRuleConfig, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
@@ -96,16 +92,16 @@ public final class ConfigurationService {
      * Persist sharding configuration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceParameterMap data source parameter map
+     * @param dataSourceConfigurationMap data source configuration map
      * @param shardingRuleConfig sharding rule configuration
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final ShardingRuleConfiguration shardingRuleConfig,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final ShardingRuleConfiguration shardingRuleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceParameterConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurationMap, isOverwrite);
         persistShardingRuleConfiguration(shardingSchemaName, shardingRuleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
@@ -116,40 +112,26 @@ public final class ConfigurationService {
      * Persist master-slave configuration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceParameterMap data source parameter map
+     * @param dataSourceConfigurationMap data source configuration map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceParameterConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurationMap, isOverwrite);
         persistMasterSlaveRuleConfiguration(shardingSchemaName, masterSlaveRuleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
-    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
+    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            Map<String, DataSourceConfiguration> dataSourceConfigMap = Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
-        
-                @Override
-                public DataSourceConfiguration apply(final DataSource input) {
-                    return DataSourceConfiguration.getDataSourceConfiguration(input);
-                }
-            });
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigMap));
-        }
-    }
-    
-    private void persistDataSourceParameterConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceParameterMap && !dataSourceParameterMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceParameterMap));
+            Preconditions.checkState(null != dataSourceConfigurationMap && !dataSourceConfigurationMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
+            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigurationMap));
         }
     }
     
@@ -214,27 +196,8 @@ public final class ConfigurationService {
      * @return data sources map
      */
     @SuppressWarnings("unchecked")
-    public Map<String, DataSource> loadDataSources(final String shardingSchemaName) {
+    public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
-        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
-        return Maps.transformValues(result, new Function<DataSourceConfiguration, DataSource>() {
-            
-            @Override
-            public DataSource apply(final DataSourceConfiguration input) {
-                return input.createDataSource();
-            }
-        });
-    }
-    
-    /**
-     * Load data source parameters.
-     *
-     * @param shardingSchemaName sharding schema name
-     * @return data source parameters map
-     */
-    @SuppressWarnings("unchecked")
-    public Map<String, DataSourceParameter> loadDataSourceParameters(final String shardingSchemaName) {
-        Map<String, DataSourceParameter> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
         return result;
     }

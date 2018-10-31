@@ -37,6 +37,7 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRul
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
+import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -191,8 +192,8 @@ public final class GlobalRegistry {
             entry.getValue().getBackendDataSource().close();
         }
         shardingSchemas.clear();
-        shardingSchemas.put(shardingEvent.getSchemaName(), new ShardingSchema(
-                shardingEvent.getSchemaName(), shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule().getShardingRuleConfig(), null, true));
+        shardingSchemas.put(shardingEvent.getSchemaName(), new ShardingSchema(shardingEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(shardingEvent.getDataSourceConfigurationMap()),
+                shardingEvent.getShardingRule().getShardingRuleConfig(), null, true));
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
@@ -208,8 +209,8 @@ public final class GlobalRegistry {
             entry.getValue().getBackendDataSource().close();
         }
         shardingSchemas.clear();
-        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(
-                masterSlaveEvent.getSchemaName(), masterSlaveEvent.getDataSourceMap(), null, masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurationMap()),
+                null, masterSlaveEvent.getMasterSlaveRuleConfig(), true));
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     

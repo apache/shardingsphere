@@ -18,8 +18,8 @@
 package io.shardingsphere.orchestration.internal.event.config;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +37,7 @@ public final class MasterSlaveConfigurationDataSourceParameterChangedEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceParameter> dataSourceMap;
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurationMap;
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
