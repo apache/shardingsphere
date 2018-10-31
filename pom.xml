@@ -65,6 +65,7 @@
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         <tomcat.commons-dbcp2.version>9.0.11</tomcat.commons-dbcp2.version>
         <commons-pool.version>1.6</commons-pool.version>
+        <antlr4.version>4.7.1</antlr4.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -210,7 +211,11 @@
                 <artifactId>opentracing-util</artifactId>
                 <version>${opentracing.version}</version>
             </dependency>
-            
+            <dependency>
+	              <groupId>org.antlr</groupId>
+	              <artifactId>antlr4</artifactId>
+		          <version>${antlr4.version}</version>
+	        </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

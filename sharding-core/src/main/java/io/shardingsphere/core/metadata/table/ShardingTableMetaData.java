@@ -37,6 +37,15 @@ public final class ShardingTableMetaData {
     private final Map<String, TableMetaData> tableMetaDataMap;
     
     /**
+     * Get table meta data by table name.
+     * @param logicTableName logicTableName logic table name
+     * @return table mata data
+     */
+    public TableMetaData get(final String logicTableName) {
+        return tableMetaDataMap.get(logicTableName);
+    }
+    
+    /**
      * Add table meta data.
      * 
      * @param logicTableName logic table name

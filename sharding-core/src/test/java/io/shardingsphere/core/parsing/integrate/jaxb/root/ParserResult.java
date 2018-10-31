@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSel
 import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
+import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import lombok.Getter;
@@ -80,6 +81,9 @@ public final class ParserResult {
     
     @XmlElement
     private ExpectedTableMetaData meta;
+    
+    @XmlElement(name = "alter-table")
+    private ExpectedAlterTable alterTable;
     
     /**
      * Get parameters.
