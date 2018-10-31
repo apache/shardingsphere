@@ -43,4 +43,14 @@ public class DataSourceConverter {
             }
         });
     }
+    
+    public Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
+        return Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
+    }
 }
