@@ -42,6 +42,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     @Getter

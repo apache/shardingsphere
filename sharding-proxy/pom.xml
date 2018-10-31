@@ -19,8 +19,8 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sharding-transaction-xa</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>

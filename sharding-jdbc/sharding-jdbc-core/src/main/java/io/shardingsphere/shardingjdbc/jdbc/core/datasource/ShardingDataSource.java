@@ -21,11 +21,14 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.spi.xa.XABackendDataSourceFactory;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -45,6 +48,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap;
+    
+    private volatile Map<String, DataSource> xaDataSourceMap;
     
     private final ShardingContext shardingContext;
     
@@ -87,6 +92,14 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     
     @Override
     public final ShardingConnection getConnection() {
+        if (TransactionType.XA == TransactionTypeHolder.get()) {
+            if (null == xaDataSourceMap) {
+                synchronized (this) {
+                    xaDataSourceMap = XABackendDataSourceFactory.getInstance().build(dataSourceMap, getDatabaseType());
+                }
+            }
+            return new ShardingConnection(xaDataSourceMap, shardingContext);
+        }
         return new ShardingConnection(dataSourceMap, shardingContext);
     }
     
