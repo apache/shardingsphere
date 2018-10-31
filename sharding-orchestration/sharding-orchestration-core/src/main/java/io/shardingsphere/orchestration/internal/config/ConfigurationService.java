@@ -17,22 +17,18 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -200,27 +196,8 @@ public final class ConfigurationService {
      * @return data sources map
      */
     @SuppressWarnings("unchecked")
-    public Map<String, DataSource> loadDataSources(final String shardingSchemaName) {
+    public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
-        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
-        return Maps.transformValues(result, new Function<DataSourceConfiguration, DataSource>() {
-            
-            @Override
-            public DataSource apply(final DataSourceConfiguration input) {
-                return input.createDataSource();
-            }
-        });
-    }
-    
-    /**
-     * Load data source parameters.
-     *
-     * @param shardingSchemaName sharding schema name
-     * @return data source parameters map
-     */
-    @SuppressWarnings("unchecked")
-    public Map<String, DataSourceParameter> loadDataSourceParameters(final String shardingSchemaName) {
-        Map<String, DataSourceParameter> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
         return result;
     }
