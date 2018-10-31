@@ -35,6 +35,7 @@ import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigur
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.internal.uilt.DataSourceConverter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -64,7 +65,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        dataSource = new MasterSlaveDataSource(configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME), 
+        dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
                 new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadConfigMap(), new ShardingProperties(configService.loadProperties()));
         getOrchestrationFacade().getListenerManager().initMasterSlaveListeners();
     }
