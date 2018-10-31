@@ -27,7 +27,7 @@ import org.postgresql.xa.PGXADataSource;
 
 import javax.sql.XADataSource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 public class XADataSourceFactoryTest {
     

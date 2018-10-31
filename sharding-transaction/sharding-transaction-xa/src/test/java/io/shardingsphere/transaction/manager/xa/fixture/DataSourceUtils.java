@@ -18,12 +18,24 @@
 package io.shardingsphere.transaction.manager.xa.fixture;
 
 import io.shardingsphere.core.constant.PoolType;
+import lombok.NoArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 
-public class DataSourceUtils {
+/**
+ * Data source utility.
+ *
+ * @author zhaojun
+ */
+@NoArgsConstructor
+public final class DataSourceUtils {
     
+    /**
+     * Build data source.
+     * @param poolType pool type
+     * @return data source
+     */
     public static DataSource build(final PoolType poolType) {
         switch (poolType) {
             case DBCP_TOMCAT:

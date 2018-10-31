@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SQLExeucteCallbackFactoryTest {
+public class SQLExecuteCallbackFactoryTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -53,6 +53,7 @@ public class SQLExeucteCallbackFactoryTest {
     private DatabaseMetaData metaData;
     
     private StatementExecuteUnit unit;
+    
     @Before
     public void setUp() throws SQLException {
         String dsName = "ds";

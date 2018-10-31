@@ -18,11 +18,27 @@
 package io.shardingsphere.transaction.manager.xa.fixture;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 
-public class ReflectiveUtils {
+/**
+ * Reflective utility.
+ * 
+ * @author zhaojun 
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReflectiveUtil {
     
+    /**
+     * Get property.
+     * 
+     * @param target target
+     * @param fieldName field name
+     * @return property
+     * @throws IllegalAccessException illegal access exception
+     */
     public static Object getProperty(final Object target, final String fieldName) throws IllegalAccessException {
         Field field = getField(target, fieldName);
         Preconditions.checkNotNull(field);
@@ -30,13 +46,19 @@ public class ReflectiveUtils {
         return field.get(target);
     }
     
+    /**
+     * Get field.
+     * @param target target
+     * @param fieldName field name
+     * @return field
+     */
     public static Field getField(final Object target, final String fieldName) {
         Class clazz = target.getClass();
         while (clazz != null) {
             try {
                 return clazz.getDeclaredField(fieldName);
                 // CHECKSTYLE:OFF
-            } catch (Exception ex) {
+            } catch (Exception ignore) {
             }
             // CHECKSTYLE:ON
             clazz = clazz.getSuperclass();
