@@ -17,11 +17,14 @@
 
 package io.shardingsphere.shardingproxy.uilt;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,5 +62,21 @@ public class DataSourceParameterConverter {
             }
         }
         return result;
+    }
+    
+    /**
+     * Get data source configuration map.
+     *
+     * @param dataSourceMap data source map
+     * @return data source configuration map
+     */
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
+        return Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
     }
 }
