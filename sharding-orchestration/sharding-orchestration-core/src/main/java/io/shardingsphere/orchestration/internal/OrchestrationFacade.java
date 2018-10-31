@@ -83,17 +83,17 @@ public final class OrchestrationFacade implements AutoCloseable {
      * Initialize for sharding orchestration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceMap data source map
+     * @param dataSourceConfigurationMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param configMap config map
      * @param props sharding properties
      */
     public void init(final String shardingSchemaName, 
-                     final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) {
+                     final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) {
         if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
-            reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
+            reviseShardingRuleConfigurationForMasterSlave(dataSourceConfigurationMap, shardingRuleConfig);
         }
-        configService.persistConfiguration(shardingSchemaName, getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props, isOverwrite);
+        configService.persistConfiguration(shardingSchemaName, getActualDataSourceMapForMasterSlave(dataSourceConfigurationMap), shardingRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners();
@@ -103,14 +103,14 @@ public final class OrchestrationFacade implements AutoCloseable {
      * Initialize for master-slave orchestration.
      * 
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceMap data source map
+     * @param dataSourceConfigurationMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
      * @param configMap config map
      * @param props properties
      */
     public void init(final String shardingSchemaName,
-                     final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
-        configService.persistConfiguration(shardingSchemaName, dataSourceMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
+                     final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
+        configService.persistConfiguration(shardingSchemaName, dataSourceConfigurationMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistMasterSlaveInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initMasterSlaveListeners();
@@ -119,7 +119,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param dataSourceConfigurationMap schema data source map
+     * @param dataSourceConfigurationMap schema data source configuration map
      * @param schemaRuleMap schema rule map
      * @param authentication authentication
      * @param prop properties
