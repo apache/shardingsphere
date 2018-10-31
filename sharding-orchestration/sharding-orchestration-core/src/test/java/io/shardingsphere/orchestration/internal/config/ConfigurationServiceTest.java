@@ -314,7 +314,6 @@ public final class ConfigurationServiceTest {
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProperties().size(), is(expected.getProperties().size()));
         assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
         assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
         assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
