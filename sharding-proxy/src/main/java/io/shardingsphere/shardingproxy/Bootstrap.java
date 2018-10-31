@@ -17,8 +17,6 @@
 
 package io.shardingsphere.shardingproxy;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -36,7 +34,6 @@ import io.shardingsphere.shardingproxy.uilt.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -135,19 +132,9 @@ public final class Bootstrap {
     private static Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Collection<String> schemaNames) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
         for (String each : schemaNames) {
-            result.put(each, getDataSourceConfigurationMap(each));
+            result.put(each, DataSourceConverter.getDataSourceConfigurationMap(GlobalRegistry.getInstance().getShardingSchema(each).getBackendDataSource().getDataSources()));
         }
         return result;
-    }
-    
-    private static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final String schemaName) {
-        return Maps.transformValues(GlobalRegistry.getInstance().getShardingSchema(schemaName).getBackendDataSource().getDataSources(), new Function<DataSource, DataSourceConfiguration>() {
-    
-            @Override
-            public DataSourceConfiguration apply(final DataSource input) {
-                return DataSourceConfiguration.getDataSourceConfiguration(input);
-            }
-        });
     }
 
     private static Map<String, Map<String, DataSourceParameter>> getSchemaDataSourceMaps(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
