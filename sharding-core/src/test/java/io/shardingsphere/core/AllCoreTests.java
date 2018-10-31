@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core;
 
+import io.shardingsphere.core.config.AllConfigTests;
 import io.shardingsphere.core.constant.AllConstantsTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.hint.AllHintTests;
@@ -35,12 +36,13 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllConstantsTests.class, 
-        AllUtilTests.class,
+        AllConfigTests.class, 
+        AllUtilTests.class, 
         AllMetaDataTests.class, 
-        AllParsingTests.class,
+        AllParsingTests.class, 
         AllOptimizerTests.class, 
         AllRewriteTests.class, 
-        AllRoutingTests.class,
+        AllRoutingTests.class, 
         AllExecutorTests.class, 
         AllMergerTests.class, 
         AllHintTests.class, 

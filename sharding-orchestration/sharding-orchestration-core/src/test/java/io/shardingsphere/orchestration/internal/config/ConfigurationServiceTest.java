@@ -55,10 +55,13 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ConfigurationServiceTest {
     
-    private static final String DATA_SOURCE_YAML = "ds_0: !!org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  driverClassName: com.mysql.jdbc.Driver\n" + "  url: jdbc:mysql://localhost:3306/ds_0\n" + "  username: root\n" + "  password: root\n"
-            + "ds_1: !!org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  driverClassName: com.mysql.jdbc.Driver\n" + "  url: jdbc:mysql://localhost:3306/ds_1\n" + "  username: root\n" + "  password: root\n";
+    private static final String DATA_SOURCE_YAML = 
+            "ds_0: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
+            + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
+            + "ds_1: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
+            + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n";
     
     private static final String DATA_SOURCE_PARAMETER_YAML = "ds_0: !!io.shardingsphere.core.rule.DataSourceParameter\n"
             + "  url: jdbc:mysql://localhost:3306/ds_0\n" + "  username: root\n" + "  password: root\n"
