@@ -248,6 +248,10 @@ public final class GlobalRegistry {
         return result;
     }
     
+    private TransactionType getTransactionType(final ShardingProperties shardingProperties) {
+        return TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE));
+    }
+    
     private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
         for (MasterSlaveRule each : ((OrchestrationShardingRule) shardingSchema.getShardingRule()).getMasterSlaveRules()) {
             ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);

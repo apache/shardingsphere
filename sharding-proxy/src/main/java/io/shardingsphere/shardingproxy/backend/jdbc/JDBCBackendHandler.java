@@ -45,6 +45,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 import lombok.RequiredArgsConstructor;
 
@@ -89,7 +90,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             return new CommandResponsePackets(new OKPacket(1));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
-        if (isUnsupportedXA(sqlStatement.getType())) {
+        if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
             return new CommandResponsePackets(new ErrPacket(1,
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
@@ -107,6 +108,11 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
         return TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != XATransactionManagerSPILoader.getInstance().getTransactionManager().getStatus();
+    }
+    
+    private boolean isUnsupportedBASE(final SQLType sqlType) throws SQLException {
+        return TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
+                && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {

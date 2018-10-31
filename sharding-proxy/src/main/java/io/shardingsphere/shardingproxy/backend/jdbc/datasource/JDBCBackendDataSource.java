@@ -46,6 +46,7 @@ import java.util.Map.Entry;
 @Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
+    @Getter
     private final Map<String, DataSource> dataSources;
     
     private final Map<String, DataSource> availableDataSources;
