@@ -86,7 +86,7 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(
             final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final Authentication authentication, final Properties prop, final int port) throws InterruptedException {
-        GlobalRegistry.getInstance().init(Bootstrap.getDataSourceParameterMaps(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, prop);
+        GlobalRegistry.getInstance().init(Bootstrap.getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, prop);
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -137,7 +137,7 @@ public final class Bootstrap {
         return result;
     }
 
-    private static Map<String, Map<String, DataSourceParameter>> getDataSourceParameterMaps(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
+    private static Map<String, Map<String, DataSourceParameter>> getDataSourceParameterMap(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
         Map<String, Map<String, DataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
         for (Entry<String, ProxyYamlRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getDataSources());
