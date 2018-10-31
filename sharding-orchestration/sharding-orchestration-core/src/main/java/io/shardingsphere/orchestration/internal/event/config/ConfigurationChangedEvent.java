@@ -17,27 +17,28 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Master slave configuration changed event.
+ * Configuration changed event.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class MasterSlaveConfigurationChangedEvent extends ConfigurationChangedEvent {
+public abstract class ConfigurationChangedEvent {
     
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    private final String schemaName;
     
-    public MasterSlaveConfigurationChangedEvent(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, 
-                                                final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Authentication authentication, final Properties props) {
-        super(schemaName, dataSourceConfigurations, authentication, props);
-        this.masterSlaveRuleConfig = masterSlaveRuleConfig;
-    }
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    
+    private final Authentication authentication;
+    
+    private final Properties props;
 }
