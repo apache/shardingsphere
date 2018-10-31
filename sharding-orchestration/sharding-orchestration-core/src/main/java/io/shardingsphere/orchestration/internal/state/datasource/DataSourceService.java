@@ -63,7 +63,7 @@ public final class DataSourceService {
     }
     
     /**
-     * Get available data sources.
+     * Get available data source configurations.
      *
      * @param shardingSchemaName sharding schema name
      * @return available data sources
