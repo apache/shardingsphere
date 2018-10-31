@@ -32,12 +32,12 @@ import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.uilt.DataSourceParameterConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -101,7 +101,7 @@ public final class Bootstrap {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
             Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
             for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
-                schemaDataSourceParameterMap.put(each, getSchemaDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
+                schemaDataSourceParameterMap.put(each, DataSourceParameterConverter.getDataSourceParameterMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
                 YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
                 if (orchestrationFacade.getConfigService().isShardingRule(each)) {
                     yamlRuleConfig.setShardingRule(orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
@@ -154,26 +154,6 @@ public final class Bootstrap {
         Map<String, Map<String, DataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
         for (Entry<String, ProxyYamlRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getDataSources());
-        }
-        return result;
-    }
-    
-    private static Map<String, DataSourceParameter> getSchemaDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, DataSourceParameter> result = new HashMap<>(dataSourceConfigurations.size(), 1);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurations.entrySet()) {
-            result.put(entry.getKey(), getDataSourceParameter(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private static DataSourceParameter getDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
-            } catch (final ReflectiveOperationException ignored) {
-            }
         }
         return result;
     }
