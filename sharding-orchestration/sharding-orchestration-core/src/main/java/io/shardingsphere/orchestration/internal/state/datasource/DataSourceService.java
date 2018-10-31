@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
@@ -69,8 +70,8 @@ public final class DataSourceService {
      * @param shardingSchemaName sharding schema name
      * @return available data sources
      */
-    public Map<String, DataSource> getAvailableDataSources(final String shardingSchemaName) {
-        Map<String, DataSource> result = configService.loadDataSources(shardingSchemaName);
+    public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
+        Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
         Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
