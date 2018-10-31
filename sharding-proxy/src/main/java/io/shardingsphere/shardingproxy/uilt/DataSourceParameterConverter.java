@@ -35,6 +35,12 @@ import java.util.Map.Entry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataSourceParameterConverter {
     
+    /**
+     * Get data source parameter map.
+     *
+     * @param dataSourceConfigurationMap data source configuration map
+     * @return data source parameter map
+     */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         Map<String, DataSourceParameter> result = new HashMap<>(dataSourceConfigurationMap.size(), 1);
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
