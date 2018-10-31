@@ -19,6 +19,7 @@ package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -118,21 +119,21 @@ public final class OrchestrationFacade implements AutoCloseable {
     /**
      * Initialize for proxy orchestration.
      *
-     * @param schemaDataSourceMap schema data source map
+     * @param dataSourceConfigurationMap schema data source map
      * @param schemaRuleMap schema rule map
      * @param authentication authentication
      * @param prop properties
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, 
+    public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
                      final Map<String, YamlRuleConfiguration> schemaRuleMap, final Authentication authentication, final Properties prop) {
-        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSourceMap.entrySet()) {
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
             YamlRuleConfiguration yamlRuleConfig = schemaRuleMap.get(entry.getKey());
             if (null == yamlRuleConfig.getShardingRule()) {
                 configService.persistConfiguration(
-                        entry.getKey(), schemaDataSourceMap.get(entry.getKey()), yamlRuleConfig.getMasterSlaveRule(), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
+                        entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), yamlRuleConfig.getMasterSlaveRule(), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
             } else {
                 configService.persistConfiguration(
-                        entry.getKey(), schemaDataSourceMap.get(entry.getKey()), yamlRuleConfig.getShardingRule(), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
+                        entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), yamlRuleConfig.getShardingRule(), authentication, Collections.<String, Object>emptyMap(), prop, isOverwrite);
             }
         }
         instanceStateService.persistProxyInstanceOnline();
