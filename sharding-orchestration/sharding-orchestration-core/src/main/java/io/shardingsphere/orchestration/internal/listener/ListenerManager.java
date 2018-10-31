@@ -38,10 +38,10 @@ public interface ListenerManager {
      */
     void watchMasterSlave();
     
-    
     /**
      * Start proxy change listener.
      *
      */
+    @Deprecated
     void watchProxy();
 }

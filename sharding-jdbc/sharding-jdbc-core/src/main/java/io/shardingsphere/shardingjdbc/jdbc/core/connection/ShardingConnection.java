@@ -120,4 +120,19 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
+    
+    @Override
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        super.setAutoCommit(autoCommit);
+    }
+    
+    @Override
+    public void commit() throws SQLException {
+        super.commit();
+    }
+    
+    @Override
+    public void rollback() throws SQLException {
+        super.rollback();
+    }
 }

@@ -18,10 +18,12 @@
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -51,9 +53,9 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
     }
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(orchestrationFacade.getConfigService().loadDataSourceMap().values());
+        super(DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)).values());
         this.orchestrationFacade = orchestrationFacade;
-        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSourceMap();
+        this.dataSourceMap = DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME));
         ShardingEventBusInstance.getInstance().register(this);
     }
     

@@ -45,14 +45,14 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watchSharding() {
-        String cachePath = configNode.getFullPath(ConfigurationNode.SHARDING_CONFIG_MAP_NODE_PATH);
+        String cachePath = configNode.getConfigMapPath();
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ConfigMapContext.getInstance().getShardingConfig().clear();
-                    ConfigMapContext.getInstance().getShardingConfig().putAll(configService.loadShardingConfigMap());
+                    ConfigMapContext.getInstance().getConfigMap().clear();
+                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
                 }
             }
         });
@@ -60,14 +60,14 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        String cachePath = configNode.getFullPath(ConfigurationNode.MASTER_SLAVE_CONFIG_MAP_NODE_PATH);
+        String cachePath = configNode.getConfigMapPath();
         regCenter.watch(cachePath, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ConfigMapContext.getInstance().getMasterSlaveConfig().clear();
-                    ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configService.loadMasterSlaveConfigMap());
+                    ConfigMapContext.getInstance().getConfigMap().clear();
+                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
                 }
             }
         });

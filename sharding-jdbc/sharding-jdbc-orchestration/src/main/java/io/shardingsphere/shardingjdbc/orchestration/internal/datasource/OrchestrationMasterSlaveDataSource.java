@@ -22,18 +22,21 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 
 /**
  * Orchestration master-slave datasource.
@@ -45,28 +48,29 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     private MasterSlaveDataSource dataSource;
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig), masterSlaveDataSource.getDataSourceMap());
-        dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(), new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
-                ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties());
-        initOrchestrationFacade(dataSource);
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), masterSlaveDataSource.getDataSourceMap());
+        dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(), 
+                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
+                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties());
+        initOrchestrationFacade();
     }
     
     public OrchestrationMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig));
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        dataSource = new MasterSlaveDataSource(configService.loadDataSourceMap(), new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadMasterSlaveConfigMap(),
-                new ShardingProperties(configService.loadMasterSlaveProperties()));
-        initOrchestrationFacade(dataSource);
+        dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
+                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadConfigMap(), new ShardingProperties(configService.loadProperties()));
+        getOrchestrationFacade().getListenerManager().initMasterSlaveListeners();
     }
     
-    private void initOrchestrationFacade(final MasterSlaveDataSource masterSlaveDataSource) {
-        MasterSlaveRule masterSlaveRule = masterSlaveDataSource.getMasterSlaveRule();
+    private void initOrchestrationFacade() {
+        MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
-        getOrchestrationFacade().init(masterSlaveDataSource.getDataSourceMap(), 
-                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveDataSource.getShardingProperties().getProps());
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap()),
+                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     @Override
@@ -90,9 +94,9 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      * @throws SQLException sql exception
      */
     @Subscribe
-    public void renew(final MasterSlaveConfigurationEventBusEvent masterSlaveEvent) throws SQLException {
+    public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) throws SQLException {
         dataSource.close();
-        dataSource = new MasterSlaveDataSource(
-                masterSlaveEvent.getDataSourceMap(), masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getMasterSlaveConfig(), masterSlaveEvent.getProps());
+        dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(masterSlaveEvent.getDataSourceConfigurations()),
+                masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
     }
 }

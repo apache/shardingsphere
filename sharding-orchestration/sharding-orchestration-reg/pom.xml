@@ -6,9 +6,10 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-orchestration</artifactId>
-        <version>3.0.0.M5-SNAPSHOT</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-orchestration-reg</artifactId>
+    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>

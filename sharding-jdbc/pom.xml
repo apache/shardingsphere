@@ -6,11 +6,12 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0.M5-SNAPSHOT</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc</artifactId>
+    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-    
+
     <modules>
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-spring</module>

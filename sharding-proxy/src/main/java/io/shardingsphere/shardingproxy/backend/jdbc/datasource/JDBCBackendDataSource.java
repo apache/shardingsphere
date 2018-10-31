@@ -22,13 +22,13 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,15 +42,14 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
+    @Getter
     private final Map<String, DataSource> dataSources;
-    
-    private final Map<String, DataSource> availableDataSources;
     
     public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
         dataSources = createDataSourceMap(dataSourceParameters);
-        availableDataSources = new LinkedHashMap<>(dataSources);
     }
     
     private Map<String, DataSource> createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -82,22 +81,6 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     /**
-     * Set available data sources.
-     *
-     * @param disabledDataSourceNames disabled data source names
-     */
-    public void setAvailableDataSources(final Collection<String> disabledDataSourceNames) {
-        synchronized (availableDataSources) {
-            availableDataSources.clear();
-            for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-                if (!disabledDataSourceNames.contains(entry.getKey())) {
-                    availableDataSources.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-    }
-    
-    /**
      * Get connection.
      *
      * @param dataSourceName data source name
@@ -119,7 +102,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        DataSource dataSource = availableDataSources.get(dataSourceName);
+        DataSource dataSource = dataSources.get(dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(dataSource.getConnection());
         }

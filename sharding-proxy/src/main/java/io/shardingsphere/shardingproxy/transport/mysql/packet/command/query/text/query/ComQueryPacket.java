@@ -38,7 +38,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
+import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,14 +94,14 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
             ShardingEventBusInstance.getInstance().post(new XATransactionEvent(operationType.get()));
         }
-        // TODO :zhaojun do not send TCL to backend, send when local transaction ready 
+        // TODO :zhaojun do not send TCL to backend, send when local transaction ready
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
     }
     
     private boolean isInTransaction(final TransactionOperationType operationType) throws SQLException {
         // TODO zhaojun: research why rollback call twice here
         return TransactionOperationType.ROLLBACK != operationType
-                || Status.STATUS_NO_TRANSACTION != ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA).getStatus();
+                || Status.STATUS_NO_TRANSACTION != XATransactionManagerSPILoader.getInstance().getTransactionManager().getStatus();
     }
     
     @Override

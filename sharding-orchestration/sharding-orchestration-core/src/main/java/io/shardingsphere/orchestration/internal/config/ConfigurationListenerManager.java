@@ -17,18 +17,17 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.config.ProxyConfigurationEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationEventBusEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
-import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -43,34 +42,38 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final RegistryCenter regCenter;
     
+    private final String shardingSchemaName;
+    
     private final ConfigurationService configService;
     
     private final DataSourceService dataSourceService;
     
-    public ConfigurationListenerManager(final String name, final RegistryCenter regCenter) {
+    public ConfigurationListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
+        this.shardingSchemaName = shardingSchemaName;
         configService = new ConfigurationService(name, regCenter);
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
     public void watchSharding() {
-        watchSharding(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        watchSharding(ConfigurationNode.SHARDING_RULE_NODE_PATH);
-        watchSharding(ConfigurationNode.SHARDING_PROPS_NODE_PATH);
+        watchSharding(configNode.getDataSourcePath(shardingSchemaName));
+        watchSharding(configNode.getRulePath(shardingSchemaName));
+        watchSharding(configNode.getPropsPath());
+        // TODO watch config map
     }
     
-    private void watchSharding(final String node) {
-        String cachePath = configNode.getFullPath(node);
-        regCenter.watch(cachePath, new EventListener() {
+    private void watchSharding(final String path) {
+        regCenter.watch(path, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSource> dataSourceMap = dataSourceService.getAvailableDataSources();
-                    ShardingConfigurationEventBusEvent shardingEvent = new ShardingConfigurationEventBusEvent(dataSourceMap,
-                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(), dataSourceMap.keySet()), configService.loadShardingProperties());
+                    Map<String, DataSourceConfiguration> availableDataSourceConfigurations = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
+                    ShardingConfigurationChangedEvent shardingEvent = new ShardingConfigurationChangedEvent(
+                            shardingSchemaName, availableDataSourceConfigurations, new ShardingRule(
+                                    dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), availableDataSourceConfigurations.keySet()), null, configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(shardingEvent);
                 }
             }
@@ -79,20 +82,21 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchMasterSlave() {
-        watchMasterSlave(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_RULE_NODE_PATH);
-        watchMasterSlave(ConfigurationNode.MASTER_SLAVE_PROPS_NODE_PATH);
+        watchMasterSlave(configNode.getDataSourcePath(shardingSchemaName));
+        watchMasterSlave(configNode.getRulePath(shardingSchemaName));
+        watchMasterSlave(configNode.getPropsPath());
+        // TODO watch config map
     }
     
-    private void watchMasterSlave(final String node) {
-        String cachePath = configNode.getFullPath(node);
-        regCenter.watch(cachePath, new EventListener() {
+    private void watchMasterSlave(final String path) {
+        regCenter.watch(path, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    MasterSlaveConfigurationEventBusEvent masterSlaveEvent = new MasterSlaveConfigurationEventBusEvent(dataSourceService.getAvailableDataSources(),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(), configService.loadMasterSlaveProperties());
+                    MasterSlaveConfigurationChangedEvent masterSlaveEvent = new MasterSlaveConfigurationChangedEvent(shardingSchemaName, 
+                            dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName),
+                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), null, configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
                 }
             }
@@ -101,20 +105,31 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     @Override
     public void watchProxy() {
-        watchProxy(ConfigurationNode.DATA_SOURCE_NODE_PATH);
-        watchProxy(ConfigurationNode.PROXY_RULE_NODE_PATH);
-        watchProxy(ConfigurationNode.PROXY_SERVER_CONFIG_NODE_PATH);
+        watchProxy(configNode.getDataSourcePath(shardingSchemaName));
+        watchProxy(configNode.getRulePath(shardingSchemaName));
+        watchProxy(configNode.getPropsPath());
     }
     
-    private void watchProxy(final String node) {
-        String cachePath = configNode.getFullPath(node);
-        regCenter.watch(cachePath, new EventListener() {
+    private void watchProxy(final String path) {
+        regCenter.watch(path, new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new ProxyConfigurationEventBusEvent(configService.loadYamlServerConfiguration(), 
-                            dataSourceService.getProxyAvailableDataSourceParameters(), dataSourceService.getAvailableYamlProxyConfiguration()));
+                    if (configService.isShardingRule(shardingSchemaName)) {
+                        Map<String, DataSourceConfiguration> dataSourceParameterMap = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
+                        ShardingConfigurationChangedEvent shardingEvent = new ShardingConfigurationChangedEvent(
+                                shardingSchemaName, dataSourceParameterMap,
+                                new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceParameterMap.keySet()), 
+                                configService.loadAuthentication(), configService.loadProperties());
+                        ShardingEventBusInstance.getInstance().post(shardingEvent);
+                    } else {
+                        MasterSlaveConfigurationChangedEvent masterSlaveEvent = new MasterSlaveConfigurationChangedEvent(
+                                shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName),
+                                dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName),
+                                configService.loadAuthentication(), configService.loadProperties());
+                        ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
+                    }
                 }
             }
         });

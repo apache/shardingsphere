@@ -24,6 +24,7 @@ import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBala
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -38,6 +39,11 @@ import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveNamespace.xml")
 public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
+    
+    @BeforeClass
+    public static void setUp() {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+    }
     
     @Test
     public void assertDefaultMaserSlaveDataSource() {
@@ -72,7 +78,7 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
         Object masterSlaveDataSource = this.applicationContext.getBean("configMapDataSource");
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         assertThat(masterSlaveDataSource, instanceOf(MasterSlaveDataSource.class));
     }
 }

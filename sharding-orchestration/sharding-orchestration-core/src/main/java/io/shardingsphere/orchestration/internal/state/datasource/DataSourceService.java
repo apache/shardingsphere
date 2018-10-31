@@ -21,21 +21,19 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.state.StateNode;
 import io.shardingsphere.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Data source service.
@@ -65,13 +63,17 @@ public final class DataSourceService {
     }
     
     /**
-     * Get available data sources.
+     * Get available data source configurations.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available data sources
      */
-    public Map<String, DataSource> getAvailableDataSources() {
-        Map<String, DataSource> result = configService.loadDataSourceMap();
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+    public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
+        Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        if (null == disabledDataSourceNames) {
+            return result;
+        }
         for (String each : disabledDataSourceNames) {
             result.remove(each);
         }
@@ -79,31 +81,18 @@ public final class DataSourceService {
     }
     
     /**
-     * Get proxy available data source parameters.
-     *
-     * @return available data source parameters
-     */
-    public Map<String, Map<String, DataSourceParameter>> getProxyAvailableDataSourceParameters() {
-        Map<String, Map<String, DataSourceParameter>> schemaDatasources = configService.loadProxyDataSources();
-        Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
-        for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
-            for (String disabledDataSourceName : each.getValue()) {
-                schemaDatasources.get(each.getKey()).remove(disabledDataSourceName);
-            }
-            
-        }
-        return schemaDatasources;
-    }
-    
-    /**
      * Get available sharding rule configuration.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available sharding rule configuration
      */
-    public ShardingRuleConfiguration getAvailableShardingRuleConfiguration() {
-        ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration();
+    public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
+        ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        if (null == disabledDataSourceNames) {
+            return result;
+        }
         for (String each : disabledDataSourceNames) {
             for (MasterSlaveRuleConfiguration masterSlaveRuleConfig : result.getMasterSlaveRuleConfigs()) {
                 masterSlaveRuleConfig.getSlaveDataSourceNames().remove(each);
@@ -115,34 +104,20 @@ public final class DataSourceService {
     /**
      * Get available master-slave rule configuration.
      *
+     * @param shardingSchemaName sharding schema name
      * @return available master-slave rule configuration
      */
-    public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration() {
-        MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration();
+    public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
+        MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames();
+        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        if (null == disabledDataSourceNames) {
+            return result;
+        }
         for (String each : disabledDataSourceNames) {
             result.getSlaveDataSourceNames().remove(each);
         }
         return result;
-    }
-    
-    /**
-     * Get available proxy rule configuration.
-     *
-     * @return available yaml proxy configuration
-     */
-    public Map<String, YamlRuleConfiguration> getAvailableYamlProxyConfiguration() {
-        Map<String, YamlRuleConfiguration> schemaRuleMap = configService.loadProxyConfiguration();
-        Map<String, Collection<String>> disabledDataSourceNames = getProxyDisabledDataSourceNames();
-        for (Entry<String, Collection<String>> each : disabledDataSourceNames.entrySet()) {
-            for (String disabledDataSourceName : each.getValue()) {
-                if (null != schemaRuleMap.get(each.getKey()).getMasterSlaveRule()) {
-                    schemaRuleMap.get(each.getKey()).getMasterSlaveRule().getSlaveDataSourceNames().remove(disabledDataSourceName);
-                }
-            }
-        }
-        return schemaRuleMap;
     }
     
     /**
@@ -163,26 +138,33 @@ public final class DataSourceService {
     }
     
     /**
-     * Get proxy disabled data source names.
+     * Get disabled data source names.
      *
      * @return disabled data source names
      */
     public Map<String, Collection<String>> getProxyDisabledDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        List<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
+        Collection<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
         for (String each : schemaDataSources) {
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
-                int pos = each.indexOf(".");
-                String schema = each.substring(0, pos);
-                String datasource = each.substring(pos + 1);
-                if (!result.containsKey(schema)) {
-                    result.put(schema, new LinkedList<String>());
-                }
-                result.get(schema).add(datasource);
+            if (!StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
+                continue;
             }
+            String schemaName;
+            String dataSourceName;
+            if (each.contains(".")) {
+                int position = each.indexOf(".");
+                schemaName = each.substring(0, position);
+                dataSourceName = each.substring(position + 1);
+            } else {
+                schemaName = ShardingConstant.LOGIC_SCHEMA_NAME;
+                dataSourceName = each;
+            }
+            if (!result.containsKey(schemaName)) {
+                result.put(schemaName, new LinkedList<String>());
+            }
+            result.get(schemaName).add(dataSourceName);
         }
         return result;
     }
-    
 }
