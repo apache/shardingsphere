@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * XA backend datasource factory.
+ * XA backend data source factory.
  *
  * @author zhaojun
  */

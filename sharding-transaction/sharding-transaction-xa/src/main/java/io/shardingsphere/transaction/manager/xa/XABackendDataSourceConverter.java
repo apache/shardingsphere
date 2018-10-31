@@ -24,7 +24,13 @@ import io.shardingsphere.transaction.manager.xa.convert.DataSourceParameterFacto
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+/**
+ * XA backend data source converter.
+ * 
+ * @author zhaojun
+ */
 public final class XABackendDataSourceConverter implements BackendDataSourceFactory {
     
     private static XATransactionManager xaManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
@@ -32,7 +38,7 @@ public final class XABackendDataSourceConverter implements BackendDataSourceFact
     @Override
     public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = xaManager.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
             result.put(entry.getKey(), dataSource);
         }
