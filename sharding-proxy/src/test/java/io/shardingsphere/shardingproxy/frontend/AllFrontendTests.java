@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.frontend;
 
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandlerFactoryTest;
+import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroupTest;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroupTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,7 +27,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         FrontendHandlerFactoryTest.class, 
-        ExecutorGroupTest.class
+        ExecutorGroupTest.class, 
+        ChannelThreadExecutorGroupTest.class
 })
 public final class AllFrontendTests {
 }
