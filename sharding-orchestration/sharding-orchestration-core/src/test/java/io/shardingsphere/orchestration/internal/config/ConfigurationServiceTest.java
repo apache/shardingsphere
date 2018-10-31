@@ -246,6 +246,10 @@ public final class ConfigurationServiceTest {
         });
     }
     
+    private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
+        return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
+    }
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
         result.put("ds_0", createDataSource("ds_0"));
@@ -302,10 +306,10 @@ public final class ConfigurationServiceTest {
     public void assertLoadDataSources() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        Map<String, DataSource> actual = configurationService.loadDataSourceConfigurations("sharding_db");
+        Map<String, DataSourceConfiguration> actual = configurationService.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(2));
-        assertDataSource((BasicDataSource) actual.get("ds_0"), (BasicDataSource) createDataSource("ds_0"));
-        assertDataSource((BasicDataSource) actual.get("ds_1"), (BasicDataSource) createDataSource("ds_1"));
+        assertDataSource((DataSourceConfiguration) actual.get("ds_0"), (BasicDataSource) createDataSource("ds_0"));
+        assertDataSource((DataSourceConfiguration) actual.get("ds_1"), (BasicDataSource) createDataSource("ds_1"));
     }
     
     private void assertDataSource(final BasicDataSource actual, final BasicDataSource expected) {
