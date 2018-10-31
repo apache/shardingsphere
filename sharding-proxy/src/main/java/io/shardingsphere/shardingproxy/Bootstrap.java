@@ -168,6 +168,18 @@ public final class Bootstrap {
         return result;
     }
     
+    
+    private static DataSourceParameter getDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
+    }
 
     private static Map<String, YamlRuleConfiguration> getRuleConfiguration(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
         Map<String, YamlRuleConfiguration> result = new HashMap<>();
