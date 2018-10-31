@@ -21,8 +21,6 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
@@ -90,10 +88,7 @@ public final class OrchestrationFacade implements AutoCloseable {
      */
     public void init(final String shardingSchemaName, 
                      final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) {
-        if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
-            reviseShardingRuleConfigurationForMasterSlave(dataSourceConfigurationMap, shardingRuleConfig);
-        }
-        configService.persistConfiguration(shardingSchemaName, getActualDataSourceMapForMasterSlave(dataSourceConfigurationMap), shardingRuleConfig, configMap, props, isOverwrite);
+        configService.persistConfiguration(shardingSchemaName, dataSourceConfigurationMap, shardingRuleConfig, configMap, props, isOverwrite);
         instanceStateService.persistShardingInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initShardingListeners();
@@ -141,15 +136,6 @@ public final class OrchestrationFacade implements AutoCloseable {
         listenerManager.initProxyListeners();
     }
     
-    private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getValue() instanceof MasterSlaveDataSource) {
-                MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource.getMasterSlaveRule()));
-            }
-        }
-    }
-    
     private Map<String, DataSource> getActualDataSourceMapForMasterSlave(final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
@@ -161,11 +147,6 @@ public final class OrchestrationFacade implements AutoCloseable {
             }
         }
         return result;
-    }
-    
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveRule masterSlaveRule) {
-        return new MasterSlaveRuleConfiguration(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
     }
     
     @Override
