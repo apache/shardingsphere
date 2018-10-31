@@ -56,7 +56,7 @@ public class DataSourceConverter {
      * @param dataSourceMap data source map
      * @return data source configuration map
      */
-    public Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
         return Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
             
             @Override
