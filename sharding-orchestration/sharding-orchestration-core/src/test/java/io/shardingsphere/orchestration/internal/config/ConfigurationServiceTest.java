@@ -17,8 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -233,6 +236,16 @@ public final class ConfigurationServiceTest {
         verify(regCenter).persist("/test/config/props", PROPS_YAML);
     }
     
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
+        return Maps.transformValues(createDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+        
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
+    }
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
         result.put("ds_0", createDataSource("ds_0"));
@@ -289,7 +302,7 @@ public final class ConfigurationServiceTest {
     public void assertLoadDataSources() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        Map<String, DataSource> actual = configurationService.loadDataSources("sharding_db");
+        Map<String, DataSource> actual = configurationService.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(2));
         assertDataSource((BasicDataSource) actual.get("ds_0"), (BasicDataSource) createDataSource("ds_0"));
         assertDataSource((BasicDataSource) actual.get("ds_1"), (BasicDataSource) createDataSource("ds_1"));
