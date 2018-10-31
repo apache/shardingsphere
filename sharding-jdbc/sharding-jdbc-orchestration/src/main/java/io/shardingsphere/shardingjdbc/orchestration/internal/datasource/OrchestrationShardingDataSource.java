@@ -64,8 +64,8 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     private void initOrchestrationFacade() {
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap()), dataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
-                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap()),
+                dataSource.getShardingContext().getShardingRule().getShardingRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     @Override
