@@ -28,7 +28,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -47,7 +46,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -160,8 +158,8 @@ public final class ShardingDataSourceTest {
         ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
         assertThat(shardingDataSource.getXaDataSourceMap() == null, is(true));
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
-        assertThat(shardingDataSource.getXaDataSourceMap().size(), is(2));
-        assertThat(shardingConnection.getDataSourceMap().size(), is(2));
+        assertThat(shardingDataSource.getXaDataSourceMap().size(), is(1));
+        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
     }
     
     @Test
@@ -172,7 +170,7 @@ public final class ShardingDataSourceTest {
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
-        assertThat(shardingConnection.getDataSourceMap().size(), is(2));
+        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         TransactionTypeHolder.set(TransactionType.LOCAL);
         assertThat(shardingDataSource.getConnection().getConnection("ds"), is(dataSource.getConnection()));
     }

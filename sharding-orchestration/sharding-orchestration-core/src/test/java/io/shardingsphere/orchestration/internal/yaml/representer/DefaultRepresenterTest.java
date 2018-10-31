@@ -59,6 +59,6 @@ public final class DefaultRepresenterTest {
         String expected = new Yaml(new DefaultRepresenter()).dumpAsMap(actual);
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
-        assertThat(expected, containsString("alue: value\n"));
+        assertThat(expected, containsString("value: value\n"));
     }
 }

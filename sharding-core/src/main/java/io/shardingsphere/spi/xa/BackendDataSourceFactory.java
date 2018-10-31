@@ -33,7 +33,7 @@ public interface BackendDataSourceFactory {
      * Build backend datasource by datasource map.
      *
      * @param dataSourceMap datasource map
-     * @param databaseType
+     * @param databaseType database type
      * @return backend datasource map
      */
     Map<String, DataSource> build(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
