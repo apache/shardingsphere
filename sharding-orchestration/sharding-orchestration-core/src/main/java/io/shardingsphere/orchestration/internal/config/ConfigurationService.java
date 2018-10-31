@@ -105,7 +105,7 @@ public final class ConfigurationService {
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final ShardingRuleConfiguration shardingRuleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceParameterConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
         persistShardingRuleConfiguration(shardingSchemaName, shardingRuleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
@@ -125,31 +125,17 @@ public final class ConfigurationService {
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceParameterConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceParameterMap, isOverwrite);
         persistMasterSlaveRuleConfiguration(shardingSchemaName, masterSlaveRuleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
-    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSource> dataSourceMap, final boolean isOverwrite) {
+    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurationMap, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceMap && !dataSourceMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            Map<String, DataSourceConfiguration> dataSourceConfigMap = Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
-        
-                @Override
-                public DataSourceConfiguration apply(final DataSource input) {
-                    return DataSourceConfiguration.getDataSourceConfiguration(input);
-                }
-            });
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigMap));
-        }
-    }
-    
-    private void persistDataSourceParameterConfiguration(final String shardingSchemaName, final Map<String, DataSourceParameter> dataSourceParameterMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceParameterMap && !dataSourceParameterMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceParameterMap));
+            Preconditions.checkState(null != dataSourceConfigurationMap && !dataSourceConfigurationMap.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
+            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigurationMap));
         }
     }
     
