@@ -90,7 +90,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
      */
     @Subscribe
     public void renew(final ShardingConfigurationDataSourceChangedEvent shardingEvent) throws SQLException {
-        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurationMap()),
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
                 shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
 }

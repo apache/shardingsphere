@@ -36,7 +36,7 @@ public final class ShardingConfigurationDataSourceChangedEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurationMap;
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
     
     private final ShardingRule shardingRule;
     

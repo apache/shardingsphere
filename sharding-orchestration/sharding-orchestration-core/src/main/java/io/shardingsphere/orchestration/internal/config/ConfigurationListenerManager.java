@@ -72,9 +72,9 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSourceConfiguration> dataSourceMap = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
-                    ShardingConfigurationDataSourceChangedEvent shardingEvent = new ShardingConfigurationDataSourceChangedEvent(shardingSchemaName, dataSourceMap,
-                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceMap.keySet()), configService.loadProperties());
+                    Map<String, DataSourceConfiguration> availableDataSourceConfigurations = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
+                    ShardingConfigurationDataSourceChangedEvent shardingEvent = new ShardingConfigurationDataSourceChangedEvent(shardingSchemaName, availableDataSourceConfigurations,
+                            new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), availableDataSourceConfigurations.keySet()), configService.loadProperties());
                     ShardingEventBusInstance.getInstance().post(shardingEvent);
                 }
             }

@@ -32,7 +32,7 @@ import java.util.Map;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataSourceConverter {
+public final class DataSourceConverter {
     
     /**
      * Get data source map.
@@ -42,7 +42,7 @@ public class DataSourceConverter {
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         return Maps.transformValues(dataSourceConfigurationMap, new Function<DataSourceConfiguration, DataSource>() {
-        
+            
             @Override
             public DataSource apply(final DataSourceConfiguration input) {
                 return input.createDataSource();

@@ -37,7 +37,7 @@ public final class MasterSlaveConfigurationDataSourceParameterChangedEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurationMap;
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
