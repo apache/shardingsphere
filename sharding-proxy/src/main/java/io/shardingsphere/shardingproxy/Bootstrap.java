@@ -122,7 +122,7 @@ public final class Bootstrap {
         if (ruleConfigs.isEmpty()) {
             orchestrationFacade.getListenerManager().initProxyListeners();
         } else {
-            orchestrationFacade.init(getSchemaDataSourceConfigurationMap(ruleConfigs.keySet()), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getProps());
+            orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs.keySet()), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getProps());
         }
     }
     
@@ -132,15 +132,15 @@ public final class Bootstrap {
         }
     }
     
-    private static Map<String, Map<String, DataSourceConfiguration>> getSchemaDataSourceConfigurationMap(final Collection<String> schemaNames) {
+    private static Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Collection<String> schemaNames) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
         for (String each : schemaNames) {
-            result.put(each, getSchemaDataSourceConfigurationMap(each));
+            result.put(each, getDataSourceConfigurationMap(each));
         }
         return result;
     }
     
-    private static Map<String, DataSourceConfiguration> getSchemaDataSourceConfigurationMap(final String schemaName) {
+    private static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final String schemaName) {
         return Maps.transformValues(GlobalRegistry.getInstance().getShardingSchema(schemaName).getBackendDataSource().getDataSources(), new Function<DataSource, DataSourceConfiguration>() {
     
             @Override
