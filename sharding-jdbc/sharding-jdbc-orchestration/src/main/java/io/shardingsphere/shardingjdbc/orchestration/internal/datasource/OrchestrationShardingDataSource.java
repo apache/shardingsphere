@@ -29,7 +29,7 @@ import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurati
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
-import io.shardingsphere.shardingjdbc.orchestration.internal.uilt.DataSourceConverter;
+import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
