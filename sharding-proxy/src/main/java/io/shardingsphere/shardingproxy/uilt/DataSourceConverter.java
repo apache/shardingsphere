@@ -45,23 +45,29 @@ public class DataSourceConverter {
      * @return data source parameter map
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        Map<String, DataSourceParameter> result = new HashMap<>(dataSourceConfigurationMap.size(), 1);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
-            result.put(entry.getKey(), getDataSourceParameter(entry.getValue()));
-        }
-        return result;
+        return Maps.transformValues(dataSourceConfigurationMap, new Function<DataSourceConfiguration, DataSourceParameter>() {
+        
+            @Override
+            public DataSourceParameter apply(final DataSourceConfiguration input) {
+                return input.createDataSourceParameter();
+            }
+        });
     }
     
-    private static DataSourceParameter getDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
-            } catch (final ReflectiveOperationException ignored) {
+    /**
+     * Get data source configuration map.
+     *
+     * @param dataSourceParameterMap data source map
+     * @return data source configuration map
+     */
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
+        return Maps.transformValues(dataSourceParameterMap, new Function<dataSourceParameterMap, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final DataSourceParameter input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
             }
-        }
-        return result;
+        });
     }
     
     /**
@@ -72,7 +78,7 @@ public class DataSourceConverter {
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
         return Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
-            
+
             @Override
             public DataSourceConfiguration apply(final DataSource input) {
                 return DataSourceConfiguration.getDataSourceConfiguration(input);
