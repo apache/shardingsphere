@@ -57,10 +57,10 @@ public final class ListenerFactory {
      */
     public void initListeners() {
         for (ConfigurationListenerManager each : configurationListenerManagers) {
-            each.watchProxy();
+            each.watch();
         }
-        instanceListenerManager.watchProxy();
-        dataSourceListenerManager.watchProxy();
-        configMapListenerManager.watchProxy();
+        instanceListenerManager.watch();
+        dataSourceListenerManager.watch();
+        configMapListenerManager.watch();
     }
 }
