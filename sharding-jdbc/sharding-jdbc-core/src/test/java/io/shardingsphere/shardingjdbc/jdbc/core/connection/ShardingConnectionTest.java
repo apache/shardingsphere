@@ -122,4 +122,15 @@ public final class ShardingConnectionTest {
         connection.rollback();
         assertThat(FixedXAShardingTransactionManager.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
     }
+    
+    @Test
+    public void assertBaseTransactionOperation() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.BASE);
+        connection.setAutoCommit(false);
+        assertThat(FixedBaseShardingTransactionManager.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        connection.commit();
+        assertThat(FixedBaseShardingTransactionManager.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        connection.rollback();
+        assertThat(FixedBaseShardingTransactionManager.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+    }
 }
