@@ -131,8 +131,7 @@ public final class GlobalRegistry {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            shardingSchemas.put(schemaName, 
-                    new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue().getShardingRule(), entry.getValue().getMasterSlaveRule(), isUsingRegistry));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
