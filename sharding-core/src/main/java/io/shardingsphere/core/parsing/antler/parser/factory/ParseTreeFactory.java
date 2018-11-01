@@ -36,7 +36,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 public class ParseTreeFactory {
     
     /** 
-     * Get DDL table statement parser.
+     * Get SQL statement AST.
      * 
      * @param dbType database type.
      * @param tokenType token type.
@@ -44,7 +44,7 @@ public class ParseTreeFactory {
      * @param sql input SQL text.
      * @return parse tree
      */
-    public static ParserRuleContext getTableDDLParser(final DatabaseType dbType, final TokenType tokenType,
+    public static ParserRuleContext getParserTree(final DatabaseType dbType, final TokenType tokenType,
                                                       final ShardingRule shardingRule, final String sql) {
         switch (dbType) {
             case MySQL:
@@ -55,7 +55,6 @@ public class ParseTreeFactory {
                 return new SQLServerStatementParseTreeBuilder().parse(sql);
             case PostgreSQL:
                 return new PostgreStatementParseTreeBuilder().parse(sql);
-
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
         }

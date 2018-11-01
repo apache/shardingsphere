@@ -29,6 +29,8 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.dfa.DFAState;
 
+import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
+
 /**
  * Advanced Parser ATN Simulator, failed calculating alt
  * , try again with ID.
@@ -56,6 +58,7 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
      * @param outerContext outer context
      * @return alternative path number
      */
+    @Override
     protected int execATN(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext) {
         try {
             return super.execATN(dfa, s0, input, startIndex, outerContext);
@@ -66,6 +69,7 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
 
     /**
      * Try again with ID.
+     * 
      * @param dfa antlr dfa instance
      * @param s0 start state
      * @param input input token stream
@@ -77,7 +81,7 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
     private int tryExecByID(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext,
             final NoViableAltException e) {
         Token token = e.getOffendingToken();
-        CommonToken commonToken = castCommonToken(token);
+        CommonToken commonToken = AntlrUtils.castCommonToken(token);
         if (null == commonToken) {
             throw e;
         }
@@ -100,18 +104,5 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
             commonToken.setType(previousType);
             throw e;
         }
-    }
-
-    /**
-     * Cast Token to CommonToken.
-     * 
-     * @param token lexical token
-     * @return token is CommonToken,return CommonToken else return null
-     */
-    private CommonToken castCommonToken(final Token token) {
-        if (token instanceof CommonToken) {
-            return (CommonToken) token;
-        }
-        return null;
     }
 }

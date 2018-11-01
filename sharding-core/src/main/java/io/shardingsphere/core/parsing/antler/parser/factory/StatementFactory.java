@@ -54,7 +54,7 @@ public final class StatementFactory {
             execDbType = DatabaseType.MySQL;
         }
 
-        ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(execDbType, tokenType, shardingRule, sql);
+        ParserRuleContext rootNode = ParseTreeFactory.getParserTree(execDbType, tokenType, shardingRule, sql);
         if (null != rootNode) {
             String commandName = getCommandName(rootNode);
             StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(execDbType, commandName);

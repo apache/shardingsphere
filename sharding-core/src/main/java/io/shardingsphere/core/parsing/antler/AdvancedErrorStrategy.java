@@ -28,6 +28,8 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.misc.IntervalSet;
 
+import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
+
 /**
  * Advanced Error Strategy, override sync method,when failed matching,
  * try again with ID.
@@ -79,7 +81,7 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
             }
 
             if (nextTokens.contains(id)) {
-                CommonToken commonToken = castCommonToken(token);
+                CommonToken commonToken = AntlrUtils.castCommonToken(token);
                 commonToken.setType(id);
             }
             super.sync(recognizer);
@@ -96,7 +98,7 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
      */
     private void tryExecByID(final Parser recognizer, final InputMismatchException e) {
         Token token = e.getOffendingToken();
-        CommonToken commonToken = castCommonToken(token);
+        CommonToken commonToken = AntlrUtils.castCommonToken(token);
         if (null == commonToken) {
             throw e;
         }
@@ -119,18 +121,5 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
             commonToken.setType(previousType);
             throw e;
         }
-    }
-
-    /**
-     * Cast Token to CommonToken.
-     * 
-     * @param token lexical token
-     * @return token is CommonToken,return CommonToken else return null
-     */
-    private CommonToken castCommonToken(final Token token) {
-        if (token instanceof CommonToken) {
-            return (CommonToken) token;
-        }
-        return null;
     }
 }

@@ -17,13 +17,13 @@
 
 package io.shardingsphere.core.parsing.antler.parser;
 
-import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 
 import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
+import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
 import io.shardingsphere.parser.antlr.PostgreStatementParser;
 
 /**
@@ -42,35 +42,16 @@ public class PostgreStatementAdvancedParser extends PostgreStatementParser {
     /**
      * Match token by token type.
      *
-     * @param ttype token type
+     * @param tokenType token type
      * @return current matched token
      * @throws RecognitionException mismatch throw exception
      */
-    public Token match(final int ttype) throws RecognitionException {
-        Token t = getCurrentToken();
-
-        boolean compatID = false;
-        if (ID == ttype && ID > t.getType()) {
-            compatID = true;
+    @Override
+    public Token match(final int tokenType) throws RecognitionException {
+        if (tokenType == Token.EOF) {
+            matchedEOF = true;
         }
-
-        if (t.getType() == ttype || compatID) {
-            if (ttype == Token.EOF) {
-                matchedEOF = true;
-            } else if (compatID && (t instanceof CommonToken)) {
-                CommonToken commonToken = (CommonToken) t;
-                commonToken.setType(ID);
-            }
-            _errHandler.reportMatch(this);
-            consume();
-        } else {
-            t = _errHandler.recoverInline(this);
-            if (_buildParseTrees && t.getTokenIndex() == -1) {
-                // we must have conjured up a new token during single token insertion
-                // if it's not the current symbol
-                _ctx.addErrorNode(createErrorNode(_ctx, t));
-            }
-        }
-        return t;
+        
+        return AntlrUtils.match(this, tokenType, ID);
     }
 }
