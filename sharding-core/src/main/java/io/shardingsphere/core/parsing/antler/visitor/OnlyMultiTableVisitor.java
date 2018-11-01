@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisit
  * @author duhongjun
  */
 public class OnlyMultiTableVisitor extends DDLStatementVisitor {
+
     public OnlyMultiTableVisitor() {
         addVisitor(new TableNamesVisitor());
     }

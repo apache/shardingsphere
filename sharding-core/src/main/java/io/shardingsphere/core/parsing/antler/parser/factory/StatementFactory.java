@@ -31,29 +31,29 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Use AST generate SQLStatement.
- * 
+ *
  * @author duhongjun
  */
-@NoArgsConstructor(access=AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatementFactory {
-    
+
     /**
      * Parse input to SQLStatement.
-     * 
-     * @param dbType database type
-     * @param tokenType token type
-     * @param shardingRule databases and tables sharding rule
-     * @param SQL input SQL text
+     *
+     * @param dbType                database type
+     * @param tokenType             token type
+     * @param shardingRule          databases and tables sharding rule
+     * @param sql                   input SQL text
      * @param shardingTableMetaData table meta data
      * @return SQLStatement instance
      */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
-            final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+                                            final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
         DatabaseType execDbType = dbType;
         if (DatabaseType.H2 == execDbType) {
             execDbType = DatabaseType.MySQL;
         }
-        
+
         ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(execDbType, tokenType, shardingRule, sql);
         if (null != rootNode) {
             String commandName = getCommandName(rootNode);
@@ -68,8 +68,8 @@ public final class StatementFactory {
 
     /**
      * Get SQL command name from ast.
-     * 
-     * @param node
+     *
+     * @param node SQL statement root node
      * @return SQL command name
      */
     private static String getCommandName(final ParserRuleContext node) {

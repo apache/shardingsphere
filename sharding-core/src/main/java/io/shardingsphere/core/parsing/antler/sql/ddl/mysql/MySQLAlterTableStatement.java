@@ -36,5 +36,4 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class MySQLAlterTableStatement extends AlterTableStatement {
     private final List<ColumnPosition> positionChangedColumns = new ArrayList<>();
-
 }
