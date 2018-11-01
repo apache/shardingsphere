@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
@@ -125,6 +126,9 @@ public final class GlobalRegistry {
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
+        if (!configMap.isEmpty()) {
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
+        }
         initServerConfiguration(authentication, props);
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
