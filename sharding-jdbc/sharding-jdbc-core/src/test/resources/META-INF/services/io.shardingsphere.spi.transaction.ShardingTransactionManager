@@ -1,7 +1,0 @@
-io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionManager
-io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionManager
-
-
-
-
-
