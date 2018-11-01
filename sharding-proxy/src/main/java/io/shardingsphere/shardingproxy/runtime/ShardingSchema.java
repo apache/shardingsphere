@@ -77,12 +77,7 @@ public final class ShardingSchema {
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
     }
     
-    /**
-     * Initialize sharding meta data.
-     *
-     * @param executeEngine sharding execute engine
-     */
-    public ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
+    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
         return new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule,
                 DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
     }
