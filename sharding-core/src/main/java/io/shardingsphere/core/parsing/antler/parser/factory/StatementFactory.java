@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.parser.factory;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.VisitorRegistry;
@@ -26,21 +24,27 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.StatementVisitor;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class StatementFactory {
+import org.antlr.v4.runtime.ParserRuleContext;
+
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+public final class StatementFactory {
     
-    /**Parse input to SQLStatement.
+    /**
+     * Parse input to SQLStatement.
      * @param dbType database type
      * @param tokenType token type
      * @param shardingRule databases and tables sharding rule
-     * @param sql input sql text
+     * @param SQL input SQL text
      * @param shardingTableMetaData table meta data
      * @return SQLStatement instance
      */
     public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
             final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
         DatabaseType execDbType = dbType;
-        if(DatabaseType.H2 == execDbType) {
+        if (DatabaseType.H2 == execDbType) {
             execDbType = DatabaseType.MySQL;
         }
         
@@ -56,6 +60,11 @@ public class StatementFactory {
         return null;
     }
 
+    /**
+     * Get SQL command name from ast.
+     * @param node
+     * @return SQL command name
+     */
     private static String getCommandName(final ParserRuleContext node) {
         String name = node.getClass().getSimpleName();
         int pos = name.indexOf("Context");

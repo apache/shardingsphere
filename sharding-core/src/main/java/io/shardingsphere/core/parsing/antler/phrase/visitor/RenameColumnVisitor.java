@@ -31,7 +31,7 @@ public class RenameColumnVisitor implements PhraseVisitor {
 
     /** Visit rename column node.
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {

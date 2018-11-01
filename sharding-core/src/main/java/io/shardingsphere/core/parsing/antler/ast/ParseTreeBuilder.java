@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public interface ParseTreeBuilder {
     
     /** Parse input to ast.
-     * @param input sql text
+     * @param input SQL text
      * @return parse tree
      */
     ParserRuleContext parse(String input);

@@ -31,7 +31,7 @@ public class SQLServerDropIndexVisitor implements PhraseVisitor {
      * Visit drop index node.
      *
      * @param ancestorNode ancestor node of ast
-     * @param statement    sql statement
+     * @param statement SQL statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {

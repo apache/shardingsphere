@@ -51,10 +51,10 @@ public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder
     }
 
     /**
-     * Get sql parse tree.
+     * Get SQL parse tree.
      *
      * @param parser instance
-     * @return sql parse tree
+     * @return SQL parse tree
      */
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {

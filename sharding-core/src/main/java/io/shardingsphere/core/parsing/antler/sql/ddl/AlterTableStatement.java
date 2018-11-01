@@ -43,55 +43,61 @@ public class AlterTableStatement extends DDLStatement {
     private boolean dropPrimaryKey;
 
     private String newTableName;
-    
+
     private ShardingTableMetaData tableMetaDataMap;
-    
+
     private TableMetaData tableMetaData;
-    
-    /**Get column definition.
+
+    /**
+     * Get column definition.
+     *
      * @param columnName column name
      * @return column definition
      */
     public ColumnDefinition getColumnDefinitionByName(final String columnName) {
         ColumnDefinition columnDefinition = getExistColumn(columnName);
-        if(null == columnDefinition) {
+        if (null == columnDefinition) {
             columnDefinition = getFromAddColumn(columnName);
         }
-        
+
         return columnDefinition;
     }
-    
-    /** Get exist column definition.
+
+    /**
+     * Get exist column definition.
+     *
      * @param columnName column name
      * @return column definition
      */
     public ColumnDefinition getExistColumn(final String columnName) {
         TableMetaData tableMeta = tableMetaDataMap.get(this.getTables().getSingleTableName());
-        if(null == tableMeta) {
+        if (null == tableMeta) {
             return null;
         }
-        
-        for(ColumnMetaData each : tableMeta.getColumnMetaData()) {
-            if(columnName.equalsIgnoreCase(each.getColumnName())) {
+
+        for (ColumnMetaData each : tableMeta.getColumnMetaData()) {
+            if (columnName.equalsIgnoreCase(each.getColumnName())) {
                 return new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey());
             }
         }
-        
+
         return null;
     }
-    
-    /** Get column definition from current add clause.
+
+    /**
+     * Get column definition from current add clause.
+     *
      * @param columnName column name
      * @return column definition
      */
     private ColumnDefinition getFromAddColumn(final String columnName) {
-        for(ColumnDefinition addColumn : addColumns) {
-            if(addColumn.getName().equalsIgnoreCase(columnName)) {
+        for (ColumnDefinition addColumn : addColumns) {
+            if (addColumn.getName().equalsIgnoreCase(columnName)) {
                 return addColumn;
             }
         }
-        
+
         return null;
     }
-    
+
 }

@@ -31,9 +31,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class AddColumnVisitor extends ColumnDefinitionVisitor {
 
-    /** Visit add column node.
+    /**
+     * Visit add column node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -48,8 +50,10 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
         }
     }
 
-    /**Visit add column context.
-     * @param addColumnCtx add column contxt
+    /**
+     * Visit add column context.
+     *
+     * @param addColumnCtx   add column contxt
      * @param alterStatement alter table statement
      */
     public void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
@@ -61,7 +65,7 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
         for (ParserRuleContext columnDefinitionCtx : columnDefinitionCtxs) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
             if (null != column) {
-                if(null != alterStatement.getExistColumn(column.getName())) {
+                if (null != alterStatement.getExistColumn(column.getName())) {
                     return;
                 }
                 alterStatement.getAddColumns().add(column);
@@ -69,7 +73,7 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
             }
         }
     }
-    
+
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,
                                              final String columnName) {
     }

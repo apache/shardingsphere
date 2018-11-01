@@ -57,7 +57,7 @@ public final class VisitorRegistry {
      * get statement visitor.
      * 
      * @param dbType database type,ex:mysql,postgre...
-     * @param commandName sql command name
+     * @param commandName SQL command name
      * @return Statement visitor
      */
     public StatementVisitor getVisitor(final DatabaseType dbType, final String commandName) {

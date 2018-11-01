@@ -24,7 +24,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public interface PhraseVisitor {
     /** Visit ast.
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     void visit(ParserRuleContext ancestorNode, SQLStatement statement);
 }

@@ -34,7 +34,7 @@ public class ParseTreeFactory {
      * @param dbType database type.
      * @param tokenType token type.
      * @param shardingRule databases and tables sharding rule.
-     * @param sql input sql text.
+     * @param SQL input SQL text.
      * @return parse tree
      */
     public static ParserRuleContext getTableDDLParser(final DatabaseType dbType, final TokenType tokenType,

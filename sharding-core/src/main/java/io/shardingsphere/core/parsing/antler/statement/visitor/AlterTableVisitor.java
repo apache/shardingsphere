@@ -42,7 +42,7 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
     /**
      * process after visit.
      *
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     protected void postVisit(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
@@ -136,7 +136,7 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
      * Use shardingTableMetaData create SQLStatement.
      *
      * @param shardingTableMetaData table metadata
-     * @return sql statement info
+     * @return SQL statement info
      */
     protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement statement = (AlterTableStatement) newStatement();
@@ -147,7 +147,7 @@ public abstract class AlterTableVisitor extends AbstractStatementVisitor {
     /**
      * Create statement.
      *
-     * @return empty sql statment
+     * @return empty SQL statment
      */
     protected SQLStatement newStatement() {
         return new AlterTableStatement();
