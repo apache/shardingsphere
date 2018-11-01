@@ -58,7 +58,7 @@ public final class ShardingSchema {
     
     private final JDBCBackendDataSource backendDataSource;
     
-    private ShardingMetaData metaData;
+    private final ShardingMetaData metaData;
     
     public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         this.name = name;
