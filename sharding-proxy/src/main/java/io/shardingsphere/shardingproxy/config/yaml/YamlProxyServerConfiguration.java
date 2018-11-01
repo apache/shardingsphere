@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class ProxyYamlServerConfiguration {
+public final class YamlProxyServerConfiguration {
     
     private Authentication authentication = new Authentication();
     
