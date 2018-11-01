@@ -20,7 +20,7 @@ package io.shardingsphere.shardingproxy.config;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -60,17 +60,17 @@ public final class ShardingConfigurationLoader {
         Collection<String> schemaNames = new HashSet<>();
         ProxyYamlServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
         File configPath = new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
-        Collection<ProxyYamlRuleConfiguration> ruleConfigurations = new LinkedList<>();
+        Collection<YamlProxyRuleConfiguration> ruleConfigurations = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
-            Optional<ProxyYamlRuleConfiguration> ruleConfig = loadRuleConfiguration(each, serverConfig);
+            Optional<YamlProxyRuleConfiguration> ruleConfig = loadRuleConfiguration(each, serverConfig);
             if (ruleConfig.isPresent()) {
                 Preconditions.checkState(schemaNames.add(ruleConfig.get().getSchemaName()), "Schema name `%s` must unique at all rule configurations.", ruleConfig.get().getSchemaName());
                 ruleConfigurations.add(ruleConfig.get());
             }
         }
         Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getOrchestration(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
-        Map<String, ProxyYamlRuleConfiguration> ruleConfigurationMap = new HashMap<>(ruleConfigurations.size(), 1);
-        for (ProxyYamlRuleConfiguration each : ruleConfigurations) {
+        Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap = new HashMap<>(ruleConfigurations.size(), 1);
+        for (YamlProxyRuleConfiguration each : ruleConfigurations) {
             ruleConfigurationMap.put(each.getSchemaName(), each);
         }
         return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
@@ -88,12 +88,12 @@ public final class ShardingConfigurationLoader {
         }
     }
     
-    private Optional<ProxyYamlRuleConfiguration> loadRuleConfiguration(final File yamlFile, final ProxyYamlServerConfiguration serverConfiguration) throws IOException {
+    private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile, final ProxyYamlServerConfiguration serverConfiguration) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            ProxyYamlRuleConfiguration result = new Yaml(new Constructor(ProxyYamlRuleConfiguration.class)).loadAs(inputStreamReader, ProxyYamlRuleConfiguration.class);
+            YamlProxyRuleConfiguration result = new Yaml(new Constructor(YamlProxyRuleConfiguration.class)).loadAs(inputStreamReader, YamlProxyRuleConfiguration.class);
             if (null == result) {
                 return Optional.absent();
             }
