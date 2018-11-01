@@ -27,9 +27,7 @@ import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionManager;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionHandler;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionManager;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import org.junit.After;
@@ -91,8 +89,8 @@ public final class ShardingConnectionTest {
         try {
             connection.close();
             TransactionTypeHolder.clear();
-            FixedXAShardingTransactionManager.getInvokes().clear();
-            FixedBaseShardingTransactionManager.getInvokes().clear();
+            FixedXAShardingTransactionHandler.getInvokes().clear();
+            FixedBaseShardingTransactionHandler.getInvokes().clear();
         } catch (final SQLException ignore) {
         }
     }
