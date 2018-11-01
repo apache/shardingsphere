@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.internal.state.StateNode;
@@ -47,7 +46,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchProxy() {
+    public void watch() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
