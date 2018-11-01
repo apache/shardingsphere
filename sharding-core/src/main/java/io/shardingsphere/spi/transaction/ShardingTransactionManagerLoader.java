@@ -18,6 +18,7 @@
 package io.shardingsphere.spi.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,11 +34,12 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTransactionManagerLoader {
     
-    private static final Map<TransactionType, ShardingTransactionManager> TRANSACTION_MANAGER_MAP = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionManager<ShardingTransactionEvent>> TRANSACTION_MANAGER_MAP = new HashMap<>();
     
+    @SuppressWarnings("unchecked")
     private static void load() {
         for (ShardingTransactionManager each : ServiceLoader.load(ShardingTransactionManager.class)) {
-            TRANSACTION_MANAGER_MAP.put(TransactionType.find(each.getClass().getName()), each);
+            TRANSACTION_MANAGER_MAP.put(TransactionType.find(each.getClass().getName()), (ShardingTransactionManager<ShardingTransactionEvent>) each);
         }
     }
     
@@ -51,7 +53,7 @@ public final class ShardingTransactionManagerLoader {
      * @param transactionType transaction type
      * @return sharding transaction manager implement
      */
-    public static ShardingTransactionManager getTransactionManager(final TransactionType transactionType) {
+    public static ShardingTransactionManager<ShardingTransactionEvent> getTransactionManager(final TransactionType transactionType) {
         return TRANSACTION_MANAGER_MAP.get(transactionType);
     }
 }
