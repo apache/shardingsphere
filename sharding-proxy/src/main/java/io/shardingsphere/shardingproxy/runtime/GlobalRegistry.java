@@ -110,8 +110,8 @@ public final class GlobalRegistry {
      * @param props properties
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
-        init(schemaDataSources, schemaRules, authentication, props, false);
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
+        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
     }
     
     /**
@@ -124,7 +124,7 @@ public final class GlobalRegistry {
      * @param isUsingRegistry is using registry or not
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
         initServerConfiguration(authentication, props);
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
