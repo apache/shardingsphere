@@ -25,7 +25,6 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -35,7 +34,6 @@ import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBus
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
@@ -184,10 +182,9 @@ public final class GlobalRegistry {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        shardingSchemas.clear();
+        shardingSchemas.remove(shardingEvent.getSchemaName());
         shardingSchemas.put(shardingEvent.getSchemaName(), new ShardingSchema(shardingEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(shardingEvent.getDataSourceConfigurations()),
                 shardingEvent.getShardingRule().getShardingRuleConfig(), true));
-        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     /**
@@ -201,11 +198,8 @@ public final class GlobalRegistry {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        shardingSchemas.clear();
-        shardingSchemas.put(masterSlaveEvent.getSchemaName(), 
-                new ShardingSchema(masterSlaveEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()),
-                        masterSlaveEvent.getMasterSlaveRuleConfig(), true));
-        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
+        shardingSchemas.remove(masterSlaveEvent.getSchemaName());
+        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
     /**
