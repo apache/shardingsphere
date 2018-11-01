@@ -21,7 +21,7 @@ import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
+import io.shardingsphere.spi.transaction.ShardingTransactionManager;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;

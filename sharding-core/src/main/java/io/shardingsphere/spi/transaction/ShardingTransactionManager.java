@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager;
+package io.shardingsphere.spi.transaction;
 
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 

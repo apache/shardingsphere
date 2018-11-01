@@ -21,7 +21,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.listener.ShardingTransactionListenerAdapter;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
+import io.shardingsphere.spi.transaction.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
 
 import java.sql.SQLException;
