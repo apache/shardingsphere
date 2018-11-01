@@ -111,7 +111,7 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param props properties
      */
-public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
         init(schemaDataSources, schemaRules, authentication, props, false);
     }
