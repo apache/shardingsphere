@@ -87,7 +87,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         }
         instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initProxyListeners();
+        listenerManager.initListeners();
     }
     
     @Override
