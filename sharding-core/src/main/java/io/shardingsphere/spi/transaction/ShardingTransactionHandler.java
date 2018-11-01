@@ -17,6 +17,7 @@
 
 package io.shardingsphere.spi.transaction;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 
 /**
@@ -32,4 +33,11 @@ public interface ShardingTransactionHandler<T extends ShardingTransactionEvent> 
      * @param event sharding transaction event
      */
     void doHandle(T event);
+    
+    /**
+     * Get transaction type.
+     *
+     * @return transaction type
+     */
+    TransactionType getTransactionType();
 }
