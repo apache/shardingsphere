@@ -69,5 +69,5 @@ public interface ShardingTransactionManager<T extends ShardingTransactionEvent> 
      *
      * @return transaction type
      */
-    TransactionType getManagerType();
+    TransactionType getTransactionType();
 }

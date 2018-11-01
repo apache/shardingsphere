@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.manager.xa.fixture;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
@@ -29,7 +30,6 @@ import javax.transaction.TransactionManager;
 public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public void destroy() {
-
     }
     
     @Override
@@ -47,6 +47,11 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public int getStatus() {
         return Status.STATUS_NO_TRANSACTION;
+    }
+    
+    @Override
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
     }
     
     @Override
