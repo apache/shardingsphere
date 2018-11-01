@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
@@ -37,6 +38,8 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConv
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Orchestration master-slave datasource.
@@ -66,12 +69,19 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     private void initOrchestrationFacade() {
-        MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = getRuleConfigurationMap();
         getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap()),
                 masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
+    
+    private Map<String, RuleConfiguration> getRuleConfigurationMap() {
+        MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
+        Map<String, RuleConfiguration> ruleConfigurationMap = new LinkedHashMap<>();
+        ruleConfigurationMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
+        return ruleConfigurationMap;
+    }
+    
     
     @Override
     public final Connection getConnection() {
