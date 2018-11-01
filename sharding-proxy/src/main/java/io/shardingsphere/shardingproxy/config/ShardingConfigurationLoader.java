@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -58,7 +58,7 @@ public final class ShardingConfigurationLoader {
      */
     public ShardingConfiguration load() throws IOException {
         Collection<String> schemaNames = new HashSet<>();
-        ProxyYamlServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
+        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
         File configPath = new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
         Collection<YamlProxyRuleConfiguration> ruleConfigurations = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
@@ -76,19 +76,19 @@ public final class ShardingConfigurationLoader {
         return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
     }
     
-    private ProxyYamlServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
+    private YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            ProxyYamlServerConfiguration result = new Yaml(new Constructor(ProxyYamlServerConfiguration.class)).loadAs(inputStreamReader, ProxyYamlServerConfiguration.class);
+            YamlProxyServerConfiguration result = new Yaml(new Constructor(YamlProxyServerConfiguration.class)).loadAs(inputStreamReader, YamlProxyServerConfiguration.class);
             Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
             Preconditions.checkState(!Strings.isNullOrEmpty(result.getAuthentication().getUsername()) || null != result.getOrchestration(), "Authority configuration is invalid.");
             return result;
         }
     }
     
-    private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile, final ProxyYamlServerConfiguration serverConfiguration) throws IOException {
+    private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile, final YamlProxyServerConfiguration serverConfiguration) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")

@@ -26,7 +26,7 @@ import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import io.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
 import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -91,7 +91,7 @@ public final class Bootstrap {
         new ShardingProxy().start(port);
     }
     
-    private static void startWithRegistryCenter(final ProxyYamlServerConfiguration serverConfig,
+    private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
@@ -112,7 +112,7 @@ public final class Bootstrap {
         }
     }
     
-    private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig,
+    private static void initOrchestrationFacade(final YamlProxyServerConfiguration serverConfig,
                                                 final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (ruleConfigs.isEmpty()) {
             orchestrationFacade.init();
