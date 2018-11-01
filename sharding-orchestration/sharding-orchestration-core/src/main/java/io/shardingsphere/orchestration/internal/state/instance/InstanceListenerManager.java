@@ -44,40 +44,6 @@ public final class InstanceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchSharding() {
-        regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(true));
-                    } else {
-                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(false));
-                    }
-                }
-            }
-        });
-    }
-    
-    @Override
-    public void watchMasterSlave() {
-        regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(true));
-                    } else {
-                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(false));
-                    }
-                }
-            }
-        });
-    }
-    
-    @Override
     public void watchProxy() {
         regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
             
