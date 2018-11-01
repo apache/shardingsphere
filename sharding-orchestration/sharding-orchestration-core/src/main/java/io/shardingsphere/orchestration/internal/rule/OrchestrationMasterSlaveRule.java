@@ -19,6 +19,7 @@ package io.shardingsphere.orchestration.internal.rule;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 
@@ -60,6 +61,6 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     @Subscribe
     public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         disabledDataSourceNames.clear();
-        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledDataSourceNames());
+        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
 }
