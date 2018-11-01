@@ -17,16 +17,12 @@
 
 package io.shardingsphere.transaction;
 
-import io.shardingsphere.transaction.listener.xa.XATransactionListenerTest;
 import io.shardingsphere.transaction.manager.xa.AllManagerTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        XATransactionListenerTest.class,
-        AllManagerTests.class
-})
+@SuiteClasses(AllManagerTests.class)
 public final class AllTests {
 }
