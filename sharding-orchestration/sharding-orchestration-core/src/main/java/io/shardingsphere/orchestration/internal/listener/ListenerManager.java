@@ -26,22 +26,8 @@ package io.shardingsphere.orchestration.internal.listener;
 public interface ListenerManager {
     
     /**
-     * Start sharding change listener.
+     * Start change listener.
      *
      */
-    void watchSharding();
-    
-    
-    /**
-     * Start master-slave change listener.
-     *
-     */
-    void watchMasterSlave();
-    
-    /**
-     * Start proxy change listener.
-     *
-     */
-    @Deprecated
     void watchProxy();
 }
