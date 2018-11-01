@@ -20,6 +20,7 @@ package io.shardingsphere.orchestration.internal.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
@@ -53,43 +54,47 @@ public final class ConfigurationService {
     }
     
     /**
-     * Persist sharding configuration.
+     * Persist rule configuration.
      *
      * @param shardingSchemaName sharding schema name
      * @param dataSourceConfigurations data source configuration map
-     * @param shardingRuleConfig sharding rule configuration
+     * @param ruleConfig rule configuration
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final ShardingRuleConfiguration shardingRuleConfig,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final RuleConfiguration ruleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations, isOverwrite);
-        persistShardingRuleConfiguration(shardingSchemaName, shardingRuleConfig, isOverwrite);
+        persistConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
-    /**
-     * Persist master-slave configuration.
-     *
-     * @param shardingSchemaName sharding schema name
-     * @param dataSourceConfigurations data source configuration map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param authentication authentication
-     * @param configMap config map
-     * @param props sharding properties
-     * @param isOverwrite is overwrite registry center's configuration
-     */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations, isOverwrite);
-        persistMasterSlaveRuleConfiguration(shardingSchemaName, masterSlaveRuleConfig, isOverwrite);
-        persistAuthentication(authentication, isOverwrite);
-        persistConfigMap(configMap, isOverwrite);
-        persistProperties(props, isOverwrite);
+    private void persistConfiguration(final String shardingSchemaName, final RuleConfiguration ruleConfig, final boolean isOverwrite) {
+        if (ruleConfig instanceof ShardingRuleConfiguration) {
+            persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig, isOverwrite);
+        } else {
+            persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig, isOverwrite);
+        }
+    }
+    
+    private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
+        if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
+            Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(),
+                    "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
+            regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig)));
+        }
+    }
+    
+    private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
+        if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
+            Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(),
+                    "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
+            regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig)));
+        }
     }
     
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -101,22 +106,6 @@ public final class ConfigurationService {
     
     private boolean hasDataSourceConfiguration(final String shardingSchemaName) {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
-    }
-    
-    private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfig, final boolean isOverwrite) {
-        if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), 
-                    "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig)));
-        }
-    }
-    
-    private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isOverwrite) {
-        if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(), 
-                    "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getRulePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig)));
-        }
     }
     
     private boolean hasRuleConfiguration(final String shardingSchemaName) {

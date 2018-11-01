@@ -15,22 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.state;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.Map;
+package io.shardingsphere.api.config;
 
 /**
- * proxy disabled event bus event.
+ * Rule configuration.
  * 
- * @author chenqingyang
+ * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public class ProxyDisabledStateEventBusEvent {
-    
-    private final Map<String, Collection<String>> disabledSchemaDataSourceMap;
+public interface RuleConfiguration {
 }

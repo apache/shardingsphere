@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -27,6 +28,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
+import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
@@ -57,37 +59,29 @@ public final class ShardingSchema {
     
     private final JDBCBackendDataSource backendDataSource;
     
-    private ShardingMetaData metaData;
+    private final ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, 
-                          final ShardingRuleConfiguration shardingRule, final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
-        this.shardingRule = getShardingRule(shardingRule, isUsingRegistry);
-        this.masterSlaveRule = getMasterSlaveRule(masterSlaveRule, isUsingRegistry);
+        shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
+                : new ShardingRule(new ShardingRuleConfiguration(), dataSources.keySet());
+        masterSlaveRule = ruleConfiguration instanceof MasterSlaveRuleConfiguration ? getMasterSlaveRule((MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
         backendDataSource = new JDBCBackendDataSource(dataSources);
+        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet())
-                : new ShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet());
+        return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSources.keySet()) : new ShardingRule(shardingRule, dataSources.keySet());
     }
     
     private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
-        if (null == masterSlaveRule) {
-            return null;
-        }
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
     }
     
-    /**
-     * Initialize sharding meta data.
-     *
-     * @param executeEngine sharding execute engine
-     */
-    public void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        metaData = new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule, 
+    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
+        return new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule,
                 DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
     }
     
@@ -105,6 +99,6 @@ public final class ShardingSchema {
      * @return is master slave only
      */
     public boolean isMasterSlaveOnly() {
-        return shardingRule.getTableRules().isEmpty() && null != masterSlaveRule;
+        return (null == shardingRule || shardingRule.getTableRules().isEmpty()) && null != masterSlaveRule;
     }
 }

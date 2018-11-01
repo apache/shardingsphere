@@ -19,7 +19,6 @@ package io.shardingsphere.orchestration.internal.state.datasource;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.internal.state.StateNode;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -47,39 +46,13 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchSharding() {
+    public void watch() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
                     ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
-                }
-            }
-        });
-    }
-    
-    @Override
-    public void watchMasterSlave() {
-        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
-                }
-            }
-        });
-    }
-    
-    @Override
-    public void watchProxy() {
-        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new ProxyDisabledStateEventBusEvent(dataSourceService.getProxyDisabledDataSourceNames()));
                 }
             }
         });
