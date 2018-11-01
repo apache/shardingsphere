@@ -52,36 +52,10 @@ public final class ListenerFactory {
     }
     
     /**
-     * Initialize listeners for sharding.
-     * 
-     */
-    public void initShardingListeners() {
-        for (ConfigurationListenerManager each : configurationListenerManagers) {
-            each.watchSharding();
-        }
-        instanceListenerManager.watchSharding();
-        dataSourceListenerManager.watchSharding();
-        configMapListenerManager.watchSharding();
-    }
-    
-    /**
-     * Initialize listeners for master-slave.
+     * Initialize listeners.
      *
      */
-    public void initMasterSlaveListeners() {
-        for (ConfigurationListenerManager each : configurationListenerManagers) {
-            each.watchMasterSlave();
-        }
-        instanceListenerManager.watchMasterSlave();
-        dataSourceListenerManager.watchMasterSlave();
-        configMapListenerManager.watchMasterSlave();
-    }
-    
-    /**
-     * Initialize listeners for proxy.
-     *
-     */
-    public void initProxyListeners() {
+    public void initListeners() {
         for (ConfigurationListenerManager each : configurationListenerManagers) {
             each.watchProxy();
         }
