@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -124,10 +125,10 @@ public final class GlobalRegistry {
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
-                     final Map<String, YamlRuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
         initServerConfiguration(authentication, props);
-        for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
+        for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, 
