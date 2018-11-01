@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy;
 
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -96,16 +97,14 @@ public final class Bootstrap {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
-            Map<String, YamlRuleConfiguration> schemaRules = new LinkedHashMap<>();
+            Map<String, RuleConfiguration> schemaRules = new LinkedHashMap<>();
             for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
                 schemaDataSourceParameterMap.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
-                YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
                 if (orchestrationFacade.getConfigService().isShardingRule(each)) {
-                    yamlRuleConfig.setShardingRule(orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
+                    schemaRules.put(each, orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
                 } else {
-                    yamlRuleConfig.setMasterSlaveRule(orchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
+                    schemaRules.put(each, orchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
                 }
-                schemaRules.put(each, yamlRuleConfig);
             }
             GlobalRegistry.getInstance().init(
                     schemaDataSourceParameterMap, schemaRules, orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadProperties(), true);
