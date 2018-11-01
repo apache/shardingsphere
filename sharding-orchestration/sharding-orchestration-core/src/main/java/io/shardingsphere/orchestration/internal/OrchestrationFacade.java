@@ -72,11 +72,12 @@ public final class OrchestrationFacade implements AutoCloseable {
     }
     
     /**
-     * Initialize for proxy orchestration.
+     * Initialize for orchestration.
      *
      * @param dataSourceConfigurationMap schema data source configuration map
      * @param schemaRuleMap schema rule map
      * @param authentication authentication
+     * @param configMap config Map
      * @param prop properties
      */
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
