@@ -22,20 +22,35 @@ import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.transaction.ShardingTransactionManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class FixedBaseShardingTransactionManager implements ShardingTransactionManager {
+    
+    private static final Map<String, Object> INVOKES = new HashMap<>();
+    
+    /**
+     * Get invoke map.
+     *
+     * @return map
+     */
+    public static Map<String, Object> getInvokes() {
+        return INVOKES;
+    }
+    
     @Override
     public void begin(final ShardingTransactionEvent transactionEvent) throws ShardingException {
-    
+        INVOKES.put("begin", transactionEvent);
     }
     
     @Override
     public void commit(final ShardingTransactionEvent transactionEvent) throws ShardingException {
-    
+        INVOKES.put("commit", transactionEvent);
     }
     
     @Override
     public void rollback(final ShardingTransactionEvent transactionEvent) throws ShardingException {
-    
+        INVOKES.put("rollback", transactionEvent);
     }
     
     @Override

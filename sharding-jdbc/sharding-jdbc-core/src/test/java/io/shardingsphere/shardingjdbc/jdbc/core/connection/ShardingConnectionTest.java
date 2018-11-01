@@ -22,9 +22,14 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionManager;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionManager;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
@@ -82,6 +88,9 @@ public final class ShardingConnectionTest {
     public void clear() {
         try {
             connection.close();
+            TransactionTypeHolder.clear();
+            FixedXAShardingTransactionManager.getInvokes().clear();
+            FixedBaseShardingTransactionManager.getInvokes().clear();
         } catch (final SQLException ignore) {
         }
     }
@@ -101,5 +110,12 @@ public final class ShardingConnectionTest {
         Connection conn = connection.getConnection(DS_NAME);
         connection.release(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME));
+    }
+    
+    @Test
+    public void assertXATransactionAutoCommit() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        connection.setAutoCommit(false);
+        assertThat(FixedXAShardingTransactionManager.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
     }
 }
