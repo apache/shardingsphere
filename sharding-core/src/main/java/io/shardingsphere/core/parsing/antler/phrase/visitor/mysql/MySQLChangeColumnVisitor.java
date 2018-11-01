@@ -28,9 +28,16 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit MySQL change column phrase.
+ * 
+ * @author duhongjun
+ */
 public class MySQLChangeColumnVisitor implements PhraseVisitor {
 
-    /** Visit change column node.
+    /** 
+     * Visit change column node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */

@@ -35,6 +35,11 @@ import io.shardingsphere.core.parsing.antler.visitor.postgre.PostgreAlterIndexVi
 import io.shardingsphere.core.parsing.antler.visitor.postgre.PostgreAlterTableVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.sqlserver.SQLServerAlterTableVisitor;
 
+/**
+ * Visitor registry.
+ * 
+ * @author duhongjun
+ */
 public final class VisitorRegistry {
     private static VisitorRegistry instance = new VisitorRegistry();
 
@@ -47,6 +52,7 @@ public final class VisitorRegistry {
 
     /**
      * Get VisitorManager instance.
+     * 
      * @return VisitorManager instance
      */
     public static VisitorRegistry getInstance() {
@@ -54,7 +60,7 @@ public final class VisitorRegistry {
     }
 
     /**
-     * get statement visitor.
+     * Get statement visitor.
      * 
      * @param dbType database type,ex:mysql,postgre...
      * @param commandName SQL command name

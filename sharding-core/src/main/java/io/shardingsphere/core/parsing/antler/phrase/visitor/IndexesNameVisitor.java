@@ -26,9 +26,16 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
+/**
+ * Visit Multiple index name phrase.
+ * 
+ * @author duhongjun
+ */
 public class IndexesNameVisitor implements PhraseVisitor {
 
-    /** Visit indexes name table node.
+    /** 
+     * Visit indexes name table node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -42,5 +49,4 @@ public class IndexesNameVisitor implements PhraseVisitor {
         List<IndexToken> indicesToken = VisitorUtils.visitIndices(ancestorNode, tableName);
         statement.getSQLTokens().addAll(indicesToken);
     }
-
 }

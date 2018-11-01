@@ -20,6 +20,11 @@ package io.shardingsphere.core.parsing.antler.visitor.postgre;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexesNameVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisitor;
 
+/**
+ * Postgre drop index statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class PostgreDropIndexVisitor extends DDLStatementVisitor {
     public PostgreDropIndexVisitor() {
         addVisitor(new IndexesNameVisitor());

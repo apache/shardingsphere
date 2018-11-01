@@ -28,9 +28,16 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
+/**
+ * Visit drop column phrase.
+ * 
+ * @author duhongjun
+ */
 public class DropColumnVisitor implements PhraseVisitor {
 
-    /** Visit drop column node.
+    /** 
+     * Visit drop column node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -53,5 +60,4 @@ public class DropColumnVisitor implements PhraseVisitor {
             }
         }
     }
-
 }

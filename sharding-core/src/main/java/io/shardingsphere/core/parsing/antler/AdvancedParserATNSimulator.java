@@ -29,6 +29,12 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.dfa.DFAState;
 
+/**
+ * Advanced Parser ATN Simulator, failed calculating alt
+ * , try again with ID.
+ * 
+ * @author duhongjun
+ */
 public class AdvancedParserATNSimulator extends ParserATNSimulator {
     private int id;
 
@@ -42,6 +48,7 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
      * Performs ATN simulation to compute a predicted alternative based
      *  upon the remaining input, but also updates the DFA cache to avoid
      *  having to traverse the ATN again for the same input sequence.
+     *  
      * @param dfa antlr dfa instance
      * @param s0 start state
      * @param input input token stream
@@ -57,6 +64,16 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
         }
     }
 
+    /**
+     * Try again with ID.
+     * @param dfa antlr dfa instance
+     * @param s0 start state
+     * @param input input token stream
+     * @param startIndex  start index
+     * @param outerContext outer context
+     * @param e prior exception
+     * @return alternative path number
+     */
     private int tryExecByID(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext,
             final NoViableAltException e) {
         Token token = e.getOffendingToken();
@@ -83,14 +100,18 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
             commonToken.setType(previousType);
             throw e;
         }
-
     }
 
+    /**
+     * Cast Token to CommonToken.
+     * 
+     * @param token lexical token
+     * @return token is CommonToken,return CommonToken else return null
+     */
     private CommonToken castCommonToken(final Token token) {
         if (token instanceof CommonToken) {
             return (CommonToken) token;
         }
         return null;
     }
-
 }

@@ -26,6 +26,11 @@ import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
 import io.shardingsphere.parser.antlr.OracleStatementParser;
 
+/**
+ * Oracle statement parser.
+ * 
+ * @author duhongjun
+ */
 public class OracleStatementAdvancedParser extends OracleStatementParser {
 
     public OracleStatementAdvancedParser(final TokenStream input) {

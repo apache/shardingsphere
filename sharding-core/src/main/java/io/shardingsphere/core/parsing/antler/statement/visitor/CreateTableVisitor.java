@@ -29,7 +29,12 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNamesVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
-public class CreateTableVisitor extends AbstractStatementVisitor {
+/**
+ * create table statement visitor.
+ * 
+ * @author duhongjun
+ */
+public class CreateTableVisitor extends DDLStatementVisitor {
     public CreateTableVisitor() {
         addVisitor(new TableNamesVisitor());
         addVisitor(new ColumnDefinitionVisitor());

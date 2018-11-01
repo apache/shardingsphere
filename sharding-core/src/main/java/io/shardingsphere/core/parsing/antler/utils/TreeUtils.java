@@ -23,6 +23,11 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+/**
+ * Visit AST utils.
+ * 
+ * @author duhongjun
+ */
 public class TreeUtils {
     public static final String RULE_SUFFIX = "Context";
 

@@ -19,6 +19,11 @@ package io.shardingsphere.core.parsing.antler.statement.visitor;
 
 import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
 
+/**
+ * Statement with single table visitor.
+ * 
+ * @author duhongjun
+ */
 public class OnlySingleTableVisitor extends DDLStatementVisitor {
 
     public OnlySingleTableVisitor() {

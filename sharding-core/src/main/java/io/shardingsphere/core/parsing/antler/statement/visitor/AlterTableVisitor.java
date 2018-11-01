@@ -31,7 +31,12 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-public abstract class AlterTableVisitor extends AbstractStatementVisitor {
+/**
+ * Abstract statement visitor, get information by each phrase visitor.
+ * 
+ * @author duhongjun
+ */
+public abstract class AlterTableVisitor extends DDLStatementVisitor {
 
     public AlterTableVisitor() {
         addVisitor(new TableNamesVisitor());

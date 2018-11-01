@@ -26,6 +26,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * MySQL alter table statement.
+ * 
+ * @author duhongjun
+ */
 @Getter
 @Setter
 @ToString(callSuper = true)

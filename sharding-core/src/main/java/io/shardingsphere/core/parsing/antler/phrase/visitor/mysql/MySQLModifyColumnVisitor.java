@@ -26,9 +26,16 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatem
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit MySQL modify column phrase.
+ * 
+ * @author duhongjun
+ */
 public class MySQLModifyColumnVisitor extends ModifyColumnVisitor {
     
-    /** Visit modify column.
+    /** 
+     * Visit modify column.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */

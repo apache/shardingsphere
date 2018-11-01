@@ -25,6 +25,11 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit SQLServer add index phrase.
+ * 
+ * @author duhongjun
+ */
 public class SQLServerAddIndexVisitor implements PhraseVisitor {
 
     /**
@@ -48,5 +53,4 @@ public class SQLServerAddIndexVisitor implements PhraseVisitor {
                     .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
         }
     }
-
 }

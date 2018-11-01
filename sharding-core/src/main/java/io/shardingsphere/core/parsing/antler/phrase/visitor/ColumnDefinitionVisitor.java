@@ -29,9 +29,16 @@ import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
+/**
+ * Visit column definition phrase.
+ * 
+ * @author duhongjun
+ */
 public class ColumnDefinitionVisitor implements PhraseVisitor {
 
-    /** Visit column definition node.
+    /** 
+     * Visit column definition node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */

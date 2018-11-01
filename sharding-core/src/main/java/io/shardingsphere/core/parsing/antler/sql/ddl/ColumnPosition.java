@@ -20,6 +20,11 @@ package io.shardingsphere.core.parsing.antler.sql.ddl;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Record MySQL alter table column position.
+ * 
+ * @author duhongjun
+ */
 @Getter
 @Setter
 public class ColumnPosition implements Comparable<ColumnPosition> {
@@ -32,7 +37,9 @@ public class ColumnPosition implements Comparable<ColumnPosition> {
     private String afterColumn;
 
 
-    /**Compare by start index.
+    /**
+     * Compare by start index.
+     * 
      * @param o compare object
      * @return positive number this object great than o, 0 is equal,
      *       negative number less than o

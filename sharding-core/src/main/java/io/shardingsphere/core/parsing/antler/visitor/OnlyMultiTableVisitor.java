@@ -20,6 +20,11 @@ package io.shardingsphere.core.parsing.antler.visitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNamesVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisitor;
 
+/**
+ * Multiple table statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class OnlyMultiTableVisitor extends DDLStatementVisitor {
     public OnlyMultiTableVisitor() {
         addVisitor(new TableNamesVisitor());

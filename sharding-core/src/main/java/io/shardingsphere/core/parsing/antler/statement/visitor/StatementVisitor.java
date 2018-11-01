@@ -22,9 +22,16 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Statement visitor interface.
+ * 
+ * @author duhongjun
+ */
 public interface StatementVisitor {
     
-    /** Visit ast,generate statement.
+    /** 
+     * Visit ast,generate statement.
+     * 
      * @param rootNode root node of ast
      * @param shardingTableMetaData table meta data
      * @return SQL statement

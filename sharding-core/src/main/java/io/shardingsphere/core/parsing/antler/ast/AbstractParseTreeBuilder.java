@@ -25,6 +25,12 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
+/**
+ * Abstract tree builder, use template pattern, 
+ * sub class implement concrete method.
+ * 
+ * @author duhongjun
+ */
 public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
 
     /**
@@ -70,5 +76,4 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
      * @return SQL parse tree
      */
     protected abstract ParserRuleContext getParserTree(Parser parser);
-
 }

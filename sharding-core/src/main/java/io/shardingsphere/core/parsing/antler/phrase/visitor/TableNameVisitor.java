@@ -29,9 +29,16 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
 
+/**
+ * Visit single tableName phrase.
+ * 
+ * @author duhongjun
+ */
 public class TableNameVisitor implements PhraseVisitor {
 
-    /** Visit table name node.
+    /** 
+     * Visit table name node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -59,5 +66,4 @@ public class TableNameVisitor implements PhraseVisitor {
             statement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
         }
     }
-
 }

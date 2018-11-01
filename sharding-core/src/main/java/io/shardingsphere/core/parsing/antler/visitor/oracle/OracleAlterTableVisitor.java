@@ -24,6 +24,11 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.oracle.OracleDropPri
 import io.shardingsphere.core.parsing.antler.phrase.visitor.oracle.OracleModifyColumnVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 
+/**
+ * Oracle alter table statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class OracleAlterTableVisitor extends AlterTableVisitor {
     public OracleAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());

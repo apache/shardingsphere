@@ -29,11 +29,17 @@ import lombok.NoArgsConstructor;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+/**
+ * Use AST generate SQLStatement.
+ * 
+ * @author duhongjun
+ */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class StatementFactory {
     
     /**
      * Parse input to SQLStatement.
+     * 
      * @param dbType database type
      * @param tokenType token type
      * @param shardingRule databases and tables sharding rule
@@ -62,6 +68,7 @@ public final class StatementFactory {
 
     /**
      * Get SQL command name from ast.
+     * 
      * @param node
      * @return SQL command name
      */

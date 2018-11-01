@@ -22,6 +22,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Column definition.
+ * 
+ * @author duhongjun
+ */
 @AllArgsConstructor
 @Getter
 @Setter

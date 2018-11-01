@@ -27,6 +27,11 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit MySQL add index phrase.
+ * 
+ * @author duhongjun
+ */
 public class MySQLAddIndexVisitor implements PhraseVisitor {
 
     /**
@@ -53,5 +58,4 @@ public class MySQLAddIndexVisitor implements PhraseVisitor {
             }
         }
     }
-
 }

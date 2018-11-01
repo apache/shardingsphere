@@ -36,16 +36,19 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatem
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * MySQL alter table statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class MySQLAlterTableVisitor extends AlterTableVisitor {
     public MySQLAlterTableVisitor() {
         addVisitor(new MySQLAddColumnVisitor());
         addVisitor(new MySQLAddIndexVisitor());
         addVisitor(new MySQLDropIndexVisitor());
         addVisitor(new RenameIndexVisitor());
-
         addVisitor(new AddPrimaryKeyVisitor("addConstraint"));
         addVisitor(new DropPrimaryKeyVisitor());
-
         addVisitor(new MySQLChangeColumnVisitor());
         addVisitor(new MySQLModifyColumnVisitor());
     }

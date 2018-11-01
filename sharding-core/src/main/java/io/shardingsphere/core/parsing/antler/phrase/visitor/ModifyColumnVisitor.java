@@ -29,6 +29,11 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit modify column phrase.
+ * 
+ * @author duhongjun
+ */
 public class ModifyColumnVisitor implements PhraseVisitor {
 
     /**

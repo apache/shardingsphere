@@ -17,6 +17,11 @@
 
 package io.shardingsphere.core.parsing.antler.utils;
 
+/**
+ * Rule name constants used for visit AST.
+ * 
+ * @author duhongjun
+ */
 public class RuleNameConstants {
     
     public static final String COLUMN_DEFINITION = "columnDefinition";

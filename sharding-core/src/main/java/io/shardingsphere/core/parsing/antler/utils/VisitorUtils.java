@@ -27,6 +27,11 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
+/**
+ * Visitor utils.
+ * 
+ * @author duhongjun
+ */
 public class VisitorUtils {
     /**
      * Parse column definition.
@@ -147,7 +152,9 @@ public class VisitorUtils {
         return new IndexToken(startPos, name, tableName);
     }
 
-    /** Get name from text.
+    /** 
+     * Get name from text.
+     * 
      * @param text input text
      * @return object name
      */

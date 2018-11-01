@@ -26,6 +26,11 @@ import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
 import io.shardingsphere.parser.antlr.PostgreStatementParser;
 
+/**
+ * Postgre statement parser.
+ * 
+ * @author duhongjun
+ */
 public class PostgreStatementAdvancedParser extends PostgreStatementParser {
 
     public PostgreStatementAdvancedParser(final TokenStream input) {

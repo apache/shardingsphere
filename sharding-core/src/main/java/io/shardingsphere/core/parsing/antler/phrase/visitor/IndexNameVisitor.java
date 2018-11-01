@@ -25,9 +25,16 @@ import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 
+/**
+ * Visit index name phrase.
+ * 
+ * @author duhongjun
+ */
 public class IndexNameVisitor implements PhraseVisitor {
 
-    /** Visit index name table node.
+    /** 
+     * Visit index name table node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -44,5 +51,4 @@ public class IndexNameVisitor implements PhraseVisitor {
         }
         statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameCtx, tableName));
     }
-
 }

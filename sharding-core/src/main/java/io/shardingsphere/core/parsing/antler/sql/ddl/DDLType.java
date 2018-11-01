@@ -17,6 +17,11 @@
 
 package io.shardingsphere.core.parsing.antler.sql.ddl;
 
+/**
+ * DDL statement type.
+ * 
+ * @author duhongjun
+ */
 public enum DDLType {
     CREATETABLE, 
     ALTERTABLE, 

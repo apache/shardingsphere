@@ -20,6 +20,11 @@ package io.shardingsphere.core.parsing.antler.visitor.oracle;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexNameVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisitor;
 
+/**
+ * Oracle drop index statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class OracleDropIndexVisitor extends DDLStatementVisitor {
     public OracleDropIndexVisitor() {
         addVisitor(new IndexNameVisitor());

@@ -24,9 +24,16 @@ import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit rename table phrase.
+ * 
+ * @author duhongjun
+ */
 public class RenameTableVisitor implements PhraseVisitor {
 
-    /** Visit rename table node.
+    /** 
+     * Visit rename table node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -40,5 +47,4 @@ public class RenameTableVisitor implements PhraseVisitor {
             alterStatement.setNewTableName(renameTableNode.getChild(renameTableNode.getChildCount() - 1).getText());
         }
     }
-
 }

@@ -28,6 +28,12 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.misc.IntervalSet;
 
+/**
+ * Advanced Error Strategy, override sync method,when failed matching,
+ * try again with ID.
+ * 
+ * @author duhongjun
+ */
 public class AdvancedErrorStrategy extends DefaultErrorStrategy {
     private int id;
 
@@ -36,9 +42,11 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
         this.id = id;
     }
 
-    /** The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
+    /** 
+     * The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
      * that the current lookahead symbol is consistent with what were expecting
      * if failed to match keyword,use ID try again.
+     * 
      * @param recognizer the parser instance
      * @throws RecognitionException the recognition exception
      */
@@ -52,8 +60,8 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
             TokenStream tokens = recognizer.getInputStream();
             Token token = tokens.LT(1);
 
-            ATNState s = recognizer.getInterpreter().atn.states.get(recognizer.getState());
-            IntervalSet nextTokens = recognizer.getATN().nextTokens(s);
+            ATNState state = recognizer.getInterpreter().atn.states.get(recognizer.getState());
+            IntervalSet nextTokens = recognizer.getATN().nextTokens(state);
             if (nextTokens.contains(token.getType())) {
                 nextTokensContext = null;
                 nextTokensState = ATNState.INVALID_STATE_NUMBER;
@@ -80,6 +88,12 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
         }
     }
 
+    /**
+     * Try again with ID.
+     * 
+     * @param recognizer rule parser
+     * @param e prior exception
+     */
     private void tryExecByID(final Parser recognizer, final InputMismatchException e) {
         Token token = e.getOffendingToken();
         CommonToken commonToken = castCommonToken(token);
@@ -107,11 +121,16 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
         }
     }
 
+    /**
+     * Cast Token to CommonToken.
+     * 
+     * @param token lexical token
+     * @return token is CommonToken,return CommonToken else return null
+     */
     private CommonToken castCommonToken(final Token token) {
         if (token instanceof CommonToken) {
             return (CommonToken) token;
         }
         return null;
     }
-
 }

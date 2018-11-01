@@ -29,6 +29,11 @@ import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit SQLServer primary key phrase.
+ * 
+ * @author duhongjun
+ */
 public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
 
     /**

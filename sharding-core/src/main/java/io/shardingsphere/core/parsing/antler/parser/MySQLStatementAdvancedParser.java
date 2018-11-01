@@ -26,6 +26,11 @@ import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
 import io.shardingsphere.parser.antlr.MySQLStatementParser;
 
+/**
+ * MySQL statement parser.
+ * 
+ * @author duhongjun
+ */
 public class MySQLStatementAdvancedParser extends MySQLStatementParser {
 
     public MySQLStatementAdvancedParser(final TokenStream input) {

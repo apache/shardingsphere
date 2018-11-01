@@ -29,9 +29,16 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit oracle modify column phrase.
+ * 
+ * @author duhongjun
+ */
 public class OracleModifyColumnVisitor implements PhraseVisitor {
 
-    /** Visit modify column node.
+    /** 
+     * Visit modify column node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -60,5 +67,4 @@ public class OracleModifyColumnVisitor implements PhraseVisitor {
             }
         }
     }
-
 }

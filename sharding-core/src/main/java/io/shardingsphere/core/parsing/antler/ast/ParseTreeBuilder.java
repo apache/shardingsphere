@@ -19,9 +19,16 @@ package io.shardingsphere.core.parsing.antler.ast;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+/**
+ * Tree builder interface.
+ * 
+ * @author duhongjun
+ */
 public interface ParseTreeBuilder {
     
-    /** Parse input to ast.
+    /** 
+     * Parse input to ast.
+     * 
      * @param input SQL text
      * @return parse tree
      */

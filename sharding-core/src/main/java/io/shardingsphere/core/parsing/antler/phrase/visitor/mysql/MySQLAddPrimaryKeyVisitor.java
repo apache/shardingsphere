@@ -29,9 +29,16 @@ import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit MySQL add primary key phrase.
+ * 
+ * @author duhongjun
+ */
 public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
 
-    /** Visit add primary key node.
+    /** 
+     * Visit add primary key node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -65,5 +72,4 @@ public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
             }
         }
     }
-
 }

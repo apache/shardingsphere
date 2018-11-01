@@ -26,6 +26,11 @@ import org.antlr.v4.runtime.TokenStream;
 import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
 import io.shardingsphere.parser.antlr.OracleStatementLexer;
 
+/**
+ * Oracle tree builder, Create private lexer and parser.
+ * 
+ * @author duhongjun
+ */
 public class OracleStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /**
@@ -61,5 +66,4 @@ public class OracleStatementParseTreeBuilder extends AbstractParseTreeBuilder {
         OracleStatementAdvancedParser parse = (OracleStatementAdvancedParser) parser;
         return parse.execute();
     }
-
 }

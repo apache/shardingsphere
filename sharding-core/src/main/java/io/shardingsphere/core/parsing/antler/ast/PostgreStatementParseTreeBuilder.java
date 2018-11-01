@@ -26,6 +26,11 @@ import org.antlr.v4.runtime.TokenStream;
 import io.shardingsphere.core.parsing.antler.parser.PostgreStatementAdvancedParser;
 import io.shardingsphere.parser.antlr.PostgreStatementLexer;
 
+/**
+ * Postgre tree builder, Create private lexer and parser.
+ * 
+ * @author duhongjun
+ */
 public class PostgreStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /**
@@ -61,5 +66,4 @@ public class PostgreStatementParseTreeBuilder extends AbstractParseTreeBuilder {
         PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser) parser;
         return parse.execute();
     }
-
 }

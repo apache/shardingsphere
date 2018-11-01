@@ -24,6 +24,11 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerA
 import io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver.SQLServerDropIndexVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 
+/**
+ * SQLServer alter table statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class SQLServerAlterTableVisitor extends AlterTableVisitor {
     public SQLServerAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());

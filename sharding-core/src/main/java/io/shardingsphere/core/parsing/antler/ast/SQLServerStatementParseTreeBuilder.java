@@ -26,6 +26,11 @@ import org.antlr.v4.runtime.TokenStream;
 import io.shardingsphere.core.parsing.antler.parser.SQLServerStatementAdvancedParser;
 import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
 
+/**
+ * SQLServer tree builder, Create private lexer and parser.
+ * 
+ * @author duhongjun
+ */
 public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /**
@@ -61,5 +66,4 @@ public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder
         SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser) parser;
         return parse.execute();
     }
-
 }

@@ -26,11 +26,17 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Abstract statement visitor, get information by each phrase visitor.
+ * 
+ * @author duhongjun
+ */
 public abstract class AbstractStatementVisitor implements StatementVisitor {
     private List<PhraseVisitor> visitors = new ArrayList<>();
 
     /**
      * Visit ast, generate statement.
+     * 
      * @param rootNode root node of ast
      * @param shardingTableMetaData table metadata
      * @return SQL statement
@@ -64,6 +70,7 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
 
     /**
      * Create statement.
+     * 
      * @return empty SQL statment
      */
     protected abstract SQLStatement newStatement();
@@ -71,6 +78,7 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
     
     /**
      * Use shardingTableMetaData create SQLStatement.
+     * 
      * @param shardingTableMetaData table metadata
      * @return SQL statement info
      */

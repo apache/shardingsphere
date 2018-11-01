@@ -23,6 +23,11 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.ModifyColumnVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.RenameColumnVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 
+/**
+ * Postgre alter table statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class PostgreAlterTableVisitor extends AlterTableVisitor {
     public PostgreAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());

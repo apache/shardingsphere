@@ -21,8 +21,16 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit phrase interface.
+ * 
+ * @author duhongjun
+ */
 public interface PhraseVisitor {
-    /** Visit ast.
+   
+    /**
+     *  Visit ast.
+     *  
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */

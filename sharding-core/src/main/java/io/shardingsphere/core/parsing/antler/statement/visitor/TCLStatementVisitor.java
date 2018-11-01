@@ -20,11 +20,15 @@ package io.shardingsphere.core.parsing.antler.statement.visitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
+/**
+ * TCL Statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class TCLStatementVisitor extends AbstractStatementVisitor {
 
     @Override
     protected SQLStatement newStatement() {
         return new TCLStatement();
     }
-
 }

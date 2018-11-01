@@ -20,9 +20,16 @@ package io.shardingsphere.core.parsing.antler.statement.visitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 
+/**
+ * create table statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class DDLStatementVisitor extends AbstractStatementVisitor {
 
-    /** Create ddl statement.
+    /** 
+     * Create ddl statement.
+     * 
      * @return empty sql statment
      */
     @Override

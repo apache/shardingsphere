@@ -28,9 +28,16 @@ import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.rule.ShardingRule;
 
+/**
+ * Parser Tree factiry, parse SQL, generate AST.
+ * 
+ * @author duhongjun
+ */
 public class ParseTreeFactory {
     
-    /** Get DDL table statement parser.
+    /** 
+     * Get DDL table statement parser.
+     * 
      * @param dbType database type.
      * @param tokenType token type.
      * @param shardingRule databases and tables sharding rule.
@@ -53,5 +60,4 @@ public class ParseTreeFactory {
                 throw new SQLParsingUnsupportedException(tokenType);
         }
     }
-
 }

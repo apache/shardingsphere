@@ -28,11 +28,19 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Visit add primary key phrase.
+ * 
+ * @author duhongjun
+ */
 @RequiredArgsConstructor
 public class AddPrimaryKeyVisitor implements PhraseVisitor {
+    
     private final String ruleName;
 
-    /** Visit add primary key node.
+    /** 
+     * Visit add primary key node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */

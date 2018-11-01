@@ -30,6 +30,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Alter table statement.
+ * 
+ * @author duhongjun
+ */
 @Getter
 @Setter
 @ToString(callSuper = true)

@@ -20,6 +20,11 @@ package io.shardingsphere.core.parsing.antler.visitor.postgre;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexesNameVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisitor;
 
+/**
+ * Postgre alter index statement visitor.
+ * 
+ * @author duhongjun
+ */
 public class PostgreAlterIndexVisitor extends DDLStatementVisitor {
     public PostgreAlterIndexVisitor() {
         addVisitor(new IndexesNameVisitor());

@@ -26,6 +26,11 @@ import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
 import io.shardingsphere.parser.antlr.SQLServerStatementParser;
 
+/**
+ * SQLServer statement parser.
+ * 
+ * @author duhongjun
+ */
 public class SQLServerStatementAdvancedParser extends SQLServerStatementParser {
 
     public SQLServerStatementAdvancedParser(final TokenStream input) {

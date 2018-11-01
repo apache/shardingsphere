@@ -20,11 +20,15 @@ package io.shardingsphere.core.parsing.antler.statement.visitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexNameVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
 
+/**
+ * Statement with table and index visitor.
+ * 
+ * @author duhongjun
+ */
 public class IndexWithTableStatementVisitor extends DDLStatementVisitor {
     
     public IndexWithTableStatementVisitor() {
         addVisitor(new TableNameVisitor());
         addVisitor(new IndexNameVisitor());
     }
-
 }

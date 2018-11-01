@@ -26,6 +26,11 @@ import org.antlr.v4.runtime.TokenStream;
 import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
 import io.shardingsphere.parser.antlr.MySQLStatementLexer;
 
+/**
+ * MySQL tree builder, Create private lexer and parser.
+ * 
+ * @author duhongjun
+ */
 public class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
 
     /**
@@ -61,5 +66,4 @@ public class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
         MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser) parser;
         return parse.execute();
     }
-
 }

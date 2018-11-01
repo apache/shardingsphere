@@ -26,10 +26,16 @@ import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
+/**
+ * Visit create table primary key  phrase.
+ * 
+ * @author duhongjun
+ */
 public class CreatePrimaryKeyVisitor implements PhraseVisitor {
 
     /**
      * Visit ast.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -58,5 +64,4 @@ public class CreatePrimaryKeyVisitor implements PhraseVisitor {
             }
         }
     }
-
 }

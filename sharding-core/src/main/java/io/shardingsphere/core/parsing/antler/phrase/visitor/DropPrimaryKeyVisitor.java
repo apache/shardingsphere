@@ -24,9 +24,16 @@ import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+/**
+ * Visit drop primary key phrase.
+ * 
+ * @author duhongjun
+ */
 public class DropPrimaryKeyVisitor implements PhraseVisitor {
 
-    /** Visit drop primary key node.
+    /** 
+     * Visit drop primary key node.
+     * 
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
@@ -40,5 +47,4 @@ public class DropPrimaryKeyVisitor implements PhraseVisitor {
             alterStatement.setDropPrimaryKey(true);
         }
     }
-
 }
