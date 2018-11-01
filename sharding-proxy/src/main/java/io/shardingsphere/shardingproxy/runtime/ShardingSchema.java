@@ -59,15 +59,24 @@ public final class ShardingSchema {
     
     private ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, 
-                          final ShardingRuleConfiguration shardingRule, final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         this.shardingRule = getShardingRule(shardingRule, isUsingRegistry);
+        masterSlaveRule = null;
+        backendDataSource = new JDBCBackendDataSource(dataSources);
+    }
+    
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
+        this.name = name;
+        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
+        this.dataSources = dataSources;
+        shardingRule = null;
         this.masterSlaveRule = getMasterSlaveRule(masterSlaveRule, isUsingRegistry);
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
+    
     
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet())
