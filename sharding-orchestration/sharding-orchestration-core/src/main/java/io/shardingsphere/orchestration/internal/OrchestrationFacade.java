@@ -90,6 +90,10 @@ public final class OrchestrationFacade implements AutoCloseable {
         listenerManager.initListeners();
     }
     
+    /**
+     * Initialize for orchestration.
+     *
+     */
     public void init() {
         instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
