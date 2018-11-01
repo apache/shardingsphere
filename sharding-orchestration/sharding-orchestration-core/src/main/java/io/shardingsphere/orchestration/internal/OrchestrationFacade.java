@@ -85,7 +85,7 @@ public final class OrchestrationFacade implements AutoCloseable {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
             configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, prop, isOverwrite);
         }
-        instanceStateService.persistProxyInstanceOnline();
+        instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
         listenerManager.initProxyListeners();
     }
