@@ -18,10 +18,10 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -61,14 +61,11 @@ public final class ComFieldListPacketTest {
     @Mock
     private BackendHandler backendHandler;
     
-    @Mock
-    private FrontendHandler frontendHandler;
-    
     @Test
     public void assertWrite() {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        ComFieldListPacket actual = new ComFieldListPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComFieldListPacket actual = new ComFieldListPacket(1, 1000, ShardingConstant.LOGIC_SCHEMA_NAME, payload, backendConnection);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
@@ -83,7 +80,7 @@ public final class ComFieldListPacketTest {
         when(backendHandler.next()).thenReturn(true, false);
         when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
         when(backendHandler.execute()).thenReturn(new CommandResponsePackets(new FieldCountPacket(1, 1)));
-        ComFieldListPacket packet = new ComFieldListPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComFieldListPacket packet = new ComFieldListPacket(1, 1000, ShardingConstant.LOGIC_SCHEMA_NAME, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -109,7 +106,7 @@ public final class ComFieldListPacketTest {
         when(payload.readStringEOF()).thenReturn("-");
         CommandResponsePackets expected = new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown"));
         when(backendHandler.execute()).thenReturn(expected);
-        ComFieldListPacket packet = new ComFieldListPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComFieldListPacket packet = new ComFieldListPacket(1, 1000, ShardingConstant.LOGIC_SCHEMA_NAME, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
