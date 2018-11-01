@@ -19,7 +19,9 @@ package io.shardingsphere.orchestration.internal.config;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.orchestration.internal.event.config.ConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
@@ -29,6 +31,7 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Configuration listener manager.
@@ -116,21 +119,22 @@ public final class ConfigurationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    if (configService.isShardingRule(shardingSchemaName)) {
-                        Map<String, DataSourceConfiguration> dataSourceParameterMap = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
-                        ShardingConfigurationChangedEvent shardingEvent = new ShardingConfigurationChangedEvent(
-                                shardingSchemaName, dataSourceParameterMap,
-                                new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceParameterMap.keySet()), 
-                                configService.loadAuthentication(), configService.loadProperties());
-                        ShardingEventBusInstance.getInstance().post(shardingEvent);
-                    } else {
-                        MasterSlaveConfigurationChangedEvent masterSlaveEvent = new MasterSlaveConfigurationChangedEvent(
-                                shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName),
-                                dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName),
-                                configService.loadAuthentication(), configService.loadProperties());
-                        ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
-                    }
+                    Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
+                    Authentication authentication = configService.loadAuthentication();
+                    Properties props = configService.loadProperties();
+                    ShardingEventBusInstance.getInstance().post(configService.isShardingRule(shardingSchemaName)
+                            ? getShardingEvent(dataSourceConfigurations, authentication, props) : getMasterSlaveEvent(dataSourceConfigurations, authentication, props));
                 }
+            }
+            
+            private ConfigurationChangedEvent getShardingEvent(final Map<String, DataSourceConfiguration> dataSourceConfigurations, final Authentication authentication, final Properties props) {
+                return new ShardingConfigurationChangedEvent(shardingSchemaName, dataSourceConfigurations,
+                        new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceConfigurations.keySet()), authentication, props);
+            }
+            
+            private ConfigurationChangedEvent getMasterSlaveEvent(final Map<String, DataSourceConfiguration> dataSourceConfigurations, final Authentication authentication, final Properties props) {
+                return new MasterSlaveConfigurationChangedEvent(shardingSchemaName, dataSourceConfigurations,
+                        dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), authentication, props);
             }
         });
     }

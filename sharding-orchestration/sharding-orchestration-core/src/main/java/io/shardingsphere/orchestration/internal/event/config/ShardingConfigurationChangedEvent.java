@@ -21,7 +21,6 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 import java.util.Properties;
@@ -31,17 +30,14 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingConfigurationChangedEvent {
-    
-    private final String schemaName;
-    
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+public final class ShardingConfigurationChangedEvent extends ConfigurationChangedEvent {
     
     private final ShardingRule shardingRule;
     
-    private final Authentication authentication;
-    
-    private final Properties props;
+    public ShardingConfigurationChangedEvent(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, 
+                                             final ShardingRule shardingRule, final Authentication authentication, final Properties props) {
+        super(schemaName, dataSourceConfigurations, authentication, props);
+        this.shardingRule = shardingRule;
+    }
 }
