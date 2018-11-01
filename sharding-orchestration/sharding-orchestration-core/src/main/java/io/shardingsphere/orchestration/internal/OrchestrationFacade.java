@@ -17,9 +17,7 @@
 
 package io.shardingsphere.orchestration.internal;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -71,40 +69,6 @@ public final class OrchestrationFacade implements AutoCloseable {
         } else {
             listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
         }
-    }
-    
-    /**
-     * Initialize for sharding orchestration.
-     *
-     * @param shardingSchemaName sharding schema name
-     * @param dataSourceConfigurations data source configuration map
-     * @param shardingRuleConfig sharding rule configuration
-     * @param configMap config map
-     * @param props sharding properties
-     */
-    public void init(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, 
-                     final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) {
-        configService.persistConfiguration(shardingSchemaName, dataSourceConfigurations, shardingRuleConfig, null, configMap, props, isOverwrite);
-        instanceStateService.persistShardingInstanceOnline();
-        dataSourceService.persistDataSourcesNode();
-        listenerManager.initShardingListeners();
-    }
-    
-    /**
-     * Initialize for master-slave orchestration.
-     * 
-     * @param shardingSchemaName sharding schema name
-     * @param dataSourceConfigurations data source configuration map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap config map
-     * @param props properties
-     */
-    public void init(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, 
-                     final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
-        configService.persistConfiguration(shardingSchemaName, dataSourceConfigurations, masterSlaveRuleConfig, null, configMap, props, isOverwrite);
-        instanceStateService.persistMasterSlaveInstanceOnline();
-        dataSourceService.persistDataSourcesNode();
-        listenerManager.initMasterSlaveListeners();
     }
     
     /**
