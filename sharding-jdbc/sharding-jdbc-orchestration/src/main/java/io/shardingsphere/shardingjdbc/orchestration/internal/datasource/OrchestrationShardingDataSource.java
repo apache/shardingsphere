@@ -62,7 +62,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
                 new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()),
                 configService.loadConfigMap(), configService.loadProperties());
-        getOrchestrationFacade().getListenerManager().initShardingListeners();
+        getOrchestrationFacade().getListenerManager().initListeners();
     }
     
     private void initOrchestrationFacade() {
