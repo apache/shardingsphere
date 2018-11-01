@@ -52,7 +52,7 @@ public final class DataSourceListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new ProxyDisabledStateEventBusEvent(dataSourceService.getProxyDisabledDataSourceNames()));
+                    ShardingEventBusInstance.getInstance().post(new ProxyDisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
                 }
             }
         });
