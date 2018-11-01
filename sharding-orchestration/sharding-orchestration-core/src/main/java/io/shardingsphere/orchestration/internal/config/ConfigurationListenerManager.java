@@ -60,53 +60,6 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchSharding() {
-        watchSharding(configNode.getDataSourcePath(shardingSchemaName));
-        watchSharding(configNode.getRulePath(shardingSchemaName));
-        watchSharding(configNode.getPropsPath());
-        // TODO watch config map
-    }
-    
-    private void watchSharding(final String path) {
-        regCenter.watch(path, new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSourceConfiguration> availableDataSourceConfigurations = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
-                    ShardingConfigurationChangedEvent shardingEvent = new ShardingConfigurationChangedEvent(
-                            shardingSchemaName, availableDataSourceConfigurations, new ShardingRule(
-                                    dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), availableDataSourceConfigurations.keySet()), null, configService.loadProperties());
-                    ShardingEventBusInstance.getInstance().post(shardingEvent);
-                }
-            }
-        });
-    }
-    
-    @Override
-    public void watchMasterSlave() {
-        watchMasterSlave(configNode.getDataSourcePath(shardingSchemaName));
-        watchMasterSlave(configNode.getRulePath(shardingSchemaName));
-        watchMasterSlave(configNode.getPropsPath());
-        // TODO watch config map
-    }
-    
-    private void watchMasterSlave(final String path) {
-        regCenter.watch(path, new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    MasterSlaveConfigurationChangedEvent masterSlaveEvent = new MasterSlaveConfigurationChangedEvent(shardingSchemaName, 
-                            dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName),
-                            dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), null, configService.loadProperties());
-                    ShardingEventBusInstance.getInstance().post(masterSlaveEvent);
-                }
-            }
-        });
-    }
-    
-    @Override
     public void watchProxy() {
         watchProxy(configNode.getDataSourcePath(shardingSchemaName));
         watchProxy(configNode.getRulePath(shardingSchemaName));
