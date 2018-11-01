@@ -77,7 +77,6 @@ public final class ShardingSchema {
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
     
-    
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSources.keySet()) : new ShardingRule(shardingRule, dataSources.keySet());
     }
