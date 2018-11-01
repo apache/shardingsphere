@@ -79,14 +79,10 @@ public final class ShardingSchema {
     
     
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet())
-                : new ShardingRule(null == shardingRule ? new ShardingRuleConfiguration() : shardingRule, dataSources.keySet());
+        return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSources.keySet()) : new ShardingRule(shardingRule, dataSources.keySet());
     }
     
     private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
-        if (null == masterSlaveRule) {
-            return null;
-        }
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
     }
     
