@@ -47,32 +47,6 @@ public final class DataSourceListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchSharding() {
-        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
-                }
-            }
-        });
-    }
-    
-    @Override
-    public void watchMasterSlave() {
-        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledDataSourceNames()));
-                }
-            }
-        });
-    }
-    
-    @Override
     public void watchProxy() {
         regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
             
