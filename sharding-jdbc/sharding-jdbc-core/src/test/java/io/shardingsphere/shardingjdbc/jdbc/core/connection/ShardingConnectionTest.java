@@ -113,9 +113,13 @@ public final class ShardingConnectionTest {
     }
     
     @Test
-    public void assertXATransactionAutoCommit() throws SQLException {
+    public void assertXATransactionOperation() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
         connection.setAutoCommit(false);
         assertThat(FixedXAShardingTransactionManager.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        connection.commit();
+        assertThat(FixedXAShardingTransactionManager.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        connection.rollback();
+        assertThat(FixedXAShardingTransactionManager.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
     }
 }
