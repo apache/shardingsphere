@@ -22,12 +22,15 @@ import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfigurat
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * Server configuration for yaml.
  * 
  * @author chenqingyang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -38,4 +41,6 @@ public final class ProxyYamlServerConfiguration {
     private YamlOrchestrationConfiguration orchestration;
     
     private Properties props = new Properties();
+    
+    private Map<String, Object> configMap = new LinkedHashMap<>();
 }
