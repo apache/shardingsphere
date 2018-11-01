@@ -98,6 +98,6 @@ public final class ShardingSchema {
      * @return is master slave only
      */
     public boolean isMasterSlaveOnly() {
-        return shardingRule.getTableRules().isEmpty() && null != masterSlaveRule;
+        return (null == shardingRule || shardingRule.getTableRules().isEmpty()) && null != masterSlaveRule;
     }
 }
