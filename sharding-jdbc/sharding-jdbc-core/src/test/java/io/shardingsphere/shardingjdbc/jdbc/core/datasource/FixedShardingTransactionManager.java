@@ -19,32 +19,33 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.transaction.ShardingTransactionManager;
 
 public final class FixedShardingTransactionManager implements ShardingTransactionManager {
     
     @Override
-    public void begin(final ShardingTransactionEvent transactionEvent) {
+    public void begin(final ShardingTransactionEvent transactionEvent) throws ShardingException {
     
     }
     
     @Override
-    public void commit(final ShardingTransactionEvent transactionEvent) {
+    public void commit(final ShardingTransactionEvent transactionEvent) throws ShardingException {
     
     }
     
     @Override
-    public void rollback(final ShardingTransactionEvent transactionEvent) {
+    public void rollback(final ShardingTransactionEvent transactionEvent) throws ShardingException {
     
     }
     
     @Override
-    public int getStatus() {
+    public int getStatus() throws ShardingException {
         return 0;
     }
     
     @Override
     public TransactionType getTransactionType() {
-        return TransactionType.XA;
+        return null;
     }
 }

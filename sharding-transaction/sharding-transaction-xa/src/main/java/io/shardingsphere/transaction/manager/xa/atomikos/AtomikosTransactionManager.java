@@ -34,7 +34,6 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import java.sql.SQLException;
 
 /**
  * Atomikos XA transaction manager.
@@ -61,38 +60,38 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void begin(final XATransactionEvent event) throws SQLException {
+    public void begin(final XATransactionEvent event) throws ShardingException {
         try {
             USER_TRANSACTION_MANAGER.begin();
         } catch (final SystemException | NotSupportedException ex) {
-            throw new SQLException(ex);
+            throw new ShardingException(ex);
         }
     }
     
     @Override
-    public void commit(final XATransactionEvent event) throws SQLException {
+    public void commit(final XATransactionEvent event) throws ShardingException {
         try {
             USER_TRANSACTION_MANAGER.commit();
         } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
-            throw new SQLException(ex);
+            throw new ShardingException(ex);
         }
     }
     
     @Override
-    public void rollback(final XATransactionEvent event) throws SQLException {
+    public void rollback(final XATransactionEvent event) throws ShardingException {
         try {
             USER_TRANSACTION_MANAGER.rollback();
         } catch (final SystemException ex) {
-            throw new SQLException(ex);
+            throw new ShardingException(ex);
         }
     }
     
     @Override
-    public int getStatus() throws SQLException {
+    public int getStatus() throws ShardingException {
         try {
             return USER_TRANSACTION_MANAGER.getStatus();
         } catch (final SystemException ex) {
-            throw new SQLException(ex);
+            throw new ShardingException(ex);
         }
     }
     
