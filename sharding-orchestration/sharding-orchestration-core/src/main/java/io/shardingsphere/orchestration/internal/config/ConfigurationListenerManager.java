@@ -60,13 +60,13 @@ public final class ConfigurationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchProxy() {
-        watchProxy(configNode.getDataSourcePath(shardingSchemaName));
-        watchProxy(configNode.getRulePath(shardingSchemaName));
-        watchProxy(configNode.getPropsPath());
+    public void watch() {
+        watch(configNode.getDataSourcePath(shardingSchemaName));
+        watch(configNode.getRulePath(shardingSchemaName));
+        watch(configNode.getPropsPath());
     }
     
-    private void watchProxy(final String path) {
+    private void watch(final String path) {
         regCenter.watch(path, new EventListener() {
             
             @Override
