@@ -29,10 +29,8 @@ import io.shardingsphere.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,23 +114,6 @@ public final class DataSourceService {
         }
         for (String each : disabledDataSourceNames) {
             result.getSlaveDataSourceNames().remove(each);
-        }
-        return result;
-    }
-    
-    /**
-     * Get disabled data source names.
-     *
-     * @return disabled data source names
-     */
-    public Collection<String> getDisabledDataSourceNames() {
-        Collection<String> result = new HashSet<>();
-        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        for (String each : dataSources) {
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
-                result.add(each);
-            }
         }
         return result;
     }
