@@ -64,11 +64,8 @@ public final class OrchestrationFacade implements AutoCloseable {
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
-        if (shardingSchemaNames.isEmpty()) {
-            listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames());
-        } else {
-            listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
-        }
+        listenerManager = shardingSchemaNames.isEmpty() ? new ListenerFactory(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
+                : new ListenerFactory(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
     }
     
     /**
@@ -78,12 +75,12 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param schemaRuleMap schema rule map
      * @param authentication authentication
      * @param configMap config Map
-     * @param prop properties
+     * @param props properties
      */
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
-                     final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication, final Map<String, Object> configMap, final Properties prop) {
+                     final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, prop, isOverwrite);
+            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, isOverwrite);
         }
         instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
@@ -92,7 +89,6 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     /**
      * Initialize for orchestration.
-     *
      */
     public void init() {
         instanceStateService.persistInstanceOnline();

@@ -47,13 +47,6 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     
     private ShardingDataSource dataSource;
     
-    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
-        dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
-                shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
-        initOrchestrationFacade();
-    }
-    
     public OrchestrationShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
@@ -65,7 +58,10 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         getOrchestrationFacade().init();
     }
     
-    private void initOrchestrationFacade() {
+    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
+        dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+                shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
         getOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
@@ -78,10 +74,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     
     @Override
     public final Connection getConnection() {
-        if (isCircuitBreak()) {
-            return new CircuitBreakerDataSource().getConnection();
-        }
-        return dataSource.getConnection();
+        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
     }
     
     @Override

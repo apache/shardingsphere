@@ -38,7 +38,7 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConv
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -50,14 +50,6 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     
     private MasterSlaveDataSource dataSource;
     
-    public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), masterSlaveDataSource.getDataSourceMap());
-        dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(), 
-                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
-                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties());
-        initOrchestrationFacade();
-    }
-    
     public OrchestrationMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
@@ -68,26 +60,26 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         getOrchestrationFacade().init();
     }
     
-    private void initOrchestrationFacade() {
+    public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), masterSlaveDataSource.getDataSourceMap());
+        dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
+                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
+                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties());
         getOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(),
-                masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
-        Map<String, RuleConfiguration> ruleConfigurationMap = new LinkedHashMap<>();
-        ruleConfigurationMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
-        return ruleConfigurationMap;
+        Map<String, RuleConfiguration> result = new HashMap<>();
+        result.put(ShardingConstant.LOGIC_SCHEMA_NAME, new MasterSlaveRuleConfiguration(
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
+        return result;
     }
     
     @Override
     public final Connection getConnection() {
-        if (isCircuitBreak()) {
-            return new CircuitBreakerDataSource().getConnection();
-        }
-        return dataSource.getConnection();
+        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
     }
     
     @Override
@@ -99,8 +91,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     /**
      * Renew master-slave data source.
      *
-     * @param masterSlaveEvent master slave configuration event bus event
-     * @throws SQLException sql exception
+     * @param masterSlaveEvent master-slave configuration changed event
+     * @throws SQLException SQL exception
      */
     @Subscribe
     public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) throws SQLException {
