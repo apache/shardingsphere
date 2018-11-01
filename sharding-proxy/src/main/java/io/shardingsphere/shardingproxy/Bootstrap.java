@@ -36,7 +36,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -107,7 +106,7 @@ public final class Bootstrap {
                 }
             }
             GlobalRegistry.getInstance().init(
-                    schemaDataSourceParameterMap, schemaRules, orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadProperties(), true);
+                    schemaDataSourceParameterMap, schemaRules, orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(), orchestrationFacade.getConfigService().loadProperties(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
@@ -118,7 +117,7 @@ public final class Bootstrap {
         if (ruleConfigs.isEmpty()) {
             orchestrationFacade.init();
         } else {
-            orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), Collections.<String, Object>emptyMap(), serverConfig.getProps());
+            orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getConfigMap(), serverConfig.getProps());
         }
     }
     
