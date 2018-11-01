@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.runtime;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -32,7 +33,6 @@ import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigur
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
@@ -43,6 +43,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -230,21 +231,21 @@ public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataS
      * @param disabledStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            DisabledStateEventBusEvent disabledEvent = new DisabledStateEventBusEvent(getDisabledDataSourceNames(entry.getKey(), disabledStateEventBusEvent.getDisabledSchemaDataSourceMap()));
-            if (entry.getValue().isMasterSlaveOnly()) {
-                renewShardingSchemaWithMasterSlaveRule(entry.getValue(), disabledEvent);
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        Map<String, Collection<String>> disabledSchemaDataSourceMap = disabledStateEventBusEvent.getDisabledSchemaDataSourceMap();
+        for (String each : disabledSchemaDataSourceMap.keySet()) {
+            DisabledStateEventBusEvent eventBusEvent = new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, disabledSchemaDataSourceMap.get(each)));
+            if (shardingSchemas.get(each).isMasterSlaveOnly()) {
+                renewShardingSchemaWithMasterSlaveRule(shardingSchemas.get(each), eventBusEvent);
             } else {
-                renewShardingSchemaWithShardingRule(entry.getValue(), disabledEvent);
+                renewShardingSchemaWithShardingRule(shardingSchemas.get(each), eventBusEvent);
             }
         }
     }
     
-    private Collection<String> getDisabledDataSourceNames(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
-        Collection<String> result = new LinkedList<>();
+    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
         if (disabledSchemaDataSourceMap.containsKey(shardingSchemaName)) {
-            result.addAll(disabledSchemaDataSourceMap.get(shardingSchemaName));
+        
         }
         return result;
     }
