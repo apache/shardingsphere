@@ -20,13 +20,15 @@ package io.shardingsphere.shardingproxy.frontend;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandlerFactoryTest;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroupTest;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroupTest;
+import io.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        FrontendHandlerFactoryTest.class, 
+        FrontendHandlerFactoryTest.class,
+        MySQLFrontendHandlerTest.class, 
         ExecutorGroupTest.class, 
         ChannelThreadExecutorGroupTest.class
 })
