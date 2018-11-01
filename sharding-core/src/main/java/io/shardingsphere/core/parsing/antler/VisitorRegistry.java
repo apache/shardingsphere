@@ -71,28 +71,58 @@ public final class VisitorRegistry {
     }
     
     /**
-     * Register ddl statement visitor
+     * Register DDL statement visitor.
      */
     private void registerDDLVisitor() {
+        registerCommonDDL();
+        registerMySQLDDL();
+        registerOracleDDL();
+        registerSQLServerDDL();
+        registerPostgreDDL();
+    }
+    
+    /**
+     * Register common DDL visitor.
+     */
+    private void registerCommonDDL() {
         visitors.put("CreateTable", new CreateTableVisitor());
         visitors.put("DropTable", new OnlySingleTableVisitor());
         visitors.put("TruncateTable", new OnlySingleTableVisitor());
-        
         visitors.put("CreateIndex", new IndexWithTableStatementVisitor());
-        
+    }
+    
+    /**
+     *  Register MySQL private DDL visitor.
+     */
+    private void registerMySQLDDL() {
         visitors.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
         visitors.put(DatabaseType.MySQL + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.MySQL + "DropIndex", new IndexWithTableStatementVisitor());
-        
+    }
+    
+    /**
+     *  Register oracle private DDL visitor.
+     */
+    private void registerOracleDDL() {
         visitors.put(DatabaseType.Oracle + "AlterTable", new OracleAlterTableVisitor());
         visitors.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
         visitors.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
+    }
 
+    /**
+     *  Register SQLServer private DDL visitor.
+     */
+    private void registerSQLServerDDL() {
         visitors.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
         visitors.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());
         visitors.put(DatabaseType.SQLServer + "AlterIndex", new IndexWithTableStatementVisitor());
-        
+    }
+    
+    /**
+     *  Register postgre private DDL visitor.
+     */
+    private void registerPostgreDDL() {
         visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreAlterTableVisitor());
         visitors.put(DatabaseType.PostgreSQL + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
@@ -101,7 +131,7 @@ public final class VisitorRegistry {
     }
     
     /**
-     * Register tcl statement visitor
+     * Register TCL statement visitor.
      */
     private void registerTCLVisitor() {
         visitors.put("SetTransaction", new TCLStatementVisitor());
