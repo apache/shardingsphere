@@ -49,7 +49,7 @@ public final class StatementFactory {
         }
         
         ParserRuleContext rootNode = ParseTreeFactory.getTableDDLParser(execDbType, tokenType, shardingRule, sql);
-        if (rootNode != null) {
+        if (null != rootNode) {
             String commandName = getCommandName(rootNode);
             StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(execDbType, commandName);
             if (null != visitor) {

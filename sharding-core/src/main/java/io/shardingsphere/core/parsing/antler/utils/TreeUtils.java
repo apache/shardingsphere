@@ -100,7 +100,7 @@ public class TreeUtils {
 
         for (final ParserRuleContext child : childNodes) {
             List<ParserRuleContext> retChilds = getAllDescendantByRuleName(child, name);
-            if (retChilds != null) {
+            if (null != retChilds) {
                 childs.addAll(retChilds);
             }
         }

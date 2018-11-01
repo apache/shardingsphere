@@ -50,7 +50,7 @@ public class VisitorUtils {
                 RuleNameConstants.DATA_TYPE);
 
         String typeName = null;
-        if (dataTypeCtx != null) {
+        if (null != dataTypeCtx) {
             typeName = dataTypeCtx.getChild(0).getText();
         }
 
@@ -98,7 +98,7 @@ public class VisitorUtils {
         ColumnPosition columnPosition = new ColumnPosition();
         columnPosition.setStartIndex(firstOrAfterColumnCtx.getStart().getStartIndex());
 
-        if (columnNameCtx != null) {
+        if (null != columnNameCtx) {
             columnPosition.setColumnName(columnName);
             columnPosition.setAfterColumn(columnNameCtx.getText());
         } else {

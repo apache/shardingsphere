@@ -63,7 +63,7 @@ public final class VisitorRegistry {
     public StatementVisitor getVisitor(final DatabaseType dbType, final String commandName) {
         String key = dbType.name() + commandName;
         StatementVisitor visitor = visitors.get(key);
-        if (visitor != null) {
+        if (null != visitor) {
             return visitor;
         }
 

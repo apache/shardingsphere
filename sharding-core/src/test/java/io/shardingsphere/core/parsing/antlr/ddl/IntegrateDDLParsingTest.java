@@ -100,7 +100,7 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
     @Test
     public void assertSupportedSQL() {
         ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
-        if (parserResult != null) {
+        if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
             DatabaseType execDatabaseType = databaseType;
             if (DatabaseType.H2 == databaseType) {

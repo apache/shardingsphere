@@ -76,7 +76,7 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
         }
 
         for (ColumnPosition each : mysqlAlter.getPositionChangedColumns()) {
-            if (each.getFirstColumn() != null) {
+            if (null != each.getFirstColumn()) {
                 adjustFirst(newColumnMeta, each.getFirstColumn());
             } else {
                 adjustAfter(newColumnMeta, each);
