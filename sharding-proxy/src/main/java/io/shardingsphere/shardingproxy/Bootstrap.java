@@ -21,7 +21,6 @@ import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.opentracing.ShardingTracer;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
@@ -144,13 +143,11 @@ public final class Bootstrap {
         return result;
     }
     
-    private static Map<String, YamlRuleConfiguration> getRuleConfiguration(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
-        Map<String, YamlRuleConfiguration> result = new HashMap<>();
+    private static Map<String, RuleConfiguration> getRuleConfiguration(final Map<String, ProxyYamlRuleConfiguration> localRuleConfigs) {
+        Map<String, RuleConfiguration> result = new HashMap<>();
         for (Entry<String, ProxyYamlRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfiguration();
-            yamlRuleConfig.setShardingRule(null == entry.getValue().getShardingRule() ? null : entry.getValue().getShardingRule().getShardingRuleConfiguration());
-            yamlRuleConfig.setMasterSlaveRule(null == entry.getValue().getMasterSlaveRule() ? null : entry.getValue().getMasterSlaveRule().getMasterSlaveRuleConfiguration());
-            result.put(entry.getKey(), yamlRuleConfig);
+            result.put(entry.getKey(), null != entry.getValue().getShardingRule() ? entry.getValue().getShardingRule().getShardingRuleConfiguration()
+                    : entry.getValue().getMasterSlaveRule().getMasterSlaveRuleConfiguration());
         }
         return result;
     }
