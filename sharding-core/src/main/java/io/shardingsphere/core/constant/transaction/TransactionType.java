@@ -17,12 +17,36 @@
 
 package io.shardingsphere.core.constant.transaction;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Transaction type.
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 public enum TransactionType {
     
-    LOCAL, XA, BASE
+    LOCAL("none"),
+    
+    XA("io.shardingsphere.transaction.manager.xa.XATransactionManager"),
+    
+    BASE("io.shardingsphere.transaction.manager.base.BASETransactionManager");
+    
+    private final String spiClassName;
+    
+    /**
+     * Find transaction type by class name.
+     *
+     * @param className class name
+     * @return transaction type
+     */
+    public static TransactionType find(final String className) {
+        for (TransactionType each : TransactionType.values()) {
+            if (className.equals(each.spiClassName)) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException(String.format("Cannot find transaction type of [%s]", className));
+    }
 }
