@@ -75,12 +75,12 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(masterSlaveRule.getName(),
+                masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm());
         Map<String, RuleConfiguration> ruleConfigurationMap = new LinkedHashMap<>();
         ruleConfigurationMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
         return ruleConfigurationMap;
     }
-    
     
     @Override
     public final Connection getConnection() {
