@@ -29,5 +29,5 @@ public interface ListenerManager {
      * Start change listener.
      *
      */
-    void watchProxy();
+    void watch();
 }
