@@ -20,6 +20,7 @@ package io.shardingsphere.orchestration.internal.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
@@ -77,16 +78,20 @@ public final class ConfigurationService {
      *
      * @param shardingSchemaName sharding schema name
      * @param dataSourceConfigurations data source configuration map
-     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @param ruleConfig rule configuration
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final RuleConfiguration ruleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations, isOverwrite);
-        persistMasterSlaveRuleConfiguration(shardingSchemaName, masterSlaveRuleConfig, isOverwrite);
+        if (ruleConfig instanceof ShardingRuleConfiguration) {
+            persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig, isOverwrite);
+        } else {
+            persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig, isOverwrite);
+        }
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
