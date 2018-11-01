@@ -133,7 +133,6 @@ public final class GlobalRegistry {
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
-        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     private void initServerConfiguration(final Authentication authentication, final Properties props) {
