@@ -22,6 +22,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
@@ -37,7 +38,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -69,7 +69,7 @@ public final class AtomikosTransactionManagerTest {
         verify(userTransactionManager).begin();
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = ShardingException.class)
     public void assertBeginWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).begin();
         new AtomikosTransactionManager().begin(new XATransactionEvent(TransactionOperationType.BEGIN));
@@ -81,7 +81,7 @@ public final class AtomikosTransactionManagerTest {
         verify(userTransactionManager).commit();
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = ShardingException.class)
     public void assertCommitWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).commit();
         new AtomikosTransactionManager().commit(new XATransactionEvent(TransactionOperationType.COMMIT));
@@ -93,7 +93,7 @@ public final class AtomikosTransactionManagerTest {
         verify(userTransactionManager).rollback();
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = ShardingException.class)
     public void assertRollbackWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).rollback();
         new AtomikosTransactionManager().rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
@@ -105,7 +105,7 @@ public final class AtomikosTransactionManagerTest {
         assertThat(new AtomikosTransactionManager().getStatus(), is(Status.STATUS_ACTIVE));
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = ShardingException.class)
     public void assertGetStatusWithException() throws Exception {
         when(userTransactionManager.getStatus()).thenThrow(SystemException.class);
         new AtomikosTransactionManager().getStatus();
