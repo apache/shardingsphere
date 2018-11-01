@@ -243,13 +243,6 @@ public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataS
         }
     }
     
-    private DisabledStateEventBusEvent getDisabledStateEventBusEvent(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
-        if (disabledSchemaDataSourceMap.containsKey(shardingSchemaName)) {
-        
-        }
-        return result;
-    }
-    
     private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
         for (MasterSlaveRule each : ((OrchestrationShardingRule) shardingSchema.getShardingRule()).getMasterSlaveRules()) {
             ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);
