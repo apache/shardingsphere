@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
@@ -107,11 +108,12 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
+     * @param configMap config map
      * @param props properties
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
-        init(schemaDataSources, schemaRules, authentication, props, false);
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
+        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
     }
     
     /**
@@ -120,11 +122,15 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
+     * @param configMap config map
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
+        if (!configMap.isEmpty()) {
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
+        }
         initServerConfiguration(authentication, props);
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
