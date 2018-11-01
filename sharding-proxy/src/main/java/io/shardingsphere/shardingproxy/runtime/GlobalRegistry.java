@@ -154,12 +154,6 @@ public final class GlobalRegistry {
         this.authentication = authentication;
     }
     
-    private void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        for (ShardingSchema each : shardingSchemas.values()) {
-            each.initShardingMetaData(executeEngine);
-        }
-    }
-    
     /**
      * Check schema exists.
      *
