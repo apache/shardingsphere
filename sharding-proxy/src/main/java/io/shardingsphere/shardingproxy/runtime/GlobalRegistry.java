@@ -108,6 +108,7 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
+     * @param configMap config map
      * @param props properties
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
@@ -121,6 +122,7 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
+     * @param configMap config map
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
