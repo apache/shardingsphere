@@ -68,7 +68,7 @@ public final class ShardingSchema {
         shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
         masterSlaveRule = ruleConfiguration instanceof MasterSlaveRuleConfiguration ? getMasterSlaveRule((MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine()) : null;
+        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
