@@ -39,20 +39,6 @@ public final class InstanceStateService {
     }
     
     /**
-     * Persist sharding instance online.
-     */
-    public void persistShardingInstanceOnline() {
-        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
-    }
-    
-    /**
-     * Persist master-salve instance online.
-     */
-    public void persistMasterSlaveInstanceOnline() {
-        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
-    }
-    
-    /**
      * Persist proxy instance online.
      */
     public void persistProxyInstanceOnline() {
