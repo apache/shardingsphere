@@ -33,39 +33,39 @@ import java.util.ServiceLoader;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingTransactionManagerRegistry {
+public final class ShardingTransactionHandlerRegistry {
     
-    private static final Map<TransactionType, ShardingTransactionManager<ShardingTransactionEvent>> TRANSACTION_MANAGER_MAP = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionHandler<ShardingTransactionEvent>> TRANSACTION_HANDLER_MAP = new HashMap<>();
     
-    private static final ShardingTransactionManagerRegistry INSTANCE = new ShardingTransactionManagerRegistry();
+    private static final ShardingTransactionHandlerRegistry INSTANCE = new ShardingTransactionHandlerRegistry();
     
     /**
-     * Load sharding transaction manager.
+     * Load sharding transaction handler.
      */
     @SuppressWarnings("unchecked")
     public static void load() {
-        for (ShardingTransactionManager each : ServiceLoader.load(ShardingTransactionManager.class)) {
-            TRANSACTION_MANAGER_MAP.put(each.getTransactionType(), (ShardingTransactionManager<ShardingTransactionEvent>) each);
+        for (ShardingTransactionHandler each : ServiceLoader.load(ShardingTransactionHandler.class)) {
+            TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionEvent>) each);
         }
     }
     
     /**
-     * Get instance of sharding transaction manager registry.
+     * Get instance of sharding transaction handler registry.
      *
-     * @return sharding transaction manager registry
+     * @return sharding transaction handler registry
      */
-    public static ShardingTransactionManagerRegistry getInstance() {
+    public static ShardingTransactionHandlerRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Get transaction manager by type.
+     * Get transaction handler by type.
      *
      * @param transactionType transaction type
-     * @return sharding transaction manager implement
+     * @return sharding transaction handler implement
      */
-    public ShardingTransactionManager<ShardingTransactionEvent> getTransactionManager(final TransactionType transactionType) {
-        ShardingTransactionManager<ShardingTransactionEvent> result = TRANSACTION_MANAGER_MAP.get(transactionType);
+    public ShardingTransactionHandler<ShardingTransactionEvent> getHandler(final TransactionType transactionType) {
+        ShardingTransactionHandler<ShardingTransactionEvent> result = TRANSACTION_HANDLER_MAP.get(transactionType);
         Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType));
         return result;
     }

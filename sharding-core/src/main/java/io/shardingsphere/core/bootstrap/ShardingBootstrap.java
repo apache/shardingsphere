@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.bootstrap;
 
-import io.shardingsphere.spi.transaction.ShardingTransactionManagerRegistry;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +33,6 @@ public final class ShardingBootstrap {
      * Initialize sharding bootstrap.
      */
     public static void init() {
-        ShardingTransactionManagerRegistry.load();
+        ShardingTransactionHandlerRegistry.load();
     }
 }
