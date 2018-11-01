@@ -45,7 +45,7 @@ public final class ShardingTransactionManagerRegistry {
     @SuppressWarnings("unchecked")
     public static void load() {
         for (ShardingTransactionManager each : ServiceLoader.load(ShardingTransactionManager.class)) {
-            TRANSACTION_MANAGER_MAP.put(TransactionType.find(each.getClass().getName()), (ShardingTransactionManager<ShardingTransactionEvent>) each);
+            TRANSACTION_MANAGER_MAP.put(each.getTransactionType(), (ShardingTransactionManager<ShardingTransactionEvent>) each);
         }
     }
     
@@ -66,7 +66,7 @@ public final class ShardingTransactionManagerRegistry {
      */
     public ShardingTransactionManager<ShardingTransactionEvent> getTransactionManager(final TransactionType transactionType) {
         ShardingTransactionManager<ShardingTransactionEvent> result = TRANSACTION_MANAGER_MAP.get(transactionType);
-        Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType.getSpiClassName()));
+        Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType));
         return result;
     }
 }
