@@ -174,4 +174,3 @@ computedColumnDefinition
 columnSetDefinition 
     : columnSetName ID COLUMN_SET FOR ALL_SPARSE_COLUMNS  
     ;
- 

@@ -162,4 +162,3 @@ lowPriorityLockWait
 onLowPriorLockWait
     : ON (LEFT_PAREN lowPriorityLockWait RIGHT_PAREN)?
     ;
-    

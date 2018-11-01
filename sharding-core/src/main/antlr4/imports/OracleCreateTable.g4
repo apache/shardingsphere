@@ -27,4 +27,3 @@ tableProperties
     : columnProperties?
     (AS unionSelect)?
     ;
-    

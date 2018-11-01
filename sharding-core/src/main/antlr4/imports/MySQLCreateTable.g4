@@ -53,5 +53,3 @@ createTableLike
 likeTable
     : LIKE tableName
     ;
-
- 
