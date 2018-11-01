@@ -235,11 +235,15 @@ public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataS
         Map<String, Collection<String>> disabledSchemaDataSourceMap = disabledStateEventBusEvent.getDisabledSchemaDataSourceMap();
         for (String each : disabledSchemaDataSourceMap.keySet()) {
             DisabledStateEventBusEvent eventBusEvent = new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, disabledSchemaDataSourceMap.get(each)));
-            if (shardingSchemas.get(each).isMasterSlaveOnly()) {
-                renewShardingSchemaWithMasterSlaveRule(shardingSchemas.get(each), eventBusEvent);
-            } else {
-                renewShardingSchemaWithShardingRule(shardingSchemas.get(each), eventBusEvent);
-            }
+            renewShardingSchema(each, eventBusEvent);
+        }
+    }
+    
+    private void renewShardingSchema(final String each, final DisabledStateEventBusEvent eventBusEvent) {
+        if (shardingSchemas.get(each).isMasterSlaveOnly()) {
+            renewShardingSchemaWithMasterSlaveRule(shardingSchemas.get(each), eventBusEvent);
+        } else {
+            renewShardingSchemaWithShardingRule(shardingSchemas.get(each), eventBusEvent);
         }
     }
     
