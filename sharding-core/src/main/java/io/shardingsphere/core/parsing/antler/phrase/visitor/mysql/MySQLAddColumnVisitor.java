@@ -30,7 +30,7 @@ public class MySQLAddColumnVisitor extends AddColumnVisitor {
 
     /** Visit mysql add column.
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      * @param columnName column name
      */
     @Override

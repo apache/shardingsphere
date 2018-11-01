@@ -30,7 +30,7 @@ public class MySQLModifyColumnVisitor extends ModifyColumnVisitor {
     
     /** Visit modify column.
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     @Override
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,

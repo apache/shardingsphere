@@ -31,9 +31,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
 
-    /** Visit add primary key node.
+    /**
+     * Visit add primary key node.
+     *
      * @param ancestorNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -63,7 +65,7 @@ public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {
                 updateColumn.setPrimaryKey(true);
-            }else {
+            } else {
                 updateColumn = new ColumnDefinition(each.getText(), null, null, true);
             }
             alterStatement.getUpdateColumns().put(columnName, updateColumn);

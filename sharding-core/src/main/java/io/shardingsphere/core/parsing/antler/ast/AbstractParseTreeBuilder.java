@@ -30,7 +30,7 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
     /**
      * Parse input to ast.
      *
-     * @param input sql text
+     * @param input SQL text
      * @return parse tree
      */
     @Override
@@ -64,10 +64,10 @@ public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
     protected abstract Parser newParser(TokenStream tokenStream);
 
     /**
-     * Get sql parse tree.
+     * Get SQL parse tree.
      *
      * @param parser instance
-     * @return sql parse tree
+     * @return SQL parse tree
      */
     protected abstract ParserRuleContext getParserTree(Parser parser);
 

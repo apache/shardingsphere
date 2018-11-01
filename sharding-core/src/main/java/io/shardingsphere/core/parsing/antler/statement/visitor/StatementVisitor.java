@@ -27,7 +27,7 @@ public interface StatementVisitor {
     /** Visit ast,generate statement.
      * @param rootNode root node of ast
      * @param shardingTableMetaData table meta data
-     * @return sql statement
+     * @return SQL statement
      */
     SQLStatement visit(ParserRuleContext rootNode, ShardingTableMetaData shardingTableMetaData);
 }

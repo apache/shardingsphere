@@ -53,7 +53,7 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
     /**
      * Create statement.
      *
-     * @return empty sql statment
+     * @return empty SQL statment
      */
     protected SQLStatement newStatement() {
         return new MySQLAlterTableStatement();

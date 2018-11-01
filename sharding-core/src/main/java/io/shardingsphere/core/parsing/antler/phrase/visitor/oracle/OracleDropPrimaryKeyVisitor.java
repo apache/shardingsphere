@@ -29,7 +29,7 @@ public class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
 
     /** Visit drop primary key node.
      * @param rootNode ancestor node of ast
-     * @param statement sql statement
+     * @param statement SQL statement
      */
     @Override
     public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
