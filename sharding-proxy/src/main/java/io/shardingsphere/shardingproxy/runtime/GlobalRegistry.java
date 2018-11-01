@@ -28,7 +28,6 @@ import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
@@ -112,7 +111,7 @@ public final class GlobalRegistry {
      * @param props properties
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
-                     final Map<String, YamlRuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
         init(schemaDataSources, schemaRules, authentication, props, false);
     }
     
@@ -193,7 +192,7 @@ public final class GlobalRegistry {
         }
         shardingSchemas.clear();
         shardingSchemas.put(shardingEvent.getSchemaName(), new ShardingSchema(shardingEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(shardingEvent.getDataSourceConfigurations()),
-                shardingEvent.getShardingRule().getShardingRuleConfig(), null, true));
+                shardingEvent.getShardingRule().getShardingRuleConfig(), true));
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
@@ -211,7 +210,7 @@ public final class GlobalRegistry {
         shardingSchemas.clear();
         shardingSchemas.put(masterSlaveEvent.getSchemaName(), 
                 new ShardingSchema(masterSlaveEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()),
-                null, masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+                        masterSlaveEvent.getMasterSlaveRuleConfig(), true));
         initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
