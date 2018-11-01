@@ -116,7 +116,7 @@ public final class Bootstrap {
     private static void initOrchestrationFacade(final ProxyYamlServerConfiguration serverConfig, 
                                                 final Map<String, ProxyYamlRuleConfiguration> ruleConfigs, final OrchestrationFacade orchestrationFacade) {
         if (ruleConfigs.isEmpty()) {
-            orchestrationFacade.getListenerManager().initProxyListeners();
+            orchestrationFacade.getListenerManager().initListeners();
         } else {
             orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs), getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), Collections.<String, Object>emptyMap(), serverConfig.getProps());
         }
