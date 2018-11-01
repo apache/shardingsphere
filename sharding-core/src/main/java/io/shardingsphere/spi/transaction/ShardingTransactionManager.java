@@ -17,6 +17,7 @@
 
 package io.shardingsphere.spi.transaction;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 
 import java.sql.SQLException;
@@ -62,4 +63,11 @@ public interface ShardingTransactionManager<T extends ShardingTransactionEvent> 
      * @throws SQLException SQL exception
      */
     int getStatus() throws SQLException;
+    
+    /**
+     * Get type of sharding transaction manager.
+     *
+     * @return transaction type
+     */
+    TransactionType getManagerType();
 }
