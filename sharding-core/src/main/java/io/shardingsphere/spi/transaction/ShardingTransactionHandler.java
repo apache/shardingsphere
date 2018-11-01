@@ -32,7 +32,7 @@ public interface ShardingTransactionHandler<T extends ShardingTransactionEvent> 
      *
      * @param event sharding transaction event
      */
-    void doHandle(T event);
+    void doInTransaction(T event);
     
     /**
      * Get transaction type.

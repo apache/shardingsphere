@@ -175,9 +175,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
-            transactionRegistry.getHandler(TransactionType.XA).doHandle(new XATransactionEvent(TransactionOperationType.BEGIN));
+            transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
         } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            transactionRegistry.getHandler(TransactionType.BASE).doHandle(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
+            transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
         }
     }
     
@@ -192,9 +192,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
-            transactionRegistry.getHandler(TransactionType.XA).doHandle(new XATransactionEvent(TransactionOperationType.COMMIT));
+            transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            transactionRegistry.getHandler(TransactionType.BASE).doHandle(new SagaTransactionEvent(TransactionOperationType.COMMIT));
+            transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
         }
     }
     
@@ -209,9 +209,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == TransactionTypeHolder.get()) {
-            transactionRegistry.getHandler(TransactionType.XA).doHandle(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+            transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            transactionRegistry.getHandler(TransactionType.BASE).doHandle(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+            transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
         }
     }
     

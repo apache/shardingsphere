@@ -43,7 +43,7 @@ public final class FixedBaseShardingTransactionHandler implements ShardingTransa
     }
     
     @Override
-    public void doHandle(final ShardingTransactionEvent event) {
+    public void doInTransaction(final ShardingTransactionEvent event) {
         switch (event.getOperationType()) {
             case BEGIN:
                 INVOKES.put("begin", event);
