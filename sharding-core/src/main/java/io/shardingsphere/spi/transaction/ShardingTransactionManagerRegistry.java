@@ -17,6 +17,7 @@
 
 package io.shardingsphere.spi.transaction;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.AccessLevel;
@@ -32,19 +33,29 @@ import java.util.ServiceLoader;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingTransactionManagerLoader {
+public final class ShardingTransactionManagerRegistry {
     
     private static final Map<TransactionType, ShardingTransactionManager<ShardingTransactionEvent>> TRANSACTION_MANAGER_MAP = new HashMap<>();
     
+    private static final ShardingTransactionManagerRegistry INSTANCE = new ShardingTransactionManagerRegistry();
+    
+    /**
+     * Load sharding transaction manager.
+     */
     @SuppressWarnings("unchecked")
-    private static void load() {
+    public static void load() {
         for (ShardingTransactionManager each : ServiceLoader.load(ShardingTransactionManager.class)) {
             TRANSACTION_MANAGER_MAP.put(TransactionType.find(each.getClass().getName()), (ShardingTransactionManager<ShardingTransactionEvent>) each);
         }
     }
     
-    static {
-        load();
+    /**
+     * Get instance of sharding transaction manager registry.
+     *
+     * @return sharding transaction manager registry
+     */
+    public static ShardingTransactionManagerRegistry getInstance() {
+        return INSTANCE;
     }
     
     /**
@@ -53,7 +64,9 @@ public final class ShardingTransactionManagerLoader {
      * @param transactionType transaction type
      * @return sharding transaction manager implement
      */
-    public static ShardingTransactionManager<ShardingTransactionEvent> getTransactionManager(final TransactionType transactionType) {
-        return TRANSACTION_MANAGER_MAP.get(transactionType);
+    public ShardingTransactionManager<ShardingTransactionEvent> getTransactionManager(final TransactionType transactionType) {
+        ShardingTransactionManager<ShardingTransactionEvent> result = TRANSACTION_MANAGER_MAP.get(transactionType);
+        Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType.getSpiClassName()));
+        return result;
     }
 }

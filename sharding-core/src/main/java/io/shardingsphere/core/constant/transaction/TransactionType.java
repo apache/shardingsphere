@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.constant.transaction;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhaojun
  */
 @RequiredArgsConstructor
+@Getter
 public enum TransactionType {
     
     LOCAL("none"),
