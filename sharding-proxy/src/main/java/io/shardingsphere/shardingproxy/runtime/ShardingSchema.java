@@ -65,7 +65,8 @@ public final class ShardingSchema {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
-        shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
+        shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
+                : new ShardingRule(new ShardingRuleConfiguration(), dataSources.keySet());
         masterSlaveRule = ruleConfiguration instanceof MasterSlaveRuleConfiguration ? getMasterSlaveRule((MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
         backendDataSource = new JDBCBackendDataSource(dataSources);
         metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
