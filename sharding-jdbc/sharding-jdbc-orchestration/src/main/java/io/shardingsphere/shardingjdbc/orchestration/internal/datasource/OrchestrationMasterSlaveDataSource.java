@@ -69,9 +69,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     private void initOrchestrationFacade() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = getRuleConfigurationMap();
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap()),
-                masterSlaveRuleConfiguration, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+        getOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
+                getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
