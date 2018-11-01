@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class ProxyYamlRuleConfiguration {
+public final class YamlProxyRuleConfiguration {
     
     private String schemaName;
     
