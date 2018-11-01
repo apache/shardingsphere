@@ -199,7 +199,8 @@ public final class GlobalRegistry {
             entry.getValue().getBackendDataSource().close();
         }
         shardingSchemas.remove(masterSlaveEvent.getSchemaName());
-        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(),
+                DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
     /**
