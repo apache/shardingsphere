@@ -22,7 +22,7 @@ import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.transaction.ShardingTransactionManager;
 
-public final class FixedShardingTransactionManager implements ShardingTransactionManager {
+public final class FixedXAShardingTransactionManager implements ShardingTransactionManager {
     
     @Override
     public void begin(final ShardingTransactionEvent transactionEvent) throws ShardingException {
@@ -46,6 +46,6 @@ public final class FixedShardingTransactionManager implements ShardingTransactio
     
     @Override
     public TransactionType getTransactionType() {
-        return null;
+        return TransactionType.XA;
     }
 }
