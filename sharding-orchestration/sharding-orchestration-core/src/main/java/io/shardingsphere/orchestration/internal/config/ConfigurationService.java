@@ -54,7 +54,7 @@ public final class ConfigurationService {
     }
     
     /**
-     * Persist master-slave configuration.
+     * Persist rule configuration.
      *
      * @param shardingSchemaName sharding schema name
      * @param dataSourceConfigurations data source configuration map
