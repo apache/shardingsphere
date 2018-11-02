@@ -95,7 +95,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) throws SQLException {
+    public final void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) throws SQLException {
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(masterSlaveEvent.getDataSourceConfigurations()),
                 masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
