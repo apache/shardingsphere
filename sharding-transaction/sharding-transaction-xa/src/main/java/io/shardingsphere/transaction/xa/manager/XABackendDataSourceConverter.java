@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.xa.BackendDataSourceFactory;
+import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.manager.convert.DataSourceParameterFactory;
 
 import javax.sql.DataSource;
