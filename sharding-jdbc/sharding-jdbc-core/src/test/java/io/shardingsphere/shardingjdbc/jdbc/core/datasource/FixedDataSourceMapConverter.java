@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public final class FixedBackendDataSourceFactory implements DataSourceMapConverter {
+public final class FixedDataSourceMapConverter implements DataSourceMapConverter {
     
     @Override
     public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
