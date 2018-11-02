@@ -1,5 +1,11 @@
 ## 3.0.1
 
+### Bug Fixes
+
+#### Sharding-Proxy
+
+1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) Parameter is not set when use PreparedStatement in Read-write splitting
+
 ## 3.0.0
 
 ### Milestones

@@ -1,5 +1,11 @@
 ## 3.0.1
 
+### 缺陷修正
+
+#### Sharding-Proxy
+
+1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式下PreparedStatement设置参数无效
+
 ## 3.0.0
 
 ### 里程碑
