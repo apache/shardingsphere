@@ -1,8 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="creation_date" />
-        <column name="c_number" />
-    </metadata>
-    <row values="17-08-08, 2" />
-    <row values="17-08-18, 2" />
-</dataset>

@@ -1,7 +1,0 @@
-<dataset>
-    <metadata table-name="t_log">
-        <column name="id" type="integer" />
-        <column name="status" type="varchar" />
-        <index name="t_log_index_t_log" column="id" unique="true" />
-    </metadata>
-</dataset>

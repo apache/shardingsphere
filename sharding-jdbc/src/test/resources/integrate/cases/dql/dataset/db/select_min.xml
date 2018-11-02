@@ -1,6 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="min_user_id" />
-    </metadata>
-    <row values="10" />
-</dataset>

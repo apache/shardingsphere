@@ -1,8 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="orders_count" />
-        <column name="user_id" />
-    </metadata>
-    <row values="10, 10" />
-    <row values="10, 11" />
-</dataset>
