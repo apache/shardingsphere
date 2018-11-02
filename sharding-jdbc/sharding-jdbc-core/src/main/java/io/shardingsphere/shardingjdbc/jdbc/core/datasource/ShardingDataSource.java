@@ -116,6 +116,15 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     }
     
     private void closeOriginalDataSources() {
+        if (null != dataSourceMap) {
+            closeDataSource(dataSourceMap);
+        }
+        if (null != xaDataSourceMap) {
+            closeDataSource(xaDataSourceMap);
+        }
+    }
+    
+    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             try {
                 each.getClass().getDeclaredMethod("close").invoke(each);
