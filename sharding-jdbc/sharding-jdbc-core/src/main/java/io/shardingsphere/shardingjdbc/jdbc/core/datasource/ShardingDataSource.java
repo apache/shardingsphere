@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
-public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private final Map<String, DataSource> dataSourceMap;
     
