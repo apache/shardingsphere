@@ -28,7 +28,7 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.spi.xa.SPIDataSourceMapConverter;
+import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
 import lombok.Getter;
 
 import javax.sql.DataSource;

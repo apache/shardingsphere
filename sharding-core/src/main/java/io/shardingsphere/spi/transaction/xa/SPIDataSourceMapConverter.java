@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.spi.xa;
+package io.shardingsphere.spi.transaction.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;

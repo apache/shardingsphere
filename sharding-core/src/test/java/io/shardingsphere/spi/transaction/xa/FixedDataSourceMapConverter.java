@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.spi.xa;
+package io.shardingsphere.spi.transaction.xa;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public final class FixedBackendDataSourceFactory implements DataSourceMapConverter {
+public final class FixedDataSourceMapConverter implements DataSourceMapConverter {
     
     @Override
     public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
