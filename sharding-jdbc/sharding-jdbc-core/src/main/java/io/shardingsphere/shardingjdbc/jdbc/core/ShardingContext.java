@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.jdbc.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -45,6 +46,8 @@ public final class ShardingContext implements AutoCloseable {
     private final DatabaseType databaseType;
     
     private final ShardingExecuteEngine executeEngine;
+    
+    private final ShardingProperties shardingProperties;
     
     private final int maxConnectionsSizePerQuery;
     
