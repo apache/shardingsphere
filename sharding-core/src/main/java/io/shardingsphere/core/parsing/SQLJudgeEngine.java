@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
@@ -150,6 +151,9 @@ public final class SQLJudgeEngine {
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.COLUMNS, MySQLKeyword.FIELDS)) {
             return parseShowColumnsFields(lexerEngine);
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+            return new ShowCreateTableStatement();
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX, MySQLKeyword.INDEXES, MySQLKeyword.KEYS)) {
             return parseShowIndex(lexerEngine);
