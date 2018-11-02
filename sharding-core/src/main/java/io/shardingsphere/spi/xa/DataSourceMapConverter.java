@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Convert data source map by database type.
+ * Data source map converter SPI.
  *
  * @author zhaojun
  */
@@ -34,7 +34,7 @@ public interface DataSourceMapConverter {
      *
      * @param dataSourceMap data source map
      * @param databaseType database type
-     * @return transactional xa data source map
+     * @return data source map
      */
     Map<String, DataSource> convert(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
 }
