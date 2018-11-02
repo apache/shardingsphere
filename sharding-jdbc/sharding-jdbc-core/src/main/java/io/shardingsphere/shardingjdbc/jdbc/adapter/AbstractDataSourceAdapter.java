@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 @Getter
 @Setter
-public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
+public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     static {
         ShardingBootstrap.init();
@@ -77,7 +77,8 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
     }
     
-    private void close() {
+    @Override
+    public void close() {
         for (DataSource each : getDataSourceMap().values()) {
             try {
                 Method closeMethod = each.getClass().getDeclaredMethod("close");
