@@ -137,9 +137,6 @@ public final class GlobalRegistry {
     }
     
     private void initServerConfiguration(final Authentication authentication, final Properties props) {
-        showSQL =
-        acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
-        executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
         useNIO = false;
         
@@ -160,6 +157,14 @@ public final class GlobalRegistry {
     
     public boolean isShowSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    }
+    
+    public int getAcceptorSize() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
+    }
+    
+    public int getExecutorSize() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
     }
     
     
