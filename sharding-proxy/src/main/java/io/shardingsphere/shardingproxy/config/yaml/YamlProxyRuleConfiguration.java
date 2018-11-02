@@ -15,22 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.state;
+package io.shardingsphere.shardingproxy.config.yaml;
 
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * proxy disabled event bus event.
- * 
- * @author chenqingyang
+ * Rule configuration for yaml.
+ *
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public class ProxyDisabledStateEventBusEvent {
+@Setter
+public final class YamlProxyRuleConfiguration {
     
-    private final Map<String, Collection<String>> disabledSchemaDataSourceMap;
+    private String schemaName;
+    
+    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
+    
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
 }

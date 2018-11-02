@@ -91,7 +91,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message, this));
+        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message));
     }
     
     @Override
@@ -110,8 +110,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
         
         private final ByteBuf message;
         
-        private final FrontendHandler frontendHandler;
-        
         private int currentSequenceId;
         
         @Override
@@ -121,7 +119,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
                  BackendConnection backendConnection = new BackendConnection()) {
                 setBackendConnection(backendConnection);
-                CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
+                CommandPacket commandPacket = getCommandPacket(payload, backendConnection, MySQLFrontendHandler.this);
                 Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
                 if (!responsePackets.isPresent()) {
                     return;

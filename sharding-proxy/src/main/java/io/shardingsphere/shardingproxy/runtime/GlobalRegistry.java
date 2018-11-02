@@ -19,23 +19,22 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.state.ProxyDisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
@@ -43,6 +42,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -108,11 +108,12 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
+     * @param configMap config map
      * @param props properties
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
-                     final Map<String, YamlRuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
-        init(schemaDataSources, schemaRules, authentication, props, false);
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
+        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
     }
     
     /**
@@ -121,19 +122,21 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
+     * @param configMap config map
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
-                     final Map<String, YamlRuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
+        if (!configMap.isEmpty()) {
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
+        }
         initServerConfiguration(authentication, props);
-        for (Entry<String, YamlRuleConfiguration> entry : schemaRules.entrySet()) {
+        for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            shardingSchemas.put(schemaName, 
-                    new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue().getShardingRule(), entry.getValue().getMasterSlaveRule(), isUsingRegistry));
+            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
-        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     private void initServerConfiguration(final Authentication authentication, final Properties props) {
@@ -152,12 +155,6 @@ public final class GlobalRegistry {
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
         this.authentication = authentication;
-    }
-    
-    private void initShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        for (ShardingSchema each : shardingSchemas.values()) {
-            each.initShardingMetaData(executeEngine);
-        }
     }
     
     /**
@@ -191,10 +188,9 @@ public final class GlobalRegistry {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        shardingSchemas.clear();
+        shardingSchemas.remove(shardingEvent.getSchemaName());
         shardingSchemas.put(shardingEvent.getSchemaName(), new ShardingSchema(shardingEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(shardingEvent.getDataSourceConfigurations()),
-                shardingEvent.getShardingRule().getShardingRuleConfig(), null, true));
-        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
+                shardingEvent.getShardingRule().getShardingRuleConfig(), true));
     }
     
     /**
@@ -208,11 +204,9 @@ public final class GlobalRegistry {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        shardingSchemas.clear();
-        shardingSchemas.put(masterSlaveEvent.getSchemaName(), 
-                new ShardingSchema(masterSlaveEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()),
-                null, masterSlaveEvent.getMasterSlaveRuleConfig(), true));
-        initShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
+        shardingSchemas.remove(masterSlaveEvent.getSchemaName());
+        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(),
+                DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
     /**
@@ -231,23 +225,20 @@ public final class GlobalRegistry {
      * @param disabledStateEventBusEvent jdbc disabled event bus event
      */
     @Subscribe
-    public void renewDisabledDataSourceNames(final ProxyDisabledStateEventBusEvent disabledStateEventBusEvent) {
-        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            DisabledStateEventBusEvent disabledEvent = new DisabledStateEventBusEvent(getDisabledDataSourceNames(entry.getKey(), disabledStateEventBusEvent.getDisabledSchemaDataSourceMap()));
-            if (entry.getValue().isMasterSlaveOnly()) {
-                renewShardingSchemaWithMasterSlaveRule(entry.getValue(), disabledEvent);
-            } else {
-                renewShardingSchemaWithShardingRule(entry.getValue(), disabledEvent);
-            }
+    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        Map<String, Collection<String>> disabledSchemaDataSourceMap = disabledStateEventBusEvent.getDisabledSchemaDataSourceMap();
+        for (String each : disabledSchemaDataSourceMap.keySet()) {
+            DisabledStateEventBusEvent eventBusEvent = new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, disabledSchemaDataSourceMap.get(each)));
+            renewShardingSchema(each, eventBusEvent);
         }
     }
     
-    private Collection<String> getDisabledDataSourceNames(final String shardingSchemaName, final Map<String, Collection<String>> disabledSchemaDataSourceMap) {
-        Collection<String> result = new LinkedList<>();
-        if (disabledSchemaDataSourceMap.containsKey(shardingSchemaName)) {
-            result.addAll(disabledSchemaDataSourceMap.get(shardingSchemaName));
+    private void renewShardingSchema(final String each, final DisabledStateEventBusEvent eventBusEvent) {
+        if (shardingSchemas.get(each).isMasterSlaveOnly()) {
+            renewShardingSchemaWithMasterSlaveRule(shardingSchemas.get(each), eventBusEvent);
+        } else {
+            renewShardingSchemaWithShardingRule(shardingSchemas.get(each), eventBusEvent);
         }
-        return result;
     }
     
     private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {

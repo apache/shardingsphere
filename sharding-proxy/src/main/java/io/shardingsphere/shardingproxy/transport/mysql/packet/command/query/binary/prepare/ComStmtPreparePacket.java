@@ -23,7 +23,6 @@ import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -51,17 +50,17 @@ public final class ComStmtPreparePacket implements CommandPacket {
     @Getter
     private final int sequenceId;
     
+    private final String currentSchema;
+    
     private final String sql;
     
     private final SQLParsingEngine sqlParsingEngine;
     
-    private final FrontendHandler frontendHandler;
-    
-    public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
+    public ComStmtPreparePacket(final int sequenceId, final String currentSchema, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
-        this.frontendHandler = frontendHandler;
+        this.currentSchema = currentSchema;
         sql = payload.readStringEOF();
-        ShardingSchema shardingSchema = GlobalRegistry.getInstance().getShardingSchema(frontendHandler.getCurrentSchema());
+        ShardingSchema shardingSchema = GlobalRegistry.getInstance().getShardingSchema(currentSchema);
         sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingSchema.getShardingRule(), shardingSchema.getMetaData().getTable());
     }
     
@@ -80,7 +79,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
                 new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getCurrentSchema(),
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, currentSchema,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {

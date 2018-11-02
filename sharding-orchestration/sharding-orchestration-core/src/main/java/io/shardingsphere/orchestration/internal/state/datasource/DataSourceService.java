@@ -29,10 +29,8 @@ import io.shardingsphere.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,7 +68,7 @@ public final class DataSourceService {
      */
     public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
-        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
         }
@@ -89,7 +87,7 @@ public final class DataSourceService {
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
         }
@@ -110,7 +108,7 @@ public final class DataSourceService {
     public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
         MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        Collection<String> disabledDataSourceNames = getProxyDisabledDataSourceNames().get(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
         }
@@ -125,24 +123,7 @@ public final class DataSourceService {
      *
      * @return disabled data source names
      */
-    public Collection<String> getDisabledDataSourceNames() {
-        Collection<String> result = new HashSet<>();
-        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        List<String> dataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        for (String each : dataSources) {
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get disabled data source names.
-     *
-     * @return disabled data source names
-     */
-    public Map<String, Collection<String>> getProxyDisabledDataSourceNames() {
+    public Map<String, Collection<String>> getDisabledDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         Collection<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);

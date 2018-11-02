@@ -15,27 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.config.yaml;
-
-import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfiguration;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Properties;
+package io.shardingsphere.api.config;
 
 /**
- * Server configuration for yaml.
+ * Rule configuration.
  * 
- * @author chenqingyang
+ * @author panjuan
  */
-@Getter
-@Setter
-public final class ProxyYamlServerConfiguration {
-    
-    private Authentication authentication = new Authentication();
-    
-    private YamlOrchestrationConfiguration orchestration;
-    
-    private Properties props = new Properties();
+public interface RuleConfiguration {
 }

@@ -35,7 +35,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Getter
 @Setter
-public final class MasterSlaveRuleConfiguration {
+public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private String name;
     

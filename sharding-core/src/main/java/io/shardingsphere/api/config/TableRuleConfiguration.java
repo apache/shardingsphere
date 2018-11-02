@@ -29,7 +29,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class TableRuleConfiguration {
+public final class TableRuleConfiguration implements RuleConfiguration {
     
     private String logicTable;
     
