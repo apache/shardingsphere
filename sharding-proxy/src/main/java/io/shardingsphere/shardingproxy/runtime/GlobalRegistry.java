@@ -62,29 +62,19 @@ public final class GlobalRegistry {
     
     private static final GlobalRegistry INSTANCE = new GlobalRegistry();
     
-    private List<String> schemaNames = new LinkedList<>();
+    private final List<String> schemaNames = new LinkedList<>();
     
-    private Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
     
-    private Authentication authentication;
+    private final Authentication authentication;
     
-    private boolean showSQL;
+    private final ShardingProperties shardingProperties;
     
-    private int maxConnectionsSizePerQuery;
-    
-    private int acceptorSize;
-    
-    private int executorSize;
-    
-    private TransactionType transactionType;
-    
-    private boolean openTracingEnable;
-    
-    private boolean useNIO;
-    
-    private BackendNIOConfiguration backendNIOConfig;
+    private final BackendNIOConfiguration backendNIOConfig;
     
     private boolean isCircuitBreak;
+    
+    
     
     /**
      * Get instance of proxy context.
