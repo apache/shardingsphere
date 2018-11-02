@@ -27,15 +27,13 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class XABackendDataSourceFactoryTest {
-    
-    private DataSourceMapConverterFactory xaBackendDataSourceFactory = DataSourceMapConverterFactory.getInstance();
+public class SPIDataSourceMapConverterTest {
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Test
     public void createBackendDatasourceSuccess() {
-        Map<String, DataSource> backendDatasourceMap = xaBackendDataSourceFactory.build(dataSourceMap, DatabaseType.MySQL);
+        Map<String, DataSource> backendDatasourceMap = SPIDataSourceMapConverter.convert(dataSourceMap, DatabaseType.MySQL);
         assertThat(backendDatasourceMap.size(), is(0));
     }
     

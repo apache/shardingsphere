@@ -28,7 +28,7 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.spi.xa.DataSourceMapConverterFactory;
+import io.shardingsphere.spi.xa.SPIDataSourceMapConverter;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -95,7 +95,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
                 synchronized (this) {
-                    xaDataSourceMap = DataSourceMapConverterFactory.getInstance().build(dataSourceMap, getDatabaseType());
+                    xaDataSourceMap = SPIDataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
                 }
             }
             return new ShardingConnection(xaDataSourceMap, shardingContext);

@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.spi.xa.DataSourceMapConverterFactory;
+import io.shardingsphere.spi.xa.SPIDataSourceMapConverter;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -33,11 +33,9 @@ import static org.junit.Assert.assertThat;
 
 public class XABackendDataSourceConvertTest {
     
-    private DataSourceMapConverterFactory xaBackendDataSourceFactory = DataSourceMapConverterFactory.getInstance();
-    
     @Test
     public void getMysqlXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.MySQL);
+        Map<String, DataSource> xaDataSourceMap = SPIDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.MySQL);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
@@ -45,7 +43,7 @@ public class XABackendDataSourceConvertTest {
     
     @Test
     public void getH2XATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.H2);
+        Map<String, DataSource> xaDataSourceMap = SPIDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.H2);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
@@ -53,7 +51,7 @@ public class XABackendDataSourceConvertTest {
     
     @Test
     public void getPGXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.PostgreSQL);
+        Map<String, DataSource> xaDataSourceMap = SPIDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.PostgreSQL);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
@@ -61,7 +59,7 @@ public class XABackendDataSourceConvertTest {
     
     @Test
     public void getMSXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaBackendDataSourceFactory.build(createDBCPDataSourceMap(), DatabaseType.SQLServer);
+        Map<String, DataSource> xaDataSourceMap = SPIDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.SQLServer);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), Matchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));

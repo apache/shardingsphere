@@ -35,28 +35,21 @@ import java.util.Map;
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceMapConverterFactory implements DataSourceMapConverter {
+public final class SPIDataSourceMapConverter {
     
     private static final NewInstanceServiceLoader<DataSourceMapConverter> SERVICE_LOADER = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
     
-    private static final DataSourceMapConverterFactory INSTANCE = new DataSourceMapConverterFactory();
-    
-    private final Collection<DataSourceMapConverter> backendDataSourceFactories = SERVICE_LOADER.newServiceInstances();
-    
-    @Override
-    public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        if (backendDataSourceFactories.isEmpty()) {
+    /**
+     * Using data source map converter SPI to convert normal data source.
+     * @param dataSourceMap data source map
+     * @param databaseType database type
+     * @return xa transactional datasource map
+     */
+    public static Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+        Collection<DataSourceMapConverter> dataSourceMapConverters = SERVICE_LOADER.newServiceInstances();
+        if (dataSourceMapConverters.isEmpty()) {
             throw new ShardingException("Please make DataSourceMapConverter SPI available.");
         }
-        return backendDataSourceFactories.iterator().next().build(dataSourceMap, databaseType);
-    }
-    
-    /**
-     * Get XA backend datasource factory instance.
-     *
-     * @return XA backend datasource factory
-     */
-    public static DataSourceMapConverterFactory getInstance() {
-        return INSTANCE;
+        return dataSourceMapConverters.iterator().next().build(dataSourceMap, databaseType);
     }
 }
