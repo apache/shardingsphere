@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
@@ -33,6 +34,7 @@ import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperat
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 
 import javax.sql.DataSource;
@@ -52,6 +54,7 @@ import java.util.Map.Entry;
  *
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
@@ -71,12 +74,14 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
-    private final TransactionType transactionType = TransactionType.LOCAL;
+    private final TransactionType transactionType;
     
-    private final ShardingTransactionHandlerRegistry transactionRegistry = ShardingTransactionHandlerRegistry.getInstance();
+    private final ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler;
     
-    protected AbstractConnectionAdapter() {
+    protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
+        this.transactionType = transactionType;
+        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
     }
     
     /**
@@ -177,9 +182,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == transactionType) {
-            transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
         } else if (TransactionType.BASE == transactionType) {
-            transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
         }
     }
     
@@ -194,9 +199,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == transactionType) {
-            transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
-            transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
         }
     }
     
@@ -211,9 +216,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == transactionType) {
-            transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == transactionType) {
-            transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
         }
     }
     

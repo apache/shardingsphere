@@ -17,13 +17,13 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,14 +40,24 @@ import java.util.Map;
  * @author zhangliang
  * @author caohao
  * @author gaohongtao
+ * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingContext shardingContext;
+    
+    protected ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
+        this(dataSourceMap, shardingContext, TransactionType.LOCAL);
+    }
+    
+    protected ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
+        super(transactionType);
+        this.dataSourceMap = dataSourceMap;
+        this.shardingContext = shardingContext;
+    }
     
     /**
      * Release connection.
