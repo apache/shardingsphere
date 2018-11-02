@@ -26,6 +26,7 @@ import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
@@ -141,8 +142,8 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
-        Object shardingContext = FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
-        assertTrue((boolean) FieldValueUtil.getFieldValue(shardingContext, "showSQL"));
+        ShardingContext shardingContext = (ShardingContext) FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
+        assertTrue(shardingContext.isShowSQL());
         ShardingProperties shardingProperties = (ShardingProperties) FieldValueUtil.getFieldValue(dataSource, "shardingProperties", false);
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
