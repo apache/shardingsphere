@@ -233,7 +233,8 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final ShardingConfigurationChangedEvent shardingEvent) {
-        initServerConfiguration(shardingEvent.getAuthentication(), shardingEvent.getProps());
+        authentication = shardingEvent.getAuthentication();
+        shardingProperties = new ShardingProperties(shardingEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
