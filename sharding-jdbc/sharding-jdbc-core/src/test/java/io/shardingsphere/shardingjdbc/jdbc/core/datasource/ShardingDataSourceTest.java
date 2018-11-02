@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeast;
@@ -176,8 +177,15 @@ public final class ShardingDataSourceTest {
         ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.XA));
+        assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedXAShardingTransactionHandler.class));
+        
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        assertThat(shardingDataSource.getConnection().getConnection("ds"), is(dataSource.getConnection()));
+        shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
+        assertThat(shardingConnection.getShardingTransactionHandler() == null, is(true));
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

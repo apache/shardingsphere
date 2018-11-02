@@ -36,6 +36,7 @@ import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,6 +57,7 @@ import java.util.Map.Entry;
  * @author panjuan
  * @author zhaojun
  */
+@Getter
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
     private final Multimap<String, Connection> cachedConnections = HashMultimap.create();

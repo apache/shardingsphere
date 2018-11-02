@@ -58,6 +58,10 @@ public final class ShardingConnectionTest {
     
     private ShardingConnection connection;
     
+    private ShardingContext shardingContext;
+    
+    private Map<String, DataSource> dataSourceMap;
+    
     @BeforeClass
     public static void init() throws SQLException {
         DataSource masterDataSource = new TestDataSource("test_ds_master");
@@ -73,13 +77,13 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
-        ShardingContext shardingContext = mock(ShardingContext.class);
+        shardingContext = mock(ShardingContext.class);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         connection = new ShardingConnection(dataSourceMap, shardingContext);
     }
@@ -114,7 +118,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertXATransactionOperation() throws SQLException {
-        TransactionTypeHolder.set(TransactionType.XA);
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
         connection.setAutoCommit(false);
         assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
         connection.commit();
@@ -125,7 +129,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertBaseTransactionOperation() throws SQLException {
-        TransactionTypeHolder.set(TransactionType.BASE);
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
         connection.setAutoCommit(false);
         assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
         connection.commit();
