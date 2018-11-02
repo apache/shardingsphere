@@ -74,8 +74,6 @@ public final class GlobalRegistry {
     
     private boolean isCircuitBreak;
     
-    
-    
     /**
      * Get instance of proxy context.
      *
