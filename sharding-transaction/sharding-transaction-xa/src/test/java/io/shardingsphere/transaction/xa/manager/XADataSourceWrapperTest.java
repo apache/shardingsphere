@@ -46,7 +46,7 @@ public class XADataSourceWrapperTest {
     
     private final DataSourceParameter parameter = new DataSourceParameter();
     
-    private final XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(transactionManager);
+    private final XATransactionDataSourceWrapper xaDataSourceWrapper = new XATransactionDataSourceWrapper(transactionManager);
     
     @Before
     public void setup() {

@@ -37,7 +37,7 @@ import java.util.Properties;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class XADataSourceWrapper {
+public final class XATransactionDataSourceWrapper {
     
     private final TransactionManager transactionManager;
     

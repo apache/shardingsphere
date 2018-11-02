@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.manager.XADataSourceWrapper;
+import io.shardingsphere.transaction.xa.manager.XATransactionDataSourceWrapper;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
 import javax.sql.DataSource;
@@ -44,7 +44,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     private static final UserTransactionManager USER_TRANSACTION_MANAGER = new UserTransactionManager();
     
-    private final XADataSourceWrapper xaDataSourceWrapper = new XADataSourceWrapper(USER_TRANSACTION_MANAGER);
+    private final XATransactionDataSourceWrapper xaDataSourceWrapper = new XATransactionDataSourceWrapper(USER_TRANSACTION_MANAGER);
     
     public AtomikosTransactionManager() {
         try {
