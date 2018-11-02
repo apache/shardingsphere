@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public class XABackendDataSourceFactoryTest {
     
-    private XABackendDataSourceFactory xaBackendDataSourceFactory = XABackendDataSourceFactory.getInstance();
+    private DataSourceMapConverterFactory xaBackendDataSourceFactory = DataSourceMapConverterFactory.getInstance();
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
     

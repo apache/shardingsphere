@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.spi.xa.XABackendDataSourceFactory;
+import io.shardingsphere.spi.xa.DataSourceMapConverterFactory;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 public class XABackendDataSourceConvertTest {
     
-    private XABackendDataSourceFactory xaBackendDataSourceFactory = XABackendDataSourceFactory.getInstance();
+    private DataSourceMapConverterFactory xaBackendDataSourceFactory = DataSourceMapConverterFactory.getInstance();
     
     @Test
     public void getMysqlXATransactionalDataSourceSuccess() {
