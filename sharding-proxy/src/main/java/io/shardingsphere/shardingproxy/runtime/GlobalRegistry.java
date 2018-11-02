@@ -160,18 +160,38 @@ public final class GlobalRegistry {
         return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
     }
     
+    /**
+     * Is open tracing enable.
+     *
+     * @return is or not
+     */
     public boolean isOpenTracingEnable() {
         return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
     }
     
+    /**
+     * Is show SQL.
+     *
+     * @return show or not
+     */
     public boolean isShowSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
     }
     
+    /**
+     * Get acceptor size.
+     *
+     * @return acceptor size
+     */
     public int getAcceptorSize() {
         return shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
     }
     
+    /**
+     * Get executor size.
+     *
+     * @return executor size
+     */
     public int getExecutorSize() {
         return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
     }
