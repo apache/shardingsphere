@@ -50,7 +50,6 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingExecuteEngine executeEngine;
     
-    @Getter(AccessLevel.PRIVATE)
     private final ShardingProperties shardingProperties;
     
     private final ShardingMetaData metaData;
