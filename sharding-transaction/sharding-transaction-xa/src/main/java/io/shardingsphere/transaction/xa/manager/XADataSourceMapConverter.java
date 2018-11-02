@@ -28,19 +28,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * XA backend data source converter.
+ * XA transactional data source map converter.
  * 
  * @author zhaojun
  */
-public final class XABackendDataSourceConverter implements DataSourceMapConverter {
+public final class XADataSourceMapConverter implements DataSourceMapConverter {
     
-    private static XATransactionManager xaManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
+    private static final XATransactionManager XA_MANAGER = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Override
     public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = xaManager.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
+            DataSource dataSource = XA_MANAGER.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
             result.put(entry.getKey(), dataSource);
         }
         return result;

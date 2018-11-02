@@ -23,14 +23,14 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Backend data source factory.
+ * Convert data source map by database type.
  *
  * @author zhaojun
  */
 public interface DataSourceMapConverter {
     
     /**
-     * Convert normal data source map to xa transactional data source map.
+     * Convert normal data source map to another transactional data source map.
      *
      * @param dataSourceMap data source map
      * @param databaseType database type

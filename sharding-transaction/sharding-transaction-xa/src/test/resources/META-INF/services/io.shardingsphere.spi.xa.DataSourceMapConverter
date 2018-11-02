@@ -1,1 +1,1 @@
-io.shardingsphere.transaction.xa.manager.XABackendDataSourceConverter
+io.shardingsphere.transaction.xa.manager.XADataSourceMapConverter
