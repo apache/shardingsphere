@@ -103,7 +103,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
             if (null == xaDataSourceMap) {
                 log.warn("XA transaction resource have not load, using Local transaction instead!");
             } else {
-                return new ShardingConnection(xaDataSourceMap, shardingContext);
+                return new ShardingConnection(xaDataSourceMap, shardingContext, TransactionType.XA);
             }
         }
         return new ShardingConnection(dataSourceMap, shardingContext);

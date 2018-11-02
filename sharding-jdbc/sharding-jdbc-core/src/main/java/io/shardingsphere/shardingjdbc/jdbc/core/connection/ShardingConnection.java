@@ -49,11 +49,11 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final ShardingContext shardingContext;
     
-    protected ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
         this(dataSourceMap, shardingContext, TransactionType.LOCAL);
     }
     
-    protected ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
         super(transactionType);
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
