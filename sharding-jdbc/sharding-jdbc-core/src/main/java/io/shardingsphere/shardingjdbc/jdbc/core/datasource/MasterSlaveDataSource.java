@@ -95,11 +95,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         return new MasterSlaveConnection(this);
     }
     
-    @Override
-    public final void close() {
-        closeOriginalDataSources();
-    }
-    
     /**
      * Show SQL or not.
      *
