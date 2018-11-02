@@ -17,7 +17,6 @@
 
 package io.shardingsphere.spi.transaction;
 
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.AccessLevel;
@@ -65,8 +64,6 @@ public final class ShardingTransactionHandlerRegistry {
      * @return sharding transaction handler implement
      */
     public ShardingTransactionHandler<ShardingTransactionEvent> getHandler(final TransactionType transactionType) {
-        ShardingTransactionHandler<ShardingTransactionEvent> result = TRANSACTION_HANDLER_MAP.get(transactionType);
-        Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType));
-        return result;
+        return TRANSACTION_HANDLER_MAP.get(transactionType);
     }
 }
