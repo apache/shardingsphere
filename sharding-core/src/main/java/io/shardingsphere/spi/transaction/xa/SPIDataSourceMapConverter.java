@@ -45,6 +45,7 @@ public final class SPIDataSourceMapConverter implements DataSourceMapConverter {
         Collection<DataSourceMapConverter> converters = SERVICE_LOADER.newServiceInstances();
         if (converters.isEmpty()) {
             log.info("Could not find XA DataSourceConverter, XA transaction will not be effective");
+            return;
         }
         dataSourceMapConverter = converters.iterator().next();
     }
