@@ -63,14 +63,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(shardingRule);
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) throws SQLException {
-        super(dataSourceMap.values());
-        this.dataSourceMap = dataSourceMap;
+        super(dataSourceMap);
         this.shardingContext = shardingContext;
         this.shardingProperties = shardingProperties;
     }
@@ -85,7 +83,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         int maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), new ShardingExecuteEngine(executorSize), maxConnectionsSizePerQuery, showSQL);
+        return new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), new ShardingExecuteEngine(executorSize), maxConnectionsSizePerQuery, showSQL);
     }
     
     @Override
@@ -93,12 +91,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
                 synchronized (this) {
-                    xaDataSourceMap = XABackendDataSourceFactory.getInstance().build(dataSourceMap, getDatabaseType());
+                    xaDataSourceMap = XABackendDataSourceFactory.getInstance().build(getDataSourceMap(), getDatabaseType());
                 }
             }
             return new ShardingConnection(xaDataSourceMap, shardingContext);
         }
-        return new ShardingConnection(dataSourceMap, shardingContext);
+        return new ShardingConnection(getDataSourceMap(), shardingContext);
     }
     
     @Override
