@@ -50,6 +50,6 @@ public final class SPIDataSourceMapConverter {
         if (dataSourceMapConverters.isEmpty()) {
             throw new ShardingException("Please make DataSourceMapConverter SPI available.");
         }
-        return dataSourceMapConverters.iterator().next().build(dataSourceMap, databaseType);
+        return dataSourceMapConverters.iterator().next().convert(dataSourceMap, databaseType);
     }
 }
