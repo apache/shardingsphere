@@ -37,7 +37,7 @@ import javax.transaction.TransactionManager;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class XADataSourceWrapperTest {
+public class XATransactionDataSourceWrapperTest {
     
     private TransactionManager transactionManager =
         XATransactionManagerSPILoader.getInstance().getTransactionManager().getUnderlyingTransactionManager();

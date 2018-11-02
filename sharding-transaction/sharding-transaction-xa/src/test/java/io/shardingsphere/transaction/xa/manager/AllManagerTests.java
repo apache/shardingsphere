@@ -31,7 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
         XAPropertyFactoryTest.class,
         XADataSourceMapConverterTest.class,
         XADataSourceFactoryTest.class,
-        XADataSourceWrapperTest.class,
+        XATransactionDataSourceWrapperTest.class,
         XATransactionManagerSPILoaderTest.class
 })
 public final class AllManagerTests {
