@@ -37,7 +37,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter {
     
     private final OrchestrationFacade orchestrationFacade;
     
