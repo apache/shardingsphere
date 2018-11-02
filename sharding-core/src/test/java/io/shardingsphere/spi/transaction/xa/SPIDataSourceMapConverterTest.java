@@ -29,11 +29,14 @@ import static org.junit.Assert.assertThat;
 
 public class SPIDataSourceMapConverterTest {
     
+    private final SPIDataSourceMapConverter converter = new SPIDataSourceMapConverter();
+    
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Test
     public void createBackendDatasourceSuccess() {
-        Map<String, DataSource> backendDatasourceMap = SPIDataSourceMapConverter.convert(dataSourceMap, DatabaseType.MySQL);
+        Map<String, DataSource> backendDatasourceMap = converter.convert(dataSourceMap, DatabaseType.MySQL);
+        assertThat(backendDatasourceMap != null, is(true));
         assertThat(backendDatasourceMap.size(), is(0));
     }
     
