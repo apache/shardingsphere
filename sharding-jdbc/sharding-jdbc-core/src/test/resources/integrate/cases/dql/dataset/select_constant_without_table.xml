@@ -1,0 +1,6 @@
+<dataset>
+    <metadata>
+        <column name="a" />
+    </metadata>
+    <row values="1" />
+</dataset>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/masterslave
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
+                        ">
+    <import resource="../datasource/masterSlaveDataSource.xml" />
+
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    
+    <master-slave:data-source id="defaultMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" >
+        <master-slave:props>
+            <prop key="sql.show">${sql_show}</prop>
+            <prop key="executor.size">10</prop>
+            <prop key="foo">bar</prop>
+        </master-slave:props>
+    </master-slave:data-source>
+    <master-slave:data-source id="randomMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="RANDOM" />
+    <master-slave:data-source id="roundRobinMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-type="ROUND_ROBIN" />
+    <master-slave:data-source id="refMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomStrategy" />
+    <master-slave:data-source id="configMapDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomStrategy" >
+        <master-slave:config-map>
+            <entry key="key1" value="value1" />
+        </master-slave:config-map>
+    </master-slave:data-source>
+</beans>

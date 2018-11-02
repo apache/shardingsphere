@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://shardingsphere.io/schema/shardingsphere/masterslave"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://shardingsphere.io/schema/shardingsphere/masterslave"
+            elementFormDefault="qualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
+    <xsd:element name="data-source">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="config-map" minOccurs="0" />
+                <xsd:element ref="props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="strategy-ref" type="xsd:string" />
+            <xsd:attribute name="strategy-type" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="config-map">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:mapType" />
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="props">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:propsType" />
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

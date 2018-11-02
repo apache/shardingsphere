@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
+
+    <import resource="../datasource/masterSlaveDataSource.xml" />
+
+    <bean id="keyGenerator" class="io.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator" />
+
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="rangeModuloTableShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
+    <bean id="defaultComplexKeysShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
+    <bean id="defaultHintShardingAlgorithm" class="io.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
+
+    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
+    <sharding:inline-strategy id="inlineStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 4}" />
+    <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
+    <sharding:none-strategy id="noneStrategy" />
+
+    <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="keyGenerator">
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
+                <sharding:master-slave-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
+            </sharding:master-slave-rules>
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" generate-key-column-name="order_id" key-generator-ref="keyGenerator" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+
+    <sharding:data-source id="masterSlaveShardingDataSourceByUserStrategy">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="keyGenerator">
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1" strategy-ref="randomStrategy"/>
+                <sharding:master-slave-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1" strategy-ref="randomStrategy"/>
+            </sharding:master-slave-rules>
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" generate-key-column-name="order_id" key-generator-ref="keyGenerator" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+</beans>
