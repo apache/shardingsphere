@@ -17,28 +17,28 @@
 
 package io.shardingsphere.test.sql;
 
-import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * SQL test cases for xml root tag.
+ * SQL test cases loader.
  * 
  * @author zhangliang 
  */
-@XmlRootElement(name = "sql-cases")
-@Getter
-public final class SQLCases {
-    @XmlAttribute
-    private String namespace;
+public final class AntlrSQLCasesLoader extends SQLCasesLoader{
     
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+    private static final AntlrSQLCasesLoader INSTANCE = new AntlrSQLCasesLoader();
     
-    @XmlElement(name = "sql-case")
-    private List<SQLCase> sqlCases = new LinkedList<>();
+    
+    protected AntlrSQLCasesLoader() {
+        supportedSQLCaseMap = loadSQLCases("antlr_supported_sql");
+        unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
+    }
+    
+    /**
+     * Get singleton instance.
+     * 
+     * @return singleton instance
+     */
+    public static AntlrSQLCasesLoader getInstance() {
+        return INSTANCE;
+    }
+   
 }
