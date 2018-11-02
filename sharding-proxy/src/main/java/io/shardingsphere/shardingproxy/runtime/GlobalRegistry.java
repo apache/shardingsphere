@@ -66,11 +66,11 @@ public final class GlobalRegistry {
     
     private final Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
     
-    private final Authentication authentication;
+    private Authentication authentication;
     
-    private final ShardingProperties shardingProperties;
+    private ShardingProperties shardingProperties;
     
-    private final BackendNIOConfiguration backendNIOConfig;
+    private BackendNIOConfiguration backendNIOConfig;
     
     private boolean isCircuitBreak;
     
@@ -127,6 +127,10 @@ public final class GlobalRegistry {
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
+        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
+        this.authentication = authentication;
     }
     
     private void initServerConfiguration(final Authentication authentication, final Properties props) {
@@ -141,10 +145,7 @@ public final class GlobalRegistry {
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
         useNIO = false;
         // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
-        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
-        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
-        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-        this.authentication = authentication;
+        
     }
     
     /**
