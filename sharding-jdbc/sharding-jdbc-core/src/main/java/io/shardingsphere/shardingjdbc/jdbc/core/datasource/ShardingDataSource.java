@@ -20,9 +20,7 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -51,8 +49,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private final ShardingContext shardingContext;
     
-//    private final ShardingProperties shardingProperties;
-    
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
     }
@@ -63,26 +59,18 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.shardingContext = getShardingContext(shardingRule);
+        this.shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) throws SQLException {
         super(dataSourceMap);
         this.shardingContext = shardingContext;
-        this.shardingProperties = shardingProperties;
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
         }
-    }
-    
-    private ShardingContext getShardingContext(final ShardingRule shardingRule) throws SQLException {
-        int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        int maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        return new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), new ShardingExecuteEngine(executorSize), maxConnectionsSizePerQuery, showSQL);
     }
     
     @Override
