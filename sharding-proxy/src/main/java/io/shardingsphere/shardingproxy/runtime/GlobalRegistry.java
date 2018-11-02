@@ -66,11 +66,11 @@ public final class GlobalRegistry {
     
     private final Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
     
-    private Authentication authentication;
-    
     private ShardingProperties shardingProperties;
     
     private BackendNIOConfiguration backendNIOConfig;
+    
+    private Authentication authentication;
     
     private boolean isCircuitBreak;
     
@@ -126,7 +126,7 @@ public final class GlobalRegistry {
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
-        ShardingProperties shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
