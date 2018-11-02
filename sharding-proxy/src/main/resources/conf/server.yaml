@@ -1,0 +1,29 @@
+######################################################################################################
+# 
+# If you want to configure orchestration, authorization and proxy properties, please refer to this file.
+# 
+######################################################################################################
+
+#orchestration:
+#  name: orchestration_ds
+#  overwrite: true
+#  registry:
+#    serverLists: localhost:2181
+#    namespace: orchestration
+#
+#authentication:
+#  username: root
+#  password: root
+#
+#props:
+#  max.connections.size.per.query: 1
+#  acceptor.size: 16  # The default value is available processors count * 2.
+#  executor.size: 16  # Infinite by default.
+#  proxy.transaction.enabled: false
+#    # Be valid when proxy.transaction.enabled is true.
+#    # LOCAL: Proxy will run with LOCAL transaction.
+#    # XA: Proxy will run with XA transaction.
+#    # BASE: Proxy will run with B.A.S.E transaction.
+#  proxy.transaction.type: BASE
+#  proxy.opentracing.enabled: false
+#  sql.show: false
