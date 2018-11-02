@@ -53,8 +53,6 @@ public final class ShardingContext implements AutoCloseable {
     
     private final int maxConnectionsSizePerQuery;
     
-    private final boolean showSQL;
-    
     private final ShardingMetaData metaData;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, 
@@ -89,6 +87,15 @@ public final class ShardingContext implements AutoCloseable {
      */
     public boolean isShowSQL() {
         return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    }
+    
+    /**
+     * Get max connections size per query.
+     *
+     * @return max connections size per query
+     */
+    public int getMaxConnectionsSizePerQuery() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
     }
     
     @Override
