@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * XA backend data source factory.
+ * SPI data source map converter.
  *
  * @author zhaojun
  */
@@ -54,7 +54,7 @@ public final class SPIDataSourceMapConverter {
     }
     
     /**
-     * Using data source map converter SPI to convert normal data source.
+     * Convert normal datasource to xa transactional datasource.
      * @param dataSourceMap data source map
      * @param databaseType database type
      * @return xa transactional datasource map
