@@ -27,7 +27,6 @@ import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,16 +77,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             result.put(each, getDataSourceMap().get(each));
         }
         return result;
-    }
-    
-    private void closeOriginalDataSources() {
-        for (DataSource each : getDataSourceMap().values()) {
-            try {
-                Method closeMethod = each.getClass().getDeclaredMethod("close");
-                closeMethod.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
     }
     
     @Override
