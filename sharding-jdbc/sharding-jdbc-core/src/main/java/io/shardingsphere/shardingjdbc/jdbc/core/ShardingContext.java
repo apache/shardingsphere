@@ -51,8 +51,6 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingProperties shardingProperties;
     
-    private final int maxConnectionsSizePerQuery;
-    
     private final ShardingMetaData metaData;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, 
@@ -61,7 +59,6 @@ public final class ShardingContext implements AutoCloseable {
         this.databaseType = databaseType;
         this.executeEngine = executeEngine;
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
-        this.showSQL = showSQL;
         metaData = new ShardingMetaData(
                 getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), maxConnectionsSizePerQuery);
     }
