@@ -18,10 +18,7 @@
 package io.shardingsphere.spi.transaction.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -34,8 +31,7 @@ import java.util.Map;
  * @author zhaojun
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SPIDataSourceMapConverter {
+public final class SPIDataSourceMapConverter implements DataSourceMapConverter {
     
     private static final NewInstanceServiceLoader<DataSourceMapConverter> SERVICE_LOADER = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
     
@@ -48,18 +44,20 @@ public final class SPIDataSourceMapConverter {
     private static void init() {
         Collection<DataSourceMapConverter> converters = SERVICE_LOADER.newServiceInstances();
         if (converters.isEmpty()) {
-            throw new ShardingException("Please make DataSourceMapConverter SPI available.");
+            log.info("Could not find XA DataSourceConverter, XA transaction will not be effective");
         }
         dataSourceMapConverter = converters.iterator().next();
     }
     
     /**
      * Convert normal datasource to xa transactional datasource.
+     *
      * @param dataSourceMap data source map
      * @param databaseType database type
      * @return xa transactional datasource map
      */
-    public static Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        return dataSourceMapConverter.convert(dataSourceMap, databaseType);
+    @Override
+    public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+        return null != dataSourceMapConverter ? dataSourceMapConverter.convert(dataSourceMap, databaseType) : null;
     }
 }
