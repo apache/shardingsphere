@@ -15,25 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.yaml;
+package io.shardingsphere.orchestration.internal.event.config;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Rule configuration for yaml.
+ * Configuration changed event.
  *
- * @author panjuan
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@Deprecated
-// TODO to be removed
-public final class YamlRuleConfiguration {
+public abstract class ConfigurationChangedEvent {
     
-    private ShardingRuleConfiguration shardingRule;
+    private final String schemaName;
     
-    private MasterSlaveRuleConfiguration masterSlaveRule;
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    
+    private final Authentication authentication;
+    
+    private final Properties props;
 }

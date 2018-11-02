@@ -15,22 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.state;
+package io.shardingsphere.orchestration.internal.state;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * proxy disabled event bus event.
- * 
- * @author chenqingyang
- */
-@RequiredArgsConstructor
-@Getter
-public class ProxyDisabledStateEventBusEvent {
+public final class StateNodeTest {
     
-    private final Map<String, Collection<String>> disabledSchemaDataSourceMap;
+    private StateNode stateNode = new StateNode("test");
+    
+    @Test
+    public void assertGetDataSourcesNodeFullPath() {
+        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/test/state/datasources"));
+    }
+    
+    @Test
+    public void assertGetInstancesNodeFullPath() {
+        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
+    }
 }

@@ -15,24 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy;
+package io.shardingsphere.shardingproxy.frontend;
 
-import io.shardingsphere.shardingproxy.config.AllConfigTests;
-import io.shardingsphere.shardingproxy.frontend.AllFrontendTests;
-import io.shardingsphere.shardingproxy.listener.AllListenerTests;
-import io.shardingsphere.shardingproxy.runtime.AllRuntimeTests;
-import io.shardingsphere.shardingproxy.transport.AllTransportTests;
+import io.shardingsphere.shardingproxy.frontend.common.FrontendHandlerFactoryTest;
+import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroupTest;
+import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroupTest;
+import io.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllRuntimeTests.class, 
-        AllListenerTests.class, 
-        AllConfigTests.class, 
-        AllTransportTests.class, 
-        AllFrontendTests.class
+        FrontendHandlerFactoryTest.class,
+        MySQLFrontendHandlerTest.class, 
+        ExecutorGroupTest.class, 
+        ChannelThreadExecutorGroupTest.class
 })
-public final class AllTests {
+public final class AllFrontendTests {
 }

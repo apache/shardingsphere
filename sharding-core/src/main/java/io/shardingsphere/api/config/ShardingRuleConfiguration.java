@@ -32,7 +32,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class ShardingRuleConfiguration {
+public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private String defaultDataSourceName;
     

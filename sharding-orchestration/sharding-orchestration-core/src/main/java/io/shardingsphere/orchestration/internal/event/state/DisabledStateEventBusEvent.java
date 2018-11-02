@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Disabled event bus event.
@@ -31,5 +32,5 @@ import java.util.Collection;
 @Getter
 public final class DisabledStateEventBusEvent {
     
-    private final Collection<String> disabledDataSourceNames;
+    private final Map<String, Collection<String>> disabledSchemaDataSourceMap;
 }

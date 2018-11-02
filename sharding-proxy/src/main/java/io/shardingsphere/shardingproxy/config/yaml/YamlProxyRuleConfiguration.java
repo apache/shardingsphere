@@ -15,30 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.config;
+package io.shardingsphere.shardingproxy.config.yaml;
 
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import javax.sql.DataSource;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Sharding configuration changed event.
+ * Rule configuration for yaml.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingConfigurationDataSourceChangedEvent {
+@Setter
+public final class YamlProxyRuleConfiguration {
     
-    private final String schemaName;
+    private String schemaName;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
     
-    private final ShardingRule shardingRule;
+    private YamlShardingRuleConfiguration shardingRule;
     
-    private final Properties props;
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
 }

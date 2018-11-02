@@ -21,10 +21,12 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,6 +38,7 @@ import java.util.Map.Entry;
  * Data source configuration.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -75,6 +78,26 @@ public final class DataSourceConfiguration {
         DataSourceConfiguration result = new DataSourceConfiguration();
         result.setDataSourceClassName(dataSource.getClass().getName());
         result.setProperties(properties);
+        return result;
+    }
+    
+    /**
+     * Get data source configuration.
+     *
+     * @param dataSourceParameter data source parameter
+     * @return data source configuration
+     */
+    public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+        DataSourceConfiguration result = new DataSourceConfiguration();
+        result.setDataSourceClassName("com.zaxxer.hikari.HikariDataSource");
+        result.setProperties(new LinkedHashMap<String, Object>());
+        for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                result.getProperties().put(each.getName(), each.get(dataSourceParameter));
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
         return result;
     }
     
@@ -120,5 +143,22 @@ public final class DataSourceConfiguration {
             }
         }
         return null;
+    }
+    
+    /**
+     * Create data source parameter.
+     *
+     * @return data source parameter
+     */
+    public DataSourceParameter createDataSourceParameter() {
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                each.set(result, properties.get(each.getName()));
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
     }
 }
