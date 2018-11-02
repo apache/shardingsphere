@@ -196,6 +196,11 @@ public final class GlobalRegistry {
         return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
     }
     
+    /**
+     * Is use NIO.
+     *
+     * @return use or not
+     */
     // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
     public boolean isUseNIO() {
         return false;
@@ -244,7 +249,8 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) {
-        initServerConfiguration(masterSlaveEvent.getAuthentication(), masterSlaveEvent.getProps());
+        authentication = masterSlaveEvent.getAuthentication();
+        shardingProperties = new ShardingProperties(masterSlaveEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
