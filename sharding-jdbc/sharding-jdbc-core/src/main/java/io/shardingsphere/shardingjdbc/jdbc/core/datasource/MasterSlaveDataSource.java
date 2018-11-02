@@ -42,9 +42,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
-    
-    private final Map<String, DataSource> dataSourceMap;
+public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -52,22 +50,20 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
+        super(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
                                  final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
-        super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
+        super(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = masterSlaveRule;
         this.shardingProperties = props;
     }
