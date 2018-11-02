@@ -141,10 +141,20 @@ public final class GlobalRegistry {
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
     }
     
+    /**
+     * Get max connections size per query.
+     *
+     * @return max connections size per query
+     */
     public int getMaxConnectionsSizePerQuery() {
         return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
     }
     
+    /**
+     * Get transaction type.
+     *
+     * @return transaction type
+     */
     // TODO just config proxy.transaction.enable here, in future(3.1.0)
     public TransactionType getTransactionType() {
         return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
