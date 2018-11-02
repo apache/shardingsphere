@@ -19,14 +19,14 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.spi.xa.BackendDataSourceFactory;
+import io.shardingsphere.spi.xa.DataSourceMapConverter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public final class FixedBackendDataSourceFactory implements BackendDataSourceFactory {
+public final class FixedBackendDataSourceFactory implements DataSourceMapConverter {
     
     @Override
     public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {

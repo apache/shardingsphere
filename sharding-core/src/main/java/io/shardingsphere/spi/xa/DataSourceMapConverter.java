@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public interface BackendDataSourceFactory {
+public interface DataSourceMapConverter {
     
     /**
      * Build backend datasource by datasource map.

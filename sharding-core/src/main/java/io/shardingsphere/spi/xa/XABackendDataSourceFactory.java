@@ -35,13 +35,13 @@ import java.util.Map;
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class XABackendDataSourceFactory implements BackendDataSourceFactory {
+public final class XABackendDataSourceFactory implements DataSourceMapConverter {
     
-    private static final NewInstanceServiceLoader<BackendDataSourceFactory> SERVICE_LOADER = NewInstanceServiceLoader.load(BackendDataSourceFactory.class);
+    private static final NewInstanceServiceLoader<DataSourceMapConverter> SERVICE_LOADER = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
     
     private static final XABackendDataSourceFactory INSTANCE = new XABackendDataSourceFactory();
     
-    private final Collection<BackendDataSourceFactory> backendDataSourceFactories = SERVICE_LOADER.newServiceInstances();
+    private final Collection<DataSourceMapConverter> backendDataSourceFactories = SERVICE_LOADER.newServiceInstances();
     
     @Override
     public Map<String, DataSource> build(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
