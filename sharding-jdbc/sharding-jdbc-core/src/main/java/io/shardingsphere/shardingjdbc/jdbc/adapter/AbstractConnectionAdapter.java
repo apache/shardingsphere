@@ -71,6 +71,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
+    private final TransactionType transactionType = TransactionType.LOCAL;
+    
     private final ShardingTransactionHandlerRegistry transactionRegistry = ShardingTransactionHandlerRegistry.getInstance();
     
     protected AbstractConnectionAdapter() {
@@ -163,9 +165,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+        if (TransactionType.LOCAL == transactionType) {
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
@@ -174,16 +176,16 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.setAutoCommit(autoCommit);
                 }
             });
-        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
+        } else if (TransactionType.XA == transactionType) {
             transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
-        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
+        } else if (TransactionType.BASE == transactionType) {
             transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
         }
     }
     
     @Override
-    public void commit() throws SQLException {
-        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+    public final void commit() throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
                 @Override
@@ -191,16 +193,16 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.commit();
                 }
             });
-        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
+        } else if (TransactionType.XA == transactionType) {
             transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
-        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
+        } else if (TransactionType.BASE == transactionType) {
             transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
         }
     }
     
     @Override
-    public void rollback() throws SQLException {
-        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+    public final void rollback() throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
                 @Override
@@ -208,9 +210,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.rollback();
                 }
             });
-        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
+        } else if (TransactionType.XA == transactionType) {
             transactionRegistry.getHandler(TransactionType.XA).doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
-        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
+        } else if (TransactionType.BASE == transactionType) {
             transactionRegistry.getHandler(TransactionType.BASE).doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
         }
     }
