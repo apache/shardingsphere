@@ -17,5 +17,27 @@
 
 package io.shardingsphere.transaction.xa.handler;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.transaction.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class XAShardingTransactionHandlerTest {
+    
+    private XAShardingTransactionHandler xaShardingTransactionHandler = new XAShardingTransactionHandler();
+    
+    @Test
+    public void assertGetTransactionManager() {
+        ShardingTransactionManager shardingTransactionManager = xaShardingTransactionHandler.getShardingTransactionManager();
+        assertThat(shardingTransactionManager, instanceOf(AtomikosTransactionManager.class));
+    }
+    
+    @Test
+    public void assertGetTransactionType() {
+        assertThat(xaShardingTransactionHandler.getTransactionType(), is(TransactionType.XA));
+    }
 }
