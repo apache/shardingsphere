@@ -47,8 +47,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private volatile Map<String, DataSource> xaDataSourceMap;
     
     private final ShardingContext shardingContext;
@@ -60,7 +58,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap.values());
+        super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
