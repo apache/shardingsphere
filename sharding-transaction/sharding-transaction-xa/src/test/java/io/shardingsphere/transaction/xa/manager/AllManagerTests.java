@@ -29,7 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AtomikosTransactionManagerTest.class,
         DataSourceParameterFactoryTest.class,
         XAPropertyFactoryTest.class,
-        XABackendDataSourceConvertTest.class,
+        XADataSourceMapConverterTest.class,
         XADataSourceFactoryTest.class,
         XADataSourceWrapperTest.class,
         XATransactionManagerSPILoaderTest.class
