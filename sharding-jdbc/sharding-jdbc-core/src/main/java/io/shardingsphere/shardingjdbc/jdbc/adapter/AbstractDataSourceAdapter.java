@@ -26,6 +26,7 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -53,6 +54,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
     }
     
@@ -72,6 +74,16 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+        }
+    }
+    
+    private void close() {
+        for (DataSource each : getDataSourceMap().values()) {
+            try {
+                Method closeMethod = each.getClass().getDeclaredMethod("close");
+                closeMethod.invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
         }
     }
     
