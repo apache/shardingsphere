@@ -121,16 +121,24 @@ public final class GlobalRegistry {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        this.authentication = authentication;
+        initSchema(schemaDataSources, schemaRules, isUsingRegistry);
+        initBackendNIOConfig();
+    }
+    
+    private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+    }
+    
+    private void initBackendNIOConfig() {
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-        this.authentication = authentication;
     }
     
     public int getMaxConnectionsSizePerQuery() {
