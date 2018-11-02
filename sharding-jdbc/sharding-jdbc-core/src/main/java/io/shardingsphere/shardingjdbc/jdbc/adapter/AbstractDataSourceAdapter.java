@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -45,12 +46,14 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         ShardingBootstrap.init();
     }
     
+    private final Map<String, DataSource> dataSourceMap;
+    
     private final DatabaseType databaseType;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
-        databaseType = getDatabaseType(dataSources);
+    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        databaseType = getDatabaseType(dataSourceMap.values());
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
