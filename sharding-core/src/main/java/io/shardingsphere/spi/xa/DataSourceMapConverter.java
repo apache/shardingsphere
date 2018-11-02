@@ -30,7 +30,7 @@ import java.util.Map;
 public interface DataSourceMapConverter {
     
     /**
-     * Convert normal data source map to another transactional data source map.
+     * Do convert data source map.
      *
      * @param dataSourceMap data source map
      * @param databaseType database type
