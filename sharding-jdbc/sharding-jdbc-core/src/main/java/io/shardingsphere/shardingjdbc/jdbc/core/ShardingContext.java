@@ -18,7 +18,9 @@
 package io.shardingsphere.shardingjdbc.jdbc.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -78,6 +80,15 @@ public final class ShardingContext implements AutoCloseable {
         try (Connection connection = dataSource.getConnection()) {
             return connection.getMetaData().getURL();
         }
+    }
+    
+    /**
+     * Is show sql or not.
+     *
+     * @return show or not
+     */
+    public boolean isShowSQL() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
     }
     
     @Override
