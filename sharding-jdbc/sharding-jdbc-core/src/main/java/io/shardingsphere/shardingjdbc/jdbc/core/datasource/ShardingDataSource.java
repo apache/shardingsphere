@@ -51,7 +51,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private final ShardingContext shardingContext;
     
-    private final ShardingProperties shardingProperties;
+//    private final ShardingProperties shardingProperties;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -63,7 +63,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(shardingRule);
     }
     
