@@ -64,7 +64,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), executorSize, getMaxConnectionsSizePerQuery());
+        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), executorSize);
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final Properties props) throws SQLException {
