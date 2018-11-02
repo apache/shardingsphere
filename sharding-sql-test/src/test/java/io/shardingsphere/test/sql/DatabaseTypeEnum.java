@@ -17,28 +17,7 @@
 
 package io.shardingsphere.test.sql;
 
-/**
- * SQL test cases loader.
- * 
- * @author zhangliang 
- */
-public final class AntlrSQLCasesLoader extends SQLCasesLoader{
+public enum DatabaseTypeEnum {
     
-    private static final AntlrSQLCasesLoader INSTANCE = new AntlrSQLCasesLoader();
-    
-    
-    protected AntlrSQLCasesLoader() {
-        supportedSQLCaseMap = loadSQLCases("antlr_supported_sql");
-        unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
-    }
-    
-    /**
-     * Get singleton instance.
-     * 
-     * @return singleton instance
-     */
-    public static AntlrSQLCasesLoader getInstance() {
-        return INSTANCE;
-    }
-   
+    H2, MySQL, Oracle, SQLServer, PostgreSQL
 }
