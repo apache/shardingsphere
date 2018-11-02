@@ -19,7 +19,6 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -49,8 +48,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private final ShardingContext shardingContext;
     
-    private final ShardingProperties shardingProperties;
-    
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
     }
@@ -61,13 +58,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final Properties props) throws SQLException {
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) throws SQLException {
         super(dataSourceMap);
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = shardingContext;
     }
     
