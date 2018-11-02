@@ -137,10 +137,7 @@ public final class GlobalRegistry {
     }
     
     private void initServerConfiguration(final Authentication authentication, final Properties props) {
-        // TODO just config proxy.transaction.enable here, in future(3.1.0)
-        transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
-        openTracingEnable = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
-        showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        showSQL =
         acceptorSize = shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
@@ -152,8 +149,18 @@ public final class GlobalRegistry {
         return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
     }
     
-    public TransactionType
+    public TransactionType getTransactionType() {
+        // TODO just config proxy.transaction.enable here, in future(3.1.0)
+        return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
+    }
     
+    public boolean isOpenTracingEnable() {
+        return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
+    }
+    
+    public boolean isShowSQL() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    }
     
     
     
