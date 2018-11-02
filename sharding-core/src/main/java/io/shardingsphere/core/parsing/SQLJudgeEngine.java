@@ -161,6 +161,16 @@ public final class SQLJudgeEngine {
         return new ShowOtherStatement();
     }
     
+    private DALStatement parseShowTableStatus(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowTableStatusStatement();
+        lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+        }
+        return result;
+    }
+    
     private DALStatement parseShowTables(final LexerEngine lexerEngine) {
         DALStatement result = new ShowTablesStatement();
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
@@ -181,14 +191,10 @@ public final class SQLJudgeEngine {
         return result;
     }
     
-    private void parseSingleTableWithSchema(final LexerEngine lexerEngine, final SQLStatement sqlStatement) {
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        String literals = lexerEngine.getCurrentToken().getLiterals();
-        lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
-            sqlStatement.addSQLToken(new SchemaToken(beginPosition, literals, null));
-            lexerEngine.nextToken(); 
-        }
+    private DALStatement parseShowCreateTable(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowCreateTableStatement();
+        parseSingleTableWithSchema(lexerEngine, result);
+        return result;
     }
     
     private DALStatement parseShowIndex(final LexerEngine lexerEngine) {
@@ -202,19 +208,13 @@ public final class SQLJudgeEngine {
         return result;
     }
     
-    private DALStatement parseShowTableStatus(final LexerEngine lexerEngine) {
-        DALStatement result = new ShowTableStatusStatement();
+    private void parseSingleTableWithSchema(final LexerEngine lexerEngine, final SQLStatement sqlStatement) {
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        String literals = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
-        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
-            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            sqlStatement.addSQLToken(new SchemaToken(beginPosition, literals, null));
+            lexerEngine.nextToken();
         }
-        return result;
-    }
-    
-    private DALStatement parseShowCreateTable(final LexerEngine lexerEngine) {
-        DALStatement result = new ShowCreateTableStatement();
-        parseSingleTableWithSchema(lexerEngine, result);
-        return result;
     }
 }
