@@ -28,8 +28,10 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -45,6 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
+@Slf4j
 public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap;
@@ -54,6 +57,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     private final ShardingContext shardingContext;
     
     private final ShardingProperties shardingProperties;
+    
+    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -68,6 +73,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         this.dataSourceMap = dataSourceMap;
         this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.shardingContext = getShardingContext(shardingRule);
+        this.xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) throws SQLException {
@@ -75,6 +81,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
         this.shardingProperties = shardingProperties;
+        this.xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
@@ -94,11 +101,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
     public final ShardingConnection getConnection() {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
-                synchronized (this) {
-                    xaDataSourceMap = SPIDataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
-                }
+                log.warn("XA transaction resource have not load, using Local transaction instead!");
+            } else {
+                return new ShardingConnection(xaDataSourceMap, shardingContext);
             }
-            return new ShardingConnection(xaDataSourceMap, shardingContext);
         }
         return new ShardingConnection(dataSourceMap, shardingContext);
     }
