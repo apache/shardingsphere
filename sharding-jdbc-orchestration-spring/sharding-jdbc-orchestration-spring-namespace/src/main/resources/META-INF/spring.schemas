@@ -1,3 +1,0 @@
-http\://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd=META-INF/namespace/orchestration-sharding.xsd
-http\://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd=META-INF/namespace/orchestration-master-slave.xsd
-http\://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd=META-INF/namespace/orchestration-reg.xsd
