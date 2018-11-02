@@ -101,16 +101,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final void close() {
-        closeOriginalDataSources();
+        super.close();
         shardingContext.close();
-    }
-    
-    private void closeOriginalDataSources() {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                each.getClass().getDeclaredMethod("close").invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
     }
 }
