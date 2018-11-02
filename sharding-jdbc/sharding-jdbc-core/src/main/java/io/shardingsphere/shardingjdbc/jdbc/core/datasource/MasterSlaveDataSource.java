@@ -29,9 +29,7 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -66,15 +64,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         }
         this.masterSlaveRule = masterSlaveRule;
         this.shardingProperties = props;
-    }
-    
-    private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
-        Collection<DataSource> result = new LinkedList<>();
-        result.add(dataSourceMap.get(masterDataSourceName));
-        for (String each : slaveDataSourceNames) {
-            result.add(dataSourceMap.get(each));
-        }
-        return result;
     }
     
     /**
