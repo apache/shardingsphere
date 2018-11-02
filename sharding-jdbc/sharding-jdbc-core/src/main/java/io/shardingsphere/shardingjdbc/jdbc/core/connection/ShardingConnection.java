@@ -54,7 +54,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      *
      * @param connection to be released connection
      */
-    public void release(final Connection connection) {
+    void release(final Connection connection) {
         removeCache(connection);
         try {
             connection.close();
@@ -119,20 +119,5 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    @Override
-    public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        super.setAutoCommit(autoCommit);
-    }
-    
-    @Override
-    public void commit() throws SQLException {
-        super.commit();
-    }
-    
-    @Override
-    public void rollback() throws SQLException {
-        super.rollback();
     }
 }
