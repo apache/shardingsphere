@@ -104,7 +104,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         return merge(sqlStatement);
     }
     
-    private boolean isUnsupportedXA(final SQLType sqlType) throws SQLException {
+    private boolean isUnsupportedXA(final SQLType sqlType) {
         return TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
                 && Status.STATUS_NO_TRANSACTION != XATransactionManagerSPILoader.getInstance().getTransactionManager().getStatus();
     }
