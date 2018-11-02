@@ -127,6 +127,9 @@ public final class GlobalRegistry {
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
+        ShardingProperties shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+    
+        // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
@@ -134,8 +137,6 @@ public final class GlobalRegistry {
     }
     
     private void initServerConfiguration(final Authentication authentication, final Properties props) {
-        ShardingProperties shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO just config proxy.transaction.enable here, in future(3.1.0)
         transactionType = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
         openTracingEnable = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
@@ -144,9 +145,18 @@ public final class GlobalRegistry {
         executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
         useNIO = false;
-        // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         
     }
+    
+    public int getMaxConnectionsSizePerQuery() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    }
+    
+    public TransactionType
+    
+    
+    
+    
     
     /**
      * Check schema exists.
