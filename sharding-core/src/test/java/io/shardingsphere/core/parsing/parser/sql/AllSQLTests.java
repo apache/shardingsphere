@@ -25,9 +25,10 @@ import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatementTest;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatementTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         DQLStatementTest.class, 
         DMLStatementTest.class, 
         DDLStatementTest.class, 

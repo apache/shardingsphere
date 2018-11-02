@@ -18,7 +18,6 @@
 package io.shardingsphere.core.merger.dql.groupby.aggregation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -28,7 +27,6 @@ import java.util.List;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ComparableAggregationUnit implements AggregationUnit {
     
     private final boolean asc;
@@ -43,13 +41,11 @@ public final class ComparableAggregationUnit implements AggregationUnit {
         }
         if (null == result) {
             result = values.get(0);
-            log.trace("Comparable result: {}", result);
             return;
         }
         int comparedValue = ((Comparable) values.get(0)).compareTo(result);
         if (asc && comparedValue < 0 || !asc && comparedValue > 0) {
             result = values.get(0);
-            log.trace("Comparable result: {}", result);
         }
     }
     

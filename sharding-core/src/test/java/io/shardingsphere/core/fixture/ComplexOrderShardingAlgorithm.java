@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.fixture;
 
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 
 import java.util.Collection;
 

@@ -18,8 +18,8 @@
 package io.shardingsphere.core.metadata.table.executor;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -30,7 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -44,10 +44,10 @@ public final class TableMetaDataInitializer {
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(
-            final ShardingDataSourceMetaData shardingDataSourceMetaData, final ListeningExecutorService executorService, final TableMetaDataConnectionManager connectionManager) {
+    public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, 
+                                    final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery) {
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executorService, connectionManager);
+        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executeEngine, connectionManager, maxConnectionsSizePerQuery);
     }
     
     /**
@@ -67,7 +67,7 @@ public final class TableMetaDataInitializer {
         return result;
     }
     
-    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) {
+    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
             result.put(each.getLogicTable(), tableMetaDataLoader.load(each.getLogicTable(), shardingRule));
@@ -87,11 +87,14 @@ public final class TableMetaDataInitializer {
     }
     
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new LinkedHashSet<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(dataSourceName, null, null, null)) {
+             ResultSet resultSet = connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
-                result.add(resultSet.getString("TABLE_NAME"));
+                String tableName = resultSet.getString("TABLE_NAME");
+                if (!tableName.contains("$")) {
+                    result.add(tableName);
+                }
             }
         }
         return result;

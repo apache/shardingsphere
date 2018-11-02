@@ -19,6 +19,7 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -34,10 +35,9 @@ import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
@@ -52,6 +52,8 @@ import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.core.util.SQLLogger;
+import io.shardingsphere.spi.parsing.ParsingHook;
+import io.shardingsphere.spi.parsing.SPIParsingHook;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -60,8 +62,8 @@ import java.util.List;
 
 /**
  * Sharding router with parse.
- * 
- * @author zhangiang
+ *
+ * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
@@ -80,9 +82,21 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
+    private final ParsingHook parsingHook = new SPIParsingHook();
+    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+        parsingHook.start(logicSQL);
+        try {
+            SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            parsingHook.finishSuccess();
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            parsingHook.finishFailure(ex);
+            throw ex;
+        }
     }
     
     @Override
@@ -104,10 +118,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
         }
         if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
         }
         return result;
     }

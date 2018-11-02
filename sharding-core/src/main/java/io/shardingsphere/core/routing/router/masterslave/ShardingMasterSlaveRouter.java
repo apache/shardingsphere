@@ -19,7 +19,7 @@ package io.shardingsphere.core.routing.router.masterslave;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.util.LinkedList;
 /**
  * Sharding with master-slave router interface.
  * 
- * @author zhangiang
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingMasterSlaveRouter {
@@ -52,23 +52,23 @@ public final class ShardingMasterSlaveRouter {
     }
     
     private void route(final MasterSlaveRule masterSlaveRule, final SQLRouteResult sqlRouteResult) {
-        Collection<SQLExecutionUnit> toBeRemoved = new LinkedList<>();
-        Collection<SQLExecutionUnit> toBeAdded = new LinkedList<>();
-        for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSource())) {
+        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
+        Collection<RouteUnit> toBeAdded = new LinkedList<>();
+        for (RouteUnit each : sqlRouteResult.getRouteUnits()) {
+            if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
                 continue;
             }
             toBeRemoved.add(each);
             if (isMasterRoute(sqlRouteResult.getSqlStatement().getType())) {
                 MasterVisitedManager.setMasterVisited();
-                toBeAdded.add(new SQLExecutionUnit(masterSlaveRule.getMasterDataSourceName(), each.getSqlUnit()));
+                toBeAdded.add(new RouteUnit(masterSlaveRule.getMasterDataSourceName(), each.getSqlUnit()));
             } else {
-                toBeAdded.add(new SQLExecutionUnit(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
+                toBeAdded.add(new RouteUnit(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
                         masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())), each.getSqlUnit()));
             }
         }
-        sqlRouteResult.getExecutionUnits().removeAll(toBeRemoved);
-        sqlRouteResult.getExecutionUnits().addAll(toBeAdded);
+        sqlRouteResult.getRouteUnits().removeAll(toBeRemoved);
+        sqlRouteResult.getRouteUnits().addAll(toBeAdded);
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {

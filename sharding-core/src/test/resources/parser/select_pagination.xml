@@ -329,4 +329,19 @@
         </order-by-columns>
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order"/>
+            <row-count-token begin-position="38" row-count="20"/>
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <limit row-count="20" row-count-index="0"/>
+    </parser-result>
+    
 </parser-result-sets>

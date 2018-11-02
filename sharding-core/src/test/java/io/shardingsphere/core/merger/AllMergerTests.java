@@ -41,9 +41,10 @@ import io.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResu
 import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResultTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         DQLMergeEngineTest.class, 
         StreamMergedResultTest.class, 
         MemoryMergedResultTest.class, 

@@ -47,6 +47,11 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     private boolean wasNull;
     
+    protected final void resetLabelAndIndexMap(final Map<String, Integer> labelAndIndexMap) {
+        this.labelAndIndexMap.clear();
+        this.labelAndIndexMap.putAll(labelAndIndexMap);
+    }
+    
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {

@@ -17,12 +17,12 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.core.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;

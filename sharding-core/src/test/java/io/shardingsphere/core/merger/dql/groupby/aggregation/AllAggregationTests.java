@@ -19,9 +19,10 @@ package io.shardingsphere.core.merger.dql.groupby.aggregation;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         AggregationUnitFactoryTest.class, 
         ComparableAggregationUnitTest.class, 
         AccumulationAggregationUnitTest.class, 

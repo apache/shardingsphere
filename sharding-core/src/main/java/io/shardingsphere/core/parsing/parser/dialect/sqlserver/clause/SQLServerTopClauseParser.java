@@ -69,7 +69,7 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             rowCountValue = new LimitValue(rowCount, -1, false);
-            selectStatement.getSqlTokens().add(new RowCountToken(beginPosition, rowCount));
+            selectStatement.addSQLToken(new RowCountToken(beginPosition, rowCount));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             rowCountValue = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), false);
         } else {

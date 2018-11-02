@@ -18,16 +18,16 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlHintShardingStrategyConfiguration;

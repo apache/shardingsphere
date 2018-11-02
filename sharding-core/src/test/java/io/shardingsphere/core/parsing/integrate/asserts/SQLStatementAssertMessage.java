@@ -31,9 +31,9 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLStatementAssertMessage {
     
-    private final SQLCasesLoader sqlCasesLoader;
+    private final SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     
-    private final ParserResultSetLoader parserResultSetLoader;
+    private final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
     
     private final String sqlCaseId;
     

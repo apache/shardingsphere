@@ -77,7 +77,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
             if (lexerEngine.equalAny(Literals.INT, Literals.FLOAT)) {
                 rowCountValue = NumberUtil.roundHalfUp(lexerEngine.getCurrentToken().getLiterals());
                 valueBeginPosition = valueBeginPosition - (rowCountValue + "").length();
-                selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCountValue));
+                selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, rowCountValue));
             } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
                 rowCountIndex = parameterIndex++;
                 selectStatement.setParametersIndex(parameterIndex);
@@ -98,7 +98,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
         if (lexerEngine.equalAny(Literals.INT, Literals.FLOAT)) {
             offsetValue = NumberUtil.roundHalfUp(lexerEngine.getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
-            selectStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetValue));
         } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
             offsetIndex = parameterIndex++;
             selectStatement.setParametersIndex(parameterIndex);

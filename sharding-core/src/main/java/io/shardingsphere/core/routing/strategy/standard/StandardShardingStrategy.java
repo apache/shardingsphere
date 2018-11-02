@@ -18,13 +18,13 @@
 package io.shardingsphere.core.routing.strategy.standard;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.PreciseShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 
 import java.util.ArrayList;

@@ -75,9 +75,9 @@ public abstract class AbstractDropIndexParser implements SQLParser {
         lexerEngine.skipUntil(DefaultKeyword.ON);
         if (lexerEngine.skipIfEqual(DefaultKeyword.ON)) {
             tableReferencesClauseParser.parseSingleTableWithoutAlias(ddlStatement);
-            ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, ddlStatement.getTables().getSingleTableName()));
+            ddlStatement.addSQLToken(new IndexToken(beginPosition, literals, ddlStatement.getTables().getSingleTableName()));
         } else {
-            ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, ""));
+            ddlStatement.addSQLToken(new IndexToken(beginPosition, literals, ""));
         }
     }
 }

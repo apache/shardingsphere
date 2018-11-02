@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -41,7 +41,7 @@ final class ItemsTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertItemsToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertItemsToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<ItemsToken> itemsToken = getItemsToken(actual);
         if (itemsToken.isPresent()) {
             assertItemsToken(itemsToken.get(), expected.getItemsToken());
@@ -55,7 +55,7 @@ final class ItemsTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Items token items assertion error: "), actual.getItems(), is(expected.getItems()));
     }
     
-    private Optional<ItemsToken> getItemsToken(final List<SQLToken> actual) {
+    private Optional<ItemsToken> getItemsToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof ItemsToken) {
                 return Optional.of((ItemsToken) each);

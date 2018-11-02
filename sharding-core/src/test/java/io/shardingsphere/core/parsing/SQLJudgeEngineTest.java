@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherSt
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -32,6 +33,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 
 public final class SQLJudgeEngineTest {
     
@@ -82,7 +84,9 @@ public final class SQLJudgeEngineTest {
     
     @Test
     public void assertJudgeForUse() {
-        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fuse sharding_db  ").judge(), instanceOf(UseStatement.class));
+        SQLStatement statement = new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fuse sharding_db  ").judge();
+        assertThat(statement, instanceOf(UseStatement.class));
+        assertThat(((UseStatement) statement).getSchema(), is("sharding_db"));
     }
     
     @Test

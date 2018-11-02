@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.fixture.ComplexOrderShardingAlgorithm;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;

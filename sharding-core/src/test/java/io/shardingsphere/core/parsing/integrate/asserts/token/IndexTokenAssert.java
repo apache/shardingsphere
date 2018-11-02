@@ -17,18 +17,19 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.token;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedIndexToken;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Index token assert.
@@ -40,14 +41,12 @@ final class IndexTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertIndexToken(final List<SQLToken> actual, final ExpectedTokens expected) {
-        List<IndexToken> indexTokens = getIndexTokens(actual);
-        
-        assertThat(assertMessage.getFullAssertMessage("Index tokens size error: "), indexTokens.size(), is(expected.getIndexTokens().size()));
-        int count = 0;
-        for (ExpectedIndexToken each : expected.getIndexTokens()) {
-            assertIndexToken(indexTokens.get(count), each);
-            count++;
+    void assertIndexToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
+        Optional<IndexToken> indexToken = getIndexToken(actual);
+        if (indexToken.isPresent()) {
+            assertIndexToken(indexToken.get(), expected.getIndexToken());
+        } else {
+            assertNull(assertMessage.getFullAssertMessage("Index token should not exist: "), expected.getIndexToken());
         }
     }
     
@@ -57,13 +56,12 @@ final class IndexTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Index token table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
     }
     
-    private List<IndexToken> getIndexTokens(final List<SQLToken> actual) {
-        List<IndexToken> result = new ArrayList<>(actual.size());
+    private Optional<IndexToken> getIndexToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof IndexToken) {
-                result.add((IndexToken) each);
+                return Optional.of((IndexToken) each);
             }
         }
-        return result;
+        return Optional.absent();
     }
 }

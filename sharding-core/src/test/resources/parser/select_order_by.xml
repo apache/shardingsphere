@@ -91,7 +91,7 @@
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_order_by_with_multiple_stars">
         <tables>
             <table name="t_order" alias="o" />
@@ -103,7 +103,7 @@
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
         <tables>
             <table name="t_order" alias="o" />
@@ -115,7 +115,7 @@
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_order_by_with_star_table_alias">
         <tables>
             <table name="t_order" alias="o" />
@@ -127,7 +127,20 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
+    <!--TODO need to add later-->
+    <!--<parser-result sql-case-id="select_order_by_with_parameter" parameters="order_id">-->
+        <!--<tables>-->
+            <!--<table name="t_order" alias="o" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token begin-position="14" original-literals="t_order" />-->
+        <!--</tokens>-->
+        <!--<order-by-columns>-->
+            <!--<order-by-column name="order_id" order-direction="ASC" />-->
+        <!--</order-by-columns>-->
+    <!--</parser-result>-->
+    
     <parser-result sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
             <table name="t_order" />
@@ -141,7 +154,7 @@
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
         <tables>
             <table name="t_order" />
@@ -153,7 +166,7 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_order_by_with_table_star_without_table_name">
         <tables>
             <table name="t_order" alias="o"/>

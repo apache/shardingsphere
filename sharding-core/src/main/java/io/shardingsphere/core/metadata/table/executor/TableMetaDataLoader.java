@@ -17,14 +17,16 @@
 
 package io.shardingsphere.core.metadata.table.executor;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.executor.ShardingExecuteGroup;
+import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingDataSourceNames;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Table meta data loader.
@@ -52,9 +52,11 @@ public final class TableMetaDataLoader {
     
     private final ShardingDataSourceMetaData shardingDataSourceMetaData;
     
-    private final ListeningExecutorService executorService;
+    private final ShardingExecuteEngine executeEngine;
     
     private final TableMetaDataConnectionManager connectionManager;
+    
+    private final int maxConnectionsSizePerQuery;
     
     /**
      * Load table meta data.
@@ -62,45 +64,50 @@ public final class TableMetaDataLoader {
      * @param logicTableName logic table name
      * @param shardingRule sharding rule
      * @return table meta data
+     * @throws SQLException SQL exception
      */
-    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
         List<TableMetaData> actualTableMetaDataList = load(shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups(), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, Collection<String>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) {
-        List<ListenableFuture<Collection<TableMetaData>>> futures = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : dataNodeGroups.entrySet()) {
-            final String dataSourceName = shardingDataSourceNames.getRawMasterDataSourceName(entry.getKey());
-            DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(entry.getKey());
-            final String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
-            final Collection<String> actualTableNames = entry.getValue();
-            futures.add(executorService.submit(new Callable<Collection<TableMetaData>>() {
-                
-                @Override
-                public Collection<TableMetaData> call() throws SQLException {
-                    return load(dataSourceName, catalog, actualTableNames);
-                }
-            }));
-        }
-        List<TableMetaData> result = new LinkedList<>();
-        try {
-            for (Collection<TableMetaData> each : Futures.allAsList(futures).get()) {
-                result.addAll(each);
+    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
+        return executeEngine.groupExecute(getDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
+            
+            @Override
+            public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread) throws SQLException {
+                String dataSourceName = dataNodes.iterator().next().getDataSourceName();
+                DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
+                String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
+                return load(shardingDataSourceNames.getRawMasterDataSourceName(dataSourceName), catalog, dataNodes);
             }
-            return result;
-        } catch (final InterruptedException | ExecutionException ex) {
-            throw new ShardingException(ex);
-        }
+        });
     }
     
-    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<String> actualTableNames) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final Collection<DataNode> dataNodes) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            for (String each : actualTableNames) {
-                result.add(new TableMetaData(isTableExist(connection, catalog, each) ? getColumnMetaDataList(connection, catalog, each) : Collections.<ColumnMetaData>emptyList()));
+            for (DataNode each : dataNodes) {
+                result.add(new TableMetaData(
+                        isTableExist(connection, catalog, each.getTableName()) ? getColumnMetaDataList(connection, catalog, each.getTableName()) : Collections.<ColumnMetaData>emptyList()));
             }
+        }
+        return result;
+    }
+    
+    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+        Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
+        for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
+            result.addAll(getDataNodeGroups(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final List<DataNode> dataNodes) {
+        Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
+        for (List<DataNode> each : Lists.partition(dataNodes, Math.max(dataNodes.size() / maxConnectionsSizePerQuery, 1))) {
+            result.add(new ShardingExecuteGroup<>(each));
         }
         return result;
     }

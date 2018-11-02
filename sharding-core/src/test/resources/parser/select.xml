@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
     <parser-result sql-case-id="select_constant_without_table" />
+
+    <parser-result sql-case-id="select_with_alias" parameters="1, 1">
+        <tables>
+            <table name="t_order" alias="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="7" original-literals="t_order" />
+            <table-token begin-position="22" original-literals="t_order" />
+            <table-token begin-position="30" original-literals="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
     
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
@@ -392,33 +413,39 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1">
+    <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
         <tables>
-            <table name="t_place" />
+            <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="3" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="2" type="int" />
                 </condition>
             </and-condition>
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+    <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
         <tables>
-            <table name="t_place" />
+            <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="4" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="5" literal="2" type="int" />
                 </condition>
             </and-condition>
         </or-condition>

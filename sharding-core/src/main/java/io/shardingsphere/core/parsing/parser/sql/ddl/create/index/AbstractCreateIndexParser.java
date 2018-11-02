@@ -79,6 +79,6 @@ public abstract class AbstractCreateIndexParser implements SQLParser {
         lexerEngine.skipUntil(DefaultKeyword.ON);
         lexerEngine.nextToken();
         String tableName = lexerEngine.getCurrentToken().getLiterals();
-        ddlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+        ddlStatement.addSQLToken(new IndexToken(beginPosition, literals, tableName));
     }
 }

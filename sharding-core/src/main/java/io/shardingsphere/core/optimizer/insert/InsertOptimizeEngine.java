@@ -18,7 +18,7 @@
 package io.shardingsphere.core.optimizer.insert;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.OptimizeEngine;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -81,7 +81,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 }
                 String expression;
                 Number currentGeneratedKey = generatedKeys.next();
-                if (0 == parameters.size()) {
+                if (parameters.isEmpty()) {
                     if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
                         expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey.toString() + ")";
                     } else {

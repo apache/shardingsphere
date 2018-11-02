@@ -17,12 +17,12 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.core.api.algorithm.fixture.TestPreciseShardingAlgorithm;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;

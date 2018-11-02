@@ -19,7 +19,7 @@ package io.shardingsphere.core.optimizer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
@@ -68,8 +68,8 @@ public final class InsertOptimizeEngineTest {
         insertStatement.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatement.setParametersIndex(4);
         insertStatement.setInsertValuesListLastPosition(45);
-        insertStatement.getSqlTokens().add(new TableToken(12, 0, "t_order"));
-        insertStatement.getSqlTokens().add(new InsertValuesToken(39, "t_order"));
+        insertStatement.addSQLToken(new TableToken(12, 0, "t_order"));
+        insertStatement.addSQLToken(new InsertValuesToken(39, "t_order"));
         AndCondition andCondition1 = new AndCondition();
         andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(0)));
         insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition1);

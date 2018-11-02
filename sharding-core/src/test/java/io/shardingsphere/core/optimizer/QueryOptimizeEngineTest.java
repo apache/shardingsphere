@@ -18,9 +18,9 @@
 package io.shardingsphere.core.optimizer;
 
 import com.google.common.collect.Range;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.query.QueryOptimizeEngine;

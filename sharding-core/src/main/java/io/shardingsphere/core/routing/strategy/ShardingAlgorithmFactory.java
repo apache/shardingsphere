@@ -46,7 +46,7 @@ public final class ShardingAlgorithmFactory {
             }
             return (T) result.newInstance();
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingException("Class %s should have public privilege and no argument constructor", shardingAlgorithmClassName);
+            throw new ShardingException(ex);
         }
     }
 }

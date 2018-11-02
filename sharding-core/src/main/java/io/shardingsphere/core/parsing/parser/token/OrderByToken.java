@@ -17,17 +17,14 @@
 
 package io.shardingsphere.core.parsing.parser.token;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Order by token.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class OrderByToken implements SQLToken {
+public final class OrderByToken extends SQLToken {
     
-    private final int beginPosition;
+    public OrderByToken(final int beginPosition) {
+        super(beginPosition);
+    }
 }

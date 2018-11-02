@@ -20,6 +20,7 @@ package io.shardingsphere.core.constant.properties;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.util.StringUtil;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,9 +32,11 @@ import java.util.Set;
  *
  * @author gaohongtao
  * @author zhangliang
+ * @author panjuan
  */
 public final class ShardingProperties {
     
+    @Getter
     private final Properties props;
     
     public ShardingProperties(final Properties props) {
