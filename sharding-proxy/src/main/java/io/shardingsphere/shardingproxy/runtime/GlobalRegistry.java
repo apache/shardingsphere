@@ -136,18 +136,12 @@ public final class GlobalRegistry {
         this.authentication = authentication;
     }
     
-    private void initServerConfiguration(final Authentication authentication, final Properties props) {
-        // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
-        useNIO = false;
-        
-    }
-    
     public int getMaxConnectionsSizePerQuery() {
         return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
     }
     
+    // TODO just config proxy.transaction.enable here, in future(3.1.0)
     public TransactionType getTransactionType() {
-        // TODO just config proxy.transaction.enable here, in future(3.1.0)
         return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
     }
     
@@ -165,6 +159,11 @@ public final class GlobalRegistry {
     
     public int getExecutorSize() {
         return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+    }
+    
+    // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
+    public boolean isUseNIO() {
+        return false;
     }
     
     
