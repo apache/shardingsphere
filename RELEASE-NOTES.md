@@ -1,3 +1,5 @@
+## 3.0.1
+
 ## 3.0.0
 
 ### Milestones
@@ -11,22 +13,26 @@
 1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT
 1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR
 1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) Support DCL
-1. [ISSUE #1111](https://github.com/sharding-sphere/sharding-sphere/issues/1111) SupportMySQL DAL
+1. [ISSUE #1111](https://github.com/sharding-sphere/sharding-sphere/issues/1111) Support MySQL DAL
 
 #### Sharding-Proxy
 
+1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) Support XA transaction
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support registry center
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) Support multiple logic databases
 
 ### Enhancements
 
 #### Core
 
+1. [ISSUE #373](https://github.com/sharding-sphere/sharding-sphere/issues/373) Support `order by ?`
 1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Route unicast for DQL without table
 1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Caching parsed results to improve performance
 1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement key of INSERT without column names
 1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Use `YAML` instead of `JSON` to store configurations in registry center
 1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Properties can configure for Sharding and Master-slave independent
+1. [ISSUE #1205](https://github.com/sharding-sphere/sharding-sphere/issues/1205) Execute engine enhancement
 
 #### Sharding-JDBC
 
@@ -35,10 +41,24 @@
 1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support inject key generator objects by spring namespace
 1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
 
+#### Sharding-Opentracing
+
+1. [ISSUE #1172](https://github.com/sharding-sphere/sharding-sphere/issues/1172) Opentracing enhancement
+
+### API changes
+
+1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Adjust the maven artifactId for Orchestration module
+1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) Adjust Spring namespace xsd for Sharding and Master-slave
+1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) Adjust Hint API
+1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) Refine package structure
+1. [ISSUE #1305](https://github.com/sharding-sphere/sharding-sphere/issues/1305) Deprecated and remove sharding-jdbc-transaction-parent module
+1. [ISSUE #1382](https://github.com/sharding-sphere/sharding-sphere/issues/1328) Remove type configuration in Orchestration module
+
 ### Bug Fixes
 
 #### Core
 
+1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) Failed to parse SQL for Oracle when ROWNUM is not at end
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
 1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in `SELECT ITEMS` correspond to the real column names of `GROUP BY` or `ORDER BY`, there is no need to generate derived columns
 1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN` parse exception
@@ -46,6 +66,9 @@
 1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Inline expression with groovy may cause memory leak
 1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) Fail to parsing PostgreSQL due to the quotation
 1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1120](https://github.com/sharding-sphere/sharding-sphere/issues/1120) Derived columns of `GROUP BY / ORDER BY` appear in query result
+1. [ISSUE #1186](https://github.com/sharding-sphere/sharding-sphere/issues/1186) Dead lock may occur on MEMORY_STRICTLY mode when get connection on concurrency environment
+1. [ISSUE #1265](https://github.com/sharding-sphere/sharding-sphere/issues/1265) RoundRobinMasterSlaveLoadBalanceAlgorithm throw an ArrayIndexOutOfBoundsException when AtomicInteger overflow
 
 #### Sharding-JDBC
 
@@ -53,7 +76,6 @@
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
 1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
 1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
-1. [ISSUE #1020](https://github.com/sharding-sphere/sharding-sphere/issues/1020) Derived columns of `GROUP BY / ORDER BY` appear in query result
 
 ## 2.0.3
 
