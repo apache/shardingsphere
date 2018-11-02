@@ -30,12 +30,12 @@ import java.util.Map;
 public interface DataSourceMapConverter {
     
     /**
-     * Build backend datasource by datasource map.
+     * Convert normal data source map to xa transactional data source map.
      *
      * @param dataSourceMap data source map
      * @param databaseType database type
-     * @return backend datasource map
+     * @return transactional xa data source map
      */
-    Map<String, DataSource> build(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
+    Map<String, DataSource> convert(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
 }
 
