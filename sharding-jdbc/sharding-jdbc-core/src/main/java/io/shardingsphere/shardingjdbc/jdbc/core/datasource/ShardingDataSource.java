@@ -92,24 +92,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         return new ShardingConnection(getDataSourceMap(), shardingContext);
     }
     
-    /**
-     * Is show sql or not.
-     *
-     * @return show or not
-     */
-    public boolean isShowSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
-    
-    /**
-     * Get max connections size per query.
-     *
-     * @return max connections size per query
-     */
-    public int getMaxConnectionsSizePerQuery() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-    }
-    
     @Override
     public final void close() {
         super.close();
