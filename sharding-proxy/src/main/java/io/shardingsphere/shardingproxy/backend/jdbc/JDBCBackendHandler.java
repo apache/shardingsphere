@@ -45,7 +45,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.manager.xa.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Status;

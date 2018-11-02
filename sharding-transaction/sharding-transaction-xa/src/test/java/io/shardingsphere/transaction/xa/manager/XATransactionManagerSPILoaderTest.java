@@ -15,14 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses(AllManagerTests.class)
-public final class AllTests {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class XATransactionManagerSPILoaderTest {
+    
+    @Test
+    public void assertGerInstanceWithSPI() {
+        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
+    }
 }

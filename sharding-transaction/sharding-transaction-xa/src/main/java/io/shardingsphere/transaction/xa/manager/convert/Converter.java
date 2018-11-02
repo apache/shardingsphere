@@ -15,14 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.xa.manager.convert;
 
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
-@RunWith(Suite.class)
-@SuiteClasses(AllManagerTests.class)
-public final class AllTests {
+/**
+ * Convert interface.
+ *
+ * @author zhaojun
+ */
+public interface Converter {
+    
+    /**
+     * Get the DataSource pool property, then convert to datasource parameter.
+     *
+     * @return dataSource parameter
+     */
+    DataSourceParameter convertTo();
 }
+
