@@ -121,15 +121,12 @@ public final class GlobalRegistry {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        initServerConfiguration(authentication, props);
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
             shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
         ShardingProperties shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-    
-        // boolean proxyBackendUseNio = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO);
         int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
@@ -165,9 +162,6 @@ public final class GlobalRegistry {
     public boolean isUseNIO() {
         return false;
     }
-    
-    
-    
     
     /**
      * Check schema exists.
