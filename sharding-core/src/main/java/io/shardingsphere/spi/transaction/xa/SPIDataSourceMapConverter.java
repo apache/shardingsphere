@@ -39,6 +39,20 @@ public final class SPIDataSourceMapConverter {
     
     private static final NewInstanceServiceLoader<DataSourceMapConverter> SERVICE_LOADER = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
     
+    private static DataSourceMapConverter dataSourceMapConverter;
+    
+    static {
+        init();
+    }
+    
+    private static void init() {
+        Collection<DataSourceMapConverter> converters = SERVICE_LOADER.newServiceInstances();
+        if (converters.isEmpty()) {
+            throw new ShardingException("Please make DataSourceMapConverter SPI available.");
+        }
+        dataSourceMapConverter = converters.iterator().next();
+    }
+    
     /**
      * Using data source map converter SPI to convert normal data source.
      * @param dataSourceMap data source map
@@ -46,10 +60,6 @@ public final class SPIDataSourceMapConverter {
      * @return xa transactional datasource map
      */
     public static Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        Collection<DataSourceMapConverter> dataSourceMapConverters = SERVICE_LOADER.newServiceInstances();
-        if (dataSourceMapConverters.isEmpty()) {
-            throw new ShardingException("Please make DataSourceMapConverter SPI available.");
-        }
-        return dataSourceMapConverters.iterator().next().convert(dataSourceMap, databaseType);
+        return dataSourceMapConverter.convert(dataSourceMap, databaseType);
     }
 }
