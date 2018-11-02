@@ -153,7 +153,7 @@ public final class SQLJudgeEngine {
             return parseShowColumnsFields(lexerEngine);
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
-            return new ShowCreateTableStatement();
+            return parseShowCreateTable(lexerEngine);
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX, MySQLKeyword.INDEXES, MySQLKeyword.KEYS)) {
             return parseShowIndex(lexerEngine);
@@ -209,6 +209,12 @@ public final class SQLJudgeEngine {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
         }
+        return result;
+    }
+    
+    private DALStatement parseShowCreateTable(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowCreateTableStatement();
+        parseSingleTableWithSchema(lexerEngine, result);
         return result;
     }
 }

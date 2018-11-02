@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
@@ -132,7 +133,8 @@ public final class BackendHandlerFactory {
         List<SQLToken> sqlTokens = sqlStatement.getSQLTokens();
         if (!sqlTokens.isEmpty()
                 && (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowColumnsStatement
-                || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement)) {
+                || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement
+                || sqlStatement instanceof ShowCreateTableStatement)) {
             return Optional.of(((SchemaToken) new LinkedList<>(sqlTokens).getLast()).getSchemaName());
         }
         return Optional.absent();
