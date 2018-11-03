@@ -33,6 +33,9 @@ import io.shardingsphere.orchestration.internal.event.config.AuthenticationChang
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
