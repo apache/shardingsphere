@@ -59,9 +59,16 @@ public final class RuleListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(configService.isShardingRule(shardingSchemaName)
-                            ?  new ShardingConfigurationChangedEvent(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName)): new MasterSlaveConfigurationChangedEvent(dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName)));
+                    ShardingEventBusInstance.getInstance().post(configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent() : getMasterSlaveConfigurationChangedEvent());
                 }
+            }
+    
+            private MasterSlaveConfigurationChangedEvent getMasterSlaveConfigurationChangedEvent() {
+                return new MasterSlaveConfigurationChangedEvent(dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
+            }
+    
+            private ShardingConfigurationChangedEvent getShardingConfigurationChangedEvent() {
+                return new ShardingConfigurationChangedEvent(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
             }
         });
     }
