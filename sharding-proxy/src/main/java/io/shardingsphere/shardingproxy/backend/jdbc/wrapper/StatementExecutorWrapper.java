@@ -29,6 +29,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.MasterSlaveSchema;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -58,7 +59,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String rewriteSQL = new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData()).rewrite();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(logicSchema.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
+        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.<List<Object>>emptyList())));
         }
         return result;
@@ -66,7 +67,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource());
+                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource());
         return routingEngine.route(sql);
     }
     
