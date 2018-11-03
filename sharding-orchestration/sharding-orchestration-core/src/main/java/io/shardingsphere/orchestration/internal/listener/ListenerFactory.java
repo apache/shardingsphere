@@ -71,7 +71,9 @@ public final class ListenerFactory {
         for (ConfigurationListenerManager each : configurationListenerManagers) {
             each.watch();
         }
-        
+        for (DataSourceListenerManager each : dataSourceListenerManagers) {
+            each.watch();
+        }
         propertiesListenerManager.watch();
         authenticationListenerManager.watch();
         instanceStateListenerManager.watch();
