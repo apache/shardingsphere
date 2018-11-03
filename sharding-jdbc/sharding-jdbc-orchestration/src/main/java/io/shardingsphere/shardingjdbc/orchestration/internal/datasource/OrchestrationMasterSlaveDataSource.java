@@ -24,7 +24,6 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
@@ -59,7 +58,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
-                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadConfigMap(), new ShardingProperties(configService.loadProperties()));
+                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadConfigMap(), configService.loadProperties());
         getOrchestrationFacade().init();
     }
     
@@ -67,7 +66,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), masterSlaveDataSource.getDataSourceMap());
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
                 new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
-                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties());
+                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
         getOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
@@ -114,7 +113,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public final void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()),
-                dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties());
+                dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     /**
@@ -126,6 +125,6 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     public final void renew(final PropertiesChangedEvent propertiesEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
-                dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), new ShardingProperties(propertiesEvent.getProps()));
+                dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesEvent.getProps());
     }
 }
