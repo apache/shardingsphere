@@ -17,12 +17,14 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
@@ -44,7 +46,7 @@ import java.util.Map.Entry;
 @Getter
 public final class ShardingSchema extends LogicSchema {
     
-    private final ShardingRule shardingRule;
+    private ShardingRule shardingRule;
     
     private final ShardingMetaData metaData;
     
@@ -69,5 +71,18 @@ public final class ShardingSchema extends LogicSchema {
             result.put(entry.getKey(), entry.getValue().getUrl());
         }
         return result;
+    }
+    
+    /**
+     * Renew sharding rule.
+     *
+     * @param shardingEvent sharding event.
+     */
+    @Subscribe
+    public void renew(final ShardingRuleChangedEvent shardingEvent) {
+        if (!getName().equals(shardingEvent.getShardingSchemaName())) {
+            return;
+        }
+        shardingRule = new ShardingRule(shardingEvent.getShardingRuleConfiguration(), getDataSources().keySet());
     }
 }
