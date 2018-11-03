@@ -259,6 +259,11 @@ public final class GlobalRegistry {
                 DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
+    /**
+     * Renew authentication.
+     *
+     * @param authenticationEvent authentication event
+     */
     @Subscribe
     public void renew(final AuthenticationChangedEvent authenticationEvent) {
         authentication = authenticationEvent.getAuthentication();
