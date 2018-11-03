@@ -118,12 +118,7 @@ public final class DataSourceService {
         return result;
     }
     
-    /**
-     * Get disabled data source names.
-     *
-     * @return disabled data source names
-     */
-    public Map<String, Collection<String>> getDisabledDataSourceNames() {
+    private Map<String, Collection<String>> getDisabledDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         Collection<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
