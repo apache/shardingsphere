@@ -34,7 +34,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.LogicSchema;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +68,7 @@ public final class BackendNettyClient {
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    public BackendNettyClient(final ShardingSchema logicSchema) {
+    public BackendNettyClient(final LogicSchema logicSchema) {
         this.logicSchema = logicSchema;
         maxConnections = GLOBAL_REGISTRY.getBackendNIOConfig().getMaxConnections();
         connectionTimeoutSeconds = GLOBAL_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
