@@ -53,7 +53,7 @@ public final class ListenerFactory {
     
     public ListenerFactory(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
-            
+            dataSourceListenerManagers.add(new DataSourceListenerManager(name, regCenter, each));
             configurationListenerManagers.add(new ConfigurationListenerManager(name, regCenter, each));
         }
         propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
@@ -71,6 +71,7 @@ public final class ListenerFactory {
         for (ConfigurationListenerManager each : configurationListenerManagers) {
             each.watch();
         }
+        
         propertiesListenerManager.watch();
         authenticationListenerManager.watch();
         instanceStateListenerManager.watch();
