@@ -15,25 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.parser.factory;
+package io.shardingsphere.core.parsing.antler.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antler.ast.MySQLStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.ast.OracleStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.ast.PostgreStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.ast.SQLServerStatementParseTreeBuilder;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Parser Tree factory, parse SQL, generate AST.
+ * Parser tree builder factory.
+ * 
+ * <p>For SQL parse and AST generate.</p>
  * 
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParseTreeFactory {
+public final class ParseTreeBuilderFactory {
     
     /** 
      * Get SQL statement AST.
