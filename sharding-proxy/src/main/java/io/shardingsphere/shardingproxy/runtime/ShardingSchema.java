@@ -19,10 +19,7 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -30,15 +27,11 @@ import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChanged
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
-import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Sharding schema.
