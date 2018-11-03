@@ -79,7 +79,6 @@ public final class ComQueryPacketTest {
     
     @Before
     public void setUp() {
-        setNIOConfig();
         setShardingSchemas();
         setFrontendHandlerSchema();
         listener = new Listener();
@@ -91,13 +90,6 @@ public final class ComQueryPacketTest {
     public void tearDown() {
         ShardingEventBusInstance.getInstance().unregister(listener);
         setTransactionType(null);
-    }
-    
-    @SneakyThrows
-    private void setNIOConfig() {
-        Field field = GlobalRegistry.class.getDeclaredField("useNIO");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), true);
     }
     
     @SneakyThrows
