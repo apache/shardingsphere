@@ -61,11 +61,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) throws SQLException {
-        super(dataSourceMap);
-        this.shardingContext = shardingContext;
-    }
-    
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
