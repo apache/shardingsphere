@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class AuthenticationChangedEvent {
+public final class AuthenticationChangedEvent {
     
     private final Authentication authentication;
 }
