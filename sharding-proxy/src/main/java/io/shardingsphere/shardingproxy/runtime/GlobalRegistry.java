@@ -234,9 +234,6 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final ShardingRuleChangedEvent shardingEvent) {
-        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            entry.getValue().getBackendDataSource().close();
-        }
         ShardingSchema shardingSchema = shardingSchemas.get(shardingEvent.getShardingSchemaName());
         shardingSchemas.put(shardingEvent.getShardingSchemaName(), new ShardingSchema(shardingEvent.getShardingSchemaName(), shardingSchema.getDataSources(), shardingEvent.getShardingRuleConfiguration(), true));
     }
@@ -248,8 +245,6 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) {
-        authentication = masterSlaveEvent.getAuthentication();
-        shardingProperties = new ShardingProperties(masterSlaveEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
@@ -265,10 +260,8 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final DataSourceChangedEvent dataSourceEvent) {
-        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
-            entry.getValue().getBackendDataSource().close();
-        }
         ShardingSchema shardingSchema = shardingSchemas.get(dataSourceEvent.getSchemaName());
+        shardingSchema.getBackendDataSource().close();
         shardingSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
                 DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), shardingSchema.getShardingRule(), shardingSchema.getMasterSlaveRule()));
     }
