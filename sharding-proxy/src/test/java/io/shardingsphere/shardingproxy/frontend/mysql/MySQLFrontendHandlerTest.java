@@ -31,6 +31,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +58,8 @@ public final class MySQLFrontendHandlerTest {
     private ChannelHandlerContext context;
     
     @Before
-    public void resetConnectionIdGenerator() throws ReflectiveOperationException {
+    @SneakyThrows
+    public void resetConnectionIdGenerator() {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
