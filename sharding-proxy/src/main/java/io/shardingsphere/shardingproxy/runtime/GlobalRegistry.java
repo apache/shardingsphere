@@ -20,7 +20,9 @@ package io.shardingsphere.shardingproxy.runtime;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -132,8 +134,13 @@ public final class GlobalRegistry {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            logicSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
+            logicSchemas.put(schemaName, getLogicSchema(schemaDataSources, isUsingRegistry, entry, schemaName));
         }
+    }
+    
+    private LogicSchema getLogicSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Entry<String, RuleConfiguration> entry, final String schemaName, final boolean isUsingRegistry) {
+        return entry.getValue() instanceof ShardingRuleConfiguration ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) entry.getValue(), isUsingRegistry)
+                        : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) entry.getValue(), isUsingRegistry);
     }
     
     private void initBackendNIOConfig() {
