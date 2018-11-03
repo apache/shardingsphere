@@ -228,10 +228,10 @@ public final class ConfigurationService {
         return regCenter.getChildrenKeys(configNode.getSchemaPath());
     }
     
+    
     public Collection<String> getAllMasterDataSourceNames() {
-        Collection<String> schemaNames = getAllShardingSchemaNames();
         Collection<String> result = new LinkedList<>();
-        for (String each : schemaNames) {
+        for (String each : getAllShardingSchemaNames()) {
             if (isShardingRule(each)) {
                 result.addAll(getMasterDataSourceNamesFromShardingRule(each));
             } else {
