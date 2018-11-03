@@ -45,11 +45,7 @@ public final class AuthenticationListenerManager implements ListenerManager {
     
     private final RegistryCenter regCenter;
     
-    private final String shardingSchemaName;
-    
     private final ConfigurationService configService;
-    
-    private final DataSourceService dataSourceService;
     
     public AuthenticationListenerManager(final String name, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(name);
@@ -58,7 +54,7 @@ public final class AuthenticationListenerManager implements ListenerManager {
     }
     
     @Override
-    private void watch(final String path) {
+    public void watch() {
         regCenter.watch(configNode.getAuthenticationPath(), new EventListener() {
             
             @Override
