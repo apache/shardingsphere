@@ -23,12 +23,13 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
@@ -93,9 +94,9 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
      */
     @Subscribe
     @SneakyThrows
-    public final void renew(final ShardingConfigurationChangedEvent shardingEvent) {
-        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
-                shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
+    public final void renew(final ShardingRuleChangedEvent shardingEvent) {
+        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new ShardingRule(shardingEvent.getShardingRuleConfiguration(),
+                dataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
     }
     
     /**
