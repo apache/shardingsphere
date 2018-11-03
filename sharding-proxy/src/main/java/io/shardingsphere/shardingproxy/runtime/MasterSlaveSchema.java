@@ -17,9 +17,11 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import lombok.Getter;
 
@@ -33,7 +35,7 @@ import java.util.Map;
 @Getter
 public final class MasterSlaveSchema extends LogicSchema {
     
-    private final MasterSlaveRule masterSlaveRule;
+    private MasterSlaveRule masterSlaveRule;
     
     public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
@@ -42,5 +44,18 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
+    }
+    
+    /**
+     * Renew master-slave rule.
+     *
+     * @param masterSlaveEvent master-slave event.
+     */
+    @Subscribe
+    public void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) {
+        if (!getName().equals(masterSlaveEvent.getShardingSchemaName())) {
+            return;
+        }
+        masterSlaveRule = new MasterSlaveRule(masterSlaveEvent.getMasterSlaveRuleConfig());
     }
 }
