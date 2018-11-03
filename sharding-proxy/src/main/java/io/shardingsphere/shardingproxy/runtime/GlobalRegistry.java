@@ -31,9 +31,9 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
@@ -228,29 +228,26 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Renew sharding configuration.
+     * Renew sharding rule.
      *
      * @param shardingEvent sharding event.
      */
     @Subscribe
-    public void renew(final ShardingConfigurationChangedEvent shardingEvent) {
-        authentication = shardingEvent.getAuthentication();
-        shardingProperties = new ShardingProperties(shardingEvent.getProps());
+    public void renew(final ShardingRuleChangedEvent shardingEvent) {
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        shardingSchemas.remove(shardingEvent.getSchemaName());
-        shardingSchemas.put(shardingEvent.getSchemaName(), new ShardingSchema(shardingEvent.getSchemaName(), DataSourceConverter.getDataSourceParameterMap(shardingEvent.getDataSourceConfigurations()),
-                shardingEvent.getShardingRule().getShardingRuleConfig(), true));
+        ShardingSchema shardingSchema = shardingSchemas.get(shardingEvent.getShardingSchemaName());
+        shardingSchemas.put(shardingEvent.getShardingSchemaName(), new ShardingSchema(shardingEvent.getShardingSchemaName(), shardingSchema.getDataSources(), shardingEvent.getShardingRuleConfiguration(), true));
     }
     
     /**
-     * Renew master-slave configuration.
+     * Renew master-slave rule.
      *
      * @param masterSlaveEvent master-slave event.
      */
     @Subscribe
-    public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) {
+    public void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) {
         authentication = masterSlaveEvent.getAuthentication();
         shardingProperties = new ShardingProperties(masterSlaveEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
