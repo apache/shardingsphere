@@ -41,7 +41,7 @@ public class LogicSchema {
     
     private final JDBCBackendDataSource backendDataSource;
     
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final boolean isUsingRegistry) {
+    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
