@@ -68,9 +68,10 @@ public final class CommandPacketFactoryTest {
     private FrontendHandler frontendHandler;
     
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException {
         setShardingSchemas();
         setFrontendHandlerSchema();
+        setMaxConnectionsSizePerQuery();
     }
     
     @SneakyThrows
