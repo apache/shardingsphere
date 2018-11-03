@@ -31,7 +31,7 @@ import io.shardingsphere.orchestration.reg.listener.EventListener;
  * @author caohao
  * @author panjuan
  */
-public final class DataSourceListenerManager implements ListenerManager {
+public final class DataSourceStateListenerManager implements ListenerManager {
     
     private final StateNode stateNode;
     
@@ -39,7 +39,7 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     private final DataSourceService dataSourceService;
     
-    public DataSourceListenerManager(final String name, final RegistryCenter regCenter) {
+    public DataSourceStateListenerManager(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
         dataSourceService = new DataSourceService(name, regCenter);
