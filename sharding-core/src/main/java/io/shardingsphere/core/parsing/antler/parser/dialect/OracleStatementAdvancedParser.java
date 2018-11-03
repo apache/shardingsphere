@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antler.parser.dialect;
 
 import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
-import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
+import io.shardingsphere.core.parsing.antler.util.AntlrUtils;
 import io.shardingsphere.parser.antlr.OracleStatementParser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;

@@ -23,9 +23,9 @@ import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 

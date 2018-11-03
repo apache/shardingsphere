@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;

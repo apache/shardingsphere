@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.utils;
+package io.shardingsphere.core.parsing.antler.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

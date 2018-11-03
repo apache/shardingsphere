@@ -29,7 +29,7 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.dfa.DFAState;
 
-import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
+import io.shardingsphere.core.parsing.antler.util.AntlrUtils;
 
 /**
  * Advanced Parser ATN Simulator, failed calculating alt

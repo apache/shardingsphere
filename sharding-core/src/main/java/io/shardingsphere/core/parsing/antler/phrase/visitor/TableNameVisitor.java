@@ -21,8 +21,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;

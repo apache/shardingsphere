@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.utils;
+package io.shardingsphere.core.parsing.antler.util;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;

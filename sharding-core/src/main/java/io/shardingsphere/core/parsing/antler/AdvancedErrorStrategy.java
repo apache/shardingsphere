@@ -28,7 +28,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.misc.IntervalSet;
 
-import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
+import io.shardingsphere.core.parsing.antler.util.AntlrUtils;
 
 /**
  * Advanced Error Strategy, override sync method,when failed matching,

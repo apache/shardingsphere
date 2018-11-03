@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddColumnVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**

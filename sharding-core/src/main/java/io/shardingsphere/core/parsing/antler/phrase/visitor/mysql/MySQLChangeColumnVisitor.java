@@ -23,9 +23,9 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**

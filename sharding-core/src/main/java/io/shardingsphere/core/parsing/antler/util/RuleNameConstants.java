@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.utils;
+package io.shardingsphere.core.parsing.antler.util;
 
 /**
  * Rule name constants used for visit AST.
