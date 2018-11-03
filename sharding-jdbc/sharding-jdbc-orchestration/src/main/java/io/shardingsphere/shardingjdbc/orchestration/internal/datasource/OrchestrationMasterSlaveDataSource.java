@@ -29,7 +29,7 @@ import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -97,10 +97,10 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public final void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) throws SQLException {
+    public final void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) throws SQLException {
         dataSource.close();
-        dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(masterSlaveEvent.getDataSourceConfigurations()),
-                masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
+                masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     /**
