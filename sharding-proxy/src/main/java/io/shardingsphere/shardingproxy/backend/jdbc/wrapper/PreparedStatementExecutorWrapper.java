@@ -45,6 +45,7 @@ import java.util.List;
  * Executor wrapper for prepared statement.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
@@ -71,8 +72,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        return new PreparedStatementRoutingEngine(sql, 
-                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource()).route(parameters);
+        return new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(),
+                logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource()).route(parameters);
     }
     
     @Override
