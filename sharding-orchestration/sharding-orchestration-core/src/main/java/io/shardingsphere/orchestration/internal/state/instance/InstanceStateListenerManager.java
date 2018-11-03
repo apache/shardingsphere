@@ -32,13 +32,13 @@ import io.shardingsphere.orchestration.reg.listener.EventListener;
  * @author caohao
  * @author panjuan
  */
-public final class InstanceListenerManager implements ListenerManager {
+public final class InstanceStateListenerManager implements ListenerManager {
     
     private final StateNode stateNode;
     
     private final RegistryCenter regCenter;
     
-    public InstanceListenerManager(final String name, final RegistryCenter regCenter) {
+    public InstanceStateListenerManager(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
     }

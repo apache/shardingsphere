@@ -22,7 +22,7 @@ import io.shardingsphere.orchestration.internal.config.ConfigMapListenerManager;
 import io.shardingsphere.orchestration.internal.config.ConfigurationListenerManager;
 import io.shardingsphere.orchestration.internal.config.PropertiesListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceListenerManager;
-import io.shardingsphere.orchestration.internal.state.instance.InstanceListenerManager;
+import io.shardingsphere.orchestration.internal.state.instance.InstanceStateListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
@@ -42,7 +42,7 @@ public final class ListenerFactory {
     
     private final AuthenticationListenerManager authenticationListenerManager;
     
-    private final InstanceListenerManager instanceListenerManager;
+    private final InstanceStateListenerManager instanceStateListenerManager;
     
     private final ConfigMapListenerManager configMapListenerManager;
     
@@ -54,7 +54,7 @@ public final class ListenerFactory {
         }
         propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
         authenticationListenerManager = new AuthenticationListenerManager(name, regCenter);
-        instanceListenerManager = new InstanceListenerManager(name, regCenter);
+        instanceStateListenerManager = new InstanceStateListenerManager(name, regCenter);
         configMapListenerManager = new ConfigMapListenerManager(name, regCenter);
         dataSourceListenerManager = new DataSourceListenerManager(name, regCenter);
     }
@@ -69,7 +69,7 @@ public final class ListenerFactory {
         }
         propertiesListenerManager.watch();
         authenticationListenerManager.watch();
-        instanceListenerManager.watch();
+        instanceStateListenerManager.watch();
         dataSourceListenerManager.watch();
         configMapListenerManager.watch();
     }
