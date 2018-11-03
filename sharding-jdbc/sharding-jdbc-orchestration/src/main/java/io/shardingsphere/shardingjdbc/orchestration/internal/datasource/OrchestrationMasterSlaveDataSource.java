@@ -104,6 +104,11 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
                 masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
     }
     
+    /**
+     * Renew master-slave data source.
+     *
+     * @param dataSourceChangedEvent data source changed event
+     */
     @Subscribe
     @SneakyThrows
     public final void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
