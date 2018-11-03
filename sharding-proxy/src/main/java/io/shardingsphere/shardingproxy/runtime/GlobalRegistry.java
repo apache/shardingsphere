@@ -45,6 +45,7 @@ import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sun.rmi.runtime.Log;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -252,7 +253,7 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) {
-        logicSchemas.put(masterSlaveEvent.getShardingSchemaName(), new ShardingSchema(masterSlaveEvent.getShardingSchemaName(),
+        logicSchemas.put(masterSlaveEvent.getShardingSchemaName(), new MasterSlaveSchema(masterSlaveEvent.getShardingSchemaName(),
                 logicSchemas.get(masterSlaveEvent.getShardingSchemaName()).getDataSources(), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
@@ -263,10 +264,10 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final DataSourceChangedEvent dataSourceEvent) {
-        ShardingSchema shardingSchema = logicSchemas.get(dataSourceEvent.getSchemaName());
-        shardingSchema.getBackendDataSource().close();
+        LogicSchema logicSchema = logicSchemas.get(dataSourceEvent.getSchemaName());
+        logicSchema.getBackendDataSource().close();
         logicSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
-                DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), shardingSchema.getShardingRule(), shardingSchema.getMasterSlaveRule()));
+                DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), logicSchema.getShardingRule(), logicSchema.getMasterSlaveRule()));
     }
     
     /**
