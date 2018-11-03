@@ -233,13 +233,13 @@ public final class ConfigurationService {
      *
      * @return master-slave data source names
      */
-    public Collection<String> getAllMasterDataSourceNames() {
-        Collection<String> result = new LinkedList<>();
+    public Map<String, Collection<String>> getAllMasterDataSourceNames() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String each : getAllShardingSchemaNames()) {
             if (isShardingRule(each)) {
-                result.addAll(getMasterDataSourceNamesFromShardingRule(each));
+                result.put(each, getMasterDataSourceNamesFromShardingRule(each));
             } else {
-                result.addAll(getMasterDataSourceNamesFromMasterSlaveRule(each));
+                result.put(each, getMasterDataSourceNamesFromMasterSlaveRule(each));
             }
         }
         return result;
