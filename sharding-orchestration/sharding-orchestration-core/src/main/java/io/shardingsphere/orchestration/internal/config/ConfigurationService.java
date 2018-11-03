@@ -21,7 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterators;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -233,7 +232,7 @@ public final class ConfigurationService {
         for (String each : schemaNames) {
             Collection<String> result = new LinkedList<>();
             if (isShardingRule(each)) {
-                result.addAll(getMasterDataSourceNames(each));
+                result.addAll(getMasterDataSourceNamesFromShardingRule(each));
             } else {
                 MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(each);
                 result.add(masterSlaveConfig.getMasterDataSourceName());
@@ -241,7 +240,7 @@ public final class ConfigurationService {
         }
     }
     
-    private Collection<String> getMasterDataSourceNames(final String schemaName) {
+    private Collection<String> getMasterDataSourceNamesFromShardingRule(final String schemaName) {
         Collection<String> result = new LinkedList<>();
         ShardingRuleConfiguration shardingConfig = loadShardingRuleConfiguration(schemaName);
         result.addAll(Collections2.transform(shardingConfig.getMasterSlaveRuleConfigs(), new Function<MasterSlaveRuleConfiguration, String>() {
