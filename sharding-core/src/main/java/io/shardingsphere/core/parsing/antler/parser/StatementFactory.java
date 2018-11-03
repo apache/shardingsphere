@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antler.parser.factory;
+package io.shardingsphere.core.parsing.antler.parser;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;

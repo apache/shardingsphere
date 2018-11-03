@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.antler.ast.dialect;
 
 import io.shardingsphere.core.parsing.antler.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.MySQLStatementAdvancedParser;
 import io.shardingsphere.parser.antlr.MySQLStatementLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;

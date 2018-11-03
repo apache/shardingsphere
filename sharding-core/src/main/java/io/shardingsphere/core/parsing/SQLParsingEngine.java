@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antler.parser.factory.StatementFactory;
+import io.shardingsphere.core.parsing.antler.parser.StatementFactory;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;

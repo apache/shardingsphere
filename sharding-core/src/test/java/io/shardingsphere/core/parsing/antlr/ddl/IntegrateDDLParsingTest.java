@@ -18,11 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.PostgreStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.SQLServerStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.factory.StatementFactory;
+import io.shardingsphere.core.parsing.antler.parser.StatementFactory;
+import io.shardingsphere.core.parsing.antler.parser.dialect.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.OracleStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.PostgreStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.SQLServerStatementAdvancedParser;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
