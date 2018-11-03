@@ -18,6 +18,10 @@
 package io.shardingsphere.core.parsing.antler.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antler.ast.dialect.MySQLStatementParseTreeBuilder;
+import io.shardingsphere.core.parsing.antler.ast.dialect.OracleStatementParseTreeBuilder;
+import io.shardingsphere.core.parsing.antler.ast.dialect.PostgreStatementParseTreeBuilder;
+import io.shardingsphere.core.parsing.antler.ast.dialect.SQLServerStatementParseTreeBuilder;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
