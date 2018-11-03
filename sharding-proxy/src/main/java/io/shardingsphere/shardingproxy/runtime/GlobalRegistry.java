@@ -29,6 +29,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
@@ -256,6 +257,11 @@ public final class GlobalRegistry {
         shardingSchemas.remove(masterSlaveEvent.getSchemaName());
         shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(),
                 DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+    }
+    
+    @Subscribe
+    public void renew(final AuthenticationChangedEvent authenticationEvent) {
+        authentication = authenticationEvent.getAuthentication();
     }
     
     /**
