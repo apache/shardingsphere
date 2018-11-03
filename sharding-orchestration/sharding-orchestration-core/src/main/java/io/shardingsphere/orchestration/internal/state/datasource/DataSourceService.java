@@ -148,4 +148,18 @@ public final class DataSourceService {
         }
         return result;
     }
+    
+    /**
+     * Get disabled slave data source names.
+     *
+     * @return disabled slave data source names
+     */
+    public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
+        Map<String, Collection<String>> result = getDisabledDataSourceNames();
+        Map<String, Collection<String>> masterDataSourceNamesMap = configService.getAllMasterDataSourceNames();
+        for (String each : result.keySet()) {
+            result.get(each).removeAll(masterDataSourceNamesMap.get(each));
+        }
+        return result;
+    }
 }
