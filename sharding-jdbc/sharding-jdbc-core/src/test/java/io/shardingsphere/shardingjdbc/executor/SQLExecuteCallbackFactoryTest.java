@@ -67,14 +67,14 @@ public class SQLExecuteCallbackFactoryTest {
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
-        sqlExecuteCallback.execute(unit, true);
+        sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeUpdate();
     }
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DQL, true);
-        sqlExecuteCallback.execute(unit, true);
+        sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).execute();
     }
 }
