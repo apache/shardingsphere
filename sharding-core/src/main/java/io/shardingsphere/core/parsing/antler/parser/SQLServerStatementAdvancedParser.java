@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.TokenStream;
  * 
  * @author duhongjun
  */
-public class SQLServerStatementAdvancedParser extends SQLServerStatementParser {
+public final class SQLServerStatementAdvancedParser extends SQLServerStatementParser {
     
     public SQLServerStatementAdvancedParser(final TokenStream input) {
         super(input);
