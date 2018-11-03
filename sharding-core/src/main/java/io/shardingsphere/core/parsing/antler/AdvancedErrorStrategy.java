@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antler;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ANTLRErrorStrategy;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.InputMismatchException;
@@ -36,18 +35,10 @@ import org.antlr.v4.runtime.misc.IntervalSet;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class AdvancedErrorStrategy extends DefaultErrorStrategy {
+public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
     
     private final int id;
     
-    /** 
-     * The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
-     * that the current lookahead symbol is consistent with what were expecting
-     * if failed to matched keyword,use ID try again.
-     * 
-     * @param recognizer the parser instance
-     * @throws RecognitionException the recognition exception
-     */
     @Override
     public void sync(final Parser recognizer) throws RecognitionException {
         if (inErrorRecoveryMode(recognizer)) {

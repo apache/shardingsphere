@@ -21,6 +21,8 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
@@ -31,7 +33,8 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class VisitorUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class VisitorUtils {
     
     /**
      * Parse column definition.

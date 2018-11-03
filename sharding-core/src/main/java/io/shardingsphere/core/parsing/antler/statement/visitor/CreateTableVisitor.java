@@ -34,29 +34,21 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class CreateTableVisitor extends DDLStatementVisitor {
+public final class CreateTableVisitor extends DDLStatementVisitor {
+    
     public CreateTableVisitor() {
         addVisitor(new TableNamesVisitor());
         addVisitor(new ColumnDefinitionVisitor());
         addVisitor(new IndexesNameVisitor());
         addVisitor(new CreatePrimaryKeyVisitor());
     }
-
-    /**
-     * Create create table statement.
-     *
-     * @return empty SQL statement
-     */
+    
     @Override
     protected SQLStatement newStatement() {
         return new CreateTableStatement();
     }
-
-    /**
-     * process after visit.
-     *
-     * @param statement SQL statement
-     */
+    
+    @Override
     protected void postVisit(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         List<ColumnMetaData> newColumnMeta = new LinkedList<>();
@@ -65,14 +57,11 @@ public class CreateTableVisitor extends DDLStatementVisitor {
         List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
         for (String each : createStatement.getColumnNames()) {
             String type = null;
-
             if (columnTypes.size() > pos) {
                 type = columnTypes.get(pos);
             }
-
             newColumnMeta.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
         }
-
         createStatement.setTableMetaData(new TableMetaData(newColumnMeta));
     }
 }

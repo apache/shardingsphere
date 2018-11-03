@@ -33,14 +33,8 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class OracleModifyColumnVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit modify column node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class OracleModifyColumnVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;

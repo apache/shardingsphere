@@ -32,14 +32,8 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class DropColumnVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit drop column node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class DropColumnVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;

@@ -35,7 +35,7 @@ import org.antlr.v4.runtime.dfa.DFAState;
  * 
  * @author duhongjun
  */
-public class AdvancedParserATNSimulator extends ParserATNSimulator {
+public final class AdvancedParserATNSimulator extends ParserATNSimulator {
     
     private int id;
     
@@ -44,18 +44,6 @@ public class AdvancedParserATNSimulator extends ParserATNSimulator {
         this.id = id;
     }
     
-    /**
-     * Performs ATN simulation to compute a predicted alternative based
-     *  upon the remaining input, but also updates the DFA cache to avoid
-     *  having to traverse the ATN again for the same input sequence.
-     *  
-     * @param dfa antlr dfa instance
-     * @param s0 start state
-     * @param input input token stream
-     * @param startIndex  start index
-     * @param outerContext outer context
-     * @return alternative path number
-     */
     @Override
     protected int execATN(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext) {
         try {

@@ -34,15 +34,9 @@ import java.util.List;
  * @author duhongjun
  */
 public class ModifyColumnVisitor implements PhraseVisitor {
-
-    /**
-     * Visit modify column node.
-     *
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+    
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         List<ParserRuleContext> modifyColumnContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN);
         if (null == modifyColumnContexts) {

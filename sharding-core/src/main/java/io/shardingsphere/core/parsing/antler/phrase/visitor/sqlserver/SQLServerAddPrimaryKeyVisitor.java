@@ -33,14 +33,8 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
-
-    /**
-     * Visit add primary key node.
-     *
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;

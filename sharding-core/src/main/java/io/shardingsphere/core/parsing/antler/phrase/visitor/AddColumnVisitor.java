@@ -35,14 +35,8 @@ import java.util.List;
  */
 public class AddColumnVisitor extends ColumnDefinitionVisitor {
     
-    /**
-     * Visit add column node.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @param statement SQL statement
-     */
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         List<ParserRuleContext> addColumnContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
         if (null == addColumnContexts) {

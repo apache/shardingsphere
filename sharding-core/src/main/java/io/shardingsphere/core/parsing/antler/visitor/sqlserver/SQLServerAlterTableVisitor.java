@@ -29,7 +29,8 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor
  * 
  * @author duhongjun
  */
-public class SQLServerAlterTableVisitor extends AlterTableVisitor {
+public final class SQLServerAlterTableVisitor extends AlterTableVisitor {
+    
     public SQLServerAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());
         addVisitor(new ModifyColumnVisitor()); 

@@ -17,53 +17,40 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.List;
 
 /**
  * Visit MySQL add primary key phrase.
  * 
  * @author duhongjun
  */
-public class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit add primary key node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-
-        ParserRuleContext constraintDefinitionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.ADD_CONSTRAINT);
+        ParserRuleContext constraintDefinitionNode = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_CONSTRAINT);
         if (null == constraintDefinitionNode) {
             return;
         }
-
-        ParserRuleContext primaryKeyOptionNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.PRIMARY_KEY_OPTION);
+        ParserRuleContext primaryKeyOptionNode = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.PRIMARY_KEY_OPTION);
         if (null == primaryKeyOptionNode) {
             return;
         }
-
         List<ParserRuleContext> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.KEY_PART);
         if (null == keyPartNodes) {
             return;
         }
-
-        for (final ParseTree each : keyPartNodes) {
+        for (ParseTree each : keyPartNodes) {
             String columnName = each.getChild(0).getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

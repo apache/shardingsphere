@@ -28,14 +28,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * 
  * @author duhongjun
  */
-public class RenameIndexVisitor implements PhraseVisitor {
-
-    /**
-     * Visit rename index node.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @param statement SQL statement
-     */
+public final class RenameIndexVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         ParserRuleContext renameIndexNode = TreeUtils.getFirstChildByRuleName(ancestorNode, "renameIndex");

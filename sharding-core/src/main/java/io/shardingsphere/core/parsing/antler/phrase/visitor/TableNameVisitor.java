@@ -17,10 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -28,6 +25,7 @@ import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit single tableName phrase.
@@ -35,33 +33,24 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public class TableNameVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit table name node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        ParserRuleContext tableNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.TABLE_NAME);
+        ParserRuleContext tableNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
         if (null != tableNameCtx) {
             String name = tableNameCtx.getText();
             if (null == name) {
                 return;
             }
-
             String dotString = Symbol.DOT.getLiterals();
             int pos = name.lastIndexOf(dotString);
-            String literals = null;
+            String literals;
             if (pos > 0) {
                 literals = name.substring(pos + dotString.length());
             } else {
                 pos = 0;
                 literals = name;
             }
-
             statement.getSQLTokens().add(new TableToken(tableNameCtx.getStart().getStartIndex(), pos, name));
             statement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
         }

@@ -17,11 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.sql.ddl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
@@ -29,6 +24,11 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Alter table statement.
@@ -39,20 +39,21 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class AlterTableStatement extends DDLStatement {
+    
     private final List<String> dropColumns = new ArrayList<>();
-
+    
     private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
-
+    
     private final List<ColumnDefinition> addColumns = new ArrayList<>();
-
+    
     private boolean dropPrimaryKey;
-
+    
     private String newTableName;
-
+    
     private ShardingTableMetaData tableMetaDataMap;
-
+    
     private TableMetaData tableMetaData;
-
+    
     /**
      * Get column definition.
      *
@@ -67,7 +68,7 @@ public class AlterTableStatement extends DDLStatement {
 
         return columnDefinition;
     }
-
+    
     /**
      * Get exist column definition.
      *
@@ -79,16 +80,14 @@ public class AlterTableStatement extends DDLStatement {
         if (null == tableMeta) {
             return null;
         }
-
         for (ColumnMetaData each : tableMeta.getColumnMetaData()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
                 return new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey());
             }
         }
-
         return null;
     }
-
+    
     /**
      * Get column definition from current add clause.
      *
@@ -101,8 +100,6 @@ public class AlterTableStatement extends DDLStatement {
                 return addColumn;
             }
         }
-
         return null;
     }
-
 }

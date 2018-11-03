@@ -31,56 +31,33 @@ import java.util.List;
  * @author duhongjun
  */
 public abstract class AbstractStatementVisitor implements StatementVisitor {
+    
     private List<PhraseVisitor> visitors = new ArrayList<>();
-
-    /**
-     * Visit ast, generate statement.
-     * 
-     * @param rootNode root node of ast
-     * @param shardingTableMetaData table metadata
-     * @return SQL statement
-     */
+    
     @Override
-    public SQLStatement visit(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
+    public final SQLStatement visit(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement statement = newStatement(shardingTableMetaData);
-
         for (PhraseVisitor each : visitors) {
             each.visit(rootNode, statement);
         }
-        
         postVisit(statement);
         return statement;
     }
     
-    /** process after visit.
-     * @param statement SQL statement
-     */
     protected void postVisit(final SQLStatement statement) {
-
     }
-
+    
     /**
      * Add visitor.
+     * 
      * @param visitor phrase visitor for filling statement
      */
-    public void addVisitor(final PhraseVisitor visitor) {
+    public final void addVisitor(final PhraseVisitor visitor) {
         visitors.add(visitor);
     }
-
-    /**
-     * Create statement.
-     * 
-     * @return empty SQL statement
-     */
+    
     protected abstract SQLStatement newStatement();
     
-    
-    /**
-     * Use shardingTableMetaData create SQLStatement.
-     * 
-     * @param shardingTableMetaData table metadata
-     * @return SQL statement info
-     */
     protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         return newStatement();
     }

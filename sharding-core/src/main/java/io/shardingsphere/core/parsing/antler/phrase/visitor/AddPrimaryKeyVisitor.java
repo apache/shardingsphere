@@ -17,16 +17,15 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.List;
 
 /**
  * Visit add primary key phrase.
@@ -34,35 +33,25 @@ import lombok.RequiredArgsConstructor;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class AddPrimaryKeyVisitor implements PhraseVisitor {
+public final class AddPrimaryKeyVisitor implements PhraseVisitor {
     
     private final String ruleName;
-
-    /** 
-     * Visit add primary key node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        
         ParserRuleContext modifyColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, ruleName);
         if (null == modifyColumnCtx) {
             return;
         }
-
         ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(modifyColumnCtx, RuleNameConstants.PRIMARY_KEY);
         if (null == primaryKeyCtx) {
             return;
         }
-
         List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, RuleNameConstants.COLUMN_NAME);
         if (null == columnNodes) {
             return;
         }
-        
         for (final ParserRuleContext each : columnNodes) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);

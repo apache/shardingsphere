@@ -17,27 +17,20 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit index name phrase.
  * 
  * @author duhongjun
  */
-public class IndexNameVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit index name table node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class IndexNameVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;

@@ -30,14 +30,8 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class TableNamesVisitor extends TableNameVisitor {
-
-    /** 
-     * Visit ast.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class TableNamesVisitor extends TableNameVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         List<ParserRuleContext> tableNameContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);

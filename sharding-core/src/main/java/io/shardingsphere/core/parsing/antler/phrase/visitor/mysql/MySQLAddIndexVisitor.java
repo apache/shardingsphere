@@ -31,14 +31,8 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public class MySQLAddIndexVisitor implements PhraseVisitor {
-
-    /**
-     * Visit add index node.
-     *
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class MySQLAddIndexVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         List<ParserRuleContext> addIndexContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_INDEX);

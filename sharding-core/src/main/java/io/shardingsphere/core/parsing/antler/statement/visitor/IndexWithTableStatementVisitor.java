@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
  * 
  * @author duhongjun
  */
-public class IndexWithTableStatementVisitor extends DDLStatementVisitor {
+public final class IndexWithTableStatementVisitor extends DDLStatementVisitor {
     
     public IndexWithTableStatementVisitor() {
         addVisitor(new TableNameVisitor());

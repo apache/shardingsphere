@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisit
  * 
  * @author duhongjun
  */
-public class OracleAlterIndexVisitor extends DDLStatementVisitor {
+public final class OracleAlterIndexVisitor extends DDLStatementVisitor {
     
     public OracleAlterIndexVisitor() {
         addVisitor(new IndexesNameVisitor());

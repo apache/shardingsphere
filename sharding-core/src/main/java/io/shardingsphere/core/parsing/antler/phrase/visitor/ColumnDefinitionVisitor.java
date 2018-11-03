@@ -17,17 +17,16 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import io.shardingsphere.core.util.SQLUtil;
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.List;
 
 /**
  * Visit column definition phrase.
@@ -35,28 +34,19 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
  * @author duhongjun
  */
 public class ColumnDefinitionVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit column definition node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-
         List<ParserRuleContext> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.COLUMN_DEFINITION);
         if (null == columnDefinitions) {
             return;
         }
-
         for (final ParserRuleContext each : columnDefinitions) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null == column) {
                 continue;
             }
-
             createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.getName()));
             createStatement.getColumnTypes().add(column.getType());
             if (column.isPrimaryKey()) {

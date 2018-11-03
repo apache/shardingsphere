@@ -25,7 +25,8 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisit
  * 
  * @author duhongjun
  */
-public class PostgreAlterIndexVisitor extends DDLStatementVisitor {
+public final class PostgreAlterIndexVisitor extends DDLStatementVisitor {
+    
     public PostgreAlterIndexVisitor() {
         addVisitor(new IndexesNameVisitor());
     }

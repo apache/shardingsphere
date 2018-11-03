@@ -17,28 +17,21 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.List;
 
 /**
  * Visit create table primary key  phrase.
  * 
  * @author duhongjun
  */
-public class CreatePrimaryKeyVisitor implements PhraseVisitor {
-
-    /**
-     * Visit ast.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class CreatePrimaryKeyVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
@@ -46,18 +39,15 @@ public class CreatePrimaryKeyVisitor implements PhraseVisitor {
         if (null == primaryKeyCtx) {
             return;
         }
-
         ParserRuleContext columnListCtx = TreeUtils.getFirstChildByRuleName(primaryKeyCtx.getParent().getParent(),
                 RuleNameConstants.COLUMN_LIST);
         if (null == columnListCtx) {
             return;
         }
-
         List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(columnListCtx, RuleNameConstants.COLUMN_NAME);
         if (null == columnNodes) {
             return;
         }
-
         for (final ParserRuleContext each : columnNodes) {
             if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
                 createStatement.getPrimaryKeyColumns().add(each.getText());
