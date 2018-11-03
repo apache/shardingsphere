@@ -17,14 +17,13 @@
 
 package io.shardingsphere.core.parsing.antler.parser;
 
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-
 import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
 import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
 import io.shardingsphere.parser.antlr.SQLServerStatementParser;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
 
 /**
  * SQLServer statement parser.
@@ -32,26 +31,18 @@ import io.shardingsphere.parser.antlr.SQLServerStatementParser;
  * @author duhongjun
  */
 public class SQLServerStatementAdvancedParser extends SQLServerStatementParser {
-
+    
     public SQLServerStatementAdvancedParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         this._errHandler = new AdvancedErrorStrategy(ID);
     }
-
-    /**
-     * Match token by token type.
-     *
-     * @param tokenType token type
-     * @return current matched token
-     * @throws RecognitionException mismatch throw exception
-    */
+    
     @Override
     public Token match(final int tokenType) throws RecognitionException {
-        if (tokenType == Token.EOF) {
+        if (Token.EOF == tokenType) {
             matchedEOF = true;
         }
-        
         return AntlrUtils.match(this, tokenType, ID);
     }
 }

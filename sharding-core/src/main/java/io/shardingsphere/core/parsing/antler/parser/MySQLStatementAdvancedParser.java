@@ -30,24 +30,17 @@ import org.antlr.v4.runtime.TokenStream;
  * 
  * @author duhongjun
  */
-public class MySQLStatementAdvancedParser extends MySQLStatementParser {
-
+public final class MySQLStatementAdvancedParser extends MySQLStatementParser {
+    
     public MySQLStatementAdvancedParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         this._errHandler = new AdvancedErrorStrategy(ID);
     }
-
-    /**
-     * Match token by token type.
-     *
-     * @param tokenType token type
-     * @return current matched token
-     * @throws RecognitionException mismatch throw exception
-     */
+    
     @Override
     public Token match(final int tokenType) throws RecognitionException {
-        if (tokenType == Token.EOF) {
+        if (Token.EOF == tokenType) {
             matchedEOF = true;
         }
         return AntlrUtils.match(this, tokenType, ID);
