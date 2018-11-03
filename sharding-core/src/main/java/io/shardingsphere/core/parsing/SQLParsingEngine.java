@@ -64,21 +64,19 @@ public final class SQLParsingEngine {
         lexerEngine.nextToken();
         Token firstToken = lexerEngine.getCurrentToken();
         SQLStatement result;
-        SQLParser parser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
+        SQLParser sqlParser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
         Token currentToken = lexerEngine.getCurrentToken();
         if (firstToken != currentToken) {
             if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
-                result = StatementFactory.getStatement(dbType, firstToken.getType(), shardingRule, sql, shardingTableMetaData);
+                result = StatementFactory.parse(dbType, firstToken.getType(), shardingRule, sql, shardingTableMetaData);
             } else {
-                result = parser.parse();
+                result = sqlParser.parse();
             }
         } else if (TCLStatement.isTCL(firstToken.getType())) {
-            result = StatementFactory.getStatement(dbType, firstToken.getType(), shardingRule, sql,
-                    shardingTableMetaData);
+            result = StatementFactory.parse(dbType, firstToken.getType(), shardingRule, sql, shardingTableMetaData);
         } else {
-            result = parser.parse();
+            result = sqlParser.parse();
         }
-        
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }

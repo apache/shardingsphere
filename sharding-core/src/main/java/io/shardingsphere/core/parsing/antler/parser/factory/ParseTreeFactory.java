@@ -25,6 +25,8 @@ import io.shardingsphere.core.parsing.antler.ast.SQLServerStatementParseTreeBuil
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -32,20 +34,21 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public class ParseTreeFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ParseTreeFactory {
     
     /** 
      * Get SQL statement AST.
      * 
-     * @param dbType database type.
-     * @param tokenType token type.
-     * @param shardingRule databases and tables sharding rule.
-     * @param sql input SQL text.
+     * @param dbType database type
+     * @param tokenType token type
+     * @param shardingRule databases and tables sharding rule
+     * @param sql input SQL text
      * @return parse tree
      */
-    public static ParserRuleContext getParserTree(final DatabaseType dbType, final TokenType tokenType,
-                                                      final ShardingRule shardingRule, final String sql) {
+    public static ParserRuleContext getParserTree(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final String sql) {
         switch (dbType) {
+            case H2:
             case MySQL:
                 return new MySQLStatementParseTreeBuilder().parse(sql);
             case Oracle:

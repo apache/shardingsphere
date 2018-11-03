@@ -43,14 +43,14 @@ import java.util.Map;
 public final class VisitorRegistry {
     
     private static VisitorRegistry instance = new VisitorRegistry();
-
+    
     private Map<String, StatementVisitor> visitors = new HashMap<>();
-
+    
     private VisitorRegistry() {
         registerDDLVisitor();
         registerTCLVisitor();
     }
-
+    
     /**
      * Get VisitorManager instance.
      * 
@@ -59,7 +59,7 @@ public final class VisitorRegistry {
     public static VisitorRegistry getInstance() {
         return instance;
     }
-
+    
     /**
      * Get statement visitor.
      * 
@@ -73,7 +73,6 @@ public final class VisitorRegistry {
         if (null != visitor) {
             return visitor;
         }
-
         return visitors.get(commandName);
     }
     
@@ -102,6 +101,9 @@ public final class VisitorRegistry {
      *  Register MySQL private DDL visitor.
      */
     private void registerMySQLDDL() {
+        visitors.put(DatabaseType.H2 + "AlterTable", new MySQLAlterTableVisitor());
+        visitors.put(DatabaseType.H2 + "DropTable", new OnlyMultiTableVisitor());
+        visitors.put(DatabaseType.H2 + "DropIndex", new IndexWithTableStatementVisitor());
         visitors.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
         visitors.put(DatabaseType.MySQL + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.MySQL + "DropIndex", new IndexWithTableStatementVisitor());
@@ -115,7 +117,7 @@ public final class VisitorRegistry {
         visitors.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
         visitors.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
     }
-
+    
     /**
      *  Register SQLServer private DDL visitor.
      */
@@ -146,6 +148,7 @@ public final class VisitorRegistry {
         visitors.put("Rollback", new TCLStatementVisitor());
         visitors.put("Savepoint", new TCLStatementVisitor());
         visitors.put("BeginWork", new TCLStatementVisitor());
+        visitors.put(DatabaseType.H2 + "SetVariable", new TCLStatementVisitor());
         visitors.put(DatabaseType.MySQL + "SetVariable", new TCLStatementVisitor());
     }
 }

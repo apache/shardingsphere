@@ -26,7 +26,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -38,31 +37,24 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class StatementFactory {
 
     /**
-     * Parse input to SQLStatement.
+     * Parse SQL.
      *
-     * @param dbType                database type
-     * @param tokenType             token type
-     * @param shardingRule          databases and tables sharding rule
-     * @param sql                   input SQL text
+     * @param dbType database type
+     * @param tokenType token type
+     * @param shardingRule sharding rule
+     * @param sql input SQL text
      * @param shardingTableMetaData table meta data
-     * @return SQLStatement instance
+     * @return SQL statement
      */
-    public static SQLStatement getStatement(final DatabaseType dbType, final TokenType tokenType,
-                                            final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
-        DatabaseType execDbType = dbType;
-        if (DatabaseType.H2 == execDbType) {
-            execDbType = DatabaseType.MySQL;
-        }
-
-        ParserRuleContext rootNode = ParseTreeFactory.getParserTree(execDbType, tokenType, shardingRule, sql);
+    public static SQLStatement parse(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+        ParserRuleContext rootNode = ParseTreeFactory.getParserTree(dbType, tokenType, shardingRule, sql);
         if (null != rootNode) {
             String commandName = getCommandName(rootNode);
-            StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(execDbType, commandName);
+            StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, commandName);
             if (null != visitor) {
                 return visitor.visit(rootNode, shardingTableMetaData);
             }
         }
-
         return null;
     }
 
