@@ -21,6 +21,7 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
@@ -50,12 +51,10 @@ public final class AuthenticationListenerManager implements ListenerManager {
     
     private final DataSourceService dataSourceService;
     
-    public AuthenticationListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+    public AuthenticationListenerManager(final String name, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
-        this.shardingSchemaName = shardingSchemaName;
         configService = new ConfigurationService(name, regCenter);
-        dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
@@ -72,22 +71,8 @@ public final class AuthenticationListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName);
-                    Authentication authentication = configService.loadAuthentication();
-                    Properties props = configService.loadProperties();
-                    ShardingEventBusInstance.getInstance().post(configService.isShardingRule(shardingSchemaName)
-                            ? getShardingEvent(dataSourceConfigurations, authentication, props) : getMasterSlaveEvent(dataSourceConfigurations, authentication, props));
+                    ShardingEventBusInstance.getInstance().post(new AuthenticationChangedEvent(configService.loadAuthentication()));
                 }
-            }
-            
-            private ConfigurationChangedEvent getShardingEvent(final Map<String, DataSourceConfiguration> dataSourceConfigurations, final Authentication authentication, final Properties props) {
-                return new ShardingConfigurationChangedEvent(shardingSchemaName, dataSourceConfigurations,
-                        new ShardingRule(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName), dataSourceConfigurations.keySet()), authentication, props);
-            }
-            
-            private ConfigurationChangedEvent getMasterSlaveEvent(final Map<String, DataSourceConfiguration> dataSourceConfigurations, final Authentication authentication, final Properties props) {
-                return new MasterSlaveConfigurationChangedEvent(shardingSchemaName, dataSourceConfigurations,
-                        dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName), authentication, props);
             }
         });
     }
