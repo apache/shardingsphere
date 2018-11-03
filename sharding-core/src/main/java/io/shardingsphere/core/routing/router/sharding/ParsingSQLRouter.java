@@ -137,6 +137,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof DCLStatement) {
             routingEngine = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+        } else if (shardingRule.isAllInDefaultDataSource(tableNames)) {
+            routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (shardingConditions.isAlwaysFalse()) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (sqlStatement instanceof DALStatement) {
@@ -145,7 +147,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllInDefaultDataSource(tableNames)) {
+        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
             routingEngine = new StandardRoutingEngine(shardingRule, tableNames.iterator().next(), shardingConditions);
         } else {
             // TODO config for cartesian set
