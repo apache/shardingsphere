@@ -18,8 +18,8 @@
 package io.shardingsphere.orchestration.internal.config;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.listener.ListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -63,12 +63,12 @@ public final class RuleListenerManager implements ListenerManager {
                 }
             }
     
-            private MasterSlaveConfigurationChangedEvent getMasterSlaveConfigurationChangedEvent() {
-                return new MasterSlaveConfigurationChangedEvent(dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
+            private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent() {
+                return new MasterSlaveRuleChangedEvent(dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
             }
     
-            private ShardingConfigurationChangedEvent getShardingConfigurationChangedEvent() {
-                return new ShardingConfigurationChangedEvent(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
+            private ShardingRuleChangedEvent getShardingConfigurationChangedEvent() {
+                return new ShardingRuleChangedEvent(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
             }
         });
     }
