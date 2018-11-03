@@ -33,6 +33,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -229,15 +230,15 @@ public final class ConfigurationService {
     
     public Collection<String> getAllMasterDataSourceNames() {
         Collection<String> schemaNames = getAllShardingSchemaNames();
+        Collection<String> result = new LinkedList<>();
         for (String each : schemaNames) {
-            Collection<String> result = new LinkedList<>();
             if (isShardingRule(each)) {
                 result.addAll(getMasterDataSourceNamesFromShardingRule(each));
             } else {
-                MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(each);
-                result.add(masterSlaveConfig.getMasterDataSourceName());
+                result.addAll(getMasterDataSourceNamesFromMasterSlaveRule(each));
             }
         }
+        return result;
     }
     
     private Collection<String> getMasterDataSourceNamesFromShardingRule(final String schemaName) {
@@ -251,6 +252,11 @@ public final class ConfigurationService {
             }
         }));
         return result;
+    }
+    
+    private Collection<String> getMasterDataSourceNamesFromMasterSlaveRule(final String schemaName) {
+        MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(schemaName);
+        return Collections.singletonList(masterSlaveConfig.getMasterDataSourceName());
     }
     
     
