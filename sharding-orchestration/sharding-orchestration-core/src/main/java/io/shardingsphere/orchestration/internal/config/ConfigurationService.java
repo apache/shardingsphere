@@ -17,8 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterators;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -32,6 +35,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -223,4 +227,32 @@ public final class ConfigurationService {
     public Collection<String> getAllShardingSchemaNames() {
         return regCenter.getChildrenKeys(configNode.getSchemaPath());
     }
+    
+    public Collection<String> getAllMasterDataSourceNames() {
+        Collection<String> schemaNames = getAllShardingSchemaNames();
+        for (String each : schemaNames) {
+            Collection<String> result = new LinkedList<>();
+            if (isShardingRule(each)) {
+                result.addAll(getMasterDataSourceNames(each))
+            } else {
+                MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(each);
+                result.add(masterSlaveConfig.getMasterDataSourceName());
+            }
+        }
+    }
+    
+    private void getMasterDataSourceNames(final String schemaName) {
+        Collection<String> result = new LinkedList<>();
+        ShardingRuleConfiguration shardingConfig = loadShardingRuleConfiguration(schemaName);
+        result.addAll(Collections2.transform(shardingConfig.getMasterSlaveRuleConfigs(), new Function<MasterSlaveRuleConfiguration, String>() {
+
+            @Override
+            public String apply(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+                return masterSlaveRuleConfig.getMasterDataSourceName();
+            }
+        }));
+        return result;
+    }
+    
+    
 }
