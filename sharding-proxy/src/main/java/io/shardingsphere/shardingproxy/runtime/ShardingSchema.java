@@ -55,8 +55,8 @@ public final class ShardingSchema extends LogicSchema {
     private ShardingRule shardingRule;
     
     public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
-        super(name, dataSources, getShardingRule());
-        shardingRule = getShardingRule(shardingRuleConfig, isUsingRegistry);
+        super(name, dataSources, getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry));
+        shardingRule = getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
         getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
