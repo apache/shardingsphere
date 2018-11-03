@@ -17,20 +17,10 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.RuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
@@ -43,52 +33,26 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Getter
-public final class LogicSchema {
+public class LogicSchema {
     
     private final String name;
     
     private final Map<String, DataSourceParameter> dataSources;
     
-    private final ShardingRule shardingRule;
-    
-    private final MasterSlaveRule masterSlaveRule;
-    
     private final JDBCBackendDataSource backendDataSource;
     
-    private final ShardingMetaData metaData;
-    
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
+    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final boolean isUsingRegistry) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
-        shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
-                : new ShardingRule(new ShardingRuleConfiguration(), dataSources.keySet());
-        masterSlaveRule = ruleConfiguration instanceof MasterSlaveRuleConfiguration ? getMasterSlaveRule((MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingRule, final MasterSlaveRule masterSlaveRule) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
-        this.shardingRule = shardingRule;
-        this.masterSlaveRule = masterSlaveRule;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
-    }
-    
-    private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSources.keySet()) : new ShardingRule(shardingRule, dataSources.keySet());
-    }
-    
-    private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
-    }
-    
-    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        return new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule,
-                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -97,14 +61,5 @@ public final class LogicSchema {
             result.put(entry.getKey(), entry.getValue().getUrl());
         }
         return result;
-    }
-    
-    /**
-     * Judge is master slave only.
-     *
-     * @return is master slave only
-     */
-    public boolean isMasterSlaveOnly() {
-        return (null == shardingRule || shardingRule.getTableRules().isEmpty()) && null != masterSlaveRule;
     }
 }
