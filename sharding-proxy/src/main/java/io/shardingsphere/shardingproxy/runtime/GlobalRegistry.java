@@ -138,9 +138,9 @@ public final class GlobalRegistry {
         }
     }
     
-    private LogicSchema getLogicSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Entry<String, RuleConfiguration> entry, final String schemaName, final boolean isUsingRegistry) {
-        return entry.getValue() instanceof ShardingRuleConfiguration ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) entry.getValue(), isUsingRegistry)
-                        : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) entry.getValue(), isUsingRegistry);
+    private LogicSchema getLogicSchema(final String schemaName, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
+        return ruleConfiguration instanceof ShardingRuleConfiguration ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
+                : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
     }
     
     private void initBackendNIOConfig() {
