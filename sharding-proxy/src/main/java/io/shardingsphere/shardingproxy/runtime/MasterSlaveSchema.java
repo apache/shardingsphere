@@ -19,9 +19,11 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
@@ -42,7 +44,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     private MasterSlaveRule masterSlaveRule;
     
     public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
-        super(name, dataSources);
+        super(name, dataSources, new ShardingRule(new ShardingRuleConfiguration(), dataSources.keySet()));
         masterSlaveRule = getMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
     }
     
