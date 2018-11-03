@@ -268,14 +268,12 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final DataSourceChangedEvent dataSourceEvent) {
-        authentication = masterSlaveEvent.getAuthentication();
-        shardingProperties = new ShardingProperties(masterSlaveEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
             entry.getValue().getBackendDataSource().close();
         }
-        shardingSchemas.remove(masterSlaveEvent.getSchemaName());
-        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(),
-                DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+        ShardingSchema shardingSchema = shardingSchemas.get(dataSourceEvent.getSchemaName());
+        shardingSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
+                DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), shardingSchema.getShardingRule(), shardingSchema.getMasterSlaveRule()));
     }
     
     /**
