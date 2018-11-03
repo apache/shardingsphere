@@ -22,6 +22,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.EventLoopGroup;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -35,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
@@ -92,11 +96,12 @@ public final class MySQLFrontendHandlerTest {
     }
     
     @Test
-    public void assertExecuteCommand() {
+    public void assertExecuteCommand() throws ReflectiveOperationException {
         Channel channel = mock(Channel.class);
         ChannelId channelId = mock(ChannelId.class);
         when(channel.id()).thenReturn(channelId);
         when(context.channel()).thenReturn(channel);
+        setTransactionType();
         mysqlFrontendHandler.executeCommand(context, mock(ByteBuf.class));
     }
     
@@ -104,5 +109,17 @@ public final class MySQLFrontendHandlerTest {
         Field field = GlobalRegistry.class.getDeclaredField("authentication");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), value);
+    }
+    
+    private void setTransactionType() throws ReflectiveOperationException {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), getShardingProperties(TransactionType.LOCAL));
+    }
+    
+    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
+        return new ShardingProperties(props);
     }
 }
