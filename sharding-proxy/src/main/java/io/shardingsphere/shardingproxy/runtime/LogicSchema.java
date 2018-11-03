@@ -18,8 +18,6 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import lombok.Getter;
 
@@ -40,13 +38,6 @@ public class LogicSchema {
     private final JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
-        this.name = name;
-        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        this.dataSources = dataSources;
-        backendDataSource = new JDBCBackendDataSource(dataSources);
-    }
-    
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingRule, final MasterSlaveRule masterSlaveRule) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
