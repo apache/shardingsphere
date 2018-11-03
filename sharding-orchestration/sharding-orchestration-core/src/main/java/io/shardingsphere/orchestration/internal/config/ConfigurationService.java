@@ -233,7 +233,7 @@ public final class ConfigurationService {
         for (String each : schemaNames) {
             Collection<String> result = new LinkedList<>();
             if (isShardingRule(each)) {
-                result.addAll(getMasterDataSourceNames(each))
+                result.addAll(getMasterDataSourceNames(each));
             } else {
                 MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(each);
                 result.add(masterSlaveConfig.getMasterDataSourceName());
@@ -241,7 +241,7 @@ public final class ConfigurationService {
         }
     }
     
-    private void getMasterDataSourceNames(final String schemaName) {
+    private Collection<String> getMasterDataSourceNames(final String schemaName) {
         Collection<String> result = new LinkedList<>();
         ShardingRuleConfiguration shardingConfig = loadShardingRuleConfiguration(schemaName);
         result.addAll(Collections2.transform(shardingConfig.getMasterSlaveRuleConfigs(), new Function<MasterSlaveRuleConfiguration, String>() {
