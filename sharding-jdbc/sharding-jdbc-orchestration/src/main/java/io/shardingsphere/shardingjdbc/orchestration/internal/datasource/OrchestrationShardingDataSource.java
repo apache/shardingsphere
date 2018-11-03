@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
@@ -94,6 +95,18 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
      */
     @Subscribe
     public final void renew(final ShardingConfigurationChangedEvent shardingEvent) throws SQLException {
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
+                shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
+    }
+    
+    /**
+     * Renew sharding data source.
+     *
+     * @param dataSourceEvent data source event
+     * @throws SQLException SQL exception
+     */
+    @Subscribe
+    public final void renew(final DataSourceChangedEvent dataSourceEvent) throws SQLException {
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
                 shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
