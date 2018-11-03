@@ -262,6 +262,4 @@ public final class ConfigurationService {
         MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(schemaName);
         return Collections.singletonList(masterSlaveConfig.getMasterDataSourceName());
     }
-    
-    
 }
