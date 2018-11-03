@@ -103,7 +103,7 @@ public final class ShardingSchema extends LogicSchema {
         if (!disabledSchemaDataSourceMap.keySet().contains(getName())) {
             return;
         }
-        
+        renew(disabledSchemaDataSourceMap.get(getName()));
     }
     
     private void renew(final Collection<String> disabledDataSourceNames) {
