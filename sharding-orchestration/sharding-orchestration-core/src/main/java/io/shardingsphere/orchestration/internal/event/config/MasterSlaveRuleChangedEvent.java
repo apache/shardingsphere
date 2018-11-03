@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveConfigurationChangedEvent {
+public final class MasterSlaveRuleChangedEvent {
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
     
