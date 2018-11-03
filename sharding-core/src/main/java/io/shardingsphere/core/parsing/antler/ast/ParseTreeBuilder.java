@@ -27,9 +27,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public interface ParseTreeBuilder {
     
     /** 
-     * Parse input to ast.
+     * Parse input to AST.
      * 
-     * @param input SQL text
+     * @param input input text
      * @return parse tree
      */
     ParserRuleContext parse(String input);

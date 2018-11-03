@@ -17,50 +17,31 @@
 
 package io.shardingsphere.core.parsing.antler.ast;
 
+import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.MySQLStatementLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
-import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
-import io.shardingsphere.parser.antlr.MySQLStatementLexer;
-
 /**
- * MySQL tree builder, Create private lexer and parser.
+ * MySQL tree builder.
  * 
  * @author duhongjun
  */
-public class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
-
-    /**
-     * Create lexer instance.
-     *
-     * @param charStream text stream
-     * @return antlr lexer instance
-     */
+public final class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
+    
     @Override
     protected Lexer newLexer(final CharStream charStream) {
         return new MySQLStatementLexer(charStream);
     }
-
-    /**
-     * Create parser instance.
-     *
-     * @param tokenStream token stream
-     * @return antlr parser instance
-     */
+    
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new MySQLStatementAdvancedParser(tokenStream);
     }
-
-    /**
-     * Get SQL parse tree.
-     *
-     * @param parser instance
-     * @return SQL parse tree
-     */
+    
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
         MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser) parser;

@@ -17,50 +17,31 @@
 
 package io.shardingsphere.core.parsing.antler.ast;
 
+import io.shardingsphere.core.parsing.antler.parser.SQLServerStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
-import io.shardingsphere.core.parsing.antler.parser.SQLServerStatementAdvancedParser;
-import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
-
 /**
- * SQLServer tree builder, Create private lexer and parser.
+ * SQLServer tree builder.
  * 
  * @author duhongjun
  */
-public class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder {
-
-    /**
-     * Create lexer instance.
-     *
-     * @param charStream text stream
-     * @return antlr lexer instance
-     */
+public final class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder {
+    
     @Override
     protected Lexer newLexer(final CharStream charStream) {
         return new SQLServerStatementLexer(charStream);
     }
-
-    /**
-     * Create parser instance.
-     *
-     * @param tokenStream token stream
-     * @return antlr parser instance
-     */
+    
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new SQLServerStatementAdvancedParser(tokenStream);
     }
-
-    /**
-     * Get SQL parse tree.
-     *
-     * @param parser instance
-     * @return SQL parse tree
-     */
+    
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
         SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser) parser;

@@ -45,19 +45,19 @@ public final class StatementFactory {
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext rootNode = ParseTreeFactory.getParserTree(dbType, sql, shardingRule);
-        if (null == rootNode) {
+        ParserRuleContext parserRuleContext = ParseTreeFactory.getParserTree(dbType, sql, shardingRule);
+        if (null == parserRuleContext) {
             return null;
         }
-        StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, getCommandName(rootNode));
+        StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, getCommandName(parserRuleContext));
         if (null == visitor) {
             return null;
         }
-        return visitor.visit(rootNode, shardingTableMetaData);
+        return visitor.visit(parserRuleContext, shardingTableMetaData);
     }
     
-    private static String getCommandName(final ParserRuleContext node) {
-        String name = node.getClass().getSimpleName();
+    private static String getCommandName(final ParserRuleContext parserRuleContext) {
+        String name = parserRuleContext.getClass().getSimpleName();
         int pos = name.indexOf("Context");
         return pos > 0 ? name.substring(0, pos) : name;
     }

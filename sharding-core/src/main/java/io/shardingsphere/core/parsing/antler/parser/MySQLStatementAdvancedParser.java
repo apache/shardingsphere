@@ -17,14 +17,13 @@
 
 package io.shardingsphere.core.parsing.antler.parser;
 
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-
 import io.shardingsphere.core.parsing.antler.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antler.AdvancedParserATNSimulator;
 import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
 import io.shardingsphere.parser.antlr.MySQLStatementParser;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
 
 /**
  * MySQL statement parser.
@@ -51,7 +50,6 @@ public class MySQLStatementAdvancedParser extends MySQLStatementParser {
         if (tokenType == Token.EOF) {
             matchedEOF = true;
         }
-        
         return AntlrUtils.match(this, tokenType, ID);
     }
 }

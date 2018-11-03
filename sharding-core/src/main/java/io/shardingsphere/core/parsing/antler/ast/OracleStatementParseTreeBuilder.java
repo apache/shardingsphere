@@ -17,50 +17,31 @@
 
 package io.shardingsphere.core.parsing.antler.ast;
 
+import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
+import io.shardingsphere.parser.antlr.OracleStatementLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
-import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
-import io.shardingsphere.parser.antlr.OracleStatementLexer;
-
 /**
- * Oracle tree builder, Create private lexer and parser.
+ * Oracle tree builder.
  * 
  * @author duhongjun
  */
-public class OracleStatementParseTreeBuilder extends AbstractParseTreeBuilder {
-
-    /**
-     * Create lexer instance.
-     *
-     * @param charStream text stream
-     * @return antlr lexer instance
-     */
+public final class OracleStatementParseTreeBuilder extends AbstractParseTreeBuilder {
+    
     @Override
     protected Lexer newLexer(final CharStream charStream) {
         return new OracleStatementLexer(charStream);
     }
-
-    /**
-     * Create parser instance.
-     *
-     * @param tokenStream token stream
-     * @return antlr parser instance
-     */
+    
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new OracleStatementAdvancedParser(tokenStream);
     }
-
-    /**
-     * Get SQL parse tree.
-     *
-     * @param parser instance
-     * @return SQL parse tree
-     */
+    
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
         OracleStatementAdvancedParser parse = (OracleStatementAdvancedParser) parser;
