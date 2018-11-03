@@ -30,6 +30,7 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
@@ -250,6 +251,23 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final MasterSlaveConfigurationChangedEvent masterSlaveEvent) {
+        authentication = masterSlaveEvent.getAuthentication();
+        shardingProperties = new ShardingProperties(masterSlaveEvent.getProps());
+        for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
+            entry.getValue().getBackendDataSource().close();
+        }
+        shardingSchemas.remove(masterSlaveEvent.getSchemaName());
+        shardingSchemas.put(masterSlaveEvent.getSchemaName(), new ShardingSchema(masterSlaveEvent.getSchemaName(),
+                DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+    }
+    
+    /**
+     * Renew data source configuration.
+     *
+     * @param dataSourceEvent data source event.
+     */
+    @Subscribe
+    public void renew(final DataSourceChangedEvent dataSourceEvent) {
         authentication = masterSlaveEvent.getAuthentication();
         shardingProperties = new ShardingProperties(masterSlaveEvent.getProps());
         for (Entry<String, ShardingSchema> entry : shardingSchemas.entrySet()) {
