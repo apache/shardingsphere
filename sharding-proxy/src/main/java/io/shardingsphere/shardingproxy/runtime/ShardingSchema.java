@@ -57,24 +57,10 @@ public final class ShardingSchema extends LogicSchema {
     public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources, getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry));
         shardingRule = getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
-        getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
     private static ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSourceNames) : new ShardingRule(shardingRule, dataSourceNames);
-    }
-    
-    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule,
-                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
-    }
-    
-    private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getUrl());
-        }
-        return result;
     }
     
     /**
