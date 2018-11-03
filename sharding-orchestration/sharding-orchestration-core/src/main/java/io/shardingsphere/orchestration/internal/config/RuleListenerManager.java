@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Configuration listener manager.
+ * Rule listener manager.
  *
  * @author caohao
  * @author panjuan
@@ -58,11 +58,6 @@ public final class RuleListenerManager implements ListenerManager {
     
     @Override
     public void watch() {
-        watch(configNode.getDataSourcePath(shardingSchemaName));
-        watch(configNode.getRulePath(shardingSchemaName));
-    }
-    
-    private void watch() {
         regCenter.watch(configNode.getRulePath(shardingSchemaName), new EventListener() {
             
             @Override
