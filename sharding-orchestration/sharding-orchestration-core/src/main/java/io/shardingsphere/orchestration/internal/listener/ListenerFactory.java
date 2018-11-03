@@ -63,6 +63,7 @@ public final class ListenerFactory {
         for (ConfigurationListenerManager each : configurationListenerManagers) {
             each.watch();
         }
+        authenticationListenerManager.watch();
         instanceListenerManager.watch();
         dataSourceListenerManager.watch();
         configMapListenerManager.watch();
