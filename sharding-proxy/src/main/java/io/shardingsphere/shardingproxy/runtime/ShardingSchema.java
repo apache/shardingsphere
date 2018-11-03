@@ -59,22 +59,8 @@ public final class ShardingSchema extends LogicSchema {
         metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingRule, final MasterSlaveRule masterSlaveRule) {
-        this.name = name;
-        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        this.dataSources = dataSources;
-        this.shardingRule = shardingRule;
-        this.masterSlaveRule = masterSlaveRule;
-        backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
-    }
-    
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSources.keySet()) : new ShardingRule(shardingRule, dataSources.keySet());
-    }
-    
-    private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
     }
     
     private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
@@ -88,14 +74,5 @@ public final class ShardingSchema extends LogicSchema {
             result.put(entry.getKey(), entry.getValue().getUrl());
         }
         return result;
-    }
-    
-    /**
-     * Judge is master slave only.
-     *
-     * @return is master slave only
-     */
-    public boolean isMasterSlaveOnly() {
-        return (null == shardingRule || shardingRule.getTableRules().isEmpty()) && null != masterSlaveRule;
     }
 }
