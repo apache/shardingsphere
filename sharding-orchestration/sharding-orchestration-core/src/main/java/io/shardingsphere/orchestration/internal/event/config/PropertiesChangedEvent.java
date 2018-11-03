@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class PropertiesChangedEvent {
+public final class PropertiesChangedEvent {
     
     private final Properties props;
 }
