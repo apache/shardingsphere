@@ -63,7 +63,6 @@ public final class ConfigurationListenerManager implements ListenerManager {
     public void watch() {
         watch(configNode.getDataSourcePath(shardingSchemaName));
         watch(configNode.getRulePath(shardingSchemaName));
-        watch(configNode.getPropsPath());
     }
     
     private void watch(final String path) {
