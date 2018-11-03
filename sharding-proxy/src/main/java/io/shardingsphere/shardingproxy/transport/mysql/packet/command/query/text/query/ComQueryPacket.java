@@ -66,19 +66,23 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler;
     
+    private final TransactionType transactionType;
+    
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
         backendHandler = BackendHandlerFactory.createBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
-        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(GlobalRegistry.getInstance().getTransactionType());
-        if (GlobalRegistry.getInstance().getTransactionType() != TransactionType.LOCAL) {
-            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", GlobalRegistry.getInstance().getTransactionType()));
+        transactionType = GlobalRegistry.getInstance().getTransactionType();
+        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        if (null != transactionType && transactionType != TransactionType.LOCAL) {
+            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
+        transactionType = GlobalRegistry.getInstance().getTransactionType();
         backendHandler = null;
         shardingTransactionHandler = null;
     }
@@ -99,7 +103,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == GlobalRegistry.getInstance().getTransactionType()) {
+        if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready
