@@ -23,32 +23,20 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
-import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
-import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sun.rmi.runtime.Log;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -236,19 +224,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Renew data source configuration.
-     *
-     * @param dataSourceEvent data source event.
-     */
-    @Subscribe
-    public void renew(final DataSourceChangedEvent dataSourceEvent) {
-        LogicSchema logicSchema = logicSchemas.get(dataSourceEvent.getSchemaName());
-        logicSchema.getBackendDataSource().close();
-        logicSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
-                DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), logicSchema.getShardingRule(), logicSchema.getMasterSlaveRule()));
-    }
-    
-    /**
      * Renew properties.
      *
      * @param propertiesEvent properties event
@@ -276,37 +251,5 @@ public final class GlobalRegistry {
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
-    }
-    
-    /**
-     * Renew disabled data source names.
-     *
-     * @param disabledStateEventBusEvent jdbc disabled event bus event
-     */
-    @Subscribe
-    public void renewDisabledDataSourceNames(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        Map<String, Collection<String>> disabledSchemaDataSourceMap = disabledStateEventBusEvent.getDisabledSchemaDataSourceMap();
-        for (String each : disabledSchemaDataSourceMap.keySet()) {
-            DisabledStateEventBusEvent eventBusEvent = new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, disabledSchemaDataSourceMap.get(each)));
-            renewShardingSchema(each, eventBusEvent);
-        }
-    }
-    
-    private void renewShardingSchema(final String each, final DisabledStateEventBusEvent eventBusEvent) {
-        if (logicSchemas.get(each).isMasterSlaveOnly()) {
-            renewShardingSchemaWithMasterSlaveRule(logicSchemas.get(each), eventBusEvent);
-        } else {
-            renewShardingSchemaWithShardingRule(logicSchemas.get(each), eventBusEvent);
-        }
-    }
-    
-    private void renewShardingSchemaWithShardingRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
-        for (MasterSlaveRule each : ((OrchestrationShardingRule) shardingSchema.getShardingRule()).getMasterSlaveRules()) {
-            ((OrchestrationMasterSlaveRule) each).renew(disabledEvent);
-        }
-    }
-    
-    private void renewShardingSchemaWithMasterSlaveRule(final ShardingSchema shardingSchema, final DisabledStateEventBusEvent disabledEvent) {
-        ((OrchestrationMasterSlaveRule) shardingSchema.getMasterSlaveRule()).renew(disabledEvent);
     }
 }
