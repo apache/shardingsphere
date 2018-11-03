@@ -94,7 +94,7 @@ public final class CommandPacketFactoryTest {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
         field.setAccessible(true);
         Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(1));
+        props.setProperty(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), String.valueOf(1));
         field.set(GlobalRegistry.getInstance(), new ShardingProperties(props));
     }
     
