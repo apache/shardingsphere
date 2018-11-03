@@ -41,6 +41,7 @@ import io.shardingsphere.shardingproxy.backend.netty.future.SynchronizedFuture;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -100,11 +101,11 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
-        return logicSchema.isMasterSlaveOnly() ? executeForMasterSlave() : executeForSharding();
+        return logicSchema instanceof MasterSlaveSchema ? executeForMasterSlave() : executeForSharding();
     }
     
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
-        String dataSourceName = new MasterSlaveRouter(logicSchema.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(sql).iterator().next();
+        String dataSourceName = new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
         executeSQL(dataSourceName, sql);
