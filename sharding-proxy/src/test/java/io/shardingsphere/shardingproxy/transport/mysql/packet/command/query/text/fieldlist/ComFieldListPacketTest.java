@@ -19,9 +19,12 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -42,6 +45,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -60,6 +64,14 @@ public final class ComFieldListPacketTest {
     
     @Mock
     private BackendHandler backendHandler;
+    
+    private void setMaxConnectionsSizePerQuery() throws ReflectiveOperationException {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(1));
+        field.set(GlobalRegistry.getInstance(), new ShardingProperties(props));
+    }
     
     @Test
     public void assertWrite() {
