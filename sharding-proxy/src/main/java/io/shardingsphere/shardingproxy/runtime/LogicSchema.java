@@ -58,7 +58,8 @@ public class LogicSchema {
             return;
         }
         backendDataSource.close();
-        logicSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
-                DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), logicSchema.getShardingRule(), logicSchema.getMasterSlaveRule()));
+        dataSources.clear();
+        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()));
+        backendDataSource = new JDBCBackendDataSource(dataSources);
     }
 }
