@@ -58,15 +58,8 @@ public final class AuthenticationListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watch() {
-        watch(configNode.getDataSourcePath(shardingSchemaName));
-        watch(configNode.getRulePath(shardingSchemaName));
-        watch(configNode.getPropsPath());
-        watch(configNode.getAuthenticationPath());
-    }
-    
     private void watch(final String path) {
-        regCenter.watch(path, new EventListener() {
+        regCenter.watch(configNode.getAuthenticationPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
