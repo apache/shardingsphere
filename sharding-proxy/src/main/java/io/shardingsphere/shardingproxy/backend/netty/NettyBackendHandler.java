@@ -42,6 +42,7 @@ import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.MasterSlaveSchema;
+import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -120,7 +121,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource());
+                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource());
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
@@ -199,7 +200,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(logicSchema.getShardingRule(), queryResults, sqlStatement, logicSchema.getMetaData().getTable()).merge();
+            mergedResult = MergeEngineFactory.newInstance(((ShardingSchema) logicSchema).getShardingRule(), queryResults, sqlStatement, logicSchema.getMetaData().getTable()).merge();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }
@@ -212,7 +213,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
                 logicSchema.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
                 new ProxyTableMetaDataConnectionManager(logicSchema.getBackendDataSource()), GLOBAL_REGISTRY.getMaxConnectionsSizePerQuery());
-        logicSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, logicSchema.getShardingRule()));
+        logicSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ((ShardingSchema) logicSchema).getShardingRule()));
     }
     
     @Override
