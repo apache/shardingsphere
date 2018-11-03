@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingConfigurationChangedEvent {
+public final class ShardingRuleChangedEvent {
     
     private final ShardingRuleConfiguration shardingRuleConfiguration;
 }
