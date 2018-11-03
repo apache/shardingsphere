@@ -47,10 +47,6 @@ public final class PropertiesListenerManager implements ListenerManager {
     
     @Override
     public void watch() {
-        watch(configNode.getPropsPath());
-    }
-    
-    private void watch(final String path) {
         regCenter.watch(configNode.getPropsPath(), new EventListener() {
             
             @Override
