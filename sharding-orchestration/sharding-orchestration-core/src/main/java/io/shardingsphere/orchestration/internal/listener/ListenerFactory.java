@@ -68,16 +68,24 @@ public final class ListenerFactory {
      *
      */
     public void initListeners() {
-        for (RuleListenerManager each : ruleListenerManagers) {
-            each.watch();
-        }
-        for (DataSourceListenerManager each : dataSourceListenerManagers) {
-            each.watch();
-        }
+        initRuleListenerManagers();
+        initDataSourceListenerManagers();
         propertiesListenerManager.watch();
         authenticationListenerManager.watch();
         instanceStateListenerManager.watch();
         dataSourceStateListenerManager.watch();
         configMapListenerManager.watch();
+    }
+    
+    private void initDataSourceListenerManagers() {
+        for (DataSourceListenerManager each : dataSourceListenerManagers) {
+            each.watch();
+        }
+    }
+    
+    private void initRuleListenerManagers() {
+        for (RuleListenerManager each : ruleListenerManagers) {
+            each.watch();
+        }
     }
 }
