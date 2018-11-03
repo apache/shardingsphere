@@ -39,7 +39,7 @@ public final class PropertiesListenerManager implements ListenerManager {
     
     private final ConfigurationService configService;
     
-    public PropertiesListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+    public PropertiesListenerManager(final String name, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
         configService = new ConfigurationService(name, regCenter);
