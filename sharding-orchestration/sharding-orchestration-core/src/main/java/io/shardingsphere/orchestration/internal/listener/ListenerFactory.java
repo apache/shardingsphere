@@ -19,7 +19,7 @@ package io.shardingsphere.orchestration.internal.listener;
 
 import io.shardingsphere.orchestration.internal.config.AuthenticationListenerManager;
 import io.shardingsphere.orchestration.internal.config.ConfigMapListenerManager;
-import io.shardingsphere.orchestration.internal.config.ConfigurationListenerManager;
+import io.shardingsphere.orchestration.internal.config.RuleListenerManager;
 import io.shardingsphere.orchestration.internal.config.DataSourceListenerManager;
 import io.shardingsphere.orchestration.internal.config.PropertiesListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceStateListenerManager;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
  */
 public final class ListenerFactory {
     
-    private final Collection<ConfigurationListenerManager> configurationListenerManagers = new LinkedList<>();
+    private final Collection<RuleListenerManager> ruleListenerManagers = new LinkedList<>();
     
     private final Collection<DataSourceListenerManager> dataSourceListenerManagers = new LinkedList<>();
     
@@ -54,7 +54,7 @@ public final class ListenerFactory {
     public ListenerFactory(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
             dataSourceListenerManagers.add(new DataSourceListenerManager(name, regCenter, each));
-            configurationListenerManagers.add(new ConfigurationListenerManager(name, regCenter, each));
+            ruleListenerManagers.add(new RuleListenerManager(name, regCenter, each));
         }
         propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
         authenticationListenerManager = new AuthenticationListenerManager(name, regCenter);
@@ -68,7 +68,7 @@ public final class ListenerFactory {
      *
      */
     public void initListeners() {
-        for (ConfigurationListenerManager each : configurationListenerManagers) {
+        for (RuleListenerManager each : ruleListenerManagers) {
             each.watch();
         }
         for (DataSourceListenerManager each : dataSourceListenerManagers) {
