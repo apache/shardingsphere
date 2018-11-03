@@ -27,7 +27,8 @@ import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.MasterSlaveSchema;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -46,18 +47,18 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final ShardingSchema shardingSchema;
+    private final LogicSchema logicSchema;
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        return shardingSchema.isMasterSlaveOnly() ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+        return logicSchema instanceof MasterSlaveSchema ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
     }
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        String rewriteSQL = new MasterSlaveSQLRewriteEngine(shardingSchema.getMasterSlaveRule(), sql, sqlStatement, shardingSchema.getMetaData()).rewrite();
+        String rewriteSQL = new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData()).rewrite();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(shardingSchema.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
+        for (String each : new MasterSlaveRouter(logicSchema.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.<List<Object>>emptyList())));
         }
         return result;
@@ -65,7 +66,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                shardingSchema.getShardingRule(), shardingSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), shardingSchema.getMetaData().getDataSource());
+                logicSchema.getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource());
         return routingEngine.route(sql);
     }
     
