@@ -21,11 +21,12 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexesNameVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisitor;
 
 /**
- * oralce alter index statement visitor.
+ * Oracle alter index statement visitor.
  * 
  * @author duhongjun
  */
 public class OracleAlterIndexVisitor extends DDLStatementVisitor {
+    
     public OracleAlterIndexVisitor() {
         addVisitor(new IndexesNameVisitor());
     }

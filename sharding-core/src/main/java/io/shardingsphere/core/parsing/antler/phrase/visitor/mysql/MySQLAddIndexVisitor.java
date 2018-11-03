@@ -17,15 +17,14 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.List;
 
 /**
  * Visit MySQL add index phrase.
@@ -42,19 +41,14 @@ public class MySQLAddIndexVisitor implements PhraseVisitor {
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        List<ParserRuleContext> addIndexCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                RuleNameConstants.ADD_INDEX);
-        
-        if (null == addIndexCtxs) {
+        List<ParserRuleContext> addIndexContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_INDEX);
+        if (null == addIndexContexts) {
             return;
         }
-
-        for (ParserRuleContext each : addIndexCtxs) {
-            ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(each,
-                    RuleNameConstants.INDEX_NAME);
+        for (ParserRuleContext each : addIndexContexts) {
+            ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(each, RuleNameConstants.INDEX_NAME);
             if (null != indexNameNode) {
-                statement.getSQLTokens()
-                        .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
+                statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
             }
         }
     }

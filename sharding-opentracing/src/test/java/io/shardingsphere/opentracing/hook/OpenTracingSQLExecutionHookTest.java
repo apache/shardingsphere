@@ -95,7 +95,8 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Collections.singletonList(Arrays.<Object>asList("1", 2))), dataSourceMetaData, false, ShardingExecuteDataMap.getDataMap());
+        sqlExecutionHook.start(
+                createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Collections.singletonList(Arrays.<Object>asList("1", 2))), dataSourceMetaData, false, ShardingExecuteDataMap.getDataMap());
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));

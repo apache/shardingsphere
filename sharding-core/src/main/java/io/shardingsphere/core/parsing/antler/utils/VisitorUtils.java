@@ -17,15 +17,14 @@
 
 package io.shardingsphere.core.parsing.antler.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Visitor utils.
@@ -33,125 +32,102 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
  * @author duhongjun
  */
 public class VisitorUtils {
+    
     /**
      * Parse column definition.
      *
      * @param columnDefinitionNode column definition rule
-     * @return column defition
+     * @return column definition
      */
     public static ColumnDefinition visitColumnDefinition(final ParserRuleContext columnDefinitionNode) {
         if (null == columnDefinitionNode) {
             return null;
         }
-
         ParserRuleContext columnNameNode = TreeUtils
                 .getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
 
         if (null == columnNameNode) {
             return null;
         }
-
-        ParserRuleContext dataTypeCtx = TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                RuleNameConstants.DATA_TYPE);
-
+        ParserRuleContext dataTypeCtx = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
         String typeName = null;
         if (null != dataTypeCtx) {
             typeName = dataTypeCtx.getChild(0).getText();
         }
-
         Integer length = null;
-
-        ParserRuleContext dataTypeLengthCtx = TreeUtils.getFirstChildByRuleName(dataTypeCtx,
-                RuleNameConstants.DATA_TYPE_LENGTH);
-
+        ParserRuleContext dataTypeLengthCtx = TreeUtils.getFirstChildByRuleName(dataTypeCtx, RuleNameConstants.DATA_TYPE_LENGTH);
         if (null != dataTypeLengthCtx) {
             if (dataTypeLengthCtx.getChildCount() >= 3) {
                 try {
                     length = Integer.parseInt(dataTypeLengthCtx.getChild(1).getText());
-                } catch (NumberFormatException e) {
-                    // just for checksty
-                    length = null;
+                } catch (NumberFormatException ignore) {
                 }
             }
         }
-
-        ParserRuleContext primaryKeyNode = TreeUtils.getFirstChildByRuleName(columnDefinitionNode,
-                RuleNameConstants.PRIMARY_KEY);
+        ParserRuleContext primaryKeyNode = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
         boolean primaryKey = false;
         if (null != primaryKeyNode) {
             primaryKey = true;
         }
-
         return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
     }
-
+    
     /**
      * Visit column position.
      *
      * @param ancestorNode ancestor node of ast
-     * @param columnName   column name
+     * @param columnName column name
      * @return column position object
      */
     public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
-        ParserRuleContext firstOrAfterColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.FIRST_OR_AFTER_COLUMN);
-        if (null == firstOrAfterColumnCtx) {
+        ParserRuleContext firstOrAfterColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
+        if (null == firstOrAfterColumnContext) {
             return null;
         }
-
-        ParserRuleContext columnNameCtx = TreeUtils.getFirstChildByRuleName(firstOrAfterColumnCtx, "columnName");
+        ParserRuleContext columnNameCtx = TreeUtils.getFirstChildByRuleName(firstOrAfterColumnContext, "columnName");
         ColumnPosition columnPosition = new ColumnPosition();
-        columnPosition.setStartIndex(firstOrAfterColumnCtx.getStart().getStartIndex());
-
+        columnPosition.setStartIndex(firstOrAfterColumnContext.getStart().getStartIndex());
         if (null != columnNameCtx) {
             columnPosition.setColumnName(columnName);
             columnPosition.setAfterColumn(columnNameCtx.getText());
         } else {
             columnPosition.setFirstColumn(columnName);
         }
-
         return columnPosition;
     }
-
-
+    
     /**
      * Visit indices node.
      *
      * @param ancestorNode ancestor node of ast
-     * @param tableName    table name
+     * @param tableName table name
      * @return index token list
      */
     public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
-        List<ParserRuleContext> indexNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                RuleNameConstants.INDEX_NAME);
+        List<ParserRuleContext> indexNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
         if (null == indexNameCtxs) {
             return null;
         }
-
-        List<IndexToken> indicesToken = new ArrayList<>();
-
+        List<IndexToken> result = new ArrayList<>();
         for (ParserRuleContext each : indexNameCtxs) {
-            indicesToken.add(visitIndex(each, tableName));
+            result.add(visitIndex(each, tableName));
         }
-
-        return indicesToken;
+        return result;
     }
-
-
+    
     /**
      * Visit index node.
      *
-     * @param indexNameCtx index name context
+     * @param indexNameContext index name context
      * @param tableName  table name
      * @return index token
      */
-    public static IndexToken visitIndex(final ParserRuleContext indexNameCtx, final String tableName) {
-        String name = getName(indexNameCtx.getText());
-        int startPos = indexNameCtx.getStop().getStartIndex();
-
+    public static IndexToken visitIndex(final ParserRuleContext indexNameContext, final String tableName) {
+        String name = getName(indexNameContext.getText());
+        int startPos = indexNameContext.getStop().getStartIndex();
         return new IndexToken(startPos, name, tableName);
     }
-
+    
     /** 
      * Get name from text.
      * 
@@ -161,10 +137,6 @@ public class VisitorUtils {
     public static String getName(final String text) {
         String dotString = Symbol.DOT.getLiterals();
         int pos = text.lastIndexOf(dotString);
-        if (pos > 0) {
-            return text.substring(pos + dotString.length());
-        } else {
-            return text;
-        }
+        return pos > 0 ? text.substring(pos + dotString.length()) : text;
     }
 }

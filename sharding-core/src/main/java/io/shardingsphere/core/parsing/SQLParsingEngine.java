@@ -63,7 +63,7 @@ public final class SQLParsingEngine {
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
         Token firstToken = lexerEngine.getCurrentToken();
-        SQLStatement result = null;
+        SQLStatement result;
         SQLParser parser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
         Token currentToken = lexerEngine.getCurrentToken();
         if (firstToken != currentToken) {

@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antler.statement.visitor.CreateTableVisitor;
 import io.shardingsphere.core.parsing.antler.statement.visitor.IndexWithTableStatementVisitor;
@@ -35,15 +32,19 @@ import io.shardingsphere.core.parsing.antler.visitor.postgre.PostgreAlterIndexVi
 import io.shardingsphere.core.parsing.antler.visitor.postgre.PostgreAlterTableVisitor;
 import io.shardingsphere.core.parsing.antler.visitor.sqlserver.SQLServerAlterTableVisitor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Visitor registry.
  * 
  * @author duhongjun
  */
 public final class VisitorRegistry {
+    
     private static VisitorRegistry instance = new VisitorRegistry();
 
-    private Map<String, StatementVisitor> visitors = new HashMap<String, StatementVisitor>();
+    private Map<String, StatementVisitor> visitors = new HashMap<>();
 
     private VisitorRegistry() {
         registerDDLVisitor();

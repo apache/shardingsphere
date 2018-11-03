@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
@@ -30,6 +26,10 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNamesVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Abstract statement visitor, get information by each phrase visitor.
@@ -130,8 +130,8 @@ public abstract class AlterTableVisitor extends DDLStatementVisitor {
     private void dropColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
         Iterator<ColumnMetaData> it = newColumnMeta.iterator();
         while (it.hasNext()) {
-            ColumnMetaData eachMeata = it.next();
-            if (alterStatement.getDropColumns().contains(eachMeata.getColumnName())) {
+            ColumnMetaData each = it.next();
+            if (alterStatement.getDropColumns().contains(each.getColumnName())) {
                 it.remove();
             }
         }

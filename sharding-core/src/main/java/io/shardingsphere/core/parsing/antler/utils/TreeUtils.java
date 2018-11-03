@@ -17,21 +17,24 @@
 
 package io.shardingsphere.core.parsing.antler.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Visit AST utils.
  * 
  * @author duhongjun
  */
-public class TreeUtils {
-    public static final String RULE_SUFFIX = "Context";
-
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TreeUtils {
+    
+    private static final String RULE_SUFFIX = "Context";
+    
     /**
      * Find first child node whose rule name is ${name}.
      *
@@ -43,31 +46,26 @@ public class TreeUtils {
         if (null == node) {
             return null;
         }
-
         String ruleName = name;
-        if (name.indexOf(RULE_SUFFIX) < 0) {
+        if (!name.contains(RULE_SUFFIX)) {
             ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
         }
-
         if (ruleName.equals(node.getClass().getSimpleName())) {
             return node;
         }
-
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
             if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-
             ParserRuleContext retNode = getFirstChildByRuleName((ParserRuleContext) child, name);
             if (null != retNode) {
                 return retNode;
             }
         }
-
         return null;
     }
-
+    
     /**
      * Find all children node whose rule name is ${name}.
      *
@@ -79,22 +77,18 @@ public class TreeUtils {
         if (null == node) {
             return null;
         }
-
         String ruleName = name;
-        if (name.indexOf(RULE_SUFFIX) < 0) {
+        if (!name.contains(RULE_SUFFIX)) {
             ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
         }
-
-        List<ParserRuleContext> childs = new ArrayList<>();
+        List<ParserRuleContext> result = new ArrayList<>();
         if (ruleName.equals(node.getClass().getSimpleName())) {
-            childs.add(node);
+            result.add(node);
         }
-
         int count = node.getChildCount();
         if (0 == count) {
-            return childs;
+            return result;
         }
-
         List<ParserRuleContext> childNodes = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             ParseTree child = node.getChild(i);
@@ -102,26 +96,12 @@ public class TreeUtils {
                 childNodes.add((ParserRuleContext) child);
             }
         }
-
-        for (final ParserRuleContext child : childNodes) {
-            List<ParserRuleContext> retChilds = getAllDescendantByRuleName(child, name);
+        for (ParserRuleContext each : childNodes) {
+            List<ParserRuleContext> retChilds = getAllDescendantByRuleName(each, name);
             if (null != retChilds) {
-                childs.addAll(retChilds);
+                result.addAll(retChilds);
             }
         }
-
-        return childs;
-    }
-
-
-    /**
-     * Determine whether the two class is compatible.
-     *
-     * @param c1 first param
-     * @param c2 second param
-     * @return true is compatible
-     */
-    public static boolean isCompatible(final Class<?> c1, final Class<?> c2) {
-        return c1 == c2 || c2.isAssignableFrom(c1);
+        return result;
     }
 }

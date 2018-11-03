@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.visitor.mysql;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.DropPrimaryKeyVisitor;
@@ -35,6 +31,10 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * MySQL alter table statement visitor.
@@ -56,7 +56,7 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
     /**
      * Create statement.
      *
-     * @return empty SQL statment
+     * @return empty SQL statement
      */
     protected SQLStatement newStatement() {
         return new MySQLAlterTableStatement();
@@ -97,9 +97,9 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
         ColumnMetaData firstMeta = null;
         Iterator<ColumnMetaData> it = newColumnMeta.iterator();
         while (it.hasNext()) {
-            ColumnMetaData eachMeata = it.next();
-            if (eachMeata.getColumnName().equals(columnName)) {
-                firstMeta = eachMeata;
+            ColumnMetaData each = it.next();
+            if (each.getColumnName().equals(columnName)) {
+                firstMeta = each;
                 it.remove();
                 break;
             }

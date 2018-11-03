@@ -30,7 +30,7 @@ public class TCLStatementVisitor extends AbstractStatementVisitor {
     /**
      * Create TCL statement.
      *
-     * @return empty SQL statment
+     * @return empty SQL statement
      */
     @Override
     protected SQLStatement newStatement() {

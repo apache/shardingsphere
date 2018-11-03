@@ -258,13 +258,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
             String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
             
-            if(routeResult.getSqlStatement() instanceof CreateTableStatement) {
-                CreateTableStatement createStatement = (CreateTableStatement)routeResult.getSqlStatement();
+            if (routeResult.getSqlStatement() instanceof CreateTableStatement) {
+                CreateTableStatement createStatement = (CreateTableStatement) routeResult.getSqlStatement();
                 connection.getShardingContext().getMetaData().getTable().put(logicTableName, createStatement.getTableMetaData());
-            }else if(routeResult.getSqlStatement() instanceof AlterTableStatement) {
-                AlterTableStatement alterStatement = (AlterTableStatement)routeResult.getSqlStatement();
+            } else if (routeResult.getSqlStatement() instanceof AlterTableStatement) {
+                AlterTableStatement alterStatement = (AlterTableStatement) routeResult.getSqlStatement();
                 connection.getShardingContext().getMetaData().getTable().put(logicTableName, alterStatement.getTableMetaData());
-            }else {
+            } else {
                 TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(),
                         connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
                         connection.getShardingContext().getMaxConnectionsSizePerQuery());

@@ -70,8 +70,8 @@ public final class SQLStatementAssert {
         this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
     }
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType,final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader,sqlCaseId, sqlCaseType);
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
@@ -118,7 +118,7 @@ public final class SQLStatementAssert {
     }
     
     private void assertAlterTableStatement(final AlterTableStatement actual) {
-        if(null != expected.getAlterTable()) {
+        if (null != expected.getAlterTable()) {
             alterTableAssert.assertAlterTable(actual, expected.getAlterTable());
         }
     }

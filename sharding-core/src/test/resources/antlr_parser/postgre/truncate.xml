@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets namespace="postgre.ddl.truncate">
-	<parser-result sql-case-id="truncate_table">
+    <parser-result sql-case-id="truncate_table">
         <tables>
             <table name="t_order" />
         </tables>
@@ -8,7 +8,7 @@
             <table-token begin-position="15" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="truncate_table_with_space">
         <tables>
             <table name="t_order" />
@@ -26,7 +26,7 @@
             <table-token begin-position="15" original-literals="`t_order`" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="truncate_tables">
         <tables>
             <table name="t_order_item" />
@@ -37,8 +37,8 @@
             <table-token begin-position="29" original-literals="t_order" />
         </tokens>
     </parser-result>
-
-    <parser-result sql-case-id="truncate_table_with_asterish">
+    
+    <parser-result sql-case-id="truncate_table_with_asterisk">
         <tables>
             <table name="t_order" />
         </tables>
@@ -55,7 +55,7 @@
             <table-token begin-position="20" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="truncate_table_simple">
         <tables>
             <table name="t_order" />

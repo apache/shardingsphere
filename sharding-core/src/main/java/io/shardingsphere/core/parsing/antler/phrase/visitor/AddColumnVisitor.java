@@ -17,17 +17,16 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.List;
 
 /**
  * Visit add column phrase.
@@ -35,38 +34,30 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  * @author duhongjun
  */
 public class AddColumnVisitor extends ColumnDefinitionVisitor {
-
+    
     /**
      * Visit add column node.
      *
-     * @param ancestorNode ancestor node of ast
+     * @param ancestorNode ancestor node of AST
      * @param statement SQL statement
      */
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParserRuleContext> addColumnCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
-        if (null == addColumnCtxs) {
+        List<ParserRuleContext> addColumnContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
+        if (null == addColumnContexts) {
             return;
         }
-
-        for (ParserRuleContext each : addColumnCtxs) {
+        for (ParserRuleContext each : addColumnContexts) {
             visitAddColumn(each, alterStatement);
         }
     }
-
-    /**
-     * Visit add column context.
-     *
-     * @param addColumnCtx   add column contxt
-     * @param alterStatement alter table statement
-     */
-    public void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
+    
+    private void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
         List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, RuleNameConstants.COLUMN_DEFINITION);
         if (null == columnDefinitionCtxs) {
             return;
         }
-
         for (ParserRuleContext columnDefinitionCtx : columnDefinitionCtxs) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
             if (null != column) {
@@ -78,8 +69,7 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
             }
         }
     }
-
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,
-                                             final String columnName) {
+    
+    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
     }
 }

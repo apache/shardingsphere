@@ -40,8 +40,8 @@
 
     <sql-case id="create_table_with_comment" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) COMMENT 't_order'" />
     <sql-case id="create_table_with_partition" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY HASH (order_id) PARTITIONS 2" />
-	
-	<!--
+    
+    <!--
     <sql-case id="create_table_select" value="CREATE TABLE t_order_bak AS SELECT * FROM t_order" />
 
     <sql-case id="create_table_like" value="CREATE TABLE t_order_bak (LIKE t_order)" />

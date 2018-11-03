@@ -17,40 +17,36 @@
 
 package io.shardingsphere.core.parsing.antler.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 /**
  * Antlr utils.
  *
  * @author duhongjun
  */
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AntlrUtils {
+public final class AntlrUtils {
 
     /**
      * Match token by token type.
      *
-     * @param parser    antlr parser
+     * @param parser antlr parser
      * @param tokenType token type
-     * @param id        id token index num
+     * @param id id token index num
      * @return Token
-     * @throws RecognitionException  mismatch throw exception
+     * @throws RecognitionException mismatch throw exception
      */
     public static Token match(final Parser parser, final int tokenType, final int id) throws RecognitionException {
         Token token = parser.getCurrentToken();
-
         boolean compatID = false;
         if (id == tokenType && id > token.getType()) {
             compatID = true;
         }
-
         if (token.getType() == tokenType || compatID) {
             if (Token.EOF != tokenType && compatID && (token instanceof CommonToken)) {
                 CommonToken commonToken = (CommonToken) token;
@@ -68,17 +64,14 @@ public class AntlrUtils {
         }
         return token;
     }
-
+    
     /**
      * Cast Token to CommonToken.
      *
      * @param token lexical token
-     * @return token is CommonToken,return CommonToken else return null
+     * @return token is CommonToken, return CommonToken else return null
      */
     public static CommonToken castCommonToken(final Token token) {
-        if (token instanceof CommonToken) {
-            return (CommonToken) token;
-        }
-        return null;
+        return token instanceof CommonToken ? (CommonToken) token : null;
     }
 }

@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
@@ -28,6 +25,9 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.IndexesNameVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNamesVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * create table statement visitor.
@@ -45,7 +45,7 @@ public class CreateTableVisitor extends DDLStatementVisitor {
     /**
      * Create create table statement.
      *
-     * @return empty SQL statment
+     * @return empty SQL statement
      */
     @Override
     protected SQLStatement newStatement() {

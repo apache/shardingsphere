@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.parser.factory;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antler.ast.MySQLStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.OracleStatementParseTreeBuilder;
@@ -27,9 +25,10 @@ import io.shardingsphere.core.parsing.antler.ast.SQLServerStatementParseTreeBuil
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.rule.ShardingRule;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Parser Tree factiry, parse SQL, generate AST.
+ * Parser Tree factory, parse SQL, generate AST.
  * 
  * @author duhongjun
  */

@@ -111,8 +111,8 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-		<alter-table drop-columns="user_id">
-        	<new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
+        <alter-table drop-columns="user_id">
+            <new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
         </alter-table>
     </parser-result>
 
@@ -125,7 +125,7 @@
         </tokens>
 
         <alter-table drop-columns="user_id,column5">
-        	<new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
+            <new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
         </alter-table>
     </parser-result>
 
@@ -138,10 +138,10 @@
         </tokens>
 
         <alter-table>
-        	<update-columns>
-        		<update-column origin-column-name="user_id" type="int" name="column4"/>
-        	</update-columns>
-        	<new-meta column-names="order_id,column4,status" column-types="int,int,int" primary-key-columns="order_id"/>
+            <update-columns>
+                <update-column origin-column-name="user_id" type="int" name="column4"/>
+            </update-columns>
+            <new-meta column-names="order_id,column4,status" column-types="int,int,int" primary-key-columns="order_id"/>
         </alter-table>
     </parser-result>
 
@@ -154,10 +154,10 @@
         </tokens>
 
         <alter-table>
-        	<update-columns>
-        		<update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
-        	</update-columns>
-        	<new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id,user_id"/>
+            <update-columns>
+                <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
+            </update-columns>
+            <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id,user_id"/>
         </alter-table>
     </parser-result>
 
@@ -175,7 +175,7 @@
                 <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
                 <update-column origin-column-name="status" name="status" type="int" primary-key="true"/>
             </update-columns>
-        	<new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id,user_id,status"/>
+            <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id,user_id,status"/>
         </alter-table>
     </parser-result>
 
@@ -198,7 +198,7 @@
             <table-token begin-position="86" original-literals="t_order" />
         </tokens>
         <alter-table>
-        	<new-meta column-names="item_id,order_id,user_id,status,c_date" column-types="int,int,int,varchar,timestamp" primary-key-columns="item_id"/>
+            <new-meta column-names="item_id,order_id,user_id,status,c_date" column-types="int,int,int,varchar,timestamp" primary-key-columns="item_id"/>
         </alter-table>
     </parser-result>
 
@@ -222,10 +222,10 @@
         </tokens>
 
         <alter-table>
-        	<update-columns>
-        		<update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
-        	</update-columns>
-        	<new-meta column-names="item_id,order_id,user_id,status,c_date" column-types="int,int,int,varchar,timestamp" primary-key-columns="item_id,order_id"/>
+            <update-columns>
+                <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
+            </update-columns>
+            <new-meta column-names="item_id,order_id,user_id,status,c_date" column-types="int,int,int,varchar,timestamp" primary-key-columns="item_id,order_id"/>
         </alter-table>
     </parser-result>
 
@@ -237,7 +237,7 @@
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
         <alter-table drop-primary-key="true">
-        	<new-meta column-names="order_id,user_id,status" column-types="int,int,int"/>
+            <new-meta column-names="order_id,user_id,status" column-types="int,int,int"/>
         </alter-table>
     </parser-result>
 

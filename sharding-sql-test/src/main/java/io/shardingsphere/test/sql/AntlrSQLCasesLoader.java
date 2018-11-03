@@ -22,10 +22,9 @@ package io.shardingsphere.test.sql;
  * 
  * @author zhangliang 
  */
-public final class AntlrSQLCasesLoader extends SQLCasesLoader{
+public final class AntlrSQLCasesLoader extends SQLCasesLoader {
     
     private static final AntlrSQLCasesLoader INSTANCE = new AntlrSQLCasesLoader();
-    
     
     protected AntlrSQLCasesLoader() {
         supportedSQLCaseMap = loadSQLCases("antlr_supported_sql");

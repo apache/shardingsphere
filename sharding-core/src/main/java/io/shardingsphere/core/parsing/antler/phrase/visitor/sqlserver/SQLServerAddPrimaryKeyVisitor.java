@@ -17,17 +17,16 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.List;
 
 /**
  * Visit SQLServer primary key phrase.
@@ -45,27 +44,21 @@ public class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-
         ParserRuleContext addColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
-
         if (null == addColumnCtx) {
             return;
         }
-
         ParserRuleContext tableConstraintCtx = TreeUtils.getFirstChildByRuleName(addColumnCtx, RuleNameConstants.TABLE_CONSTRAINT);
-
         if (null == tableConstraintCtx) {
             return;
         }
-
         ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(tableConstraintCtx,
                 RuleNameConstants.PRIMARY_KEY);
         if (null == primaryKeyCtx) {
             return;
         }
-
-        List<ParserRuleContext> columnNameCtxs = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, RuleNameConstants.COLUMN_NAME);
-        for (ParseTree each : columnNameCtxs) {
+        List<ParserRuleContext> columnNameContexts = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, RuleNameConstants.COLUMN_NAME);
+        for (ParseTree each : columnNameContexts) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

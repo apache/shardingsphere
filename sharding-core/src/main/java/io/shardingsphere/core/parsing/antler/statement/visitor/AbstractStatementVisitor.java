@@ -17,14 +17,13 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract statement visitor, get information by each phrase visitor.
@@ -71,7 +70,7 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
     /**
      * Create statement.
      * 
-     * @return empty SQL statment
+     * @return empty SQL statement
      */
     protected abstract SQLStatement newStatement();
     
