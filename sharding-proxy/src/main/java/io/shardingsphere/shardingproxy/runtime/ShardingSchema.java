@@ -47,28 +47,15 @@ import java.util.Map.Entry;
  * @author wangkai
  */
 @Getter
-public final class ShardingSchema {
-    
-    private final String name;
-    
-    private final Map<String, DataSourceParameter> dataSources;
+public final class ShardingSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
-    private final MasterSlaveRule masterSlaveRule;
-    
-    private final JDBCBackendDataSource backendDataSource;
-    
     private final ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
-        this.name = name;
-        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        this.dataSources = dataSources;
-        shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
-                : new ShardingRule(new ShardingRuleConfiguration(), dataSources.keySet());
-        masterSlaveRule = ruleConfiguration instanceof MasterSlaveRuleConfiguration ? getMasterSlaveRule((MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
-        backendDataSource = new JDBCBackendDataSource(dataSources);
+    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
+        super(name, dataSources);
+        shardingRule = getShardingRule(shardingRuleConfig, isUsingRegistry);
         metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
     }
     
