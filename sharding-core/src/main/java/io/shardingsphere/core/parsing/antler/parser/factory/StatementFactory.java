@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antler.VisitorRegistry;
 import io.shardingsphere.core.parsing.antler.statement.visitor.StatementVisitor;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
@@ -40,37 +39,26 @@ public final class StatementFactory {
      * Parse SQL.
      *
      * @param dbType database type
-     * @param tokenType token type
+     * @param sql SQL
      * @param shardingRule sharding rule
-     * @param sql input SQL text
      * @param shardingTableMetaData table meta data
      * @return SQL statement
      */
-    public static SQLStatement parse(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final String sql, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext rootNode = ParseTreeFactory.getParserTree(dbType, tokenType, shardingRule, sql);
-        if (null != rootNode) {
-            String commandName = getCommandName(rootNode);
-            StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, commandName);
-            if (null != visitor) {
-                return visitor.visit(rootNode, shardingTableMetaData);
-            }
+    public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        ParserRuleContext rootNode = ParseTreeFactory.getParserTree(dbType, sql, shardingRule);
+        if (null == rootNode) {
+            return null;
         }
-        return null;
+        StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, getCommandName(rootNode));
+        if (null == visitor) {
+            return null;
+        }
+        return visitor.visit(rootNode, shardingTableMetaData);
     }
-
-    /**
-     * Get SQL command name from ast.
-     *
-     * @param node SQL statement root node
-     * @return SQL command name
-     */
+    
     private static String getCommandName(final ParserRuleContext node) {
         String name = node.getClass().getSimpleName();
         int pos = name.indexOf("Context");
-        if (pos > 0) {
-            return name.substring(0, pos);
-        }
-
-        return name;
+        return pos > 0 ? name.substring(0, pos) : name;
     }
 }

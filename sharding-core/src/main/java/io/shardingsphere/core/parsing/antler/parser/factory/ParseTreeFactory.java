@@ -22,8 +22,6 @@ import io.shardingsphere.core.parsing.antler.ast.MySQLStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.OracleStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.PostgreStatementParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.ast.SQLServerStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,12 +39,11 @@ public final class ParseTreeFactory {
      * Get SQL statement AST.
      * 
      * @param dbType database type
-     * @param tokenType token type
-     * @param shardingRule databases and tables sharding rule
-     * @param sql input SQL text
+     * @param sql SQL
+     * @param shardingRule sharding rule
      * @return parse tree
      */
-    public static ParserRuleContext getParserTree(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final String sql) {
+    public static ParserRuleContext getParserTree(final DatabaseType dbType, final String sql, final ShardingRule shardingRule) {
         switch (dbType) {
             case H2:
             case MySQL:
@@ -58,7 +55,7 @@ public final class ParseTreeFactory {
             case PostgreSQL:
                 return new PostgreStatementParseTreeBuilder().parse(sql);
             default:
-                throw new SQLParsingUnsupportedException(tokenType);
+                throw new UnsupportedOperationException(String.format("Can not support database type [%s].", dbType.name()));
         }
     }
 }

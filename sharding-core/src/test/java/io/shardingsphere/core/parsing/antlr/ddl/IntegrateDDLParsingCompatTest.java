@@ -105,7 +105,7 @@ public final class IntegrateDDLParsingCompatTest extends AbstractBaseIntegrateSQ
             execDatabaseType = DatabaseType.MySQL;
         }
         new SQLStatementAssert(StatementFactory.parse(
-                execDatabaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+                execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
     }
     
     /**
