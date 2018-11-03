@@ -29,6 +29,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
@@ -101,6 +102,11 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(masterSlaveEvent.getDataSourceConfigurations()),
                 masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
+    }
+    
+    @Subscribe
+    public final void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+    
     }
     
     /**
