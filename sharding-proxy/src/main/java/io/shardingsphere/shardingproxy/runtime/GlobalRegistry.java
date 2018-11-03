@@ -236,28 +236,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Renew sharding rule.
-     *
-     * @param shardingEvent sharding event.
-     */
-    @Subscribe
-    public void renew(final ShardingRuleChangedEvent shardingEvent) {
-        logicSchemas.put(shardingEvent.getShardingSchemaName(), new ShardingSchema(shardingEvent.getShardingSchemaName(),
-                logicSchemas.get(shardingEvent.getShardingSchemaName()).getDataSources(), shardingEvent.getShardingRuleConfiguration(), true));
-    }
-    
-    /**
-     * Renew master-slave rule.
-     *
-     * @param masterSlaveEvent master-slave event.
-     */
-    @Subscribe
-    public void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) {
-        logicSchemas.put(masterSlaveEvent.getShardingSchemaName(), new MasterSlaveSchema(masterSlaveEvent.getShardingSchemaName(),
-                logicSchemas.get(masterSlaveEvent.getShardingSchemaName()).getDataSources(), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
-    }
-    
-    /**
      * Renew data source configuration.
      *
      * @param dataSourceEvent data source event.
