@@ -260,10 +260,15 @@ public final class GlobalRegistry {
                 DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
+    /**
+     * Renew properties.
+     *
+     * @param propertiesEvent properties event
+     */
+    @Subscribe
     public void renew(final PropertiesChangedEvent propertiesEvent) {
         shardingProperties = new ShardingProperties(propertiesEvent.getProps());
     }
-    
     
     /**
      * Renew authentication.
