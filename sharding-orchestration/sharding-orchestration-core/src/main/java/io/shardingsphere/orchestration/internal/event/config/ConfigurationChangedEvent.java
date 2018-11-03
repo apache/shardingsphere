@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.event.config;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -37,8 +36,6 @@ public abstract class ConfigurationChangedEvent {
     private final String schemaName;
     
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
-    
-    private final Authentication authentication;
     
     private final Properties props;
 }
