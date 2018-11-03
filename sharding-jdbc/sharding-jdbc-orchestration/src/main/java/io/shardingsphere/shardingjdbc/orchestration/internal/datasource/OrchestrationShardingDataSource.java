@@ -26,11 +26,14 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -93,5 +96,16 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public final void renew(final ShardingConfigurationChangedEvent shardingEvent) throws SQLException {
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
                 shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
+    }
+    
+    /**
+     * Renew properties.
+     *
+     * @param propertiesEvent properties event
+     */
+    @SneakyThrows
+    @Subscribe
+    public void renew(final PropertiesChangedEvent propertiesEvent) {
+        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new ShardingContext(dataSource.getDataSourceMap(), dataSource.getShardingContext().getShardingRule(), dataSource.getDatabaseType(), propertiesEvent.getProps()));
     }
 }
