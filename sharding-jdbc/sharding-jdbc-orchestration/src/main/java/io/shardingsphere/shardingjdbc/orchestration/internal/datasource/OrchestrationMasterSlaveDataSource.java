@@ -110,7 +110,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      */
     @SneakyThrows
     @Subscribe
-    public void renew(final PropertiesChangedEvent propertiesEvent) {
+    public final void renew(final PropertiesChangedEvent propertiesEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
                 dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), new ShardingProperties(propertiesEvent.getProps()));
     }
