@@ -18,24 +18,12 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.RuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
-import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
-import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Master-slave schema.
@@ -52,33 +40,7 @@ public final class MasterSlaveSchema extends LogicSchema {
         masterSlaveRule = getMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
     }
     
-    private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSources.keySet()) : new ShardingRule(shardingRule, dataSources.keySet());
-    }
-    
     private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
-    }
-    
-    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
-        return new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule,
-                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
-    }
-    
-    private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getUrl());
-        }
-        return result;
-    }
-    
-    /**
-     * Judge is master slave only.
-     *
-     * @return is master slave only
-     */
-    public boolean isMasterSlaveOnly() {
-        return (null == shardingRule || shardingRule.getTableRules().isEmpty()) && null != masterSlaveRule;
     }
 }
