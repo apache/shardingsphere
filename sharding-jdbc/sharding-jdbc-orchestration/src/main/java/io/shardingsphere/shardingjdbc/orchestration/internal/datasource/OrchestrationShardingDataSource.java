@@ -106,6 +106,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @SneakyThrows
     @Subscribe
     public void renew(final PropertiesChangedEvent propertiesEvent) {
-        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new ShardingContext(dataSource.getDataSourceMap(), dataSource.getShardingContext().getShardingRule(), dataSource.getDatabaseType(), propertiesEvent.getProps()));
+        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(),
+                new ShardingContext(dataSource.getDataSourceMap(), dataSource.getShardingContext().getShardingRule(), dataSource.getDatabaseType(), propertiesEvent.getProps()));
     }
 }
