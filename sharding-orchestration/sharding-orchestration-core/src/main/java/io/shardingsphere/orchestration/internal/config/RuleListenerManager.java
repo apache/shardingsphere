@@ -64,11 +64,11 @@ public final class RuleListenerManager implements ListenerManager {
             }
     
             private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent() {
-                return new MasterSlaveRuleChangedEvent(dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
+                return new MasterSlaveRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
             }
     
             private ShardingRuleChangedEvent getShardingConfigurationChangedEvent() {
-                return new ShardingRuleChangedEvent(dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
+                return new ShardingRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
             }
         });
     }
