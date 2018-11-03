@@ -19,11 +19,11 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
+import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
@@ -54,12 +54,12 @@ public class LogicSchema {
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = ;
+        metaData = getShardingMetaData(shardingrule);
     }
     
-    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
+    private ShardingMetaData getShardingMetaData(final ShardingRule shardingRule) {
         return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule,
-                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
+                DatabaseType.MySQL, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
