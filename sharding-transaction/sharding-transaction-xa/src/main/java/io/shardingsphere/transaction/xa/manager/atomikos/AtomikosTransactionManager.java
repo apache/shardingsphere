@@ -23,8 +23,8 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.manager.XATransactionDataSourceWrapper;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
+import io.shardingsphere.transaction.xa.manager.XATransactionDataSourceWrapper;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -32,6 +32,7 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
@@ -80,7 +81,9 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public void rollback(final XATransactionEvent event) throws ShardingException {
         try {
-            USER_TRANSACTION_MANAGER.rollback();
+            if (Status.STATUS_NO_TRANSACTION != getStatus()) {
+                USER_TRANSACTION_MANAGER.rollback();
+            }
         } catch (final SystemException ex) {
             throw new ShardingException(ex);
         }

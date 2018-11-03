@@ -41,11 +41,9 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.transaction.Status;
 import java.sql.SQLException;
 
 /**
@@ -101,17 +99,11 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == GlobalRegistry.getInstance().getTransactionType() && isInTransaction(operationType.get())) {
+        if (TransactionType.XA == GlobalRegistry.getInstance().getTransactionType()) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
-    }
-    
-    private boolean isInTransaction(final TransactionOperationType operationType) {
-        // TODO zhaojun: research why rollback call twice here
-        return TransactionOperationType.ROLLBACK != operationType
-                || Status.STATUS_NO_TRANSACTION != XATransactionManagerSPILoader.getInstance().getTransactionManager().getStatus();
     }
     
     @Override
