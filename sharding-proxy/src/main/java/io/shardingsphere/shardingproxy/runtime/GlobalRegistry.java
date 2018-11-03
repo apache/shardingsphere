@@ -225,12 +225,12 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Get sharding schema.
+     * Get logic schema.
      *
      * @param schemaName schema name
      * @return sharding schema
      */
-    public ShardingSchema getShardingSchema(final String schemaName) {
+    public LogicSchema getLogicSchema(final String schemaName) {
         return Strings.isNullOrEmpty(schemaName) ? null : logicSchemas.get(schemaName);
     }
     
