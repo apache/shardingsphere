@@ -43,39 +43,13 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Getter
-public final class MasterSlaveSchema {
-    
-    private final String name;
-    
-    private final Map<String, DataSourceParameter> dataSources;
-    
-    private final ShardingRule shardingRule;
+public final class MasterSlaveSchema extends LogicSchema {
     
     private final MasterSlaveRule masterSlaveRule;
     
-    private final JDBCBackendDataSource backendDataSource;
-    
-    private final ShardingMetaData metaData;
-    
-    public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
-        this.name = name;
-        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        this.dataSources = dataSources;
-        shardingRule = ruleConfiguration instanceof ShardingRuleConfiguration ? getShardingRule((ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
-                : new ShardingRule(new ShardingRuleConfiguration(), dataSources.keySet());
-        masterSlaveRule = ruleConfiguration instanceof MasterSlaveRuleConfiguration ? getMasterSlaveRule((MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry) : null;
-        backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
-    }
-    
-    public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingRule, final MasterSlaveRule masterSlaveRule) {
-        this.name = name;
-        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
-        this.dataSources = dataSources;
-        this.shardingRule = shardingRule;
-        this.masterSlaveRule = masterSlaveRule;
-        backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData(BackendExecutorContext.getInstance().getExecuteEngine());
+    public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
+        super(name, dataSources);
+        masterSlaveRule = getMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
     }
     
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final boolean isUsingRegistry) {
