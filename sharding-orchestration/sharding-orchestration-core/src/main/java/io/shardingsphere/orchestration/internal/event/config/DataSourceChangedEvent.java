@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Data source changed event.
@@ -31,11 +30,9 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class DataSourceChangedEvent {
+public final class DataSourceChangedEvent {
     
     private final String schemaName;
     
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
-    
-    private final Properties props;
 }
