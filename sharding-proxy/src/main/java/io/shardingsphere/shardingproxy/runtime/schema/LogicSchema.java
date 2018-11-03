@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.runtime;
+package io.shardingsphere.shardingproxy.runtime.schema;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.Getter;

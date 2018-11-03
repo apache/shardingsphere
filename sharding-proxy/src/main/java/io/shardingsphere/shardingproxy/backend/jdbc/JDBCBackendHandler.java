@@ -35,8 +35,8 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteQuer
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.LogicSchema;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
