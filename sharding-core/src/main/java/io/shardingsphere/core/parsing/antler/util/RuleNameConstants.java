@@ -17,11 +17,15 @@
 
 package io.shardingsphere.core.parsing.antler.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Rule name constants used for visit AST.
  * 
  * @author duhongjun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleNameConstants {
     
     public static final String COLUMN_DEFINITION = "columnDefinition";
