@@ -40,6 +40,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWra
 import io.shardingsphere.shardingproxy.backend.netty.NettyBackendHandler;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -71,11 +72,11 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        ShardingSchema shardingSchema = GLOBAL_REGISTRY.getShardingSchema(schema);
-        backendConnection.setShardingSchema(shardingSchema);
+        LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
+        backendConnection.setLogicSchema(logicSchema);
         return GLOBAL_REGISTRY.isUseNIO()
-                ? new NettyBackendHandler(shardingSchema, connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(shardingSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(shardingSchema)));
+                ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
     }
     
     /**
@@ -92,10 +93,10 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters,
                                                            final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        ShardingSchema shardingSchema = GLOBAL_REGISTRY.getShardingSchema(schema);
-        backendConnection.setShardingSchema(shardingSchema);
-        return GLOBAL_REGISTRY.isUseNIO() ? new NettyBackendHandler(shardingSchema, connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(shardingSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(shardingSchema, parameters)));
+        LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
+        backendConnection.setLogicSchema(logicSchema);
+        return GLOBAL_REGISTRY.isUseNIO() ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
+                : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
     
     /**
