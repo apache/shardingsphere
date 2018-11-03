@@ -56,13 +56,13 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
-                                 final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
+                                 final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.masterSlaveRule = masterSlaveRule;
-        this.shardingProperties = props;
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     /**
