@@ -91,7 +91,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     /**
-     * Renew master-slave data source.
+     * Renew master-slave rule.
      *
      * @param masterSlaveEvent master-slave configuration changed event
      * @throws SQLException SQL exception
