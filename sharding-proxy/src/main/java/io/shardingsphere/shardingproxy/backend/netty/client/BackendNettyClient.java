@@ -33,6 +33,7 @@ import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,7 @@ public final class BackendNettyClient {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final ShardingSchema shardingSchema;
+    private final LogicSchema logicSchema;
     
     private final int maxConnections;
     
@@ -67,8 +68,8 @@ public final class BackendNettyClient {
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    public BackendNettyClient(final ShardingSchema shardingSchema) {
-        this.shardingSchema = shardingSchema;
+    public BackendNettyClient(final ShardingSchema logicSchema) {
+        this.logicSchema = logicSchema;
         maxConnections = GLOBAL_REGISTRY.getBackendNIOConfig().getMaxConnections();
         connectionTimeoutSeconds = GLOBAL_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
     }
@@ -124,13 +125,13 @@ public final class BackendNettyClient {
             
             @Override
             protected SimpleChannelPool newPool(final String dataSourceName) {
-                DataSourceMetaData dataSourceMetaData = shardingSchema.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+                DataSourceMetaData dataSourceMetaData = logicSchema.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
                 return new FixedChannelPool(
                         bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), 
-                        new BackendNettyClientChannelPoolHandler(dataSourceName, shardingSchema.getName()), maxConnections);
+                        new BackendNettyClientChannelPoolHandler(dataSourceName, logicSchema.getName()), maxConnections);
             }
         };
-        for (String each : shardingSchema.getDataSources().keySet()) {
+        for (String each : logicSchema.getDataSources().keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
             Channel[] channels = new Channel[maxConnections];
             for (int i = 0; i < maxConnections; i++) {
