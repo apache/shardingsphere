@@ -134,7 +134,7 @@ public final class GlobalRegistry {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            logicSchemas.put(schemaName, getLogicSchema(schemaDataSources, isUsingRegistry, entry, schemaName));
+            logicSchemas.put(schemaName, getLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry));
         }
     }
     
