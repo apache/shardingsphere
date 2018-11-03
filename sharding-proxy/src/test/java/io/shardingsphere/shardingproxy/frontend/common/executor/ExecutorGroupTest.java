@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecutorGroupTest {
     
-    private TransactionType originalTransactionType = GlobalRegistry.getInstance().getTransactionType();
+    private TransactionType originalTransactionType = TransactionType.LOCAL;
     
     @After
     public void tearDown() throws ReflectiveOperationException {
@@ -66,10 +66,13 @@ public final class ExecutorGroupTest {
     
     private void setTransactionType(final TransactionType transactionType) throws ReflectiveOperationException {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
-        Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), transactionType.name());
-        ShardingProperties shardingProperties = new ShardingProperties(props);
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), transactionType);
+        field.set(GlobalRegistry.getInstance(), getShardingProperties(transactionType));
+    }
+    
+    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
+        return new ShardingProperties(props);
     }
 }
