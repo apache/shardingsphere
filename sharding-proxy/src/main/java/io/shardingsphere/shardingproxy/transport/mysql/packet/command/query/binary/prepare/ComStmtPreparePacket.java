@@ -64,7 +64,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
         this.currentSchema = currentSchema;
         sql = payload.readStringEOF();
         LogicSchema logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
-        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, , logicSchema.getMetaData().getTable());
+        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
     }
     
     private ShardingRule getShardingRule(final LogicSchema logicSchema) {
