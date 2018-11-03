@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ import java.util.ServiceLoader;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ShardingTransactionHandlerRegistry {
     
     private static final Map<TransactionType, ShardingTransactionHandler<ShardingTransactionEvent>> TRANSACTION_HANDLER_MAP = new HashMap<>();
@@ -44,6 +46,11 @@ public final class ShardingTransactionHandlerRegistry {
     @SuppressWarnings("unchecked")
     public static void load() {
         for (ShardingTransactionHandler each : ServiceLoader.load(ShardingTransactionHandler.class)) {
+            if (TRANSACTION_HANDLER_MAP.containsKey(each.getTransactionType())) {
+                log.warn("Find more than one {} transaction handler implementation class, use `{}` now",
+                    each.getTransactionType(), TRANSACTION_HANDLER_MAP.get(each.getTransactionType()).getClass().getName());
+                continue;
+            }
             TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionEvent>) each);
         }
     }
