@@ -52,7 +52,7 @@ public final class ListenerFactory {
         for (String each : shardingSchemaNames) {
             configurationListenerManagers.add(new ConfigurationListenerManager(name, regCenter, each));
         }
-        propertiesListenerManager = new PropertiesListenerManager(name, regCenter)
+        propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
         authenticationListenerManager = new AuthenticationListenerManager(name, regCenter);
         instanceListenerManager = new InstanceListenerManager(name, regCenter);
         configMapListenerManager = new ConfigMapListenerManager(name, regCenter);
@@ -67,6 +67,7 @@ public final class ListenerFactory {
         for (ConfigurationListenerManager each : configurationListenerManagers) {
             each.watch();
         }
+        propertiesListenerManager.watch();
         authenticationListenerManager.watch();
         instanceListenerManager.watch();
         dataSourceListenerManager.watch();
