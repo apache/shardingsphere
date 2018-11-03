@@ -40,8 +40,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWra
 import io.shardingsphere.shardingproxy.backend.netty.NettyBackendHandler;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.LogicSchema;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

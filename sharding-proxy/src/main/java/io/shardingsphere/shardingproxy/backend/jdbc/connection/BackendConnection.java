@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.shardingproxy.runtime.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
