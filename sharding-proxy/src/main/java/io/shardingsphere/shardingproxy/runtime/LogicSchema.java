@@ -43,11 +43,12 @@ public class LogicSchema {
     
     private final ShardingMetaData metaData;
     
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
+    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingMetaData shardingMetaData) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
+        metaData = shardingMetaData;
     }
     
     /**
