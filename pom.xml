@@ -634,6 +634,7 @@
                             <exclude>etcdserverpb/*.class</exclude>
                             <exclude>io/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>io/shardingsphere/orchestration/reg/etcd/*.class</exclude>
+                            <exclude>io/shardingsphere/parser/antlr/*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>
