@@ -228,7 +228,11 @@ public final class ConfigurationService {
         return regCenter.getChildrenKeys(configNode.getSchemaPath());
     }
     
-    
+    /**
+     * Get all master-slave data source names.
+     *
+     * @return master-slave data source names
+     */
     public Collection<String> getAllMasterDataSourceNames() {
         Collection<String> result = new LinkedList<>();
         for (String each : getAllShardingSchemaNames()) {
