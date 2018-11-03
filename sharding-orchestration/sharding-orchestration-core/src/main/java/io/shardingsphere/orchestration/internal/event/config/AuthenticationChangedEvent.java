@@ -17,10 +17,18 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
+import io.shardingsphere.core.rule.Authentication;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Authentication changed event.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
+@Getter
 public class AuthenticationChangedEvent {
+    
+    private final Authentication authentication;
 }
