@@ -30,10 +30,12 @@ import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -99,5 +101,17 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(masterSlaveEvent.getDataSourceConfigurations()),
                 masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), masterSlaveEvent.getProps());
+    }
+    
+    /**
+     * Renew properties.
+     *
+     * @param propertiesEvent properties event
+     */
+    @SneakyThrows
+    @Subscribe
+    public void renew(final PropertiesChangedEvent propertiesEvent) {
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
+                dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), new ShardingProperties(propertiesEvent.getProps()));
     }
 }
