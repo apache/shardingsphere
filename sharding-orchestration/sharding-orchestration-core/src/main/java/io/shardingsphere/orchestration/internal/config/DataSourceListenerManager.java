@@ -38,15 +38,12 @@ public final class DataSourceListenerManager implements ListenerManager {
     
     private final String shardingSchemaName;
     
-    private final ConfigurationService configService;
-    
     private final DataSourceService dataSourceService;
     
     public DataSourceListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
         this.shardingSchemaName = shardingSchemaName;
-        configService = new ConfigurationService(name, regCenter);
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
