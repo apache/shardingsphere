@@ -67,7 +67,7 @@ public final class GlobalRegistry {
     
     private final List<String> schemaNames = new LinkedList<>();
     
-    private final Map<String, ShardingSchema> shardingSchemas = new ConcurrentHashMap<>();
+    private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
     private ShardingProperties shardingProperties;
     
@@ -132,7 +132,7 @@ public final class GlobalRegistry {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             schemaNames.add(schemaName);
-            shardingSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
+            logicSchemas.put(schemaName, new ShardingSchema(schemaName, schemaDataSources.get(schemaName), entry.getValue(), isUsingRegistry));
         }
     }
     
@@ -224,7 +224,7 @@ public final class GlobalRegistry {
      * @return sharding schema
      */
     public ShardingSchema getShardingSchema(final String schemaName) {
-        return Strings.isNullOrEmpty(schemaName) ? null : shardingSchemas.get(schemaName);
+        return Strings.isNullOrEmpty(schemaName) ? null : logicSchemas.get(schemaName);
     }
     
     /**
@@ -234,8 +234,8 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final ShardingRuleChangedEvent shardingEvent) {
-        shardingSchemas.put(shardingEvent.getShardingSchemaName(), new ShardingSchema(shardingEvent.getShardingSchemaName(),
-                shardingSchemas.get(shardingEvent.getShardingSchemaName()).getDataSources(), shardingEvent.getShardingRuleConfiguration(), true));
+        logicSchemas.put(shardingEvent.getShardingSchemaName(), new ShardingSchema(shardingEvent.getShardingSchemaName(),
+                logicSchemas.get(shardingEvent.getShardingSchemaName()).getDataSources(), shardingEvent.getShardingRuleConfiguration(), true));
     }
     
     /**
@@ -245,8 +245,8 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) {
-        shardingSchemas.put(masterSlaveEvent.getShardingSchemaName(), new ShardingSchema(masterSlaveEvent.getShardingSchemaName(),
-                shardingSchemas.get(masterSlaveEvent.getShardingSchemaName()).getDataSources(), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
+        logicSchemas.put(masterSlaveEvent.getShardingSchemaName(), new ShardingSchema(masterSlaveEvent.getShardingSchemaName(),
+                logicSchemas.get(masterSlaveEvent.getShardingSchemaName()).getDataSources(), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
     /**
@@ -256,9 +256,9 @@ public final class GlobalRegistry {
      */
     @Subscribe
     public void renew(final DataSourceChangedEvent dataSourceEvent) {
-        ShardingSchema shardingSchema = shardingSchemas.get(dataSourceEvent.getSchemaName());
+        ShardingSchema shardingSchema = logicSchemas.get(dataSourceEvent.getSchemaName());
         shardingSchema.getBackendDataSource().close();
-        shardingSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
+        logicSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
                 DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), shardingSchema.getShardingRule(), shardingSchema.getMasterSlaveRule()));
     }
     
@@ -307,10 +307,10 @@ public final class GlobalRegistry {
     }
     
     private void renewShardingSchema(final String each, final DisabledStateEventBusEvent eventBusEvent) {
-        if (shardingSchemas.get(each).isMasterSlaveOnly()) {
-            renewShardingSchemaWithMasterSlaveRule(shardingSchemas.get(each), eventBusEvent);
+        if (logicSchemas.get(each).isMasterSlaveOnly()) {
+            renewShardingSchemaWithMasterSlaveRule(logicSchemas.get(each), eventBusEvent);
         } else {
-            renewShardingSchemaWithShardingRule(shardingSchemas.get(each), eventBusEvent);
+            renewShardingSchemaWithShardingRule(logicSchemas.get(each), eventBusEvent);
         }
     }
     
