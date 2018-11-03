@@ -17,11 +17,9 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
-import io.shardingsphere.core.config.DataSourceConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
