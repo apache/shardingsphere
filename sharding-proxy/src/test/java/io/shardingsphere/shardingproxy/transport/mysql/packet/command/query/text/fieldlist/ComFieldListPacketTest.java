@@ -36,6 +36,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Fiel
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.SneakyThrows;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -64,6 +65,11 @@ public final class ComFieldListPacketTest {
     
     @Mock
     private BackendHandler backendHandler;
+    
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        setMaxConnectionsSizePerQuery();
+    }
     
     private void setMaxConnectionsSizePerQuery() throws ReflectiveOperationException {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
