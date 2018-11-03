@@ -17,8 +17,11 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.Getter;
 
 import java.util.Map;
@@ -35,12 +38,27 @@ public class LogicSchema {
     
     private final Map<String, DataSourceParameter> dataSources;
     
-    private final JDBCBackendDataSource backendDataSource;
+    private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
+    }
+    
+    /**
+     * Renew data source configuration.
+     *
+     * @param dataSourceEvent data source event.
+     */
+    @Subscribe
+    public void renew(final DataSourceChangedEvent dataSourceEvent) {
+        if (!name.equals(dataSourceEvent.getSchemaName())) {
+            return;
+        }
+        backendDataSource.close();
+        logicSchemas.put(dataSourceEvent.getSchemaName(), new ShardingSchema(dataSourceEvent.getSchemaName(),
+                DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()), logicSchema.getShardingRule(), logicSchema.getMasterSlaveRule()));
     }
 }
