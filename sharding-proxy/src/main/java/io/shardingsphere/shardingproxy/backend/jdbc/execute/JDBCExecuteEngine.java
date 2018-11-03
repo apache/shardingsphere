@@ -96,9 +96,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
+        int maxConnectionsSizePerQuery = GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery();
         ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
         sqlExecutePrepareTemplate = TransactionType.XA == GlobalRegistry.getInstance().getTransactionType()
-                ? new SQLExecutePrepareTemplate() : new SQLExecutePrepareTemplate(executeEngine);
+                ? new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery, executeEngine);
         sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     }
     
