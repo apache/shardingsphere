@@ -31,5 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShardingRuleChangedEvent {
     
+    private final String shardingSchemaName;
+    
     private final ShardingRuleConfiguration shardingRuleConfiguration;
 }
