@@ -18,14 +18,20 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.Getter;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Logic schema.
@@ -43,12 +49,25 @@ public class LogicSchema {
     
     private final ShardingMetaData metaData;
     
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingMetaData shardingMetaData) {
+    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingrule) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = shardingMetaData;
+        metaData = ;
+    }
+    
+    private ShardingMetaData getShardingMetaData(final ShardingExecuteEngine executeEngine) {
+        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule,
+                DatabaseType.MySQL, executeEngine, new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
+    }
+    
+    private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getUrl());
+        }
+        return result;
     }
     
     /**
