@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class MasterSlaveRuleChangedEvent {
     
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    private final String shardingSchemaName;
     
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
 }
