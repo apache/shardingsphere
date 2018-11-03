@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
@@ -39,6 +40,8 @@ public class LogicSchema {
     private final Map<String, DataSourceParameter> dataSources;
     
     private JDBCBackendDataSource backendDataSource;
+    
+    private final ShardingMetaData metaData;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
         this.name = name;
