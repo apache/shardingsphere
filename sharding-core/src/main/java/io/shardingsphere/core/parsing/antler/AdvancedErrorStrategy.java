@@ -43,7 +43,7 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
     /** 
      * The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
      * that the current lookahead symbol is consistent with what were expecting
-     * if failed to getMatchedToken keyword,use ID try again.
+     * if failed to matched keyword,use ID try again.
      * 
      * @param recognizer the parser instance
      * @throws RecognitionException the recognition exception
@@ -65,7 +65,7 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
             }
             if (nextTokens.contains(Token.EPSILON)) {
                 if (null == nextTokensContext) {
-                    // It's possible the next token won't getMatchedToken; information tracked
+                    // It's possible the next token won't matched; information tracked
                     // by sync is restricted for performance.
                     nextTokensContext = recognizer.getContext();
                     nextTokensState = recognizer.getState();
