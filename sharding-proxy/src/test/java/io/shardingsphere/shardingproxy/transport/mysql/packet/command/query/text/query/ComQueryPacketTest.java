@@ -20,6 +20,8 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
@@ -54,6 +56,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -108,9 +111,15 @@ public final class ComQueryPacketTest {
     
     @SneakyThrows
     private void setTransactionType(final TransactionType transactionType) {
-        Field transactionTypeField = GlobalRegistry.class.getDeclaredField("transactionType");
-        transactionTypeField.setAccessible(true);
-        transactionTypeField.set(GlobalRegistry.getInstance(), transactionType);
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), getShardingProperties(transactionType));
+    }
+    
+    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
+        return new ShardingProperties(props);
     }
     
     @Test
