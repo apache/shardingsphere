@@ -31,6 +31,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveConfigurationChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
@@ -259,10 +260,15 @@ public final class GlobalRegistry {
                 DataSourceConverter.getDataSourceParameterMap(masterSlaveEvent.getDataSourceConfigurations()), masterSlaveEvent.getMasterSlaveRuleConfig(), true));
     }
     
+    public void renew(final PropertiesChangedEvent propertiesEvent) {
+        shardingProperties = new ShardingProperties(propertiesEvent.getProps());
+    }
+    
+    
     /**
      * Renew authentication.
      *
-     * @param authenticationEvent authentication event
+     * @param authenticationEvent authe
      */
     @Subscribe
     public void renew(final AuthenticationChangedEvent authenticationEvent) {
