@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -31,5 +31,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShardingConfigurationChangedEvent {
     
-    private final ShardingRule shardingRule;
+    private final ShardingRuleConfiguration shardingRuleConfiguration;
 }
