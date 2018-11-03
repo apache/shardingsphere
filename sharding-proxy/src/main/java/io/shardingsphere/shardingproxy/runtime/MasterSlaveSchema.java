@@ -19,12 +19,16 @@ package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import lombok.Getter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -57,5 +61,24 @@ public final class MasterSlaveSchema extends LogicSchema {
             return;
         }
         masterSlaveRule = new MasterSlaveRule(masterSlaveEvent.getMasterSlaveRuleConfig());
+    }
+    
+    /**
+     * Renew disabled data source names.
+     *
+     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     */
+    @Subscribe
+    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
+        Map<String, Collection<String>> disabledSchemaDataSourceMap = disabledStateEventBusEvent.getDisabledSchemaDataSourceMap();
+        if (!disabledSchemaDataSourceMap.keySet().contains(getName())) {
+            return;
+        }
+        renew(disabledSchemaDataSourceMap.get(getName()));
+    }
+    
+    private void renew(final Collection<String> disabledDataSourceNames) {
+        DisabledStateEventBusEvent eventBusEvent = new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, disabledDataSourceNames));
+        ((OrchestrationMasterSlaveRule) masterSlaveRule).renew(eventBusEvent);
     }
 }
