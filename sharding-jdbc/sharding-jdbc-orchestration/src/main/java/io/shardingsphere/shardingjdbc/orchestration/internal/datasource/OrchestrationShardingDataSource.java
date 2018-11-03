@@ -30,7 +30,6 @@ import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEv
 import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
@@ -108,8 +107,8 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @SneakyThrows
     public final void renew(final DataSourceChangedEvent dataSourceEvent) {
         dataSource.close();
-        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceEvent.getDataSourceConfigurations()), new ShardingContext(dataSource.getDataSourceMap(),
-                dataSource.getShardingContext().getShardingRule(), dataSource.getDatabaseType(), dataSource.getShardingContext().getShardingProperties().getProps()));
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceEvent.getDataSourceConfigurations()), dataSource.getShardingContext().getShardingRule(),
+                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
     }
     
     /**
@@ -121,6 +120,6 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @Subscribe
     public void renew(final PropertiesChangedEvent propertiesEvent) {
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(),
-                new ShardingContext(dataSource.getDataSourceMap(), dataSource.getShardingContext().getShardingRule(), dataSource.getDatabaseType(), propertiesEvent.getProps()));
+                dataSource.getShardingContext().getShardingRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesEvent.getProps());
     }
 }
