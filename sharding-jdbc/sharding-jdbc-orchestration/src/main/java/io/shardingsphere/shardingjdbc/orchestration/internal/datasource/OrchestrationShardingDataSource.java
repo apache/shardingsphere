@@ -87,7 +87,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     /**
-     * Renew sharding data source.
+     * Renew sharding rule.
      *
      * @param shardingEvent sharding configuration event bus event.
      * @throws SQLException SQL exception
