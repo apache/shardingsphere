@@ -39,7 +39,7 @@ import java.util.Properties;
  * @author caohao
  * @author panjuan
  */
-public final class ConfigurationListenerManager implements ListenerManager {
+public final class RuleListenerManager implements ListenerManager {
     
     private final ConfigurationNode configNode;
     
@@ -49,14 +49,11 @@ public final class ConfigurationListenerManager implements ListenerManager {
     
     private final ConfigurationService configService;
     
-    private final DataSourceService dataSourceService;
-    
-    public ConfigurationListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+    public RuleListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
         this.shardingSchemaName = shardingSchemaName;
         configService = new ConfigurationService(name, regCenter);
-        dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
@@ -65,8 +62,8 @@ public final class ConfigurationListenerManager implements ListenerManager {
         watch(configNode.getRulePath(shardingSchemaName));
     }
     
-    private void watch(final String path) {
-        regCenter.watch(path, new EventListener() {
+    private void watch() {
+        regCenter.watch(configNode.getRulePath(shardingSchemaName), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
