@@ -40,7 +40,7 @@ public final class TreeUtils {
      *
      * @param node start node
      * @param name rule name
-     * @return match node
+     * @return getMatchedToken node
      */
     public static ParserRuleContext getFirstChildByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
@@ -71,7 +71,7 @@ public final class TreeUtils {
      *
      * @param node start node
      * @param name rule name
-     * @return match nodes
+     * @return getMatchedToken nodes
      */
     public static List<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {

@@ -31,47 +31,36 @@ import org.antlr.v4.runtime.Token;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AntlrUtils {
-
+    
     /**
-     * Match token by token type.
+     * Get matched token by token type.
      *
      * @param parser antlr parser
      * @param tokenType token type
-     * @param id id token index num
+     * @param idTokenIndex index of id token
      * @return Token
      * @throws RecognitionException mismatch throw exception
      */
-    public static Token match(final Parser parser, final int tokenType, final int id) throws RecognitionException {
-        Token token = parser.getCurrentToken();
-        boolean compatID = false;
-        if (id == tokenType && id > token.getType()) {
-            compatID = true;
+    public static Token getMatchedToken(final Parser parser, final int tokenType, final int idTokenIndex) throws RecognitionException {
+        Token result = parser.getCurrentToken();
+        boolean isIDCompatible = false;
+        if (idTokenIndex == tokenType && idTokenIndex > result.getType()) {
+            isIDCompatible = true;
         }
-        if (token.getType() == tokenType || compatID) {
-            if (Token.EOF != tokenType && compatID && (token instanceof CommonToken)) {
-                CommonToken commonToken = (CommonToken) token;
-                commonToken.setType(id);
+        if (result.getType() == tokenType || isIDCompatible) {
+            if (Token.EOF != tokenType && isIDCompatible && result instanceof CommonToken) {
+                ((CommonToken) result).setType(idTokenIndex);
             }
             parser.getErrorHandler().reportMatch(parser);
             parser.consume();
         } else {
-            token = parser.getErrorHandler().recoverInline(parser);
-            if (parser.getBuildParseTree() && token.getTokenIndex() == -1) {
+            result = parser.getErrorHandler().recoverInline(parser);
+            if (parser.getBuildParseTree() && -1 == result.getTokenIndex()) {
                 // we must have conjured up a new token during single token insertion
                 // if it's not the current symbol
-                parser.getContext().addErrorNode(parser.createErrorNode(parser.getContext(), token));
+                parser.getContext().addErrorNode(parser.createErrorNode(parser.getContext(), result));
             }
         }
-        return token;
-    }
-    
-    /**
-     * Cast Token to CommonToken.
-     *
-     * @param token lexical token
-     * @return token is CommonToken, return CommonToken else return null
-     */
-    public static CommonToken castCommonToken(final Token token) {
-        return token instanceof CommonToken ? (CommonToken) token : null;
+        return result;
     }
 }

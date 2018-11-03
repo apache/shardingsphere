@@ -43,6 +43,6 @@ public final class SQLServerStatementAdvancedParser extends SQLServerStatementPa
         if (Token.EOF == tokenType) {
             matchedEOF = true;
         }
-        return AntlrUtils.match(this, tokenType, ID);
+        return AntlrUtils.getMatchedToken(this, tokenType, ID);
     }
 }
