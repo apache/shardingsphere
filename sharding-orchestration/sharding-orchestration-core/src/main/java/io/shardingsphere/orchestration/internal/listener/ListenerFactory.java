@@ -20,6 +20,7 @@ package io.shardingsphere.orchestration.internal.listener;
 import io.shardingsphere.orchestration.internal.config.AuthenticationListenerManager;
 import io.shardingsphere.orchestration.internal.config.ConfigMapListenerManager;
 import io.shardingsphere.orchestration.internal.config.ConfigurationListenerManager;
+import io.shardingsphere.orchestration.internal.config.DataSourceListenerManager;
 import io.shardingsphere.orchestration.internal.config.PropertiesListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceStateListenerManager;
 import io.shardingsphere.orchestration.internal.state.instance.InstanceStateListenerManager;
@@ -38,18 +39,21 @@ public final class ListenerFactory {
     
     private final Collection<ConfigurationListenerManager> configurationListenerManagers = new LinkedList<>();
     
+    private final Collection<DataSourceListenerManager> dataSourceListenerManagers = new LinkedList<>();
+    
     private final PropertiesListenerManager propertiesListenerManager;
     
     private final AuthenticationListenerManager authenticationListenerManager;
     
-    private final InstanceStateListenerManager instanceStateListenerManager;
-    
     private final ConfigMapListenerManager configMapListenerManager;
+    
+    private final InstanceStateListenerManager instanceStateListenerManager;
     
     private final DataSourceStateListenerManager dataSourceStateListenerManager;
     
     public ListenerFactory(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
+            
             configurationListenerManagers.add(new ConfigurationListenerManager(name, regCenter, each));
         }
         propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
