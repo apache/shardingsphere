@@ -46,9 +46,9 @@ public class LogicSchema {
     
     private final Map<String, DataSourceParameter> dataSources;
     
-    private JDBCBackendDataSource backendDataSource;
-    
     private final ShardingMetaData metaData;
+    
+    private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingrule) {
         this.name = name;
