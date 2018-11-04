@@ -100,7 +100,7 @@ public final class ComQueryPacketTest {
         ShardingSchema shardingSchema = mock(ShardingSchema.class);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
-        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
+        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
