@@ -62,7 +62,7 @@ public final class MasterSlaveSchema extends LogicSchema {
         if (!getName().equals(masterSlaveEvent.getShardingSchemaName())) {
             return;
         }
-        masterSlaveRule = new MasterSlaveRule(masterSlaveEvent.getMasterSlaveRuleConfig());
+        masterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveEvent.getMasterSlaveRuleConfig());
     }
     
     /**
