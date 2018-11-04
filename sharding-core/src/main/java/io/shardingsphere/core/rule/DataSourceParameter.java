@@ -19,7 +19,6 @@ package io.shardingsphere.core.rule;
 
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +26,6 @@ import lombok.Setter;
  * Data source parameters.
  *
  * @author zhangyonglun
- * @author panjuan
  */
 @Getter
 @Setter
