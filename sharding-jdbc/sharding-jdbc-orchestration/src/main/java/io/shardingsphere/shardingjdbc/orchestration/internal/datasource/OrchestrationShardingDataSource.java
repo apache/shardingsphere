@@ -23,18 +23,14 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
-import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -65,9 +61,9 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
         dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
-                shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingContext().getShardingProperties().getProps());
+                shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
         getOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
+                getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
@@ -88,39 +84,14 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     /**
-     * Renew sharding rule.
-     *
-     * @param shardingEvent sharding event
-     */
-    @Subscribe
-    @SneakyThrows
-    public final void renew(final ShardingRuleChangedEvent shardingEvent) {
-        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new ShardingRule(shardingEvent.getShardingRuleConfiguration(),
-                dataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
-    }
-    
-    /**
      * Renew sharding data source.
      *
-     * @param dataSourceEvent data source event
+     * @param shardingEvent sharding configuration event bus event.
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    @SneakyThrows
-    public final void renew(final DataSourceChangedEvent dataSourceEvent) {
-        dataSource.close();
-        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceEvent.getDataSourceConfigurations()), dataSource.getShardingContext().getShardingRule(),
-                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
-    }
-    
-    /**
-     * Renew properties.
-     *
-     * @param propertiesEvent properties event
-     */
-    @SneakyThrows
-    @Subscribe
-    public void renew(final PropertiesChangedEvent propertiesEvent) {
-        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(),
-                dataSource.getShardingContext().getShardingRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesEvent.getProps());
+    public void renew(final ShardingConfigurationChangedEvent shardingEvent) throws SQLException {
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
+                shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
 }

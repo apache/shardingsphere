@@ -106,9 +106,10 @@ public final class ShardingDataSourceFactoryTest {
     
     @SneakyThrows
     private Properties getShardingProperties(final DataSource dataSource) {
-        Field shardingContextField = dataSource.getClass().getDeclaredField("shardingContext");
-        shardingContextField.setAccessible(true);
-        ShardingContext shardingContext = (ShardingContext) shardingContextField.get(dataSource);
-        return shardingContext.getShardingProperties().getProps();
+        Field shardingPropertiesField = dataSource.getClass().getDeclaredField("shardingProperties");
+        shardingPropertiesField.setAccessible(true);
+        Field propsField = shardingPropertiesField.get(dataSource).getClass().getDeclaredField("props");
+        propsField.setAccessible(true);
+        return (Properties) propsField.get(shardingPropertiesField.get(dataSource));
     }
 }

@@ -26,11 +26,9 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -41,22 +39,18 @@ import java.util.logging.Logger;
  */
 @Getter
 @Setter
-public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
     
     static {
         ShardingBootstrap.init();
     }
     
-    @Getter
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final DatabaseType databaseType;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        this.dataSourceMap = dataSourceMap;
-        databaseType = getDatabaseType(dataSourceMap.values());
+    public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
+        databaseType = getDatabaseType(dataSources);
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -75,17 +69,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
-        }
-    }
-    
-    @Override
-    public void close() {
-        for (DataSource each : getDataSourceMap().values()) {
-            try {
-                Method closeMethod = each.getClass().getDeclaredMethod("close");
-                closeMethod.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
         }
     }
     

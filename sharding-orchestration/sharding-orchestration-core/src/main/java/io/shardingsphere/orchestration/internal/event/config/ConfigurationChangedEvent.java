@@ -18,21 +18,27 @@
 package io.shardingsphere.orchestration.internal.event.config;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * Data source changed event.
+ * Configuration changed event.
  *
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangedEvent {
+public abstract class ConfigurationChangedEvent {
     
     private final String schemaName;
     
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    
+    private final Authentication authentication;
+    
+    private final Properties props;
 }

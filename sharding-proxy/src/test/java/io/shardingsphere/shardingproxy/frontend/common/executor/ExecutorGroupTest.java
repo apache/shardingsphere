@@ -19,8 +19,6 @@ package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
 import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.hamcrest.CoreMatchers;
@@ -29,7 +27,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.assertNotNull;
@@ -38,7 +35,7 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecutorGroupTest {
     
-    private TransactionType originalTransactionType = TransactionType.LOCAL;
+    private TransactionType originalTransactionType = GlobalRegistry.getInstance().getTransactionType();
     
     @After
     public void tearDown() throws ReflectiveOperationException {
@@ -65,14 +62,8 @@ public final class ExecutorGroupTest {
     }
     
     private void setTransactionType(final TransactionType transactionType) throws ReflectiveOperationException {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("transactionType");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), getShardingProperties(transactionType));
-    }
-    
-    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
-        Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
-        return new ShardingProperties(props);
+        field.set(GlobalRegistry.getInstance(), transactionType);
     }
 }

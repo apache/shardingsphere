@@ -36,5 +36,5 @@ public final class ShardingConstant {
      * Default: sharding_db
      * </p>
      */
-    public static final String LOGIC_SCHEMA_NAME = "logic_db";
+    public static final String LOGIC_SCHEMA_NAME = "sharding_db";
 }

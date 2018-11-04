@@ -37,21 +37,25 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter {
+public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final OrchestrationFacade orchestrationFacade;
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     private boolean isCircuitBreak;
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        super(dataSourceMap);
+        super(dataSourceMap.values());
         this.orchestrationFacade = orchestrationFacade;
+        this.dataSourceMap = dataSourceMap;
         ShardingEventBusInstance.getInstance().register(this);
     }
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        super(DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)).values());
         this.orchestrationFacade = orchestrationFacade;
+        this.dataSourceMap = DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME));
         ShardingEventBusInstance.getInstance().register(this);
     }
     

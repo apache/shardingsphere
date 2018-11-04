@@ -17,13 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.orchestration.internal.config.AuthenticationListenerManager;
 import io.shardingsphere.orchestration.internal.config.ConfigMapListenerManager;
-import io.shardingsphere.orchestration.internal.config.RuleListenerManager;
-import io.shardingsphere.orchestration.internal.config.DataSourceListenerManager;
-import io.shardingsphere.orchestration.internal.config.PropertiesListenerManager;
-import io.shardingsphere.orchestration.internal.state.datasource.DataSourceStateListenerManager;
-import io.shardingsphere.orchestration.internal.state.instance.InstanceStateListenerManager;
+import io.shardingsphere.orchestration.internal.config.ConfigurationListenerManager;
+import io.shardingsphere.orchestration.internal.state.datasource.DataSourceListenerManager;
+import io.shardingsphere.orchestration.internal.state.instance.InstanceListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
@@ -37,30 +34,21 @@ import java.util.LinkedList;
  */
 public final class ListenerFactory {
     
-    private final Collection<RuleListenerManager> ruleListenerManagers = new LinkedList<>();
+    private final Collection<ConfigurationListenerManager> configurationListenerManagers = new LinkedList<>();
     
-    private final Collection<DataSourceListenerManager> dataSourceListenerManagers = new LinkedList<>();
-    
-    private final PropertiesListenerManager propertiesListenerManager;
-    
-    private final AuthenticationListenerManager authenticationListenerManager;
+    private final InstanceListenerManager instanceListenerManager;
     
     private final ConfigMapListenerManager configMapListenerManager;
     
-    private final InstanceStateListenerManager instanceStateListenerManager;
-    
-    private final DataSourceStateListenerManager dataSourceStateListenerManager;
+    private final DataSourceListenerManager dataSourceListenerManager;
     
     public ListenerFactory(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
-            dataSourceListenerManagers.add(new DataSourceListenerManager(name, regCenter, each));
-            ruleListenerManagers.add(new RuleListenerManager(name, regCenter, each));
+            configurationListenerManagers.add(new ConfigurationListenerManager(name, regCenter, each));
         }
-        propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
-        authenticationListenerManager = new AuthenticationListenerManager(name, regCenter);
-        instanceStateListenerManager = new InstanceStateListenerManager(name, regCenter);
+        instanceListenerManager = new InstanceListenerManager(name, regCenter);
         configMapListenerManager = new ConfigMapListenerManager(name, regCenter);
-        dataSourceStateListenerManager = new DataSourceStateListenerManager(name, regCenter);
+        dataSourceListenerManager = new DataSourceListenerManager(name, regCenter);
     }
     
     /**
@@ -68,24 +56,11 @@ public final class ListenerFactory {
      *
      */
     public void initListeners() {
-        initRuleListenerManagers();
-        initDataSourceListenerManagers();
-        propertiesListenerManager.watch();
-        authenticationListenerManager.watch();
-        instanceStateListenerManager.watch();
-        dataSourceStateListenerManager.watch();
+        for (ConfigurationListenerManager each : configurationListenerManagers) {
+            each.watch();
+        }
+        instanceListenerManager.watch();
+        dataSourceListenerManager.watch();
         configMapListenerManager.watch();
-    }
-    
-    private void initDataSourceListenerManagers() {
-        for (DataSourceListenerManager each : dataSourceListenerManagers) {
-            each.watch();
-        }
-    }
-    
-    private void initRuleListenerManagers() {
-        for (RuleListenerManager each : ruleListenerManagers) {
-            each.watch();
-        }
     }
 }

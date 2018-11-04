@@ -27,8 +27,11 @@ import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection
 import lombok.Getter;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,7 +42,9 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
+public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -47,22 +52,33 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap);
+        super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
+        this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
-                                 final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap);
+                                 final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
+        super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
+        this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = masterSlaveRule;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        this.shardingProperties = props;
+    }
+    
+    private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
+        Collection<DataSource> result = new LinkedList<>();
+        result.add(dataSourceMap.get(masterDataSourceName));
+        for (String each : slaveDataSourceNames) {
+            result.add(dataSourceMap.get(each));
+        }
+        return result;
     }
     
     /**
@@ -79,9 +95,24 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         return result;
     }
     
+    private void closeOriginalDataSources() {
+        for (DataSource each : getDataSourceMap().values()) {
+            try {
+                Method closeMethod = each.getClass().getDeclaredMethod("close");
+                closeMethod.invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+    }
+    
     @Override
     public final MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
+    }
+    
+    @Override
+    public final void close() {
+        closeOriginalDataSources();
     }
     
     /**
