@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.util;
 
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -42,28 +43,28 @@ public final class TreeUtils {
      * @param name rule name
      * @return matched node
      */
-    public static ParserRuleContext getFirstChildByRuleName(final ParserRuleContext node, final String name) {
+    public static Optional<ParserRuleContext> findFirstChildByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
-            return null;
+            return Optional.absent();
         }
         String ruleName = name;
         if (!name.contains(RULE_SUFFIX)) {
             ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
         }
         if (ruleName.equals(node.getClass().getSimpleName())) {
-            return node;
+            return Optional.of(node);
         }
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
             if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-            ParserRuleContext retNode = getFirstChildByRuleName((ParserRuleContext) child, name);
-            if (null != retNode) {
+            Optional<ParserRuleContext> retNode = findFirstChildByRuleName((ParserRuleContext) child, name);
+            if (retNode.isPresent()) {
                 return retNode;
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     /**

@@ -42,7 +42,7 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
         if (null == columnDefinitions) {
             return;
         }
-        for (final ParserRuleContext each : columnDefinitions) {
+        for (ParserRuleContext each : columnDefinitions) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null == column) {
                 continue;

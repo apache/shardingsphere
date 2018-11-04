@@ -47,7 +47,7 @@ public final class OracleModifyColumnVisitor implements PhraseVisitor {
             if (null == columnNodes) {
                 return;
             }
-            for (final ParserRuleContext each : columnNodes) {
+            for (ParserRuleContext each : columnNodes) {
                 // it`s not column definition, but can call this method
                 ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
                 if (null != column) {

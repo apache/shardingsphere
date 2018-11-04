@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
@@ -33,8 +34,8 @@ public final class DropPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext dropPrimaryKeyNode = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.DROP_PRIMARY_KEY);
-        if (null != dropPrimaryKeyNode) {
+        Optional<ParserRuleContext> dropPrimaryKeyNode = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.DROP_PRIMARY_KEY);
+        if (dropPrimaryKeyNode.isPresent()) {
             alterStatement.setDropPrimaryKey(true);
         }
     }

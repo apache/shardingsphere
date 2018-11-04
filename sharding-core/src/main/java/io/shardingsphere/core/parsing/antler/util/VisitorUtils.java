@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.util;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -46,31 +47,31 @@ public final class VisitorUtils {
         if (null == columnDefinitionNode) {
             return null;
         }
-        ParserRuleContext columnNameNode = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
-        if (null == columnNameNode) {
+        Optional<ParserRuleContext> columnNameNode = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
+        if (!columnNameNode.isPresent()) {
             return null;
         }
-        ParserRuleContext dataTypeContext = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
+        Optional<ParserRuleContext> dataTypeContext = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
         String typeName = null;
-        if (null != dataTypeContext) {
-            typeName = dataTypeContext.getChild(0).getText();
+        if (dataTypeContext.isPresent()) {
+            typeName = dataTypeContext.get().getChild(0).getText();
         }
         Integer length = null;
-        ParserRuleContext dataTypeLengthContext = TreeUtils.getFirstChildByRuleName(dataTypeContext, RuleNameConstants.DATA_TYPE_LENGTH);
-        if (null != dataTypeLengthContext) {
-            if (dataTypeLengthContext.getChildCount() >= 3) {
+        Optional<ParserRuleContext> dataTypeLengthContext = TreeUtils.findFirstChildByRuleName(dataTypeContext.get(), RuleNameConstants.DATA_TYPE_LENGTH);
+        if (dataTypeLengthContext.isPresent()) {
+            if (dataTypeLengthContext.get().getChildCount() >= 3) {
                 try {
-                    length = Integer.parseInt(dataTypeLengthContext.getChild(1).getText());
+                    length = Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText());
                 } catch (NumberFormatException ignore) {
                 }
             }
         }
-        ParserRuleContext primaryKeyNode = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyNode = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
         boolean primaryKey = false;
-        if (null != primaryKeyNode) {
+        if (primaryKeyNode.isPresent()) {
             primaryKey = true;
         }
-        return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
+        return new ColumnDefinition(columnNameNode.get().getText(), typeName, length, primaryKey);
     }
     
     /**
@@ -81,16 +82,16 @@ public final class VisitorUtils {
      * @return column position object
      */
     public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
-        ParserRuleContext firstOrAfterColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
-        if (null == firstOrAfterColumnContext) {
+        Optional<ParserRuleContext> firstOrAfterColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
+        if (!firstOrAfterColumnContext.isPresent()) {
             return null;
         }
-        ParserRuleContext columnNameContext = TreeUtils.getFirstChildByRuleName(firstOrAfterColumnContext, "columnName");
+        Optional<ParserRuleContext> columnNameContext = TreeUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), "columnName");
         ColumnPosition result = new ColumnPosition();
-        result.setStartIndex(firstOrAfterColumnContext.getStart().getStartIndex());
-        if (null != columnNameContext) {
+        result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
+        if (columnNameContext.isPresent()) {
             result.setColumnName(columnName);
-            result.setAfterColumn(columnNameContext.getText());
+            result.setAfterColumn(columnNameContext.get().getText());
         } else {
             result.setFirstColumn(columnName);
         }

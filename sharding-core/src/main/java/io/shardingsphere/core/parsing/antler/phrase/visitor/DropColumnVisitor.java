@@ -46,7 +46,7 @@ public final class DropColumnVisitor implements PhraseVisitor {
             if (null == columnNodes) {
                 continue;
             }
-            for (final ParseTree columnNode : columnNodes) {
+            for (ParseTree columnNode : columnNodes) {
                 alterStatement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }

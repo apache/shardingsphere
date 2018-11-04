@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
@@ -36,11 +37,11 @@ public final class RenameColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext modifyColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_COLUMN);
-        if (null == modifyColumnContext) {
+        Optional<ParserRuleContext> modifyColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_COLUMN);
+        if (!modifyColumnContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.COLUMN_NAME);
+        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
         if (null == columnNodes || 2 != columnNodes.size()) {
             return;
         }

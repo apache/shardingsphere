@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
@@ -37,22 +38,22 @@ public final class MySQLChangeColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        ParserRuleContext changeColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.CHANGE_COLUMN);
-        if (null == changeColumnContext) {
+        Optional<ParserRuleContext> changeColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.CHANGE_COLUMN);
+        if (!changeColumnContext.isPresent()) {
             return;
         }
-        ParserRuleContext oldColumnContext = TreeUtils.getFirstChildByRuleName(changeColumnContext, RuleNameConstants.COLUMN_NAME);
-        if (null == oldColumnContext) {
+        Optional<ParserRuleContext> oldColumnContext = TreeUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleNameConstants.COLUMN_NAME);
+        if (!oldColumnContext.isPresent()) {
             return;
         }
-        ParserRuleContext columnDefinitionContext = TreeUtils.getFirstChildByRuleName(changeColumnContext, RuleNameConstants.COLUMN_DEFINITION);
-        if (null == columnDefinitionContext) {
+        Optional<ParserRuleContext> columnDefinitionContext = TreeUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleNameConstants.COLUMN_DEFINITION);
+        if (!columnDefinitionContext.isPresent()) {
             return;
         }
-        ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionContext);
+        ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionContext.get());
         if (null != column) {
-            alterStatement.getUpdateColumns().put(oldColumnContext.getText(), column);
-            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnContext, column.getName());
+            alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), column);
+            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnContext.get(), column.getName());
             if (null != columnPosition) {
                 alterStatement.getPositionChangedColumns().add(columnPosition);
             }

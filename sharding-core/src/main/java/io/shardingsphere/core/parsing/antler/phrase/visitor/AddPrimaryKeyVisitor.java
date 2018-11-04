@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
@@ -40,15 +41,15 @@ public final class AddPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext modifyColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, ruleName);
-        if (null == modifyColumnContext) {
+        Optional<ParserRuleContext> modifyColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, ruleName);
+        if (!modifyColumnContext.isPresent()) {
             return;
         }
-        ParserRuleContext primaryKeyContext = TreeUtils.getFirstChildByRuleName(modifyColumnContext, RuleNameConstants.PRIMARY_KEY);
-        if (null == primaryKeyContext) {
+        Optional<ParserRuleContext> primaryKeyContext = TreeUtils.findFirstChildByRuleName(modifyColumnContext.get(), RuleNameConstants.PRIMARY_KEY);
+        if (!primaryKeyContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.COLUMN_NAME);
+        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
         if (null == columnNodes) {
             return;
         }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
@@ -33,13 +34,13 @@ public final class SQLServerAddIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        ParserRuleContext indexDefOptionNode = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
-        if (null == indexDefOptionNode) {
+        Optional<ParserRuleContext> indexDefOptionNode = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
+        if (!indexDefOptionNode.isPresent()) {
             return;
         }
-        ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(indexDefOptionNode, RuleNameConstants.INDEX_NAME);
-        if (null != indexNameNode) {
-            statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
+        Optional<ParserRuleContext> indexNameNode = TreeUtils.findFirstChildByRuleName(indexDefOptionNode.get(), RuleNameConstants.INDEX_NAME);
+        if (indexNameNode.isPresent()) {
+            statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
         }
     }
 }

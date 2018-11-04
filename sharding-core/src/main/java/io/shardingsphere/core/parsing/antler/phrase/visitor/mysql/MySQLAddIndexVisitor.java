@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.TreeUtils;
@@ -40,9 +41,9 @@ public final class MySQLAddIndexVisitor implements PhraseVisitor {
             return;
         }
         for (ParserRuleContext each : addIndexContexts) {
-            ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(each, RuleNameConstants.INDEX_NAME);
-            if (null != indexNameNode) {
-                statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
+            Optional<ParserRuleContext> indexNameNode = TreeUtils.findFirstChildByRuleName(each, RuleNameConstants.INDEX_NAME);
+            if (indexNameNode.isPresent()) {
+                statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
             }
         }
     }
