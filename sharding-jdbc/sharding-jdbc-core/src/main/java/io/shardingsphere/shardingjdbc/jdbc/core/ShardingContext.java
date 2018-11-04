@@ -18,6 +18,8 @@
 package io.shardingsphere.shardingjdbc.jdbc.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -30,6 +32,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Sharding runtime context.
@@ -46,21 +49,19 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingExecuteEngine executeEngine;
     
-    private final int maxConnectionsSizePerQuery;
-    
-    private final boolean showSQL;
+    private final ShardingProperties shardingProperties;
     
     private final ShardingMetaData metaData;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, 
-                           final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final int maxConnectionsSizePerQuery, final boolean showSQL) throws SQLException {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
+                           final DatabaseType databaseType, final Properties props) throws SQLException {
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
-        this.executeEngine = executeEngine;
-        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
-        this.showSQL = showSQL;
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+        executeEngine = new ShardingExecuteEngine(executorSize);
         metaData = new ShardingMetaData(
-                getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), maxConnectionsSizePerQuery);
+                getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), getMaxConnectionsSizePerQuery());
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -75,6 +76,24 @@ public final class ShardingContext implements AutoCloseable {
         try (Connection connection = dataSource.getConnection()) {
             return connection.getMetaData().getURL();
         }
+    }
+    
+    /**
+     * Is show sql or not.
+     *
+     * @return show or not
+     */
+    public boolean isShowSQL() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+    }
+    
+    /**
+     * Get max connections size per query.
+     *
+     * @return max connections size per query
+     */
+    public int getMaxConnectionsSizePerQuery() {
+        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
     }
     
     @Override

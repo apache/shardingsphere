@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -60,21 +59,9 @@ public final class ComStmtExecutePacketTest {
     private BackendConnection backendConnection;
     
     @Before
-    public void setUp() {
-        setNIOConfig();
-    }
-    
-    @Before
     @After
     public void reset() {
         BinaryStatementRegistryUtil.reset();
-    }
-    
-    @SneakyThrows
-    private void setNIOConfig() {
-        Field field = GlobalRegistry.class.getDeclaredField("useNIO");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), true);
     }
     
     @Test

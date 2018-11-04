@@ -19,19 +19,14 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
-import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
+import io.shardingsphere.spi.xa.XABackendDataSourceFactory;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,41 +42,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
-@Slf4j
-public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
-    
-    private final Map<String, DataSource> dataSourceMap;
+public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private volatile Map<String, DataSource> xaDataSourceMap;
     
     private final ShardingContext shardingContext;
-    
-    private final ShardingProperties shardingProperties;
-    
-    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap.values());
+        super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
-        this.shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        this.shardingContext = getShardingContext(shardingRule);
-        this.xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
-    }
-    
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final ShardingProperties shardingProperties) throws SQLException {
-        super(dataSourceMap.values());
-        this.dataSourceMap = dataSourceMap;
-        this.shardingContext = shardingContext;
-        this.shardingProperties = shardingProperties;
-        this.xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
+        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
@@ -90,46 +67,22 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         }
     }
     
-    private ShardingContext getShardingContext(final ShardingRule shardingRule) throws SQLException {
-        int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-        int maxConnectionsSizePerQuery = shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        return new ShardingContext(dataSourceMap, shardingRule, getDatabaseType(), new ShardingExecuteEngine(executorSize), maxConnectionsSizePerQuery, showSQL);
-    }
-    
     @Override
     public final ShardingConnection getConnection() {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
-                log.warn("XA transaction resource have not load, using Local transaction instead!");
-            } else {
-                return new ShardingConnection(xaDataSourceMap, shardingContext, TransactionType.XA);
+                synchronized (this) {
+                    xaDataSourceMap = XABackendDataSourceFactory.getInstance().build(getDataSourceMap(), getDatabaseType());
+                }
             }
+            return new ShardingConnection(xaDataSourceMap, shardingContext);
         }
-        return new ShardingConnection(dataSourceMap, shardingContext);
+        return new ShardingConnection(getDataSourceMap(), shardingContext);
     }
     
     @Override
     public final void close() {
-        closeOriginalDataSources();
+        super.close();
         shardingContext.close();
-    }
-    
-    private void closeOriginalDataSources() {
-        if (null != dataSourceMap) {
-            closeDataSource(dataSourceMap);
-        }
-        if (null != xaDataSourceMap) {
-            closeDataSource(xaDataSourceMap);
-        }
-    }
-    
-    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                each.getClass().getDeclaredMethod("close").invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
     }
 }
