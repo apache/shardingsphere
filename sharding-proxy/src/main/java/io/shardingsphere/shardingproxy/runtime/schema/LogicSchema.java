@@ -77,7 +77,7 @@ public class LogicSchema {
      * @param dataSourceEvent data source event.
      */
     @Subscribe
-    public void renew(final DataSourceChangedEvent dataSourceEvent) {
+    public final void renew(final DataSourceChangedEvent dataSourceEvent) {
         if (!name.equals(dataSourceEvent.getSchemaName())) {
             return;
         }
