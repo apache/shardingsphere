@@ -58,7 +58,7 @@ public final class ReflectiveUtil {
             try {
                 return clazz.getDeclaredField(fieldName);
                 // CHECKSTYLE:OFF
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
             }
             // CHECKSTYLE:ON
             clazz = clazz.getSuperclass();

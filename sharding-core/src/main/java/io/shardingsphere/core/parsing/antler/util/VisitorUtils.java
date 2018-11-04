@@ -62,7 +62,7 @@ public final class VisitorUtils {
             if (dataTypeLengthContext.get().getChildCount() >= 3) {
                 try {
                     length = Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText());
-                } catch (NumberFormatException ignore) {
+                } catch (NumberFormatException ignored) {
                 }
             }
         }

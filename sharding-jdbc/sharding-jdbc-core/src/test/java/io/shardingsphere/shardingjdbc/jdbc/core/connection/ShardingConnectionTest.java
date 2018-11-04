@@ -95,7 +95,7 @@ public final class ShardingConnectionTest {
             TransactionTypeHolder.clear();
             FixedXAShardingTransactionHandler.getInvokes().clear();
             FixedBaseShardingTransactionHandler.getInvokes().clear();
-        } catch (final SQLException ignore) {
+        } catch (final SQLException ignored) {
         }
     }
     

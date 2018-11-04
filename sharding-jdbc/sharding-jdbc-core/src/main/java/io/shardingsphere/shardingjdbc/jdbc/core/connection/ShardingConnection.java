@@ -68,7 +68,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         removeCache(connection);
         try {
             connection.close();
-        } catch (final SQLException ignore) {
+        } catch (final SQLException ignored) {
         }
     }
     
