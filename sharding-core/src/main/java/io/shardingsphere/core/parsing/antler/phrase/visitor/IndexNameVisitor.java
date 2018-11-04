@@ -34,14 +34,14 @@ public final class IndexNameVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        ParserRuleContext indexNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
-        if (null == indexNameCtx) {
+        ParserRuleContext indexNameContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
+        if (null == indexNameContext) {
             return;
         }
         String tableName = "";
         if (!ddlStatement.getTables().isEmpty()) {
             tableName = ddlStatement.getTables().getSingleTableName();
         }
-        statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameCtx, tableName));
+        statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameContext, tableName));
     }
 }

@@ -36,11 +36,11 @@ public final class RenameColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext modifyColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_COLUMN);
-        if (null == modifyColumnCtx) {
+        ParserRuleContext modifyColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_COLUMN);
+        if (null == modifyColumnContext) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, RuleNameConstants.COLUMN_NAME);
+        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.COLUMN_NAME);
         if (null == columnNodes || 2 != columnNodes.size()) {
             return;
         }

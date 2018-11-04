@@ -47,19 +47,19 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
         }
     }
     
-    private void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
-        List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, RuleNameConstants.COLUMN_DEFINITION);
-        if (null == columnDefinitionCtxs) {
+    private void visitAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
+        List<ParserRuleContext> columnDefinitionContexts = TreeUtils.getAllDescendantByRuleName(addColumnContext, RuleNameConstants.COLUMN_DEFINITION);
+        if (null == columnDefinitionContexts) {
             return;
         }
-        for (ParserRuleContext columnDefinitionCtx : columnDefinitionCtxs) {
-            ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
+        for (ParserRuleContext each : columnDefinitionContexts) {
+            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
                 if (null != alterStatement.getExistColumn(column.getName())) {
                     return;
                 }
                 alterStatement.getAddColumns().add(column);
-                postVisitColumnDefinition(addColumnCtx, alterStatement, column.getName());
+                postVisitColumnDefinition(addColumnContext, alterStatement, column.getName());
             }
         }
     }

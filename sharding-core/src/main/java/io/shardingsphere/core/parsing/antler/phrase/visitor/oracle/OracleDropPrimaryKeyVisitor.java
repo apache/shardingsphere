@@ -34,10 +34,10 @@ public final class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext dropConstraintCtx = TreeUtils.getFirstChildByRuleName(rootNode, RuleNameConstants.DROP_CONSTRAINT_CLAUSE);
-        if (null != dropConstraintCtx) {
-            ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(dropConstraintCtx, RuleNameConstants.PRIMARY_KEY);
-            if (null != primaryKeyCtx) {
+        ParserRuleContext dropConstraintContext = TreeUtils.getFirstChildByRuleName(rootNode, RuleNameConstants.DROP_CONSTRAINT_CLAUSE);
+        if (null != dropConstraintContext) {
+            ParserRuleContext primaryKeyContext = TreeUtils.getFirstChildByRuleName(dropConstraintContext, RuleNameConstants.PRIMARY_KEY);
+            if (null != primaryKeyContext) {
                 alterStatement.setDropPrimaryKey(true);
             }
         }

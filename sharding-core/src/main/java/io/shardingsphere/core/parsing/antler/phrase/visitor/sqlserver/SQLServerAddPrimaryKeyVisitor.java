@@ -38,20 +38,19 @@ public final class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext addColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
-        if (null == addColumnCtx) {
+        ParserRuleContext addColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
+        if (null == addColumnContext) {
             return;
         }
-        ParserRuleContext tableConstraintCtx = TreeUtils.getFirstChildByRuleName(addColumnCtx, RuleNameConstants.TABLE_CONSTRAINT);
-        if (null == tableConstraintCtx) {
+        ParserRuleContext tableConstraintContext = TreeUtils.getFirstChildByRuleName(addColumnContext, RuleNameConstants.TABLE_CONSTRAINT);
+        if (null == tableConstraintContext) {
             return;
         }
-        ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(tableConstraintCtx,
-                RuleNameConstants.PRIMARY_KEY);
-        if (null == primaryKeyCtx) {
+        ParserRuleContext primaryKeyContext = TreeUtils.getFirstChildByRuleName(tableConstraintContext, RuleNameConstants.PRIMARY_KEY);
+        if (null == primaryKeyContext) {
             return;
         }
-        List<ParserRuleContext> columnNameContexts = TreeUtils.getAllDescendantByRuleName(tableConstraintCtx, RuleNameConstants.COLUMN_NAME);
+        List<ParserRuleContext> columnNameContexts = TreeUtils.getAllDescendantByRuleName(tableConstraintContext, RuleNameConstants.COLUMN_NAME);
         for (ParseTree each : columnNameContexts) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);

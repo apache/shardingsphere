@@ -44,9 +44,9 @@ public final class RenameIndexVisitor implements PhraseVisitor {
         if (!(newIndexNode instanceof ParserRuleContext)) {
             return;
         }
-        ParserRuleContext oldIndexCtx = (ParserRuleContext) oldIndexNode;
-        ParserRuleContext newIndexCtx = (ParserRuleContext) newIndexNode;
-        statement.getSQLTokens().add(VisitorUtils.visitIndex(oldIndexCtx, statement.getTables().getSingleTableName()));
-        statement.getSQLTokens().add(VisitorUtils.visitIndex(newIndexCtx, statement.getTables().getSingleTableName()));
+        ParserRuleContext oldIndexContext = (ParserRuleContext) oldIndexNode;
+        ParserRuleContext newIndexContext = (ParserRuleContext) newIndexNode;
+        statement.getSQLTokens().add(VisitorUtils.visitIndex(oldIndexContext, statement.getTables().getSingleTableName()));
+        statement.getSQLTokens().add(VisitorUtils.visitIndex(newIndexContext, statement.getTables().getSingleTableName()));
     }
 }

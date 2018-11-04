@@ -37,22 +37,22 @@ public final class MySQLChangeColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        ParserRuleContext changeColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.CHANGE_COLUMN);
-        if (null == changeColumnCtx) {
+        ParserRuleContext changeColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.CHANGE_COLUMN);
+        if (null == changeColumnContext) {
             return;
         }
-        ParserRuleContext oldColumnCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx, RuleNameConstants.COLUMN_NAME);
-        if (null == oldColumnCtx) {
+        ParserRuleContext oldColumnContext = TreeUtils.getFirstChildByRuleName(changeColumnContext, RuleNameConstants.COLUMN_NAME);
+        if (null == oldColumnContext) {
             return;
         }
-        ParserRuleContext columnDefinitionCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx, RuleNameConstants.COLUMN_DEFINITION);
-        if (null == columnDefinitionCtx) {
+        ParserRuleContext columnDefinitionContext = TreeUtils.getFirstChildByRuleName(changeColumnContext, RuleNameConstants.COLUMN_DEFINITION);
+        if (null == columnDefinitionContext) {
             return;
         }
-        ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
+        ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionContext);
         if (null != column) {
-            alterStatement.getUpdateColumns().put(oldColumnCtx.getText(), column);
-            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnCtx, column.getName());
+            alterStatement.getUpdateColumns().put(oldColumnContext.getText(), column);
+            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnContext, column.getName());
             if (null != columnPosition) {
                 alterStatement.getPositionChangedColumns().add(columnPosition);
             }
