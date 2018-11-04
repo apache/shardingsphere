@@ -59,8 +59,8 @@ public class LogicSchema {
     }
     
     private ShardingMetaData getShardingMetaData(final ShardingRule shardingRule) {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL,
-                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
+        return new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule, DatabaseType.MySQL,
+                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
