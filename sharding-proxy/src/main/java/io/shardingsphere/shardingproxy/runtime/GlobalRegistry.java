@@ -40,6 +40,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -219,6 +221,10 @@ public final class GlobalRegistry {
      */
     public LogicSchema getLogicSchema(final String schemaName) {
         return Strings.isNullOrEmpty(schemaName) ? null : logicSchemas.get(schemaName);
+    }
+    
+    public List<String> getSchemaNames(){
+        return new LinkedList<>(logicSchemas.keySet());
     }
     
     /**
