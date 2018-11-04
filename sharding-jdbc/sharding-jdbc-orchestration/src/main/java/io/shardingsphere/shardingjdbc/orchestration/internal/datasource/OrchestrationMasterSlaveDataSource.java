@@ -23,6 +23,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -37,10 +38,12 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.SneakyThrows;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -110,6 +113,17 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+        Map<String, DataSourceConfiguration> originalDataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
+        Map<String, DataSourceConfiguration> newDataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (String each : originalDataSourceConfigurations.keySet()) {
+            if (originalDataSourceConfigurations.get(each).equals(newDataSourceConfigurations.get(each))) {
+                result.put(each, dataSource.getDataSourceMap().get(each));
+                newDataSourceConfigurations.remove(each);
+            }
+        }
+        result.putAll(DataSourceConverter.getDataSourceMap(newDataSourceConfigurations));
+        
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()),
                 dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
