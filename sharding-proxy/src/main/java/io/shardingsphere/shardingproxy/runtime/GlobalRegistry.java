@@ -245,7 +245,7 @@ public final class GlobalRegistry {
     /**
      * Renew authentication.
      *
-     * @param authenticationEvent authe
+     * @param authenticationEvent authentication event
      */
     @Subscribe
     public void renew(final AuthenticationChangedEvent authenticationEvent) {
