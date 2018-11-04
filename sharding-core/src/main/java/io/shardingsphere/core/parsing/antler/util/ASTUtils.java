@@ -50,8 +50,7 @@ public final class ASTUtils {
         if (null == node) {
             return Optional.absent();
         }
-        String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
-        if (ruleName.equals(node.getClass().getSimpleName())) {
+        if (isMatchedNode(node, name)) {
             return Optional.of(node);
         }
         for (int i = 0; i < node.getChildCount(); i++) {
@@ -78,24 +77,31 @@ public final class ASTUtils {
         if (null == node) {
             return Collections.emptyList();
         }
-        String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
         List<ParserRuleContext> result = new LinkedList<>();
-        if (ruleName.equals(node.getClass().getSimpleName())) {
+        if (isMatchedNode(node, name)) {
             result.add(node);
         }
-        int count = node.getChildCount();
-        if (0 == count) {
-            return result;
+        for (ParserRuleContext each : getChildrenNodes(node)) {
+            result.addAll(getAllDescendantByRuleName(each, name));
         }
-        List<ParserRuleContext> childNodes = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
+        return result;
+    }
+    
+    private static boolean isMatchedNode(final ParserRuleContext node, final String name) {
+        return getRuleName(name).equals(node.getClass().getSimpleName());
+    }
+    
+    private static String getRuleName(final String name) {
+        return name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
+    }
+    
+    private static List<ParserRuleContext> getChildrenNodes(final ParserRuleContext node) {
+        List<ParserRuleContext> result = new LinkedList<>();
+        for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
             if (child instanceof ParserRuleContext) {
-                childNodes.add((ParserRuleContext) child);
+                result.add((ParserRuleContext) child);
             }
-        }
-        for (ParserRuleContext each : childNodes) {
-            result.addAll(getAllDescendantByRuleName(each, name));
         }
         return result;
     }
