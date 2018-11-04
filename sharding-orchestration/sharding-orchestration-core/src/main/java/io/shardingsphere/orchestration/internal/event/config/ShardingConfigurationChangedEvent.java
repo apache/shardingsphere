@@ -17,18 +17,27 @@
 
 package io.shardingsphere.orchestration.internal.event.config;
 
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
+import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Authentication changed event.
+ * Sharding configuration changed event.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class AuthenticationChangedEvent {
+public final class ShardingConfigurationChangedEvent extends ConfigurationChangedEvent {
     
-    private final Authentication authentication;
+    private final ShardingRule shardingRule;
+    
+    public ShardingConfigurationChangedEvent(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, 
+                                             final ShardingRule shardingRule, final Authentication authentication, final Properties props) {
+        super(schemaName, dataSourceConfigurations, authentication, props);
+        this.shardingRule = shardingRule;
+    }
 }
