@@ -25,7 +25,8 @@ import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Visit rename column phrase.
@@ -41,12 +42,13 @@ public final class RenameColumnVisitor implements PhraseVisitor {
         if (!modifyColumnContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
+        Collection<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
         if (2 != columnNodes.size()) {
             return;
         }
-        String oldName = columnNodes.get(0).getText();
-        String newName = columnNodes.get(1).getText();
+        Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
+        String oldName = columnNodesIterator.next().getText();
+        String newName = columnNodesIterator.next().getText();
         ColumnDefinition oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
         if (null != oldDefinition) {
             oldDefinition.setName(newName);

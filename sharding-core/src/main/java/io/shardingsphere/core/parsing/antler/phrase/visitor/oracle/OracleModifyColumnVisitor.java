@@ -26,8 +26,6 @@ import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.List;
-
 /**
  * Visit oracle modify column phrase.
  * 
@@ -39,11 +37,7 @@ public final class OracleModifyColumnVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (ParserRuleContext modifyColumnContext : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN)) {
-            List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.MODIFY_COL_PROPERTIES);
-            if (null == columnNodes) {
-                return;
-            }
-            for (ParserRuleContext each : columnNodes) {
+            for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
                 ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
                 if (null != column) {

@@ -24,8 +24,9 @@ import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -73,12 +74,12 @@ public final class TreeUtils {
      * @param name rule name
      * @return matched nodes
      */
-    public static List<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
+    public static Collection<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
             return Collections.emptyList();
         }
         String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
-        List<ParserRuleContext> result = new ArrayList<>();
+        List<ParserRuleContext> result = new LinkedList<>();
         if (ruleName.equals(node.getClass().getSimpleName())) {
             result.add(node);
         }
@@ -86,7 +87,7 @@ public final class TreeUtils {
         if (0 == count) {
             return result;
         }
-        List<ParserRuleContext> childNodes = new ArrayList<>();
+        List<ParserRuleContext> childNodes = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             ParseTree child = node.getChild(i);
             if (child instanceof ParserRuleContext) {
