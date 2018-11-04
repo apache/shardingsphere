@@ -59,7 +59,7 @@ public final class GlobalRegistry {
     
     private static final GlobalRegistry INSTANCE = new GlobalRegistry();
     
-    private final List<String> schemaNames = new LinkedList<>();
+//    private final List<String> schemaNames = new LinkedList<>();
     
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
@@ -125,7 +125,6 @@ public final class GlobalRegistry {
     private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
-            schemaNames.add(schemaName);
             logicSchemas.put(schemaName, getLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry));
         }
     }
@@ -213,7 +212,7 @@ public final class GlobalRegistry {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schema) {
-        return schemaNames.contains(schema);
+        return logicSchemas.keySet().contains(schema);
     }
     
     /**
