@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.util;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -47,10 +48,7 @@ public final class TreeUtils {
         if (null == node) {
             return Optional.absent();
         }
-        String ruleName = name;
-        if (!name.contains(RULE_SUFFIX)) {
-            ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
-        }
+        String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
         if (ruleName.equals(node.getClass().getSimpleName())) {
             return Optional.of(node);
         }
@@ -59,9 +57,9 @@ public final class TreeUtils {
             if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-            Optional<ParserRuleContext> retNode = findFirstChildByRuleName((ParserRuleContext) child, name);
-            if (retNode.isPresent()) {
-                return retNode;
+            Optional<ParserRuleContext> result = findFirstChildByRuleName((ParserRuleContext) child, name);
+            if (result.isPresent()) {
+                return result;
             }
         }
         return Optional.absent();
