@@ -223,7 +223,12 @@ public final class GlobalRegistry {
         return Strings.isNullOrEmpty(schemaName) ? null : logicSchemas.get(schemaName);
     }
     
-    public List<String> getSchemaNames(){
+    /**
+     * Get schema names.
+     *
+     * @return schema names
+     */
+    public List<String> getSchemaNames() {
         return new LinkedList<>(logicSchemas.keySet());
     }
     
