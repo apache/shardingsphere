@@ -15,26 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.orchestration.internal.event.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Sharding constant.
- * 
+ * Sharding rule changed event.
+ *
  * @author zhangliang
+ * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingConstant {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingRuleChangedEvent {
     
-    /**
-     * Logic database schema name.
-     * 
-     * <p>
-     * Sharding-Sphere just have one logic database table.
-     * Default: sharding_db
-     * </p>
-     */
-    public static final String LOGIC_SCHEMA_NAME = "logic_db";
+    private final String shardingSchemaName;
+    
+    private final ShardingRuleConfiguration shardingRuleConfiguration;
 }

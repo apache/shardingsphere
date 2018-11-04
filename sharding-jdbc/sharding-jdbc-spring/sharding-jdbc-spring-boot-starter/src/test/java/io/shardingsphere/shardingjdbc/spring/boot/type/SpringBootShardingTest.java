@@ -68,7 +68,7 @@ public class SpringBootShardingTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
-        ShardingProperties shardingProperties = getFieldValue("shardingProperties", ShardingDataSource.class, dataSource);
+        ShardingProperties shardingProperties = shardingContext.getShardingProperties();
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
     }

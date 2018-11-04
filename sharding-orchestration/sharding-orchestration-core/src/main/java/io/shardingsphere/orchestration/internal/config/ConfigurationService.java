@@ -17,8 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -31,7 +33,9 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -222,5 +226,40 @@ public final class ConfigurationService {
      */
     public Collection<String> getAllShardingSchemaNames() {
         return regCenter.getChildrenKeys(configNode.getSchemaPath());
+    }
+    
+    /**
+     * Get all master data source names.
+     *
+     * @return master data source names
+     */
+    public Map<String, Collection<String>> getAllMasterDataSourceNames() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (String each : getAllShardingSchemaNames()) {
+            if (isShardingRule(each)) {
+                result.put(each, getMasterDataSourceNamesFromShardingRule(each));
+            } else {
+                result.put(each, getMasterDataSourceNamesFromMasterSlaveRule(each));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getMasterDataSourceNamesFromShardingRule(final String schemaName) {
+        Collection<String> result = new LinkedList<>();
+        ShardingRuleConfiguration shardingConfig = loadShardingRuleConfiguration(schemaName);
+        result.addAll(Collections2.transform(shardingConfig.getMasterSlaveRuleConfigs(), new Function<MasterSlaveRuleConfiguration, String>() {
+
+            @Override
+            public String apply(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+                return masterSlaveRuleConfig.getMasterDataSourceName();
+            }
+        }));
+        return result;
+    }
+    
+    private Collection<String> getMasterDataSourceNamesFromMasterSlaveRule(final String schemaName) {
+        MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(schemaName);
+        return Collections.singletonList(masterSlaveConfig.getMasterDataSourceName());
     }
 }
