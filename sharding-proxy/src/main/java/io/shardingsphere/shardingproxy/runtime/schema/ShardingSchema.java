@@ -66,7 +66,7 @@ public final class ShardingSchema extends LogicSchema {
         if (!getName().equals(shardingEvent.getShardingSchemaName())) {
             return;
         }
-        shardingRule = new ShardingRule(shardingEvent.getShardingRuleConfiguration(), getDataSources().keySet());
+        shardingRule = new OrchestrationShardingRule(shardingEvent.getShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     /**
