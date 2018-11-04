@@ -52,13 +52,13 @@ public final class CreateTableVisitor extends DDLStatementVisitor {
     protected void postVisit(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         List<ColumnMetaData> newColumnMeta = new LinkedList<>();
-        int pos = 0;
+        int position = 0;
         List<String> columnTypes = createStatement.getColumnTypes();
         List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
         for (String each : createStatement.getColumnNames()) {
             String type = null;
-            if (columnTypes.size() > pos) {
-                type = columnTypes.get(pos);
+            if (columnTypes.size() > position) {
+                type = columnTypes.get(position);
             }
             newColumnMeta.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
         }
