@@ -40,8 +40,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -58,8 +56,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class GlobalRegistry {
     
     private static final GlobalRegistry INSTANCE = new GlobalRegistry();
-    
-//    private final List<String> schemaNames = new LinkedList<>();
     
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
