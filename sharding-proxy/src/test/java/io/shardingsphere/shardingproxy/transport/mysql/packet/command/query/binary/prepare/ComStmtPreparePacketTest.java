@@ -86,7 +86,7 @@ public final class ComStmtPreparePacketTest {
         when(shardingSchema.getMetaData()).thenReturn(metaData);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
-        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
+        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
