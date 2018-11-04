@@ -36,22 +36,22 @@ public class TableNameVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        ParserRuleContext tableNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
-        if (null != tableNameCtx) {
-            String name = tableNameCtx.getText();
+        Optional<ParserRuleContext> tableNameContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
+        if (tableNameContext.isPresent()) {
+            String name = tableNameContext.get().getText();
             if (null == name) {
                 return;
             }
             String dotString = Symbol.DOT.getLiterals();
-            int pos = name.lastIndexOf(dotString);
+            int position = name.lastIndexOf(dotString);
             String literals;
-            if (pos > 0) {
-                literals = name.substring(pos + dotString.length());
+            if (position > 0) {
+                literals = name.substring(position + dotString.length());
             } else {
-                pos = 0;
+                position = 0;
                 literals = name;
             }
-            statement.getSQLTokens().add(new TableToken(tableNameCtx.getStart().getStartIndex(), pos, name));
+            statement.getSQLTokens().add(new TableToken(tableNameContext.get().getStart().getStartIndex(), position, name));
             statement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
         }
     }

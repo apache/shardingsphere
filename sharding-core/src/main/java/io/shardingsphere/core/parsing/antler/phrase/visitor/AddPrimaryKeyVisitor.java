@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
@@ -24,8 +25,6 @@ import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.List;
 
 /**
  * Visit add primary key phrase.
@@ -40,19 +39,15 @@ public final class AddPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        ParserRuleContext modifyColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, ruleName);
-        if (null == modifyColumnCtx) {
+        Optional<ParserRuleContext> modifyColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, ruleName);
+        if (!modifyColumnContext.isPresent()) {
             return;
         }
-        ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(modifyColumnCtx, RuleNameConstants.PRIMARY_KEY);
-        if (null == primaryKeyCtx) {
+        Optional<ParserRuleContext> primaryKeyContext = TreeUtils.findFirstChildByRuleName(modifyColumnContext.get(), RuleNameConstants.PRIMARY_KEY);
+        if (!primaryKeyContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, RuleNameConstants.COLUMN_NAME);
-        if (null == columnNodes) {
-            return;
-        }
-        for (final ParserRuleContext each : columnNodes) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME)) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

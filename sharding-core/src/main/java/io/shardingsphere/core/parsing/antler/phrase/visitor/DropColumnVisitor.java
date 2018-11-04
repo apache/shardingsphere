@@ -25,8 +25,6 @@ import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
-
 /**
  * Visit drop column phrase.
  * 
@@ -37,16 +35,8 @@ public final class DropColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParserRuleContext> dropColumnContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_COLUMN);
-        if (null == dropColumnContexts) {
-            return;
-        }
-        for (ParserRuleContext each : dropColumnContexts) {
-            List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(each, RuleNameConstants.COLUMN_NAME);
-            if (null == columnNodes) {
-                continue;
-            }
-            for (final ParseTree columnNode : columnNodes) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_COLUMN)) {
+            for (ParseTree columnNode : TreeUtils.getAllDescendantByRuleName(each, RuleNameConstants.COLUMN_NAME)) {
                 alterStatement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }

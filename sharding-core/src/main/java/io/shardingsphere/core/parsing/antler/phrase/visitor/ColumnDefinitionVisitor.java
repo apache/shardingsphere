@@ -26,8 +26,6 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.List;
-
 /**
  * Visit column definition phrase.
  * 
@@ -38,11 +36,7 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        List<ParserRuleContext> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.COLUMN_DEFINITION);
-        if (null == columnDefinitions) {
-            return;
-        }
-        for (final ParserRuleContext each : columnDefinitions) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.COLUMN_DEFINITION)) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null == column) {
                 continue;

@@ -17,12 +17,16 @@
 
 package io.shardingsphere.core.parsing.antler.util;
 
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,28 +46,25 @@ public final class TreeUtils {
      * @param name rule name
      * @return matched node
      */
-    public static ParserRuleContext getFirstChildByRuleName(final ParserRuleContext node, final String name) {
+    public static Optional<ParserRuleContext> findFirstChildByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
-            return null;
+            return Optional.absent();
         }
-        String ruleName = name;
-        if (!name.contains(RULE_SUFFIX)) {
-            ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
-        }
+        String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
         if (ruleName.equals(node.getClass().getSimpleName())) {
-            return node;
+            return Optional.of(node);
         }
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
             if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-            ParserRuleContext retNode = getFirstChildByRuleName((ParserRuleContext) child, name);
-            if (null != retNode) {
-                return retNode;
+            Optional<ParserRuleContext> result = findFirstChildByRuleName((ParserRuleContext) child, name);
+            if (result.isPresent()) {
+                return result;
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     /**
@@ -73,15 +74,12 @@ public final class TreeUtils {
      * @param name rule name
      * @return matched nodes
      */
-    public static List<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
+    public static Collection<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
-            return null;
+            return Collections.emptyList();
         }
-        String ruleName = name;
-        if (!name.contains(RULE_SUFFIX)) {
-            ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
-        }
-        List<ParserRuleContext> result = new ArrayList<>();
+        String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
+        List<ParserRuleContext> result = new LinkedList<>();
         if (ruleName.equals(node.getClass().getSimpleName())) {
             result.add(node);
         }
@@ -89,7 +87,7 @@ public final class TreeUtils {
         if (0 == count) {
             return result;
         }
-        List<ParserRuleContext> childNodes = new ArrayList<>();
+        List<ParserRuleContext> childNodes = new LinkedList<>();
         for (int i = 0; i < count; i++) {
             ParseTree child = node.getChild(i);
             if (child instanceof ParserRuleContext) {
@@ -97,10 +95,7 @@ public final class TreeUtils {
             }
         }
         for (ParserRuleContext each : childNodes) {
-            List<ParserRuleContext> retChilds = getAllDescendantByRuleName(each, name);
-            if (null != retChilds) {
-                result.addAll(retChilds);
-            }
+            result.addAll(getAllDescendantByRuleName(each, name));
         }
         return result;
     }

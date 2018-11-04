@@ -26,8 +26,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
-
 /**
  * Visit add column phrase.
  * 
@@ -37,29 +35,20 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
     
     @Override
     public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParserRuleContext> addColumnContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN);
-        if (null == addColumnContexts) {
-            return;
-        }
-        for (ParserRuleContext each : addColumnContexts) {
-            visitAddColumn(each, alterStatement);
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN)) {
+            visitAddColumn(each, (AlterTableStatement) statement);
         }
     }
     
-    private void visitAddColumn(final ParserRuleContext addColumnCtx, final AlterTableStatement alterStatement) {
-        List<ParserRuleContext> columnDefinitionCtxs = TreeUtils.getAllDescendantByRuleName(addColumnCtx, RuleNameConstants.COLUMN_DEFINITION);
-        if (null == columnDefinitionCtxs) {
-            return;
-        }
-        for (ParserRuleContext columnDefinitionCtx : columnDefinitionCtxs) {
-            ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
+    private void visitAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(addColumnContext, RuleNameConstants.COLUMN_DEFINITION)) {
+            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
                 if (null != alterStatement.getExistColumn(column.getName())) {
                     return;
                 }
                 alterStatement.getAddColumns().add(column);
-                postVisitColumnDefinition(addColumnCtx, alterStatement, column.getName());
+                postVisitColumnDefinition(addColumnContext, alterStatement, column.getName());
             }
         }
     }

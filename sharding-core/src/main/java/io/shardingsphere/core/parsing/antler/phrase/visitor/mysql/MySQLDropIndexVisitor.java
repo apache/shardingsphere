@@ -25,8 +25,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
-
 /**
  * Visit MySQL drop index phrase.
  * 
@@ -36,11 +34,7 @@ public final class MySQLDropIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        List<ParserRuleContext> dropIndexDefs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_INDEX_REF);
-        if (null == dropIndexDefs) {
-            return;
-        }
-        for (ParserRuleContext each : dropIndexDefs) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_INDEX_REF)) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;

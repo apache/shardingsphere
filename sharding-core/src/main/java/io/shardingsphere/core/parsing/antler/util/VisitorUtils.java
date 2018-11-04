@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.util;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -46,33 +47,31 @@ public final class VisitorUtils {
         if (null == columnDefinitionNode) {
             return null;
         }
-        ParserRuleContext columnNameNode = TreeUtils
-                .getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
-
-        if (null == columnNameNode) {
+        Optional<ParserRuleContext> columnNameNode = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
+        if (!columnNameNode.isPresent()) {
             return null;
         }
-        ParserRuleContext dataTypeCtx = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
+        Optional<ParserRuleContext> dataTypeContext = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
         String typeName = null;
-        if (null != dataTypeCtx) {
-            typeName = dataTypeCtx.getChild(0).getText();
+        if (dataTypeContext.isPresent()) {
+            typeName = dataTypeContext.get().getChild(0).getText();
         }
         Integer length = null;
-        ParserRuleContext dataTypeLengthCtx = TreeUtils.getFirstChildByRuleName(dataTypeCtx, RuleNameConstants.DATA_TYPE_LENGTH);
-        if (null != dataTypeLengthCtx) {
-            if (dataTypeLengthCtx.getChildCount() >= 3) {
+        Optional<ParserRuleContext> dataTypeLengthContext = TreeUtils.findFirstChildByRuleName(dataTypeContext.get(), RuleNameConstants.DATA_TYPE_LENGTH);
+        if (dataTypeLengthContext.isPresent()) {
+            if (dataTypeLengthContext.get().getChildCount() >= 3) {
                 try {
-                    length = Integer.parseInt(dataTypeLengthCtx.getChild(1).getText());
+                    length = Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText());
                 } catch (NumberFormatException ignore) {
                 }
             }
         }
-        ParserRuleContext primaryKeyNode = TreeUtils.getFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyNode = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
         boolean primaryKey = false;
-        if (null != primaryKeyNode) {
+        if (primaryKeyNode.isPresent()) {
             primaryKey = true;
         }
-        return new ColumnDefinition(columnNameNode.getText(), typeName, length, primaryKey);
+        return new ColumnDefinition(columnNameNode.get().getText(), typeName, length, primaryKey);
     }
     
     /**
@@ -83,20 +82,20 @@ public final class VisitorUtils {
      * @return column position object
      */
     public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
-        ParserRuleContext firstOrAfterColumnContext = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
-        if (null == firstOrAfterColumnContext) {
+        Optional<ParserRuleContext> firstOrAfterColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
+        if (!firstOrAfterColumnContext.isPresent()) {
             return null;
         }
-        ParserRuleContext columnNameCtx = TreeUtils.getFirstChildByRuleName(firstOrAfterColumnContext, "columnName");
-        ColumnPosition columnPosition = new ColumnPosition();
-        columnPosition.setStartIndex(firstOrAfterColumnContext.getStart().getStartIndex());
-        if (null != columnNameCtx) {
-            columnPosition.setColumnName(columnName);
-            columnPosition.setAfterColumn(columnNameCtx.getText());
+        Optional<ParserRuleContext> columnNameContext = TreeUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), "columnName");
+        ColumnPosition result = new ColumnPosition();
+        result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
+        if (columnNameContext.isPresent()) {
+            result.setColumnName(columnName);
+            result.setAfterColumn(columnNameContext.get().getText());
         } else {
-            columnPosition.setFirstColumn(columnName);
+            result.setFirstColumn(columnName);
         }
-        return columnPosition;
+        return result;
     }
     
     /**
@@ -107,12 +106,8 @@ public final class VisitorUtils {
      * @return index token list
      */
     public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
-        List<ParserRuleContext> indexNameCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
-        if (null == indexNameCtxs) {
-            return null;
-        }
         List<IndexToken> result = new ArrayList<>();
-        for (ParserRuleContext each : indexNameCtxs) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME)) {
             result.add(visitIndex(each, tableName));
         }
         return result;
@@ -127,8 +122,8 @@ public final class VisitorUtils {
      */
     public static IndexToken visitIndex(final ParserRuleContext indexNameContext, final String tableName) {
         String name = getName(indexNameContext.getText());
-        int startPos = indexNameContext.getStop().getStartIndex();
-        return new IndexToken(startPos, name, tableName);
+        int startPosition = indexNameContext.getStop().getStartIndex();
+        return new IndexToken(startPosition, name, tableName);
     }
     
     /** 
@@ -139,7 +134,7 @@ public final class VisitorUtils {
      */
     public static String getName(final String text) {
         String dotString = Symbol.DOT.getLiterals();
-        int pos = text.lastIndexOf(dotString);
-        return pos > 0 ? text.substring(pos + dotString.length()) : text;
+        int position = text.lastIndexOf(dotString);
+        return position > 0 ? text.substring(position + dotString.length()) : text;
     }
 }

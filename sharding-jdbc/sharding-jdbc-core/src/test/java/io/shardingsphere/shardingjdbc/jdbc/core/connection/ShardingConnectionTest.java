@@ -22,9 +22,14 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
@@ -51,6 +57,10 @@ public final class ShardingConnectionTest {
     private static final String DS_NAME = "default";
     
     private ShardingConnection connection;
+    
+    private ShardingContext shardingContext;
+    
+    private Map<String, DataSource> dataSourceMap;
     
     @BeforeClass
     public static void init() throws SQLException {
@@ -67,13 +77,13 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
-        ShardingContext shardingContext = mock(ShardingContext.class);
+        shardingContext = mock(ShardingContext.class);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("test");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         connection = new ShardingConnection(dataSourceMap, shardingContext);
     }
@@ -82,6 +92,9 @@ public final class ShardingConnectionTest {
     public void clear() {
         try {
             connection.close();
+            TransactionTypeHolder.clear();
+            FixedXAShardingTransactionHandler.getInvokes().clear();
+            FixedBaseShardingTransactionHandler.getInvokes().clear();
         } catch (final SQLException ignore) {
         }
     }
@@ -101,5 +114,27 @@ public final class ShardingConnectionTest {
         Connection conn = connection.getConnection(DS_NAME);
         connection.release(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME));
+    }
+    
+    @Test
+    public void assertXATransactionOperation() throws SQLException {
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
+        connection.setAutoCommit(false);
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        connection.commit();
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        connection.rollback();
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+    }
+    
+    @Test
+    public void assertBaseTransactionOperation() throws SQLException {
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
+        connection.setAutoCommit(false);
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        connection.commit();
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        connection.rollback();
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
     }
 }

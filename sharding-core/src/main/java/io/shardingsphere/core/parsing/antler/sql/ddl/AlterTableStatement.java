@@ -65,7 +65,6 @@ public class AlterTableStatement extends DDLStatement {
         if (null == columnDefinition) {
             columnDefinition = getFromAddColumn(columnName);
         }
-
         return columnDefinition;
     }
     

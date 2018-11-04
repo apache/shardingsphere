@@ -17,12 +17,12 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlaveStatement;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
@@ -35,12 +35,22 @@ import java.util.Map;
  * Connection that support master-slave.
  * 
  * @author zhangliang
+ * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
 public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
+    
+    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource) {
+        super(TransactionType.LOCAL);
+        this.masterSlaveDataSource = masterSlaveDataSource;
+    }
+    
+    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource, final TransactionType transactionType) {
+        super(transactionType);
+        this.masterSlaveDataSource = masterSlaveDataSource;
+    }
     
     @Override
     protected Map<String, DataSource> getDataSourceMap() {

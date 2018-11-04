@@ -59,7 +59,7 @@ public final class StatementFactory {
     
     private static String getCommandName(final ParserRuleContext parserRuleContext) {
         String name = parserRuleContext.getClass().getSimpleName();
-        int pos = name.indexOf("Context");
-        return pos > 0 ? name.substring(0, pos) : name;
+        int position = name.indexOf("Context");
+        return position > 0 ? name.substring(0, position) : name;
     }
 }
