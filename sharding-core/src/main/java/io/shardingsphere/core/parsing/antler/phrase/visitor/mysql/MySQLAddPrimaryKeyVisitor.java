@@ -27,8 +27,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
-
 /**
  * Visit MySQL add primary key phrase.
  * 
@@ -47,11 +45,7 @@ public final class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
         if (!primaryKeyOptionNode.isPresent()) {
             return;
         }
-        List<ParserRuleContext> keyPartNodes = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.KEY_PART);
-        if (null == keyPartNodes) {
-            return;
-        }
-        for (ParseTree each : keyPartNodes) {
+        for (ParseTree each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.KEY_PART)) {
             String columnName = each.getChild(0).getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

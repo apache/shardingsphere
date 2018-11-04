@@ -23,8 +23,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
-
 /**
  * Visit Multiple tableName phrase.
  * 
@@ -34,11 +32,7 @@ public final class TableNamesVisitor extends TableNameVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        List<ParserRuleContext> tableNameContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
-        if (null == tableNameContexts) {
-            return;
-        }
-        for (ParseTree each : tableNameContexts) {
+        for (ParseTree each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME)) {
             super.visit((ParserRuleContext) each, statement);
         }
     }

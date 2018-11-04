@@ -27,8 +27,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
-
 /**
  * Visit SQLServer primary key phrase.
  * 
@@ -51,8 +49,7 @@ public final class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
         if (!primaryKeyContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNameContexts = TreeUtils.getAllDescendantByRuleName(tableConstraintContext.get(), RuleNameConstants.COLUMN_NAME);
-        for (ParseTree each : columnNameContexts) {
+        for (ParseTree each : TreeUtils.getAllDescendantByRuleName(tableConstraintContext.get(), RuleNameConstants.COLUMN_NAME)) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

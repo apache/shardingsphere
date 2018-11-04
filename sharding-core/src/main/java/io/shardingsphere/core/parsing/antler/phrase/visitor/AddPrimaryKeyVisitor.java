@@ -26,8 +26,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.List;
-
 /**
  * Visit add primary key phrase.
  * 
@@ -49,11 +47,7 @@ public final class AddPrimaryKeyVisitor implements PhraseVisitor {
         if (!primaryKeyContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
-        if (null == columnNodes) {
-            return;
-        }
-        for (ParserRuleContext each : columnNodes) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME)) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

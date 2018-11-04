@@ -106,12 +106,8 @@ public final class VisitorUtils {
      * @return index token list
      */
     public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
-        List<ParserRuleContext> indexNameContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
-        if (null == indexNameContexts) {
-            return null;
-        }
         List<IndexToken> result = new ArrayList<>();
-        for (ParserRuleContext each : indexNameContexts) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME)) {
             result.add(visitIndex(each, tableName));
         }
         return result;

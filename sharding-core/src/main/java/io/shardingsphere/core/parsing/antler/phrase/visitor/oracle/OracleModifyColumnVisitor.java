@@ -38,11 +38,7 @@ public final class OracleModifyColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        List<ParserRuleContext> modifyColumnContexts = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN);
-        if (null == modifyColumnContexts) {
-            return;
-        }
-        for (ParserRuleContext modifyColumnContext : modifyColumnContexts) {
+        for (ParserRuleContext modifyColumnContext : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN)) {
             List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.MODIFY_COL_PROPERTIES);
             if (null == columnNodes) {
                 return;

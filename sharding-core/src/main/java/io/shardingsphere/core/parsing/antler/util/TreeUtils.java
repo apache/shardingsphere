@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,12 +75,9 @@ public final class TreeUtils {
      */
     public static List<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
         if (null == node) {
-            return null;
+            return Collections.emptyList();
         }
-        String ruleName = name;
-        if (!name.contains(RULE_SUFFIX)) {
-            ruleName = Character.toUpperCase(name.charAt(0)) + name.substring(1) + RULE_SUFFIX;
-        }
+        String ruleName = name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
         List<ParserRuleContext> result = new ArrayList<>();
         if (ruleName.equals(node.getClass().getSimpleName())) {
             result.add(node);
@@ -96,10 +94,7 @@ public final class TreeUtils {
             }
         }
         for (ParserRuleContext each : childNodes) {
-            List<ParserRuleContext> retChilds = getAllDescendantByRuleName(each, name);
-            if (null != retChilds) {
-                result.addAll(retChilds);
-            }
+            result.addAll(getAllDescendantByRuleName(each, name));
         }
         return result;
     }

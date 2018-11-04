@@ -42,7 +42,7 @@ public final class RenameColumnVisitor implements PhraseVisitor {
             return;
         }
         List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
-        if (null == columnNodes || 2 != columnNodes.size()) {
+        if (2 != columnNodes.size()) {
             return;
         }
         String oldName = columnNodes.get(0).getText();

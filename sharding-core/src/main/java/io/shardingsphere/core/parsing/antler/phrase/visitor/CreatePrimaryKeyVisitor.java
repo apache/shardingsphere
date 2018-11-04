@@ -24,8 +24,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.List;
-
 /**
  * Visit create table primary key  phrase.
  * 
@@ -44,11 +42,7 @@ public final class CreatePrimaryKeyVisitor implements PhraseVisitor {
         if (!columnListContext.isPresent()) {
             return;
         }
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(columnListContext.get(), RuleNameConstants.COLUMN_NAME);
-        if (null == columnNodes) {
-            return;
-        }
-        for (ParserRuleContext each : columnNodes) {
+        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(columnListContext.get(), RuleNameConstants.COLUMN_NAME)) {
             if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
                 createStatement.getPrimaryKeyColumns().add(each.getText());
             }
