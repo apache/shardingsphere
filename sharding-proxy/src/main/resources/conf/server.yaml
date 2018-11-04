@@ -27,6 +27,7 @@
 #  proxy.transaction.type: BASE
 #  proxy.opentracing.enabled: false
 #  sql.show: true
+#
 #configMap:
 #  sharding-key1: sharding-value1
 #  sharding-key2: sharding-value2
