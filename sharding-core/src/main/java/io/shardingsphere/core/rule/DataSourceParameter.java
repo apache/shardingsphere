@@ -31,7 +31,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
 public final class DataSourceParameter {
     
     private PoolType originPoolType;
