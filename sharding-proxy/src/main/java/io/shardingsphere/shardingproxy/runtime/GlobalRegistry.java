@@ -111,8 +111,8 @@ public final class GlobalRegistry {
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, 
+                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }

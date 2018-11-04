@@ -20,11 +20,16 @@ package io.shardingsphere.core.parsing;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antler.parser.StatementFactory;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
+import io.shardingsphere.core.parsing.lexer.token.Token;
+import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -57,7 +62,21 @@ public final class SQLParsingEngine {
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         lexerEngine.nextToken();
-        SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData).parse();
+        Token firstToken = lexerEngine.getCurrentToken();
+        SQLStatement result;
+        SQLParser sqlParser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
+        Token currentToken = lexerEngine.getCurrentToken();
+        if (firstToken != currentToken) {
+            if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
+                result = StatementFactory.parse(dbType, sql, shardingRule, shardingTableMetaData);
+            } else {
+                result = sqlParser.parse();
+            }
+        } else if (TCLStatement.isTCL(firstToken.getType())) {
+            result = StatementFactory.parse(dbType, sql, shardingRule, shardingTableMetaData);
+        } else {
+            result = sqlParser.parse();
+        }
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }
