@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc;
 
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -27,6 +28,7 @@ import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
@@ -116,7 +118,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-                ((ShardingSchema) logicSchema).getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, logicSchema.getMetaData().getTable()).merge();
+                getShardingRule(), ((ExecuteQueryResponse) executeResponse).getQueryResults(), sqlStatement, logicSchema.getMetaData().getTable()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
@@ -124,6 +126,10 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
         return result;
+    }
+    
+    private ShardingRule getShardingRule() {
+        return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
     private QueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
