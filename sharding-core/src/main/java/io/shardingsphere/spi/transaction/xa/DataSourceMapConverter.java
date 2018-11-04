@@ -15,24 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.spi.transaction.xa;
 
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.constant.DatabaseType;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Sharding bootstrap.
+ * Data source map converter SPI.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface DataSourceMapConverter {
     
     /**
-     * Initialize sharding bootstrap.
+     * Do convert data source map.
+     *
+     * @param dataSourceMap data source map
+     * @param databaseType database type
+     * @return data source map
      */
-    public static void init() {
-        ShardingTransactionHandlerRegistry.load();
-    }
+    Map<String, DataSource> convert(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
 }
+

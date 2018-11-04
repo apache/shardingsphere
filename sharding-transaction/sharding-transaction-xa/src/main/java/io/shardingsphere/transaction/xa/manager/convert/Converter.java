@@ -15,24 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.transaction.xa.manager.convert;
 
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
 /**
- * Sharding bootstrap.
+ * Convert interface.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface Converter {
     
     /**
-     * Initialize sharding bootstrap.
+     * Get the DataSource pool property, then convert to datasource parameter.
+     *
+     * @return dataSource parameter
      */
-    public static void init() {
-        ShardingTransactionHandlerRegistry.load();
-    }
+    DataSourceParameter convertTo();
 }
+

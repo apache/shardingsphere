@@ -15,24 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.transaction.xa.manager.property;
 
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Properties;
+
 /**
- * Sharding bootstrap.
+ * XA property factory.
  *
- * @author zhangliang
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public class XAPropertyFactory {
     
     /**
-     * Initialize sharding bootstrap.
+     * Create XA properties using datasource parameter.
+     *
+     * @param xaDatabaseType XA database type
+     * @param dataSourceParameter datasource parameter
+     * @return XA properties
      */
-    public static void init() {
-        ShardingTransactionHandlerRegistry.load();
+    public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
+        switch (xaDatabaseType) {
+            case MySQL:
+                return new MysqlXAPropertyFactory(dataSourceParameter).build();
+            default:
+                return new Properties();
+        }
     }
 }

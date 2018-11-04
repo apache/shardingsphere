@@ -15,24 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import org.junit.Test;
 
-/**
- * Sharding bootstrap.
- *
- * @author zhangliang
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class XATransactionManagerSPILoaderTest {
     
-    /**
-     * Initialize sharding bootstrap.
-     */
-    public static void init() {
-        ShardingTransactionHandlerRegistry.load();
+    @Test
+    public void assertGerInstanceWithSPI() {
+        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
     }
 }

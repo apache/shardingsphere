@@ -15,14 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
+import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManagerTest;
+import io.shardingsphere.transaction.xa.manager.convert.DataSourceParameterFactoryTest;
+import io.shardingsphere.transaction.xa.manager.property.XAPropertyFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(AllManagerTests.class)
-public final class AllTests {
+@SuiteClasses({
+        AtomikosTransactionManagerTest.class,
+        DataSourceParameterFactoryTest.class,
+        XAPropertyFactoryTest.class,
+        XADataSourceMapConverterTest.class,
+        XADataSourceFactoryTest.class,
+        XATransactionDataSourceWrapperTest.class,
+        XATransactionManagerSPILoaderTest.class
+})
+public final class AllManagerTests {
 }

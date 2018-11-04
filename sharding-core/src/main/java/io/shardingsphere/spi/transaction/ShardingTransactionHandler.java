@@ -15,24 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.core.bootstrap;
+package io.shardingsphere.spi.transaction;
 
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 
 /**
- * Sharding bootstrap.
+ * Sharding transaction handler SPI.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+public interface ShardingTransactionHandler<T extends ShardingTransactionEvent> {
     
     /**
-     * Initialize sharding bootstrap.
+     * Do transaction operation using specific transaction manager.
+     *
+     * @param event sharding transaction event
      */
-    public static void init() {
-        ShardingTransactionHandlerRegistry.load();
-    }
+    void doInTransaction(T event);
+    
+    /**
+     * Get transaction type.
+     *
+     * @return transaction type
+     */
+    TransactionType getTransactionType();
 }
