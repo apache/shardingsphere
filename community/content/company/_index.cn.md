@@ -38,6 +38,7 @@ chapter = true
 * [京东金融](http://jr.jd.com/)
 * [策赢平台](https://www.cypfintech.com/)
 * [拍拍贷](https://www.ppdai.com/)
+* [火币资讯](https://www.huobiinfo.com/)
 
 ## 信息资讯
 

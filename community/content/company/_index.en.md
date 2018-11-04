@@ -38,6 +38,7 @@ The list here will be shown in the registered order.
 * [JD Finance](http://jr.jd.com/)
 * [Cypfintech](https://www.cypfintech.com/)
 * [Ppdai](https://www.ppdai.com/)
+* [HuoBi Info](https://www.huobiinfo.com/)
 
 ## Information
 
