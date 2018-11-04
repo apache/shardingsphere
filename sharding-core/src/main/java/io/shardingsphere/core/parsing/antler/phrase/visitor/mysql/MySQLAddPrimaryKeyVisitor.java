@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -37,15 +37,15 @@ public final class MySQLAddPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> constraintDefinitionNode = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_CONSTRAINT);
+        Optional<ParserRuleContext> constraintDefinitionNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.ADD_CONSTRAINT);
         if (!constraintDefinitionNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> primaryKeyOptionNode = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.PRIMARY_KEY_OPTION);
+        Optional<ParserRuleContext> primaryKeyOptionNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.PRIMARY_KEY_OPTION);
         if (!primaryKeyOptionNode.isPresent()) {
             return;
         }
-        for (ParseTree each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.KEY_PART)) {
+        for (ParseTree each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.KEY_PART)) {
             String columnName = each.getChild(0).getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

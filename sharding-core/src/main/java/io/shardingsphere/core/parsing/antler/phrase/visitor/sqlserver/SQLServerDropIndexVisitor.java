@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor.sqlserver;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -34,9 +34,9 @@ public final class SQLServerDropIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> indexDefOptionNode = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.ALTER_DROP_INDEX);
+        Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.ALTER_DROP_INDEX);
         if (indexDefOptionNode.isPresent()) {
-            Optional<ParserRuleContext> indexNameNode = TreeUtils.findFirstChildByRuleName(indexDefOptionNode.get(), RuleNameConstants.INDEX_NAME);
+            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildByRuleName(indexDefOptionNode.get(), RuleNameConstants.INDEX_NAME);
             if (indexNameNode.isPresent()) {
                 statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
             }

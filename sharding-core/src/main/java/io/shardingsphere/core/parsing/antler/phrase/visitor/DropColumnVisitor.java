@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -35,8 +35,8 @@ public final class DropColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_COLUMN)) {
-            for (ParseTree columnNode : TreeUtils.getAllDescendantByRuleName(each, RuleNameConstants.COLUMN_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_COLUMN)) {
+            for (ParseTree columnNode : ASTUtils.getAllDescendantByRuleName(each, RuleNameConstants.COLUMN_NAME)) {
                 alterStatement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }

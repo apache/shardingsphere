@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -36,7 +36,7 @@ public class TableNameVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> tableNameContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
+        Optional<ParserRuleContext> tableNameContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME);
         if (tableNameContext.isPresent()) {
             String name = tableNameContext.get().getText();
             if (null == name) {

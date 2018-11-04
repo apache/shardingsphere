@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -35,13 +35,13 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
     
     @Override
     public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_COLUMN)) {
             visitAddColumn(each, (AlterTableStatement) statement);
         }
     }
     
     private void visitAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
-        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(addColumnContext, RuleNameConstants.COLUMN_DEFINITION)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(addColumnContext, RuleNameConstants.COLUMN_DEFINITION)) {
             ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
             if (null != column) {
                 if (null != alterStatement.getExistColumn(column.getName())) {

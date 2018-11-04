@@ -30,12 +30,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Visit AST utils.
+ * AST utility.
  * 
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TreeUtils {
+public final class ASTUtils {
     
     private static final String RULE_SUFFIX = "Context";
     
@@ -68,7 +68,7 @@ public final class TreeUtils {
     }
     
     /**
-     * Find all children node whose rule name is ${name}.
+     * Find all children node by rule name.
      *
      * @param node start node
      * @param name rule name

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.util.TreeUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -32,7 +32,7 @@ public final class TableNamesVisitor extends TableNameVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParseTree each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME)) {
+        for (ParseTree each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.TABLE_NAME)) {
             super.visit((ParserRuleContext) each, statement);
         }
     }

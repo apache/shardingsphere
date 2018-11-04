@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Visitor utils.
+ * Visitor utility.
  * 
  * @author duhongjun
  */
@@ -47,17 +47,17 @@ public final class VisitorUtils {
         if (null == columnDefinitionNode) {
             return null;
         }
-        Optional<ParserRuleContext> columnNameNode = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
+        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return null;
         }
-        Optional<ParserRuleContext> dataTypeContext = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
+        Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
         String typeName = null;
         if (dataTypeContext.isPresent()) {
             typeName = dataTypeContext.get().getChild(0).getText();
         }
         Integer length = null;
-        Optional<ParserRuleContext> dataTypeLengthContext = TreeUtils.findFirstChildByRuleName(dataTypeContext.get(), RuleNameConstants.DATA_TYPE_LENGTH);
+        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildByRuleName(dataTypeContext.get(), RuleNameConstants.DATA_TYPE_LENGTH);
         if (dataTypeLengthContext.isPresent()) {
             if (dataTypeLengthContext.get().getChildCount() >= 3) {
                 try {
@@ -66,7 +66,7 @@ public final class VisitorUtils {
                 }
             }
         }
-        Optional<ParserRuleContext> primaryKeyNode = TreeUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
         boolean primaryKey = false;
         if (primaryKeyNode.isPresent()) {
             primaryKey = true;
@@ -82,11 +82,11 @@ public final class VisitorUtils {
      * @return column position object
      */
     public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
-        Optional<ParserRuleContext> firstOrAfterColumnContext = TreeUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
+        Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnContext.isPresent()) {
             return null;
         }
-        Optional<ParserRuleContext> columnNameContext = TreeUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), "columnName");
+        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), "columnName");
         ColumnPosition result = new ColumnPosition();
         result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
         if (columnNameContext.isPresent()) {
@@ -107,7 +107,7 @@ public final class VisitorUtils {
      */
     public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
         List<IndexToken> result = new ArrayList<>();
-        for (ParserRuleContext each : TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME)) {
             result.add(visitIndex(each, tableName));
         }
         return result;

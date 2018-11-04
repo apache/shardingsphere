@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 
 /**
- * Antlr utils.
+ * Antlr utility.
  *
  * @author duhongjun
  */
