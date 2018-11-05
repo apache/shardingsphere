@@ -18,7 +18,6 @@
 package io.shardingsphere.core.routing.type.defaultdb;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -38,7 +37,6 @@ public final class DefaultDatabaseRoutingEngineTest {
     @Before
     public void setEngineContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         Collection<String> logicTables = Arrays.asList("t_order", "t_order_item");
