@@ -96,20 +96,10 @@ public final class VisitorUtils {
      * @return index token
      */
     public static IndexToken visitIndex(final ParserRuleContext indexNameContext, final String tableName) {
-        String name = getName(indexNameContext.getText());
-        int startPosition = indexNameContext.getStop().getStartIndex();
-        return new IndexToken(startPosition, name, tableName);
+        return new IndexToken(indexNameContext.getStop().getStartIndex(), getIndexName(indexNameContext.getText()), tableName);
     }
     
-    /** 
-     * Get name from text.
-     * 
-     * @param text input text
-     * @return object name
-     */
-    public static String getName(final String text) {
-        String dotString = Symbol.DOT.getLiterals();
-        int position = text.lastIndexOf(dotString);
-        return position > 0 ? text.substring(position + dotString.length()) : text;
+    private static String getIndexName(final String text) {
+        return text.contains(Symbol.DOT.getLiterals()) ? text.substring(text.lastIndexOf(Symbol.DOT.getLiterals()) + Symbol.DOT.getLiterals().length()) : text;
     }
 }
