@@ -25,8 +25,8 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.spi.xa.XABackendDataSourceFactory;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
+@Slf4j
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private volatile Map<String, DataSource> xaDataSourceMap;
@@ -71,9 +72,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public final ShardingConnection getConnection() {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
-                synchronized (this) {
-                    xaDataSourceMap = XABackendDataSourceFactory.getInstance().build(getDataSourceMap(), getDatabaseType());
-                }
+                log.warn("XA transaction resource have not load, using Local transaction instead!");
             }
             return new ShardingConnection(xaDataSourceMap, shardingContext);
         }
