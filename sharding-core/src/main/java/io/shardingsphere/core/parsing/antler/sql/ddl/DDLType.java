@@ -23,11 +23,6 @@ package io.shardingsphere.core.parsing.antler.sql.ddl;
  * @author duhongjun
  */
 public enum DDLType {
-    CREATETABLE, 
-    ALTERTABLE, 
-    DROPTABLE, 
-    TRUNCATETABLE, 
-    CREATEINDEX, 
-    ALTERINDEX, 
-    DROPINDEX
+    
+    CREATE_TABLE, ALTER_TABLE, DROP_TABLE, TRUNCATE_TABLE, CREATE_INDEX, ALTER_INDEX, DROP_INDEX
 }

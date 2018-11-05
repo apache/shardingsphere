@@ -27,7 +27,9 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -43,34 +45,35 @@ import java.util.List;
  * Executor wrapper for prepared statement.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final ShardingSchema shardingSchema;
+    private final LogicSchema logicSchema;
     
     private final List<Object> parameters;
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        return shardingSchema.isMasterSlaveOnly() ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+        return logicSchema instanceof MasterSlaveSchema ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
     }
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        String rewriteSQL = new MasterSlaveSQLRewriteEngine(shardingSchema.getMasterSlaveRule(), sql, sqlStatement, shardingSchema.getMetaData()).rewrite();
+        String rewriteSQL = new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData()).rewrite();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(shardingSchema.getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
+        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, new ArrayList<>(Collections.singleton(parameters)))));
         }
         return result;
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        return new PreparedStatementRoutingEngine(sql, 
-                shardingSchema.getShardingRule(), shardingSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), shardingSchema.getMetaData().getDataSource()).route(parameters);
+        return new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(),
+                logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource()).route(parameters);
     }
     
     @Override

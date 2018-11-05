@@ -17,8 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.yaml;
 
-import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenterTest;
-import io.shardingsphere.orchestration.internal.yaml.representer.SimpleTypeRepresenterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -26,8 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         YamlOrchestrationConfigurationTest.class, 
-        DefaultRepresenterTest.class,
-        SimpleTypeRepresenterTest.class
+        DefaultRepresenterTest.class
 })
 public final class AllYamlTests {
 }

@@ -17,44 +17,27 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit MySQL add index phrase.
  * 
  * @author duhongjun
  */
-public class MySQLAddIndexVisitor implements PhraseVisitor {
-
-    /**
-     * Visit add index node.
-     *
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class MySQLAddIndexVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        List<ParserRuleContext> addIndexCtxs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                RuleNameConstants.ADD_INDEX);
-        
-        if (null == addIndexCtxs) {
-            return;
-        }
-
-        for (ParserRuleContext each : addIndexCtxs) {
-            ParserRuleContext indexNameNode = TreeUtils.getFirstChildByRuleName(each,
-                    RuleNameConstants.INDEX_NAME);
-            if (null != indexNameNode) {
-                statement.getSQLTokens()
-                        .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.ADD_INDEX)) {
+            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildByRuleName(each, RuleNameConstants.INDEX_NAME);
+            if (indexNameNode.isPresent()) {
+                statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
             }
         }
     }

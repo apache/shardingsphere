@@ -17,14 +17,14 @@
 
 package io.shardingsphere.core.parsing.antler.sql.ddl.mysql;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * MySQL alter table statement.
@@ -34,6 +34,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class MySQLAlterTableStatement extends AlterTableStatement {
+public final class MySQLAlterTableStatement extends AlterTableStatement {
+    
     private final List<ColumnPosition> positionChangedColumns = new ArrayList<>();
 }

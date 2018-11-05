@@ -17,46 +17,38 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Visit rename column phrase.
  * 
  * @author duhongjun
  */
-public class RenameColumnVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit rename column node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class RenameColumnVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        
-        ParserRuleContext modifyColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.RENAME_COLUMN);
-        if (null == modifyColumnCtx) {
+        Optional<ParserRuleContext> modifyColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_COLUMN);
+        if (!modifyColumnContext.isPresent()) {
             return;
         }
-
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(modifyColumnCtx, RuleNameConstants.COLUMN_NAME);
-        if (null == columnNodes || columnNodes.size() != 2) {
+        Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME);
+        if (2 != columnNodes.size()) {
             return;
         }
-
-        String oldName = columnNodes.get(0).getText();
-        String newName = columnNodes.get(1).getText();
+        Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
+        String oldName = columnNodesIterator.next().getText();
+        String newName = columnNodesIterator.next().getText();
         ColumnDefinition oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
         if (null != oldDefinition) {
             oldDefinition.setName(newName);

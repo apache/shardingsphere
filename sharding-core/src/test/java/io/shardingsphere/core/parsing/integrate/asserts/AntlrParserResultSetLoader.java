@@ -22,7 +22,7 @@ package io.shardingsphere.core.parsing.integrate.asserts;
  *
  * @author zhangliang
  */
-public final class AntlrParserResultSetLoader extends ParserResultSetLoader{
+public final class AntlrParserResultSetLoader extends ParserResultSetLoader {
     
     private static final AntlrParserResultSetLoader INSTANCE = new AntlrParserResultSetLoader();
     

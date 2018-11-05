@@ -18,11 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antler.parser.MySQLStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.OracleStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.PostgreStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.SQLServerStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.factory.StatementFactory;
+import io.shardingsphere.core.parsing.antler.parser.StatementFactory;
+import io.shardingsphere.core.parsing.antler.parser.dialect.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.OracleStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.PostgreStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antler.parser.dialect.SQLServerStatementAdvancedParser;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
@@ -57,7 +57,7 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsingTest{
+public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
     
@@ -77,20 +77,20 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
     @Test
     public void parsingSupportedSQL() throws Exception {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        CodePointCharStream cs = CharStreams.fromString(sql);
+        CodePointCharStream charStream = CharStreams.fromString(sql);
         switch (databaseType) {
             case H2:
             case MySQL:
-                execute(MySQLStatementLexer.class, MySQLStatementAdvancedParser.class,  cs);
+                execute(MySQLStatementLexer.class, MySQLStatementAdvancedParser.class, charStream);
                 break;
             case Oracle:
-                execute(OracleStatementLexer.class, OracleStatementAdvancedParser.class,  cs);
+                execute(OracleStatementLexer.class, OracleStatementAdvancedParser.class, charStream);
                 break;
             case PostgreSQL:
-                execute(PostgreStatementLexer.class, PostgreStatementAdvancedParser.class,  cs);
+                execute(PostgreStatementLexer.class, PostgreStatementAdvancedParser.class, charStream);
                 break;
             case SQLServer:
-                execute(SQLServerStatementLexer.class, SQLServerStatementAdvancedParser.class,  cs);
+                execute(SQLServerStatementLexer.class, SQLServerStatementAdvancedParser.class, charStream);
                 break;
             default:
                 break;
@@ -106,23 +106,33 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new SQLStatementAssert(StatementFactory.getStatement(execDatabaseType, null, getShardingRule(), sql, getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+            new SQLStatementAssert(StatementFactory.parse(
+                    execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
         }
     }
     
-    public void execute(Class<?> lexerClass, Class<?> parserClass, CharStream cs) throws Exception {
-        Constructor<?> lexerCon = lexerClass.getConstructor(new Class[] {CharStream.class});
-        Lexer lexer = (Lexer)lexerCon.newInstance(new Object[] {cs});
+    /**
+     * Execute.
+     * @param lexerClass lexer class
+     * @param parserClass parser class
+     * @param charStream char stream
+     * @throws Exception exception
+     */
+    public void execute(final Class<?> lexerClass, final Class<?> parserClass, final CharStream charStream) throws Exception {
+        Constructor<?> lexerCon = lexerClass.getConstructor(CharStream.class);
+        Lexer lexer = (Lexer) lexerCon.newInstance(charStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        Constructor<?> parserCon = parserClass.getConstructor(new Class[] {TokenStream.class});
-        Object parser = parserCon.newInstance(new Object[] {tokenStream});
+        Constructor<?> parserCon = parserClass.getConstructor(TokenStream.class);
+        Object parser = parserCon.newInstance(tokenStream);
         Method addErrorListener = parserClass.getMethod("addErrorListener", ANTLRErrorListener.class);
         addErrorListener.invoke(parser, new BaseErrorListener() {
-            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+            
+            @Override
+            public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException ex) {
                 throw new RuntimeException();
             }
         });
         Method execute = parserClass.getMethod("execute");
-        execute.invoke(parser, new Object[] {});
+        execute.invoke(parser);
     }
 }

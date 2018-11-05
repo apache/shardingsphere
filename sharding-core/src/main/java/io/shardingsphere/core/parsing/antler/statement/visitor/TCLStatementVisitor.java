@@ -25,13 +25,8 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
  * 
  * @author duhongjun
  */
-public class TCLStatementVisitor extends AbstractStatementVisitor {
-
-    /**
-     * Create TCL statement.
-     *
-     * @return empty SQL statment
-     */
+public final class TCLStatementVisitor extends AbstractStatementVisitor {
+    
     @Override
     protected SQLStatement newStatement() {
         return new TCLStatement();

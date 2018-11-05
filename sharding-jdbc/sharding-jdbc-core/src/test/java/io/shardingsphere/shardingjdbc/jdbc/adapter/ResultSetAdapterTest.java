@@ -102,7 +102,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
             assertThat(each.getValue().getFetchDirection(), is(ResultSet.FETCH_FORWARD));
             try {
                 each.getValue().setFetchDirection(ResultSet.FETCH_REVERSE);
-            } catch (final SQLException ignore) {
+            } catch (final SQLException ignored) {
             }
             if (each.getKey() == DatabaseType.MySQL || each.getKey() == DatabaseType.PostgreSQL) {
                 assertFetchDirection((AbstractResultSetAdapter) each.getValue(), ResultSet.FETCH_REVERSE, each.getKey());
@@ -111,7 +111,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     }
     
     private void assertFetchDirection(final AbstractResultSetAdapter actual, final int fetchDirection, final DatabaseType type) throws SQLException {
-        // H2数据库未实现getFetchDirection方法
+        // H2 do not implement getFetchDirection
         assertThat(actual.getFetchDirection(), is(DatabaseType.H2 == type || DatabaseType.PostgreSQL == type ? ResultSet.FETCH_FORWARD : fetchDirection));
         assertThat(actual.getResultSets().size(), is(4));
         for (ResultSet each : actual.getResultSets()) {
@@ -131,7 +131,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     }
     
     private void assertFetchSize(final AbstractResultSetAdapter actual, final DatabaseType type) throws SQLException {
-        // H2数据库未实现getFetchSize方法
+        // H2 do not implement getFetchSize
         assertThat(actual.getFetchSize(), is(DatabaseType.H2 == type ? 0 : 100));
         assertThat(actual.getResultSets().size(), is(4));
         for (ResultSet each : actual.getResultSets()) {

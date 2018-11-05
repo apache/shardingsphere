@@ -26,54 +26,25 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * Abstract tree builder, use template pattern, 
- * sub class implement concrete method.
+ * Abstract parser tree builder.
+ * 
+ * <p>Use template pattern, sub class implement concrete method.</p>
  * 
  * @author duhongjun
  */
 public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
-
-    /**
-     * Parse input to ast.
-     *
-     * @param input SQL text
-     * @return parse tree
-     */
+    
     @Override
-    public ParserRuleContext parse(final String input) {
-        CharStream stream = CharStreams.fromString(input);
-        Lexer lexer = newLexer(stream);
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        Parser parser = newParser(tokenStream);
-        ParserRuleContext rootCtx = getParserTree(parser);
-        if (null != rootCtx) {
-            return (ParserRuleContext) rootCtx.getChild(0);
-        }
-
-        return null;
+    public final ParserRuleContext parse(final String input) {
+        Lexer lexer = newLexer(CharStreams.fromString(input));
+        Parser parser = newParser(new CommonTokenStream(lexer));
+        ParserRuleContext rootContext = getParserTree(parser);
+        return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
     }
-
-    /**
-     * Create lexer instance.
-     *
-     * @param charStream char stream
-     * @return antlr lexer instance
-     */
+    
     protected abstract Lexer newLexer(CharStream charStream);
-
-    /**
-     * Create parser instance.
-     *
-     * @param tokenStream token stream
-     * @return antlr parser instance
-     */
+    
     protected abstract Parser newParser(TokenStream tokenStream);
-
-    /**
-     * Get SQL parse tree.
-     *
-     * @param parser instance
-     * @return SQL parse tree
-     */
+    
     protected abstract ParserRuleContext getParserTree(Parser parser);
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases db-types="Oracle" namespace="oracle.ddl.create">
-	<!-- -->
-	<sql-case id="create_table" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" />
+    <!-- -->
+    <sql-case id="create_table" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" />
     <sql-case id="create_table_with_space" value="    CREATE TABLE t_order_item (
         item_id NUMBER(10),
         order_id NUMBER(10),
@@ -39,10 +39,10 @@
 
     <sql-case id="create_table_with_partition" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" />
 
-	<!--  
+    <!--  
     <sql-case id="create_table_with_select" value="CREATE TABLE t_order_bak AS SELECT * FROM t_order" />
-	-->
-	
+    -->
+    
     <sql-case id="create_index" value="CREATE INDEX idx_order_id ON t_order (order_id)" />
     <sql-case id="create_index_with_space" value="    CREATE INDEX
         idx_order_id

@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.ColumnDefinitionVisitor;
@@ -29,50 +26,42 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNamesVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * create table statement visitor.
  * 
  * @author duhongjun
  */
-public class CreateTableVisitor extends DDLStatementVisitor {
+public final class CreateTableVisitor extends DDLStatementVisitor {
+    
     public CreateTableVisitor() {
         addVisitor(new TableNamesVisitor());
         addVisitor(new ColumnDefinitionVisitor());
         addVisitor(new IndexesNameVisitor());
         addVisitor(new CreatePrimaryKeyVisitor());
     }
-
-    /**
-     * Create create table statement.
-     *
-     * @return empty SQL statment
-     */
+    
     @Override
     protected SQLStatement newStatement() {
         return new CreateTableStatement();
     }
-
-    /**
-     * process after visit.
-     *
-     * @param statement SQL statement
-     */
+    
+    @Override
     protected void postVisit(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         List<ColumnMetaData> newColumnMeta = new LinkedList<>();
-        int pos = 0;
+        int position = 0;
         List<String> columnTypes = createStatement.getColumnTypes();
         List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
         for (String each : createStatement.getColumnNames()) {
             String type = null;
-
-            if (columnTypes.size() > pos) {
-                type = columnTypes.get(pos);
+            if (columnTypes.size() > position) {
+                type = columnTypes.get(position);
             }
-
             newColumnMeta.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
         }
-
         createStatement.setTableMetaData(new TableMetaData(newColumnMeta));
     }
 }

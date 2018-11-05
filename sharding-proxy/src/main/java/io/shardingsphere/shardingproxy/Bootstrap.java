@@ -94,22 +94,32 @@ public final class Bootstrap {
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
-            Map<String, Map<String, DataSourceParameter>> schemaDataSourceParameterMap = new LinkedHashMap<>();
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
-            Map<String, RuleConfiguration> schemaRules = new LinkedHashMap<>();
-            for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
-                schemaDataSourceParameterMap.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
-                if (orchestrationFacade.getConfigService().isShardingRule(each)) {
-                    schemaRules.put(each, orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
-                } else {
-                    schemaRules.put(each, orchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
-                }
-            }
-            GlobalRegistry.getInstance().init(schemaDataSourceParameterMap, schemaRules, orchestrationFacade.getConfigService().loadAuthentication(),
-                    orchestrationFacade.getConfigService().loadConfigMap(), orchestrationFacade.getConfigService().loadProperties(), true);
+            GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(orchestrationFacade), getSchemaRules(orchestrationFacade),
+                    orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(), orchestrationFacade.getConfigService().loadProperties(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
+    }
+    
+    private static Map<String, Map<String, DataSourceParameter>> getSchemaDataSourceParameterMap(final OrchestrationFacade orchestrationFacade) {
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
+        for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
+            result.put(each, DataSourceConverter.getDataSourceParameterMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
+        }
+        return result;
+    }
+    
+    private static Map<String, RuleConfiguration> getSchemaRules(final OrchestrationFacade orchestrationFacade) {
+        Map<String, RuleConfiguration> result = new LinkedHashMap<>();
+        for (String each : orchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
+            if (orchestrationFacade.getConfigService().isShardingRule(each)) {
+                result.put(each, orchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
+            } else {
+                result.put(each, orchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
+            }
+        }
+        return result;
     }
     
     private static void initOrchestrationFacade(final YamlProxyServerConfiguration serverConfig,

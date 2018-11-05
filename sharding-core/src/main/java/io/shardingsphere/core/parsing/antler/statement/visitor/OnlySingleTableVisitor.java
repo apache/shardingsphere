@@ -24,8 +24,8 @@ import io.shardingsphere.core.parsing.antler.phrase.visitor.TableNameVisitor;
  * 
  * @author duhongjun
  */
-public class OnlySingleTableVisitor extends DDLStatementVisitor {
-
+public final class OnlySingleTableVisitor extends DDLStatementVisitor {
+    
     public OnlySingleTableVisitor() {
         addVisitor(new TableNameVisitor());
     }

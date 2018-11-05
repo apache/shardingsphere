@@ -62,8 +62,8 @@ public final class MySQLResponseHandler extends ResponseHandler {
     private final Map<Integer, MySQLQueryResult> resultMap;
     
     public MySQLResponseHandler(final String dataSourceName, final String schema) {
-        dataSourceParameter = GLOBAL_REGISTRY.getShardingSchema(schema).getDataSources().get(dataSourceName);
-        dataSourceMetaData = GLOBAL_REGISTRY.getShardingSchema(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+        dataSourceParameter = GLOBAL_REGISTRY.getLogicSchema(schema).getDataSources().get(dataSourceName);
+        dataSourceMetaData = GLOBAL_REGISTRY.getLogicSchema(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
         resultMap = new HashMap<>();
     }
     

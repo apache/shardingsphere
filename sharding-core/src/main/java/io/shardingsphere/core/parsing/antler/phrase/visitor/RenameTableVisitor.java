@@ -17,34 +17,26 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit rename table phrase.
  * 
  * @author duhongjun
  */
-public class RenameTableVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit rename table node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class RenameTableVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-
-        ParserRuleContext renameTableNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.RENAME_TABLE);
-        if (null != renameTableNode && 0 < renameTableNode.getChildCount()) {
-            alterStatement.setNewTableName(renameTableNode.getChild(renameTableNode.getChildCount() - 1).getText());
+        Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_TABLE);
+        if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
+            alterStatement.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
         }
     }
 }

@@ -28,7 +28,8 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor
  * 
  * @author duhongjun
  */
-public class PostgreAlterTableVisitor extends AlterTableVisitor {
+public final class PostgreAlterTableVisitor extends AlterTableVisitor {
+    
     public PostgreAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());
         addVisitor(new AddPrimaryKeyVisitor("alterTableAddConstraint"));

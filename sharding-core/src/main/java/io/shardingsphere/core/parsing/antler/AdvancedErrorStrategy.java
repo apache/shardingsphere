@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler;
 
-import org.antlr.v4.runtime.ANTLRErrorStrategy;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.InputMismatchException;
@@ -28,40 +28,25 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.misc.IntervalSet;
 
-import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
-
 /**
  * Advanced Error Strategy, override sync method,when failed matching,
  * try again with ID.
  * 
  * @author duhongjun
  */
-public class AdvancedErrorStrategy extends DefaultErrorStrategy {
-    private int id;
-
-    public AdvancedErrorStrategy(final int id) {
-        super();
-        this.id = id;
-    }
-
-    /** 
-     * The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
-     * that the current lookahead symbol is consistent with what were expecting
-     * if failed to match keyword,use ID try again.
-     * 
-     * @param recognizer the parser instance
-     * @throws RecognitionException the recognition exception
-     */
+@RequiredArgsConstructor
+public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
+    
+    private final int id;
+    
     @Override
     public void sync(final Parser recognizer) throws RecognitionException {
         if (inErrorRecoveryMode(recognizer)) {
             return;
         }
-
         try {
             TokenStream tokens = recognizer.getInputStream();
             Token token = tokens.LT(1);
-
             ATNState state = recognizer.getInterpreter().atn.states.get(recognizer.getState());
             IntervalSet nextTokens = recognizer.getATN().nextTokens(state);
             if (nextTokens.contains(token.getType())) {
@@ -69,57 +54,48 @@ public class AdvancedErrorStrategy extends DefaultErrorStrategy {
                 nextTokensState = ATNState.INVALID_STATE_NUMBER;
                 return;
             }
-
             if (nextTokens.contains(Token.EPSILON)) {
-                if (nextTokensContext == null) {
-                    // It's possible the next token won't match; information tracked
+                if (null == nextTokensContext) {
+                    // It's possible the next token won't matched; information tracked
                     // by sync is restricted for performance.
                     nextTokensContext = recognizer.getContext();
                     nextTokensState = recognizer.getState();
                 }
                 return;
             }
-
             if (nextTokens.contains(id)) {
-                CommonToken commonToken = AntlrUtils.castCommonToken(token);
-                commonToken.setType(id);
+                ((CommonToken) token).setType(id);
             }
             super.sync(recognizer);
-        } catch (InputMismatchException e) {
-            tryExecByID(recognizer, e);
+        } catch (InputMismatchException ex) {
+            tryToExecuteByID(recognizer, ex);
         }
     }
-
-    /**
-     * Try again with ID.
-     * 
-     * @param recognizer rule parser
-     * @param e prior exception
-     */
-    private void tryExecByID(final Parser recognizer, final InputMismatchException e) {
-        Token token = e.getOffendingToken();
-        CommonToken commonToken = AntlrUtils.castCommonToken(token);
-        if (null == commonToken) {
-            throw e;
+    
+    private void tryToExecuteByID(final Parser recognizer, final InputMismatchException cause) {
+        Token token = cause.getOffendingToken();
+        CommonToken commonToken;
+        if (token instanceof CommonToken) {
+            commonToken = (CommonToken) token;
+        } else {
+            throw cause;
         }
-
         int previousType = commonToken.getType();
         if (previousType > id) {
             return;
         }
-
         commonToken.setType(id);
         try {
             super.sync(recognizer);
         } catch (InputMismatchException ex) {
-            if (e.getOffendingToken() == ex.getOffendingToken()) {
+            if (cause.getOffendingToken() == ex.getOffendingToken()) {
                 commonToken.setType(previousType);
-                throw e;
+                throw cause;
             }
-            tryExecByID(recognizer, ex);
-        } catch (Exception ex) {
+            tryToExecuteByID(recognizer, ex);
+        } catch (final Exception ex) {
             commonToken.setType(previousType);
-            throw e;
+            throw cause;
         }
     }
 }

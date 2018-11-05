@@ -27,29 +27,18 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ColumnPosition implements Comparable<ColumnPosition> {
+public final class ColumnPosition implements Comparable<ColumnPosition> {
+    
     private int startIndex;
-
+    
     private String firstColumn;
-
+    
     private String columnName;
-
+    
     private String afterColumn;
-
-
-    /**
-     * Compare by start index.
-     * 
-     * @param o compare object
-     * @return positive number this object great than o, 0 is equal,
-     *       negative number less than o
-     */
+    
     @Override
     public int compareTo(final ColumnPosition o) {
-        if (o == null) {
-            return -1;
-        }
-
-        return this.getStartIndex() - o.getStartIndex();
+        return o == null ? -1 : startIndex - o.startIndex;
     }
 }

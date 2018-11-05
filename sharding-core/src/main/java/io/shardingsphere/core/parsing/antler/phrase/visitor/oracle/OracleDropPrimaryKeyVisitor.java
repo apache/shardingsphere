@@ -17,34 +17,28 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.oracle;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit oracle drop primary key phrase.
  * 
  * @author duhongjun
  */
-public class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
-
-    /** Visit drop primary key node.
-     * 
-     * @param rootNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-
-        ParserRuleContext dropConstraintCtx = TreeUtils.getFirstChildByRuleName(rootNode, RuleNameConstants.DROP_CONSTRAINT_CLAUSE);
-        if (null != dropConstraintCtx) {
-            ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(dropConstraintCtx, RuleNameConstants.PRIMARY_KEY);
-            if (null != primaryKeyCtx) {
+        Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildByRuleName(rootNode, RuleNameConstants.DROP_CONSTRAINT_CLAUSE);
+        if (dropConstraintContext.isPresent()) {
+            Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(dropConstraintContext.get(), RuleNameConstants.PRIMARY_KEY);
+            if (primaryKeyContext.isPresent()) {
                 alterStatement.setDropPrimaryKey(true);
             }
         }

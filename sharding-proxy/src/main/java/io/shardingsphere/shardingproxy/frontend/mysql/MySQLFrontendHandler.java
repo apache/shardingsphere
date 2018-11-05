@@ -158,7 +158,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     synchronized (MySQLFrontendHandler.this) {
                         try {
                             MySQLFrontendHandler.this.wait();
-                        } catch (final InterruptedException ignore) {
+                        } catch (final InterruptedException ignored) {
                         }
                     }
                 }

@@ -21,20 +21,14 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 
 /**
- * create table statement visitor.
+ * Create table statement visitor.
  * 
  * @author duhongjun
  */
 public class DDLStatementVisitor extends AbstractStatementVisitor {
-
-    /** 
-     * Create ddl statement.
-     * 
-     * @return empty sql statment
-     */
+    
     @Override
     protected SQLStatement newStatement() {
         return new DDLStatement();
     }
-
 }

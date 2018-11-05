@@ -17,33 +17,25 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit drop primary key phrase.
  * 
  * @author duhongjun
  */
-public class DropPrimaryKeyVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit drop primary key node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class DropPrimaryKeyVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-
-        ParserRuleContext dropPrimaryKeyNode = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.DROP_PRIMARY_KEY);
-        if (null != dropPrimaryKeyNode) {
+        Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.DROP_PRIMARY_KEY);
+        if (dropPrimaryKeyNode.isPresent()) {
             alterStatement.setDropPrimaryKey(true);
         }
     }

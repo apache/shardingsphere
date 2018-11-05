@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
@@ -31,57 +27,41 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Abstract statement visitor, get information by each phrase visitor.
  * 
  * @author duhongjun
  */
 public abstract class AlterTableVisitor extends DDLStatementVisitor {
-
+    
     public AlterTableVisitor() {
         addVisitor(new TableNamesVisitor());
         addVisitor(new RenameTableVisitor());
         addVisitor(new DropColumnVisitor());
     }
-
-    /**
-     * process after visit.
-     *
-     * @param statement SQL statement
-     */
+    
     protected void postVisit(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         TableMetaData oldTableMeta = alterStatement.getTableMetaDataMap().get(alterStatement.getTables().getSingleTableName());
         if (null == oldTableMeta) {
             return;
         }
-
         List<ColumnMetaData> newColumnMeta = updateColumn(alterStatement, oldTableMeta);
         addColumn(alterStatement, newColumnMeta);
         adjustColumn(alterStatement, newColumnMeta);
         dropColumn(alterStatement, newColumnMeta);
         alterStatement.setTableMetaData(new TableMetaData(newColumnMeta));
     }
-
-    /**
-     * Adjust column position.
-     *
-     * @param alterStatement alter table statement
-     * @param newColumnMeta  table new column meta data
-     */
+    
     protected void adjustColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-
     }
-
-    /**
-     * Update column info.
-     *
-     * @param alterStatement alter table statement
-     * @param oldTableMeta   table meta data before update
-     * @return update column info
-     */
+    
     private List<ColumnMetaData> updateColumn(final AlterTableStatement alterStatement, final TableMetaData oldTableMeta) {
-        List<ColumnMetaData> newColumnMeta = new LinkedList<>();
+        List<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : oldTableMeta.getColumnMetaData()) {
             ColumnDefinition columnDefinition = alterStatement.getUpdateColumns().get(each.getColumnName());
             String columnName;
@@ -98,64 +78,37 @@ public abstract class AlterTableVisitor extends DDLStatementVisitor {
                     primaryKey = columnDefinition.isPrimaryKey();
                 }
             }
-
             if (each.isPrimaryKey() && alterStatement.isDropPrimaryKey()) {
                 primaryKey = false;
             }
-
-            newColumnMeta.add(new ColumnMetaData(columnName, columnType, primaryKey));
+            result.add(new ColumnMetaData(columnName, columnType, primaryKey));
         }
-
-        return newColumnMeta;
+        return result;
     }
-
-    /**
-     * Add column meta data.
-     *
-     * @param alterStatement alter table statement
-     * @param newColumnMeta  new column meta data
-     */
+    
     private void addColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
         for (ColumnDefinition each : alterStatement.getAddColumns()) {
             newColumnMeta.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
         }
     }
-
-    /**
-     * Drop column meta data.
-     *
-     * @param alterStatement alter table statement
-     * @param newColumnMeta  new column meta data
-     */
+    
     private void dropColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
         Iterator<ColumnMetaData> it = newColumnMeta.iterator();
         while (it.hasNext()) {
-            ColumnMetaData eachMeata = it.next();
-            if (alterStatement.getDropColumns().contains(eachMeata.getColumnName())) {
+            ColumnMetaData each = it.next();
+            if (alterStatement.getDropColumns().contains(each.getColumnName())) {
                 it.remove();
             }
         }
     }
-
-    /**
-     * Use shardingTableMetaData create SQLStatement.
-     *
-     * @param shardingTableMetaData table metadata
-     * @return SQL statement info
-     */
-    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+    
+    protected final SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement statement = (AlterTableStatement) newStatement();
         statement.setTableMetaDataMap(shardingTableMetaData);
         return statement;
     }
-
-    /**
-     * Create statement.
-     *
-     * @return empty SQL statment
-     */
+    
     protected SQLStatement newStatement() {
         return new AlterTableStatement();
     }
-
 }

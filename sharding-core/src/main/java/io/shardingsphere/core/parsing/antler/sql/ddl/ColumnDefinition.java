@@ -31,12 +31,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ColumnDefinition {
+public final class ColumnDefinition {
+    
     private String name;
-
+    
     private String type;
-
+    
     private Integer length;
-
+    
     private boolean primaryKey;
 }

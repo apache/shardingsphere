@@ -17,48 +17,32 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit create table primary key  phrase.
  * 
  * @author duhongjun
  */
-public class CreatePrimaryKeyVisitor implements PhraseVisitor {
-
-    /**
-     * Visit ast.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class CreatePrimaryKeyVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        ParserRuleContext primaryKeyCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.PRIMARY_KEY);
-        if (null == primaryKeyCtx) {
+        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.PRIMARY_KEY);
+        if (!primaryKeyContext.isPresent()) {
             return;
         }
-
-        ParserRuleContext columnListCtx = TreeUtils.getFirstChildByRuleName(primaryKeyCtx.getParent().getParent(),
-                RuleNameConstants.COLUMN_LIST);
-        if (null == columnListCtx) {
+        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildByRuleName(primaryKeyContext.get().getParent().getParent(), RuleNameConstants.COLUMN_LIST);
+        if (!columnListContext.isPresent()) {
             return;
         }
-
-        List<ParserRuleContext> columnNodes = TreeUtils.getAllDescendantByRuleName(columnListCtx, RuleNameConstants.COLUMN_NAME);
-        if (null == columnNodes) {
-            return;
-        }
-
-        for (final ParserRuleContext each : columnNodes) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(columnListContext.get(), RuleNameConstants.COLUMN_NAME)) {
             if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
                 createStatement.getPrimaryKeyColumns().add(each.getText());
             }

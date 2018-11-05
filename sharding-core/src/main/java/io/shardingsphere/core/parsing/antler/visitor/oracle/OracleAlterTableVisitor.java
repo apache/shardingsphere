@@ -29,7 +29,8 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor
  * 
  * @author duhongjun
  */
-public class OracleAlterTableVisitor extends AlterTableVisitor {
+public final class OracleAlterTableVisitor extends AlterTableVisitor {
+    
     public OracleAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());
         addVisitor(new OracleModifyColumnVisitor());

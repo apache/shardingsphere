@@ -17,55 +17,34 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import java.util.List;
-
+import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-
-import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
  * Visit MySQL drop index phrase.
  * 
  * @author duhongjun
  */
-public class MySQLDropIndexVisitor implements PhraseVisitor {
-
-    /**
-     * Visit drop index node.
-     *
-     * @param ancestorNode ancestor node of ast
-     * @param statement  SQL statement
-     */
+public final class MySQLDropIndexVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        List<ParserRuleContext> dropIndexDefs = TreeUtils.getAllDescendantByRuleName(ancestorNode,
-                RuleNameConstants.DROP_INDEX_REF);
-
-        if (null == dropIndexDefs) {
-            return;
-        }
-
-        for (ParserRuleContext each : dropIndexDefs) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_INDEX_REF)) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;
             }
-
             ParseTree lastChild = each.getChild(childCnt - 1);
             if (!(lastChild instanceof ParserRuleContext)) {
                 continue;
             }
-
             ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
-            if (null != indexNameNode) {
-                statement.getSQLTokens()
-                        .add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
-            }
+            statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode, statement.getTables().getSingleTableName()));
         }
     }
 }

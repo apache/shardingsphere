@@ -17,37 +17,28 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddColumnVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Visit MySQL add column phrase.
  * 
  * @author duhongjun
  */
-public class MySQLAddColumnVisitor extends AddColumnVisitor {
-
-    /** 
-     * Visit mysql add column.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     * @param columnName column name
-     */
+public final class MySQLAddColumnVisitor extends AddColumnVisitor {
+    
     @Override
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement,
-                                             final String columnName) {
-        ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) ancestorNode, columnName);
-
+    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
+        Optional<ColumnPosition> columnPosition = VisitorUtils.visitFirstOrAfterColumn((ParserRuleContext) ancestorNode, columnName);
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        if (null != columnPosition) {
-            alterStatement.getPositionChangedColumns().add(columnPosition);
+        if (columnPosition.isPresent()) {
+            alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }
     }
 }

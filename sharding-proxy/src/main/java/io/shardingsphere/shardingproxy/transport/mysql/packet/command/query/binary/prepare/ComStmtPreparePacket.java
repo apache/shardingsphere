@@ -18,13 +18,16 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
@@ -60,8 +63,12 @@ public final class ComStmtPreparePacket implements CommandPacket {
         this.sequenceId = sequenceId;
         this.currentSchema = currentSchema;
         sql = payload.readStringEOF();
-        ShardingSchema shardingSchema = GlobalRegistry.getInstance().getShardingSchema(currentSchema);
-        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingSchema.getShardingRule(), shardingSchema.getMetaData().getTable());
+        LogicSchema logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+    }
+    
+    private ShardingRule getShardingRule(final LogicSchema logicSchema) {
+        return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
     @Override

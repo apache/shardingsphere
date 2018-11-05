@@ -33,8 +33,8 @@
         idx_order_id
     REBUILD PARALLEL    " />
     <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;idx_order_id&quot; REBUILD PARALLEL" />
-	
-	<!--  
+    
+    <!--  
     <sql-case id="alter_index_rename" value="ALTER INDEX idx_order_id_bak RENAME TO idx_order_id" />
-	-->
+    -->
 </sql-cases>

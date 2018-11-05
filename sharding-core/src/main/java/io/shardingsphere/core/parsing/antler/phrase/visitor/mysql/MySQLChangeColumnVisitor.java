@@ -17,60 +17,45 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit MySQL change column phrase.
  * 
  * @author duhongjun
  */
-public class MySQLChangeColumnVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit change column node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class MySQLChangeColumnVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-
-        ParserRuleContext changeColumnCtx = TreeUtils.getFirstChildByRuleName(ancestorNode,
-                RuleNameConstants.CHANGE_COLUMN);
-        if (null == changeColumnCtx) {
+        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.CHANGE_COLUMN);
+        if (!changeColumnContext.isPresent()) {
             return;
         }
-
-        ParserRuleContext oldColumnCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx,
-                RuleNameConstants.COLUMN_NAME);
-
-        if (null == oldColumnCtx) {
+        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleNameConstants.COLUMN_NAME);
+        if (!oldColumnContext.isPresent()) {
             return;
         }
-
-        ParserRuleContext columnDefinitionCtx = TreeUtils.getFirstChildByRuleName(changeColumnCtx,
-                RuleNameConstants.COLUMN_DEFINITION);
-
-        if (null == columnDefinitionCtx) {
+        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleNameConstants.COLUMN_DEFINITION);
+        if (!columnDefinitionContext.isPresent()) {
             return;
         }
-
-        ColumnDefinition column = VisitorUtils.visitColumnDefinition(columnDefinitionCtx);
-        if (null != column) {
-            alterStatement.getUpdateColumns().put(oldColumnCtx.getText(), column);
-            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnCtx, column.getName());
-            if (null != columnPosition) {
-                alterStatement.getPositionChangedColumns().add(columnPosition);
+        Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(columnDefinitionContext.get());
+        if (column.isPresent()) {
+            alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), column.get());
+            Optional<ColumnPosition> columnPosition = VisitorUtils.visitFirstOrAfterColumn(changeColumnContext.get(), column.get().getName());
+            if (columnPosition.isPresent()) {
+                alterStatement.getPositionChangedColumns().add(columnPosition.get());
             }
         }
     }

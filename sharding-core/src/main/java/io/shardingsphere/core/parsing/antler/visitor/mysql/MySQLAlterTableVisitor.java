@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.parsing.antler.visitor.mysql;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.DropPrimaryKeyVisitor;
@@ -36,12 +32,17 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatem
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * MySQL alter table statement visitor.
  * 
  * @author duhongjun
  */
-public class MySQLAlterTableVisitor extends AlterTableVisitor {
+public final class MySQLAlterTableVisitor extends AlterTableVisitor {
+    
     public MySQLAlterTableVisitor() {
         addVisitor(new MySQLAddColumnVisitor());
         addVisitor(new MySQLAddIndexVisitor());
@@ -52,32 +53,21 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
         addVisitor(new MySQLChangeColumnVisitor());
         addVisitor(new MySQLModifyColumnVisitor());
     }
-
-    /**
-     * Create statement.
-     *
-     * @return empty SQL statment
-     */
+    
+    @Override
     protected SQLStatement newStatement() {
         return new MySQLAlterTableStatement();
     }
-
-    /**
-     * Adjust column position.
-     *
-     * @param alterStatement alter table statement
-     * @param newColumnMeta table new column meta data
-     */
+    
+    @Override
     protected void adjustColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
         MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement) alterStatement;
         if (mysqlAlter.getPositionChangedColumns().isEmpty()) {
             return;
         }
-
         if (mysqlAlter.getPositionChangedColumns().size() > 1) {
             Collections.sort(mysqlAlter.getPositionChangedColumns());
         }
-
         for (ColumnPosition each : mysqlAlter.getPositionChangedColumns()) {
             if (null != each.getFirstColumn()) {
                 adjustFirst(newColumnMeta, each.getFirstColumn());
@@ -86,36 +76,23 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
             }
         }
     }
-
-    /**
-     * Adjust column to first.
-     *
-     * @param newColumnMeta new columns meta
-     * @param columnName first column name
-     */
+    
     private void adjustFirst(final List<ColumnMetaData> newColumnMeta, final String columnName) {
         ColumnMetaData firstMeta = null;
         Iterator<ColumnMetaData> it = newColumnMeta.iterator();
         while (it.hasNext()) {
-            ColumnMetaData eachMeata = it.next();
-            if (eachMeata.getColumnName().equals(columnName)) {
-                firstMeta = eachMeata;
+            ColumnMetaData each = it.next();
+            if (each.getColumnName().equals(columnName)) {
+                firstMeta = each;
                 it.remove();
                 break;
             }
         }
-
         if (null != firstMeta) {
             newColumnMeta.add(0, firstMeta);
         }
     }
-
-    /**
-     * Adjust column to after column.
-     *
-     * @param newColumnMeta new columns meta
-     * @param columnPosition column position
-     */
+    
     private void adjustAfter(final List<ColumnMetaData> newColumnMeta, final ColumnPosition columnPosition) {
         int afterIndex = -1;
         int adjustColumnIndex = -1;
@@ -123,16 +100,13 @@ public class MySQLAlterTableVisitor extends AlterTableVisitor {
             if (newColumnMeta.get(i).getColumnName().equals(columnPosition.getColumnName())) {
                 adjustColumnIndex = i;
             }
-
             if (newColumnMeta.get(i).getColumnName().equals(columnPosition.getAfterColumn())) {
                 afterIndex = i;
             }
-
             if (adjustColumnIndex >= 0 && afterIndex >= 0) {
                 break;
             }
         }
-
         if (adjustColumnIndex >= 0 && afterIndex >= 0 && adjustColumnIndex != afterIndex + 1) {
             ColumnMetaData adjustColumn = newColumnMeta.remove(adjustColumnIndex);
             if (afterIndex < adjustColumnIndex) {

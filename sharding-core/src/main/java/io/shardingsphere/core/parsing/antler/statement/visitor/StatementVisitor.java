@@ -17,10 +17,9 @@
 
 package io.shardingsphere.core.parsing.antler.statement.visitor;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Statement visitor interface.
@@ -30,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public interface StatementVisitor {
     
     /** 
-     * Visit ast,generate statement.
+     * Visit AST and generate statement.
      * 
      * @param rootNode root node of ast
      * @param shardingTableMetaData table meta data

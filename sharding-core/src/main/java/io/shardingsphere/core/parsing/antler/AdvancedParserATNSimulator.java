@@ -29,80 +29,53 @@ import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.dfa.DFAState;
 
-import io.shardingsphere.core.parsing.antler.utils.AntlrUtils;
-
 /**
  * Advanced Parser ATN Simulator, failed calculating alt
  * , try again with ID.
  * 
  * @author duhongjun
  */
-public class AdvancedParserATNSimulator extends ParserATNSimulator {
+public final class AdvancedParserATNSimulator extends ParserATNSimulator {
+    
     private int id;
-
-    public AdvancedParserATNSimulator(final Parser parser, final ATN atn, final DFA[] decisionToDFA,
-            final PredictionContextCache sharedContextCache, final int id) {
+    
+    public AdvancedParserATNSimulator(final Parser parser, final ATN atn, final DFA[] decisionToDFA, final PredictionContextCache sharedContextCache, final int id) {
         super(parser, atn, decisionToDFA, sharedContextCache);
         this.id = id;
     }
-
-    /**
-     * Performs ATN simulation to compute a predicted alternative based
-     *  upon the remaining input, but also updates the DFA cache to avoid
-     *  having to traverse the ATN again for the same input sequence.
-     *  
-     * @param dfa antlr dfa instance
-     * @param s0 start state
-     * @param input input token stream
-     * @param startIndex  start index
-     * @param outerContext outer context
-     * @return alternative path number
-     */
+    
     @Override
     protected int execATN(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext) {
         try {
             return super.execATN(dfa, s0, input, startIndex, outerContext);
-        } catch (NoViableAltException e) {
-            return tryExecByID(dfa, s0, input, startIndex, outerContext, e);
+        } catch (final NoViableAltException ex) {
+            return tryToExecuteByID(dfa, s0, input, startIndex, outerContext, ex);
         }
     }
-
-    /**
-     * Try again with ID.
-     * 
-     * @param dfa antlr dfa instance
-     * @param s0 start state
-     * @param input input token stream
-     * @param startIndex  start index
-     * @param outerContext outer context
-     * @param e prior exception
-     * @return alternative path number
-     */
-    private int tryExecByID(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext,
-            final NoViableAltException e) {
-        Token token = e.getOffendingToken();
-        CommonToken commonToken = AntlrUtils.castCommonToken(token);
-        if (null == commonToken) {
-            throw e;
+    
+    private int tryToExecuteByID(final DFA dfa, final DFAState s0, final TokenStream input, final int startIndex, final ParserRuleContext outerContext, final NoViableAltException cause) {
+        Token token = cause.getOffendingToken();
+        CommonToken commonToken;
+        if (token instanceof CommonToken) {
+            commonToken = (CommonToken) token;
+        } else {
+            throw cause;
         }
-
         int previousType = commonToken.getType();
         if (previousType > id || Token.EOF == token.getType()) {
-            throw e;
+            throw cause;
         }
-
         commonToken.setType(id);
         try {
             return super.execATN(dfa, s0, input, startIndex, outerContext);
         } catch (NoViableAltException ex) {
-            if (e.getOffendingToken() == ex.getOffendingToken()) {
-                throw e;
+            if (cause.getOffendingToken() == ex.getOffendingToken()) {
+                throw cause;
             }
-
-            return tryExecByID(dfa, s0, input, startIndex, outerContext, ex);
-        } catch (Exception ex) {
+            return tryToExecuteByID(dfa, s0, input, startIndex, outerContext, ex);
+        } catch (final Exception ex) {
             commonToken.setType(previousType);
-            throw e;
+            throw cause;
         }
     }
 }

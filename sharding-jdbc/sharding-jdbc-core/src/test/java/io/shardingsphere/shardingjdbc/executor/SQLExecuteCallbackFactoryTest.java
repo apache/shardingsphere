@@ -56,12 +56,10 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Before
     public void setUp() throws SQLException {
-        String dsName = "ds";
-        String sql = "SELECT now()";
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        unit = new StatementExecuteUnit(new RouteUnit(dsName, new SQLUnit(sql, Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
+        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
     }
     
     @Test

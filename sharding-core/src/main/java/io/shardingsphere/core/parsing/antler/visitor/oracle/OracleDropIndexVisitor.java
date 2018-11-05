@@ -25,7 +25,8 @@ import io.shardingsphere.core.parsing.antler.statement.visitor.DDLStatementVisit
  * 
  * @author duhongjun
  */
-public class OracleDropIndexVisitor extends DDLStatementVisitor {
+public final class OracleDropIndexVisitor extends DDLStatementVisitor {
+    
     public OracleDropIndexVisitor() {
         addVisitor(new IndexNameVisitor());
     }

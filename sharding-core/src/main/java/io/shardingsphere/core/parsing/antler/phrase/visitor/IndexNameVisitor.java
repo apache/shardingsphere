@@ -17,38 +17,32 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit index name phrase.
  * 
  * @author duhongjun
  */
-public class IndexNameVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit index name table node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+public final class IndexNameVisitor implements PhraseVisitor {
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        ParserRuleContext indexNameCtx = TreeUtils.getFirstChildByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
-        if (null == indexNameCtx) {
+        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
+        if (!indexNameContext.isPresent()) {
             return;
         }
         String tableName = "";
         if (!ddlStatement.getTables().isEmpty()) {
             tableName = ddlStatement.getTables().getSingleTableName();
         }
-        statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameCtx, tableName));
+        statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameContext.get(), tableName));
     }
 }

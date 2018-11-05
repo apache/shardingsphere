@@ -17,17 +17,15 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
-import java.util.List;
-
-import io.shardingsphere.core.util.SQLUtil;
-import org.antlr.v4.runtime.ParserRuleContext;
-
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antler.utils.RuleNameConstants;
-import io.shardingsphere.core.parsing.antler.utils.TreeUtils;
-import io.shardingsphere.core.parsing.antler.utils.VisitorUtils;
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
+import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Visit column definition phrase.
@@ -35,32 +33,19 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
  * @author duhongjun
  */
 public class ColumnDefinitionVisitor implements PhraseVisitor {
-
-    /** 
-     * Visit column definition node.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
-     */
+    
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-
-        List<ParserRuleContext> columnDefinitions = TreeUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.COLUMN_DEFINITION);
-        if (null == columnDefinitions) {
-            return;
-        }
-
-        for (final ParserRuleContext each : columnDefinitions) {
-            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
-            if (null == column) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.COLUMN_DEFINITION)) {
+            Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(each);
+            if (!column.isPresent()) {
                 continue;
             }
-
-            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.getName()));
-            createStatement.getColumnTypes().add(column.getType());
-            if (column.isPrimaryKey()) {
-                createStatement.getPrimaryKeyColumns().add(column.getName());
+            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
+            createStatement.getColumnTypes().add(column.get().getType());
+            if (column.get().isPrimaryKey()) {
+                createStatement.getPrimaryKeyColumns().add(column.get().getName());
             }
         }
     }

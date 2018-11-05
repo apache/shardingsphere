@@ -7,8 +7,8 @@
 # if you want to use sharding, please refer to the config-sharding.yaml.
 # 
 ######################################################################################################
-
-#schemaName: master_slave_db
+#
+#schemaName: master_slave_db_1
 #
 #dataSources:
 #  master_ds:
