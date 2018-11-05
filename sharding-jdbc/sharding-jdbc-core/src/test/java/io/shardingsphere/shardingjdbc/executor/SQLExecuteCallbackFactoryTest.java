@@ -56,25 +56,23 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Before
     public void setUp() throws SQLException {
-        String dsName = "ds";
-        String sql = "SELECT now()";
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        unit = new StatementExecuteUnit(new RouteUnit(dsName, new SQLUnit(sql, Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
+        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
     }
     
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
-        sqlExecuteCallback.execute(unit, true);
+        sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeUpdate();
     }
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DQL, true);
-        sqlExecuteCallback.execute(unit, true);
+        sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).execute();
     }
 }

@@ -53,11 +53,16 @@ public class ParserResultSetLoader {
         return INSTANCE;
     }
     
-    public void switchResult(String dirName) {
+    /**
+     * Switch result.
+     * 
+     * @param dirName dir name
+     */
+    public void switchResult(final String dirName) {
         parserResultMap = loadParserResultSet(dirName);
     }
     
-    protected Map<String, ParserResult> loadParserResultSet(String dirName) {
+    protected Map<String, ParserResult> loadParserResultSet(final String dirName) {
         URL url = ParserResultSetLoader.class.getClassLoader().getResource(dirName);
         Preconditions.checkNotNull(url, "Cannot found parser test cases.");
         File[] files = new File(url.getPath()).listFiles();
@@ -73,16 +78,16 @@ public class ParserResultSetLoader {
     protected Map<String, ParserResult> loadParserResultSet(final File file) {
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         try {
-            if(file.isDirectory()) {
+            if (file.isDirectory()) {
                 for (File each : file.listFiles()) {
                     result.putAll(loadParserResultSet(each));
                 } 
-            }else {
-                ParserResultSet resultSet = (ParserResultSet)JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
+            } else {
+                ParserResultSet resultSet = (ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
                 for (ParserResult each : resultSet.getParserResults()) {
-                    if(null != resultSet.getNamespace()) {
-                        result.put(resultSet.getNamespace()+"."+each.getSqlCaseId(), each);
-                    }else {
+                    if (null != resultSet.getNamespace()) {
+                        result.put(resultSet.getNamespace() + "." + each.getSqlCaseId(), each);
+                    } else {
                         result.put(each.getSqlCaseId(), each);
                     }
                 }

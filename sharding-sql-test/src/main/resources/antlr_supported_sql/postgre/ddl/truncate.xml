@@ -5,7 +5,7 @@
         t_order    " />
     <sql-case id="truncate_table_with_back_quota" value="TRUNCATE TABLE `t_order`" />
     <sql-case id="truncate_tables" value="TRUNCATE TABLE t_order_item, t_order" />
-    <sql-case id="truncate_table_with_asterish" value="TRUNCATE TABLE t_order *" />
+    <sql-case id="truncate_table_with_asterisk" value="TRUNCATE TABLE t_order *" />
     <sql-case id="truncate_table_only" value="TRUNCATE TABLE ONLY t_order" />
     <sql-case id="truncate_table_simple" value="TRUNCATE t_order" />
 </sql-cases>

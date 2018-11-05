@@ -69,10 +69,15 @@ public class SQLCasesLoader {
         return INSTANCE;
     }
     
-	public void switchSQLCase(final String path) {
+    /**
+     * Switch SQL case.
+     * 
+     * @param path path
+     */
+    public void switchSQLCase(final String path) {
         supportedSQLCaseMap = loadSQLCases(path);
     }
-	
+    
     @SneakyThrows
     protected static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -131,11 +136,11 @@ public class SQLCasesLoader {
     private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
-            if(null == each.getDatabaseTypes()) {
+            if (null == each.getDatabaseTypes()) {
                 each.setDatabaseTypes(sqlCases.getDatabaseTypes());
             }
-            if(null != sqlCases.getNamespace()) {
-                each.setId(sqlCases.getNamespace()+"."+each.getId());
+            if (null != sqlCases.getNamespace()) {
+                each.setId(sqlCases.getNamespace() + "." + each.getId());
             }
             sqlCaseMap.put(each.getId(), each);
         }
