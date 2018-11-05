@@ -34,7 +34,7 @@ import java.util.List;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class DefaultDatasourceRoutingEngine implements RoutingEngine {
+public final class DefaultDataSourceRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
