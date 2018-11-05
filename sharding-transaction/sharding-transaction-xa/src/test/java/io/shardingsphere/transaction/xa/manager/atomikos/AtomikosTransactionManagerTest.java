@@ -130,4 +130,8 @@ public final class AtomikosTransactionManagerTest {
         DataSource actual = new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
         assertThat(actual, CoreMatchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
     }
+    
+    @Test
+    public void assertWrapDataSourceFailed() {
+    }
 }
