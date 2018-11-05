@@ -18,7 +18,6 @@
 package io.shardingsphere.core.routing.type.standard;
 
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
