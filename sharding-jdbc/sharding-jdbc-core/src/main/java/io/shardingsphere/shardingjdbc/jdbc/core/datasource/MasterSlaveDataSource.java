@@ -74,7 +74,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             if (null == getXaDataSourceMap() || getXaDataSourceMap().isEmpty()) {
                 log.warn("XA transaction resource have not load, using Local transaction instead!");
             } else {
-                return new MasterSlaveConnection(this, getXaDataSourceMap());
+                return new MasterSlaveConnection(this, getXaDataSourceMap(), TransactionType.XA);
             }
         }
         return new MasterSlaveConnection(this, getDataSourceMap());
