@@ -15,21 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.yaml.representer.fixture;
+package io.shardingsphere.orchestration.internal.yaml.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
 @Getter
 @Setter
-public final class DefaultRepresenterFixture {
+public final class SimpleTypeRepresenterFixture {
     
-    private String value;
+    private boolean booleanValue;
     
-    private Collection<String> collection;
+    private Boolean booleanObjectValue = Boolean.TRUE;
     
-    private Map<String, String> map;
+    private int intValue;
+    
+    private Integer integerObjectValue = 10;
+    
+    private long longValue;
+    
+    private Long longObjectValue = 10L;
+    
+    private String string = "value";
+    
+    private Collection<String> collection = Arrays.asList("value1", "value2");
+    
+    private String skippedProperty = "skipped";
 }

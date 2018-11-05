@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.yaml.representer;
+package io.shardingsphere.orchestration.internal.yaml;
 
-import io.shardingsphere.orchestration.internal.yaml.representer.fixture.DefaultRepresenterFixture;
+import io.shardingsphere.orchestration.internal.yaml.fixture.DefaultRepresenterFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

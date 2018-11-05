@@ -24,8 +24,6 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
-import java.util.Properties;
-
 /**
  * Properties listener manager.
  *
@@ -52,7 +50,6 @@ public final class PropertiesListenerManager implements ListenerManager {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    Properties props = configService.loadProperties();
                     ShardingEventBusInstance.getInstance().post(new PropertiesChangedEvent(configService.loadProperties()));
                 }
             }

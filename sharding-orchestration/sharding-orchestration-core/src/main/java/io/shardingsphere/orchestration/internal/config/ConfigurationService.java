@@ -28,7 +28,7 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.representer.DefaultRepresenter;
+import io.shardingsphere.orchestration.internal.yaml.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.yaml.snakeyaml.Yaml;
 
