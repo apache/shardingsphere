@@ -30,6 +30,7 @@ import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.antler.statement.visitor.AlterTableVisitor;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 import java.util.Collections;
@@ -48,7 +49,7 @@ public final class MySQLAlterTableVisitor extends AlterTableVisitor {
         addVisitor(new MySQLAddIndexVisitor());
         addVisitor(new MySQLDropIndexVisitor());
         addVisitor(new RenameIndexVisitor());
-        addVisitor(new AddPrimaryKeyVisitor("addConstraint"));
+        addVisitor(new AddPrimaryKeyVisitor(RuleNameConstants.ADD_CONSTRAINT));
         addVisitor(new DropPrimaryKeyVisitor());
         addVisitor(new MySQLChangeColumnVisitor());
         addVisitor(new MySQLModifyColumnVisitor());

@@ -40,10 +40,6 @@ public final class RuleNameConstants {
     
     public static final String PRIMARY_KEY = "primaryKey";
     
-    public static final String PRIMARY_KEY_OPTION = "primaryKeyOption";
-    
-    public static final String KEY_PART = "keyPart";
-    
     public static final String COLUMN_LIST = "columnList";
     
     public static final String ADD_COLUMN = "addColumn";

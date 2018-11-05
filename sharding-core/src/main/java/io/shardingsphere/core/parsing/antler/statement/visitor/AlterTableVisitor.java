@@ -103,9 +103,9 @@ public abstract class AlterTableVisitor extends DDLStatementVisitor {
     }
     
     protected final SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement statement = (AlterTableStatement) newStatement();
-        statement.setTableMetaDataMap(shardingTableMetaData);
-        return statement;
+        AlterTableStatement result = (AlterTableStatement) newStatement();
+        result.setTableMetaDataMap(shardingTableMetaData);
+        return result;
     }
     
     protected SQLStatement newStatement() {

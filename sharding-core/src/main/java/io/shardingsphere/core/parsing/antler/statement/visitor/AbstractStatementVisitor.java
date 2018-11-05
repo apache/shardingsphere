@@ -36,12 +36,12 @@ public abstract class AbstractStatementVisitor implements StatementVisitor {
     
     @Override
     public final SQLStatement visit(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement statement = newStatement(shardingTableMetaData);
+        SQLStatement result = newStatement(shardingTableMetaData);
         for (PhraseVisitor each : visitors) {
-            each.visit(rootNode, statement);
+            each.visit(rootNode, result);
         }
-        postVisit(statement);
-        return statement;
+        postVisit(result);
+        return result;
     }
     
     protected void postVisit(final SQLStatement statement) {

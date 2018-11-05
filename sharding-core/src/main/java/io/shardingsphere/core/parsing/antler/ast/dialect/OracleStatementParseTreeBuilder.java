@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antler.ast.dialect;
 
 import io.shardingsphere.core.parsing.antler.ast.AbstractParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.parser.dialect.OracleStatementAdvancedParser;
-import io.shardingsphere.parser.antlr.OracleStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;

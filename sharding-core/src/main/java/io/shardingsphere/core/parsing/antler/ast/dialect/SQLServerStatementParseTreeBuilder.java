@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antler.ast.dialect;
 
 import io.shardingsphere.core.parsing.antler.ast.AbstractParseTreeBuilder;
 import io.shardingsphere.core.parsing.antler.parser.dialect.SQLServerStatementAdvancedParser;
-import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;

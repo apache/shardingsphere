@@ -56,8 +56,6 @@ public final class AntlrUtils {
         } else {
             result = parser.getErrorHandler().recoverInline(parser);
             if (parser.getBuildParseTree() && -1 == result.getTokenIndex()) {
-                // we must have conjured up a new token during single token insertion
-                // if it's not the current symbol
                 parser.getContext().addErrorNode(parser.createErrorNode(parser.getContext(), result));
             }
         }
