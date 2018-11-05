@@ -25,6 +25,8 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
+import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,9 +47,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private volatile Map<String, DataSource> xaDataSourceMap;
-    
     private final ShardingContext shardingContext;
+    
+    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
+    
+    private volatile Map<String, DataSource> xaDataSourceMap;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
@@ -59,6 +63,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
+        xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, getDatabaseType());
         shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
@@ -73,8 +78,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
             if (null == xaDataSourceMap) {
                 log.warn("XA transaction resource have not load, using Local transaction instead!");
+            } else {
+                return new ShardingConnection(xaDataSourceMap, shardingContext, TransactionType.XA);
             }
-            return new ShardingConnection(xaDataSourceMap, shardingContext);
         }
         return new ShardingConnection(getDataSourceMap(), shardingContext);
     }
