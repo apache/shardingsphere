@@ -28,7 +28,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -63,20 +62,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         }
         this.masterSlaveRule = masterSlaveRule;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-    }
-    
-    /**
-     * Get map of all actual data source name and all actual data sources.
-     *
-     * @return map of all actual data source name and all actual data sources
-     */
-    public Map<String, DataSource> getAllDataSources() {
-        Map<String, DataSource> result = new HashMap<>(masterSlaveRule.getSlaveDataSourceNames().size() + 1, 1);
-        result.put(masterSlaveRule.getMasterDataSourceName(), getDataSourceMap().get(masterSlaveRule.getMasterDataSourceName()));
-        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
-            result.put(each, getDataSourceMap().get(each));
-        }
-        return result;
     }
     
     @Override
