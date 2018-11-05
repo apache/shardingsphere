@@ -20,17 +20,17 @@ package io.shardingsphere.transaction.xa.manager.convert;
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 /**
- * Convert interface.
+ * Extract datasource parameter from datasource.
  *
  * @author zhaojun
  */
-public interface Converter {
+public interface DataSourceParameterExtractor {
     
     /**
      * Get the DataSource pool property, then convert to datasource parameter.
      *
      * @return dataSource parameter
      */
-    DataSourceParameter convertTo();
+    DataSourceParameter extract();
 }
 

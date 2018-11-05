@@ -28,7 +28,7 @@ import javax.sql.DataSource;
  *
  * @author zhaojun
  */
-public final class DBCPTomcatConverter implements Converter {
+public final class DBCPTomcatConverter implements DataSourceParameterExtractor {
     
     private final DataSourceConfiguration dataSourceConfiguration;
     
@@ -37,7 +37,7 @@ public final class DBCPTomcatConverter implements Converter {
     }
     
     @Override
-    public DataSourceParameter convertTo() {
+    public DataSourceParameter extract() {
         dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxTotal"));
         dataSourceConfiguration.getProperties().put("originPoolType", PoolType.find(dataSourceConfiguration.getDataSourceClassName()));
         return dataSourceConfiguration.createDataSourceParameter();
