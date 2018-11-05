@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing.type.defaultds;
+package io.shardingsphere.core.routing.type.defaultdb;
 
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -31,9 +31,9 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultDataSourceRoutingEngineTest {
+public final class DefaultDatabaseRoutingEngineTest {
     
-    private DefaultDataSourceRoutingEngine defaultDataSourceRoutingEngine;
+    private DefaultDatabaseRoutingEngine defaultDatabaseRoutingEngine;
     
     @Before
     public void setEngineContext() {
@@ -42,12 +42,12 @@ public final class DefaultDataSourceRoutingEngineTest {
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         Collection<String> logicTables = Arrays.asList("t_order", "t_order_item");
-        defaultDataSourceRoutingEngine = new DefaultDataSourceRoutingEngine(shardingRule, logicTables);
+        defaultDatabaseRoutingEngine = new DefaultDatabaseRoutingEngine(shardingRule, logicTables);
     }
     
     @Test
     public void assertRoute() {
-        RoutingResult routingResult = defaultDataSourceRoutingEngine.route();
+        RoutingResult routingResult = defaultDatabaseRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
         assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds_0"));

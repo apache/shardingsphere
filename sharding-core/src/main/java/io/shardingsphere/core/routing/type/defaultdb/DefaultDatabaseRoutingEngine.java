@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.routing.type.defaultds;
+package io.shardingsphere.core.routing.type.defaultdb;
 
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class DefaultDataSourceRoutingEngine implements RoutingEngine {
+public final class DefaultDatabaseRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
