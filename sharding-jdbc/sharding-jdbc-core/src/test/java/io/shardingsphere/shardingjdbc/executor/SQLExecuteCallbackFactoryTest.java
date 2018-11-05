@@ -26,6 +26,7 @@ import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +66,7 @@ public class SQLExecuteCallbackFactoryTest {
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
+        ShardingTransactionHandlerRegistry.load();
     }
     
     @Test

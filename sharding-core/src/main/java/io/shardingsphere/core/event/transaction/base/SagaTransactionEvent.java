@@ -65,7 +65,7 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     }
     
     public SagaTransactionEvent(final SagaSQLExecutionEvent event) {
-        this.operationType = null;
+        this.operationType = TransactionOperationType.BEGIN;
         this.connection = null;
         this.proxySchema = null;
         this.sagaSQLExecutionEvent = event;

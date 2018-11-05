@@ -66,7 +66,7 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     
     @Override
     public void doInTransaction(final SagaTransactionEvent transactionEvent) {
-        if (null == transactionEvent.getOperationType()) {
+        if (null != transactionEvent.getSagaSQLExecutionEvent()) {
             try {
                 handleSQLExecutionEvent(transactionEvent.getSagaSQLExecutionEvent());
                 return;
