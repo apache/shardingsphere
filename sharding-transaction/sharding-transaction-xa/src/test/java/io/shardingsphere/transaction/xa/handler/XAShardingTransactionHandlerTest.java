@@ -17,10 +17,14 @@
 
 package io.shardingsphere.transaction.xa.handler;
 
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
 import org.junit.Test;
+
+import javax.transaction.Status;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -39,5 +43,33 @@ public class XAShardingTransactionHandlerTest {
     @Test
     public void assertGetTransactionType() {
         assertThat(xaShardingTransactionHandler.getTransactionType(), is(TransactionType.XA));
+    }
+    
+    @Test
+    public void assertDoXATransactionBegin() {
+        XATransactionEvent xaTransactionEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+        xaShardingTransactionHandler.doInTransaction(xaTransactionEvent);
+        int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+        assertThat(actualStatus, is(Status.STATUS_ACTIVE));
+    }
+    
+    @Test
+    public void assertDoXATransactionCommit() {
+        XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+        XATransactionEvent commitEvent = new XATransactionEvent(TransactionOperationType.COMMIT);
+        xaShardingTransactionHandler.doInTransaction(beginEvent);
+        xaShardingTransactionHandler.doInTransaction(commitEvent);
+        int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+        assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
+    }
+    
+    @Test
+    public void assertDoXATransactionRollback() {
+        XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+        XATransactionEvent rollbackEvent = new XATransactionEvent(TransactionOperationType.ROLLBACK);
+        xaShardingTransactionHandler.doInTransaction(beginEvent);
+        xaShardingTransactionHandler.doInTransaction(rollbackEvent);
+        int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+        assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
     }
 }
