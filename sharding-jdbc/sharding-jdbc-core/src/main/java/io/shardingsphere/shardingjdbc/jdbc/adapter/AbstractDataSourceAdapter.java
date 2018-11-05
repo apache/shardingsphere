@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
+import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,11 +54,16 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final DatabaseType databaseType;
     
+    private final Map<String, DataSource> xaDataSourceMap;
+    
+    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
+    
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
+        xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, databaseType);
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
