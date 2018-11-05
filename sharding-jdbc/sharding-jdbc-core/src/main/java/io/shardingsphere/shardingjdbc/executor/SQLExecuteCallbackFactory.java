@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.manager.base.executor.SagaSQLExecuteCallback;
+import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
