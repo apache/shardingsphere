@@ -74,12 +74,12 @@ public final class VisitorUtils {
      * @param columnName column name
      * @return column position object
      */
-    public static Optional<ColumnPosition> visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
+    public static Optional<ColumnPosition> visitFirstOrAfterColumn(final ParserRuleContext ancestorNode, final String columnName) {
         Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnContext.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), "columnName");
+        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), RuleNameConstants.COLUMN_NAME);
         ColumnPosition result = new ColumnPosition();
         result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
         if (columnNameContext.isPresent()) {
