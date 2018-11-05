@@ -44,7 +44,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     }
     
     @Override
-    public void watchSharding() {
+    public void watch() {
         String cachePath = configNode.getConfigMapPath();
         regCenter.watch(cachePath, new EventListener() {
             
@@ -56,24 +56,5 @@ public final class ConfigMapListenerManager implements ListenerManager {
                 }
             }
         });
-    }
-    
-    @Override
-    public void watchMasterSlave() {
-        String cachePath = configNode.getConfigMapPath();
-        regCenter.watch(cachePath, new EventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ConfigMapContext.getInstance().getConfigMap().clear();
-                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
-                }
-            }
-        });
-    }
-    
-    @Override
-    public void watchProxy() {
     }
 }

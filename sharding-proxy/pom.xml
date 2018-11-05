@@ -24,11 +24,6 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-base-saga</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-orchestration-core</artifactId>
             <version>${project.version}</version>
         </dependency>

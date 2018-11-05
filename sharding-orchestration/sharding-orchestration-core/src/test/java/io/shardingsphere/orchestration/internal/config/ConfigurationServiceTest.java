@@ -17,11 +17,13 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -84,13 +86,14 @@ public final class ConfigurationServiceTest {
     private RegistryCenter regCenter;
     
     @Test
-    public void assertPersistConfigurationForShardingRuleWithDataSourceAndIsNotOverwriteAndConfigurationIsExisted() {
+    public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(regCenter.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
         when(regCenter.get("/test/config/configmap")).thenReturn(CONFIG_MAP_YAML);
         when(regCenter.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", createDataSourceMap(), createShardingRuleConfiguration(), Collections.<String, Object>emptyMap(), createProperties(), false);
+        configurationService.persistConfiguration("sharding_db", 
+                createDataSourceConfigurationMap(), createShardingRuleConfiguration(), null, Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter, times(0)).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(regCenter, times(0)).persist("/test/config/configmap", CONFIG_MAP_YAML);
@@ -98,9 +101,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForShardingRuleWithDataSourceAndIsNotOverwriteAndConfigurationIsNotExisted() {
+    public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", createDataSourceMap(), createShardingRuleConfiguration(), Collections.<String, Object>emptyMap(), createProperties(), false);
+        configurationService.persistConfiguration("sharding_db", 
+                createDataSourceConfigurationMap(), createShardingRuleConfiguration(), null, Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(regCenter).persist("/test/config/configmap", CONFIG_MAP_YAML);
@@ -108,9 +112,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForShardingRuleWithDataSourceAndIsOverwrite() {
+    public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsOverwrite() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", createDataSourceMap(), createShardingRuleConfiguration(), Collections.<String, Object>emptyMap(), createProperties(), true);
+        configurationService.persistConfiguration("sharding_db", 
+                createDataSourceConfigurationMap(), createShardingRuleConfiguration(), null, Collections.<String, Object>emptyMap(), createProperties(), true);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(regCenter).persist("/test/config/configmap", CONFIG_MAP_YAML);
@@ -118,13 +123,14 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForMasterSlaveRuleWithDataSourceAndIsNotOverwriteAndConfigurationIsExisted() {
+    public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(regCenter.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         when(regCenter.get("/test/config/configmap")).thenReturn(CONFIG_MAP_YAML);
         when(regCenter.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", createDataSourceMap(), createMasterSlaveRuleConfiguration(), Collections.<String, Object>emptyMap(), createProperties(), false);
+        configurationService.persistConfiguration("sharding_db", 
+                createDataSourceConfigurationMap(), createMasterSlaveRuleConfiguration(), null, Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter, times(0)).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
         verify(regCenter, times(0)).persist("/test/config/configmap", CONFIG_MAP_YAML);
@@ -132,9 +138,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForMasterSlaveRuleWithDataSourceAndIsNotOverwriteAndConfigurationIsNotExisted() {
+    public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", createDataSourceMap(), createMasterSlaveRuleConfiguration(), Collections.<String, Object>emptyMap(), createProperties(), false);
+        configurationService.persistConfiguration("sharding_db", 
+                createDataSourceConfigurationMap(), createMasterSlaveRuleConfiguration(), null, Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
         verify(regCenter).persist("/test/config/configmap", CONFIG_MAP_YAML);
@@ -142,9 +149,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForMasterSlaveRuleWithDataSourceAndIsOverwrite() {
+    public void assertPersistConfigurationForMasterSlaveRuleWithoutAuthenticationAndIsOverwrite() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", createDataSourceMap(), createMasterSlaveRuleConfiguration(), Collections.<String, Object>emptyMap(), createProperties(), true);
+        configurationService.persistConfiguration("sharding_db", 
+                createDataSourceConfigurationMap(), createMasterSlaveRuleConfiguration(), null, Collections.<String, Object>emptyMap(), createProperties(), true);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
         verify(regCenter).persist("/test/config/configmap", CONFIG_MAP_YAML);
@@ -152,15 +160,15 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForShardingRuleWithDataSourceParameterAndIsNotOverwriteAndConfigurationIsExisted() {
+    public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(regCenter.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_PARAMETER_YAML);
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
         when(regCenter.get("/test/config/authentication")).thenReturn(AUTHENTICATION_YAML);
         when(regCenter.get("/test/config/configmap")).thenReturn(CONFIG_MAP_YAML);
         when(regCenter.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", 
-                createDataSourceParameterMap(), createShardingRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
+        configurationService.persistConfiguration("sharding_db",
+                createDataSourceConfigurationMap(), createShardingRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter, times(0)).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(regCenter, times(0)).persist("/test/config/authentication", AUTHENTICATION_YAML);
@@ -169,10 +177,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForShardingRuleWithDataSourceParameterAndIsNotOverwriteAndConfigurationIsNotExisted() {
+    public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", 
-                createDataSourceParameterMap(), createShardingRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
+        configurationService.persistConfiguration("sharding_db",
+                createDataSourceConfigurationMap(), createShardingRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(regCenter).persist("/test/config/authentication", AUTHENTICATION_YAML);
@@ -181,10 +189,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForShardingRuleWithDataSourceParameterAndIsOverwrite() {
+    public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsOverwrite() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        configurationService.persistConfiguration("sharding_db", 
-                createDataSourceParameterMap(), createShardingRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), true);
+        configurationService.persistConfiguration("sharding_db",
+                createDataSourceConfigurationMap(), createShardingRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), true);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(regCenter).persist("/test/config/authentication", AUTHENTICATION_YAML);
@@ -193,7 +201,7 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForMasterSlaveRuleWithDataSourceParameterAndIsNotOverwriteAndConfigurationIsExisted() {
+    public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         when(regCenter.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_PARAMETER_YAML);
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         when(regCenter.get("/test/config/authentication")).thenReturn(AUTHENTICATION_YAML);
@@ -201,7 +209,7 @@ public final class ConfigurationServiceTest {
         when(regCenter.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         configurationService.persistConfiguration("sharding_db",
-                createDataSourceParameterMap(), createMasterSlaveRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
+                createDataSourceConfigurationMap(), createMasterSlaveRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter, times(0)).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
         verify(regCenter, times(0)).persist("/test/config/authentication", AUTHENTICATION_YAML);
@@ -210,10 +218,10 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForMasterSlaveRuleWithDataSourceParameterAndIsNotOverwriteAndConfigurationIsNotExisted() {
+    public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         configurationService.persistConfiguration("sharding_db",
-                createDataSourceParameterMap(), createMasterSlaveRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
+                createDataSourceConfigurationMap(), createMasterSlaveRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), false);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
         verify(regCenter).persist("/test/config/authentication", AUTHENTICATION_YAML);
@@ -222,15 +230,29 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurationForMasterSlaveRuleWithDataSourceParameterAndIsOverwrite() {
+    public void assertPersistConfigurationForMasterSlaveRuleWithAuthenticationAndIsOverwrite() {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         configurationService.persistConfiguration("sharding_db",
-                createDataSourceParameterMap(), createMasterSlaveRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), true);
+                createDataSourceConfigurationMap(), createMasterSlaveRuleConfiguration(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties(), true);
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", MASTER_SLAVE_RULE_YAML);
         verify(regCenter).persist("/test/config/authentication", AUTHENTICATION_YAML);
         verify(regCenter).persist("/test/config/configmap", CONFIG_MAP_YAML);
         verify(regCenter).persist("/test/config/props", PROPS_YAML);
+    }
+    
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
+        return Maps.transformValues(createDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+        
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
+    }
+    
+    private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
+        return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -243,21 +265,6 @@ public final class ConfigurationServiceTest {
     private DataSource createDataSource(final String name) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setUrl("jdbc:mysql://localhost:3306/" + name);
-        result.setUsername("root");
-        result.setPassword("root");
-        return result;
-    }
-    
-    private Map<String, DataSourceParameter> createDataSourceParameterMap() {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", createDataSourceParameter("ds_0"));
-        result.put("ds_1", createDataSourceParameter("ds_1"));
-        return result;
-    }
-    
-    private DataSourceParameter createDataSourceParameter(final String name) {
-        DataSourceParameter result = new DataSourceParameter();
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
@@ -289,35 +296,17 @@ public final class ConfigurationServiceTest {
     public void assertLoadDataSources() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        Map<String, DataSource> actual = configurationService.loadDataSources("sharding_db");
+        Map<String, DataSourceConfiguration> actual = configurationService.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(2));
-        assertDataSource((BasicDataSource) actual.get("ds_0"), (BasicDataSource) createDataSource("ds_0"));
-        assertDataSource((BasicDataSource) actual.get("ds_1"), (BasicDataSource) createDataSource("ds_1"));
+        assertDataSourceConfiguration(actual.get("ds_0"), createDataSourceConfiguration(createDataSource("ds_0")));
+        assertDataSourceConfiguration(actual.get("ds_1"), createDataSourceConfiguration(createDataSource("ds_1")));
     }
     
-    private void assertDataSource(final BasicDataSource actual, final BasicDataSource expected) {
-        assertThat(actual.getDriverClassName(), is(expected.getDriverClassName()));
-        assertThat(actual.getUrl(), is(expected.getUrl()));
-        assertThat(actual.getUrl(), is(expected.getUrl()));
-        assertThat(actual.getUsername(), is(expected.getUsername()));
-        assertThat(actual.getPassword(), is(expected.getPassword()));
-    }
-    
-    @Test
-    public void assertLoadDataSourceParameters() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_PARAMETER_YAML);
-        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        Map<String, DataSourceParameter> actual = configurationService.loadDataSourceParameters("sharding_db");
-        assertThat(actual.size(), is(2));
-        assertDataSourceParameter(actual.get("ds_0"), createDataSourceParameter("ds_0"));
-        assertDataSourceParameter(actual.get("ds_1"), createDataSourceParameter("ds_1"));
-    }
-    
-    private void assertDataSourceParameter(final DataSourceParameter actual, final DataSourceParameter expected) {
-        assertThat(actual.getUrl(), is(expected.getUrl()));
-        assertThat(actual.getUrl(), is(expected.getUrl()));
-        assertThat(actual.getUsername(), is(expected.getUsername()));
-        assertThat(actual.getPassword(), is(expected.getPassword()));
+    private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
+        assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
+        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
+        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
+        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
     }
     
     @Test

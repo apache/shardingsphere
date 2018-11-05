@@ -36,7 +36,6 @@ public interface XATransactionManager extends ShardingTransactionManager<XATrans
      * destroy the transaction manager and could be helpful with shutdown gracefully.
      */
     void destroy();
-
     
     /**
      * Get specific {@link XADataSource} and enroll it with a JTA.

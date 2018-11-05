@@ -101,7 +101,7 @@ public final class BackendConnection implements AutoCloseable {
         for (Statement each : cachedStatements) {
             try {
                 each.cancel();
-            } catch (final SQLException ignore) {
+            } catch (final SQLException ignored) {
             }
         }
     }

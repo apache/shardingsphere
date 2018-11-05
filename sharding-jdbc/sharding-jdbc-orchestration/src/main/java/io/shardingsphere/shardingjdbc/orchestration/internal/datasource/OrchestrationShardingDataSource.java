@@ -20,20 +20,23 @@ package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationDataSourceChangedEvent;
+import io.shardingsphere.orchestration.internal.event.config.ShardingConfigurationChangedEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
+import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Orchestration sharding datasource.
@@ -44,35 +47,34 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     
     private ShardingDataSource dataSource;
     
-    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
-        dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
-                shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
-        initOrchestrationFacade(dataSource);
-    }
-    
     public OrchestrationShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getOrchestrationFacade().getConfigService();
         ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        dataSource = new ShardingDataSource(configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME),
-                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()), 
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
+                new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()),
                 configService.loadConfigMap(), configService.loadProperties());
-        getOrchestrationFacade().getListenerManager().initShardingListeners();
+        getOrchestrationFacade().init();
     }
     
-    private void initOrchestrationFacade(final ShardingDataSource shardingDataSource) {
-        getOrchestrationFacade().init(ShardingConstant.LOGIC_SCHEMA_NAME, shardingDataSource.getDataSourceMap(), shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
-                ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
+    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        super(new OrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
+        dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
+                shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingProperties().getProps());
+        getOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
+                getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+    }
+    
+    private Map<String, RuleConfiguration> getRuleConfigurationMap() {
+        Map<String, RuleConfiguration> ruleConfigurationMap = new LinkedHashMap<>();
+        ruleConfigurationMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, dataSource.getShardingContext().getShardingRule().getShardingRuleConfig());
+        return ruleConfigurationMap;
     }
     
     @Override
     public final Connection getConnection() {
-        if (isCircuitBreak()) {
-            return new CircuitBreakerDataSource().getConnection();
-        }
-        return dataSource.getConnection();
+        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
     }
     
     @Override
@@ -88,7 +90,8 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public void renew(final ShardingConfigurationDataSourceChangedEvent shardingEvent) throws SQLException {
-        dataSource = new ShardingDataSource(shardingEvent.getDataSourceMap(), shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
+    public void renew(final ShardingConfigurationChangedEvent shardingEvent) throws SQLException {
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(shardingEvent.getDataSourceConfigurations()),
+                shardingEvent.getShardingRule(), new LinkedHashMap<String, Object>(), shardingEvent.getProps());
     }
 }

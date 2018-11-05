@@ -17,9 +17,9 @@
 
 package io.shardingsphere.transaction.manager;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
-
-import java.sql.SQLException;
+import io.shardingsphere.core.exception.ShardingException;
 
 /**
  * Sharding transaction manager.
@@ -35,31 +35,38 @@ public interface ShardingTransactionManager<T extends ShardingTransactionEvent> 
      * Begin transaction.
      *
      * @param transactionEvent transaction event
-     * @throws SQLException SQL exception
+     * @throws ShardingException sharding exception
      */
-    void begin(T transactionEvent) throws SQLException;
+    void begin(T transactionEvent) throws ShardingException;
     
     /**
      * Commit transaction.
      *
      * @param transactionEvent transaction event
-     * @throws SQLException SQL exception
+     * @throws ShardingException sharding exception
      */
-    void commit(T transactionEvent) throws SQLException;
+    void commit(T transactionEvent) throws ShardingException;
     
     /**
      * Rollback transaction.
      *
      * @param transactionEvent transaction event
-     * @throws SQLException SQL exception
+     * @throws ShardingException sharding exception
      */
-    void rollback(T transactionEvent) throws SQLException;
+    void rollback(T transactionEvent) throws ShardingException;
     
     /**
      * Obtain the status of the transaction associated with the current thread.
      *
      * @return Transaction status. Returns {@code Status.NoTransaction} if no transaction is associated with current thread.
-     * @throws SQLException SQL exception
+     * @throws ShardingException sharding exception
      */
-    int getStatus() throws SQLException;
+    int getStatus() throws ShardingException;
+    
+    /**
+     * Get type of sharding transaction manager.
+     *
+     * @return transaction type
+     */
+    TransactionType getTransactionType();
 }
