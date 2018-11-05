@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManagerTest;
-import io.shardingsphere.transaction.xa.manager.convert.DataSourceParameterFactoryTest;
+import io.shardingsphere.transaction.xa.manager.extractor.DataSourceParameterFactoryTest;
 import io.shardingsphere.transaction.xa.manager.property.XAPropertyFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

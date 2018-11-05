@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.xa.manager;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.manager.convert.DataSourceParameterFactory;
+import io.shardingsphere.transaction.xa.manager.extractor.DataSourceParameterFactory;
 
 import javax.sql.DataSource;
 import java.util.HashMap;

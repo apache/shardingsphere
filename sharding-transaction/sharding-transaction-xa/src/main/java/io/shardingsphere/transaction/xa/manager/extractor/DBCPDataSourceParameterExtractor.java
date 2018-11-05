@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.convert;
+package io.shardingsphere.transaction.xa.manager.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.PoolType;
