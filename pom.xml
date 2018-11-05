@@ -243,6 +243,17 @@
                 <version>${spring-boot.version}</version>
                 <optional>true</optional>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicecomb.saga</groupId>
+                <artifactId>saga-core</artifactId>
+                <version>${servicecomb.saga.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicecomb.saga</groupId>
+                <artifactId>saga-format</artifactId>
+                <version>${servicecomb.saga.version}</version>
+            </dependency>
             
             <dependency>
                 <groupId>junit</groupId>
@@ -358,17 +369,6 @@
                 <artifactId>opentracing-mock</artifactId>
                 <version>${opentracing.version}</version>
                 <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.apache.servicecomb.saga</groupId>
-                <artifactId>saga-core</artifactId>
-                <version>${servicecomb.saga.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.servicecomb.saga</groupId>
-                <artifactId>saga-format</artifactId>
-                <version>${servicecomb.saga.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

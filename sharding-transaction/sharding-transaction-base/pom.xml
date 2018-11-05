@@ -11,7 +11,11 @@
     </parent>
     <artifactId>sharding-transaction-base</artifactId>
     <name>${project.artifactId}</name>
-    
+
+    <modules>
+        <module>sharding-transaction-base-saga</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
