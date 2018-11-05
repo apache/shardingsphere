@@ -38,6 +38,8 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     
     private final String proxySchema;
     
+    private final SagaSQLExecutionEvent sagaSQLExecutionEvent;
+    
     @Setter
     private String sagaJson;
     
@@ -45,17 +47,27 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
         this.operationType = operationType;
         this.connection = null;
         this.proxySchema = null;
+        this.sagaSQLExecutionEvent = null;
     }
     
     public SagaTransactionEvent(final TransactionOperationType operationType, final Connection connection) {
         this.operationType = operationType;
         this.connection = connection;
         this.proxySchema = null;
+        sagaSQLExecutionEvent = null;
     }
     
     public SagaTransactionEvent(final TransactionOperationType operationType, final String proxySchema) {
         this.operationType = operationType;
         this.connection = null;
         this.proxySchema = proxySchema;
+        this.sagaSQLExecutionEvent = null;
+    }
+    
+    public SagaTransactionEvent(final SagaSQLExecutionEvent event) {
+        this.operationType = null;
+        this.connection = null;
+        this.proxySchema = null;
+        this.sagaSQLExecutionEvent = event;
     }
 }
