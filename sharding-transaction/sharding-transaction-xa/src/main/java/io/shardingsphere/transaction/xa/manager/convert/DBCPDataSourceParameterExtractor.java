@@ -24,15 +24,15 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import javax.sql.DataSource;
 
 /**
- * Convert implement of Commons DBCP.
+ * Extract datasource parameter from DBCP connection pool.
  *
  * @author zhaojun
  */
-public final class DBCPTomcatConverter implements DataSourceParameterExtractor {
+public final class DBCPDataSourceParameterExtractor implements DataSourceParameterExtractor {
     
     private final DataSourceConfiguration dataSourceConfiguration;
     
-    public DBCPTomcatConverter(final DataSource dataSource) {
+    public DBCPDataSourceParameterExtractor(final DataSource dataSource) {
         dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
     }
     

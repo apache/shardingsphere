@@ -44,7 +44,7 @@ public class DataSourceParameterFactory {
             case DRUID:
             case DBCP:
             case DBCP_TOMCAT:
-                return new DBCPTomcatConverter(dataSource).extract();
+                return new DBCPDataSourceParameterExtractor(dataSource).extract();
             default:
                 return null;
         }
