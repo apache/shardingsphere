@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.xa.manager.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 
@@ -40,6 +41,7 @@ public abstract class DataSourceParameterExtractorAdapter implements DataSourceP
     @Override
     public final DataSourceParameter extract() {
         convertProperties();
+        dataSourceConfiguration.getProperties().put("originPoolType", PoolType.find(dataSourceConfiguration.getDataSourceClassName()));
         return dataSourceConfiguration.createDataSourceParameter();
     }
     

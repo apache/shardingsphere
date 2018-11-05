@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.xa.manager.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.constant.PoolType;
 
 import javax.sql.DataSource;
 
@@ -37,6 +36,5 @@ public final class DBCPDataSourceParameterExtractor extends DataSourceParameterE
     protected void convertProperties() {
         DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
         dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxTotal"));
-        dataSourceConfiguration.getProperties().put("originPoolType", PoolType.find(dataSourceConfiguration.getDataSourceClassName()));
     }
 }
