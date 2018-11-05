@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.mysql;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.AddColumnVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antler.sql.ddl.mysql.MySQLAlterTableStatement;
@@ -34,10 +35,10 @@ public final class MySQLAddColumnVisitor extends AddColumnVisitor {
     
     @Override
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
-        ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) ancestorNode, columnName);
+        Optional<ColumnPosition> columnPosition = VisitorUtils.visitFirstOrAfter((ParserRuleContext) ancestorNode, columnName);
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        if (null != columnPosition) {
-            alterStatement.getPositionChangedColumns().add(columnPosition);
+        if (columnPosition.isPresent()) {
+            alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }
     }
 }

@@ -53,9 +53,9 @@ public final class MySQLChangeColumnVisitor implements PhraseVisitor {
         Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(columnDefinitionContext.get());
         if (column.isPresent()) {
             alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), column.get());
-            ColumnPosition columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnContext.get(), column.get().getName());
-            if (null != columnPosition) {
-                alterStatement.getPositionChangedColumns().add(columnPosition);
+            Optional<ColumnPosition> columnPosition = VisitorUtils.visitFirstOrAfter(changeColumnContext.get(), column.get().getName());
+            if (columnPosition.isPresent()) {
+                alterStatement.getPositionChangedColumns().add(columnPosition.get());
             }
         }
     }

@@ -70,14 +70,14 @@ public final class VisitorUtils {
     /**
      * Visit column position.
      *
-     * @param ancestorNode ancestor node of ast
+     * @param ancestorNode ancestor node of AST
      * @param columnName column name
      * @return column position object
      */
-    public static ColumnPosition visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
+    public static Optional<ColumnPosition> visitFirstOrAfter(final ParserRuleContext ancestorNode, final String columnName) {
         Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnContext.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), "columnName");
         ColumnPosition result = new ColumnPosition();
@@ -88,7 +88,7 @@ public final class VisitorUtils {
         } else {
             result.setFirstColumn(columnName);
         }
-        return result;
+        return Optional.of(result);
     }
     
     /**
