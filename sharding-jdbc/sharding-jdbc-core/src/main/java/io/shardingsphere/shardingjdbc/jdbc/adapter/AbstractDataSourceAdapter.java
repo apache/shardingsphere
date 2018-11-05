@@ -28,7 +28,6 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -85,15 +84,11 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
     }
     
-    @Override
+    /**
+     * Close original datasource.
+     */
     public void close() {
-        for (DataSource each : getDataSourceMap().values()) {
-            try {
-                Method closeMethod = each.getClass().getDeclaredMethod("close");
-                closeMethod.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
+        closeOriginalDataSources();
     }
     
     @Override
@@ -104,5 +99,23 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     @Override
     public final Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
+    }
+    
+    private void closeOriginalDataSources() {
+        if (null != dataSourceMap) {
+            closeDataSource(dataSourceMap);
+        }
+        if (null != xaDataSourceMap) {
+            closeDataSource(xaDataSourceMap);
+        }
+    }
+    
+    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                each.getClass().getDeclaredMethod("close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
     }
 }
