@@ -47,29 +47,44 @@ public class XAShardingTransactionHandlerTest {
     
     @Test
     public void assertDoXATransactionBegin() {
-        XATransactionEvent xaTransactionEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
-        xaShardingTransactionHandler.doInTransaction(xaTransactionEvent);
-        int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-        assertThat(actualStatus, is(Status.STATUS_ACTIVE));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                XATransactionEvent xaTransactionEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+                xaShardingTransactionHandler.doInTransaction(xaTransactionEvent);
+                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+                assertThat(actualStatus, is(Status.STATUS_ACTIVE));
+            }
+        }).start();
     }
     
     @Test
     public void assertDoXATransactionCommit() {
-        XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
-        XATransactionEvent commitEvent = new XATransactionEvent(TransactionOperationType.COMMIT);
-        xaShardingTransactionHandler.doInTransaction(beginEvent);
-        xaShardingTransactionHandler.doInTransaction(commitEvent);
-        int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-        assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+                XATransactionEvent commitEvent = new XATransactionEvent(TransactionOperationType.COMMIT);
+                xaShardingTransactionHandler.doInTransaction(beginEvent);
+                xaShardingTransactionHandler.doInTransaction(commitEvent);
+                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+                assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
+            }
+        }).start();
     }
     
     @Test
     public void assertDoXATransactionRollback() {
-        XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
-        XATransactionEvent rollbackEvent = new XATransactionEvent(TransactionOperationType.ROLLBACK);
-        xaShardingTransactionHandler.doInTransaction(beginEvent);
-        xaShardingTransactionHandler.doInTransaction(rollbackEvent);
-        int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-        assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+                XATransactionEvent rollbackEvent = new XATransactionEvent(TransactionOperationType.ROLLBACK);
+                xaShardingTransactionHandler.doInTransaction(beginEvent);
+                xaShardingTransactionHandler.doInTransaction(rollbackEvent);
+                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+                assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
+            }
+        }).start();
     }
 }
