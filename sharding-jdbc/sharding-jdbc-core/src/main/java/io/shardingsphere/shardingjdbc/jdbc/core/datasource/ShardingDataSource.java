@@ -76,7 +76,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     @Override
     public final ShardingConnection getConnection() {
         if (TransactionType.XA == TransactionTypeHolder.get()) {
-            if (null == xaDataSourceMap) {
+            if (null == xaDataSourceMap || xaDataSourceMap.isEmpty()) {
                 log.warn("XA transaction resource have not load, using Local transaction instead!");
             } else {
                 return new ShardingConnection(xaDataSourceMap, shardingContext, TransactionType.XA);

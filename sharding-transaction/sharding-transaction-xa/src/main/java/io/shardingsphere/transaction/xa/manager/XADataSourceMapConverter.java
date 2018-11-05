@@ -39,10 +39,16 @@ public final class XADataSourceMapConverter implements DataSourceMapConverter {
     @Override
     public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = XA_MANAGER.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
-            result.put(entry.getKey(), dataSource);
+        try {
+            for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+                DataSource dataSource = XA_MANAGER.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
+                result.put(entry.getKey(), dataSource);
+            }
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            return result;
         }
-        return result;
     }
 }
