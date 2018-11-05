@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public enum PoolType {
     
     HIKARI("com.zaxxer.hikari.HikariDataSource"),
-    DRUID(""),
+    DRUID("com.alibaba.druid.pool.DruidDataSource"),
     DBCP("org.apache.commons.dbcp2.BasicDataSource"),
     DBCP_TOMCAT("org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
     
