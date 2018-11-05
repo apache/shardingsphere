@@ -30,11 +30,11 @@ import javax.sql.DataSource;
  * @author zhaojun
  */
 @Getter
-public abstract class DataSourceParameterExtractorAdapter implements DataSourceParameterExtractor {
+public class DefaultDataSourceParameterExtractor implements DataSourceParameterExtractor {
     
     private final DataSourceConfiguration dataSourceConfiguration;
     
-    DataSourceParameterExtractorAdapter(final DataSource dataSource) {
+    DefaultDataSourceParameterExtractor(final DataSource dataSource) {
         dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
     }
     
@@ -45,5 +45,7 @@ public abstract class DataSourceParameterExtractorAdapter implements DataSourceP
         return dataSourceConfiguration.createDataSourceParameter();
     }
     
-    protected abstract void convertProperties();
+    protected void convertProperties() {
+    
+    }
 }

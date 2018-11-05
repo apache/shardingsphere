@@ -26,7 +26,7 @@ import javax.sql.DataSource;
  *
  * @author zhaojun
  */
-public final class DBCPDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public final class DBCPDataSourceParameterExtractor extends DefaultDataSourceParameterExtractor {
     
     DBCPDataSourceParameterExtractor(final DataSource dataSource) {
         super(dataSource);
