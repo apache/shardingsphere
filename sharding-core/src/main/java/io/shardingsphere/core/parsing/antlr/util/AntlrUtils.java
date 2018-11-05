@@ -37,19 +37,19 @@ public final class AntlrUtils {
      *
      * @param parser antlr parser
      * @param tokenType token type
-     * @param idTokenIndex index of id token
-     * @return Token
+     * @param identifierTokenIndex index of identifier token
+     * @return matched token
      * @throws RecognitionException mismatch throw exception
      */
-    public static Token getMatchedToken(final Parser parser, final int tokenType, final int idTokenIndex) throws RecognitionException {
+    public static Token getMatchedToken(final Parser parser, final int tokenType, final int identifierTokenIndex) throws RecognitionException {
         Token result = parser.getCurrentToken();
-        boolean isIDCompatible = false;
-        if (idTokenIndex == tokenType && idTokenIndex > result.getType()) {
-            isIDCompatible = true;
+        boolean isIdentifierCompatible = false;
+        if (identifierTokenIndex == tokenType && identifierTokenIndex > result.getType()) {
+            isIdentifierCompatible = true;
         }
-        if (result.getType() == tokenType || isIDCompatible) {
-            if (Token.EOF != tokenType && isIDCompatible && result instanceof CommonToken) {
-                ((CommonToken) result).setType(idTokenIndex);
+        if (result.getType() == tokenType || isIdentifierCompatible) {
+            if (Token.EOF != tokenType && isIdentifierCompatible && result instanceof CommonToken) {
+                ((CommonToken) result).setType(identifierTokenIndex);
             }
             parser.getErrorHandler().reportMatch(parser);
             parser.consume();
