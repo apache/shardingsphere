@@ -42,6 +42,10 @@ public class XAPropertyFactory {
         switch (xaDatabaseType) {
             case MySQL:
                 return new MysqlXAProperty(dataSourceParameter).build();
+            case PostgreSQL:
+                return new PGXAProperty(dataSourceParameter).build();
+            case H2:
+                return new H2XAProperty(dataSourceParameter).build();
             default:
                 return new Properties();
         }
