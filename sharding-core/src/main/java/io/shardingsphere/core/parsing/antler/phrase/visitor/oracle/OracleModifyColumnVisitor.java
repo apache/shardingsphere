@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor.oracle;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.phrase.visitor.PhraseVisitor;
 import io.shardingsphere.core.parsing.antler.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
@@ -39,9 +40,9 @@ public final class OracleModifyColumnVisitor implements PhraseVisitor {
         for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN)) {
             for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
-                ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
-                if (null != column) {
-                    alterStatement.getUpdateColumns().put(column.getName(), column);
+                Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(each);
+                if (column.isPresent()) {
+                    alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
                 }
             }
         }

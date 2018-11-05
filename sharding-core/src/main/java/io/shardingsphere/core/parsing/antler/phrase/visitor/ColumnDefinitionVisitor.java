@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antler.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antler.util.ASTUtils;
 import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
@@ -37,14 +38,14 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.COLUMN_DEFINITION)) {
-            ColumnDefinition column = VisitorUtils.visitColumnDefinition(each);
-            if (null == column) {
+            Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(each);
+            if (!column.isPresent()) {
                 continue;
             }
-            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.getName()));
-            createStatement.getColumnTypes().add(column.getType());
-            if (column.isPrimaryKey()) {
-                createStatement.getPrimaryKeyColumns().add(column.getName());
+            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
+            createStatement.getColumnTypes().add(column.get().getType());
+            if (column.get().isPrimaryKey()) {
+                createStatement.getPrimaryKeyColumns().add(column.get().getName());
             }
         }
     }

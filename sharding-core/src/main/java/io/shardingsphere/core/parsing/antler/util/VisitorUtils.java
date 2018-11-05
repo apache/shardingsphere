@@ -43,13 +43,13 @@ public final class VisitorUtils {
      * @param columnDefinitionNode column definition rule
      * @return column definition
      */
-    public static ColumnDefinition visitColumnDefinition(final ParserRuleContext columnDefinitionNode) {
+    public static Optional<ColumnDefinition> visitColumnDefinition(final ParserRuleContext columnDefinitionNode) {
         if (null == columnDefinitionNode) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
         String typeName = null;
@@ -71,7 +71,7 @@ public final class VisitorUtils {
         if (primaryKeyNode.isPresent()) {
             primaryKey = true;
         }
-        return new ColumnDefinition(columnNameNode.get().getText(), typeName, length, primaryKey);
+        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), typeName, length, primaryKey));
     }
     
     /**
