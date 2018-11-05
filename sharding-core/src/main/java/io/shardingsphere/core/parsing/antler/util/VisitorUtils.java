@@ -44,34 +44,27 @@ public final class VisitorUtils {
      * @return column definition
      */
     public static Optional<ColumnDefinition> visitColumnDefinition(final ParserRuleContext columnDefinitionNode) {
-        if (null == columnDefinitionNode) {
-            return Optional.absent();
-        }
         Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return Optional.absent();
         }
         Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
-        String typeName = null;
-        if (dataTypeContext.isPresent()) {
-            typeName = dataTypeContext.get().getChild(0).getText();
+        Optional<String> typeName = dataTypeContext.isPresent() ? Optional.of(dataTypeContext.get().getChild(0).getText()) : Optional.<String>absent();
+        Optional<Integer> dataTypeLength = dataTypeContext.isPresent() ? getDataTypeLength(dataTypeContext.get()) : Optional.<Integer>absent();
+        boolean primaryKey = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY).isPresent();
+        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), typeName.orNull(), dataTypeLength.orNull(), primaryKey));
+    }
+    
+    private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
+        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildByRuleName(dataTypeContext, RuleNameConstants.DATA_TYPE_LENGTH);
+        if (!dataTypeLengthContext.isPresent() || dataTypeLengthContext.get().getChildCount() <= 3) {
+            return Optional.absent();
         }
-        Integer length = null;
-        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildByRuleName(dataTypeContext.get(), RuleNameConstants.DATA_TYPE_LENGTH);
-        if (dataTypeLengthContext.isPresent()) {
-            if (dataTypeLengthContext.get().getChildCount() >= 3) {
-                try {
-                    length = Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText());
-                } catch (NumberFormatException ignored) {
-                }
-            }
+        try {
+            return Optional.of(Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText()));
+        } catch (final NumberFormatException ignored) {
+            return Optional.absent();
         }
-        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY);
-        boolean primaryKey = false;
-        if (primaryKeyNode.isPresent()) {
-            primaryKey = true;
-        }
-        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), typeName, length, primaryKey));
     }
     
     /**
