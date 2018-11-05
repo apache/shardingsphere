@@ -21,10 +21,13 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -38,6 +41,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
+@Slf4j
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
@@ -66,7 +70,14 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this);
+        if (TransactionType.XA == TransactionTypeHolder.get()) {
+            if (null == getXaDataSourceMap() || getXaDataSourceMap().isEmpty()) {
+                log.warn("XA transaction resource have not load, using Local transaction instead!");
+            } else {
+                return new MasterSlaveConnection(this, getXaDataSourceMap());
+            }
+        }
+        return new MasterSlaveConnection(this, getDataSourceMap());
     }
     
     /**
