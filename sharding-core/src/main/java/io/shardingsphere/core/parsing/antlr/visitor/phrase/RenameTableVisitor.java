@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -34,7 +34,7 @@ public final class RenameTableVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.RENAME_TABLE);
+        Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.RENAME_TABLE);
         if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
             alterStatement.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
         }

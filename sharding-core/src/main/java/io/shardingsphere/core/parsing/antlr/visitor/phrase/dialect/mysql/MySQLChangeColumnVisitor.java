@@ -18,11 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase.dialect.mysql;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antlr.util.VisitorUtils;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -38,15 +38,15 @@ public final class MySQLChangeColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.CHANGE_COLUMN);
+        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleNameConstants.COLUMN_NAME);
+        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleName.COLUMN_NAME);
         if (!oldColumnContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleNameConstants.COLUMN_DEFINITION);
+        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionContext.isPresent()) {
             return;
         }

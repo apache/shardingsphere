@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -34,15 +34,15 @@ public final class CreatePrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildByRuleName(primaryKeyContext.get().getParent().getParent(), RuleNameConstants.COLUMN_LIST);
+        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildByRuleName(primaryKeyContext.get().getParent().getParent(), RuleName.COLUMN_LIST);
         if (!columnListContext.isPresent()) {
             return;
         }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(columnListContext.get(), RuleNameConstants.COLUMN_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(columnListContext.get(), RuleName.COLUMN_NAME)) {
             if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
                 createStatement.getPrimaryKeyColumns().add(each.getText());
             }

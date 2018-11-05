@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.util;
 
-import com.google.common.base.CaseFormat;
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -37,20 +37,18 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ASTUtils {
     
-    private static final String RULE_SUFFIX = "Context";
-    
     /**
      * Find first child node whose rule name is ${name}.
      *
      * @param node start node
-     * @param name rule name
+     * @param ruleName rule name
      * @return matched node
      */
-    public static Optional<ParserRuleContext> findFirstChildByRuleName(final ParserRuleContext node, final String name) {
+    public static Optional<ParserRuleContext> findFirstChildByRuleName(final ParserRuleContext node, final RuleName ruleName) {
         if (null == node) {
             return Optional.absent();
         }
-        if (isMatchedNode(node, name)) {
+        if (isMatchedNode(node, ruleName)) {
             return Optional.of(node);
         }
         for (int i = 0; i < node.getChildCount(); i++) {
@@ -58,7 +56,7 @@ public final class ASTUtils {
             if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-            Optional<ParserRuleContext> result = findFirstChildByRuleName((ParserRuleContext) child, name);
+            Optional<ParserRuleContext> result = findFirstChildByRuleName((ParserRuleContext) child, ruleName);
             if (result.isPresent()) {
                 return result;
             }
@@ -70,29 +68,25 @@ public final class ASTUtils {
      * Find all children node by rule name.
      *
      * @param node start node
-     * @param name rule name
+     * @param ruleName rule name
      * @return matched nodes
      */
-    public static Collection<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final String name) {
+    public static Collection<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final RuleName ruleName) {
         if (null == node) {
             return Collections.emptyList();
         }
         List<ParserRuleContext> result = new LinkedList<>();
-        if (isMatchedNode(node, name)) {
+        if (isMatchedNode(node, ruleName)) {
             result.add(node);
         }
         for (ParserRuleContext each : getChildrenNodes(node)) {
-            result.addAll(getAllDescendantByRuleName(each, name));
+            result.addAll(getAllDescendantByRuleName(each, ruleName));
         }
         return result;
     }
     
-    private static boolean isMatchedNode(final ParserRuleContext node, final String name) {
-        return getRuleName(name).equals(node.getClass().getSimpleName());
-    }
-    
-    private static String getRuleName(final String name) {
-        return name.contains(RULE_SUFFIX) ? name : CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name + RULE_SUFFIX);
+    private static boolean isMatchedNode(final ParserRuleContext node, final RuleName ruleName) {
+        return ruleName.getName().equals(node.getClass().getSimpleName());
     }
     
     private static List<ParserRuleContext> getChildrenNodes(final ParserRuleContext node) {

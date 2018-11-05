@@ -18,10 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -34,7 +34,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 @RequiredArgsConstructor
 public final class AddPrimaryKeyVisitor implements PhraseVisitor {
     
-    private final String ruleName;
+    private final RuleName ruleName;
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -43,11 +43,11 @@ public final class AddPrimaryKeyVisitor implements PhraseVisitor {
         if (!modifyColumnContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(modifyColumnContext.get(), RuleNameConstants.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(modifyColumnContext.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyContext.isPresent()) {
             return;
         }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleNameConstants.COLUMN_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(modifyColumnContext.get(), RuleName.COLUMN_NAME)) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {

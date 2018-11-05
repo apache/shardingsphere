@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antlr.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
@@ -35,7 +35,7 @@ public final class IndexNameVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME);
+        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.INDEX_NAME);
         if (!indexNameContext.isPresent()) {
             return;
         }

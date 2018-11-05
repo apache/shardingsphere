@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -33,7 +34,7 @@ public final class RenameIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildByRuleName(ancestorNode, "renameIndex");
+        Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.RENAME_INDEX);
         if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
             return;
         }

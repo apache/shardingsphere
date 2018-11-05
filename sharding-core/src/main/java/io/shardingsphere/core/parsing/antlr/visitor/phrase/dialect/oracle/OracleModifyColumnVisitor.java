@@ -18,10 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase.dialect.oracle;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antlr.util.VisitorUtils;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -37,8 +37,8 @@ public final class OracleModifyColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.MODIFY_COLUMN)) {
-            for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(modifyColumnContext, RuleNameConstants.MODIFY_COL_PROPERTIES)) {
+        for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.MODIFY_COLUMN)) {
+            for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(modifyColumnContext, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
                 Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(each);
                 if (column.isPresent()) {

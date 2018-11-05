@@ -18,10 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.DropPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.RenameIndexVisitor;
@@ -49,7 +49,7 @@ public final class MySQLAlterTableVisitor extends AlterTableVisitor {
         addVisitor(new MySQLAddIndexVisitor());
         addVisitor(new MySQLDropIndexVisitor());
         addVisitor(new RenameIndexVisitor());
-        addVisitor(new AddPrimaryKeyVisitor(RuleNameConstants.ADD_CONSTRAINT));
+        addVisitor(new AddPrimaryKeyVisitor(RuleName.ADD_CONSTRAINT));
         addVisitor(new DropPrimaryKeyVisitor());
         addVisitor(new MySQLChangeColumnVisitor());
         addVisitor(new MySQLModifyColumnVisitor());

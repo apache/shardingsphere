@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.visitor.phrase.dialect.mysql;
 
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antlr.util.VisitorUtils;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -34,7 +34,7 @@ public final class MySQLDropIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.DROP_INDEX_REF)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.DROP_INDEX_REF)) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;

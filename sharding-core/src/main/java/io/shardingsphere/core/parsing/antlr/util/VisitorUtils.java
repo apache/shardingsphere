@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.util;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -41,19 +42,19 @@ public final class VisitorUtils {
      * @return column definition
      */
     public static Optional<ColumnDefinition> visitColumnDefinition(final ParserRuleContext columnDefinitionNode) {
-        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.COLUMN_NAME);
+        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleName.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.DATA_TYPE);
+        Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleName.DATA_TYPE);
         Optional<String> typeName = dataTypeContext.isPresent() ? Optional.of(dataTypeContext.get().getChild(0).getText()) : Optional.<String>absent();
         Optional<Integer> dataTypeLength = dataTypeContext.isPresent() ? getDataTypeLength(dataTypeContext.get()) : Optional.<Integer>absent();
-        boolean primaryKey = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleNameConstants.PRIMARY_KEY).isPresent();
+        boolean primaryKey = ASTUtils.findFirstChildByRuleName(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
         return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), typeName.orNull(), dataTypeLength.orNull(), primaryKey));
     }
     
     private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
-        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildByRuleName(dataTypeContext, RuleNameConstants.DATA_TYPE_LENGTH);
+        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildByRuleName(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
         if (!dataTypeLengthContext.isPresent() || dataTypeLengthContext.get().getChildCount() < 3) {
             return Optional.absent();
         }
@@ -72,11 +73,11 @@ public final class VisitorUtils {
      * @return column position object
      */
     public static Optional<ColumnPosition> visitFirstOrAfterColumn(final ParserRuleContext ancestorNode, final String columnName) {
-        Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleNameConstants.FIRST_OR_AFTER_COLUMN);
+        Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnContext.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), RuleNameConstants.COLUMN_NAME);
+        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildByRuleName(firstOrAfterColumnContext.get(), RuleName.COLUMN_NAME);
         ColumnPosition result = new ColumnPosition();
         result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
         if (columnNameContext.isPresent()) {

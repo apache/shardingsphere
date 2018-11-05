@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase.dialect.oracle;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -35,9 +35,9 @@ public final class OracleDropPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildByRuleName(rootNode, RuleNameConstants.DROP_CONSTRAINT_CLAUSE);
+        Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildByRuleName(rootNode, RuleName.DROP_CONSTRAINT_CLAUSE);
         if (dropConstraintContext.isPresent()) {
-            Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(dropConstraintContext.get(), RuleNameConstants.PRIMARY_KEY);
+            Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(dropConstraintContext.get(), RuleName.PRIMARY_KEY);
             if (primaryKeyContext.isPresent()) {
                 alterStatement.setDropPrimaryKey(true);
             }

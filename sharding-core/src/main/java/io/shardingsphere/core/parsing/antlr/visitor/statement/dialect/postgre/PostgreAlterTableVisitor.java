@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgre;
 
+import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.AddColumnVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.ModifyColumnVisitor;
@@ -32,7 +33,7 @@ public final class PostgreAlterTableVisitor extends AlterTableVisitor {
     
     public PostgreAlterTableVisitor() {
         addVisitor(new AddColumnVisitor());
-        addVisitor(new AddPrimaryKeyVisitor("alterTableAddConstraint"));
+        addVisitor(new AddPrimaryKeyVisitor(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
         addVisitor(new ModifyColumnVisitor());
         addVisitor(new RenameColumnVisitor());
     }
