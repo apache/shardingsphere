@@ -38,6 +38,7 @@ import java.util.logging.Logger;
  * 
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
 @Setter
@@ -47,7 +48,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         ShardingBootstrap.init();
     }
     
-    @Getter
     private final Map<String, DataSource> dataSourceMap;
     
     private final DatabaseType databaseType;
