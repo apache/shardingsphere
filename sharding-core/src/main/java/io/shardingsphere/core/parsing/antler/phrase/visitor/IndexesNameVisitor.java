@@ -17,13 +17,12 @@
 
 package io.shardingsphere.core.parsing.antler.phrase.visitor;
 
+import io.shardingsphere.core.parsing.antler.util.ASTUtils;
+import io.shardingsphere.core.parsing.antler.util.RuleNameConstants;
 import io.shardingsphere.core.parsing.antler.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.List;
 
 /**
  * Visit Multiple index name phrase.
@@ -39,7 +38,8 @@ public final class IndexesNameVisitor implements PhraseVisitor {
         if (!ddlStatement.getTables().isEmpty()) {
             tableName = ddlStatement.getTables().getSingleTableName();
         }
-        List<IndexToken> indicesToken = VisitorUtils.visitIndices(ancestorNode, tableName);
-        statement.getSQLTokens().addAll(indicesToken);
+        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME)) {
+            statement.getSQLTokens().add(VisitorUtils.visitIndex(each, tableName));
+        }
     }
 }

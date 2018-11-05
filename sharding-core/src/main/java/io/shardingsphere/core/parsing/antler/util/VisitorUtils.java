@@ -26,9 +26,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Visitor utility.
  * 
@@ -57,7 +54,7 @@ public final class VisitorUtils {
     
     private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
         Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildByRuleName(dataTypeContext, RuleNameConstants.DATA_TYPE_LENGTH);
-        if (!dataTypeLengthContext.isPresent() || dataTypeLengthContext.get().getChildCount() <= 3) {
+        if (!dataTypeLengthContext.isPresent() || dataTypeLengthContext.get().getChildCount() < 3) {
             return Optional.absent();
         }
         try {
@@ -89,21 +86,6 @@ public final class VisitorUtils {
             result.setFirstColumn(columnName);
         }
         return Optional.of(result);
-    }
-    
-    /**
-     * Visit indices node.
-     *
-     * @param ancestorNode ancestor node of ast
-     * @param tableName table name
-     * @return index token list
-     */
-    public static List<IndexToken> visitIndices(final ParserRuleContext ancestorNode, final String tableName) {
-        List<IndexToken> result = new ArrayList<>();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleNameConstants.INDEX_NAME)) {
-            result.add(visitIndex(each, tableName));
-        }
-        return result;
     }
     
     /**
