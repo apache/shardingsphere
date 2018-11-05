@@ -19,9 +19,9 @@ package io.shardingsphere.core.parsing.antlr.parser;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.VisitorRegistry;
 import io.shardingsphere.core.parsing.antlr.ast.ParseTreeBuilderFactory;
-import io.shardingsphere.core.parsing.antlr.statement.visitor.StatementVisitor;
+import io.shardingsphere.core.parsing.antlr.visitor.VisitorRegistry;
+import io.shardingsphere.core.parsing.antlr.visitor.statement.StatementVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
