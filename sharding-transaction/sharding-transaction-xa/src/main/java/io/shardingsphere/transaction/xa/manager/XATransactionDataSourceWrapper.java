@@ -59,24 +59,30 @@ public final class XATransactionDataSourceWrapper {
         }
     }
     
-    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
+    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter parameter) throws PropertyException {
         BasicManagedDataSource result = new BasicManagedDataSource();
         result.setTransactionManager(transactionManager);
-        result.setMaxTotal(dataSourceParameter.getMaximumPoolSize());
+        result.setMaxTotal(parameter.getMaximumPoolSize());
+        result.setMaxWaitMillis(parameter.getConnectionTimeout());
+        result.setMaxIdle((int) parameter.getIdleTimeout());
+        result.setMaxConnLifetimeMillis(parameter.getMaxLifetime());
         result.setXADataSource(xaDataSource.getClass().getName());
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSourceInstance(xaDataSource);
         return result;
     }
     
-    private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
+    private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
-        result.setMaxPoolSize(dataSourceParameter.getMaximumPoolSize());
+        result.setMaxPoolSize(parameter.getMaximumPoolSize());
+        result.setMaxIdleTime((int) parameter.getIdleTimeout());
+        result.setBorrowConnectionTimeout((int) parameter.getConnectionTimeout());
+        result.setMaxLifetime((int) parameter.getMaxLifetime());
         result.setTestQuery("SELECT 1");
         result.setXaDataSourceClassName(xaDataSource.getClass().getName());
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), dataSourceParameter);
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSource(xaDataSource);
         result.setXaProperties(xaProperties);
