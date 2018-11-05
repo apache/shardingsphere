@@ -32,7 +32,7 @@ public final class TableNamesVisitor extends TableNameVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParseTree each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.TABLE_NAME)) {
+        for (ParseTree each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
             super.visit((ParserRuleContext) each, statement);
         }
     }

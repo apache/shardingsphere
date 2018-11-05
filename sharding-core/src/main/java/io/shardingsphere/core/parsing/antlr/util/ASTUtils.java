@@ -38,13 +38,13 @@ import java.util.List;
 public final class ASTUtils {
     
     /**
-     * Find first child node whose rule name is ${name}.
+     * Find first child node.
      *
      * @param node start node
      * @param ruleName rule name
      * @return matched node
      */
-    public static Optional<ParserRuleContext> findFirstChildByRuleName(final ParserRuleContext node, final RuleName ruleName) {
+    public static Optional<ParserRuleContext> findFirstChildNode(final ParserRuleContext node, final RuleName ruleName) {
         if (null == node) {
             return Optional.absent();
         }
@@ -56,7 +56,7 @@ public final class ASTUtils {
             if (!(child instanceof ParserRuleContext)) {
                 continue;
             }
-            Optional<ParserRuleContext> result = findFirstChildByRuleName((ParserRuleContext) child, ruleName);
+            Optional<ParserRuleContext> result = findFirstChildNode((ParserRuleContext) child, ruleName);
             if (result.isPresent()) {
                 return result;
             }
@@ -65,13 +65,13 @@ public final class ASTUtils {
     }
     
     /**
-     * Find all children node by rule name.
+     * Get all descendant nodes.
      *
      * @param node start node
      * @param ruleName rule name
-     * @return matched nodes
+     * @return all descendant nodes
      */
-    public static Collection<ParserRuleContext> getAllDescendantByRuleName(final ParserRuleContext node, final RuleName ruleName) {
+    public static Collection<ParserRuleContext> getAllDescendantNodes(final ParserRuleContext node, final RuleName ruleName) {
         if (null == node) {
             return Collections.emptyList();
         }
@@ -80,7 +80,7 @@ public final class ASTUtils {
             result.add(node);
         }
         for (ParserRuleContext each : getChildrenNodes(node)) {
-            result.addAll(getAllDescendantByRuleName(each, ruleName));
+            result.addAll(getAllDescendantNodes(each, ruleName));
         }
         return result;
     }

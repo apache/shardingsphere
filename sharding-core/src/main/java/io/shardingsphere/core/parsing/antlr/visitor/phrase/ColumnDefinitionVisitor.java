@@ -37,7 +37,7 @@ public class ColumnDefinitionVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.COLUMN_DEFINITION)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(each);
             if (!column.isPresent()) {
                 continue;

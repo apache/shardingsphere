@@ -34,7 +34,7 @@ public final class RenameIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.RENAME_INDEX);
+        Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
         if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
             return;
         }

@@ -36,13 +36,13 @@ public class AddColumnVisitor extends ColumnDefinitionVisitor {
     
     @Override
     public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.ADD_COLUMN)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
             visitAddColumn(each, (AlterTableStatement) statement);
         }
     }
     
     private void visitAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(addColumnContext, RuleName.COLUMN_DEFINITION)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnContext, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> column = VisitorUtils.visitColumnDefinition(each);
             if (column.isPresent()) {
                 if (null != alterStatement.getExistColumn(column.get().getName())) {

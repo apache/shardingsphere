@@ -35,8 +35,8 @@ public final class DropColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.DROP_COLUMN)) {
-            for (ParseTree columnNode : ASTUtils.getAllDescendantByRuleName(each, RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
+            for (ParseTree columnNode : ASTUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
                 alterStatement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }

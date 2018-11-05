@@ -35,7 +35,7 @@ public final class IndexNameVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.INDEX_NAME);
+        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
         if (!indexNameContext.isPresent()) {
             return;
         }

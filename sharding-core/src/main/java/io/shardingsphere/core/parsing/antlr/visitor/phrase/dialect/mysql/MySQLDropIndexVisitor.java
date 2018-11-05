@@ -34,7 +34,7 @@ public final class MySQLDropIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.DROP_INDEX_REF)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF)) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;

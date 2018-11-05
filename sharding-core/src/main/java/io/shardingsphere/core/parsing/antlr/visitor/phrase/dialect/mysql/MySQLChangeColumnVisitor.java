@@ -38,15 +38,15 @@ public final class MySQLChangeColumnVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.CHANGE_COLUMN);
+        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildNode(changeColumnContext.get(), RuleName.COLUMN_NAME);
         if (!oldColumnContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildByRuleName(changeColumnContext.get(), RuleName.COLUMN_DEFINITION);
+        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildNode(changeColumnContext.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionContext.isPresent()) {
             return;
         }

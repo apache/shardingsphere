@@ -34,15 +34,15 @@ public final class CreatePrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildByRuleName(primaryKeyContext.get().getParent().getParent(), RuleName.COLUMN_LIST);
+        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildNode(primaryKeyContext.get().getParent().getParent(), RuleName.COLUMN_LIST);
         if (!columnListContext.isPresent()) {
             return;
         }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(columnListContext.get(), RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListContext.get(), RuleName.COLUMN_NAME)) {
             if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
                 createStatement.getPrimaryKeyColumns().add(each.getText());
             }

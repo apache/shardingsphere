@@ -34,11 +34,11 @@ public final class SQLServerAddIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.ADD_COLUMN);
+        Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!indexDefOptionNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildByRuleName(indexDefOptionNode.get(), RuleName.INDEX_NAME);
+        Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);
         if (indexNameNode.isPresent()) {
             statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
         }

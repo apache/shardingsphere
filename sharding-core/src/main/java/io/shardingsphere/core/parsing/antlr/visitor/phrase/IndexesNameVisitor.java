@@ -35,7 +35,7 @@ public final class IndexesNameVisitor implements PhraseVisitor {
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
         String tableName = ddlStatement.getTables().isEmpty() ? null : ddlStatement.getTables().getSingleTableName();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.INDEX_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
             statement.getSQLTokens().add(VisitorUtils.visitIndex(each, tableName));
         }
     }

@@ -34,8 +34,8 @@ public final class MySQLAddIndexVisitor implements PhraseVisitor {
     
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantByRuleName(ancestorNode, RuleName.ADD_INDEX)) {
-            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildByRuleName(each, RuleName.INDEX_NAME);
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX)) {
+            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(each, RuleName.INDEX_NAME);
             if (indexNameNode.isPresent()) {
                 statement.getSQLTokens().add(VisitorUtils.visitIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
             }

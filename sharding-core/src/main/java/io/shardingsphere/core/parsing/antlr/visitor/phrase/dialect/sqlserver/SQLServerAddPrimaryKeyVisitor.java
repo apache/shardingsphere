@@ -37,19 +37,19 @@ public final class SQLServerAddPrimaryKeyVisitor implements PhraseVisitor {
     @Override
     public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> addColumnContext = ASTUtils.findFirstChildByRuleName(ancestorNode, RuleName.ADD_COLUMN);
+        Optional<ParserRuleContext> addColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> tableConstraintContext = ASTUtils.findFirstChildByRuleName(addColumnContext.get(), RuleName.TABLE_CONSTRAINT);
+        Optional<ParserRuleContext> tableConstraintContext = ASTUtils.findFirstChildNode(addColumnContext.get(), RuleName.TABLE_CONSTRAINT);
         if (!tableConstraintContext.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildByRuleName(tableConstraintContext.get(), RuleName.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(tableConstraintContext.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyContext.isPresent()) {
             return;
         }
-        for (ParseTree each : ASTUtils.getAllDescendantByRuleName(tableConstraintContext.get(), RuleName.COLUMN_NAME)) {
+        for (ParseTree each : ASTUtils.getAllDescendantNodes(tableConstraintContext.get(), RuleName.COLUMN_NAME)) {
             String columnName = each.getText();
             ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
             if (null != updateColumn) {
