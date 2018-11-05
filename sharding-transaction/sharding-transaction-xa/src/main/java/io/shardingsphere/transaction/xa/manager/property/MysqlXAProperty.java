@@ -29,7 +29,7 @@ import java.util.Properties;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class MysqlXAPropertyFactory {
+public class MysqlXAProperty {
     
     private final DataSourceParameter dataSourceParameter;
     

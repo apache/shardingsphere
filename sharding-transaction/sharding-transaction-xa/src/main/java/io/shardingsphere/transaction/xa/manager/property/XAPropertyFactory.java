@@ -41,7 +41,7 @@ public class XAPropertyFactory {
     public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
         switch (xaDatabaseType) {
             case MySQL:
-                return new MysqlXAPropertyFactory(dataSourceParameter).build();
+                return new MysqlXAProperty(dataSourceParameter).build();
             default:
                 return new Properties();
         }
