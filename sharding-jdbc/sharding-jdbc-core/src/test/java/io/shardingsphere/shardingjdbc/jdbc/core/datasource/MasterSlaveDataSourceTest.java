@@ -71,30 +71,6 @@ public final class MasterSlaveDataSourceTest {
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
     }
-//    
-//    @Test
-//    public void assertGetDataSourceForDML() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DML).getDataSourceName(), is(masterDataSource));
-//    }
-//    
-//    @Test
-//    public void assertGetDataSourceForDQL() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(slaveDataSource));
-//    }
-//    
-//    @Test
-//    public void assertGetDataSourceForDMLAndDQL() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DML).getDataSourceName(), is(masterDataSource));
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(masterDataSource));
-//    }
-//    
-//    @Test
-//    public void assertGetDataSourceForHintToMasterOnly() {
-//        HintManager hintManager = HintManager.getInstance();
-//        hintManager.setMasterRouteOnly();
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(masterDataSource));
-//        hintManager.close();
-//    }
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
@@ -153,12 +129,4 @@ public final class MasterSlaveDataSourceTest {
     public void assertGetConnection() {
         assertThat(masterSlaveDataSource.getConnection(), instanceOf(MasterSlaveConnection.class));
     }
-    
-//    @Test
-//    public void assertResetDMLFlag() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DML).getDataSourceName(), is(masterDataSource));
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(masterDataSource));
-//        MasterSlaveDataSource.resetDMLFlag();
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(slaveDataSource));
-//    }
 }
