@@ -36,5 +36,8 @@ public final class DBCPDataSourceParameterExtractor extends DefaultDataSourcePar
     protected void convertProperties() {
         DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
         dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxTotal"));
+        dataSourceConfiguration.getProperties().put("idleTimeout", dataSourceConfiguration.getProperties().get("maxIdle"));
+        dataSourceConfiguration.getProperties().put("connectionTimeout", dataSourceConfiguration.getProperties().get("maxWaitMillis"));
+        dataSourceConfiguration.getProperties().put("maxLifetime", dataSourceConfiguration.getProperties().get("maxConnLifetimeMillis"));
     }
 }
