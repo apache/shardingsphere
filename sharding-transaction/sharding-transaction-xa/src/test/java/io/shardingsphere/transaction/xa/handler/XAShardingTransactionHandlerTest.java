@@ -34,6 +34,12 @@ public class XAShardingTransactionHandlerTest {
     
     private XAShardingTransactionHandler xaShardingTransactionHandler = new XAShardingTransactionHandler();
     
+    private XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+    
+    private XATransactionEvent commitEvent = new XATransactionEvent(TransactionOperationType.COMMIT);
+    
+    private XATransactionEvent rollbackEvent = new XATransactionEvent(TransactionOperationType.ROLLBACK);
+    
     @Test
     public void assertGetTransactionManager() {
         ShardingTransactionManager shardingTransactionManager = xaShardingTransactionHandler.getShardingTransactionManager();
@@ -46,45 +52,62 @@ public class XAShardingTransactionHandlerTest {
     }
     
     @Test
-    public void assertDoXATransactionBegin() {
-        new Thread(new Runnable() {
+    public void assertDoXATransactionBegin() throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                XATransactionEvent xaTransactionEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
-                xaShardingTransactionHandler.doInTransaction(xaTransactionEvent);
+                xaShardingTransactionHandler.doInTransaction(beginEvent);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_ACTIVE));
             }
-        }).start();
+        });
+        thread.start();
+        thread.join();
     }
     
     @Test
-    public void assertDoXATransactionCommit() {
-        new Thread(new Runnable() {
+    public void assertDoXATransactionCommit() throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
-                XATransactionEvent commitEvent = new XATransactionEvent(TransactionOperationType.COMMIT);
                 xaShardingTransactionHandler.doInTransaction(beginEvent);
                 xaShardingTransactionHandler.doInTransaction(commitEvent);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }
-        }).start();
+        });
+        thread.start();
+        thread.join();
     }
     
     @Test
-    public void assertDoXATransactionRollback() {
-        new Thread(new Runnable() {
+    public void assertDoXATransactionRollback() throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
-                XATransactionEvent rollbackEvent = new XATransactionEvent(TransactionOperationType.ROLLBACK);
                 xaShardingTransactionHandler.doInTransaction(beginEvent);
                 xaShardingTransactionHandler.doInTransaction(rollbackEvent);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }
-        }).start();
+        });
+        thread.start();
+        thread.join();
+    }
+    
+    @Test
+    public void assertDoXATransactionCommitRollback() throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                xaShardingTransactionHandler.doInTransaction(beginEvent);
+                xaShardingTransactionHandler.doInTransaction(commitEvent);
+                xaShardingTransactionHandler.doInTransaction(rollbackEvent);
+                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
+                assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
+            }
+        });
+        thread.start();
+        thread.join();
     }
 }
