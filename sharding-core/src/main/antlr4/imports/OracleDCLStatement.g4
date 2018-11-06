@@ -2,6 +2,19 @@ grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
 
+
+grantObjectPrivileges
+    : objectPrivilege (COMMA objectPrivilege)*
+    ;
+    
+grantObjectPrivilege
+    : (objectPrivilege | ALL PRIVILEGES?)( LEFT_PAREN columnName (COMMA columnName)* RIGHT_PAREN)?
+    ;
+
+objectPrivilege
+    : ID *?
+    ;
+    
 grantRolesToPrograms
     : roleName (COMMA roleName)* TO programUnit ( COMMA programUnit )*
     ;
