@@ -41,8 +41,9 @@ public final class DataSourceUtils {
     public static DataSource build(final PoolType poolType) {
         switch (poolType) {
             case DBCP:
-            case DBCP_TOMCAT:
                 return newBasicDataSource();
+            case DBCP_TOMCAT:
+                return newTomcatBasicDataSource();
             case HIKARI:
                 return newHikariDataSource();
             case DRUID:
@@ -52,7 +53,19 @@ public final class DataSourceUtils {
         }
     }
     
-    private static BasicDataSource newBasicDataSource() {
+    private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource() {
+        org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaxTotal(10);
+        result.setMaxWaitMillis(2000);
+        result.setMaxIdle(200);
+        result.setMaxConnLifetimeMillis(100000);
+        return result;
+    }
+    
+    private static BasicDataSource newTomcatBasicDataSource() {
         BasicDataSource result = new BasicDataSource();
         result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
         result.setUsername("root");
