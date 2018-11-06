@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.ast.dialect;
 
-import io.shardingsphere.core.parsing.antlr.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.SQLServerStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.ast.AbstractShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.OracleStatementAdvancedParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
@@ -27,25 +27,25 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * SQLServer tree builder.
+ * Sharding AST builder for Oracle.
  * 
  * @author duhongjun
  */
-public final class SQLServerStatementParseTreeBuilder extends AbstractParseTreeBuilder {
+public final class OracleShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
     protected Lexer newLexer(final CharStream charStream) {
-        return new SQLServerStatementLexer(charStream);
+        return new OracleStatementLexer(charStream);
     }
     
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
-        return new SQLServerStatementAdvancedParser(tokenStream);
+        return new OracleStatementAdvancedParser(tokenStream);
     }
     
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser) parser;
+        OracleStatementAdvancedParser parse = (OracleStatementAdvancedParser) parser;
         return parse.execute();
     }
 }

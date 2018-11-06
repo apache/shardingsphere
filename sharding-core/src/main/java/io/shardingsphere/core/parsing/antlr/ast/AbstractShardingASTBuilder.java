@@ -15,37 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.dialect;
+package io.shardingsphere.core.parsing.antlr.ast;
 
-import io.shardingsphere.core.parsing.antlr.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.MySQLStatementAdvancedParser;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * MySQL tree builder.
+ * Abstract class for sharding AST builder.
  * 
  * @author duhongjun
  */
-public final class MySQLStatementParseTreeBuilder extends AbstractParseTreeBuilder {
+public abstract class AbstractShardingASTBuilder implements ShardingASTBuilder {
     
     @Override
-    protected Lexer newLexer(final CharStream charStream) {
-        return new MySQLStatementLexer(charStream);
+    public final ParserRuleContext parse(final String sql) {
+        Lexer lexer = newLexer(CharStreams.fromString(sql));
+        Parser parser = newParser(new CommonTokenStream(lexer));
+        ParserRuleContext rootContext = getParserTree(parser);
+        return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
     }
     
-    @Override
-    protected Parser newParser(final TokenStream tokenStream) {
-        return new MySQLStatementAdvancedParser(tokenStream);
-    }
+    protected abstract Lexer newLexer(CharStream charStream);
     
-    @Override
-    protected ParserRuleContext getParserTree(final Parser parser) {
-        MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser) parser;
-        return parse.execute();
-    }
+    protected abstract Parser newParser(TokenStream tokenStream);
+    
+    protected abstract ParserRuleContext getParserTree(Parser parser);
 }

@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.ast.dialect;
 
-import io.shardingsphere.core.parsing.antlr.ast.AbstractParseTreeBuilder;
-import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.OracleStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.ast.AbstractShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreStatementAdvancedParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
@@ -27,25 +27,25 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * Oracle tree builder.
+ * Sharding AST builder for PostgreSQL.
  * 
  * @author duhongjun
  */
-public final class OracleStatementParseTreeBuilder extends AbstractParseTreeBuilder {
+public final class PostgreSQLShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
     protected Lexer newLexer(final CharStream charStream) {
-        return new OracleStatementLexer(charStream);
+        return new PostgreStatementLexer(charStream);
     }
     
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
-        return new OracleStatementAdvancedParser(tokenStream);
+        return new PostgreStatementAdvancedParser(tokenStream);
     }
     
     @Override
     protected ParserRuleContext getParserTree(final Parser parser) {
-        OracleStatementAdvancedParser parse = (OracleStatementAdvancedParser) parser;
+        PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser) parser;
         return parse.execute();
     }
 }

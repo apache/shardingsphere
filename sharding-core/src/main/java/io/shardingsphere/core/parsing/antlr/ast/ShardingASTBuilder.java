@@ -20,17 +20,17 @@ package io.shardingsphere.core.parsing.antlr.ast;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Tree builder interface.
+ * Sharding AST builder.
  * 
  * @author duhongjun
  */
-public interface ParseTreeBuilder {
+public interface ShardingASTBuilder {
     
     /** 
-     * Parse input to AST.
+     * Parse SQL to AST.
      * 
-     * @param input input text
-     * @return parse tree
+     * @param sql SQL
+     * @return parsed AST
      */
-    ParserRuleContext parse(String input);
+    ParserRuleContext parse(String sql);
 }

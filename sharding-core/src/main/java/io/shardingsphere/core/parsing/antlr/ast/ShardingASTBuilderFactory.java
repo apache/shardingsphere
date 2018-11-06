@@ -18,44 +18,42 @@
 package io.shardingsphere.core.parsing.antlr.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreStatementParseTreeBuilder;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerStatementParseTreeBuilder;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerShardingASTBuilder;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Parser tree builder factory.
- * 
- * <p>For SQL parse and AST generate.</p>
+ * Sharding AST builder factory.
  * 
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParseTreeBuilderFactory {
+public final class ShardingASTBuilderFactory {
     
     /** 
-     * Get SQL statement AST.
+     * Parse.
      * 
      * @param dbType database type
      * @param sql SQL
      * @param shardingRule sharding rule
-     * @return parse tree
+     * @return sharding AST
      */
-    public static ParserRuleContext getParserTree(final DatabaseType dbType, final String sql, final ShardingRule shardingRule) {
+    public static ParserRuleContext parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLStatementParseTreeBuilder().parse(sql);
+                return new MySQLShardingASTBuilder().parse(sql);
             case Oracle:
-                return new OracleStatementParseTreeBuilder().parse(sql);
+                return new OracleShardingASTBuilder().parse(sql);
             case SQLServer:
-                return new SQLServerStatementParseTreeBuilder().parse(sql);
+                return new SQLServerShardingASTBuilder().parse(sql);
             case PostgreSQL:
-                return new PostgreStatementParseTreeBuilder().parse(sql);
+                return new PostgreSQLShardingASTBuilder().parse(sql);
             default:
                 throw new UnsupportedOperationException(String.format("Can not support database type [%s].", dbType.name()));
         }

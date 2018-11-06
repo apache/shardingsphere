@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.parser;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.ast.ParseTreeBuilderFactory;
+import io.shardingsphere.core.parsing.antlr.ast.ShardingASTBuilderFactory;
 import io.shardingsphere.core.parsing.antlr.visitor.VisitorRegistry;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.StatementVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -46,7 +46,7 @@ public final class StatementFactory {
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext parserRuleContext = ParseTreeBuilderFactory.getParserTree(dbType, sql, shardingRule);
+        ParserRuleContext parserRuleContext = ShardingASTBuilderFactory.parse(dbType, sql, shardingRule);
         if (null == parserRuleContext) {
             return null;
         }

@@ -15,36 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast;
+package io.shardingsphere.core.parsing.antlr.ast.dialect;
 
+import io.shardingsphere.core.parsing.antlr.ast.AbstractShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.MySQLStatementAdvancedParser;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * Abstract parser tree builder.
- * 
- * <p>Use template pattern, sub class implement concrete method.</p>
+ * Sharding AST builder for MySQL.
  * 
  * @author duhongjun
  */
-public abstract class AbstractParseTreeBuilder implements ParseTreeBuilder {
+public final class MySQLShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
-    public final ParserRuleContext parse(final String input) {
-        Lexer lexer = newLexer(CharStreams.fromString(input));
-        Parser parser = newParser(new CommonTokenStream(lexer));
-        ParserRuleContext rootContext = getParserTree(parser);
-        return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
+    protected Lexer newLexer(final CharStream charStream) {
+        return new MySQLStatementLexer(charStream);
     }
     
-    protected abstract Lexer newLexer(CharStream charStream);
+    @Override
+    protected Parser newParser(final TokenStream tokenStream) {
+        return new MySQLStatementAdvancedParser(tokenStream);
+    }
     
-    protected abstract Parser newParser(TokenStream tokenStream);
-    
-    protected abstract ParserRuleContext getParserTree(Parser parser);
+    @Override
+    protected ParserRuleContext getParserTree(final Parser parser) {
+        MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser) parser;
+        return parse.execute();
+    }
 }
