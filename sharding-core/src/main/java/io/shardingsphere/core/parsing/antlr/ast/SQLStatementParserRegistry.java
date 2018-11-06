@@ -20,11 +20,11 @@ package io.shardingsphere.core.parsing.antlr.ast;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
-import io.shardingsphere.core.parsing.antlr.autogen.PostgreStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
 import io.shardingsphere.core.parsing.antlr.parser.dialect.MySQLStatementAdvancedParser;
 import io.shardingsphere.core.parsing.antlr.parser.dialect.OracleStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreSQLStatementAdvancedParser;
 import io.shardingsphere.core.parsing.antlr.parser.dialect.SQLServerStatementAdvancedParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -53,7 +53,7 @@ public final class SQLStatementParserRegistry {
     private static void registerLexer() {
         LEXER_CLASSES.put(DatabaseType.H2, MySQLStatementLexer.class);
         LEXER_CLASSES.put(DatabaseType.MySQL, MySQLStatementLexer.class);
-        LEXER_CLASSES.put(DatabaseType.PostgreSQL, PostgreStatementLexer.class);
+        LEXER_CLASSES.put(DatabaseType.PostgreSQL, PostgreSQLStatementLexer.class);
         LEXER_CLASSES.put(DatabaseType.SQLServer, SQLServerStatementLexer.class);
         LEXER_CLASSES.put(DatabaseType.Oracle, OracleStatementLexer.class);
     }
@@ -61,7 +61,7 @@ public final class SQLStatementParserRegistry {
     private static void registerParser() {
         PARSER_CLASSES.put(DatabaseType.H2, MySQLStatementAdvancedParser.class);
         PARSER_CLASSES.put(DatabaseType.MySQL, MySQLStatementAdvancedParser.class);
-        PARSER_CLASSES.put(DatabaseType.PostgreSQL, PostgreStatementAdvancedParser.class);
+        PARSER_CLASSES.put(DatabaseType.PostgreSQL, PostgreSQLStatementAdvancedParser.class);
         PARSER_CLASSES.put(DatabaseType.SQLServer, SQLServerStatementAdvancedParser.class);
         PARSER_CLASSES.put(DatabaseType.Oracle, OracleStatementAdvancedParser.class);
     }

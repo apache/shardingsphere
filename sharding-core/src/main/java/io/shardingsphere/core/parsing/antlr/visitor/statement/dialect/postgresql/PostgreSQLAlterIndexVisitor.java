@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgre;
+package io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgresql;
 
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.IndexesNameVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.DDLStatementVisitor;
 
 /**
- * Postgre drop index statement visitor.
+ * Postgre alter index statement visitor.
  * 
  * @author duhongjun
  */
-public final class PostgreDropIndexVisitor extends DDLStatementVisitor {
+public final class PostgreSQLAlterIndexVisitor extends DDLStatementVisitor {
     
-    public PostgreDropIndexVisitor() {
+    public PostgreSQLAlterIndexVisitor() {
         addVisitor(new IndexesNameVisitor());
     }
 }

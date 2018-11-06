@@ -28,8 +28,8 @@ import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.mysql.MySQ
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.oracle.OracleAlterIndexVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.oracle.OracleAlterTableVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.oracle.OracleDropIndexVisitor;
-import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgre.PostgreAlterIndexVisitor;
-import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgre.PostgreAlterTableVisitor;
+import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgresql.PostgreSQLAlterIndexVisitor;
+import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgresql.PostgreSQLAlterTableVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.sqlserver.SQLServerAlterTableVisitor;
 
 import java.util.HashMap;
@@ -132,11 +132,11 @@ public final class VisitorRegistry {
      *  Register postgre private DDL visitor.
      */
     private void registerPostgreDDL() {
-        visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreAlterTableVisitor());
+        visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreSQLAlterTableVisitor());
         visitors.put(DatabaseType.PostgreSQL + "DropTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
         visitors.put(DatabaseType.PostgreSQL + "DropIndex", new IndexWithTableStatementVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "AlterIndex", new PostgreAlterIndexVisitor());
+        visitors.put(DatabaseType.PostgreSQL + "AlterIndex", new PostgreSQLAlterIndexVisitor());
     }
     
     /**
