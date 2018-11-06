@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhangliang
  * @author zhaojun
  * @author panjuan
+ * @author yangyi
  */
 @Getter
 @Slf4j
@@ -81,6 +82,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
             } else {
                 return new ShardingConnection(xaDataSourceMap, shardingContext, TransactionType.XA);
             }
+        }
+        if (TransactionType.BASE == TransactionTypeHolder.get()) {
+            return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.BASE);
         }
         return new ShardingConnection(getDataSourceMap(), shardingContext);
     }
