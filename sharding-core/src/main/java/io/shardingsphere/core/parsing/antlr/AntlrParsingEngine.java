@@ -51,7 +51,7 @@ public final class AntlrParsingEngine {
             return null;
         }
         ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
-        StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, getCommandName(parserRuleContext));
+        StatementVisitor visitor = VisitorRegistry.getVisitor(dbType, getCommandName(parserRuleContext));
         if (null == visitor) {
             return null;
         }

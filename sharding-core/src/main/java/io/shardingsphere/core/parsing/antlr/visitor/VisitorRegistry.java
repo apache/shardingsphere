@@ -31,6 +31,8 @@ import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.oracle.Ora
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgresql.PostgreSQLAlterIndexVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.postgresql.PostgreSQLAlterTableVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.sqlserver.SQLServerAlterTableVisitor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,115 +42,81 @@ import java.util.Map;
  * 
  * @author duhongjun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VisitorRegistry {
     
-    private static final VisitorRegistry INSTANCE = new VisitorRegistry();
+    private static final Map<String, StatementVisitor> VISITORS = new HashMap<>();
     
-    private Map<String, StatementVisitor> visitors = new HashMap<>();
-    
-    private VisitorRegistry() {
+    static {
         registerDDLVisitor();
         registerTCLVisitor();
     }
     
-    /**
-     * Get INSTANCE.
-     * 
-     * @return INSTANCE of {@code VisitorRegistry}
-     */
-    public static VisitorRegistry getInstance() {
-        return INSTANCE;
+    private static void registerDDLVisitor() {
+        registerCommonDDL();
+        registerMySQLDDL();
+        registerOracleDDL();
+        registerSQLServerDDL();
+        registerPostgreSQLDDL();
+    }
+    
+    private static void registerCommonDDL() {
+        VISITORS.put("CreateTable", new CreateTableVisitor());
+        VISITORS.put("DropTable", new OnlySingleTableVisitor());
+        VISITORS.put("TruncateTable", new OnlySingleTableVisitor());
+        VISITORS.put("CreateIndex", new IndexWithTableStatementVisitor());
+    }
+    
+    private static void registerMySQLDDL() {
+        VISITORS.put(DatabaseType.H2 + "AlterTable", new MySQLAlterTableVisitor());
+        VISITORS.put(DatabaseType.H2 + "DropTable", new OnlyMultiTableVisitor());
+        VISITORS.put(DatabaseType.H2 + "DropIndex", new IndexWithTableStatementVisitor());
+        VISITORS.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
+        VISITORS.put(DatabaseType.MySQL + "DropTable", new OnlyMultiTableVisitor());
+        VISITORS.put(DatabaseType.MySQL + "DropIndex", new IndexWithTableStatementVisitor());
+    }
+    
+    private static void registerOracleDDL() {
+        VISITORS.put(DatabaseType.Oracle + "AlterTable", new OracleAlterTableVisitor());
+        VISITORS.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
+        VISITORS.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
+    }
+    
+    private static void registerSQLServerDDL() {
+        VISITORS.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
+        VISITORS.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
+        VISITORS.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());
+        VISITORS.put(DatabaseType.SQLServer + "AlterIndex", new IndexWithTableStatementVisitor());
+    }
+    
+    private static void registerPostgreSQLDDL() {
+        VISITORS.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreSQLAlterTableVisitor());
+        VISITORS.put(DatabaseType.PostgreSQL + "DropTable", new OnlyMultiTableVisitor());
+        VISITORS.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
+        VISITORS.put(DatabaseType.PostgreSQL + "DropIndex", new IndexWithTableStatementVisitor());
+        VISITORS.put(DatabaseType.PostgreSQL + "AlterIndex", new PostgreSQLAlterIndexVisitor());
+    }
+    
+    private static void registerTCLVisitor() {
+        VISITORS.put("SetTransaction", new TCLStatementVisitor());
+        VISITORS.put("Commit", new TCLStatementVisitor());
+        VISITORS.put("Rollback", new TCLStatementVisitor());
+        VISITORS.put("Savepoint", new TCLStatementVisitor());
+        VISITORS.put("BeginWork", new TCLStatementVisitor());
+        VISITORS.put(DatabaseType.H2 + "SetVariable", new TCLStatementVisitor());
+        VISITORS.put(DatabaseType.MySQL + "SetVariable", new TCLStatementVisitor());
     }
     
     /**
      * Get statement visitor.
      * 
-     * @param dbType database type
-     * @param commandName SQL command name
+     * @param databaseType database type
+     * @param commandName command name
      * @return statement visitor
      */
-    public StatementVisitor getVisitor(final DatabaseType dbType, final String commandName) {
-        String key = dbType.name() + commandName;
-        StatementVisitor visitor = visitors.get(key);
-        if (null != visitor) {
-            return visitor;
-        }
-        return visitors.get(commandName);
+    public static StatementVisitor getVisitor(final DatabaseType databaseType, final String commandName) {
+        String key = databaseType.name() + commandName;
+        return VISITORS.containsKey(key) ? VISITORS.get(key) : VISITORS.get(commandName);
     }
     
-    /**
-     * Register DDL statement visitor.
-     */
-    private void registerDDLVisitor() {
-        registerCommonDDL();
-        registerMySQLDDL();
-        registerOracleDDL();
-        registerSQLServerDDL();
-        registerPostgreDDL();
-    }
-    
-    /**
-     * Register common DDL visitor.
-     */
-    private void registerCommonDDL() {
-        visitors.put("CreateTable", new CreateTableVisitor());
-        visitors.put("DropTable", new OnlySingleTableVisitor());
-        visitors.put("TruncateTable", new OnlySingleTableVisitor());
-        visitors.put("CreateIndex", new IndexWithTableStatementVisitor());
-    }
-    
-    /**
-     *  Register MySQL private DDL visitor.
-     */
-    private void registerMySQLDDL() {
-        visitors.put(DatabaseType.H2 + "AlterTable", new MySQLAlterTableVisitor());
-        visitors.put(DatabaseType.H2 + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.H2 + "DropIndex", new IndexWithTableStatementVisitor());
-        visitors.put(DatabaseType.MySQL + "AlterTable", new MySQLAlterTableVisitor());
-        visitors.put(DatabaseType.MySQL + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.MySQL + "DropIndex", new IndexWithTableStatementVisitor());
-    }
-    
-    /**
-     *  Register oracle private DDL visitor.
-     */
-    private void registerOracleDDL() {
-        visitors.put(DatabaseType.Oracle + "AlterTable", new OracleAlterTableVisitor());
-        visitors.put(DatabaseType.Oracle + "DropIndex", new OracleDropIndexVisitor());
-        visitors.put(DatabaseType.Oracle + "AlterIndex", new OracleAlterIndexVisitor());
-    }
-    
-    /**
-     *  Register SQLServer private DDL visitor.
-     */
-    private void registerSQLServerDDL() {
-        visitors.put(DatabaseType.SQLServer + "AlterTable", new SQLServerAlterTableVisitor());
-        visitors.put(DatabaseType.SQLServer + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.SQLServer + "DropIndex", new IndexWithTableStatementVisitor());
-        visitors.put(DatabaseType.SQLServer + "AlterIndex", new IndexWithTableStatementVisitor());
-    }
-    
-    /**
-     *  Register postgre private DDL visitor.
-     */
-    private void registerPostgreDDL() {
-        visitors.put(DatabaseType.PostgreSQL + "AlterTable", new PostgreSQLAlterTableVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "DropTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "TruncateTable", new OnlyMultiTableVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "DropIndex", new IndexWithTableStatementVisitor());
-        visitors.put(DatabaseType.PostgreSQL + "AlterIndex", new PostgreSQLAlterIndexVisitor());
-    }
-    
-    /**
-     * Register TCL statement visitor.
-     */
-    private void registerTCLVisitor() {
-        visitors.put("SetTransaction", new TCLStatementVisitor());
-        visitors.put("Commit", new TCLStatementVisitor());
-        visitors.put("Rollback", new TCLStatementVisitor());
-        visitors.put("Savepoint", new TCLStatementVisitor());
-        visitors.put("BeginWork", new TCLStatementVisitor());
-        visitors.put(DatabaseType.H2 + "SetVariable", new TCLStatementVisitor());
-        visitors.put(DatabaseType.MySQL + "SetVariable", new TCLStatementVisitor());
-    }
 }
