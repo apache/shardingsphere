@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.transaction.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;

@@ -22,6 +22,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
 import io.shardingsphere.transaction.xa.manager.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.manager.fixture.ReflectiveUtil;
 import io.shardingsphere.transaction.xa.manager.dialect.XADatabaseType;

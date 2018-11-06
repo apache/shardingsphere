@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.transaction.xa;
 
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
