@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.property;
+package io.shardingsphere.transaction.xa.manager.dialect;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;

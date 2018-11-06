@@ -21,8 +21,8 @@ import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.manager.property.XADatabaseType;
-import io.shardingsphere.transaction.xa.manager.property.XAPropertyFactory;
+import io.shardingsphere.transaction.xa.manager.dialect.XADatabaseType;
+import io.shardingsphere.transaction.xa.manager.dialect.XAPropertyFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 

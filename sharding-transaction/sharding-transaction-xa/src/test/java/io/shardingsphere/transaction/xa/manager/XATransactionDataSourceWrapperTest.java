@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.manager.fixture.ReflectiveUtil;
-import io.shardingsphere.transaction.xa.manager.property.XADatabaseType;
+import io.shardingsphere.transaction.xa.manager.dialect.XADatabaseType;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;

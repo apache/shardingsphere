@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.xa.manager.property.XADatabaseType;
+import io.shardingsphere.transaction.xa.manager.dialect.XADatabaseType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

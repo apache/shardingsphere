@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.property;
+package io.shardingsphere.transaction.xa.manager.dialect;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
