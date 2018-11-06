@@ -2,6 +2,10 @@ lexer grammar OracleKeyword;
 
 import Symbol;
    
+ADMIN
+    : A D M I N
+    ;
+
 AT
     : A T
     ;
@@ -34,6 +38,14 @@ CONSTRAINTS
     : C O N S T R A I N T S
     ;
 
+CONTAINER
+    : C O N T A I N E R
+    ;
+
+CURRENT
+    : C U R R E N T
+    ;
+
 CYCLE
     : C Y C L E
     ;
@@ -58,8 +70,20 @@ DEFERRED
     : D E F E R R E D
     ;
 
+DELEGATE
+    : D E L E G A T E
+    ;
+
+DIRECTORY
+    : D I R E C T O R Y
+    ;
+
 DOUBLE
     : D O U B L E
+    ;
+
+EDITION
+    : E D I T I O N
     ;
 
 ELEMENT
@@ -90,8 +114,20 @@ FORCE
     : F O R C E
     ;
 
+FUNCTION
+    : F U N C T I O N
+    ;
+
 GLOBAL
     : G L O B A L
+    ;
+
+GRANT
+    : G R A N T
+    ;
+
+HIERARCHY
+    : H I E R A R C H Y
     ;
 
 IDENTIFIED
@@ -126,6 +162,10 @@ INVALIDATE
     : I N V A L I D A T E
     ;
 
+JAVA
+    : J A V A
+    ;
+
 KEEP
     : K E E P
     ;
@@ -142,8 +182,16 @@ MAXVALUE
     : M A X V A L U E
     ;
 
+MINING
+    : M I N I N G
+    ;
+
 MINVALUE
     : M I N V A L U E
+    ;
+
+MODEL
+    : M O D E L
     ;
 
 MODIFY
@@ -206,6 +254,14 @@ ONLY
     : O N L Y
     ;
 
+OPTION
+    : O P T I O N
+    ;
+
+PACKAGE
+    : P A C K A G E
+    ;
+
 PRECISION
     : P R E C I S I O N
     ;
@@ -216,6 +272,22 @@ PRESERVE
 
 PRIOR
     : P R I O R
+    ;
+
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
+PROFILE
+    : P R O F I L E
+    ;
+
+PUBLIC
+    : P U B L I C
     ;
 
 REF
@@ -232,6 +304,10 @@ RELY
 
 RENAME
     : R E N A M E
+    ;
+
+RESOURCE
+    : R E S O U R C E
     ;
 
 ROWID
@@ -266,6 +342,14 @@ SORT
     : S O R T
     ;
 
+SOURCE
+    : S O U R C E
+    ;
+
+SQL
+    : S Q L
+    ;
+
 SQLRF
     : S Q L R F
     ;
@@ -286,6 +370,10 @@ THEN
     : T H E N
     ;
 
+TRANSLATION
+    : T R A N S L A T I O N
+    ;
+
 TREAT
     : T R E A T
     ;
@@ -300,6 +388,10 @@ UNUSED
 
 USE
     : U S E
+    ;
+
+USER
+    : U S E R
     ;
 
 USING
