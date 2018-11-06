@@ -30,28 +30,24 @@ public class DataSourceParameterFactoryTest {
     @Test
     public void assertBuildParameterFromHikari() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI));
-        assertThat(parameter.getOriginPoolType(), is(PoolType.HIKARI));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDruid() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID));
-        assertThat(parameter.getOriginPoolType(), is(PoolType.DRUID));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP_TOMCAT));
-        assertThat(parameter.getOriginPoolType(), is(PoolType.DBCP_TOMCAT));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCP2() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP));
-        assertThat(parameter.getOriginPoolType(), is(PoolType.DBCP));
         assertThatParameter(parameter);
     }
     
