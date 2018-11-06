@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.visitor.phrase.dialect.mysql;
 
-import io.shardingsphere.core.parsing.antlr.RuleName;
-import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.util.VisitorUtils;
+import io.shardingsphere.core.parsing.antlr.visitor.RuleName;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.PhraseVisitor;
+import io.shardingsphere.core.parsing.antlr.visitor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.visitor.util.VisitorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;

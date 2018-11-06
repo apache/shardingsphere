@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.visitor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

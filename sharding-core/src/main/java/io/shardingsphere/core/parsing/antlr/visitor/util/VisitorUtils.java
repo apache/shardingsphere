@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.util;
+package io.shardingsphere.core.parsing.antlr.visitor.util;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import io.shardingsphere.core.parsing.antlr.visitor.RuleName;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import lombok.AccessLevel;

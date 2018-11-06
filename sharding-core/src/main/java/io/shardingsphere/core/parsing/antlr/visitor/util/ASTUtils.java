@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.util;
+package io.shardingsphere.core.parsing.antlr.visitor.util;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.RuleName;
+import io.shardingsphere.core.parsing.antlr.visitor.RuleName;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
