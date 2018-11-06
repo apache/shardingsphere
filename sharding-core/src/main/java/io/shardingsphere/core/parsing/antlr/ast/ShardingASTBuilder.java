@@ -17,14 +17,26 @@
 
 package io.shardingsphere.core.parsing.antlr.ast;
 
+import io.shardingsphere.core.exception.ShardingException;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.TokenStream;
 
 /**
  * Sharding AST builder.
  * 
  * @author duhongjun
  */
-public interface ShardingASTBuilder {
+@RequiredArgsConstructor
+public class ShardingASTBuilder {
+    
+    private final Class<? extends Lexer> lexerClass;
+    
+    private final Class<? extends SQLStatementParser> parserClass;
     
     /** 
      * Parse SQL to AST.
@@ -32,5 +44,26 @@ public interface ShardingASTBuilder {
      * @param sql SQL
      * @return parsed AST
      */
-    ParserRuleContext parse(String sql);
+    public ParserRuleContext parse(final String sql) {
+        Lexer lexer = newLexer(CharStreams.fromString(sql));
+        SQLStatementParser parser = newParser(new CommonTokenStream(lexer));
+        ParserRuleContext rootContext = parser.execute();
+        return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
+    }
+    
+    private Lexer newLexer(final CharStream charStream) {
+        try {
+            return lexerClass.getConstructor(CharStream.class).newInstance(charStream);
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingException(ex);
+        }
+    }
+    
+    private SQLStatementParser newParser(final TokenStream tokenStream) {
+        try {
+            return parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingException(ex);
+        }
+    }
 }

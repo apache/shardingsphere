@@ -18,10 +18,14 @@
 package io.shardingsphere.core.parsing.antlr.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLShardingASTBuilder;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleShardingASTBuilder;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLShardingASTBuilder;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.OracleStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.SQLServerStatementAdvancedParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -43,13 +47,13 @@ public final class ShardingASTBuilderFactory {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLShardingASTBuilder();
+                return new ShardingASTBuilder(MySQLStatementLexer.class, MySQLStatementAdvancedParser.class);
             case PostgreSQL:
-                return new PostgreSQLShardingASTBuilder();
+                return new ShardingASTBuilder(PostgreStatementLexer.class, PostgreStatementAdvancedParser.class);
             case SQLServer:
-                return new SQLServerShardingASTBuilder();
+                return new ShardingASTBuilder(SQLServerStatementLexer.class, SQLServerStatementAdvancedParser.class);
             case Oracle:
-                return new OracleShardingASTBuilder();
+                return new ShardingASTBuilder(OracleStatementLexer.class, OracleStatementAdvancedParser.class);
             default:
                 throw new UnsupportedOperationException(String.format("Can not support database type [%s].", dbType.name()));
         }
