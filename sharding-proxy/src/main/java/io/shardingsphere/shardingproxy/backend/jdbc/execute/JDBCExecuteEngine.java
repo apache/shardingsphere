@@ -52,10 +52,13 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Fiel
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
+import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -111,8 +114,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
-        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
+        boolean isBASETransaction = TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType()
+                && sqlType == SQLType.DML
+                && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown)
+                : new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
+                : new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
                 firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -229,6 +237,18 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
             return executeWithoutMetadata(
                     statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+        }
+    }
+    
+    private final class ProxySagaSQLExecuteCallback extends SagaSQLExecuteCallback<ExecuteResponseUnit> {
+        
+        ProxySagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown) {
+            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
+        }
+        
+        @Override
+        protected ExecuteResponseUnit executeResult() {
+            return new ExecuteUpdateResponseUnit(new OKPacket(1));
         }
     }
 }
