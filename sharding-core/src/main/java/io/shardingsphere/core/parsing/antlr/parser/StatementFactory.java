@@ -46,7 +46,7 @@ public final class StatementFactory {
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext parserRuleContext = ShardingASTBuilderFactory.parse(dbType, sql, shardingRule);
+        ParserRuleContext parserRuleContext = ShardingASTBuilderFactory.newInstance(dbType).parse(sql);
         if (null == parserRuleContext) {
             return null;
         }

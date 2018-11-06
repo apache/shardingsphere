@@ -22,10 +22,8 @@ import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLShardingASTBuilder;
 import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleShardingASTBuilder;
 import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLShardingASTBuilder;
 import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerShardingASTBuilder;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Sharding AST builder factory.
@@ -36,24 +34,22 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class ShardingASTBuilderFactory {
     
     /** 
-     * Parse.
+     * New instance of {@code ShardingASTBuilder}.
      * 
      * @param dbType database type
-     * @param sql SQL
-     * @param shardingRule sharding rule
-     * @return sharding AST
+     * @return instance of {@code ShardingASTBuilder}
      */
-    public static ParserRuleContext parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule) {
+    public static ShardingASTBuilder newInstance(final DatabaseType dbType) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLShardingASTBuilder().parse(sql);
-            case Oracle:
-                return new OracleShardingASTBuilder().parse(sql);
-            case SQLServer:
-                return new SQLServerShardingASTBuilder().parse(sql);
+                return new MySQLShardingASTBuilder();
             case PostgreSQL:
-                return new PostgreSQLShardingASTBuilder().parse(sql);
+                return new PostgreSQLShardingASTBuilder();
+            case SQLServer:
+                return new SQLServerShardingASTBuilder();
+            case Oracle:
+                return new OracleShardingASTBuilder();
             default:
                 throw new UnsupportedOperationException(String.format("Can not support database type [%s].", dbType.name()));
         }
