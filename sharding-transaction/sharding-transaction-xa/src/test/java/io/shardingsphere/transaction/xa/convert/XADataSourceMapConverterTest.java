@@ -35,7 +35,7 @@ public class XADataSourceMapConverterTest {
     private XADataSourceMapConverter xaDataSourceMapConverter = new XADataSourceMapConverter();
     
     @Test
-    public void getMysqlXATransactionalDataSourceSuccess() {
+    public void assertGetMysqlXATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.MySQL);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
@@ -43,7 +43,7 @@ public class XADataSourceMapConverterTest {
     }
     
     @Test
-    public void getH2XATransactionalDataSourceSuccess() {
+    public void assertGetH2XATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.H2);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
@@ -51,7 +51,7 @@ public class XADataSourceMapConverterTest {
     }
     
     @Test
-    public void getPGXATransactionalDataSourceSuccess() {
+    public void assertGetPGXATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.PostgreSQL);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
@@ -59,7 +59,7 @@ public class XADataSourceMapConverterTest {
     }
     
     @Test
-    public void getMSXATransactionalDataSourceSuccess() {
+    public void assertGetMSXATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.SQLServer);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
