@@ -2,6 +2,10 @@ lexer grammar OracleKeyword;
 
 import Symbol;
    
+ADMIN
+    : A D M I N
+    ;
+
 AT
     : A T
     ;
@@ -34,6 +38,14 @@ CONSTRAINTS
     : C O N S T R A I N T S
     ;
 
+CONTAINER
+    : C O N T A I N E R
+    ;
+
+CURRENT
+    : C U R R E N T
+    ;
+
 CYCLE
     : C Y C L E
     ;
@@ -56,6 +68,10 @@ DEFERRABLE
 
 DEFERRED
     : D E F E R R E D
+    ;
+
+DELEGATE
+    : D E L E G A T E
     ;
 
 DOUBLE
@@ -90,8 +106,16 @@ FORCE
     : F O R C E
     ;
 
+FUNCTION
+    : F U N C T I O N
+    ;
+
 GLOBAL
     : G L O B A L
+    ;
+
+GRANT
+    : G R A N T
     ;
 
 IDENTIFIED
@@ -206,6 +230,14 @@ ONLY
     : O N L Y
     ;
 
+OPTION
+    : O P T I O N
+    ;
+
+PACKAGE
+    : P A C K A G E
+    ;
+
 PRECISION
     : P R E C I S I O N
     ;
@@ -216,6 +248,18 @@ PRESERVE
 
 PRIOR
     : P R I O R
+    ;
+
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
+PUBLIC
+    : P U B L I C
     ;
 
 REF
