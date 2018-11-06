@@ -74,6 +74,13 @@ public class XAPropertyFactoryTest {
     
     @Test
     public void assertGetPGXAProperties() {
+        dataSourceParameter.setUrl("jdbc:postgresql://db.psql:5432/test_db");
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.PostgreSQL, dataSourceParameter);
+        assertThat(xaProperties.getProperty("user"), is("root"));
+        assertThat(xaProperties.getProperty("password"), is("root"));
+        assertThat(xaProperties.getProperty("serverName"), is("db.psql"));
+        assertThat(xaProperties.getProperty("portNumber"), is("5432"));
+        assertThat(xaProperties.getProperty("databaseName"), is("test_db"));
     }
     
     @Test
