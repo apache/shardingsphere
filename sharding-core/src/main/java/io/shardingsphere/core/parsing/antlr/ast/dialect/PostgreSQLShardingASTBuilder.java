@@ -18,11 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.ast.dialect;
 
 import io.shardingsphere.core.parsing.antlr.ast.AbstractShardingASTBuilder;
+import io.shardingsphere.core.parsing.antlr.ast.SQLStatementParser;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreStatementLexer;
 import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreStatementAdvancedParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
@@ -34,7 +34,7 @@ import org.antlr.v4.runtime.TokenStream;
 public final class PostgreSQLShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
-    protected ParserRuleContext parse(final Parser parser) {
+    protected ParserRuleContext parse(final SQLStatementParser parser) {
         PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser) parser;
         return parse.execute();
     }
@@ -45,7 +45,7 @@ public final class PostgreSQLShardingASTBuilder extends AbstractShardingASTBuild
     }
     
     @Override
-    protected Parser newParser(final TokenStream tokenStream) {
+    protected SQLStatementParser newParser(final TokenStream tokenStream) {
         return new PostgreStatementAdvancedParser(tokenStream);
     }
 }

@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public final class VisitorRegistry {
     
-    private static VisitorRegistry instance = new VisitorRegistry();
+    private static final VisitorRegistry INSTANCE = new VisitorRegistry();
     
     private Map<String, StatementVisitor> visitors = new HashMap<>();
     
@@ -52,20 +52,20 @@ public final class VisitorRegistry {
     }
     
     /**
-     * Get VisitorManager instance.
+     * Get INSTANCE.
      * 
-     * @return VisitorManager instance
+     * @return INSTANCE of {@code VisitorRegistry}
      */
     public static VisitorRegistry getInstance() {
-        return instance;
+        return INSTANCE;
     }
     
     /**
      * Get statement visitor.
      * 
-     * @param dbType database type,ex:mysql,postgre...
+     * @param dbType database type
      * @param commandName SQL command name
-     * @return Statement visitor
+     * @return statement visitor
      */
     public StatementVisitor getVisitor(final DatabaseType dbType, final String commandName) {
         String key = dbType.name() + commandName;

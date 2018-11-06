@@ -21,7 +21,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
@@ -35,14 +34,14 @@ public abstract class AbstractShardingASTBuilder implements ShardingASTBuilder {
     @Override
     public final ParserRuleContext parse(final String sql) {
         Lexer lexer = newLexer(CharStreams.fromString(sql));
-        Parser parser = newParser(new CommonTokenStream(lexer));
+        SQLStatementParser parser = newParser(new CommonTokenStream(lexer));
         ParserRuleContext rootContext = parse(parser);
         return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
     }
     
-    protected abstract ParserRuleContext parse(Parser parser);
+    protected abstract ParserRuleContext parse(SQLStatementParser parser);
     
     protected abstract Lexer newLexer(CharStream charStream);
     
-    protected abstract Parser newParser(TokenStream tokenStream);
+    protected abstract SQLStatementParser newParser(TokenStream tokenStream);
 }
