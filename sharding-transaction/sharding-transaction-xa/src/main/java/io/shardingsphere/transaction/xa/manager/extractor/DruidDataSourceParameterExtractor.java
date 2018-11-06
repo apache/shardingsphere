@@ -37,8 +37,10 @@ public final class DruidDataSourceParameterExtractor extends DefaultDataSourcePa
         DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
         dataSourceConfiguration.getProperties().put("url", dataSourceConfiguration.getProperties().get("jdbcUrl"));
         dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxActive"));
+        // TODO need to be researched for maxIdle
         dataSourceConfiguration.getProperties().put("idleTimeout", dataSourceConfiguration.getProperties().get("maxIdle"));
         dataSourceConfiguration.getProperties().put("connectionTimeout", dataSourceConfiguration.getProperties().get("maxWait"));
+        // TODO need to be researched for minEvictableIdleTimeMillis
         dataSourceConfiguration.getProperties().put("maxLifetime", dataSourceConfiguration.getProperties().get("minEvictableIdleTimeMillis"));
     }
 }
