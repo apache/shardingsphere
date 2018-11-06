@@ -13,6 +13,7 @@
 
     <properties>
         <alibaba.druid.version>1.1.11</alibaba.druid.version>
+        <oracle.jdbc.driver.version>10.2.0.3.0</oracle.jdbc.driver.version>
     </properties>
     
     <dependencies>
@@ -41,6 +42,12 @@
             <artifactId>tomcat-dbcp</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>${oracle.jdbc.driver.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
