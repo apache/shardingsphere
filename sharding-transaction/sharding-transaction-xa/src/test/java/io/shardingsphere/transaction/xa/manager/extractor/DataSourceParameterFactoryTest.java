@@ -41,13 +41,13 @@ public class DataSourceParameterFactoryTest {
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP_TOMCAT));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCP2() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2));
         assertThatParameter(parameter);
     }
     

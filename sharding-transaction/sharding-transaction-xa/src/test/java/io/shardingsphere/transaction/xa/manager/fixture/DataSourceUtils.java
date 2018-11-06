@@ -40,9 +40,9 @@ public final class DataSourceUtils {
      */
     public static DataSource build(final PoolType poolType) {
         switch (poolType) {
-            case DBCP:
+            case DBCP2:
                 return newBasicDataSource();
-            case DBCP_TOMCAT:
+            case DBCP2_TOMCAT:
                 return newTomcatBasicDataSource();
             case HIKARI:
                 return newHikariDataSource();

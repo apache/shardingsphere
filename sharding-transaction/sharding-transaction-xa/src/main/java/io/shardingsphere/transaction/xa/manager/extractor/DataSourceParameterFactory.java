@@ -42,8 +42,8 @@ public class DataSourceParameterFactory {
         switch (PoolType.find(dataSource.getClass().getName())) {
             case DRUID:
                 return new DruidDataSourceParameterExtractor(dataSource).extract();
-            case DBCP:
-            case DBCP_TOMCAT:
+            case DBCP2:
+            case DBCP2_TOMCAT:
                 return new DBCPDataSourceParameterExtractor(dataSource).extract();
             case HIKARI:
                 return new HikariDataSourceParameterExtractor(dataSource).extract();
