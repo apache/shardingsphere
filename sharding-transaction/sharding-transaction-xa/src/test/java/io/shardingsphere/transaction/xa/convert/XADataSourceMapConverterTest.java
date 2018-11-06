@@ -20,16 +20,25 @@ package io.shardingsphere.transaction.xa.convert;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 public class XADataSourceMapConverterTest {
     
@@ -65,6 +74,15 @@ public class XADataSourceMapConverterTest {
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
+    }
+    
+    @Test
+    public void assertGetTransactionDataSourceFailed() {
+        XATransactionManager xaTransactionManager = mock(XATransactionManager.class);
+        doThrow(ShardingException.class).when(xaTransactionManager).wrapDataSource((XADataSource) any(), anyString(), (DataSourceParameter) any());
+        ReflectiveUtil.setProperty(xaDataSourceMapConverter, "xaTransactionManager", xaTransactionManager);
+        Map<String, DataSource> actualDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.HIKARI, DatabaseType.SQLServer), DatabaseType.SQLServer);
+        assertThat(actualDataSourceMap.size(), is(0));
     }
     
     private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
