@@ -10,6 +10,10 @@
     </parent>
     <artifactId>sharding-transaction-xa</artifactId>
     <name>${project.artifactId}</name>
+
+    <properties>
+        <alibaba.druid.version>1.1.11</alibaba.druid.version>
+    </properties>
     
     <dependencies>
         <dependency>
@@ -35,6 +39,13 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-dbcp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${alibaba.druid.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
