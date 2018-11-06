@@ -15,34 +15,38 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.wrap.dialect;
+package io.shardingsphere.transaction.xa.convert.dialect;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
 
 /**
- * Create H2 XA property from datasource parameter.
+ * Create PostgreSQL XA property from datasource parameter.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class H2XAProperty {
+public class PGXAProperty {
     
     private final DataSourceParameter dataSourceParameter;
     
     /**
-     * Build H2 XA properties.
+     * Build PostgreSQL XA properties.
      *
-     * @return H2 XA properties
+     * @return PostgreSQL XA properties
      */
     public Properties build() {
         Properties result = new Properties();
+        PostgreSQLDataSourceMetaData pgMetaData = new PostgreSQLDataSourceMetaData(dataSourceParameter.getUrl());
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("URL", dataSourceParameter.getUrl());
+        result.setProperty("serverName", pgMetaData.getHostName());
+        result.setProperty("portNumber", String.valueOf(pgMetaData.getPort()));
+        result.setProperty("databaseName", pgMetaData.getSchemeName());
         return result;
     }
 }

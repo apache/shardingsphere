@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.wrap.dialect;
+package io.shardingsphere.transaction.xa.convert.dialect;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;

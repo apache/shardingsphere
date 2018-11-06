@@ -15,31 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.wrap.extractor;
+package io.shardingsphere.transaction.xa.convert.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 
 import javax.sql.DataSource;
 
 /**
- * Extract datasource parameter from Druid connection pool.
+ * Hikari datasource parameter extractor.
  *
  * @author zhaojun
  */
-public final class DruidDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
     
-    DruidDataSourceParameterExtractor(final DataSource dataSource) {
+    HikariDataSourceParameterExtractor(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     protected void convertProperties() {
         DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
-        dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxActive"));
-        // TODO need to be researched for maxIdle
-        dataSourceConfiguration.getProperties().put("idleTimeout", dataSourceConfiguration.getProperties().get("maxIdle"));
-        dataSourceConfiguration.getProperties().put("connectionTimeout", dataSourceConfiguration.getProperties().get("maxWait"));
-        // TODO need to be researched for minEvictableIdleTimeMillis
-        dataSourceConfiguration.getProperties().put("maxLifetime", dataSourceConfiguration.getProperties().get("minEvictableIdleTimeMillis"));
+        dataSourceConfiguration.getProperties().put("url", dataSourceConfiguration.getProperties().get("jdbcUrl"));
     }
 }

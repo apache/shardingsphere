@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.wrap.extractor;
+package io.shardingsphere.transaction.xa.convert.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
