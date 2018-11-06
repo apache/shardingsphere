@@ -26,7 +26,7 @@ import javax.sql.DataSource;
  *
  * @author zhaojun
  */
-public final class DruidDataSourceParameterExtractor extends DefaultDataSourceParameterExtractor {
+public final class DruidDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
     
     DruidDataSourceParameterExtractor(final DataSource dataSource) {
         super(dataSource);

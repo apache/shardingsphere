@@ -18,34 +18,23 @@
 package io.shardingsphere.transaction.xa.manager.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.constant.PoolType;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.Getter;
 
 import javax.sql.DataSource;
 
 /**
- * Abstract class for DataSourceParameterExtractor.
+ * Hikari datasource parameter extractor.
  *
  * @author zhaojun
  */
-@Getter
-public class DefaultDataSourceParameterExtractor implements DataSourceParameterExtractor {
+public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
     
-    private final DataSourceConfiguration dataSourceConfiguration;
-    
-    DefaultDataSourceParameterExtractor(final DataSource dataSource) {
-        dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
+    HikariDataSourceParameterExtractor(final DataSource dataSource) {
+        super(dataSource);
     }
     
     @Override
-    public final DataSourceParameter extract() {
-        convertProperties();
-        dataSourceConfiguration.getProperties().put("originPoolType", PoolType.find(dataSourceConfiguration.getDataSourceClassName()));
-        return dataSourceConfiguration.createDataSourceParameter();
-    }
-    
     protected void convertProperties() {
-    
+        DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
+        dataSourceConfiguration.getProperties().put("url", dataSourceConfiguration.getProperties().get("jdbcUrl"));
     }
 }

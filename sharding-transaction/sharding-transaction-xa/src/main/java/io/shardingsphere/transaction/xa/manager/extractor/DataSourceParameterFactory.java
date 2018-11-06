@@ -45,8 +45,10 @@ public class DataSourceParameterFactory {
             case DBCP:
             case DBCP_TOMCAT:
                 return new DBCPDataSourceParameterExtractor(dataSource).extract();
+            case HIKARI:
+                return new HikariDataSourceParameterExtractor(dataSource).extract();
             default:
-                return new DefaultDataSourceParameterExtractor(dataSource).extract();
+                return new DataSourceParameter();
         }
     }
 }
