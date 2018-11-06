@@ -17,8 +17,8 @@
 
 package io.shardingsphere.transaction;
 
-import io.shardingsphere.transaction.listener.base.SagaTransactionListenerTest;
-import io.shardingsphere.transaction.manager.base.AllServicecombTest;
+import io.shardingsphere.transaction.base.handler.SagaShardingTransactionHandlerTest;
+import io.shardingsphere.transaction.base.manager.servicecomb.AllServicecombTest;
 import io.shardingsphere.transaction.revert.AllRevertTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        SagaTransactionListenerTest.class,
+        SagaShardingTransactionHandlerTest.class,
         AllServicecombTest.class,
         AllRevertTest.class
 })

@@ -19,12 +19,14 @@ package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
@@ -61,6 +63,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void setUp() throws SQLException {
         super.setUp();
         actual = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
+        TransactionTypeHolder.set(TransactionType.LOCAL);
     }
     
     @Test

@@ -158,13 +158,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), getSqlType(), isExceptionThrown) {
-            
-            @Override
-            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return statementExecuteUnit.getStatement().executeBatch();
-            }
-        };
+        SQLExecuteCallback<int[]> callback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown);
         return accumulate(executeCallback(callback));
     }
     

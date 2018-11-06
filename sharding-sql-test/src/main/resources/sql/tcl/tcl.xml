@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
+<sql-cases db-types="MySQL">
     <sql-case id="setAutoCommit" value="SET AUTOCOMMIT=1" />
     <sql-case id="commit" value="COMMIT" />
     <sql-case id="rollback" value="ROLLBACK" />

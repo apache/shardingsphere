@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.manager.base.executor.SagaSQLExecuteCallback;
+import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -72,6 +72,35 @@ public final class SQLExecuteCallbackFactory {
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 return ((PreparedStatement) statementExecuteUnit.getStatement()).execute();
+            }
+        };
+    }
+    
+    /**
+     * Get batch SQLExecuteCallBack.
+     *
+     * @param databaseType      types of database
+     * @param sqlType           types of sql
+     * @param isExceptionThrown is exception thrown
+     * @return batch SQLExecuteCallBack
+     */
+    public static SQLExecuteCallback<int[]> getBatchPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        if (isSagaTransaction(sqlType)) {
+            return getSagaBatchSQLExecuteCallback(databaseType, sqlType, isExceptionThrown);
+        }
+        return new SQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown) {
+            @Override
+            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+                return statementExecuteUnit.getStatement().executeBatch();
+            }
+        };
+    }
+    
+    private static SQLExecuteCallback<int[]> getSagaBatchSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+        return new SagaSQLExecuteCallback<int[]>(databaseType, sqlType, isExceptionThrown) {
+            @Override
+            protected int[] executeResult() {
+                return null;
             }
         };
     }

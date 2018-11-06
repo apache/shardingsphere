@@ -23,7 +23,7 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
@@ -31,9 +31,14 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import io.shardingsphere.shardingjdbc.revert.JDBCRevertEngine;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.revert.RevertEngineHolder;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -52,7 +57,10 @@ import java.util.Map.Entry;
  *
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
+ * @author yangyi
  */
+@Getter
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
     private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
@@ -71,8 +79,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
-    protected AbstractConnectionAdapter() {
+    private final TransactionType transactionType;
+    
+    private final ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler;
+    
+    protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
+        this.transactionType = transactionType;
+        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        if (transactionType != TransactionType.LOCAL) {
+            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
+        }
     }
     
     /**
@@ -161,9 +178,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void setAutoCommit(final boolean autoCommit) throws SQLException {
+    public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+        if (TransactionType.LOCAL == transactionType) {
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
@@ -172,16 +189,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.setAutoCommit(autoCommit);
                 }
             });
-        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
-            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.BEGIN));
-        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
+        } else if (TransactionType.XA == transactionType) {
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
+        } else if (TransactionType.BASE == transactionType) {
+            RevertEngineHolder.getInstance().setRevertEngine(new JDBCRevertEngine(getDataSourceMap()));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
         }
     }
     
     @Override
-    public void commit() throws SQLException {
-        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+    public final void commit() throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
                 @Override
@@ -189,16 +207,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.commit();
                 }
             });
-        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
-            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.COMMIT));
-        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(TransactionOperationType.COMMIT));
+        } else if (TransactionType.XA == transactionType) {
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
+        } else if (TransactionType.BASE == transactionType) {
+            RevertEngineHolder.getInstance().remove();
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
         }
     }
     
     @Override
-    public void rollback() throws SQLException {
-        if (TransactionType.LOCAL == TransactionTypeHolder.get()) {
+    public final void rollback() throws SQLException {
+        if (TransactionType.LOCAL == transactionType) {
             forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
                 
                 @Override
@@ -206,10 +225,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.rollback();
                 }
             });
-        } else if (TransactionType.XA == TransactionTypeHolder.get()) {
-            ShardingEventBusInstance.getInstance().post(new XATransactionEvent(TransactionOperationType.ROLLBACK));
-        } else if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            ShardingEventBusInstance.getInstance().post(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+        } else if (TransactionType.XA == transactionType) {
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+        } else if (TransactionType.BASE == transactionType) {
+            RevertEngineHolder.getInstance().remove();
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
         }
     }
     

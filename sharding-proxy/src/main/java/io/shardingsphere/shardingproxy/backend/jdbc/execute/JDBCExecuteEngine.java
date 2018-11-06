@@ -52,8 +52,8 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Fiel
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.manager.base.SagaTransactionManager;
-import io.shardingsphere.transaction.manager.base.executor.SagaSQLExecuteCallback;
+import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
+import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -241,7 +241,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private final class ProxySagaSQLExecuteCallback extends SagaSQLExecuteCallback<ExecuteResponseUnit> {
-    
+        
         ProxySagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown) {
             super(DatabaseType.MySQL, sqlType, isExceptionThrown);
         }

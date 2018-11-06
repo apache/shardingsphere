@@ -64,13 +64,13 @@ public final class CommandPacketFactory {
             case COM_INIT_DB:
                 return new ComInitDbPacket(sequenceId, payload, frontendHandler);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
+                return new ComFieldListPacket(sequenceId, connectionId, frontendHandler.getCurrentSchema(), payload, backendConnection);
             case COM_QUERY:
                 return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
             case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(sequenceId, payload, frontendHandler);
+                return new ComStmtPreparePacket(sequenceId, frontendHandler.getCurrentSchema(), payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
+                return new ComStmtExecutePacket(sequenceId, connectionId, frontendHandler.getCurrentSchema(), payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

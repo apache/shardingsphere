@@ -23,6 +23,7 @@ import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -36,25 +37,21 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter {
     
     private final OrchestrationFacade orchestrationFacade;
-    
-    private final Map<String, DataSource> dataSourceMap;
     
     private boolean isCircuitBreak;
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        super(dataSourceMap.values());
+        super(dataSourceMap);
         this.orchestrationFacade = orchestrationFacade;
-        this.dataSourceMap = dataSourceMap;
         ShardingEventBusInstance.getInstance().register(this);
     }
     
     public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(orchestrationFacade.getConfigService().loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME).values());
+        super(DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)));
         this.orchestrationFacade = orchestrationFacade;
-        this.dataSourceMap = orchestrationFacade.getConfigService().loadDataSources(ShardingConstant.LOGIC_SCHEMA_NAME);
         ShardingEventBusInstance.getInstance().register(this);
     }
     

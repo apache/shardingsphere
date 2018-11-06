@@ -20,7 +20,6 @@ package io.shardingsphere.core.event.transaction.base;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Connection;
@@ -39,25 +38,36 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     
     private final String proxySchema;
     
+    private final SagaSQLExecutionEvent sagaSQLExecutionEvent;
+    
+    @Setter
+    private String sagaJson;
+    
     public SagaTransactionEvent(final TransactionOperationType operationType) {
         this.operationType = operationType;
         this.connection = null;
         this.proxySchema = null;
+        this.sagaSQLExecutionEvent = null;
     }
     
     public SagaTransactionEvent(final TransactionOperationType operationType, final Connection connection) {
         this.operationType = operationType;
         this.connection = connection;
         this.proxySchema = null;
+        sagaSQLExecutionEvent = null;
     }
     
     public SagaTransactionEvent(final TransactionOperationType operationType, final String proxySchema) {
         this.operationType = operationType;
         this.connection = null;
         this.proxySchema = proxySchema;
+        this.sagaSQLExecutionEvent = null;
     }
     
-    @Setter
-    private String sagaJson;
-    
+    public SagaTransactionEvent(final SagaSQLExecutionEvent event) {
+        this.operationType = TransactionOperationType.BEGIN;
+        this.connection = null;
+        this.proxySchema = null;
+        this.sagaSQLExecutionEvent = event;
+    }
 }

@@ -19,7 +19,7 @@ package io.shardingsphere.shardingjdbc.transport;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
-import io.shardingsphere.transaction.manager.base.servicecomb.ShardingTransportFactory;
+import io.shardingsphere.transaction.base.manager.servicecomb.ShardingTransportFactory;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 
 /**

@@ -17,15 +17,13 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
-import io.shardingsphere.shardingjdbc.revert.JDBCRevertEngine;
-import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,8 +40,8 @@ import java.util.Map;
  * @author zhangliang
  * @author caohao
  * @author gaohongtao
+ * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
@@ -51,16 +49,26 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final ShardingContext shardingContext;
     
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext) {
+        this(dataSourceMap, shardingContext, TransactionType.LOCAL);
+    }
+    
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
+        super(transactionType);
+        this.dataSourceMap = dataSourceMap;
+        this.shardingContext = shardingContext;
+    }
+    
     /**
      * Release connection.
      *
      * @param connection to be released connection
      */
-    public void release(final Connection connection) {
+    void release(final Connection connection) {
         removeCache(connection);
         try {
             connection.close();
-        } catch (final SQLException ignore) {
+        } catch (final SQLException ignored) {
         }
     }
     
@@ -121,23 +129,5 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-    
-    @Override
-    public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        RevertEngineHolder.getInstance().setRevertEngine(new JDBCRevertEngine(dataSourceMap));
-        super.setAutoCommit(autoCommit);
-    }
-    
-    @Override
-    public void commit() throws SQLException {
-        super.commit();
-        RevertEngineHolder.getInstance().remove();
-    }
-    
-    @Override
-    public void rollback() throws SQLException {
-        super.rollback();
-        RevertEngineHolder.getInstance().remove();
     }
 }
