@@ -2,7 +2,10 @@ grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
 
-
+grantSystemPrivileges
+    : systemObjects TO (granteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
+    ; 
+    
 systemObjects
     : systemObject(COMMA systemObject)*
     ;
