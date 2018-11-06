@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.extractor;
+package io.shardingsphere.transaction.xa.wrap.extractor;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 

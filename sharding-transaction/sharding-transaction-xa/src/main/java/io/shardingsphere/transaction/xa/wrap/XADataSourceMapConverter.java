@@ -21,8 +21,8 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
-import io.shardingsphere.transaction.xa.manager.dialect.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.manager.extractor.DataSourceParameterFactory;
+import io.shardingsphere.transaction.xa.wrap.dialect.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.wrap.extractor.DataSourceParameterFactory;
 
 import javax.sql.DataSource;
 import java.util.HashMap;

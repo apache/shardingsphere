@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.dialect;
+package io.shardingsphere.transaction.xa.wrap.dialect;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;

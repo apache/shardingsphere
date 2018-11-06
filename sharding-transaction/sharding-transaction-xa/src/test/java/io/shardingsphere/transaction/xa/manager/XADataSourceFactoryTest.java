@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.xa.manager;
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.manager.dialect.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.wrap.dialect.XADataSourceFactory;
 import org.h2.jdbcx.JdbcDataSource;
 import org.hamcrest.Matchers;
 import org.junit.Test;

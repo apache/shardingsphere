@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.atomikos;
+package io.shardingsphere.transaction.xa.wrap;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.manager.dialect.XADatabaseType;
-import io.shardingsphere.transaction.xa.manager.dialect.XAPropertyFactory;
+import io.shardingsphere.transaction.xa.wrap.dialect.XADatabaseType;
+import io.shardingsphere.transaction.xa.wrap.dialect.XAPropertyFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 

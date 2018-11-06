@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.dialect;
+package io.shardingsphere.transaction.xa.wrap.dialect;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -24,38 +24,25 @@ import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
- * Create Mysql XA property from datasource parameter.
+ * Create H2 XA property from datasource parameter.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class MysqlXAProperty {
+public class H2XAProperty {
     
     private final DataSourceParameter dataSourceParameter;
     
     /**
-     * Build Mysql XA properties.
+     * Build H2 XA properties.
      *
-     * @return Mysql XA properties
+     * @return H2 XA properties
      */
     public Properties build() {
         Properties result = new Properties();
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
         result.setProperty("URL", dataSourceParameter.getUrl());
-        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
-        result.setProperty("autoReconnect", Boolean.TRUE.toString());
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "250");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
-        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
-        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        result.setProperty("netTimeoutForStreamingResults", "0");
         return result;
     }
 }

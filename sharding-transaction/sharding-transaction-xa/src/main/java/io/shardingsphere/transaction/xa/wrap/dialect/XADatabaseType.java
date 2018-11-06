@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.dialect;
+package io.shardingsphere.transaction.xa.wrap.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
