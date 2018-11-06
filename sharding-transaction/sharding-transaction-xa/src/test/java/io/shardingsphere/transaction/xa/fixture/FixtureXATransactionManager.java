@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.fixture;
+package io.shardingsphere.transaction.xa.fixture;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
@@ -47,11 +46,6 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public int getStatus() {
         return Status.STATUS_NO_TRANSACTION;
-    }
-    
-    @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.XA;
     }
     
     @Override

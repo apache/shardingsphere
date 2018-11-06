@@ -15,18 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.transaction.xa.convert.dialect;
 
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import org.h2.jdbcx.JdbcDataSource;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.postgresql.xa.PGXADataSource;
 
 import javax.sql.XADataSource;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public class XADataSourceFactoryTest {
@@ -34,24 +34,24 @@ public class XADataSourceFactoryTest {
     @Test
     public void assertCreateH2XADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.H2);
-        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(JdbcDataSource.class));
+        assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
     }
     
     @Test
     public void assertCreateMysqlXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
-        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(MysqlXADataSource.class));
+        assertThat(xaDataSource, instanceOf(MysqlXADataSource.class));
     }
     
     @Test
     public void assertCreatePGXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.PostgreSQL);
-        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(PGXADataSource.class));
+        assertThat(xaDataSource, instanceOf(PGXADataSource.class));
     }
     
     @Test
     public void assertCreateMSXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.SQLServer);
-        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(SQLServerXADataSource.class));
+        assertThat(xaDataSource, instanceOf(SQLServerXADataSource.class));
     }
 }

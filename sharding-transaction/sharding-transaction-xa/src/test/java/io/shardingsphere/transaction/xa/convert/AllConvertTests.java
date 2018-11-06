@@ -15,14 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.xa.convert;
 
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
+import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactoryTest;
+import io.shardingsphere.transaction.xa.convert.dialect.XAPropertyFactoryTest;
+import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(AllManagerTests.class)
-public final class AllTests {
+@Suite.SuiteClasses({
+    XADataSourceMapConverterTest.class,
+    XADataSourceFactoryTest.class,
+    XAPropertyFactoryTest.class,
+    DataSourceParameterFactoryTest.class
+})
+public class AllConvertTests {
 }

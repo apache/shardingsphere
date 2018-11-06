@@ -15,12 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.transaction.xa.convert;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.manager.convert.DataSourceParameterFactory;
+import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactory;
+import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -34,15 +36,21 @@ import java.util.Map.Entry;
  */
 public final class XADataSourceMapConverter implements DataSourceMapConverter {
     
-    private static final XATransactionManager XA_MANAGER = XATransactionManagerSPILoader.getInstance().getTransactionManager();
+    private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Override
     public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = XA_MANAGER.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
-            result.put(entry.getKey(), dataSource);
+        try {
+            for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+                DataSource dataSource = xaTransactionManager.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
+                result.put(entry.getKey(), dataSource);
+            }
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            return result;
         }
-        return result;
     }
 }

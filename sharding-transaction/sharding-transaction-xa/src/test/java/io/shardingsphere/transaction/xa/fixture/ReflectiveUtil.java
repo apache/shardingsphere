@@ -15,13 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.fixture;
+package io.shardingsphere.transaction.xa.fixture;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Reflective utility.
@@ -52,7 +55,7 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @return field
      */
-    public static Field getField(final Object target, final String fieldName) {
+    private static Field getField(final Object target, final String fieldName) {
         Class clazz = target.getClass();
         while (clazz != null) {
             try {
@@ -64,5 +67,37 @@ public final class ReflectiveUtil {
             clazz = clazz.getSuperclass();
         }
         return null;
+    }
+    
+    /**
+     * Set value to specified field.
+     * @param target target
+     * @param fieldName field name
+     * @param value value
+     */
+    @SneakyThrows
+    public static void setProperty(final Object target, final String fieldName, final Object value) {
+        Field field = getField(target, fieldName);
+        Preconditions.checkNotNull(field);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+    
+    /**
+     * Invoke target method.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @return Object method return result
+     */
+    @SneakyThrows
+    public static Object methodInvoke(final Object target, final String methodName) {
+        Method method = target.getClass().getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        try {
+            return method.invoke(target);
+        } catch (InvocationTargetException ex) {
+            throw ex.getTargetException();
+        }
     }
 }

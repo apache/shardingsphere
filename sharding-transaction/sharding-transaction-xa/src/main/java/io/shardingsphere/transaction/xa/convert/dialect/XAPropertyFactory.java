@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.property;
+package io.shardingsphere.transaction.xa.convert.dialect;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
@@ -41,7 +41,11 @@ public class XAPropertyFactory {
     public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
         switch (xaDatabaseType) {
             case MySQL:
-                return new MysqlXAPropertyFactory(dataSourceParameter).build();
+                return new MysqlXAProperty(dataSourceParameter).build();
+            case PostgreSQL:
+                return new PGXAProperty(dataSourceParameter).build();
+            case H2:
+                return new H2XAProperty(dataSourceParameter).build();
             default:
                 return new Properties();
         }

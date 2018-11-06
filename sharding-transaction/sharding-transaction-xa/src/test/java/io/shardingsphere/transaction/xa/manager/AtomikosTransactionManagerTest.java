@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.atomikos;
+package io.shardingsphere.transaction.xa.manager;
 
+import com.atomikos.beans.PropertyException;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
@@ -24,8 +25,8 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,11 +37,12 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -52,63 +54,67 @@ public final class AtomikosTransactionManagerTest {
     @Mock
     private UserTransactionManager userTransactionManager;
     
+    private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
+    
     @Before
     @SneakyThrows
     public void setUp() {
-        Field field = AtomikosTransactionManager.class.getDeclaredField("USER_TRANSACTION_MANAGER");
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, userTransactionManager);
+        ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
+    }
+    
+    @Test(expected = ShardingException.class)
+    @SneakyThrows
+    public void assertUnderlyingTransactionManagerInitFailed() {
+        doThrow(SystemException.class).when(userTransactionManager).init();
+        ReflectiveUtil.methodInvoke(atomikosTransactionManager, "init");
     }
     
     @Test
     public void assertBeginWithoutException() throws Exception {
-        new AtomikosTransactionManager().begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         verify(userTransactionManager).begin();
     }
     
     @Test(expected = ShardingException.class)
     public void assertBeginWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).begin();
-        new AtomikosTransactionManager().begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
     }
     
     @Test
     public void assertCommitWithoutException() throws Exception {
-        new AtomikosTransactionManager().commit(new XATransactionEvent(TransactionOperationType.COMMIT));
+        atomikosTransactionManager.commit(new XATransactionEvent(TransactionOperationType.COMMIT));
         verify(userTransactionManager).commit();
     }
     
     @Test(expected = ShardingException.class)
     public void assertCommitWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).commit();
-        new AtomikosTransactionManager().commit(new XATransactionEvent(TransactionOperationType.COMMIT));
+        atomikosTransactionManager.commit(new XATransactionEvent(TransactionOperationType.COMMIT));
     }
     
     @Test
     public void assertRollbackWithoutException() throws Exception {
-        new AtomikosTransactionManager().rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+        atomikosTransactionManager.rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         verify(userTransactionManager).rollback();
     }
     
     @Test(expected = ShardingException.class)
     public void assertRollbackWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).rollback();
-        new AtomikosTransactionManager().rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+        atomikosTransactionManager.rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
     }
     
     @Test
     public void assertGetStatusWithoutException() throws Exception {
         when(userTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        assertThat(new AtomikosTransactionManager().getStatus(), is(Status.STATUS_ACTIVE));
+        assertThat(atomikosTransactionManager.getStatus(), is(Status.STATUS_ACTIVE));
     }
     
     @Test(expected = ShardingException.class)
     public void assertGetStatusWithException() throws Exception {
         when(userTransactionManager.getStatus()).thenThrow(SystemException.class);
-        new AtomikosTransactionManager().getStatus();
+        atomikosTransactionManager.getStatus();
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -116,7 +122,7 @@ public final class AtomikosTransactionManagerTest {
         XADataSource xaDataSource = mock(XADataSource.class);
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setMaximumPoolSize(10);
-        new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }
     
     @Test
@@ -127,7 +133,22 @@ public final class AtomikosTransactionManagerTest {
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setUrl("db:url");
         dataSourceParameter.setMaximumPoolSize(10);
-        DataSource actual = new AtomikosTransactionManager().wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
-        assertThat(actual, CoreMatchers.<DataSource>instanceOf(AtomikosDataSourceBean.class));
+        DataSource actual = atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        assertThat(actual, instanceOf(AtomikosDataSourceBean.class));
+    }
+    
+    @Test(expected = ShardingException.class)
+    @SneakyThrows
+    public void assertWrapDataSourceFailed() {
+        XATransactionDataSourceWrapper xaDataSourceWrapper = mock(XATransactionDataSourceWrapper.class);
+        doThrow(PropertyException.class).when(xaDataSourceWrapper).wrap((XADataSource) any(), anyString(), (DataSourceParameter) any());
+        ReflectiveUtil.setProperty(atomikosTransactionManager, "xaDataSourceWrapper", xaDataSourceWrapper);
+        DataSourceParameter dataSourceParameter = new DataSourceParameter();
+        dataSourceParameter.setUsername("root");
+        dataSourceParameter.setPassword("root");
+        dataSourceParameter.setUrl("db:url");
+        dataSourceParameter.setMaximumPoolSize(10);
+        XADataSource xaDataSource = new MysqlXADataSource();
+        atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }
 }

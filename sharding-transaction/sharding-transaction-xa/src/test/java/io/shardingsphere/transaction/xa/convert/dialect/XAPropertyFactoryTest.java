@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.property;
+package io.shardingsphere.transaction.xa.convert.dialect;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 import org.junit.Before;
@@ -37,6 +37,9 @@ public class XAPropertyFactoryTest {
         dataSourceParameter.setUsername("root");
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setMaximumPoolSize(100);
+        dataSourceParameter.setConnectionTimeout(1000);
+        dataSourceParameter.setIdleTimeout(1000);
+        dataSourceParameter.setMaxLifetime(60000);
     }
     
     @Test
@@ -62,10 +65,22 @@ public class XAPropertyFactoryTest {
     
     @Test
     public void assertGetH2XAProperties() {
+        dataSourceParameter.setUrl("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.H2, dataSourceParameter);
+        assertThat(xaProperties.getProperty("user"), is("root"));
+        assertThat(xaProperties.getProperty("password"), is("root"));
+        assertThat(xaProperties.getProperty("URL"), is("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"));
     }
     
     @Test
     public void assertGetPGXAProperties() {
+        dataSourceParameter.setUrl("jdbc:postgresql://db.psql:5432/test_db");
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.PostgreSQL, dataSourceParameter);
+        assertThat(xaProperties.getProperty("user"), is("root"));
+        assertThat(xaProperties.getProperty("password"), is("root"));
+        assertThat(xaProperties.getProperty("serverName"), is("db.psql"));
+        assertThat(xaProperties.getProperty("portNumber"), is("5432"));
+        assertThat(xaProperties.getProperty("databaseName"), is("test_db"));
     }
     
     @Test

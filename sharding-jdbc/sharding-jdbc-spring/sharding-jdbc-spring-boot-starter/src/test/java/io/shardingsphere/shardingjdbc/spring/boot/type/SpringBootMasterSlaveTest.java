@@ -54,7 +54,7 @@ public class SpringBootMasterSlaveTest {
     @Test
     public void assertWithMasterSlaveDataSource() {
         assertTrue(dataSource instanceof MasterSlaveDataSource);
-        for (DataSource each : ((MasterSlaveDataSource) dataSource).getAllDataSources().values()) {
+        for (DataSource each : ((MasterSlaveDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
         Map<String, Object> configMap = new ConcurrentHashMap<>();

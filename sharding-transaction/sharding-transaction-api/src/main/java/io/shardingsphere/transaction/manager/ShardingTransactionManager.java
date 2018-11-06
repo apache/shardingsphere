@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.manager;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 
@@ -62,11 +61,4 @@ public interface ShardingTransactionManager<T extends ShardingTransactionEvent> 
      * @throws ShardingException sharding exception
      */
     int getStatus() throws ShardingException;
-    
-    /**
-     * Get type of sharding transaction manager.
-     *
-     * @return transaction type
-     */
-    TransactionType getTransactionType();
 }

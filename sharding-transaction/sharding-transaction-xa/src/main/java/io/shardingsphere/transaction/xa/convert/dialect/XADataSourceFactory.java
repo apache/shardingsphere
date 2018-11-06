@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.transaction.xa.convert.dialect;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.xa.manager.property.XADatabaseType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

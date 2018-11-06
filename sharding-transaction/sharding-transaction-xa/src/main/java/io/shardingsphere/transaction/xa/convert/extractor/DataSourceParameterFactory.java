@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.convert;
+package io.shardingsphere.transaction.xa.convert.extractor;
 
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -40,13 +40,15 @@ public class DataSourceParameterFactory {
      */
     public static DataSourceParameter build(final DataSource dataSource) {
         switch (PoolType.find(dataSource.getClass().getName())) {
-            case HIKARI:
             case DRUID:
-            case DBCP:
-            case DBCP_TOMCAT:
-                return new DBCPTomcatConverter(dataSource).convertTo();
+                return new DruidDataSourceParameterExtractor(dataSource).extract();
+            case DBCP2:
+            case DBCP2_TOMCAT:
+                return new DBCPDataSourceParameterExtractor(dataSource).extract();
+            case HIKARI:
+                return new HikariDataSourceParameterExtractor(dataSource).extract();
             default:
-                return null;
+                return new DataSourceParameter();
         }
     }
 }
