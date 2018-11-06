@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.fixture;
+package io.shardingsphere.transaction.xa.fixture;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

@@ -15,17 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.wrap;
+package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.manager.XATransactionDataSourceWrapper;
-import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import io.shardingsphere.transaction.xa.wrap.dialect.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.manager.fixture.ReflectiveUtil;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import io.shardingsphere.transaction.xa.wrap.dialect.XADatabaseType;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.hamcrest.MatcherAssert;

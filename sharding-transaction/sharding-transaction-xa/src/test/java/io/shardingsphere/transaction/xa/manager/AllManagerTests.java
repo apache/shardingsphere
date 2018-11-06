@@ -17,9 +17,10 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
+import io.shardingsphere.transaction.xa.wrap.XADataSourceMapConverterTest;
+import io.shardingsphere.transaction.xa.wrap.dialect.XADataSourceFactoryTest;
 import io.shardingsphere.transaction.xa.wrap.extractor.DataSourceParameterFactoryTest;
 import io.shardingsphere.transaction.xa.wrap.dialect.XAPropertyFactoryTest;
-import io.shardingsphere.transaction.xa.wrap.XATransactionDataSourceWrapperTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

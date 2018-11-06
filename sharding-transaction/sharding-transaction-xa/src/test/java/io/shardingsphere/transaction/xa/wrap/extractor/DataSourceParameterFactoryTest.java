@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.wrap.extractor;
 
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.manager.fixture.DataSourceUtils;
+import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
