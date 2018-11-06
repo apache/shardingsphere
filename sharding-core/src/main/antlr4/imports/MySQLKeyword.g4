@@ -22,10 +22,6 @@ ANALYZE
     : A N A L Y Z E
     ;
 
-AT_
-    : A T UL_
-    ;
-
 AUDIT_ADMIN
     : A U D I T UL_ A D M I N
     ;
