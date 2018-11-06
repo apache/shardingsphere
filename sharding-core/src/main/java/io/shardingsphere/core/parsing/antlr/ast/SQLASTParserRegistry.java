@@ -18,14 +18,14 @@
 package io.shardingsphere.core.parsing.antlr.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerStatementASTParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.MySQLStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.OracleStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreSQLStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antlr.parser.dialect.SQLServerStatementAdvancedParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.Lexer;
@@ -34,16 +34,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement parser registry.
+ * SQL AST parser registry.
  * 
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementParserRegistry {
+public final class SQLASTParserRegistry {
     
     private static final Map<DatabaseType, Class<? extends Lexer>> LEXER_CLASSES = new HashMap<>();
     
-    private static final Map<DatabaseType, Class<? extends SQLStatementParser>> PARSER_CLASSES = new HashMap<>();
+    private static final Map<DatabaseType, Class<? extends SQLASTParser>> PARSER_CLASSES = new HashMap<>();
     
     static {
         registerLexer();
@@ -59,11 +59,11 @@ public final class SQLStatementParserRegistry {
     }
     
     private static void registerParser() {
-        PARSER_CLASSES.put(DatabaseType.H2, MySQLStatementAdvancedParser.class);
-        PARSER_CLASSES.put(DatabaseType.MySQL, MySQLStatementAdvancedParser.class);
-        PARSER_CLASSES.put(DatabaseType.PostgreSQL, PostgreSQLStatementAdvancedParser.class);
-        PARSER_CLASSES.put(DatabaseType.SQLServer, SQLServerStatementAdvancedParser.class);
-        PARSER_CLASSES.put(DatabaseType.Oracle, OracleStatementAdvancedParser.class);
+        PARSER_CLASSES.put(DatabaseType.H2, MySQLStatementASTParser.class);
+        PARSER_CLASSES.put(DatabaseType.MySQL, MySQLStatementASTParser.class);
+        PARSER_CLASSES.put(DatabaseType.PostgreSQL, PostgreSQLStatementASTParser.class);
+        PARSER_CLASSES.put(DatabaseType.SQLServer, SQLServerStatementASTParser.class);
+        PARSER_CLASSES.put(DatabaseType.Oracle, OracleStatementASTParser.class);
     }
     
     /**
@@ -82,7 +82,7 @@ public final class SQLStatementParserRegistry {
      * @param databaseType database type
      * @return parser class
      */
-    public static Class<? extends SQLStatementParser> getParserClass(final DatabaseType databaseType) {
+    public static Class<? extends SQLASTParser> getParserClass(final DatabaseType databaseType) {
         return PARSER_CLASSES.get(databaseType);
     }
 }

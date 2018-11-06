@@ -15,25 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.parser.dialect;
+package io.shardingsphere.core.parsing.antlr.ast.dialect;
 
 import io.shardingsphere.core.parsing.antlr.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antlr.AdvancedParserATNSimulator;
-import io.shardingsphere.core.parsing.antlr.ast.SQLStatementParser;
-import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementParser;
+import io.shardingsphere.core.parsing.antlr.ast.SQLASTParser;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementParser;
 import io.shardingsphere.core.parsing.antlr.util.AntlrUtils;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * SQLServer statement parser.
+ * Postgre statement AST parser.
  * 
  * @author duhongjun
  */
-public final class SQLServerStatementAdvancedParser extends SQLServerStatementParser implements SQLStatementParser {
+public final class PostgreSQLStatementASTParser extends PostgreSQLStatementParser implements SQLASTParser {
     
-    public SQLServerStatementAdvancedParser(final TokenStream input) {
+    public PostgreSQLStatementASTParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         _errHandler = new AdvancedErrorStrategy(ID);

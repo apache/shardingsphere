@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.parser;
+package io.shardingsphere.core.parsing.antlr;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.ast.SQLStatementParserFactory;
+import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
 import io.shardingsphere.core.parsing.antlr.visitor.VisitorRegistry;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.StatementVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -29,13 +29,13 @@ import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Use AST generate SQLStatement.
+ * Parsing engine for Antlr.
  *
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatementFactory {
-
+public final class AntlrParsingEngine {
+    
     /**
      * Parse SQL.
      *
@@ -46,7 +46,7 @@ public final class StatementFactory {
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext rootContext = SQLStatementParserFactory.newInstance(dbType, sql).execute();
+        ParserRuleContext rootContext = SQLASTParserFactory.newInstance(dbType, sql).execute();
         if (null == rootContext) {
             return null;
         }

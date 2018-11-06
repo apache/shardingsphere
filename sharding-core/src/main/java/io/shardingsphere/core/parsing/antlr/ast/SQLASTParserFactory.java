@@ -28,13 +28,13 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * SQL statement parser factory.
+ * SQL AST parser factory.
  * 
  * @author duhongjun
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementParserFactory {
+public final class SQLASTParserFactory {
     
     /** 
      * New instance of SQL statement parser.
@@ -43,21 +43,21 @@ public final class SQLStatementParserFactory {
      * @param sql SQL
      * @return SQL statement parser
      */
-    public static SQLStatementParser newInstance(final DatabaseType databaseType, final String sql) {
+    public static SQLASTParser newInstance(final DatabaseType databaseType, final String sql) {
         return newParser(databaseType, newLexer(databaseType, sql));
     }
     
     private static Lexer newLexer(final DatabaseType databaseType, final String sql) {
         try {
-            return SQLStatementParserRegistry.getLexerClass(databaseType).getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
+            return SQLASTParserRegistry.getLexerClass(databaseType).getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingException(ex);
         }
     }
     
-    private static SQLStatementParser newParser(final DatabaseType databaseType, final Lexer lexer) {
+    private static SQLASTParser newParser(final DatabaseType databaseType, final Lexer lexer) {
         try {
-            return SQLStatementParserRegistry.getParserClass(databaseType).getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
+            return SQLASTParserRegistry.getParserClass(databaseType).getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingException(ex);
         }
