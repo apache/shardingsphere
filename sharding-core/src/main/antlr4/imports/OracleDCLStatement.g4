@@ -1,6 +1,10 @@
 grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
+granteeClause
+    : grantee (COMMA grantee)
+    ;
+    
 grantee
     : userName 
     | roleName 
