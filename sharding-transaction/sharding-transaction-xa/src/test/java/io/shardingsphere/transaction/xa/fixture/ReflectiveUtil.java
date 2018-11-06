@@ -55,7 +55,7 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @return field
      */
-    public static Field getField(final Object target, final String fieldName) {
+    private static Field getField(final Object target, final String fieldName) {
         Class clazz = target.getClass();
         while (clazz != null) {
             try {
@@ -88,13 +88,14 @@ public final class ReflectiveUtil {
      *
      * @param target target object
      * @param methodName method name
+     * @return Object method return result
      */
     @SneakyThrows
-    public static void methodInvoke(final Object target, final String methodName) {
+    public static Object methodInvoke(final Object target, final String methodName) {
         Method method = target.getClass().getDeclaredMethod(methodName);
         method.setAccessible(true);
         try {
-            method.invoke(target);
+            return method.invoke(target);
         } catch (InvocationTargetException ex) {
             throw ex.getTargetException();
         }
