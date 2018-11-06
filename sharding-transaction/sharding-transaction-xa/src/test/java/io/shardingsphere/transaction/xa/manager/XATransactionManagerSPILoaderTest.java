@@ -67,4 +67,16 @@ public final class XATransactionManagerSPILoaderTest {
         assertThat(actual, is(atomikosTransactionManager));
     }
     
+    @Test
+    @SuppressWarnings("unchecked")
+    public void assertXaTransactionManagerIsEmpty() {
+        NewInstanceServiceLoader<XATransactionManager> serviceLoader = mock(NewInstanceServiceLoader.class);
+        Collection<XATransactionManager> xaTransactionManagers = mock(Collection.class);
+        when(serviceLoader.newServiceInstances()).thenReturn(xaTransactionManagers);
+        when(xaTransactionManagers.isEmpty()).thenReturn(true);
+        XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
+        ReflectiveUtil.setProperty(spiLoader, "serviceLoader", serviceLoader);
+        XATransactionManager actual = (XATransactionManager) ReflectiveUtil.methodInvoke(spiLoader, "load");
+        assertThat(actual, instanceOf(AtomikosTransactionManager.class));
+    }
 }
