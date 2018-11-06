@@ -2,6 +2,14 @@ grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
 
+grant
+    : GRANT
+    (
+    	(grantSystemPrivileges | grantObjectPrivileges) (CONTAINER EQ_OR_ASSIGN (CURRENT | ALL))?
+        | grantRolesToPrograms
+    )
+    ;
+    
 grantSystemPrivileges
     : systemObjects TO (granteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
     ; 
