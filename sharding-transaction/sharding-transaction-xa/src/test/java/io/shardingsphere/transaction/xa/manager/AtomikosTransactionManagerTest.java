@@ -24,6 +24,7 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,8 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -56,9 +58,19 @@ public final class AtomikosTransactionManagerTest {
     @Before
     @SneakyThrows
     public void setUp() {
-        Field field = AtomikosTransactionManager.class.getDeclaredField("underlyingTransactionManager");
-        field.setAccessible(true);
-        field.set(atomikosTransactionManager, userTransactionManager);
+        ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertUnderlyingTransactionManagerInitFailed() throws Throwable {
+        doThrow(SystemException.class).when(userTransactionManager).init();
+        Method method = atomikosTransactionManager.getClass().getDeclaredMethod("init");
+        method.setAccessible(true);
+        try {
+            method.invoke(atomikosTransactionManager);
+        } catch (InvocationTargetException ex) {
+            throw ex.getTargetException();
+        }
     }
     
     @Test
