@@ -19,6 +19,8 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
@@ -26,7 +28,7 @@ import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -51,6 +53,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -80,7 +83,6 @@ public final class ComQueryPacketTest {
     
     @Before
     public void setUp() {
-        setNIOConfig();
         setShardingSchemas();
         setFrontendHandlerSchema();
     }
@@ -92,18 +94,11 @@ public final class ComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setNIOConfig() {
-        Field field = GlobalRegistry.class.getDeclaredField("useNIO");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), true);
-    }
-    
-    @SneakyThrows
     private void setShardingSchemas() {
         ShardingSchema shardingSchema = mock(ShardingSchema.class);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
-        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
+        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
@@ -114,9 +109,15 @@ public final class ComQueryPacketTest {
     
     @SneakyThrows
     private void setTransactionType(final TransactionType transactionType) {
-        Field transactionTypeField = GlobalRegistry.class.getDeclaredField("transactionType");
-        transactionTypeField.setAccessible(true);
-        transactionTypeField.set(GlobalRegistry.getInstance(), transactionType);
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), getShardingProperties(transactionType));
+    }
+    
+    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
+        return new ShardingProperties(props);
     }
     
     @Test
@@ -130,6 +131,7 @@ public final class ComQueryPacketTest {
     
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException {
+        setTransactionType(TransactionType.LOCAL);
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
         BackendHandler backendHandler = mock(BackendHandler.class);
         when(backendHandler.next()).thenReturn(true, false);
@@ -179,14 +181,14 @@ public final class ComQueryPacketTest {
     }
     
     @Test
-    public void assertExecuteRollbackWithXATransaction() {
+    public void assertExecuteRollbackWithXATransaction() throws SQLException {
         setTransactionType(TransactionType.XA);
-        when(payload.readStringEOF()).thenReturn("ROLLBACK");
+        when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

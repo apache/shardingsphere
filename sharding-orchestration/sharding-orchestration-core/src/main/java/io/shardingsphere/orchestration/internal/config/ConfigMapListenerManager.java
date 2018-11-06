@@ -45,8 +45,7 @@ public final class ConfigMapListenerManager implements ListenerManager {
     
     @Override
     public void watch() {
-        String cachePath = configNode.getConfigMapPath();
-        regCenter.watch(cachePath, new EventListener() {
+        regCenter.watch(configNode.getConfigMapPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
