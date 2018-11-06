@@ -53,6 +53,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     
     @Override
     public void commit(final SagaTransactionEvent transactionEvent) {
+        // TODO Analyse the result of saga coordinator.run, if run failed, throw exception
         coordinator.run(transactionEvent.getSagaJson());
         TRANSACTION_IDS.remove();
         ShardingTransportFactorySPILoader.getInstance().getTransportFactory().remove();

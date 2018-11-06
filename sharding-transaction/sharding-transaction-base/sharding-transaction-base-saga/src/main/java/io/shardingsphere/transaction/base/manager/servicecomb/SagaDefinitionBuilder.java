@@ -32,18 +32,32 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author yangyi
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 public final class SagaDefinitionBuilder {
     
     private static final String TYPE = "sql";
     
-    private static final String POLICY = "BackwardRecovery";
+    private static final String POLICY = "ForwardRecovery";
+    
+    private static final int DEFAULT_RETIRES = 5;
+    
+    private static final int DEFAULT_FAIL_RETRY_DELAY = 5000;
+    
+    private final int transactionRetires;
+    
+    private final int compensationRetires;
+    
+    private final int failRetryDelay;
+    
+    private final ConcurrentLinkedQueue<Object> requests = new ConcurrentLinkedQueue<>();
     
     private String[] parents = new String[]{};
     
     private ConcurrentLinkedQueue<Object> newRequestIds = new ConcurrentLinkedQueue<>();
     
-    private ConcurrentLinkedQueue<Object> requests = new ConcurrentLinkedQueue<>();
+    public SagaDefinitionBuilder() {
+        this(DEFAULT_RETIRES, DEFAULT_RETIRES, DEFAULT_FAIL_RETRY_DELAY);
+    }
     
     /**
      * Add child request node to definition graph.
@@ -57,9 +71,9 @@ public final class SagaDefinitionBuilder {
      */
     public void addChildRequest(final String id, final String datasource, final String sql, final List<List<Object>> params,
                                 final String compensationSql, final List<Collection<Object>> compensationParams) {
-        Transaction transaction = new Transaction(sql, params);
-        Compensation compensation = new Compensation(compensationSql, compensationParams);
-        requests.add(new SagaRequest(id, datasource, TYPE, transaction, compensation, parents));
+        Transaction transaction = new Transaction(sql, params, transactionRetires);
+        Compensation compensation = new Compensation(compensationSql, compensationParams, compensationRetires);
+        requests.add(new SagaRequest(id, datasource, TYPE, transaction, compensation, parents, failRetryDelay));
         newRequestIds.add(id);
     }
     
@@ -98,6 +112,8 @@ public final class SagaDefinitionBuilder {
         private final Compensation compensation;
         
         private final String[] parents;
+        
+        private final int failRetryDelayMilliseconds;
     }
     
     @RequiredArgsConstructor
@@ -107,6 +123,8 @@ public final class SagaDefinitionBuilder {
         private final String sql;
         
         private final List<List<Object>> params;
+        
+        private final int retries;
     }
     
     @RequiredArgsConstructor
@@ -116,5 +134,7 @@ public final class SagaDefinitionBuilder {
         private final String sql;
         
         private final List<Collection<Object>> params;
+        
+        private final int retries;
     }
 }
