@@ -18,19 +18,19 @@
 package io.shardingsphere.core.parsing.antlr.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antler.parser.StatementFactory;
-import io.shardingsphere.core.parsing.antler.parser.dialect.MySQLStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.dialect.OracleStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.dialect.PostgreStatementAdvancedParser;
-import io.shardingsphere.core.parsing.antler.parser.dialect.SQLServerStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.StatementFactory;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.MySQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.OracleStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.PostgreSQLStatementAdvancedParser;
+import io.shardingsphere.core.parsing.antlr.parser.dialect.SQLServerStatementAdvancedParser;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
-import io.shardingsphere.parser.antlr.MySQLStatementLexer;
-import io.shardingsphere.parser.antlr.OracleStatementLexer;
-import io.shardingsphere.parser.antlr.PostgreStatementLexer;
-import io.shardingsphere.parser.antlr.SQLServerStatementLexer;
 import io.shardingsphere.test.sql.AntlrSQLCasesLoader;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
@@ -87,7 +87,7 @@ public final class IntegrateDDLParsingTest extends AbstractBaseIntegrateSQLParsi
                 execute(OracleStatementLexer.class, OracleStatementAdvancedParser.class, charStream);
                 break;
             case PostgreSQL:
-                execute(PostgreStatementLexer.class, PostgreStatementAdvancedParser.class, charStream);
+                execute(PostgreSQLStatementLexer.class, PostgreSQLStatementAdvancedParser.class, charStream);
                 break;
             case SQLServer:
                 execute(SQLServerStatementLexer.class, SQLServerStatementAdvancedParser.class, charStream);

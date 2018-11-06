@@ -37,6 +37,7 @@ roleName: ID;
 partitionName: ID;
 rewriteRuleName: ID;
 ownerName: ID;
+userName: ID;
 
 ifExists
     : IF EXISTS;

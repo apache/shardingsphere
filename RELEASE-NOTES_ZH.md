@@ -1,5 +1,20 @@
 ## 3.0.1
 
+### API调整
+
+1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) 调整数据库治理模块的注册中心存储结构
+
+### Bug Fixes
+
+#### Core
+
+1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
+
+#### Sharding-Proxy
+
+1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式时，使用`PreparedStatement`异常
+1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) 多逻辑数据源配置时，`SHOW CREATE TABLE tb_name`语句执行异常
+
 ## 3.0.0
 
 ### 里程碑
