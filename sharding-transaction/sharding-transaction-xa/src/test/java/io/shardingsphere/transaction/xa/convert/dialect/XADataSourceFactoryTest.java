@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.xa.convert.dialect;
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
+import oracle.jdbc.xa.client.OracleXADataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 import org.postgresql.xa.PGXADataSource;
@@ -53,5 +54,11 @@ public class XADataSourceFactoryTest {
     public void assertCreateMSXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.SQLServer);
         assertThat(xaDataSource, instanceOf(SQLServerXADataSource.class));
+    }
+    
+    @Test
+    public void assertCreateOracleXADataSource() {
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.Oracle);
+        assertThat(xaDataSource, instanceOf(OracleXADataSource.class));
     }
 }
