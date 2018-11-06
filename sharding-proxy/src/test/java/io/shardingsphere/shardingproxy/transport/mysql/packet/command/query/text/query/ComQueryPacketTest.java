@@ -89,7 +89,7 @@ public final class ComQueryPacketTest {
     
     @After
     public void tearDown() {
-        setTransactionType(null);
+        setTransactionType(TransactionType.LOCAL);
         FixedXAShardingTransactionHandler.getInvokes().clear();
     }
     
@@ -116,7 +116,8 @@ public final class ComQueryPacketTest {
     
     private ShardingProperties getShardingProperties(final TransactionType transactionType) {
         Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType != TransactionType.LOCAL));
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), String.valueOf(transactionType));
         return new ShardingProperties(props);
     }
     
