@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import lombok.NoArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 
@@ -52,7 +53,7 @@ public final class DataSourceUtils {
             case DRUID:
                 return newDruidDataSource(databaseType);
             default:
-                return newHikariDataSource(databaseType);
+                return Mockito.mock(DataSource.class);
         }
     }
     

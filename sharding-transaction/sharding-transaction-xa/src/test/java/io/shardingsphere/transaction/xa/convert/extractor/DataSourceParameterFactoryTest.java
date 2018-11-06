@@ -23,8 +23,11 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class DataSourceParameterFactoryTest {
     
@@ -50,6 +53,12 @@ public class DataSourceParameterFactoryTest {
     public void assertBuildParameterFromDBCP2() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL));
         assertThatParameter(parameter);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertBuildParameterFromUnsupportedDataSource() {
+        DataSource dataSource = mock(DataSource.class);
+        DataSourceParameterFactory.build(dataSource);
     }
     
     private void assertThatParameter(final DataSourceParameter parameter) {
