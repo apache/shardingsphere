@@ -1,7 +1,12 @@
 grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
-
+grantee
+    : userName 
+    | roleName 
+    | PUBLIC 
+    ;
+    
 granteeIdentifiedBy
     : userName (COMMA userName)* IDENTIFIED BY STRING (COMMA STRING)*
     ;
