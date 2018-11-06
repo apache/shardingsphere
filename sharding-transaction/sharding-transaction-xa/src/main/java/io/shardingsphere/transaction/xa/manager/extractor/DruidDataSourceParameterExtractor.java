@@ -35,7 +35,6 @@ public final class DruidDataSourceParameterExtractor extends DataSourceParameter
     @Override
     protected void convertProperties() {
         DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
-        dataSourceConfiguration.getProperties().put("url", dataSourceConfiguration.getProperties().get("jdbcUrl"));
         dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxActive"));
         // TODO need to be researched for maxIdle
         dataSourceConfiguration.getProperties().put("idleTimeout", dataSourceConfiguration.getProperties().get("maxIdle"));
