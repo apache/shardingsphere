@@ -23,7 +23,7 @@ execute
     | beginWork
     | setVariable
     | grantPriveleges
-    | grantProxys
+    | grantProxy
     | grantRoles
     ;
  

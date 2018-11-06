@@ -82,7 +82,7 @@ userOrRoles
     ;
 
 //grant.html
-grantProxys
+grantProxy
     : GRANT PROXY ON userOrRole
     TO userOrRoles
     (WITH GRANT OPTION)?
