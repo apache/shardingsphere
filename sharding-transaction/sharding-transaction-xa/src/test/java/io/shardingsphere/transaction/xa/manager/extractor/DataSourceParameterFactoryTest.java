@@ -39,10 +39,13 @@ public class DataSourceParameterFactoryTest {
     public void assertBuildParameterFromDBCPTomcat() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP_TOMCAT));
         assertThat(parameter.getOriginPoolType(), is(PoolType.DBCP_TOMCAT));
-        assertThat(parameter.getUrl(), is("jdbc:mysql://localhost:3306"));
+        assertThat(parameter.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(parameter.getUsername(), is("root"));
         assertThat(parameter.getPassword(), is("root"));
         assertThat(parameter.getMaximumPoolSize(), is(10));
+        assertThat(parameter.getIdleTimeout(), is(200L));
+        assertThat(parameter.getConnectionTimeout(), is(2000L));
+        assertThat(parameter.getMaxLifetime(), is(100000L));
     }
     
     @Test
