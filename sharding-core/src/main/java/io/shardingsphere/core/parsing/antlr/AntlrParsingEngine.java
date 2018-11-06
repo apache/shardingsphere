@@ -20,8 +20,10 @@ package io.shardingsphere.core.parsing.antlr;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
-import io.shardingsphere.core.parsing.antlr.visitor.VisitorRegistry;
+import io.shardingsphere.core.parsing.antlr.visitor.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.visitor.registry.VisitorRegistry;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.StatementVisitor;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
@@ -48,19 +50,13 @@ public final class AntlrParsingEngine {
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         ParserRuleContext rootContext = SQLASTParserFactory.newInstance(dbType, sql).execute();
         if (null == rootContext) {
-            return null;
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
         ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
-        StatementVisitor visitor = VisitorRegistry.getVisitor(dbType, getCommandName(parserRuleContext));
+        StatementVisitor visitor = VisitorRegistry.getVisitor(dbType, SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName()));
         if (null == visitor) {
-            return null;
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
         }
         return visitor.visit(parserRuleContext, shardingTableMetaData);
-    }
-    
-    private static String getCommandName(final ParserRuleContext parserRuleContext) {
-        String name = parserRuleContext.getClass().getSimpleName();
-        int position = name.indexOf("Context");
-        return position > 0 ? name.substring(0, position) : name;
     }
 }
