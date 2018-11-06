@@ -17,51 +17,47 @@
 
 package io.shardingsphere.core.parsing.antlr.ast;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * Sharding AST builder.
+ * SQL statement parser factory.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-public class ShardingASTBuilder {
-    
-    private final Class<? extends Lexer> lexerClass;
-    
-    private final Class<? extends SQLStatementParser> parserClass;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLStatementParserFactory {
     
     /** 
-     * Parse SQL to AST.
+     * New instance of SQL statement parser.
      * 
+     * @param databaseType database type
      * @param sql SQL
-     * @return parsed AST
+     * @return SQL statement parser
      */
-    public ParserRuleContext parse(final String sql) {
-        Lexer lexer = newLexer(CharStreams.fromString(sql));
-        SQLStatementParser parser = newParser(new CommonTokenStream(lexer));
-        ParserRuleContext rootContext = parser.execute();
-        return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
+    public static SQLStatementParser newInstance(final DatabaseType databaseType, final String sql) {
+        return newParser(databaseType, newLexer(databaseType, sql));
     }
     
-    private Lexer newLexer(final CharStream charStream) {
+    private static Lexer newLexer(final DatabaseType databaseType, final String sql) {
         try {
-            return lexerClass.getConstructor(CharStream.class).newInstance(charStream);
+            return SQLStatementParserRegistry.getLexerClass(databaseType).getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingException(ex);
         }
     }
     
-    private SQLStatementParser newParser(final TokenStream tokenStream) {
+    private static SQLStatementParser newParser(final DatabaseType databaseType, final Lexer lexer) {
         try {
-            return parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+            return SQLStatementParserRegistry.getParserClass(databaseType).getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingException(ex);
         }

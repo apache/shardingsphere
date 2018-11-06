@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.parser;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.ast.ShardingASTBuilderFactory;
+import io.shardingsphere.core.parsing.antlr.ast.SQLStatementParserFactory;
 import io.shardingsphere.core.parsing.antlr.visitor.VisitorRegistry;
 import io.shardingsphere.core.parsing.antlr.visitor.statement.StatementVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -46,10 +46,11 @@ public final class StatementFactory {
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext parserRuleContext = ShardingASTBuilderFactory.newInstance(dbType).parse(sql);
-        if (null == parserRuleContext) {
+        ParserRuleContext rootContext = SQLStatementParserFactory.newInstance(dbType, sql).execute();
+        if (null == rootContext) {
             return null;
         }
+        ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
         StatementVisitor visitor = VisitorRegistry.getInstance().getVisitor(dbType, getCommandName(parserRuleContext));
         if (null == visitor) {
             return null;
