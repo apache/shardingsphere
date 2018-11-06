@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.antlr.parser.dialect;
 
 import io.shardingsphere.core.parsing.antlr.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antlr.AdvancedParserATNSimulator;
+import io.shardingsphere.core.parsing.antlr.ast.SQLStatementParser;
 import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementParser;
 import io.shardingsphere.core.parsing.antlr.util.AntlrUtils;
 import org.antlr.v4.runtime.RecognitionException;
@@ -30,7 +31,7 @@ import org.antlr.v4.runtime.TokenStream;
  * 
  * @author duhongjun
  */
-public final class SQLServerStatementAdvancedParser extends SQLServerStatementParser {
+public final class SQLServerStatementAdvancedParser extends SQLServerStatementParser implements SQLStatementParser {
     
     public SQLServerStatementAdvancedParser(final TokenStream input) {
         super(input);
