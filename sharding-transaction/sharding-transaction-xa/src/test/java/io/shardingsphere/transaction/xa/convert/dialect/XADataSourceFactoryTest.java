@@ -21,7 +21,6 @@ import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import org.h2.jdbcx.JdbcDataSource;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.postgresql.xa.PGXADataSource;
 
@@ -47,7 +46,7 @@ public class XADataSourceFactoryTest {
     @Test
     public void assertCreatePGXADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.PostgreSQL);
-        assertThat(xaDataSource, Matchers.<XADataSource>instanceOf(PGXADataSource.class));
+        assertThat(xaDataSource, instanceOf(PGXADataSource.class));
     }
     
     @Test
