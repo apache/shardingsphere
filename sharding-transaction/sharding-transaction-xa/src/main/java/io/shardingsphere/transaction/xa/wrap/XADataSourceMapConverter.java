@@ -15,11 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.transaction.xa.wrap;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
+import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
 import io.shardingsphere.transaction.xa.manager.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.manager.extractor.DataSourceParameterFactory;
 

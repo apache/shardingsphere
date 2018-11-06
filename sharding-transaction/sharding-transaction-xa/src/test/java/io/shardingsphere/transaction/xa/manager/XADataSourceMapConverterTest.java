@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.XADataSourceMapConverter;
+import io.shardingsphere.transaction.xa.wrap.XADataSourceMapConverter;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.junit.Test;
 
