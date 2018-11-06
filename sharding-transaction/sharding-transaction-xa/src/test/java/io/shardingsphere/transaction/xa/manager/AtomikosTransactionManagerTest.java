@@ -61,15 +61,16 @@ public final class AtomikosTransactionManagerTest {
         ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
     }
     
-    @Test(expected = ShardingException.class)
-    public void assertUnderlyingTransactionManagerInitFailed() throws Throwable {
+    @Test
+    @SneakyThrows
+    public void assertUnderlyingTransactionManagerInitFailed() {
         doThrow(SystemException.class).when(userTransactionManager).init();
         Method method = atomikosTransactionManager.getClass().getDeclaredMethod("init");
         method.setAccessible(true);
         try {
             method.invoke(atomikosTransactionManager);
         } catch (InvocationTargetException ex) {
-            throw ex.getTargetException();
+            assertThat(ex.getTargetException(), instanceOf(ShardingException.class));
         }
     }
     
