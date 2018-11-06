@@ -46,9 +46,13 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     private final XATransactionDataSourceWrapper xaDataSourceWrapper;
     
     public AtomikosTransactionManager() {
+        underlyingTransactionManager = new UserTransactionManager();
+        xaDataSourceWrapper = new XATransactionDataSourceWrapper(underlyingTransactionManager);
+        init();
+    }
+    
+    private void init() {
         try {
-            underlyingTransactionManager = new UserTransactionManager();
-            xaDataSourceWrapper = new XATransactionDataSourceWrapper(underlyingTransactionManager);
             underlyingTransactionManager.init();
         } catch (SystemException ex) {
             throw new ShardingException(ex);
