@@ -17,6 +17,8 @@
 
 package io.shardingsphere.transaction.xa.manager.fixture;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.PoolType;
 import lombok.NoArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
@@ -38,19 +40,51 @@ public final class DataSourceUtils {
      */
     public static DataSource build(final PoolType poolType) {
         switch (poolType) {
+            case DBCP:
             case DBCP_TOMCAT:
                 return newBasicDataSource();
+            case HIKARI:
+                return newHikariDataSource();
+            case DRUID:
+                return newDruidDataSource();
             default:
-                return null;
+                return newHikariDataSource();
         }
     }
     
     private static BasicDataSource newBasicDataSource() {
         BasicDataSource result = new BasicDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306");
-        result.setMaxTotal(10);
+        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
         result.setUsername("root");
         result.setPassword("root");
+        result.setMaxTotal(10);
+        result.setMaxWaitMillis(2000);
+        result.setMaxIdle(200);
+        result.setMaxConnLifetimeMillis(100000);
+        return result;
+    }
+    
+    private static DruidDataSource newDruidDataSource() {
+        DruidDataSource result = new DruidDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaxActive(10);
+        result.setMaxWait(2000);
+        result.setMaxIdle(200);
+        result.setMinEvictableIdleTimeMillis(100000);
+        return result;
+    }
+    
+    private static HikariDataSource newHikariDataSource() {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaximumPoolSize(10);
+        result.setConnectionTimeout(2000);
+        result.setIdleTimeout(200);
+        result.setMaxLifetime(100000);
         return result;
     }
 }
