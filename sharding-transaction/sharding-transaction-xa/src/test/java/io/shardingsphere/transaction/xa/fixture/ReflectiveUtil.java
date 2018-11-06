@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Reflective utility.
@@ -79,5 +81,22 @@ public final class ReflectiveUtil {
         Preconditions.checkNotNull(field);
         field.setAccessible(true);
         field.set(target, value);
+    }
+    
+    /**
+     * Invoke target method.
+     *
+     * @param target target object
+     * @param methodName method name
+     */
+    @SneakyThrows
+    public static void methodInvoke(final Object target, final String methodName) {
+        Method method = target.getClass().getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        try {
+            method.invoke(target);
+        } catch (InvocationTargetException ex) {
+            throw ex.getTargetException();
+        }
     }
 }
