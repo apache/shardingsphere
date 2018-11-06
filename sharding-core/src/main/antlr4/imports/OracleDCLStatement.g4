@@ -5,7 +5,7 @@ import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
 grant
     : GRANT
     (
-    	(grantSystemPrivileges | grantObjectPrivileges) (CONTAINER EQ_OR_ASSIGN (CURRENT | ALL))?
+    	(grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_OR_ASSIGN (CURRENT | ALL))?
         | grantRolesToPrograms
     )
     ;
@@ -30,7 +30,7 @@ systemPrivilege
 
 
 granteeClause
-    : grantee (COMMA grantee)
+    : grantee (COMMA grantee)*
     ;
     
 grantee
@@ -43,16 +43,26 @@ granteeIdentifiedBy
     : userName (COMMA userName)* IDENTIFIED BY STRING (COMMA STRING)*
     ;
     
-grantObjectPrivileges
-    : objectPrivilege (COMMA objectPrivilege)*
+grantObjectPrivilegeClause
+    : grantObjectPrivilege (COMMA grantObjectPrivilege)* onObjectClause
+    TO granteeClause(WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
     ;
     
 grantObjectPrivilege
-    : (objectPrivilege | ALL PRIVILEGES?)( LEFT_PAREN columnName (COMMA columnName)* RIGHT_PAREN)?
+    : (objectPrivilege | ALL PRIVILEGES?)( LEFT_PAREN columnName (COMMA columnName)* RIGHT_PAREN)? 
     ;
 
 objectPrivilege
     : ID *?
+    ;
+    
+onObjectClause
+    : ON 
+    (
+    	schemaName? ID 
+       | USER userName ( COMMA userName)*
+       | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) schemaName? ID 
+    )
     ;
     
 grantRolesToPrograms
