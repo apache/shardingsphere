@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.xa.fixture;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.zaxxer.hikari.HikariDataSource;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import lombok.NoArgsConstructor;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
@@ -35,27 +36,29 @@ public final class DataSourceUtils {
     
     /**
      * Build data source.
+     *
      * @param poolType pool type
+     * @param databaseType database type
      * @return data source
      */
-    public static DataSource build(final PoolType poolType) {
+    public static DataSource build(final PoolType poolType, final DatabaseType databaseType) {
         switch (poolType) {
             case DBCP2:
-                return newBasicDataSource();
+                return newBasicDataSource(databaseType);
             case DBCP2_TOMCAT:
-                return newTomcatBasicDataSource();
+                return newTomcatBasicDataSource(databaseType);
             case HIKARI:
-                return newHikariDataSource();
+                return newHikariDataSource(databaseType);
             case DRUID:
-                return newDruidDataSource();
+                return newDruidDataSource(databaseType);
             default:
-                return newHikariDataSource();
+                return newHikariDataSource(databaseType);
         }
     }
     
-    private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource() {
+    private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource(final DatabaseType databaseType) {
         org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUrl(getUrl(databaseType));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
@@ -65,9 +68,9 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static BasicDataSource newTomcatBasicDataSource() {
+    private static BasicDataSource newTomcatBasicDataSource(final DatabaseType databaseType) {
         BasicDataSource result = new BasicDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUrl(getUrl(databaseType));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
@@ -77,9 +80,9 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static DruidDataSource newDruidDataSource() {
+    private static DruidDataSource newDruidDataSource(final DatabaseType databaseType) {
         DruidDataSource result = new DruidDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setUrl(getUrl(databaseType));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxActive(10);
@@ -89,9 +92,9 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static HikariDataSource newHikariDataSource() {
+    private static HikariDataSource newHikariDataSource(final DatabaseType databaseType) {
         HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setJdbcUrl(getUrl(databaseType));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(10);
@@ -99,5 +102,22 @@ public final class DataSourceUtils {
         result.setIdleTimeout(200);
         result.setMaxLifetime(100000);
         return result;
+    }
+    
+    private static String getUrl(final DatabaseType databaseType) {
+        switch (databaseType) {
+            case PostgreSQL:
+                return "jdbc:postgresql://localhost:3306/demo_ds";
+            case MySQL:
+                return "jdbc:mysql://localhost:3306/demo_ds";
+            case SQLServer:
+                return "jdbc:sqlserver://localhost:1433;DatabaseName=demo_ds";
+            case H2:
+                return "jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
+            case Oracle:
+                return "jdbc:oracle:thin:@//localhost:3306/demo_ds";
+            default:
+                return "jdbc:mysql://localhost:3306/demo_ds";
+        }
     }
 }
