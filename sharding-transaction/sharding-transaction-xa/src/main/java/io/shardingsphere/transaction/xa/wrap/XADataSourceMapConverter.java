@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.xa.wrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import io.shardingsphere.transaction.xa.wrap.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.wrap.extractor.DataSourceParameterFactory;
 

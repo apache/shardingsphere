@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

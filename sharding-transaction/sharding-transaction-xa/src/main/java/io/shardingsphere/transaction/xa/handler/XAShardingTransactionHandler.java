@@ -21,7 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.handler.ShardingTransactionHandlerAdapter;
-import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 
 /**
  * XA sharding transaction handler.
