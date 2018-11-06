@@ -42,13 +42,15 @@ import javax.transaction.TransactionManager;
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     
-    private static final UserTransactionManager USER_TRANSACTION_MANAGER = new UserTransactionManager();
+    private final UserTransactionManager underlyingTransactionManager;
     
-    private final XATransactionDataSourceWrapper xaDataSourceWrapper = new XATransactionDataSourceWrapper(USER_TRANSACTION_MANAGER);
+    private final XATransactionDataSourceWrapper xaDataSourceWrapper;
     
     public AtomikosTransactionManager() {
         try {
-            USER_TRANSACTION_MANAGER.init();
+            underlyingTransactionManager = new UserTransactionManager();
+            xaDataSourceWrapper = new XATransactionDataSourceWrapper(underlyingTransactionManager);
+            underlyingTransactionManager.init();
         } catch (SystemException ex) {
             throw new ShardingException(ex);
         }
@@ -56,13 +58,13 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public void destroy() {
-        USER_TRANSACTION_MANAGER.close();
+        underlyingTransactionManager.close();
     }
     
     @Override
     public void begin(final XATransactionEvent event) throws ShardingException {
         try {
-            USER_TRANSACTION_MANAGER.begin();
+            underlyingTransactionManager.begin();
         } catch (final SystemException | NotSupportedException ex) {
             throw new ShardingException(ex);
         }
@@ -71,7 +73,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public void commit(final XATransactionEvent event) throws ShardingException {
         try {
-            USER_TRANSACTION_MANAGER.commit();
+            underlyingTransactionManager.commit();
         } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
             throw new ShardingException(ex);
         }
@@ -81,7 +83,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     public void rollback(final XATransactionEvent event) throws ShardingException {
         try {
             if (Status.STATUS_NO_TRANSACTION != getStatus()) {
-                USER_TRANSACTION_MANAGER.rollback();
+                underlyingTransactionManager.rollback();
             }
         } catch (final SystemException ex) {
             throw new ShardingException(ex);
@@ -91,7 +93,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public int getStatus() throws ShardingException {
         try {
-            return USER_TRANSACTION_MANAGER.getStatus();
+            return underlyingTransactionManager.getStatus();
         } catch (final SystemException ex) {
             throw new ShardingException(ex);
         }
@@ -113,6 +115,6 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public TransactionManager getUnderlyingTransactionManager() {
-        return USER_TRANSACTION_MANAGER;
+        return underlyingTransactionManager;
     }
 }
