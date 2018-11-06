@@ -37,8 +37,6 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -64,17 +62,11 @@ public final class AtomikosTransactionManagerTest {
         ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
     }
     
-    @Test
+    @Test(expected = ShardingException.class)
     @SneakyThrows
     public void assertUnderlyingTransactionManagerInitFailed() {
         doThrow(SystemException.class).when(userTransactionManager).init();
-        Method method = atomikosTransactionManager.getClass().getDeclaredMethod("init");
-        method.setAccessible(true);
-        try {
-            method.invoke(atomikosTransactionManager);
-        } catch (InvocationTargetException ex) {
-            assertThat(ex.getTargetException(), instanceOf(ShardingException.class));
-        }
+        ReflectiveUtil.methodInvoke(atomikosTransactionManager, "init");
     }
     
     @Test
