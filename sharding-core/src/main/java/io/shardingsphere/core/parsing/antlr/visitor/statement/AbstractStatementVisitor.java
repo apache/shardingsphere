@@ -22,7 +22,7 @@ import io.shardingsphere.core.parsing.antlr.visitor.phrase.PhraseVisitor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,7 +32,7 @@ import java.util.List;
  */
 public abstract class AbstractStatementVisitor implements StatementVisitor {
     
-    private List<PhraseVisitor> visitors = new ArrayList<>();
+    private List<PhraseVisitor> visitors = new LinkedList<>();
     
     @Override
     public final SQLStatement visit(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {

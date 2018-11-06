@@ -118,5 +118,4 @@ public final class VisitorRegistry {
         String key = databaseType.name() + commandName;
         return VISITORS.containsKey(key) ? VISITORS.get(key) : VISITORS.get(commandName);
     }
-    
 }

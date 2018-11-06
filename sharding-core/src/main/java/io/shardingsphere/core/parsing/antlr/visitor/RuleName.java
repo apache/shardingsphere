@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.visitor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -26,60 +25,68 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
 public enum RuleName {
     
-    COLUMN_DEFINITION("ColumnDefinitionContext"),
+    COLUMN_DEFINITION("ColumnDefinition"),
     
-    COLUMN_NAME("ColumnNameContext"),
+    COLUMN_NAME("ColumnName"),
     
-    DATA_TYPE("DataTypeContext"),
+    DATA_TYPE("DataType"),
     
-    DATA_TYPE_LENGTH("DataTypeLengthContext"),
+    DATA_TYPE_LENGTH("DataTypeLength"),
     
-    FIRST_OR_AFTER_COLUMN("FirstOrAfterColumnContext"),
+    FIRST_OR_AFTER_COLUMN("FirstOrAfterColumn"),
     
-    PRIMARY_KEY("PrimaryKeyContext"),
+    PRIMARY_KEY("PrimaryKey"),
     
-    COLUMN_LIST("ColumnListContext"),
+    COLUMN_LIST("ColumnList"),
     
-    ADD_COLUMN("AddColumnContext"),
+    ADD_COLUMN("AddColumn"),
     
-    CHANGE_COLUMN("ChangeColumnContext"),
+    CHANGE_COLUMN("ChangeColumn"),
     
-    DROP_COLUMN("DropColumnContext"),
+    DROP_COLUMN("DropColumn"),
     
-    MODIFY_COLUMN("ModifyColumnContext"),
+    MODIFY_COLUMN("ModifyColumn"),
     
-    MODIFY_COL_PROPERTIES("ModifyColPropertiesContext"),
+    MODIFY_COL_PROPERTIES("ModifyColProperties"),
     
-    RENAME_COLUMN("RenameColumnContext"),
+    RENAME_COLUMN("RenameColumn"),
     
-    DROP_PRIMARY_KEY("DropPrimaryKeyContext"),
+    DROP_PRIMARY_KEY("DropPrimaryKey"),
     
-    RENAME_TABLE("RenameTableContext"),
+    RENAME_TABLE("RenameTable"),
     
-    TABLE_NAME("TableNameContext"),
+    TABLE_NAME("TableName"),
     
-    ADD_INDEX("AddIndexContext"),
+    ADD_INDEX("AddIndex"),
     
-    RENAME_INDEX("RenameIndexContext"),
+    RENAME_INDEX("RenameIndex"),
     
-    INDEX_NAME("IndexNameContext"),
+    INDEX_NAME("IndexName"),
     
-    DROP_INDEX_REF("DropIndexDefContext"),
+    DROP_INDEX_REF("DropIndexDef"),
     
-    ALTER_DROP_INDEX("AlterDropIndexContext"),
+    ALTER_DROP_INDEX("AlterDropIndex"),
     
-    ADD_CONSTRAINT("AddConstraintContext"),
+    ADD_CONSTRAINT("AddConstraint"),
     
-    ADD_CONSTRAINT_CLAUSE("AddConstraintClauseContext"), 
+    ADD_CONSTRAINT_CLAUSE("AddConstraintClause"), 
     
-    DROP_CONSTRAINT_CLAUSE("DropConstraintClauseContext"),
+    DROP_CONSTRAINT_CLAUSE("DropConstraintClause"),
     
-    ALTER_TABLE_ADD_CONSTRAINT("AlterTableAddConstraintContext"),
+    ALTER_TABLE_ADD_CONSTRAINT("AlterTableAddConstraint"),
     
-    TABLE_CONSTRAINT("TableConstraintContext");
+    TABLE_CONSTRAINT("TableConstraint");
     
     private final String name;
+    
+    /**
+     * Get name.
+     * 
+     * @return name
+     */
+    public String getName() {
+        return name + "Context";
+    }
 }
