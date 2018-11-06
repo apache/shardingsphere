@@ -25,8 +25,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,11 +40,11 @@ import java.util.Map;
 @ToString(callSuper = true)
 public class AlterTableStatement extends DDLStatement {
     
-    private final List<String> dropColumns = new ArrayList<>();
+    private final List<ColumnDefinition> addColumns = new LinkedList<>();
+    
+    private final List<String> dropColumns = new LinkedList<>();
     
     private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
-    
-    private final List<ColumnDefinition> addColumns = new ArrayList<>();
     
     private boolean dropPrimaryKey;
     
@@ -61,11 +61,8 @@ public class AlterTableStatement extends DDLStatement {
      * @return column definition
      */
     public ColumnDefinition getColumnDefinitionByName(final String columnName) {
-        ColumnDefinition columnDefinition = getExistColumn(columnName);
-        if (null == columnDefinition) {
-            columnDefinition = getFromAddColumn(columnName);
-        }
-        return columnDefinition;
+        ColumnDefinition result = getExistColumn(columnName);
+        return null == result ? getFromAddColumn(columnName) : result;
     }
     
     /**
@@ -94,9 +91,9 @@ public class AlterTableStatement extends DDLStatement {
      * @return column definition
      */
     private ColumnDefinition getFromAddColumn(final String columnName) {
-        for (ColumnDefinition addColumn : addColumns) {
-            if (addColumn.getName().equalsIgnoreCase(columnName)) {
-                return addColumn;
+        for (ColumnDefinition each : addColumns) {
+            if (each.getName().equalsIgnoreCase(columnName)) {
+                return each;
             }
         }
         return null;

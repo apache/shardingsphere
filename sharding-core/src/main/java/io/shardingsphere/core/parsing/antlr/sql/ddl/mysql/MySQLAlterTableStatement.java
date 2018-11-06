@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,5 +36,5 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class MySQLAlterTableStatement extends AlterTableStatement {
     
-    private final List<ColumnPosition> positionChangedColumns = new ArrayList<>();
+    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
 }

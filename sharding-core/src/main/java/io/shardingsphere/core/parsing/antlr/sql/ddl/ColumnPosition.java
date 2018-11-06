@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Record MySQL alter table column position.
+ * Record alter table column position.
  * 
  * @author duhongjun
  */
@@ -39,6 +39,6 @@ public final class ColumnPosition implements Comparable<ColumnPosition> {
     
     @Override
     public int compareTo(final ColumnPosition o) {
-        return o == null ? -1 : startIndex - o.startIndex;
+        return null == o ? -1 : startIndex - o.startIndex;
     }
 }
