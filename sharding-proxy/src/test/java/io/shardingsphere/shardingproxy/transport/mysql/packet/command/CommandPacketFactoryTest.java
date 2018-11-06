@@ -18,11 +18,13 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.NewParametersBoundFlag;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
@@ -46,6 +48,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -65,9 +68,10 @@ public final class CommandPacketFactoryTest {
     private FrontendHandler frontendHandler;
     
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException {
         setShardingSchemas();
         setFrontendHandlerSchema();
+        setMaxConnectionsSizePerQuery();
     }
     
     @SneakyThrows
@@ -77,13 +81,21 @@ public final class CommandPacketFactoryTest {
         when(shardingSchema.getMetaData()).thenReturn(metaData);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
-        Field field = GlobalRegistry.class.getDeclaredField("shardingSchemas");
+        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
     private void setFrontendHandlerSchema() {
         when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+    }
+    
+    private void setMaxConnectionsSizePerQuery() throws ReflectiveOperationException {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), String.valueOf(1));
+        field.set(GlobalRegistry.getInstance(), new ShardingProperties(props));
     }
     
     @Test

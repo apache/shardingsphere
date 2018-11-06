@@ -231,19 +231,16 @@ public class ShardingRule {
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final Column column) {
-        if (defaultDatabaseShardingStrategy.getShardingColumns().contains(column.getName()) || defaultTableShardingStrategy.getShardingColumns().contains(column.getName())) {
-            return true;
-        }
         for (TableRule each : tableRules) {
             if (!each.getLogicTable().equalsIgnoreCase(column.getTableName())) {
                 continue;
             }
-            if (null != each.getDatabaseShardingStrategy() && each.getDatabaseShardingStrategy().getShardingColumns().contains(column.getName())) {
+            ShardingStrategy databaseShardingStrategy = getDatabaseShardingStrategy(each);
+            if (null != databaseShardingStrategy && databaseShardingStrategy.getShardingColumns().contains(column.getName())) {
                 return true;
             }
-            if (null != each.getTableShardingStrategy() && each.getTableShardingStrategy().getShardingColumns().contains(column.getName())) {
-                return true;
-            }
+            ShardingStrategy tableShardingStrategy = getTableShardingStrategy(each);
+            return null != tableShardingStrategy && tableShardingStrategy.getShardingColumns().contains(column.getName());
         }
         return false;
     }

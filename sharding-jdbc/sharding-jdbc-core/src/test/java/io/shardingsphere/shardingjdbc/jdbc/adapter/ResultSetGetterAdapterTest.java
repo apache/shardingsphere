@@ -442,7 +442,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(1).read(b);
-                } catch (final Exception ignore) {
+                } catch (final Exception ignored) {
                 }
             } else {
                 each.getValue().getUnicodeStream(1).read(b);
@@ -462,7 +462,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(columnName).read(b);
-                } catch (final Exception ignore) {
+                } catch (final Exception ignored) {
                 }
             } else {
                 each.getValue().getUnicodeStream(columnName).read(b);

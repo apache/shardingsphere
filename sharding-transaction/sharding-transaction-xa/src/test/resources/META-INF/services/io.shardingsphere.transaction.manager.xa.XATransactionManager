@@ -1,2 +1,2 @@
-io.shardingsphere.transaction.manager.xa.atomikos.AtomikosTransactionManager
+io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager
 

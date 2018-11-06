@@ -1,10 +1,18 @@
 ## 3.0.1
 
-### 缺陷修正
+### API调整
+
+1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) 调整数据库治理模块的注册中心存储结构
+
+### Bug Fixes
+
+#### Core
+
+1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
 
 #### Sharding-Proxy
 
-1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式下PreparedStatement设置参数无效
+1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式时，使用`PreparedStatement`异常
 
 ## 3.0.0
 

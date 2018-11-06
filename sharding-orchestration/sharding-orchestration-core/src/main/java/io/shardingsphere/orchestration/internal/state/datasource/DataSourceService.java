@@ -68,7 +68,7 @@ public final class DataSourceService {
      */
     public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames().get(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
         }
@@ -87,7 +87,7 @@ public final class DataSourceService {
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames().get(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
         }
@@ -108,7 +108,7 @@ public final class DataSourceService {
     public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
         MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        Collection<String> disabledDataSourceNames = getDisabledDataSourceNames().get(shardingSchemaName);
+        Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;
         }
@@ -118,12 +118,7 @@ public final class DataSourceService {
         return result;
     }
     
-    /**
-     * Get disabled data source names.
-     *
-     * @return disabled data source names
-     */
-    public Map<String, Collection<String>> getDisabledDataSourceNames() {
+    private Map<String, Collection<String>> getDisabledDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
         Collection<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
@@ -145,6 +140,20 @@ public final class DataSourceService {
                 result.put(schemaName, new LinkedList<String>());
             }
             result.get(schemaName).add(dataSourceName);
+        }
+        return result;
+    }
+    
+    /**
+     * Get disabled slave data source names.
+     *
+     * @return disabled slave data source names
+     */
+    public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
+        Map<String, Collection<String>> result = getDisabledDataSourceNames();
+        Map<String, Collection<String>> masterDataSourceNamesMap = configService.getAllMasterDataSourceNames();
+        for (String each : result.keySet()) {
+            result.get(each).removeAll(masterDataSourceNamesMap.get(each));
         }
         return result;
     }
