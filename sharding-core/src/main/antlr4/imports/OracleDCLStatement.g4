@@ -1,6 +1,23 @@
 grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
+
+
+systemObjects
+    : systemObject(COMMA systemObject)*
+    ;
+          
+systemObject
+    : ALL PRIVILEGES
+    | roleName
+    | systemPrivilege
+    ;
+        
+systemPrivilege
+    : ID *?
+    ;
+
+
 granteeClause
     : grantee (COMMA grantee)
     ;
