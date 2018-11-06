@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.ast.dialect;
 
-import io.shardingsphere.core.parsing.antlr.AdvancedErrorStrategy;
-import io.shardingsphere.core.parsing.antlr.AdvancedParserATNSimulator;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedErrorStrategy;
+import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedMatchHandler;
+import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedParserATNSimulator;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementParser;
-import io.shardingsphere.core.parsing.antlr.util.AntlrUtils;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
@@ -44,6 +44,6 @@ public final class MySQLStatementASTParser extends MySQLStatementParser implemen
         if (Token.EOF == tokenType) {
             matchedEOF = true;
         }
-        return AntlrUtils.getMatchedToken(this, tokenType, ID);
+        return AdvancedMatchHandler.getMatchedToken(this, tokenType, ID);
     }
 }

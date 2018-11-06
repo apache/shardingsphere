@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.util;
+package io.shardingsphere.core.parsing.antlr.ast.advanced;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,12 +25,12 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 
 /**
- * Antlr utility.
+ * Advanced match handler.
  *
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AntlrUtils {
+public final class AdvancedMatchHandler {
     
     /**
      * Get matched token by token type.

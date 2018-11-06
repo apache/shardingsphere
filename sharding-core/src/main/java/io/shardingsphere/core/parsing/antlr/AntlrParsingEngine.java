@@ -42,7 +42,7 @@ public final class AntlrParsingEngine {
      * @param dbType database type
      * @param sql SQL
      * @param shardingRule sharding rule
-     * @param shardingTableMetaData table meta data
+     * @param shardingTableMetaData sharding table meta data
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

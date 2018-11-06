@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.ast.advanced;
 
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.NoViableAltException;
@@ -30,8 +30,9 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.dfa.DFAState;
 
 /**
- * Advanced Parser ATN Simulator, failed calculating alt
- * , try again with ID.
+ * Advanced Parser ATN simulator.
+ * 
+ * <p>Failed calculating alt, try again with ID.</p>
  * 
  * @author duhongjun
  */

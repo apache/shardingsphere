@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.ast.advanced;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CommonToken;
@@ -29,8 +29,9 @@ import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.misc.IntervalSet;
 
 /**
- * Advanced Error Strategy, override sync method,when failed matching,
- * try again with ID.
+ * Advanced error strategy.
+ * 
+ * <p>Override sync method,when failed matching, try again with ID.</p>
  * 
  * @author duhongjun
  */
@@ -56,8 +57,6 @@ public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
             }
             if (nextTokens.contains(Token.EPSILON)) {
                 if (null == nextTokensContext) {
-                    // It's possible the next token won't matched; information tracked
-                    // by sync is restricted for performance.
                     nextTokensContext = recognizer.getContext();
                     nextTokensState = recognizer.getState();
                 }
