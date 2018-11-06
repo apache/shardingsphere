@@ -74,8 +74,16 @@ DELEGATE
     : D E L E G A T E
     ;
 
+DIRECTORY
+    : D I R E C T O R Y
+    ;
+
 DOUBLE
     : D O U B L E
+    ;
+
+EDITION
+    : E D I T I O N
     ;
 
 ELEMENT
@@ -118,6 +126,10 @@ GRANT
     : G R A N T
     ;
 
+HIERARCHY
+    : H I E R A R C H Y
+    ;
+
 IDENTIFIED
     : I D E N T I F I E D
     ;
@@ -150,6 +162,10 @@ INVALIDATE
     : I N V A L I D A T E
     ;
 
+JAVA
+    : J A V A
+    ;
+
 KEEP
     : K E E P
     ;
@@ -166,8 +182,16 @@ MAXVALUE
     : M A X V A L U E
     ;
 
+MINING
+    : M I N I N G
+    ;
+
 MINVALUE
     : M I N V A L U E
+    ;
+
+MODEL
+    : M O D E L
     ;
 
 MODIFY
@@ -258,6 +282,10 @@ PROCEDURE
     : P R O C E D U R E
     ;
 
+PROFILE
+    : P R O F I L E
+    ;
+
 PUBLIC
     : P U B L I C
     ;
@@ -276,6 +304,10 @@ RELY
 
 RENAME
     : R E N A M E
+    ;
+
+RESOURCE
+    : R E S O U R C E
     ;
 
 ROWID
@@ -310,6 +342,14 @@ SORT
     : S O R T
     ;
 
+SOURCE
+    : S O U R C E
+    ;
+
+SQL
+    : S Q L
+    ;
+
 SQLRF
     : S Q L R F
     ;
@@ -330,6 +370,10 @@ THEN
     : T H E N
     ;
 
+TRANSLATION
+    : T R A N S L A T I O N
+    ;
+
 TREAT
     : T R E A T
     ;
@@ -344,6 +388,10 @@ UNUSED
 
 USE
     : U S E
+    ;
+
+USER
+    : U S E R
     ;
 
 USING
