@@ -21,7 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import io.shardingsphere.transaction.xa.manager.AtomikosTransactionManager;
 import org.junit.Test;
 
 import javax.transaction.Status;

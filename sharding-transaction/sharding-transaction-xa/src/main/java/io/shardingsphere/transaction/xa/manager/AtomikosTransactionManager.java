@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager.atomikos;
+package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.icatch.jta.UserTransactionManager;

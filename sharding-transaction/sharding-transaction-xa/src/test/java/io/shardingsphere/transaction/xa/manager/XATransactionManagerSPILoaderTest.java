@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import io.shardingsphere.transaction.xa.XATransactionManagerSPILoader;
-import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
