@@ -44,7 +44,6 @@ import java.sql.SQLException;
  *
  * @author zhangyonglun
  */
-
 @RequiredArgsConstructor
 public final class CommandExecutor implements Runnable {
     
