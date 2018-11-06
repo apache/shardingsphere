@@ -1,7 +1,12 @@
 grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
-
+/**
+ * each statement has a url, 
+ * each base url : https://docs.oracle.com/database/121/SQLRF/.
+ * no begin statement in oracle
+ */
+//statements_9014.htm#SQLRF01603
 grant
     : GRANT
     (
