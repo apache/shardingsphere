@@ -534,6 +534,10 @@ RESTRICT
     : R E S T R I C T
     ;
 
+REVOKE
+    : R E V O K E
+    ;
+
 RIGHT
     : R I G H T
     ;

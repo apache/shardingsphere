@@ -94,3 +94,29 @@ grantRoles
     TO userOrRoles
     (WITH ADMIN OPTION)?
     ;
+
+//revoke.html
+revokePriveleges
+    : REVOKE
+    privType columnList? (COMMA privType columnList?)*
+    ON objectType? privLevel
+    FROM userOrRoles
+    ;
+
+//revoke.html
+revokeAllPriveleges
+    : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
+    FROM userOrRoles
+    ;
+
+//revoke.html
+revokeProxy
+    : REVOKE PROXY ON userOrRole
+    FROM userOrRoles
+    ;
+
+//revoke.html
+revokeRoles
+    : REVOKE roleNames
+    FROM userOrRoles
+    ;

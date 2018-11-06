@@ -25,5 +25,9 @@ execute
     | grantPriveleges
     | grantProxy
     | grantRoles
+    | revokePriveleges
+    | revokeAllPriveleges
+    | revokeProxy
+    | revokeRoles
     ;
  
