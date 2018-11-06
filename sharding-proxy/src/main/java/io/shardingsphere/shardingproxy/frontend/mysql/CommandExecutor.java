@@ -36,7 +36,6 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import lombok.RequiredArgsConstructor;
-
 import java.sql.SQLException;
 
 /**
