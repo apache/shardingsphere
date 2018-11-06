@@ -19,7 +19,8 @@ package io.shardingsphere.transaction.xa.convert;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
+import io.shardingsphere.core.constant.PoolType;
+import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -36,7 +37,7 @@ public class XADataSourceMapConverterTest {
     
     @Test
     public void assertGetMysqlXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.MySQL);
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DBCP2, DatabaseType.MySQL), DatabaseType.MySQL);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
@@ -44,7 +45,7 @@ public class XADataSourceMapConverterTest {
     
     @Test
     public void assertGetH2XATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.H2);
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DBCP2_TOMCAT, DatabaseType.H2), DatabaseType.H2);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
@@ -52,7 +53,7 @@ public class XADataSourceMapConverterTest {
     
     @Test
     public void assertGetPGXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.PostgreSQL);
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DRUID, DatabaseType.PostgreSQL), DatabaseType.PostgreSQL);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
@@ -60,25 +61,16 @@ public class XADataSourceMapConverterTest {
     
     @Test
     public void assertGetMSXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDBCPDataSourceMap(), DatabaseType.SQLServer);
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.HIKARI, DatabaseType.SQLServer), DatabaseType.SQLServer);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
     }
     
-    private Map<String, DataSource> createDBCPDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", newBasicDataSource());
-        result.put("ds2", newBasicDataSource());
-        return result;
-    }
-    
-    private BasicDataSource newBasicDataSource() {
-        BasicDataSource result = new BasicDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306");
-        result.setMaxTotal(10);
-        result.setUsername("root");
-        result.setPassword("");
+        result.put("ds1", DataSourceUtils.build(poolType, databaseType));
+        result.put("ds2", DataSourceUtils.build(poolType, databaseType));
         return result;
     }
 }
