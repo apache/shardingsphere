@@ -19,8 +19,11 @@ package io.shardingsphere.core.parsing;
 
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
@@ -105,13 +108,30 @@ public final class SQLJudgeEngineTest {
     }
     
     @Test
+    public void assertJudgeForShowTableStatus() {
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow table status from logic_db").judge(), instanceOf(ShowTableStatusStatement.class));
+    }
+    
+    @Test
     public void assertJudgeForShowTables() {
         assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow tables  ").judge(), instanceOf(ShowTablesStatement.class));
     }
     
     @Test
     public void assertJudgeForShowColumns() {
-        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow columns t_order ").judge(), instanceOf(ShowColumnsStatement.class));
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow columns from t_order ").judge(), instanceOf(ShowColumnsStatement.class));
+    }
+    
+    @Test
+    public void assertJudgeForShowIndex() {
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow index from t_order ").judge(), instanceOf(ShowIndexStatement.class));
+    }
+    
+    @Test
+    public void assertJudgeForShowCreateTable() {
+        SQLStatement sqlStatement = new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow create table logic_db.t_order  ").judge();
+        assertThat(sqlStatement, instanceOf(ShowCreateTableStatement.class));
+        assertThat(sqlStatement.getSQLTokens().size(), is(1));
     }
     
     @Test
