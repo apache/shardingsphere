@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -97,11 +96,6 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         } catch (final SystemException ex) {
             throw new ShardingException(ex);
         }
-    }
-    
-    @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.XA;
     }
     
     @Override
