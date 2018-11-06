@@ -36,13 +36,13 @@ public abstract class AbstractShardingASTBuilder implements ShardingASTBuilder {
     public final ParserRuleContext parse(final String sql) {
         Lexer lexer = newLexer(CharStreams.fromString(sql));
         Parser parser = newParser(new CommonTokenStream(lexer));
-        ParserRuleContext rootContext = getParserTree(parser);
+        ParserRuleContext rootContext = parse(parser);
         return null == rootContext ? null : (ParserRuleContext) rootContext.getChild(0);
     }
+    
+    protected abstract ParserRuleContext parse(Parser parser);
     
     protected abstract Lexer newLexer(CharStream charStream);
     
     protected abstract Parser newParser(TokenStream tokenStream);
-    
-    protected abstract ParserRuleContext getParserTree(Parser parser);
 }

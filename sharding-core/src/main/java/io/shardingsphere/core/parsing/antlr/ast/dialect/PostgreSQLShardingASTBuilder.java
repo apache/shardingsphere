@@ -34,6 +34,12 @@ import org.antlr.v4.runtime.TokenStream;
 public final class PostgreSQLShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
+    protected ParserRuleContext parse(final Parser parser) {
+        PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser) parser;
+        return parse.execute();
+    }
+    
+    @Override
     protected Lexer newLexer(final CharStream charStream) {
         return new PostgreStatementLexer(charStream);
     }
@@ -41,11 +47,5 @@ public final class PostgreSQLShardingASTBuilder extends AbstractShardingASTBuild
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new PostgreStatementAdvancedParser(tokenStream);
-    }
-    
-    @Override
-    protected ParserRuleContext getParserTree(final Parser parser) {
-        PostgreStatementAdvancedParser parse = (PostgreStatementAdvancedParser) parser;
-        return parse.execute();
     }
 }

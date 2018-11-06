@@ -34,6 +34,12 @@ import org.antlr.v4.runtime.TokenStream;
 public final class SQLServerShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
+    protected ParserRuleContext parse(final Parser parser) {
+        SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser) parser;
+        return parse.execute();
+    }
+    
+    @Override
     protected Lexer newLexer(final CharStream charStream) {
         return new SQLServerStatementLexer(charStream);
     }
@@ -41,11 +47,5 @@ public final class SQLServerShardingASTBuilder extends AbstractShardingASTBuilde
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new SQLServerStatementAdvancedParser(tokenStream);
-    }
-    
-    @Override
-    protected ParserRuleContext getParserTree(final Parser parser) {
-        SQLServerStatementAdvancedParser parse = (SQLServerStatementAdvancedParser) parser;
-        return parse.execute();
     }
 }

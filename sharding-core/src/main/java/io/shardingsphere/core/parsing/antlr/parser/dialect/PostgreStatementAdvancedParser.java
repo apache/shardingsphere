@@ -31,11 +31,11 @@ import org.antlr.v4.runtime.TokenStream;
  * @author duhongjun
  */
 public final class PostgreStatementAdvancedParser extends PostgreStatementParser {
-
+    
     public PostgreStatementAdvancedParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
-        this._errHandler = new AdvancedErrorStrategy(ID);
+        _errHandler = new AdvancedErrorStrategy(ID);
     }
     
     @Override

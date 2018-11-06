@@ -34,6 +34,12 @@ import org.antlr.v4.runtime.TokenStream;
 public final class MySQLShardingASTBuilder extends AbstractShardingASTBuilder {
     
     @Override
+    protected ParserRuleContext parse(final Parser parser) {
+        MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser) parser;
+        return parse.execute();
+    }
+    
+    @Override
     protected Lexer newLexer(final CharStream charStream) {
         return new MySQLStatementLexer(charStream);
     }
@@ -41,11 +47,5 @@ public final class MySQLShardingASTBuilder extends AbstractShardingASTBuilder {
     @Override
     protected Parser newParser(final TokenStream tokenStream) {
         return new MySQLStatementAdvancedParser(tokenStream);
-    }
-    
-    @Override
-    protected ParserRuleContext getParserTree(final Parser parser) {
-        MySQLStatementAdvancedParser parse = (MySQLStatementAdvancedParser) parser;
-        return parse.execute();
     }
 }
