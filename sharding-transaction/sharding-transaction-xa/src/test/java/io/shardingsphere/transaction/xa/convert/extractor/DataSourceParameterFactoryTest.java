@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.convert.extractor;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -29,25 +30,25 @@ public class DataSourceParameterFactoryTest {
     
     @Test
     public void assertBuildParameterFromHikari() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDruid() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCP2() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL));
         assertThatParameter(parameter);
     }
     
