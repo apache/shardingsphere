@@ -17,10 +17,6 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.transaction.xa.wrap.XADataSourceMapConverterTest;
-import io.shardingsphere.transaction.xa.wrap.dialect.XADataSourceFactoryTest;
-import io.shardingsphere.transaction.xa.wrap.extractor.DataSourceParameterFactoryTest;
-import io.shardingsphere.transaction.xa.wrap.dialect.XAPropertyFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,10 +24,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AtomikosTransactionManagerTest.class,
-        DataSourceParameterFactoryTest.class,
-        XAPropertyFactoryTest.class,
-        XADataSourceMapConverterTest.class,
-        XADataSourceFactoryTest.class,
         XATransactionDataSourceWrapperTest.class,
         XATransactionManagerSPILoaderTest.class
 })
