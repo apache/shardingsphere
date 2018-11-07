@@ -73,4 +73,9 @@ grantRolesToPrograms
 programUnit
     : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
     ;
-    
+
+revokeObjectPrivileges
+    : objectPrivilege (COMMA objectPrivilege)* onObjectClause
+    FROM grantees
+    (CASCADE CONSTRAINTS | FORCE)?
+    ;
