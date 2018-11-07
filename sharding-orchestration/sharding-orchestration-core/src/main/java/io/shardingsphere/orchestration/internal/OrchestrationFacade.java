@@ -21,7 +21,7 @@ import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.internal.state.instance.InstanceStateService;

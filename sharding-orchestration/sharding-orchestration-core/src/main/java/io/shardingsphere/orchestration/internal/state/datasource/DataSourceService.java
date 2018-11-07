@@ -23,7 +23,7 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.orchestration.internal.config.ConfigurationService;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.state.StateNode;
 import io.shardingsphere.orchestration.internal.state.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
