@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.event.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
