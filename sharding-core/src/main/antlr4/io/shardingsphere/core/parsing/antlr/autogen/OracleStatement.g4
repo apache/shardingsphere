@@ -18,5 +18,6 @@ execute
     | rollback
     | savepoint
     | grant
+    | revoke
     ;
  
