@@ -121,7 +121,7 @@ expr
    
     | LEFT_PAREN expr RIGHT_PAREN
     | NOT expr
-    | NOT_SYM expr
+    | NOT_ expr
     | booleanPrimary
     | exprRecursive
     ;
@@ -187,7 +187,7 @@ simpleExpr
     | PLUS simpleExpr
     | MINUS simpleExpr
     | UNARY_BIT_COMPLEMENT simpleExpr
-    | NOT_SYM simpleExpr
+    | NOT_ simpleExpr
     | BINARY simpleExpr
     | LEFT_PAREN expr RIGHT_PAREN
     | ROW LEFT_PAREN simpleExpr( COMMA  simpleExpr)* RIGHT_PAREN

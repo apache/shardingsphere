@@ -189,7 +189,7 @@ operator
     | LTE
     | AND_
     | OR_
-    | NOT_SYM
+    | NOT_
     ;
     
  frameClause

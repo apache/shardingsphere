@@ -2,7 +2,7 @@ lexer grammar Symbol;
     
 AND_: '&&';
 OR_: '||';
-NOT_SYM: '!';
+NOT_: '!';
 
 UNARY_BIT_COMPLEMENT: '~';
 BIT_INCLUSIVE_OR: '|';
