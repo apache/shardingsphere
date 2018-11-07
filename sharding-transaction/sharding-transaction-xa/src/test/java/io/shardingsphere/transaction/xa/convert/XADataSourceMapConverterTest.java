@@ -87,8 +87,8 @@ public class XADataSourceMapConverterTest {
     
     private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", DataSourceUtils.build(poolType, databaseType));
-        result.put("ds2", DataSourceUtils.build(poolType, databaseType));
+        result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
+        result.put("ds2", DataSourceUtils.build(poolType, databaseType, "demo_ds_2"));
         return result;
     }
 }
