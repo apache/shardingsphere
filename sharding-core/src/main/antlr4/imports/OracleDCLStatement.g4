@@ -174,3 +174,12 @@ createRole
     )? 
     ( CONTAINER EQ_ ( CURRENT | ALL ) )? 
     ;
+    
+alterRole
+    : ALTER ROLE roleName
+    ( 
+          NOT IDENTIFIED
+        | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
+    )
+    (CONTAINER EQ_ ( CURRENT | ALL ))? 
+    ;
