@@ -75,11 +75,6 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     }
     
     @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.BASE;
-    }
-    
-    @Override
     public String getTransactionId() {
         return TRANSACTION_IDS.get();
     }
