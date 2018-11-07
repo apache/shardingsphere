@@ -49,7 +49,7 @@ granteeIdentifiedBy
     
 grantObjectPrivilegeClause
     : grantObjectPrivilege (COMMA grantObjectPrivilege)* onObjectClause
-    TO granteeClause(WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
+    TO grantees (WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
     ;
     
 grantObjectPrivilege
