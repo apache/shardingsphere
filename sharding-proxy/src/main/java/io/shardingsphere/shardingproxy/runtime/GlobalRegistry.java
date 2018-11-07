@@ -166,15 +166,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Get acceptor size.
-     *
-     * @return acceptor size
-     */
-    public int getAcceptorSize() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
-    }
-    
-    /**
      * Check schema exists.
      *
      * @param schema schema
