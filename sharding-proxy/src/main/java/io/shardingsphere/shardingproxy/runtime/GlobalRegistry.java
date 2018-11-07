@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.event.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
