@@ -34,5 +34,6 @@ execute
     | alterCurrentUser
     | alterUserRole
     | dropUser
+    | renameUser
     ;
  

@@ -224,3 +224,8 @@ alterUserRole
 dropUser
     : DROP USER (IF EXISTS)? users
     ;
+
+//rename-user.html
+renameUser
+    : RENAME USER user TO user (user TO user)*
+    ;
