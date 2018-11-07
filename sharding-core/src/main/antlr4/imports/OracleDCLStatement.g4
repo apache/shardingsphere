@@ -118,7 +118,28 @@ createUser
 sizeClause
     : NUMBER ID?
     ;
-
+    
+alterUser
+    : ALTER USER
+    ( 
+      userName
+      ( 
+        IDENTIFIED (BY STRING (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+        | DEFAULT TABLESPACE ID
+        | TEMPORARY TABLESPACE ID
+        | (QUOTA (sizeClause | UNLIMITED) ON ID)
+        | PROFILE ID
+        | PASSWORD EXPIRE
+        | ACCOUNT (LOCK | UNLOCK)
+        | ENABLE EDITIONS (FOR ids)? FORCE?
+        | CONTAINER EQ_ (CURRENT | ALL)
+        | DEFAULT ROLE (roleNames| ALL (EXCEPT roleNames)?| NONE)
+        | ID
+     ) *
+     | userNames proxyClause
+    ) 
+    ;
+    
 containerDataClause
     : (
         SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
