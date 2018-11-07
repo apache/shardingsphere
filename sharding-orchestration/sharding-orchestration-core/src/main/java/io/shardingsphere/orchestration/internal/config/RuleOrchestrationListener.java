@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.internal.config;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.orchestration.internal.event.config.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.event.config.ShardingRuleChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.ListenerManager;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
@@ -32,7 +32,7 @@ import io.shardingsphere.orchestration.reg.listener.EventListener;
  * @author caohao
  * @author panjuan
  */
-public final class RuleListenerManager implements ListenerManager {
+public final class RuleOrchestrationListener implements OrchestrationListener {
     
     private final ConfigurationNode configNode;
     
@@ -44,7 +44,7 @@ public final class RuleListenerManager implements ListenerManager {
     
     private final DataSourceService dataSourceService;
     
-    public RuleListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+    public RuleOrchestrationListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
         this.shardingSchemaName = shardingSchemaName;
