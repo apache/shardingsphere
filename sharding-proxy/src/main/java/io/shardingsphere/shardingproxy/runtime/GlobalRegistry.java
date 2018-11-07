@@ -148,15 +148,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Is open tracing enable.
-     *
-     * @return is or not
-     */
-    public boolean isOpenTracingEnable() {
-        return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
-    }
-    
-    /**
      * Is show SQL.
      *
      * @return show or not
