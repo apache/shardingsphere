@@ -20,5 +20,6 @@ execute
     | grant
     | revoke
     | createUser
+    | alterUser
     ;
  
