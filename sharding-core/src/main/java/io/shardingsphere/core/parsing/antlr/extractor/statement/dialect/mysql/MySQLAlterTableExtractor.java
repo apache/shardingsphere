@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.AddPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.DropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.RenameIndexExtractor;
@@ -56,8 +57,10 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
     }
     
     @Override
-    protected SQLStatement newStatement() {
-        return new MySQLAlterTableStatement();
+    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+        AlterTableStatement result = new MySQLAlterTableStatement();
+        result.setTableMetaDataMap(shardingTableMetaData);
+        return result;
     }
     
     @Override

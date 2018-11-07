@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.ColumnDefinitionExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.CreatePrimaryKeyExtractor;
@@ -44,12 +45,12 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement newStatement() {
+    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
         return new CreateTableStatement();
     }
     
     @Override
-    protected void postVisit(final SQLStatement statement) {
+    protected void postExtract(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         List<ColumnMetaData> newColumnMeta = new LinkedList<>();
         int position = 0;
