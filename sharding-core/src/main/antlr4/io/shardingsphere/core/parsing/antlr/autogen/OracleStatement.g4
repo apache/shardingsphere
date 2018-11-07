@@ -21,5 +21,6 @@ execute
     | revoke
     | createUser
     | alterUser
+    | dropUser
     ;
  
