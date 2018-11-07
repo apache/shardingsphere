@@ -148,15 +148,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Is show SQL.
-     *
-     * @return show or not
-     */
-    public boolean isShowSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
-    
-    /**
      * Check schema exists.
      *
      * @param schema schema
