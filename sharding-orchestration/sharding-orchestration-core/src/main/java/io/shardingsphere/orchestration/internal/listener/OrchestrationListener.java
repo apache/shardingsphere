@@ -23,7 +23,7 @@ package io.shardingsphere.orchestration.internal.listener;
  * @author caohao
  * @author panjuan
  */
-public interface ListenerManager {
+public interface OrchestrationListener {
     
     /**
      * Start change listener.
