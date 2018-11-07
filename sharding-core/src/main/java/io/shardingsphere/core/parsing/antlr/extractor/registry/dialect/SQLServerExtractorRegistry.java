@@ -15,28 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.registry;
+package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.DatabaseExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.CreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.IndexWithTableStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlyMultiTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlySingleTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.TCLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle.OracleAlterIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle.OracleAlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle.OracleDropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.sqlserver.SQLServerAlterTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Extractor registry for Oracle.
+ * Extractor registry for SQLServer.
  * 
  * @author duhongjun
  * @author zhangliang
  */
-public final class OracleExtractorRegistry implements DatabaseExtractorRegistry {
+public final class SQLServerExtractorRegistry implements DatabaseExtractorRegistry {
     
     private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
     
@@ -47,12 +47,12 @@ public final class OracleExtractorRegistry implements DatabaseExtractorRegistry 
     
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new OracleAlterTableExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlySingleTableExtractor());
+        EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new SQLServerAlterTableExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlyMultiTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlySingleTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new OracleAlterIndexExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new OracleDropIndexExtractor());
+        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
     }
     
     private static void registerTCL() {

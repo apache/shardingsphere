@@ -15,42 +15,43 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.registry;
+package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.DatabaseExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.CreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.IndexWithTableStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlyMultiTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlySingleTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.TCLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.sqlserver.SQLServerAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.mysql.MySQLAlterTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Extractor registry for SQLServer.
+ * Extractor registry for MySQL.
  * 
  * @author duhongjun
  * @author zhangliang
  */
-public final class SQLServerExtractorRegistry implements DatabaseExtractorRegistry {
+public final class MySQLExtractorRegistry implements DatabaseExtractorRegistry {
     
     private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
     
     static {
         registerDDL();
         registerTCL();
+        registerDAL();
     }
     
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new SQLServerAlterTableExtractor());
+        EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new MySQLAlterTableExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlyMultiTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlySingleTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new IndexWithTableStatementExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
     }
     
@@ -60,6 +61,10 @@ public final class SQLServerExtractorRegistry implements DatabaseExtractorRegist
         EXTRACTORS.put(SQLStatementType.ROLLBACK, new TCLStatementExtractor());
         EXTRACTORS.put(SQLStatementType.SAVEPOINT, new TCLStatementExtractor());
         EXTRACTORS.put(SQLStatementType.BEGIN_WORK, new TCLStatementExtractor());
+    }
+    
+    private static void registerDAL() {
+        EXTRACTORS.put(SQLStatementType.SET_VARIABLE, new TCLStatementExtractor());
     }
     
     @Override
