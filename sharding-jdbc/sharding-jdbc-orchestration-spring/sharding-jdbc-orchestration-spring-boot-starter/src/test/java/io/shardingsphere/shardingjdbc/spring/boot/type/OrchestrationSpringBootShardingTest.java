@@ -67,7 +67,7 @@ public class OrchestrationSpringBootShardingTest {
         for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
-        assertTrue(shardingContext.isShowSQL());
+        assertTrue(shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
