@@ -17,9 +17,6 @@
 
 package io.shardingsphere.transaction.base.manager.servicecomb;
 
-import io.shardingsphere.transaction.base.manager.servicecomb.EmptySQLTransportTest;
-import io.shardingsphere.transaction.base.manager.servicecomb.SagaDefinitionBuilderTest;
-import io.shardingsphere.transaction.base.manager.servicecomb.ShardingTrasportFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -27,7 +24,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         EmptySQLTransportTest.class,
         SagaDefinitionBuilderTest.class,
-        ShardingTrasportFactoryTest.class
+        ShardingTransportFactoryTest.class
 })
 public class AllServicecombTest {
 }

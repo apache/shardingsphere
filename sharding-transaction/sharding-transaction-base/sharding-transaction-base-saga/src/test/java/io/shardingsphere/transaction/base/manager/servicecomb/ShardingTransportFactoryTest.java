@@ -17,16 +17,21 @@
 
 package io.shardingsphere.transaction.base.manager.servicecomb;
 
-import io.shardingsphere.transaction.base.fixture.FixtureShardingTransportFactory;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class ShardingTrasportFactoryTest {
+public class ShardingTransportFactoryTest {
     
     @Test
     public void assertGerInstanceWithSPI() {
-        assertThat(ShardingTransportFactorySPILoader.getInstance().getTransportFactory(), instanceOf(FixtureShardingTransportFactory.class));
+        assertThat(ShardingTransportFactorySPILoader.getInstance().getTransportFactory(), instanceOf(ShardingTransportFactory.class));
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().cacheTransport(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        assertThat(ShardingTransportFactorySPILoader.getInstance().getTransportFactory().getTransport(), instanceOf(EmptySQLTransport.class));
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().remove();
     }
 }
+

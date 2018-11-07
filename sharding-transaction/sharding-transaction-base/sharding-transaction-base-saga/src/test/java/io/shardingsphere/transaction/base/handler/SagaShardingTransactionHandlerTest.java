@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.base.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -79,6 +81,11 @@ public class SagaShardingTransactionHandlerTest {
         transactionManager.set(handler, sagaTransactionManager);
         builderMap = (Map<String, SagaDefinitionBuilder>) sagaDefinitionBuilderMap.get(handler);
         revertEngines = (Map<String, RevertEngine>) revertEngineMap.get(handler);
+    }
+    
+    @Test
+    public void assertGetTransactionType() {
+        assertThat(handler.getTransactionType(), equalTo(TransactionType.BASE));
     }
     
     @Test
