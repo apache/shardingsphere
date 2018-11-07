@@ -64,6 +64,17 @@ public final class ExecutorGroupTest {
         ChannelThreadExecutorGroup.getInstance().unregister(channelId);
     }
     
+    @Test
+    public void assertGetExecutorServiceWithBASE() throws ReflectiveOperationException {
+        setTransactionType(TransactionType.BASE);
+        EventLoopGroup eventLoopGroup = mock(EventLoopGroup.class);
+        ChannelId channelId = mock(ChannelId.class);
+        ChannelThreadExecutorGroup.getInstance().register(channelId);
+        assertThat(new ExecutorGroup(eventLoopGroup, channelId).getExecutorService(), Matchers.<ExecutorService>not(eventLoopGroup));
+        assertNotNull(new ExecutorGroup(eventLoopGroup, channelId).getExecutorService());
+        ChannelThreadExecutorGroup.getInstance().unregister(channelId);
+    }
+    
     private void setTransactionType(final TransactionType transactionType) throws ReflectiveOperationException {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
         field.setAccessible(true);
