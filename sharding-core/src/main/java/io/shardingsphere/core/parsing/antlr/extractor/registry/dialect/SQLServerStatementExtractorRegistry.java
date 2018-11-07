@@ -20,12 +20,12 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.IndexWithTableStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlyMultiTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlySingleTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.TCLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.sqlserver.SQLServerAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.OnlyMultiTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.OnlySingleTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver.SQLServerAlterTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
