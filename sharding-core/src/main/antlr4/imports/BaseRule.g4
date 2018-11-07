@@ -5,8 +5,8 @@ grammar BaseRule;
 import DataType,Keyword,Symbol;
 
 ID: 
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA? DOT)?
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA?)
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)?
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     |[a-zA-Z_$0-9]+ DOT ASTERISK
     ;
 

@@ -39,7 +39,7 @@ RBT_:']';
 COMMA: ',';
 DQ_: '"';
 SQ_: '\'';
-BACK_QUOTA: '`';
+BQ_: '`';
 UL_: '_';
 QUESTION: '?' ;
 AT_:'@';
