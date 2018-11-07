@@ -72,21 +72,21 @@ privLevel
     | schemaName DOT routineName
     ;
 
-userName
+user
     : ID
     | STRING
     | STRING AT_ STRING
     ;
 
-roleName
+role
     : ID
     | STRING
     | STRING AT_ STRING
     ;
 
 userOrRole
-    : userName
-    | roleName
+    : user
+    | role
     ;
 
 userOrRoles
