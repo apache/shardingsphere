@@ -174,7 +174,7 @@ createRole
     )? 
     ( CONTAINER EQ_ ( CURRENT | ALL ) )? 
     ;
-    
+
 alterRole
     : ALTER ROLE roleName
     ( 
@@ -183,7 +183,7 @@ alterRole
     )
     (CONTAINER EQ_ ( CURRENT | ALL ))? 
     ;
-    
+
 dropRole
     : DROP ROLE roleName 
     ;
