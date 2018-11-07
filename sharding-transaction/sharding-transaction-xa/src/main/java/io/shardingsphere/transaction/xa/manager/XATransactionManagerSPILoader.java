@@ -36,6 +36,8 @@ public final class XATransactionManagerSPILoader {
     
     private static final XATransactionManagerSPILoader INSTANCE = new XATransactionManagerSPILoader();
     
+    private final Collection<XATransactionManager> xaTransactionManagers = NewInstanceServiceLoader.load(XATransactionManager.class);
+    
     private final XATransactionManager transactionManager;
     
     private XATransactionManagerSPILoader() {
@@ -44,7 +46,6 @@ public final class XATransactionManagerSPILoader {
     
     private XATransactionManager load() {
         try {
-            Collection<XATransactionManager> xaTransactionManagers = NewInstanceServiceLoader.load(XATransactionManager.class);
             if (xaTransactionManagers.size() > 1) {
                 log.warn("There are more than one transaction mangers existing, chosen first one by default.");
             }
