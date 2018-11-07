@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.orchestration.internal.event.DisabledStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateEventBusEvent;
 
 import java.util.Collection;
 import java.util.LinkedList;

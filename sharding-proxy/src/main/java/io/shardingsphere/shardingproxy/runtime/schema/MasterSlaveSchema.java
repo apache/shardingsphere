@@ -25,7 +25,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.config.event.MasterSlaveRuleChangedEvent;
-import io.shardingsphere.orchestration.internal.event.DisabledStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import lombok.Getter;
 
