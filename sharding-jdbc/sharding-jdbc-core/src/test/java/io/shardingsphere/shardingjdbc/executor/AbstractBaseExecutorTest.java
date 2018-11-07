@@ -80,7 +80,6 @@ public abstract class AbstractBaseExecutorTest {
         ShardingContext shardingContext = mock(ShardingContext.class);
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
-        when(shardingContext.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
