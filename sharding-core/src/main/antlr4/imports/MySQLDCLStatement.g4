@@ -78,6 +78,10 @@ user
     | STRING AT_ STRING
     ;
 
+users
+    : user (COMMA user)*
+    ;
+
 role
     : ID
     | STRING
@@ -214,4 +218,9 @@ alterUserRole
     : ALTER USER (IF EXISTS)?
     user DEFAULT ROLE
     (NONE | ALL | roles)
+    ;
+
+//drop-user.html
+dropUser
+    : DROP USER (IF EXISTS)? users
     ;

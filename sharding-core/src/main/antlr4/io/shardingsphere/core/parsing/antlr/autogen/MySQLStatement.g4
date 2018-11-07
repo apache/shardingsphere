@@ -33,5 +33,6 @@ execute
     | alterUser
     | alterCurrentUser
     | alterUserRole
+    | dropUser
     ;
  
