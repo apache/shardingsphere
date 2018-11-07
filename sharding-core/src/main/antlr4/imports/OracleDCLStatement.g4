@@ -28,10 +28,6 @@ systemObject
     | roleName
     | ID *?
     ;
-        
-systemPrivilege
-    : 
-    ;
 
 grantees
     : grantee (COMMA grantee)*
