@@ -78,12 +78,13 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
             case COMMIT:
                 try {
                     transactionEvent.setSagaJson(sagaDefinitionBuilderMap.remove(transactionManager.getTransactionId()).build());
-                    revertEngineMap.remove(transactionManager.getTransactionId());
                     super.doInTransaction(transactionEvent);
                 } catch (JsonProcessingException e) {
                     // shouldn't really happen, but is declared as possibility so:
                     log.error("saga transaction", transactionManager.getTransactionId(), "commit failed, caused by json build exception: ", e);
                     return;
+                } finally {
+                    revertEngineMap.remove(transactionManager.getTransactionId());
                 }
                 break;
             case ROLLBACK:

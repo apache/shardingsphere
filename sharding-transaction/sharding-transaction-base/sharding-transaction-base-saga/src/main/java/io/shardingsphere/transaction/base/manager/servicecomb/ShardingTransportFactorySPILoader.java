@@ -18,10 +18,13 @@
 package io.shardingsphere.transaction.base.manager.servicecomb;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
@@ -35,6 +38,8 @@ public final class ShardingTransportFactorySPILoader {
     
     private static final ShardingTransportFactorySPILoader INSTANCE = new ShardingTransportFactorySPILoader();
     
+    private final NewInstanceServiceLoader<ShardingTransportFactory> serviceLoader = NewInstanceServiceLoader.load(ShardingTransportFactory.class);
+    
     @Getter
     private final ShardingTransportFactory transportFactory;
     
@@ -43,30 +48,35 @@ public final class ShardingTransportFactorySPILoader {
     }
     
     private ShardingTransportFactory load() {
-        Iterator<ShardingTransportFactory> transportFactorys = ServiceLoader.load(ShardingTransportFactory.class).iterator();
-        if (!transportFactorys.hasNext()) {
-            log.warn("There are no SQLTransport configured. BASE Saga Transaction cannot be used.");
-            return new ShardingTransportFactory() {
-    
-                @Override
-                public void cacheTransport(final SagaTransactionEvent event) {
-                }
-    
-                @Override
-                public void remove() {
-                }
-    
-                @Override
-                public SQLTransport getTransport() {
-                    return new EmptySQLTransport();
-                }
-            };
+        try {
+            Collection<ShardingTransportFactory> transportFactorys = serviceLoader.newServiceInstances();
+            if (transportFactorys.isEmpty()) {
+                log.warn("There are no SQLTransport configured. BASE Saga Transaction cannot be used.");
+                return new ShardingTransportFactory() {
+        
+                    @Override
+                    public void cacheTransport(final SagaTransactionEvent event) {
+                    }
+        
+                    @Override
+                    public void remove() {
+                    }
+        
+                    @Override
+                    public SQLTransport getTransport() {
+                        return new EmptySQLTransport();
+                    }
+                };
+            }
+            if (transportFactorys.size() > 1) {
+                log.warn("There are more than one SQLTransport implement existing, chosen first one by default.");
+            }
+            return transportFactorys.iterator().next();
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            throw new ShardingException("Can not initialize the xaTransaction manager failed with " + ex);
         }
-        ShardingTransportFactory result = transportFactorys.next();
-        if (transportFactorys.hasNext()) {
-            log.warn("There are more than one SQLTransport implement existing, chosen first one by default.");
-        }
-        return result;
     }
     
     /**

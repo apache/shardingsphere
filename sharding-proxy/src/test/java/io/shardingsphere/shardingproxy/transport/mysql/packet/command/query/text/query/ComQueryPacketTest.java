@@ -23,9 +23,12 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -101,6 +104,7 @@ public final class ComQueryPacketTest {
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
+        when(shardingSchema.getBackendDataSource()).thenReturn(new JDBCBackendDataSource(new HashMap<String, DataSourceParameter>()));
     }
     
     private void setFrontendHandlerSchema() {
@@ -184,12 +188,34 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteRollbackWithXATransaction() throws SQLException {
         setTransactionType(TransactionType.XA);
+        when(payload.readStringEOF()).thenReturn("ROLLBACK");
+        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        Optional<CommandResponsePackets> actual = packet.execute();
+        assertTrue(actual.isPresent());
+        assertOKPacket(actual.get());
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+    }
+    
+    @Test
+    public void assertExecuteTCLWithBaseTransaction() {
+        setTransactionType(TransactionType.BASE);
+        when(payload.readStringEOF()).thenReturn("BEGIN");
+        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        Optional<CommandResponsePackets> actual = packet.execute();
+        assertTrue(actual.isPresent());
+        assertOKPacket(actual.get());
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+    }
+    
+    @Test
+    public void assertExecuteCommitWithBaseTransaction() {
+        setTransactionType(TransactionType.BASE);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

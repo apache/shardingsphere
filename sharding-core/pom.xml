@@ -47,7 +47,7 @@
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.7.1</version> <!-- use older version to process XPathLexer.g4, avoiding cyclic build dependency -->
+                <version>4.7.1</version>
                 <executions>
                     <execution>
                         <id>antlr</id>

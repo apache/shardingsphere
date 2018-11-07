@@ -45,6 +45,7 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
+ * @author yangyi
  */
 public final class StatementExecutor extends AbstractStatementExecutor {
     
@@ -173,13 +174,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private int executeUpdate(final Updater updater) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), getSqlType(), isExceptionThrown) {
-            
-            @Override
-            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return updater.executeUpdate(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql());
-            }
-        };
+        SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown, updater);
         List<Integer> results = executeCallback(executeCallback);
         return accumulate(results);
     }
@@ -261,13 +256,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private boolean execute(final Executor executor) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), getSqlType(), isExceptionThrown) {
-            
-            @Override
-            protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return executor.execute(statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql());
-            }
-        };
+        SQLExecuteCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown, executor);
         List<Boolean> result = executeCallback(executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
@@ -275,12 +264,12 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         return result.get(0);
     }
     
-    private interface Updater {
+    interface Updater {
         
         int executeUpdate(Statement statement, String sql) throws SQLException;
     }
     
-    private interface Executor {
+    interface Executor {
         
         boolean execute(Statement statement, String sql) throws SQLException;
     }
