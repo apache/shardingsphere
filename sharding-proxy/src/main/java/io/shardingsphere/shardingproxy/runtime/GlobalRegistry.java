@@ -175,15 +175,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Get executor size.
-     *
-     * @return executor size
-     */
-    public int getExecutorSize() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-    }
-    
-    /**
      * Check schema exists.
      *
      * @param schema schema
