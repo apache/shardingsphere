@@ -40,7 +40,7 @@ grantee
     ;
     
 granteeIdentifiedBy
-    : userName (COMMA userName)* IDENTIFIED BY STRING (COMMA STRING)*
+    : userNames IDENTIFIED BY STRING (COMMA STRING)*
     ;
     
 grantObjectPrivilegeClause
@@ -49,7 +49,7 @@ grantObjectPrivilegeClause
     ;
     
 grantObjectPrivilege
-    : objectPrivilege ( LP_ columnName (COMMA columnName)* RP_)? 
+    : objectPrivilege columnList? 
     ;
 
 objectPrivilege
@@ -67,7 +67,11 @@ onObjectClause
     ;
     
 grantRolesToPrograms
-    : roleName (COMMA roleName)* TO programUnit ( COMMA programUnit )*
+    : roleNames TO programUnits
+    ;
+
+programUnits
+    : programUnit (COMMA programUnit)*
     ;
     
 programUnit
@@ -82,4 +86,8 @@ revokeObjectPrivileges
     : objectPrivilege (COMMA objectPrivilege)* onObjectClause
     FROM grantees
     (CASCADE CONSTRAINTS | FORCE)?
+    ;
+    
+revokeRolesFromPrograms
+    : (roleNames | ALL) FROM programUnits
     ;
