@@ -119,6 +119,14 @@ sizeClause
     : NUMBER ID?
     ;
 
+containerDataClause
+    : (
+        SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
+       |(ADD |REMOVE) CONTAINER_DATA EQ_ idList
+    )
+    (FOR schemaName? ID)?
+    ;
+
 proxyClause
     : (GRANT | REVOKE) CONNECT THROUGH ( ENTERPRISE USERS | userName dbUserProxyClauses?)
     ;
