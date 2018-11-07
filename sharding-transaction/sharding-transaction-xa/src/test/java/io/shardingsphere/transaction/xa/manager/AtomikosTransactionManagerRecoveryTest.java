@@ -72,12 +72,13 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     private Map<String, DataSource> createXADataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
-        DataSource ds1 = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, "demo_ds_1");
-        DataSource xaDataSource1 = atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), "ds1", DataSourceParameterFactory.build(ds1));
-        result.put("ds1", xaDataSource1);
-        DataSource ds2 = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, "demo_ds_2");
-        DataSource xaDataSource2 = atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), "ds2", DataSourceParameterFactory.build(ds1));
-        result.put("ds2", xaDataSource2);
+        result.put("ds1", createXADataSource("ds1"));
+        result.put("ds2", createXADataSource("ds2"));
         return result;
+    }
+    
+    private DataSource createXADataSource(final String dsName) {
+        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, dsName);
+        return atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), dsName, DataSourceParameterFactory.build(dataSource));
     }
 }
