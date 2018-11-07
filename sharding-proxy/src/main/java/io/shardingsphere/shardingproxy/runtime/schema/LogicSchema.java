@@ -40,7 +40,7 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Getter
-public class LogicSchema {
+public abstract class LogicSchema {
     
     private final String name;
     
@@ -50,12 +50,12 @@ public class LogicSchema {
     
     private JDBCBackendDataSource backendDataSource;
     
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRule shardingrule) {
+    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData(shardingrule);
+        metaData = getShardingMetaData();
     }
     
     private ShardingMetaData getShardingMetaData(final ShardingRule shardingRule) {
@@ -70,6 +70,8 @@ public class LogicSchema {
         }
         return result;
     }
+    
+    protected abstract ShardingMetaData getShardingMetaData();
     
     /**
      * Renew data source configuration.
