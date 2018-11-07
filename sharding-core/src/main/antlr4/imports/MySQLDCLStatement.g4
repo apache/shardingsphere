@@ -244,3 +244,8 @@ dropRole
 setPassword
     : SET PASSWORD (FOR user)? EQ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     ;
+
+//set-default-role.html
+setDefaultRole
+    : SET DEFAULT ROLE (NONE | ALL | roles) TO users
+    ;

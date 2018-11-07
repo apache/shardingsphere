@@ -38,5 +38,6 @@ execute
     | createRole
     | dropRole
     | setPassword
+    | setDefaultRole
     ;
  
