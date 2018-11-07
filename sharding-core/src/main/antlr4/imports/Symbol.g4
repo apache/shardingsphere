@@ -33,7 +33,7 @@ POUND_: '#';
 LP_: '(';
 RP_: ')';
 LBE_: '{';
-RIGHT_BRACE: '}';
+RBE_: '}';
 LEFT_BRACKET:'[';
 RIGHT_BRACKET:']';
 COMMA: ',';
