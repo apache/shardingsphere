@@ -54,22 +54,16 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @SneakyThrows
     private void createTable() {
-        RunScript.execute(xaDataSourceMap.get("ds1").getConnection(),
-            new StringReader("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))"));
-        RunScript.execute(xaDataSourceMap.get("ds2").getConnection(),
-            new StringReader("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))"));
+        executeSQL("ds1", "CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
+        executeSQL("ds2", "CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
     }
     
     @Test
     @SneakyThrows
     public void assertAtomikosDataSourceBeanRecovery() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        try (Connection connection = xaDataSourceMap.get("ds1").getConnection()) {
-            RunScript.execute(connection, new StringReader("INSERT INTO t_order VALUES(1000, 10, 'init')"));
-        }
-        try (Connection connection = xaDataSourceMap.get("ds2").getConnection()) {
-            RunScript.execute(connection, new StringReader("INSERT INTO t_order VALUES(1000, 10, 'init')"));
-        }
+        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
         Transaction transaction = transactionManager.getTransaction();
         CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
@@ -82,6 +76,13 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
         Connection connection = xaDataSourceMap.get("ds1").getConnection();
+    }
+    
+    @SneakyThrows
+    private void executeSQL(final String dsName, final String sql) {
+        try (Connection connection = xaDataSourceMap.get(dsName).getConnection()) {
+            RunScript.execute(connection, new StringReader(sql));
+        }
     }
     
     @Test
