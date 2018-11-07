@@ -14,7 +14,7 @@ Sharding-Proxy是Sharding-Sphere的第二个产品。
 * 向应用程序完全透明，可直接当做MySQL使用。
 * 适用于任何兼容MySQL协议的的客户端。
 
-![Sharding-Proxy Architecture](/img/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
 
 ## 对比
 

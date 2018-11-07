@@ -51,34 +51,34 @@ Sharding-Sphere并不负责如何采集、存储以及展示应用性能监控�
 
 ### 拓扑图展示
 
-![拓扑图](/img/apm/5x_topology.png)
+![拓扑图](http://shardingsphere.jd.com/document/current/img/apm/5x_topology.png)
 
 从图中看，用户访问18次Sharding-Proxy应用，每次每个数据库访问了两次。这是由于每次访问涉及到每个库中的两个分表，所以每次访问了四张表。
 
 ### 跟踪数据展示
 
-![跟踪图](/img/apm/5x_trace.png)
+![跟踪图](http://shardingsphere.jd.com/document/current/img/apm/5x_trace.png)
 
 从跟踪图中可以能够看到SQL解析和执行的情况。
 
 `/Sharding-Sphere/parseSQL/` : 表示本次SQL的解析性能。
 
-![解析节点](/img/apm/5x_parse.png)
+![解析节点](http://shardingsphere.jd.com/document/current/img/apm/5x_parse.png)
 
 `/Sharding-Sphere/executeSQL/` : 表示具体执行的实际SQL的性能。
 
-![实际访问节点](/img/apm/5x_executeSQL.png)
+![实际访问节点](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL.png)
 
 ### 异常情况展示
 
-![异常跟踪图](/img/apm/5x_trace_err.png)
+![异常跟踪图](http://shardingsphere.jd.com/document/current/img/apm/5x_trace_err.png)
 
 从跟踪图中可以能够看到发生异常的节点。
 
 `/Sharding-Sphere/executeSQL/` : 表示执行SQL异常的结果。
 
-![异常节点](/img/apm/5x_executeSQL_Tags_err.png)
+![异常节点](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Tags_err.png)
 
 `/Sharding-Sphere/executeSQL/` : 表示执行SQL异常的日志。
 
-![异常节点日志](/img/apm/5x_executeSQL_Logs_err.png)
+![异常节点日志](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Logs_err.png)

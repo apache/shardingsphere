@@ -23,7 +23,7 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![Sharding-Sphere Scope](/img/sharding-sphere-scope_en_v2.png)
+![Sharding-Sphere Scope](http://shardingsphere.jd.com/document/current/img/sharding-sphere-scope_en_v2.png)
 
 ## Introduction
 
@@ -39,7 +39,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
 
-![Sharding-JDBC Architecture](/img//sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img//sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -52,7 +52,7 @@ Friendlier to DBA, the MySQL version provided now can use any kind of client acc
 * Totally transparent to applications, it can be used directly as MySQL.
 * Applicable to any kind of compatible of client end that is compatible of MySQL protocol.
 
-![Sharding-Proxy Architecture](/img//sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img//sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TBD)
 
@@ -64,7 +64,7 @@ Focusing on interaction, it effectively organizes the interaction between messy 
 The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
 They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](/img/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
 
 |                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ----------------------- | --------------- | -------------------- | ------------------ |
@@ -98,4 +98,4 @@ They are all governed by mesh layer.
 
 ## Roadmap
 
-![Roadmap](/img//roadmap_en_v4.png)
+![Roadmap](http://shardingsphere.jd.com/document/current/img//roadmap_en_v4.png)
