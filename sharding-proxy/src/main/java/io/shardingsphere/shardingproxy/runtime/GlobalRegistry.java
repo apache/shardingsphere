@@ -32,7 +32,6 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
-import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -62,8 +61,6 @@ public final class GlobalRegistry {
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
     private ShardingProperties shardingProperties;
-    
-    private BackendNIOConfiguration backendNIOConfig;
     
     private Authentication authentication;
     
@@ -117,7 +114,6 @@ public final class GlobalRegistry {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
-        initBackendNIOConfig();
     }
     
     private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
@@ -130,12 +126,6 @@ public final class GlobalRegistry {
     private LogicSchema getLogicSchema(final String schemaName, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         return ruleConfiguration instanceof ShardingRuleConfiguration ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
                 : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
-    }
-    
-    private void initBackendNIOConfig() {
-        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
-        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
-        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
     }
     
     /**
