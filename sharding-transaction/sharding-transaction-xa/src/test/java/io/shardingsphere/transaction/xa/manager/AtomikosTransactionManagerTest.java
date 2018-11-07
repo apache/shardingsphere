@@ -18,13 +18,19 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
+import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.imp.CoordinatorImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.convert.XADataSourceMapConverter;
+import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -37,6 +43,11 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -153,12 +164,39 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertAtomikosDataSourceBeanRecovery() {
-    
+        Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.HIKARI, DatabaseType.H2);
+        Map<String, DataSource> xaDataSourceMap = new XADataSourceMapConverter().convert(dataSourceMap, DatabaseType.H2);
+        atomikosTransactionManager = new AtomikosTransactionManager();
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        try (Connection connection = xaDataSourceMap.get("ds1").getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.execute("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
+            statement.execute("INSERT INTO t_order VALUES(1000, 10, 'init');");
+        }
+        UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
+        Transaction transaction = transactionManager.getTransaction();
+        CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
+        CoordinatorImp coordinator = (CoordinatorImp) compositeTransaction.getCompositeCoordinator();
+        coordinator.prepare();
+        
+        ReflectiveUtil.methodInvoke(transactionManager, "shutdownTransactionService");
+        transactionManager.close();
+        atomikosTransactionManager = new AtomikosTransactionManager();
+        xaDataSourceMap = new XADataSourceMapConverter().convert(dataSourceMap, DatabaseType.H2);
+        Connection connection = xaDataSourceMap.get("ds1").getConnection();
     }
     
     @Test
     public void assertBasicManagedDataSourceRecovery() {
     
+    }
+    
+    private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
+        result.put("ds2", DataSourceUtils.build(poolType, databaseType, "demo_ds_2"));
+        return result;
     }
 }
