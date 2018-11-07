@@ -19,6 +19,8 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
+import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
@@ -37,7 +39,7 @@ import java.util.Properties;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class XATransactionDataSourceWrapper {
+final class XATransactionDataSourceWrapper {
     
     private final TransactionManager transactionManager;
     
@@ -50,7 +52,7 @@ public final class XATransactionDataSourceWrapper {
      * @return transactional datasource pool
      * @throws PropertyException property exception
      */
-    public DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
+    DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
         switch (dataSourceParameter.getProxyDatasourceType()) {
             case TOMCAT_DBCP2:
                 return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
@@ -71,6 +73,11 @@ public final class XATransactionDataSourceWrapper {
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSourceInstance(xaDataSource);
         return result;
+    }
+    
+    private void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        JdbcTransactionalResource transactionalResource = new JdbcTransactionalResource(dataSourceName, xaDataSource);
+        Configuration.addResource(transactionalResource);
     }
     
     private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
