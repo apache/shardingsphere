@@ -151,4 +151,14 @@ public final class AtomikosTransactionManagerTest {
         XADataSource xaDataSource = new MysqlXADataSource();
         atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }
+    
+    @Test
+    public void assertAtomikosDataSourceBeanRecovery() {
+    
+    }
+    
+    @Test
+    public void assertBasicManagedDataSourceRecovery() {
+    
+    }
 }
