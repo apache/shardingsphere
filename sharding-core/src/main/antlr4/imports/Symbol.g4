@@ -35,7 +35,7 @@ RP_: ')';
 LBE_: '{';
 RBE_: '}';
 LBT_:'[';
-RIGHT_BRACKET:']';
+RBT_:']';
 COMMA: ',';
 DOUBLE_QUOTA: '"';
 SINGLE_QUOTA: '\'';

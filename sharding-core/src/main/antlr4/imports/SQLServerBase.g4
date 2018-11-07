@@ -3,8 +3,8 @@ grammar SQLServerBase;
 import SQLServerKeyword,Keyword,Symbol,BaseRule,DataType;
 
 ID
-    : (LBT_? DOUBLE_QUOTA? [a-zA-Z_$#][a-zA-Z0-9_$#]* DOUBLE_QUOTA? RIGHT_BRACKET? DOT)* DOT*
-    (LBT_? DOUBLE_QUOTA? [a-zA-Z_$#][a-zA-Z0-9_$#]* DOUBLE_QUOTA? RIGHT_BRACKET?)
+    : (LBT_? DOUBLE_QUOTA? [a-zA-Z_$#][a-zA-Z0-9_$#]* DOUBLE_QUOTA? RBT_? DOT)* DOT*
+    (LBT_? DOUBLE_QUOTA? [a-zA-Z_$#][a-zA-Z0-9_$#]* DOUBLE_QUOTA? RBT_?)
     |[a-zA-Z0-9_$]+ DOT ASTERISK
     ;
     
