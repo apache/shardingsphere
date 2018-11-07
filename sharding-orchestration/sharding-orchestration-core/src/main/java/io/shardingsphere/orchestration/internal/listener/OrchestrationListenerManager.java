@@ -30,12 +30,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Registry center's listener factory.
+ * Registry center's listener manager.
  *
  * @author caohao
  * @author panjuan
  */
-public final class ListenerFactory {
+public final class OrchestrationListenerManager {
     
     private final Collection<RuleListenerManager> ruleListenerManagers = new LinkedList<>();
     
@@ -51,7 +51,7 @@ public final class ListenerFactory {
     
     private final DataSourceStateListenerManager dataSourceStateListenerManager;
     
-    public ListenerFactory(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
+    public OrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
             dataSourceListenerManagers.add(new DataSourceListenerManager(name, regCenter, each));
             ruleListenerManagers.add(new RuleListenerManager(name, regCenter, each));
