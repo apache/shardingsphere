@@ -118,6 +118,10 @@ createUser
 sizeClause
     : NUMBER ID?
     ;
+
+proxyClause
+    : (GRANT | REVOKE) CONNECT THROUGH ( ENTERPRISE USERS | userName dbUserProxyClauses?)
+    ;
     
 dbUserProxyClauses
     : (WITH 
