@@ -18,11 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.extractor;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.DatabaseExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.MySQLExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.OracleExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.PostgreSQLExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.SQLServerExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.MySQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.OracleStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.PostgreSQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.dialect.SQLServerStatementExtractorRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -38,14 +38,14 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementExtractorFactory {
     
-    private static final Map<DatabaseType, DatabaseExtractorRegistry> EXTRACTOR_REGISTRY = new HashMap<>(5, 1);
+    private static final Map<DatabaseType, SQLStatementExtractorRegistry> EXTRACTOR_REGISTRY = new HashMap<>(5, 1);
     
     static {
-        EXTRACTOR_REGISTRY.put(DatabaseType.H2, new MySQLExtractorRegistry());
-        EXTRACTOR_REGISTRY.put(DatabaseType.MySQL, new MySQLExtractorRegistry());
-        EXTRACTOR_REGISTRY.put(DatabaseType.PostgreSQL, new PostgreSQLExtractorRegistry());
-        EXTRACTOR_REGISTRY.put(DatabaseType.SQLServer, new SQLServerExtractorRegistry());
-        EXTRACTOR_REGISTRY.put(DatabaseType.Oracle, new OracleExtractorRegistry());
+        EXTRACTOR_REGISTRY.put(DatabaseType.H2, new MySQLStatementExtractorRegistry());
+        EXTRACTOR_REGISTRY.put(DatabaseType.MySQL, new MySQLStatementExtractorRegistry());
+        EXTRACTOR_REGISTRY.put(DatabaseType.PostgreSQL, new PostgreSQLStatementExtractorRegistry());
+        EXTRACTOR_REGISTRY.put(DatabaseType.SQLServer, new SQLServerStatementExtractorRegistry());
+        EXTRACTOR_REGISTRY.put(DatabaseType.Oracle, new OracleStatementExtractorRegistry());
     }
     
     /**

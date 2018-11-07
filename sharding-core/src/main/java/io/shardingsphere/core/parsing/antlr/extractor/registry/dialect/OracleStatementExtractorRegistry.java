@@ -19,24 +19,25 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.DatabaseExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.CreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.IndexWithTableStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlyMultiTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlySingleTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.TCLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.postgresql.PostgreSQLAlterIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.postgresql.PostgreSQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle.OracleAlterIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle.OracleAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle.OracleDropIndexExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Extractor registry for PostgreSQL.
+ * SQL statement extractor registry for Oracle.
  * 
  * @author duhongjun
  * @author zhangliang
  */
-public final class PostgreSQLExtractorRegistry implements DatabaseExtractorRegistry {
+public final class OracleStatementExtractorRegistry implements SQLStatementExtractorRegistry {
     
     private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
     
@@ -47,12 +48,12 @@ public final class PostgreSQLExtractorRegistry implements DatabaseExtractorRegis
     
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new PostgreSQLAlterTableExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlyMultiTableExtractor());
-        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlyMultiTableExtractor());
+        EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new OracleAlterTableExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlySingleTableExtractor());
+        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlySingleTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new PostgreSQLAlterIndexExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new OracleAlterIndexExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new OracleDropIndexExtractor());
     }
     
     private static void registerTCL() {

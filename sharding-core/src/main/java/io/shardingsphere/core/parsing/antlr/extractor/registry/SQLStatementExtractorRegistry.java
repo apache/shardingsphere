@@ -21,11 +21,11 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 
 /**
- * Database extractor registry.
+ * SQL statement extractor registry.
  * 
  * @author zhangliang
  */
-public interface DatabaseExtractorRegistry {
+public interface SQLStatementExtractorRegistry {
     
     /**
      * Get SQL statement extractor.
