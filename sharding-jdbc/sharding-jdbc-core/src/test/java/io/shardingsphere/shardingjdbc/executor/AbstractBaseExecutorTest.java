@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -76,7 +77,7 @@ public abstract class AbstractBaseExecutorTest {
     private void setConnection() throws SQLException {
         ShardingContext shardingContext = mock(ShardingContext.class);
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
-        when(shardingContext.getMaxConnectionsSizePerQuery()).thenReturn(1);
+        when(shardingContext.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));

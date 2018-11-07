@@ -204,7 +204,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             } else {
                 TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(),
                         connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
-                        connection.getShardingContext().getMaxConnectionsSizePerQuery());
+                        connection.getShardingContext().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
                 connection.getShardingContext().getMetaData().getTable().put(
                         logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));
             }
