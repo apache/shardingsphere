@@ -17,13 +17,13 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.orchestration.internal.config.AuthenticationListenerManager;
-import io.shardingsphere.orchestration.internal.config.ConfigMapListenerManager;
-import io.shardingsphere.orchestration.internal.config.RuleListenerManager;
-import io.shardingsphere.orchestration.internal.config.DataSourceListenerManager;
-import io.shardingsphere.orchestration.internal.config.PropertiesListenerManager;
-import io.shardingsphere.orchestration.internal.state.datasource.DataSourceStateListenerManager;
-import io.shardingsphere.orchestration.internal.state.instance.InstanceStateListenerManager;
+import io.shardingsphere.orchestration.internal.config.AuthenticationOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.ConfigMapOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.RuleOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.DataSourceOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.PropertiesOrchestrationListener;
+import io.shardingsphere.orchestration.internal.state.datasource.DataSourceStateOrchestrationListener;
+import io.shardingsphere.orchestration.internal.state.instance.InstanceStateOrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
@@ -37,30 +37,30 @@ import java.util.LinkedList;
  */
 public final class OrchestrationListenerManager {
     
-    private final Collection<RuleListenerManager> ruleListenerManagers = new LinkedList<>();
+    private final Collection<RuleOrchestrationListener> ruleListenerManagers = new LinkedList<>();
     
-    private final Collection<DataSourceListenerManager> dataSourceListenerManagers = new LinkedList<>();
+    private final Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = new LinkedList<>();
     
-    private final PropertiesListenerManager propertiesListenerManager;
+    private final PropertiesOrchestrationListener propertiesListenerManager;
     
-    private final AuthenticationListenerManager authenticationListenerManager;
+    private final AuthenticationOrchestrationListener authenticationListenerManager;
     
-    private final ConfigMapListenerManager configMapListenerManager;
+    private final ConfigMapOrchestrationListener configMapListenerManager;
     
-    private final InstanceStateListenerManager instanceStateListenerManager;
+    private final InstanceStateOrchestrationListener instanceStateListenerManager;
     
-    private final DataSourceStateListenerManager dataSourceStateListenerManager;
+    private final DataSourceStateOrchestrationListener dataSourceStateListenerManager;
     
     public OrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
-            dataSourceListenerManagers.add(new DataSourceListenerManager(name, regCenter, each));
-            ruleListenerManagers.add(new RuleListenerManager(name, regCenter, each));
+            dataSourceListenerManagers.add(new DataSourceOrchestrationListener(name, regCenter, each));
+            ruleListenerManagers.add(new RuleOrchestrationListener(name, regCenter, each));
         }
-        propertiesListenerManager = new PropertiesListenerManager(name, regCenter);
-        authenticationListenerManager = new AuthenticationListenerManager(name, regCenter);
-        instanceStateListenerManager = new InstanceStateListenerManager(name, regCenter);
-        configMapListenerManager = new ConfigMapListenerManager(name, regCenter);
-        dataSourceStateListenerManager = new DataSourceStateListenerManager(name, regCenter);
+        propertiesListenerManager = new PropertiesOrchestrationListener(name, regCenter);
+        authenticationListenerManager = new AuthenticationOrchestrationListener(name, regCenter);
+        instanceStateListenerManager = new InstanceStateOrchestrationListener(name, regCenter);
+        configMapListenerManager = new ConfigMapOrchestrationListener(name, regCenter);
+        dataSourceStateListenerManager = new DataSourceStateOrchestrationListener(name, regCenter);
     }
     
     /**
@@ -78,13 +78,13 @@ public final class OrchestrationListenerManager {
     }
     
     private void initDataSourceListenerManagers() {
-        for (DataSourceListenerManager each : dataSourceListenerManagers) {
+        for (DataSourceOrchestrationListener each : dataSourceListenerManagers) {
             each.watch();
         }
     }
     
     private void initRuleListenerManagers() {
-        for (RuleListenerManager each : ruleListenerManagers) {
+        for (RuleOrchestrationListener each : ruleListenerManagers) {
             each.watch();
         }
     }
