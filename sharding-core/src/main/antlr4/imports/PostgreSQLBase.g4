@@ -7,7 +7,7 @@ columnDefinition
 	;
 	
 dataType
-    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LEFT_BRACKET RIGHT_BRACKET)*
+    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RIGHT_BRACKET)*
     | ID
     ;
 
@@ -215,7 +215,7 @@ castExpr
     ;
 
 castExprWithColon
-    : COLON COLON dataType(LEFT_BRACKET RIGHT_BRACKET)*
+    : COLON COLON dataType(LBT_ RIGHT_BRACKET)*
     ;
     
 collateExpr
@@ -224,12 +224,12 @@ collateExpr
 
 arrayConstructorWithCast
     : arrayConstructor castExprWithColon?
-    | ARRAY LEFT_BRACKET RIGHT_BRACKET castExprWithColon  
+    | ARRAY LBT_ RIGHT_BRACKET castExprWithColon  
     ;
     
 arrayConstructor
-    : ARRAY LEFT_BRACKET exprs RIGHT_BRACKET
-    | ARRAY LEFT_BRACKET arrayConstructor (COMMA arrayConstructor)* RIGHT_BRACKET
+    : ARRAY LBT_ exprs RIGHT_BRACKET
+    | ARRAY LBT_ arrayConstructor (COMMA arrayConstructor)* RIGHT_BRACKET
     ;
 
 extractFromFunction

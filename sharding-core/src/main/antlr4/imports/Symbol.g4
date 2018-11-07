@@ -34,7 +34,7 @@ LP_: '(';
 RP_: ')';
 LBE_: '{';
 RBE_: '}';
-LEFT_BRACKET:'[';
+LBT_:'[';
 RIGHT_BRACKET:']';
 COMMA: ',';
 DOUBLE_QUOTA: '"';
