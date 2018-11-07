@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -40,6 +41,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,6 +79,7 @@ public abstract class AbstractBaseExecutorTest {
     private void setConnection() throws SQLException {
         ShardingContext shardingContext = mock(ShardingContext.class);
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
+        when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
         when(shardingContext.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         DataSource dataSource = mock(DataSource.class);
@@ -85,6 +88,12 @@ public abstract class AbstractBaseExecutorTest {
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
         connection = new ShardingConnection(dataSourceSourceMap, shardingContext);
+    }
+    
+    private ShardingProperties getShardingProperties() {
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
+        return new ShardingProperties(props);
     }
     
     @After
