@@ -64,7 +64,7 @@ public final class SQLServerExtractorRegistry implements DatabaseExtractorRegist
     }
     
     @Override
-    public SQLStatementExtractor getExtractor(final SQLStatementType type) {
+    public SQLStatementExtractor getSQLStatementExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }

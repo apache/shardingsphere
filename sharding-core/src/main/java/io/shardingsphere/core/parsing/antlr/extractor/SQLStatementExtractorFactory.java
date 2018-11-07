@@ -56,6 +56,6 @@ public final class SQLStatementExtractorFactory {
      * @return statement extractor
      */
     public static SQLStatementExtractor getInstance(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
-        return EXTRACTOR_REGISTRY.get(databaseType).getExtractor(sqlStatementType);
+        return EXTRACTOR_REGISTRY.get(databaseType).getSQLStatementExtractor(sqlStatementType);
     }
 }

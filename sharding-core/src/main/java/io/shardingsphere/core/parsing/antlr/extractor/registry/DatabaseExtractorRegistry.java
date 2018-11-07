@@ -28,10 +28,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 public interface DatabaseExtractorRegistry {
     
     /**
-     * Get statement extractor.
+     * Get SQL statement extractor.
      * 
      * @param type SQL statement type
-     * @return statement extractor
+     * @return SQL statement extractor
      */
-    SQLStatementExtractor getExtractor(SQLStatementType type);
+    SQLStatementExtractor getSQLStatementExtractor(SQLStatementType type);
 }

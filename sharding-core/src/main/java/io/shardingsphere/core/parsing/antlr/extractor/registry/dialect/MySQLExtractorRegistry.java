@@ -68,7 +68,7 @@ public final class MySQLExtractorRegistry implements DatabaseExtractorRegistry {
     }
     
     @Override
-    public SQLStatementExtractor getExtractor(final SQLStatementType type) {
+    public SQLStatementExtractor getSQLStatementExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }

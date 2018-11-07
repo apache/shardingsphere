@@ -64,7 +64,7 @@ public final class PostgreSQLExtractorRegistry implements DatabaseExtractorRegis
     }
     
     @Override
-    public SQLStatementExtractor getExtractor(final SQLStatementType type) {
+    public SQLStatementExtractor getSQLStatementExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }
