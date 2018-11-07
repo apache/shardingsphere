@@ -15,46 +15,44 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config;
+package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.config.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.ListenerManager;
-import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Data source listener manager.
+ * Authentication listener manager.
  *
  * @author panjuan
  */
-public final class DataSourceListenerManager implements ListenerManager {
+public final class AuthenticationOrchestrationListener implements OrchestrationListener {
     
     private final ConfigurationNode configNode;
     
     private final RegistryCenter regCenter;
     
-    private final String shardingSchemaName;
+    private final ConfigurationService configService;
     
-    private final DataSourceService dataSourceService;
-    
-    public DataSourceListenerManager(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+    public AuthenticationOrchestrationListener(final String name, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
-        this.shardingSchemaName = shardingSchemaName;
-        dataSourceService = new DataSourceService(name, regCenter);
+        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
     public void watch() {
-        regCenter.watch(configNode.getDataSourcePath(shardingSchemaName), new EventListener() {
+        regCenter.watch(configNode.getAuthenticationPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName)));
+                    ShardingEventBusInstance.getInstance().post(new AuthenticationChangedEvent(configService.loadAuthentication()));
                 }
             }
         });

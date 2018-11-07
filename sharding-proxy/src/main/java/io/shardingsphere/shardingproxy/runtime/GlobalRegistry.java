@@ -29,10 +29,9 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
-import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
+import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -62,8 +61,6 @@ public final class GlobalRegistry {
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
     private ShardingProperties shardingProperties;
-    
-    private BackendNIOConfiguration backendNIOConfig;
     
     private Authentication authentication;
     
@@ -117,7 +114,6 @@ public final class GlobalRegistry {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
-        initBackendNIOConfig();
     }
     
     private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
@@ -132,21 +128,6 @@ public final class GlobalRegistry {
                 : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
     }
     
-    private void initBackendNIOConfig() {
-        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
-        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
-        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-    }
-    
-    /**
-     * Get max connections size per query.
-     *
-     * @return max connections size per query
-     */
-    public int getMaxConnectionsSizePerQuery() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-    }
-    
     /**
      * Get transaction type.
      *
@@ -155,52 +136,6 @@ public final class GlobalRegistry {
     // TODO just config proxy.transaction.enable here, in future(3.1.0)
     public TransactionType getTransactionType() {
         return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
-    }
-    
-    /**
-     * Is open tracing enable.
-     *
-     * @return is or not
-     */
-    public boolean isOpenTracingEnable() {
-        return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
-    }
-    
-    /**
-     * Is show SQL.
-     *
-     * @return show or not
-     */
-    public boolean isShowSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
-    
-    /**
-     * Get acceptor size.
-     *
-     * @return acceptor size
-     */
-    public int getAcceptorSize() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
-    }
-    
-    /**
-     * Get executor size.
-     *
-     * @return executor size
-     */
-    public int getExecutorSize() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-    }
-    
-    /**
-     * Is use NIO.
-     *
-     * @return use or not
-     */
-    // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
-    public boolean isUseNIO() {
-        return false;
     }
     
     /**

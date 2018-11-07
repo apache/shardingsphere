@@ -15,24 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.config;
+package io.shardingsphere.orchestration.internal.config.event;
 
-import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
 /**
- * Data source changed event.
+ * Sharding rule changed event.
  *
+ * @author zhangliang
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangedEvent {
+public final class ShardingRuleChangedEvent {
     
-    private final String schemaName;
+    private final String shardingSchemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    private final ShardingRuleConfiguration shardingRuleConfiguration;
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config;
+package io.shardingsphere.orchestration.internal.config.node;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;

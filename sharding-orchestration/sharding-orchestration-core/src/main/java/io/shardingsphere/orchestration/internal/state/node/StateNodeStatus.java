@@ -15,21 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.runtime.nio;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.orchestration.internal.state.node;
 
 /**
- * Configuration of use NIO to connection backend databases.
+ * State node status.
  *
- * @author zhangliang
+ * @author caohao
  */
-@RequiredArgsConstructor
-@Getter
-public final class BackendNIOConfiguration {
+public enum StateNodeStatus {
     
-    private final int maxConnections;
-    
-    private final int connectionTimeoutSeconds;
+    /**
+     * Disabled state.
+     */
+    DISABLED
 }

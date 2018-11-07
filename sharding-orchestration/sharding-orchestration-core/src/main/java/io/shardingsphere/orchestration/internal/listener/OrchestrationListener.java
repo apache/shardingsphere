@@ -15,23 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.config;
-
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.orchestration.internal.listener;
 
 /**
- * Master slave rule changed event.
+ * Registry center's listener manager.
  *
- * @author zhangliang
+ * @author caohao
  * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public final class MasterSlaveRuleChangedEvent {
+public interface OrchestrationListener {
     
-    private final String shardingSchemaName;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    /**
+     * Start change listener.
+     *
+     */
+    void watch();
 }

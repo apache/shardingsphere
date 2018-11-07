@@ -15,19 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.listener;
+package io.shardingsphere.orchestration.internal.config.event;
+
+import io.shardingsphere.core.config.DataSourceConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 /**
- * Registry center's listener manager.
+ * Data source changed event.
  *
- * @author caohao
  * @author panjuan
  */
-public interface ListenerManager {
+@RequiredArgsConstructor
+@Getter
+public final class DataSourceChangedEvent {
     
-    /**
-     * Start change listener.
-     *
-     */
-    void watch();
+    private final String schemaName;
+    
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
 }

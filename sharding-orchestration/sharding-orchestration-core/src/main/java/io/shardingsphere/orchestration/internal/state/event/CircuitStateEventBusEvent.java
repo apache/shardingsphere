@@ -15,22 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.state;
+package io.shardingsphere.orchestration.internal.state.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
- * Disabled event bus event.
+ * Circuit event bus event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class DisabledStateEventBusEvent {
+public final class CircuitStateEventBusEvent {
     
-    private final Map<String, Collection<String>> disabledSchemaDataSourceMap;
+    private final boolean isCircuitBreak;
 }

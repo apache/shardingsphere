@@ -15,11 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config;
+package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.ListenerManager;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
@@ -29,7 +31,7 @@ import io.shardingsphere.orchestration.reg.listener.EventListener;
  *
  * @author panjuan
  */
-public final class PropertiesListenerManager implements ListenerManager {
+public final class PropertiesOrchestrationListener implements OrchestrationListener {
     
     private final ConfigurationNode configNode;
     
@@ -37,7 +39,7 @@ public final class PropertiesListenerManager implements ListenerManager {
     
     private final ConfigurationService configService;
     
-    public PropertiesListenerManager(final String name, final RegistryCenter regCenter) {
+    public PropertiesOrchestrationListener(final String name, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
         configService = new ConfigurationService(name, regCenter);

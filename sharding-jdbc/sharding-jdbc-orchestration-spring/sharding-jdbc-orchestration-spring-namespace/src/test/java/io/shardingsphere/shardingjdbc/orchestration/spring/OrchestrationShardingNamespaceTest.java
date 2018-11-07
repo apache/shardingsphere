@@ -143,7 +143,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         ShardingContext shardingContext = (ShardingContext) FieldValueUtil.getFieldValue(dataSource, "shardingContext", false);
-        assertTrue(shardingContext.isShowSQL());
+        assertTrue(shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         ShardingProperties shardingProperties = shardingContext.getShardingProperties();
         boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);

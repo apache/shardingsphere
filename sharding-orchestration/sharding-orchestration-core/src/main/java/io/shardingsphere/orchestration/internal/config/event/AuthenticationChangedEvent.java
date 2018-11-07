@@ -15,17 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state;
+package io.shardingsphere.orchestration.internal.config.event;
+
+import io.shardingsphere.core.rule.Authentication;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * State node status.
+ * Authentication changed event.
  *
- * @author caohao
+ * @author panjuan
  */
-public enum StateNodeStatus {
+@RequiredArgsConstructor
+@Getter
+public final class AuthenticationChangedEvent {
     
-    /**
-     * Disabled state.
-     */
-    DISABLED
+    private final Authentication authentication;
 }

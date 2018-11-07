@@ -15,21 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config;
+package io.shardingsphere.orchestration.internal.config.listener;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.ListenerManager;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Authentication listener manager.
+ * Config map listener manager.
  *
+ * @author caohao
  * @author panjuan
  */
-public final class AuthenticationListenerManager implements ListenerManager {
+public final class ConfigMapOrchestrationListener implements OrchestrationListener {
     
     private final ConfigurationNode configNode;
     
@@ -37,7 +39,7 @@ public final class AuthenticationListenerManager implements ListenerManager {
     
     private final ConfigurationService configService;
     
-    public AuthenticationListenerManager(final String name, final RegistryCenter regCenter) {
+    public ConfigMapOrchestrationListener(final String name, final RegistryCenter regCenter) {
         configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
         configService = new ConfigurationService(name, regCenter);
@@ -45,12 +47,13 @@ public final class AuthenticationListenerManager implements ListenerManager {
     
     @Override
     public void watch() {
-        regCenter.watch(configNode.getAuthenticationPath(), new EventListener() {
+        regCenter.watch(configNode.getConfigMapPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new AuthenticationChangedEvent(configService.loadAuthentication()));
+                    ConfigMapContext.getInstance().getConfigMap().clear();
+                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
                 }
             }
         });

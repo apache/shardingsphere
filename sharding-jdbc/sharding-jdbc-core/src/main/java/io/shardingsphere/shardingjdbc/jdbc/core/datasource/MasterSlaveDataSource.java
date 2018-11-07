@@ -20,7 +20,6 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -80,14 +79,4 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         }
         return new MasterSlaveConnection(this, getDataSourceMap());
     }
-    
-    /**
-     * Show SQL or not.
-     *
-     * @return show SQL or not
-     */
-    public boolean showSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
 }
-
