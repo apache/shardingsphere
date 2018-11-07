@@ -16,7 +16,7 @@ grant
     ;
     
 grantSystemPrivileges
-    : systemObjects TO (granteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
+    : systemObjects TO (grantees | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
     ; 
     
 systemObjects
@@ -33,8 +33,7 @@ systemPrivilege
     : ID *?
     ;
 
-
-granteeClause
+grantees
     : grantee (COMMA grantee)*
     ;
     
@@ -77,3 +76,5 @@ grantRolesToPrograms
 programUnit
     : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
     ;
+    
+    
