@@ -15,44 +15,43 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.datasource;
+package io.shardingsphere.orchestration.internal.config;
 
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.event.state.DisabledStateEventBusEvent;
-import io.shardingsphere.orchestration.internal.listener.ListenerManager;
-import io.shardingsphere.orchestration.internal.state.StateNode;
+import io.shardingsphere.api.ConfigMapContext;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Data source listener manager.
+ * Config map listener manager.
  *
  * @author caohao
  * @author panjuan
  */
-public final class DataSourceStateListenerManager implements ListenerManager {
+public final class ConfigMapOrchestrationListener implements OrchestrationListener {
     
-    private final StateNode stateNode;
+    private final ConfigurationNode configNode;
     
     private final RegistryCenter regCenter;
     
-    private final DataSourceService dataSourceService;
+    private final ConfigurationService configService;
     
-    public DataSourceStateListenerManager(final String name, final RegistryCenter regCenter) {
-        stateNode = new StateNode(name);
+    public ConfigMapOrchestrationListener(final String name, final RegistryCenter regCenter) {
+        configNode = new ConfigurationNode(name);
         this.regCenter = regCenter;
-        dataSourceService = new DataSourceService(name, regCenter);
+        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
     public void watch() {
-        regCenter.watch(stateNode.getDataSourcesNodeFullPath(), new EventListener() {
+        regCenter.watch(configNode.getConfigMapPath(), new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
-                if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledSlaveDataSourceNames()));
+                if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
+                    ConfigMapContext.getInstance().getConfigMap().clear();
+                    ConfigMapContext.getInstance().getConfigMap().putAll(configService.loadConfigMap());
                 }
             }
         });
