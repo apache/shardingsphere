@@ -51,4 +51,4 @@ Sharding-Sphere提供灵活的配置分布式主键生成策略方式。
 
 雪花算法主键的详细结构见下图。
 
-![雪花算法](http://ovfotjrsi.bkt.clouddn.com/sharding/snowflake.png)
+![雪花算法](/img/sharding/snowflake.png)
