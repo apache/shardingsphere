@@ -73,9 +73,9 @@ privLevel
     ;
 
 user
-    : ID
+    : STRING AT_ STRING
     | STRING
-    | STRING AT_ STRING
+    | ID
     ;
 
 users
@@ -83,9 +83,9 @@ users
     ;
 
 role
-    : ID
+    : STRING AT_ STRING
     | STRING
-    | STRING AT_ STRING
+    | ID
     ;
 
 roles
@@ -144,7 +144,7 @@ revokeRoles
 //create-user.html
 createUser
     : CREATE USER (IF NOT EXISTS)?
-    user authOptions
+    user authOptions?
     DEFAULT ROLE roles
     (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
     (WITH resourceOption (COMMA resourceOption)*)?
