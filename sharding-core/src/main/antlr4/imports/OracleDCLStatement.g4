@@ -118,3 +118,13 @@ createUser
 sizeClause
     : NUMBER ID?
     ;
+    
+dbUserProxyClauses
+    : (WITH 
+        (
+           ROLE  (ALL EXCEPT)? roleNames 
+           | NO ROLES
+        )
+    )?
+    (AUTHENTICATION REQUIRED )?
+    ;
