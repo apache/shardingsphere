@@ -26,11 +26,11 @@ systemObjects
 systemObject
     : ALL PRIVILEGES
     | roleName
-    | systemPrivilege
+    | ID *?
     ;
         
 systemPrivilege
-    : ID *?
+    : 
     ;
 
 grantees
@@ -53,11 +53,12 @@ grantObjectPrivilegeClause
     ;
     
 grantObjectPrivilege
-    : (objectPrivilege | ALL PRIVILEGES?)( LP_ columnName (COMMA columnName)* RP_)? 
+    : objectPrivilege ( LP_ columnName (COMMA columnName)* RP_)? 
     ;
 
 objectPrivilege
     : ID *?
+    | ALL PRIVILEGES?
     ;
     
 onObjectClause
@@ -76,5 +77,4 @@ grantRolesToPrograms
 programUnit
     : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
     ;
-    
     
