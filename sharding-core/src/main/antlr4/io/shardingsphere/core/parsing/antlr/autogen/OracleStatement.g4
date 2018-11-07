@@ -19,5 +19,6 @@ execute
     | savepoint
     | grant
     | revoke
+    | createUser
     ;
  
