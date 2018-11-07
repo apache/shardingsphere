@@ -3,7 +3,7 @@ lexer grammar DataType;
 import Keyword,Symbol;
 
 STRING
-    : DOUBLE_QUOTA ('\\"'|.)*? DOUBLE_QUOTA
+    : DQ_ ('\\"'|.)*? DQ_
     | SINGLE_QUOTA (SINGLE_QUOTA |.)*? SINGLE_QUOTA
     ;
 

@@ -37,7 +37,7 @@ RBE_: '}';
 LBT_:'[';
 RBT_:']';
 COMMA: ',';
-DOUBLE_QUOTA: '"';
+DQ_: '"';
 SINGLE_QUOTA: '\'';
 BACK_QUOTA: '`';
 UL_: '_';
