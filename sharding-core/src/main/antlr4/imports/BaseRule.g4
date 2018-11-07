@@ -144,7 +144,7 @@ comparisonOperator
     | GT 
     | LTE 
     | LT 
-    | NEQ_SYM 
+    | NEQ_ 
     | NEQ
     ;
 

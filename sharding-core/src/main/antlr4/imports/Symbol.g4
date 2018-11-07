@@ -23,7 +23,7 @@ SAFE_EQ: '<=>';
 EQ: '==';
 EQ_OR_ASSIGN: '=';
 NEQ: '!=';
-NEQ_SYM: '<>';
+NEQ_: '<>';
 GT: '>';
 GTE: '>=';
 LT: '<' ;
