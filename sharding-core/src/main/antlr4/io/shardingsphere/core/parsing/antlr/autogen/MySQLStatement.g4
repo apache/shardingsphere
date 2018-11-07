@@ -37,5 +37,6 @@ execute
     | renameUser
     | createRole
     | dropRole
+    | setPassword
     ;
  

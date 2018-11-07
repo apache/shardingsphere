@@ -239,3 +239,8 @@ createRole
 dropRole
     : DROP ROLE (IF EXISTS)? roles
     ;
+
+//set-password.html
+setPassword
+    : SET PASSWORD (FOR user)? EQ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    ;
