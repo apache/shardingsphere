@@ -162,41 +162,4 @@ public final class AtomikosTransactionManagerTest {
         XADataSource xaDataSource = new MysqlXADataSource();
         atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }
-    
-    @Test
-    @SneakyThrows
-    public void assertAtomikosDataSourceBeanRecovery() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.HIKARI, DatabaseType.H2);
-        Map<String, DataSource> xaDataSourceMap = new XADataSourceMapConverter().convert(dataSourceMap, DatabaseType.H2);
-        atomikosTransactionManager = new AtomikosTransactionManager();
-        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        try (Connection connection = xaDataSourceMap.get("ds1").getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
-            statement.execute("INSERT INTO t_order VALUES(1000, 10, 'init');");
-        }
-        UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
-        Transaction transaction = transactionManager.getTransaction();
-        CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
-        CoordinatorImp coordinator = (CoordinatorImp) compositeTransaction.getCompositeCoordinator();
-        coordinator.prepare();
-        
-        ReflectiveUtil.methodInvoke(transactionManager, "shutdownTransactionService");
-        transactionManager.close();
-        atomikosTransactionManager = new AtomikosTransactionManager();
-        xaDataSourceMap = new XADataSourceMapConverter().convert(dataSourceMap, DatabaseType.H2);
-        Connection connection = xaDataSourceMap.get("ds1").getConnection();
-    }
-    
-    @Test
-    public void assertBasicManagedDataSourceRecovery() {
-    
-    }
-    
-    private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
-        result.put("ds2", DataSourceUtils.build(poolType, databaseType, "demo_ds_2"));
-        return result;
-    }
 }
