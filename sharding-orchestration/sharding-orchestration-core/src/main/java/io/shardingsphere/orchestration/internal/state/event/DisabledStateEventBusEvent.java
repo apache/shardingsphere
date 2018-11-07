@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event;
+package io.shardingsphere.orchestration.internal.state.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
