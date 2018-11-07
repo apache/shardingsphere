@@ -13,7 +13,7 @@ columnDefinition
     ;
 
 identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LEFT_PAREN? (identityOptions+)? RIGHT_PAREN?
+    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RIGHT_PAREN?
     ;
 
 identityOptions
@@ -32,7 +32,7 @@ identityOptions
     ;
     
 virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LEFT_PAREN expr RIGHT_PAREN 
+    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RIGHT_PAREN 
     VIRTUAL? inlineConstraint*
     ;
 
@@ -43,7 +43,7 @@ inlineConstraint
         | UNIQUE
         | primaryKey
         | referencesClause
-        | CHECK LEFT_PAREN expr RIGHT_PAREN
+        | CHECK LP_ expr RIGHT_PAREN
     )
     constraintState?
     ;
@@ -80,7 +80,7 @@ exceptionsClause:
 usingIndexClause
     : USING INDEX
     (  indexName
-    | (LEFT_PAREN createIndex RIGHT_PAREN) 
+    | (LP_ createIndex RIGHT_PAREN) 
     )?
     ;
     
@@ -100,14 +100,14 @@ outOfLineConstraint
     	UNIQUE columnList
         | primaryKey columnList 
         | FOREIGN KEY columnList referencesClause
-        | CHECK LEFT_PAREN expr RIGHT_PAREN
+        | CHECK LP_ expr RIGHT_PAREN
     ) 
     constraintState?
     ;
     
 outOfLineRefConstraint
-    : SCOPE FOR LEFT_PAREN lobItem RIGHT_PAREN IS  tableName
-    | REF LEFT_PAREN lobItem RIGHT_PAREN WITH ROWID
+    : SCOPE FOR LP_ lobItem RIGHT_PAREN IS  tableName
+    | REF LP_ lobItem RIGHT_PAREN WITH ROWID
     | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState?
     ;
 
@@ -140,6 +140,6 @@ objectTypeColProperties
     ;
 
 substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LEFT_PAREN ONLY? typeName RIGHT_PAREN
+    : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RIGHT_PAREN
     | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;

@@ -12,12 +12,12 @@ createTableHeader
     
 createTableBody
     : (AS FILETABLE)?  
-    LEFT_PAREN 
+    LP_ 
         createTableDefinition (COMMA createTableDefinition)*
         (COMMA periodClause)?  
     RIGHT_PAREN  
     (ON 
-    	(schemaName LEFT_PAREN  columnName RIGHT_PAREN   
+    	(schemaName LP_  columnName RIGHT_PAREN   
            | fileGroup   
            | STRING 
         ) 
@@ -27,7 +27,7 @@ createTableBody
        | fileGroup   
          STRING) 
      )?  
-    (WITH LEFT_PAREN  tableOption (COMMA tableOption)*  RIGHT_PAREN)?  
+    (WITH LP_  tableOption (COMMA tableOption)*  RIGHT_PAREN)?  
     ;
     
 createTableDefinition
@@ -39,7 +39,7 @@ createTableDefinition
     ;
  
 periodClause
-    : PERIOD FOR SYSTEM_TIME LEFT_PAREN  columnName   
+    : PERIOD FOR SYSTEM_TIME LP_  columnName   
     COMMA columnName RIGHT_PAREN
     ;
 
@@ -49,27 +49,27 @@ tableIndex
           (CLUSTERED | NONCLUSTERED )? columnList 
          | CLUSTERED COLUMNSTORE 
          | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
-         |CLUSTERED COLUMNSTORE (WITH LEFT_PAREN  COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RIGHT_PAREN)?
+         |CLUSTERED COLUMNSTORE (WITH LP_  COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RIGHT_PAREN)?
     ) 
     (WHERE expr)?
-    (WITH LEFT_PAREN indexOption ( COMMA indexOption)* RIGHT_PAREN)?   
+    (WITH LP_ indexOption ( COMMA indexOption)* RIGHT_PAREN)?   
     indexOnClause?   
     (FILESTREAM_ON ( groupName | schemaName | STRING ))?  
     ;
     
 tableOption  
-    : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE ) (ON PARTITIONS LEFT_PAREN  partitionExpressions RIGHT_PAREN )?
+    : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE ) (ON PARTITIONS LP_  partitionExpressions RIGHT_PAREN )?
     | FILETABLE_DIRECTORY EQ_ directoryName 
     | FILETABLE_COLLATE_FILENAME EQ_ ( collationName | DATABASE_DEAULT )
     | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ constraintName
     | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME  EQ_ constraintName  
     | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME  EQ_ constraintName 
-    |SYSTEM_VERSIONING EQ_ ON (LEFT_PAREN  HISTORY_TABLE EQ_ tableName   
+    |SYSTEM_VERSIONING EQ_ ON (LP_  HISTORY_TABLE EQ_ tableName   
          (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RIGHT_PAREN)?
     | REMOTE_DATA_ARCHIVE EQ_   
         (
-           ON (LEFT_PAREN  tableStretchOptions (COMMA tableStretchOptions)* RIGHT_PAREN )?
-         | OFF LEFT_PAREN  MIGRATION_STATE EQ_ PAUSED RIGHT_PAREN 
+           ON (LP_  tableStretchOptions (COMMA tableStretchOptions)* RIGHT_PAREN )?
+         | OFF LP_  MIGRATION_STATE EQ_ PAUSED RIGHT_PAREN 
         )
     |tableOptOption
     |distributionOption
@@ -79,14 +79,14 @@ tableOption
 tableOptOption 
     : (MEMORY_OPTIMIZED EQ_ ON)   
     | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
-    | (SYSTEM_VERSIONING EQ_ ON ( LEFT_PAREN  HISTORY_TABLE EQ_ tableName  
+    | (SYSTEM_VERSIONING EQ_ ON ( LP_  HISTORY_TABLE EQ_ tableName  
         (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RIGHT_PAREN )?)   
     ;
 
 distributionOption     
     : DISTRIBUTION EQ_ 
     (
-          HASH LEFT_PAREN columnName RIGHT_PAREN
+          HASH LP_ columnName RIGHT_PAREN
         | ROUND_ROBIN 
         | REPLICATE
      ) 
@@ -99,8 +99,8 @@ dataWareHouseTableOption
     ;
  
  dataWareHousePartitionOption
-     : (PARTITION LEFT_PAREN columnName  RANGE (LEFT | RIGHT)?  
-        FOR VALUES LEFT_PAREN  simpleExpr (COMMA simpleExpr)* RIGHT_PAREN  RIGHT_PAREN)
+     : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)?  
+        FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RIGHT_PAREN  RIGHT_PAREN)
      ; 
      
 tableStretchOptions 

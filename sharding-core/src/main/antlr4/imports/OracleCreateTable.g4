@@ -7,7 +7,7 @@ createTable
     ;
     
 relationalTable
-    : (LEFT_PAREN relationalProperties RIGHT_PAREN)?
+    : (LP_ relationalProperties RIGHT_PAREN)?
     (ON COMMIT (DELETE | PRESERVE) ROWS)?
     tableProperties
     ;

@@ -46,7 +46,7 @@ addColumn
     ;
 
 periodClause
-    : PERIOD FOR SYSTEM_TIME LEFT_PAREN columnName   
+    : PERIOD FOR SYSTEM_TIME LP_ columnName   
     COMMA columnName RIGHT_PAREN
     ;
     
@@ -64,7 +64,7 @@ constraintForColumn
     ;
 
 columnNameWithSortsWithParen
-    : LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
+    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
     ;
     
 columnNameWithSort
@@ -108,14 +108,14 @@ dropConstraintName
     ;
 
 dropConstraintWithClause
-    : WITH  LEFT_PAREN dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
+    : WITH  LP_ dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
     ;
 
 dropConstraintOption   
     : (   
           MAXDOP EQ_ NUMBER
           | ONLINE EQ_ ( ON | OFF )
-          | MOVE TO (schemaName LEFT_PAREN columnName RIGHT_PAREN | fileGroup | STRING)
+          | MOVE TO (schemaName LP_ columnName RIGHT_PAREN | fileGroup | STRING)
     )
     ;  
  
@@ -141,12 +141,12 @@ alterTrigger:
 alterSwitch
     : SWITCH ( PARTITION expr )? TO tableName   
     (PARTITION expr)?  
-    (WITH LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?  
+    (WITH LP_ lowPriorityLockWait RIGHT_PAREN )?  
     ;
     
 alterSet    
     : SET   
-    LEFT_PAREN  
+    LP_  
     (
         setFileStreamClause
         | setSystemVersionClause
@@ -169,7 +169,7 @@ setSystemVersionClause
 alterSetOnClause
     : ON   
     (
-      LEFT_PAREN 
+      LP_ 
         (HISTORY_TABLE EQ_ tableName)?  
         (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
         (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?  
@@ -208,9 +208,9 @@ indexClusterClause
     ;
 
 tableOption
-    : SET LEFT_PAREN LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RIGHT_PAREN   
+    : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RIGHT_PAREN   
     | MEMORY_OPTIMIZED EQ_ ON  
     | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
-    | SYSTEM_VERSIONING EQ_ ON (LEFT_PAREN  HISTORY_TABLE EQ_ tableName  
+    | SYSTEM_VERSIONING EQ_ ON (LP_  HISTORY_TABLE EQ_ tableName  
         (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RIGHT_PAREN )?  
     ;

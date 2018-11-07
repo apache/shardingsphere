@@ -30,7 +30,7 @@ LT: '<' ;
 LTE: '<=' ;
 POUND_: '#';
 
-LEFT_PAREN: '(';
+LP_: '(';
 RIGHT_PAREN: ')';
 LEFT_BRACE: '{';
 RIGHT_BRACE: '}';

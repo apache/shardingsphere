@@ -17,7 +17,7 @@ collateClause
     ;
 
 keyPartsWithParen
-    : LEFT_PAREN keyParts RIGHT_PAREN
+    : LP_ keyParts RIGHT_PAREN
     ;
 
 keyParts
@@ -25,7 +25,7 @@ keyParts
     ;
 
 keyPart
-    : columnName (LEFT_PAREN NUMBER RIGHT_PAREN)? (ASC | DESC)?
+    : columnName (LP_ NUMBER RIGHT_PAREN)? (ASC | DESC)?
     ;
 
 symbol
@@ -48,7 +48,7 @@ indexOption
     ;
 
 valueListWithParen
-    : LEFT_PAREN valueList RIGHT_PAREN
+    : LP_ valueList RIGHT_PAREN
     ;
 
 valueList

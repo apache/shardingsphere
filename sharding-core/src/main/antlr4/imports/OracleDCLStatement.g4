@@ -54,7 +54,7 @@ grantObjectPrivilegeClause
     ;
     
 grantObjectPrivilege
-    : (objectPrivilege | ALL PRIVILEGES?)( LEFT_PAREN columnName (COMMA columnName)* RIGHT_PAREN)? 
+    : (objectPrivilege | ALL PRIVILEGES?)( LP_ columnName (COMMA columnName)* RIGHT_PAREN)? 
     ;
 
 objectPrivilege

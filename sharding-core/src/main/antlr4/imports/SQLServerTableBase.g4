@@ -13,15 +13,15 @@ columnDefinitionOption
     : FILESTREAM  
     | COLLATE collationName
     | SPARSE  
-    | MASKED WITH LEFT_PAREN  FUNCTION EQ_ STRING RIGHT_PAREN
+    | MASKED WITH LP_  FUNCTION EQ_ STRING RIGHT_PAREN
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LEFT_PAREN  NUMBER COMMA NUMBER RIGHT_PAREN )?
+    | IDENTITY (LP_  NUMBER COMMA NUMBER RIGHT_PAREN )?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
-       LEFT_PAREN  
+       LP_  
          COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA  
          ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED ) COMMA   
          ALGORITHM EQ_ STRING 
@@ -52,7 +52,7 @@ diskTablePrimaryKeyConstraintOption
 
 columnForeignKeyConstraint
     : (FOREIGN KEY)?  
-    REFERENCES tableName LEFT_PAREN  columnName RIGHT_PAREN   
+    REFERENCES tableName LP_  columnName RIGHT_PAREN   
     foreignKeyOnAction*
     ;
 
@@ -78,13 +78,13 @@ hashWithBucket
     ;
     
 withBucket
-    : WITH LEFT_PAREN BUCKET_COUNT EQ_ NUMBER RIGHT_PAREN
+    : WITH LP_ BUCKET_COUNT EQ_ NUMBER RIGHT_PAREN
     ;
     
 primaryKeyWithClause
     : WITH 
     ((FILLFACTOR EQ_ NUMBER)    
-     | (LEFT_PAREN  indexOption (COMMA indexOption)* RIGHT_PAREN) 
+     | (LP_  indexOption (COMMA indexOption)* RIGHT_PAREN) 
     )
     ;
 
@@ -95,7 +95,7 @@ primaryKeyOnClause
     ;
  
  onSchemaColumn
- 	: ON schemaName LEFT_PAREN  columnName RIGHT_PAREN
+ 	: ON schemaName LP_  columnName RIGHT_PAREN
  	;
  	
  onFileGroup
@@ -107,12 +107,12 @@ onString
  	; 
 
 checkConstraint:
-    CHECK(NOT FOR REPLICATION)? LEFT_PAREN  expr RIGHT_PAREN  
+    CHECK(NOT FOR REPLICATION)? LP_  expr RIGHT_PAREN  
     ;
     
 columnIndex
     : INDEX indexName ( CLUSTERED | NONCLUSTERED )?  
-    ( WITH LEFT_PAREN  indexOption (COMMA indexOption)*  RIGHT_PAREN )?  
+    ( WITH LP_  indexOption (COMMA indexOption)*  RIGHT_PAREN )?  
     indexOnClause?   
     ( FILESTREAM_ON ( fileGroup | schemaName | STRING ) )?  
     ;

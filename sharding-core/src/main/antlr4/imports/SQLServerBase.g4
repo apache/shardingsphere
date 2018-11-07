@@ -12,8 +12,8 @@ dataType
     : typeName   
     (
           dataTypeLength
-        | LEFT_PAREN MAX RIGHT_PAREN
-        | LEFT_PAREN (CONTENT | DOCUMENT)? xmlSchemaCollection RIGHT_PAREN
+        | LP_ MAX RIGHT_PAREN
+        | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RIGHT_PAREN
     )?   
     ;
     
@@ -29,11 +29,11 @@ atTimeZoneExpr
     ;
     
 castExpr
-    : CAST LEFT_PAREN expr AS dataType (LEFT_PAREN  NUMBER RIGHT_PAREN )? RIGHT_PAREN  
+    : CAST LP_ expr AS dataType (LP_  NUMBER RIGHT_PAREN )? RIGHT_PAREN  
     ;
     
 convertExpr
-    : CONVERT ( dataType (LEFT_PAREN  NUMBER RIGHT_PAREN )? COMMA expr (COMMA NUMBER)?)
+    : CONVERT ( dataType (LP_  NUMBER RIGHT_PAREN )? COMMA expr (COMMA NUMBER)?)
     ;
     
 windowedFunction
@@ -42,7 +42,7 @@ windowedFunction
      
  overClause
     : OVER 
-    LEFT_PAREN     
+    LP_     
           partitionByClause?
           orderByClause?  
           rowRangeClause? 
@@ -92,7 +92,7 @@ windowFrameFollowing
     ;
 
 columnList
-    : LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
+    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
     ;
     
 columnNameWithSort
@@ -138,7 +138,7 @@ eqOnOff
     ;
 
 onPartitionClause
-    : ON PARTITIONS LEFT_PAREN partitionExpressions RIGHT_PAREN
+    : ON PARTITIONS LP_ partitionExpressions RIGHT_PAREN
     ;
 
 partitionExpressions
@@ -155,10 +155,10 @@ numberRange
     ;
 
 lowPriorityLockWait
-    : WAIT_AT_LOW_PRIORITY LEFT_PAREN MAX_DURATION EQ_ NUMBER ( MINUTES )? COMMA
+    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER ( MINUTES )? COMMA
     ABORT_AFTER_WAIT EQ_ ( NONE | SELF | BLOCKERS ) RIGHT_PAREN
     ;
 
 onLowPriorLockWait
-    : ON (LEFT_PAREN lowPriorityLockWait RIGHT_PAREN)?
+    : ON (LP_ lowPriorityLockWait RIGHT_PAREN)?
     ;

@@ -46,7 +46,7 @@ ifNotExists
     : IF NOT EXISTS;
 
 dataTypeLength
-    : LEFT_PAREN (NUMBER (COMMA NUMBER)?)? RIGHT_PAREN
+    : LP_ (NUMBER (COMMA NUMBER)?)? RIGHT_PAREN
     ;
 
 nullNotnull
@@ -63,7 +63,7 @@ matchNone
     ;
     
 idList
-    : LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
+    : LP_ ID (COMMA  ID)* RIGHT_PAREN
     ;
 
 rangeClause
@@ -72,7 +72,7 @@ rangeClause
     ;
 
 tableNamesWithParen
-    : LEFT_PAREN tableNames RIGHT_PAREN
+    : LP_ tableNames RIGHT_PAREN
     ;
 
 tableNames
@@ -80,7 +80,7 @@ tableNames
     ;
 
 columnNamesWithParen
-    : LEFT_PAREN columnNames RIGHT_PAREN
+    : LP_ columnNames RIGHT_PAREN
     ;
 
 columnNames
@@ -88,7 +88,7 @@ columnNames
     ;
     
 columnList
-    : LEFT_PAREN columnNames RIGHT_PAREN
+    : LP_ columnNames RIGHT_PAREN
     ;
 
 indexNames
@@ -108,7 +108,7 @@ exprs
     ;
  
 exprsWithParen
-    : LEFT_PAREN exprs RIGHT_PAREN
+    : LP_ exprs RIGHT_PAREN
     ;
 
 //https://dev.mysql.com/doc/refman/8.0/en/expressions.html
@@ -119,7 +119,7 @@ expr
     | expr AND expr
     | expr AND_ expr
    
-    | LEFT_PAREN expr RIGHT_PAREN
+    | LP_ expr RIGHT_PAREN
     | NOT expr
     | NOT_ expr
     | booleanPrimary
@@ -150,7 +150,7 @@ comparisonOperator
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LEFT_PAREN simpleExpr ( COMMA  simpleExpr)* RIGHT_PAREN
+    | bitExpr NOT? IN LP_ simpleExpr ( COMMA  simpleExpr)* RIGHT_PAREN
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
@@ -189,8 +189,8 @@ simpleExpr
     | UNARY_BIT_COMPLEMENT simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
-    | LEFT_PAREN expr RIGHT_PAREN
-    | ROW LEFT_PAREN simpleExpr( COMMA  simpleExpr)* RIGHT_PAREN
+    | LP_ expr RIGHT_PAREN
+    | ROW LP_ simpleExpr( COMMA  simpleExpr)* RIGHT_PAREN
     | subquery
     | EXISTS subquery
 
@@ -202,7 +202,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LEFT_PAREN( bitExprs?) RIGHT_PAREN
+    : ID LP_( bitExprs?) RIGHT_PAREN
     ;    
  
 privateExprOfDb

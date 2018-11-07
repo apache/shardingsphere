@@ -60,7 +60,7 @@ firstOrAfterColumn
     ;
 
 multiColumn
-    : LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
+    : LP_ columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
     ;
 
 addConstraint

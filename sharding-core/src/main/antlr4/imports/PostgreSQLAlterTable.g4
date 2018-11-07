@@ -37,8 +37,8 @@ alterTableAction
     | SET (WITH | WITHOUT) OIDS
     | SET TABLESPACE tablespaceName
     | SET (LOGGED | UNLOGGED)
-    | SET LEFT_PAREN storageParameterWithValue (COMMA storageParameterWithValue)* RIGHT_PAREN
-    | RESET LEFT_PAREN storageParameter (COMMA storageParameter)* RIGHT_PAREN
+    | SET LP_ storageParameterWithValue (COMMA storageParameterWithValue)* RIGHT_PAREN
+    | RESET LP_ storageParameter (COMMA storageParameter)* RIGHT_PAREN
     | INHERIT tableName
     | NO INHERIT tableName
     | OF typeName
@@ -70,12 +70,12 @@ modifyColumn
    | alterColumn SET DEFAULT expr
    | alterColumn DROP DEFAULT
    | alterColumn (SET | DROP) NOT NULL
-   | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LEFT_PAREN sequenceOptions RIGHT_PAREN)?
+   | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RIGHT_PAREN)?
    | alterColumn  alterColumnSetOption alterColumnSetOption*
    | alterColumn DROP IDENTITY (IF EXISTS)?
    | alterColumn SET STATISTICS NUMBER
-   | alterColumn SET LEFT_PAREN attributeOptions RIGHT_PAREN
-   | alterColumn RESET LEFT_PAREN attributeOptions RIGHT_PAREN
+   | alterColumn SET LP_ attributeOptions RIGHT_PAREN
+   | alterColumn RESET LP_ attributeOptions RIGHT_PAREN
    | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
      

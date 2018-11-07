@@ -45,7 +45,7 @@ caseResult:
 
 
 idListWithEmpty:
-    (LEFT_PAREN RIGHT_PAREN)
+    (LP_ RIGHT_PAREN)
     |idList
     ;
 
@@ -64,7 +64,7 @@ tableFactor:
     tableName (PARTITION  idList)?
         (AS? alias)? indexHintList? 
       | subquery AS? alias
-      | LEFT_PAREN tableReferences RIGHT_PAREN
+      | LP_ tableReferences RIGHT_PAREN
     ;
 
 joinTable:

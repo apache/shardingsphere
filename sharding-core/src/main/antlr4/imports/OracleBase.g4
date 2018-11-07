@@ -34,7 +34,7 @@ indexTypeName
     ;
     
 simpleExprsWithParen
-    : LEFT_PAREN simpleExprs RIGHT_PAREN 
+    : LP_ simpleExprs RIGHT_PAREN 
     ;
     
 simpleExprs
@@ -51,7 +51,7 @@ lobItems
     ;
 
 lobItemList
-    : LEFT_PAREN lobItems RIGHT_PAREN
+    : LP_ lobItems RIGHT_PAREN
     ;
 
 dataType
@@ -68,15 +68,15 @@ typeName
 	;
 	
 specialDatatype
-    : typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN)
-    | NATIONAL typeName (VARYING)? LEFT_PAREN NUMBER RIGHT_PAREN 
-    | typeName LEFT_PAREN? columnName  RIGHT_PAREN?
+    : typeName (LP_ NUMBER ID  RIGHT_PAREN)
+    | NATIONAL typeName (VARYING)? LP_ NUMBER RIGHT_PAREN 
+    | typeName LP_? columnName  RIGHT_PAREN?
     ;
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)?
     | TO MONTH
-    | TO SECOND (LEFT_PAREN NUMBER RIGHT_PAREN)?
+    | TO SECOND (LP_ NUMBER RIGHT_PAREN)?
     ;
 
 columnSortClause
@@ -97,7 +97,7 @@ columnSortClause
     ;
 
 treatFunction
-    : TREAT LEFT_PAREN expr AS REF? typeName RIGHT_PAREN
+    : TREAT LP_ expr AS REF? typeName RIGHT_PAREN
     ;
 
 caseExpr
@@ -134,15 +134,15 @@ exprRecursive
     ;
 
 intervalExpression
-    : LEFT_PAREN expr MINUS expr RIGHT_PAREN 
+    : LP_ expr MINUS expr RIGHT_PAREN 
     (
-         DAY ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?
-       | YEAR ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO MONTH
+         DAY ( LP_ NUMBER RIGHT_PAREN )? TO SECOND ( LP_ NUMBER RIGHT_PAREN )?
+       | YEAR ( LP_ NUMBER RIGHT_PAREN )? TO MONTH
     )
     ;
 
 objectAccessExpression
-    : ( LEFT_PAREN simpleExpr RIGHT_PAREN |treatFunction)
+    : ( LP_ simpleExpr RIGHT_PAREN |treatFunction)
     DOT
     ( 
         attributeName (DOT attributeName )* (DOT functionCall)?
