@@ -117,7 +117,7 @@ expr
     | expr OR_SYM  expr
     | expr XOR expr
     | expr AND expr
-    | expr AND_SYM expr
+    | expr AND_ expr
    
     | LEFT_PAREN expr RIGHT_PAREN
     | NOT expr
@@ -183,7 +183,7 @@ simpleExpr
     //| param_marker
     //| variable
     
-    | simpleExpr AND_SYM simpleExpr
+    | simpleExpr AND_ simpleExpr
     | PLUS simpleExpr
     | MINUS simpleExpr
     | UNARY_BIT_COMPLEMENT simpleExpr

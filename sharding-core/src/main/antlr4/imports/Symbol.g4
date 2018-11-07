@@ -1,6 +1,6 @@
 lexer grammar Symbol;
     
-AND_SYM: '&&';
+AND_: '&&';
 OR_SYM: '||';
 NOT_SYM: '!';
 
