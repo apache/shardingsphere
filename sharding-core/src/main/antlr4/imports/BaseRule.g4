@@ -61,9 +61,13 @@ primaryKey
 matchNone
     : 'Default does not match anything'
     ;
+
+ids
+    : ID (COMMA  ID)*
+    ;
     
 idList
-    : LP_ ID (COMMA  ID)* RP_
+    : LP_ ids RP_
     ;
 
 rangeClause
@@ -98,7 +102,15 @@ indexNames
 rowNames
     : rowName (COMMA rowName)*
     ;
-    
+
+roleNames
+    : roleName (COMMA roleName)*
+    ;
+
+userNames
+    : userName (COMMA userName)*
+    ;   
+        
 bitExprs:
     bitExpr (COMMA bitExpr)*
     ;
