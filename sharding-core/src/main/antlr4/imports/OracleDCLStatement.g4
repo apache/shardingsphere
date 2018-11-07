@@ -183,3 +183,7 @@ alterRole
     )
     (CONTAINER EQ_ ( CURRENT | ALL ))? 
     ;
+    
+dropRole
+    : DROP ROLE roleName 
+    ;
