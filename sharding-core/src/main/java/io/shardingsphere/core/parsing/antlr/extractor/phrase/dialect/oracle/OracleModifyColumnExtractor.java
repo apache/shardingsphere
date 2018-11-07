@@ -35,7 +35,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class OracleModifyColumnExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
             for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext, RuleName.MODIFY_COL_PROPERTIES)) {

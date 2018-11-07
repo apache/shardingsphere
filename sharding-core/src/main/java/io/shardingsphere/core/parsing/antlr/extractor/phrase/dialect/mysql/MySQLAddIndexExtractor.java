@@ -33,7 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class MySQLAddIndexExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX)) {
             Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(each, RuleName.INDEX_NAME);
             if (indexNameNode.isPresent()) {

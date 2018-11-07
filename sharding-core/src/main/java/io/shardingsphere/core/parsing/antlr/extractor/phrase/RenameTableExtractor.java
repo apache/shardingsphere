@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class RenameTableExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
         if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {

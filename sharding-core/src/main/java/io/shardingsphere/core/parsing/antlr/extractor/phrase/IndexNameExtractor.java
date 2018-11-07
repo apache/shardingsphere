@@ -32,7 +32,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class IndexNameExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
         Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
         if (!indexNameContext.isPresent()) {

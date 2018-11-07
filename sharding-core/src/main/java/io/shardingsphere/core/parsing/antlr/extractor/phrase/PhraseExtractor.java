@@ -28,10 +28,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public interface PhraseExtractor {
    
     /**
-     *  Visit ast.
+     * Extract AST.
      *  
      * @param ancestorNode ancestor node of ast
      * @param statement SQL statement
      */
-    void visit(ParserRuleContext ancestorNode, SQLStatement statement);
+    void extract(ParserRuleContext ancestorNode, SQLStatement statement);
 }

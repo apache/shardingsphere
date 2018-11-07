@@ -33,7 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class SQLServerDropIndexExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ALTER_DROP_INDEX);
         if (indexDefOptionNode.isPresent()) {
             Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);

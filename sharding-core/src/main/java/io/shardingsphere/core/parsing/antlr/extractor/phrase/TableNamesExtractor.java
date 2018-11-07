@@ -30,9 +30,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public final class TableNamesExtractor extends TableNameExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         for (ParseTree each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            super.visit((ParserRuleContext) each, statement);
+            super.extract((ParserRuleContext) each, statement);
         }
     }
 }

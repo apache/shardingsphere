@@ -103,7 +103,7 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement result = new AlterTableStatement();
         result.setTableMetaDataMap(shardingTableMetaData);
         return result;

@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class CreatePrimaryKeyExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyContext.isPresent()) {

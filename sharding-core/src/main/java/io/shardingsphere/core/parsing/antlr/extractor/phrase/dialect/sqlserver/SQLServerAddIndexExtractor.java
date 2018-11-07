@@ -33,7 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class SQLServerAddIndexExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!indexDefOptionNode.isPresent()) {
             return;

@@ -34,7 +34,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class TableNameExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         Optional<ParserRuleContext> tableNameContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (tableNameContext.isPresent()) {
             String name = tableNameContext.get().getText();

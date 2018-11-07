@@ -36,7 +36,7 @@ public final class AddPrimaryKeyExtractor implements PhraseExtractor {
     private final RuleName ruleName;
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         Optional<ParserRuleContext> modifyColumnContext = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!modifyColumnContext.isPresent()) {

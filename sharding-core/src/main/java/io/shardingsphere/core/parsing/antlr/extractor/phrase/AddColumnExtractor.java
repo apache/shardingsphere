@@ -34,7 +34,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class AddColumnExtractor extends ColumnDefinitionExtractor {
     
     @Override
-    public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
             visitAddColumn(each, (AlterTableStatement) statement);
         }

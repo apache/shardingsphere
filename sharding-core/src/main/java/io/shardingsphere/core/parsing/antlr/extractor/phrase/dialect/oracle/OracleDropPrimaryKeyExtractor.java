@@ -33,7 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class OracleDropPrimaryKeyExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildNode(rootNode, RuleName.DROP_CONSTRAINT_CLAUSE);
         if (dropConstraintContext.isPresent()) {

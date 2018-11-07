@@ -27,6 +27,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.phrase.TableNamesExtractor
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,14 +46,14 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
         return new CreateTableStatement();
     }
     
     @Override
     protected void postExtract(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        List<ColumnMetaData> newColumnMeta = new LinkedList<>();
+        Collection<ColumnMetaData> newColumnMetaDataList = new LinkedList<>();
         int position = 0;
         List<String> columnTypes = createStatement.getColumnTypes();
         List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
@@ -61,8 +62,8 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
             if (columnTypes.size() > position) {
                 type = columnTypes.get(position);
             }
-            newColumnMeta.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
+            newColumnMetaDataList.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
         }
-        createStatement.setTableMetaData(new TableMetaData(newColumnMeta));
+        createStatement.setTableMetaData(new TableMetaData(newColumnMetaDataList));
     }
 }

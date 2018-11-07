@@ -37,15 +37,15 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = newStatement(shardingTableMetaData);
+        SQLStatement result = createStatement(shardingTableMetaData);
         for (PhraseExtractor each : extractors) {
-            each.visit(rootNode, result);
+            each.extract(rootNode, result);
         }
         postExtract(result);
         return result;
     }
     
-    protected abstract SQLStatement newStatement(ShardingTableMetaData shardingTableMetaData);
+    protected abstract SQLStatement createStatement(ShardingTableMetaData shardingTableMetaData);
     
     protected void postExtract(final SQLStatement statement) {
     }

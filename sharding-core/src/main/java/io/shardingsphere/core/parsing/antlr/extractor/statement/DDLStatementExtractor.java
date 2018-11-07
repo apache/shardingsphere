@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
     
     @Override
-    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
         return new DDLStatement();
     }
 }

@@ -34,7 +34,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class ModifyColumnExtractor implements PhraseExtractor {
     
     @Override
-    public final void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
             // it`s not column definition, but can call this method

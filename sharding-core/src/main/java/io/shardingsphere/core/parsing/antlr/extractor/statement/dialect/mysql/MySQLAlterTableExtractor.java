@@ -57,7 +57,7 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
     }
     
     @Override
-    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement result = new MySQLAlterTableStatement();
         result.setTableMetaDataMap(shardingTableMetaData);
         return result;

@@ -35,7 +35,7 @@ import java.util.Iterator;
 public final class RenameColumnExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         Optional<ParserRuleContext> modifyColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
         if (!modifyColumnContext.isPresent()) {

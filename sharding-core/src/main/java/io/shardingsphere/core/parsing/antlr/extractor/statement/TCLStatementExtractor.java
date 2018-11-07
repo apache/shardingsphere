@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 public final class TCLStatementExtractor extends AbstractSQLStatementExtractor {
     
     @Override
-    protected SQLStatement newStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
         return new TCLStatement();
     }
 }

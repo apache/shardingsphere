@@ -35,7 +35,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public final class SQLServerAddPrimaryKeyExtractor implements PhraseExtractor {
     
     @Override
-    public void visit(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         Optional<ParserRuleContext> addColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnContext.isPresent()) {
