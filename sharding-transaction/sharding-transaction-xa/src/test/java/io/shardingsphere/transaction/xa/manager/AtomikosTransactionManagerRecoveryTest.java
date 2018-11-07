@@ -24,7 +24,8 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
-import io.shardingsphere.transaction.xa.convert.XADataSourceMapConverter;
+import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactory;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
@@ -44,8 +45,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     @Test
     @SneakyThrows
     public void assertAtomikosDataSourceBeanRecovery() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.HIKARI, DatabaseType.H2);
-        Map<String, DataSource> xaDataSourceMap = new XADataSourceMapConverter().convert(dataSourceMap, DatabaseType.H2);
+        Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         try (Connection connection = xaDataSourceMap.get("ds1").getConnection()) {
             Statement statement = connection.createStatement();
@@ -61,7 +61,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         ReflectiveUtil.methodInvoke(transactionManager, "shutdownTransactionService");
         transactionManager.close();
         atomikosTransactionManager = new AtomikosTransactionManager();
-        xaDataSourceMap = new XADataSourceMapConverter().convert(dataSourceMap, DatabaseType.H2);
+        xaDataSourceMap = createXADataSourceMap();
         Connection connection = xaDataSourceMap.get("ds1").getConnection();
     }
     
@@ -70,10 +70,14 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     }
     
-    private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
+    private Map<String, DataSource> createXADataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
-        result.put("ds2", DataSourceUtils.build(poolType, databaseType, "demo_ds_2"));
+        DataSource ds1 = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, "demo_ds_1");
+        DataSource xaDataSource1 = atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), "ds1", DataSourceParameterFactory.build(ds1));
+        result.put("ds1", xaDataSource1);
+        DataSource ds2 = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, "demo_ds_2");
+        DataSource xaDataSource2 = atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), "ds2", DataSourceParameterFactory.build(ds1));
+        result.put("ds2", xaDataSource2);
         return result;
     }
 }
