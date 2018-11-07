@@ -165,3 +165,12 @@ dbUserProxyClauses
 dropUser
     : DROP USER userName CASCADE? 
     ;
+
+createRole
+    : CREATE ROLE roleName
+    ( 
+        NOT IDENTIFIED
+        | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
+    )? 
+    ( CONTAINER EQ_ ( CURRENT | ALL ) )? 
+    ;
