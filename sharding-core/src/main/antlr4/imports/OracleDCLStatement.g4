@@ -10,7 +10,7 @@ import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
 grant
     : GRANT
     (
-    	(grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_OR_ASSIGN (CURRENT | ALL))?
+    	(grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_ (CURRENT | ALL))?
         | grantRolesToPrograms
     )
     ;
@@ -54,7 +54,7 @@ grantObjectPrivilegeClause
     ;
     
 grantObjectPrivilege
-    : (objectPrivilege | ALL PRIVILEGES?)( LEFT_PAREN columnName (COMMA columnName)* RIGHT_PAREN)? 
+    : (objectPrivilege | ALL PRIVILEGES?)( LP_ columnName (COMMA columnName)* RP_)? 
     ;
 
 objectPrivilege

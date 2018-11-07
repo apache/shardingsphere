@@ -3,8 +3,8 @@ grammar OracleBase;
 import OracleKeyword,Keyword,Symbol,BaseRule,DataType;
 
 ID: 
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA? DOT)?
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA?)
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT)?
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
     |[a-zA-Z_$#0-9]+ DOT ASTERISK
     ;
 
@@ -34,7 +34,7 @@ indexTypeName
     ;
     
 simpleExprsWithParen
-    : LEFT_PAREN simpleExprs RIGHT_PAREN 
+    : LP_ simpleExprs RP_ 
     ;
     
 simpleExprs
@@ -51,7 +51,7 @@ lobItems
     ;
 
 lobItemList
-    : LEFT_PAREN lobItems RIGHT_PAREN
+    : LP_ lobItems RP_
     ;
 
 dataType
@@ -68,15 +68,15 @@ typeName
 	;
 	
 specialDatatype
-    : typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN)
-    | NATIONAL typeName (VARYING)? LEFT_PAREN NUMBER RIGHT_PAREN 
-    | typeName LEFT_PAREN? columnName  RIGHT_PAREN?
+    : typeName (LP_ NUMBER ID  RP_)
+    | NATIONAL typeName (VARYING)? LP_ NUMBER RP_ 
+    | typeName LP_? columnName  RP_?
     ;
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)?
     | TO MONTH
-    | TO SECOND (LEFT_PAREN NUMBER RIGHT_PAREN)?
+    | TO SECOND (LP_ NUMBER RP_)?
     ;
 
 columnSortClause
@@ -97,7 +97,7 @@ columnSortClause
     ;
 
 treatFunction
-    : TREAT LEFT_PAREN expr AS REF? typeName RIGHT_PAREN
+    : TREAT LP_ expr AS REF? typeName RP_
     ;
 
 caseExpr
@@ -134,15 +134,15 @@ exprRecursive
     ;
 
 intervalExpression
-    : LEFT_PAREN expr MINUS expr RIGHT_PAREN 
+    : LP_ expr MINUS expr RP_ 
     (
-         DAY ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?
-       | YEAR ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO MONTH
+         DAY ( LP_ NUMBER RP_ )? TO SECOND ( LP_ NUMBER RP_ )?
+       | YEAR ( LP_ NUMBER RP_ )? TO MONTH
     )
     ;
 
 objectAccessExpression
-    : ( LEFT_PAREN simpleExpr RIGHT_PAREN |treatFunction)
+    : ( LP_ simpleExpr RP_ |treatFunction)
     DOT
     ( 
         attributeName (DOT attributeName )* (DOT functionCall)?

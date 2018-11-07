@@ -1,6 +1,6 @@
-grammar PostgreTCLStatement;
+grammar PostgreSQLTCLStatement;
 
-import PostgreKeyword, Keyword, BaseRule, DataType, Symbol;
+import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 /**
  * each statement has a url, 
