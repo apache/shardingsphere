@@ -78,6 +78,14 @@ programUnit
     : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
     ;
 
+ revoke
+    : REVOKE
+     (
+         (revokeSystemPrivileges | revokeObjectPrivileges) (CONTAINER EQ_ (CURRENT | ALL))?
+         | revokeRolesFromPrograms 
+     )
+    ;
+
 revokeSystemPrivileges
     : systemObjects FROM
     ;
