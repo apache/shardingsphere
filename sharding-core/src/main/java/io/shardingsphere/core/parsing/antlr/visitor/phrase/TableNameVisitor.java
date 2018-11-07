@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.visitor.phrase;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.RuleName;
-import io.shardingsphere.core.parsing.antlr.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.visitor.RuleName;
+import io.shardingsphere.core.parsing.antlr.visitor.util.ASTUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;

@@ -42,19 +42,16 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     private final MasterSlaveDataSource masterSlaveDataSource;
     
-    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource) {
-        super(TransactionType.LOCAL);
-        this.masterSlaveDataSource = masterSlaveDataSource;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource, final Map<String, DataSource> dataSourceMap) {
+        this(masterSlaveDataSource, dataSourceMap, TransactionType.LOCAL);
     }
     
-    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource, final TransactionType transactionType) {
+    public MasterSlaveConnection(final MasterSlaveDataSource masterSlaveDataSource, final Map<String, DataSource> dataSourceMap, final TransactionType transactionType) {
         super(transactionType);
         this.masterSlaveDataSource = masterSlaveDataSource;
-    }
-    
-    @Override
-    protected Map<String, DataSource> getDataSourceMap() {
-        return masterSlaveDataSource.getDataSourceMap();
+        this.dataSourceMap = dataSourceMap;
     }
     
     @Override

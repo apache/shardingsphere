@@ -18,10 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.parsing.antlr.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.visitor.RuleName;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.DropPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.RenameIndexVisitor;

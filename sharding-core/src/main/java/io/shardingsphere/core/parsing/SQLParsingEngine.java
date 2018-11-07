@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.parser.StatementFactory;
+import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
@@ -68,12 +68,12 @@ public final class SQLParsingEngine {
         Token currentToken = lexerEngine.getCurrentToken();
         if (firstToken != currentToken) {
             if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
-                result = StatementFactory.parse(dbType, sql, shardingRule, shardingTableMetaData);
+                result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
             } else {
                 result = sqlParser.parse();
             }
         } else if (TCLStatement.isTCL(firstToken.getType())) {
-            result = StatementFactory.parse(dbType, sql, shardingRule, shardingTableMetaData);
+            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
         } else {
             result = sqlParser.parse();
         }

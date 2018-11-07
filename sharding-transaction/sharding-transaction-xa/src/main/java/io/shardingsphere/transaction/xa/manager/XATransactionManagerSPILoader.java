@@ -17,13 +17,13 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import java.util.Collection;
 
 /**
  * XA transaction manager SPI loader.
@@ -36,6 +36,8 @@ public final class XATransactionManagerSPILoader {
     
     private static final XATransactionManagerSPILoader INSTANCE = new XATransactionManagerSPILoader();
     
+    private final NewInstanceServiceLoader<XATransactionManager> serviceLoader = NewInstanceServiceLoader.load(XATransactionManager.class);
+    
     private final XATransactionManager transactionManager;
     
     private XATransactionManagerSPILoader() {
@@ -43,23 +45,20 @@ public final class XATransactionManagerSPILoader {
     }
     
     private XATransactionManager load() {
-        XATransactionManager result = null;
         try {
-            Iterator<XATransactionManager> xaTransactionManagers = ServiceLoader.load(XATransactionManager.class).iterator();
-            if (xaTransactionManagers.hasNext()) {
-                result = xaTransactionManagers.next();
-            } else {
-                result = new AtomikosTransactionManager();
-            }
-            if (xaTransactionManagers.hasNext()) {
+            Collection<XATransactionManager> xaTransactionManagers = serviceLoader.newServiceInstances();
+            if (xaTransactionManagers.size() > 1) {
                 log.warn("There are more than one transaction mangers existing, chosen first one by default.");
             }
+            if (xaTransactionManagers.isEmpty()) {
+                return new AtomikosTransactionManager();
+            }
+            return xaTransactionManagers.iterator().next();
             // CHECKSTYLE:OFF
         } catch (Exception ex) {
             // CHECKSTYLE:ON
-            log.warn("Can not initialize the xaTransaction manager failed with " + ex);
+            throw new ShardingException("Can not initialize the xaTransaction manager failed with " + ex);
         }
-        return result;
     }
     
     /**

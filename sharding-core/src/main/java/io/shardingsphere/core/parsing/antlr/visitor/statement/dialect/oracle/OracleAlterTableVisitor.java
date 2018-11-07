@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.visitor.statement.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.RuleName;
+import io.shardingsphere.core.parsing.antlr.visitor.RuleName;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.AddColumnVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.AddPrimaryKeyVisitor;
 import io.shardingsphere.core.parsing.antlr.visitor.phrase.RenameColumnVisitor;
