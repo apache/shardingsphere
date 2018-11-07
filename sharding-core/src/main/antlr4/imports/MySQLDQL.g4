@@ -2,8 +2,8 @@ grammar MySQLDQL;
 import MySQLKeyword,Keyword,Symbol,DataType, BaseRule, DQLBase;
 
 
-selectSpec: 
-    (ALL | DISTINCT | DISTINCTROW)? 
+selectSpec
+    : (ALL | DISTINCT | DISTINCTROW)? 
     HIGH_PRIORITY? 
     STRAIGHT_JOIN?
     SQL_SMALL_RESULT?
@@ -13,82 +13,79 @@ selectSpec:
     SQL_CALC_FOUND_ROWS?
     ;
 
-caseExpress:
-    caseCond
-    |caseComp
+caseExpress
+    : caseCond
+    | caseComp
     ;
     
-caseComp:
-    CASE simpleExpr caseWhenComp+ elseResult? END  
+caseComp
+    : CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
     
-caseWhenComp:
-    WHEN simpleExpr THEN caseResult
+caseWhenComp
+    : WHEN simpleExpr THEN caseResult
     ;
 
-caseCond:
-    CASE whenResult+ elseResult? END
+caseCond
+    : CASE whenResult+ elseResult? END
     ;
     
-whenResult:
-    WHEN booleanPrimary THEN caseResult
+whenResult
+    : WHEN booleanPrimary THEN caseResult
     ;
 
-elseResult:
-    ELSE caseResult
+elseResult
+    : ELSE caseResult
     ;
 
-caseResult:
-    expr
+caseResult
+    : expr
     ;
 
-
-
-idListWithEmpty:
-    (LP_ RP_)
-    |idList
+idListWithEmpty
+    : LP_ RP_
+    | idList
     ;
 
 //https://dev.mysql.com/doc/refman/8.0/en/join.html
-tableReferences:
-    tableReference(COMMA  tableReference)*
+tableReferences
+    : tableReference(COMMA  tableReference)*
     ;
 
-tableReference:
-    (tableFactor joinTable)+
-      | tableFactor joinTable+
-      | tableFactor
+tableReference
+    : (tableFactor joinTable)+
+    | tableFactor joinTable+
+    | tableFactor
      ;
      
-tableFactor:
-    tableName (PARTITION  idList)?
-        (AS? alias)? indexHintList? 
-      | subquery AS? alias
-      | LP_ tableReferences RP_
+tableFactor
+    : tableName (PARTITION  idList)? (AS? alias)? indexHintList? 
+    | subquery AS? alias
+    | LP_ tableReferences RP_
     ;
 
-joinTable:
-    (INNER | CROSS)? JOIN tableFactor joinCondition?
-      | STRAIGHT_JOIN tableFactor
-      | STRAIGHT_JOIN tableFactor joinCondition
-      | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
-      | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
+joinTable
+    : (INNER | CROSS)? JOIN tableFactor joinCondition?
+    | STRAIGHT_JOIN tableFactor
+    | STRAIGHT_JOIN tableFactor joinCondition
+    | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
+    | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
     ;
     
-joinCondition:
-    ON expr
-      | USING idList
+joinCondition
+    : ON expr
+    | USING idList
     ;
     
-indexHintList:
-    indexHint(COMMA  indexHint)*
+indexHintList
+    : indexHint(COMMA  indexHint)*
     ;
 
-indexHint:
-    USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-      | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-     ;
+indexHint
+    : USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    ;
     
-selectExpr:
-    bitExpr AS? alias?
+selectExpr
+    : bitExpr AS? alias?
     ;
