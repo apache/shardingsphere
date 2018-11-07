@@ -161,3 +161,7 @@ dbUserProxyClauses
     )?
     (AUTHENTICATION REQUIRED )?
     ;
+
+dropUser
+    : DROP USER userName CASCADE? 
+    ;
