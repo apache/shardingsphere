@@ -38,11 +38,11 @@ import org.antlr.v4.runtime.dfa.DFAState;
  */
 public final class AdvancedParserATNSimulator extends ParserATNSimulator {
     
-    private int id;
+    private int identifierTokenIndex;
     
-    public AdvancedParserATNSimulator(final Parser parser, final ATN atn, final DFA[] decisionToDFA, final PredictionContextCache sharedContextCache, final int id) {
+    public AdvancedParserATNSimulator(final Parser parser, final ATN atn, final DFA[] decisionToDFA, final PredictionContextCache sharedContextCache, final int identifierTokenIndex) {
         super(parser, atn, decisionToDFA, sharedContextCache);
-        this.id = id;
+        this.identifierTokenIndex = identifierTokenIndex;
     }
     
     @Override
@@ -63,10 +63,10 @@ public final class AdvancedParserATNSimulator extends ParserATNSimulator {
             throw cause;
         }
         int previousType = commonToken.getType();
-        if (previousType > id || Token.EOF == token.getType()) {
+        if (previousType > identifierTokenIndex || Token.EOF == token.getType()) {
             throw cause;
         }
-        commonToken.setType(id);
+        commonToken.setType(identifierTokenIndex);
         try {
             return super.execATN(dfa, s0, input, startIndex, outerContext);
         } catch (NoViableAltException ex) {

@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.ast.advanced;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
@@ -29,19 +28,21 @@ import org.antlr.v4.runtime.Token;
  *
  * @author duhongjun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class AdvancedMatchHandler {
+    
+    private final Parser parser;
+    
+    private final int identifierTokenIndex;
     
     /**
      * Get matched token by token type.
      *
-     * @param parser antlr parser
      * @param tokenType token type
-     * @param identifierTokenIndex index of identifier token
      * @return matched token
      * @throws RecognitionException mismatch throw exception
      */
-    public static Token getMatchedToken(final Parser parser, final int tokenType, final int identifierTokenIndex) throws RecognitionException {
+    public Token getMatchedToken(final int tokenType) throws RecognitionException {
         Token result = parser.getCurrentToken();
         boolean isIdentifierCompatible = false;
         if (identifierTokenIndex == tokenType && identifierTokenIndex > result.getType()) {
