@@ -188,7 +188,7 @@ operator
     | LT
     | LTE
     | AND_
-    | OR_SYM
+    | OR_
     | NOT_SYM
     ;
     

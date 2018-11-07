@@ -114,7 +114,7 @@ exprsWithParen
 //https://dev.mysql.com/doc/refman/8.0/en/expressions.html
 expr
     : expr OR expr
-    | expr OR_SYM  expr
+    | expr OR_ expr
     | expr XOR expr
     | expr AND expr
     | expr AND_ expr
