@@ -1,8 +1,6 @@
-//rule in this file does not allow override
-
 grammar BaseRule;
 
-import DataType,Keyword,Symbol;
+import DataType, Keyword, Symbol;
 
 ID: 
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)?
@@ -58,7 +56,6 @@ rowName
 opclass
     : ID
     ;
-
 
 fileGroup
     : ID
@@ -138,8 +135,8 @@ nullNotnull
     ;
 
 primaryKey
-	: PRIMARY? KEY
-	;
+    : PRIMARY? KEY
+    ;
 
 matchNone
     : 'Default does not match anything'
@@ -315,7 +312,7 @@ liter
     | ID? STRING  collateClause?
     | (DATE | TIME |TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
-    ; 
+    ;
 
 subquery
     : matchNone
@@ -328,7 +325,7 @@ collateClause
 orderByClause
     : ORDER BY groupByItem (COMMA groupByItem)*
     ;
-    
+
 groupByItem
     : (columnName | NUMBER |expr)  (ASC|DESC)?
     ;

@@ -1,16 +1,11 @@
 grammar SQLServerTCLStatement;
 
-import SQLServerKeyword, Keyword,SQLServerBase, DataType, Symbol;
-
-/**
- * each statement has a url, 
- * each base url : https://docs.microsoft.com/en-us/sql/t-sql/language-elements/.
- */
-//begin-transaction-transact-sql?view=sql-server-2017    
+import SQLServerKeyword, Keyword, SQLServerBase, DataType, Symbol;
+    
 setTransaction
     : SET TRANSACTION ISOLATION LEVEL
     (
-    	READ (UNCOMMITTED | COMMITTED)
+        READ (UNCOMMITTED | COMMITTED)
       | REPEATABLE READ
       | SNAPSHOT
       | SERIALIZABLE
@@ -18,31 +13,26 @@ setTransaction
     )
     ;
 
-//commit-transaction-transact-sql?view=sql-server-2017
-//commit-work-transact-sql?view=sql-server-2017
 commit
     : COMMIT 
     (
-    	((TRAN | TRANSACTION) ID?)? (WITH LP_ DELAYED_DURABILITY EQ_ (OFF | ON) RP_)?
-    	| WORK?
+        ((TRAN | TRANSACTION) ID?)? (WITH LP_ DELAYED_DURABILITY EQ_ (OFF | ON) RP_)?
+        | WORK?
     )
     ;
 
-//rollback-transaction-transact-sql?view=sql-server-2017
 rollback
     : ROLLBACK  
     (
-    	(TRAN | TRANSACTION) ID?
+        (TRAN | TRANSACTION) ID?
        | WORK?
     )
     ;
 
-//save-transaction-transact-sql?view=sql-server-2017
 savepoint
     : SAVE (TRAN | TRANSACTION) ID
     ;
-    
-//begin-transaction-transact-sql?view=sql-server-2017
+
 beginWork
     : BEGIN (TRAN | TRANSACTION) (ID ( WITH MARK STRING)?)?
     ;

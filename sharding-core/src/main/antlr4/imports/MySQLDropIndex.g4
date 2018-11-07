@@ -1,4 +1,5 @@
 grammar MySQLDropIndex;
+
 import MySQLKeyword, Keyword, BaseRule;
 
 dropIndex

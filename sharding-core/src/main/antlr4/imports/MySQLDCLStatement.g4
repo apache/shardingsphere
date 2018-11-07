@@ -2,12 +2,6 @@ grammar MySQLDCLStatement;
 
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
-/**
- * each statement has a url, 
- * each base url : https://dev.mysql.com/doc/refman/8.0/en/.
- */
-
-//grant.html
 grantPriveleges
     : GRANT
     privType columnList? (COMMA privType columnList?)*
@@ -101,21 +95,18 @@ userOrRoles
     : userOrRole (COMMA userOrRole)*
     ;
 
-//grant.html
 grantProxy
     : GRANT PROXY ON userOrRole
     TO userOrRoles
     (WITH GRANT OPTION)?
     ;
 
-//grant.html
 grantRoles
     : GRANT roleNames
     TO userOrRoles
     (WITH ADMIN OPTION)?
     ;
 
-//revoke.html
 revokePriveleges
     : REVOKE
     privType columnList? (COMMA privType columnList?)*
@@ -123,25 +114,21 @@ revokePriveleges
     FROM userOrRoles
     ;
 
-//revoke.html
 revokeAllPriveleges
     : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
     FROM userOrRoles
     ;
 
-//revoke.html
 revokeProxy
     : REVOKE PROXY ON userOrRole
     FROM userOrRoles
     ;
 
-//revoke.html
 revokeRoles
     : REVOKE roleNames
     FROM userOrRoles
     ;
 
-//create-user.html
 createUser
     : CREATE USER (IF NOT EXISTS)?
     user authOptions?
@@ -194,7 +181,6 @@ lockOption
     | ACCOUNT UNLOCK
     ;
 
-//alter-user.html
 alterUser
     : ALTER USER (IF EXISTS)?
     user authOptions
@@ -203,7 +189,6 @@ alterUser
     (passwordOption | lockOption)*
     ;
 
-//alter-user.html
 alterCurrentUser
     : ALTER USER (IF EXISTS)? USER() userFuncAuthOption
     ;
@@ -213,44 +198,36 @@ userFuncAuthOption
     | DISCARD OLD PASSWORD
     ;
 
-//alter-user.html
 alterUserRole
     : ALTER USER (IF EXISTS)?
     user DEFAULT ROLE
     (NONE | ALL | roles)
     ;
 
-//drop-user.html
 dropUser
     : DROP USER (IF EXISTS)? users
     ;
 
-//rename-user.html
 renameUser
     : RENAME USER user TO user (user TO user)*
     ;
 
-//create-role.html
 createRole
     : CREATE ROLE (IF NOT EXISTS)? roles
     ;
 
-//drop-role.html
 dropRole
     : DROP ROLE (IF EXISTS)? roles
     ;
 
-//set-password.html
 setPassword
     : SET PASSWORD (FOR user)? EQ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     ;
 
-//set-default-role.html
 setDefaultRole
     : SET DEFAULT ROLE (NONE | ALL | roles) TO users
     ;
 
-//set-role.html
 setRole
     : SET ROLE (
         DEFAULT

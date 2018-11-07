@@ -1,7 +1,7 @@
 lexer grammar MySQLKeyword;
 
 import Symbol;
-   
+
 ACCOUNT
     : A C C O U N T
     ;

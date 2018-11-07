@@ -9,7 +9,7 @@ createIndex
      | bitmapJoinIndexClause
     )
     ;
-    
+
 tableIndexClause
     : tableName alias?
     LP_ indexExprSort
@@ -19,20 +19,20 @@ tableIndexClause
 indexExprSort
     : indexExpr (ASC | DESC)?
     ;
-    
+
 indexExpr
     : columnName 
     | expr 
     ;
-    
+
 tablespaceClauseWithParen
     : LP_ tablespaceClause RP_
     ;
-    
+
 tablespaceClause
     : TABLESPACE tablespaceName
     ;
-    
+
 domainIndexClause
     : indexTypeName
     ;

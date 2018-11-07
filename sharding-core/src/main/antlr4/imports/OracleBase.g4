@@ -1,6 +1,6 @@
 grammar OracleBase;
 
-import OracleKeyword,Keyword,Symbol,BaseRule,DataType;
+import OracleKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID: 
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT)?
@@ -12,7 +12,7 @@ oracleId
    : ID
    | (STRING DOT)* STRING
    ;
-     
+
 tableName
     : oracleId
     ;
@@ -20,11 +20,11 @@ tableName
 columnName
     : oracleId
     ;
-    
+
 indexName
     : oracleId
     ;
-    
+
 attributeName
     : oracleId
     ;
@@ -32,11 +32,11 @@ attributeName
 indexTypeName
     : ID
     ;
-    
+
 simpleExprsWithParen
     : LP_ simpleExprs RP_ 
     ;
-    
+
 simpleExprs
     : simpleExpr ( COMMA simpleExpr)* 
     ;
@@ -45,7 +45,7 @@ lobItem
     : attributeName
     | columnName
     ;
-    
+
 lobItems
     : lobItem (COMMA lobItem)*
     ;
@@ -59,14 +59,14 @@ dataType
     | specialDatatype
     | typeName dataTypeLength? datetimeTypeSuffix
     ;
-    
+
 typeName
-	: DOUBLE PRECISION
-	| INTERVAL YEAR
-	| INTERVAL DAY
-	| ID
-	;
-	
+    : DOUBLE PRECISION
+    | INTERVAL YEAR
+    | INTERVAL DAY
+    | ID
+    ;
+
 specialDatatype
     : typeName (LP_ NUMBER ID  RP_)
     | NATIONAL typeName (VARYING)? LP_ NUMBER RP_ 
@@ -83,12 +83,12 @@ columnSortClause
     : tableAndAlias columnName
     (ASC | DESC)?
     ;
-  
- tableAndAlias
+
+tableAndAlias
     : tableName alias?
     ;
- 
- privateExprOfDb
+
+privateExprOfDb
     : treatFunction
     | caseExpr
     | intervalExpression
@@ -107,16 +107,16 @@ caseExpr
      elseClause?
      END
     ;
-    
+
 simpleCaseExpr
     : expr
     searchedCaseExpr+
     ;
-    
+
 searchedCaseExpr
     : WHEN expr THEN simpleExpr
     ;
-    
+
 elseClause
     : ELSE expr
     ;
@@ -125,10 +125,10 @@ dateTimeExpr
     : expr AT 
     (
          LOCAL
-        | TIME ZONE (STRING | DBTIMEZONE | expr)      
+        | TIME ZONE (STRING | DBTIMEZONE | expr)
     )
     ;
-    
+
 exprRecursive
     : PRIOR expr
     ;
@@ -149,7 +149,7 @@ objectAccessExpression
         |functionCall
     )
     ;
-    
+
 constructorExpr
     : NEW typeName exprsWithParen
     ;

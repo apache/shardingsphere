@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create table statement extractor.
+ * Create table extractor.
  * 
  * @author duhongjun
  */

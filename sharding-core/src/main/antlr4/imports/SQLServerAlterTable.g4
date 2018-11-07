@@ -1,6 +1,6 @@
 grammar SQLServerAlterTable;
 
-import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
+import SQLServerKeyword, DataType, Keyword, SQLServerTableBase, SQLServerBase, BaseRule, Symbol;
 
 alterTable
     : alterTableOp
@@ -16,23 +16,23 @@ alterTable
         | REBUILD
     )
     ;
-    
+
 alterTableOp
     : ALTER TABLE tableName
     ;
-    
+
 alterColumn
     : modifyColumn
     ;
 
 modifyColumn
-	: alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
-	;
+    : alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
+    ;
 
 alterColumnOp
-	: ALTER COLUMN columnName
-	;
-    
+    : ALTER COLUMN columnName
+    ;
+
 addColumn
     : (WITH (CHECK | NOCHECK))?
     ADD   
@@ -49,7 +49,7 @@ periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName   
     COMMA columnName RP_
     ;
-    
+
 alterColumnAddOption
     : columnDefinition  
     | computedColumnDefinition    
@@ -58,7 +58,7 @@ alterColumnAddOption
     | tableIndex
     | constraintForColumn
     ;
-      
+
 constraintForColumn
     : (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
     ;
@@ -66,7 +66,7 @@ constraintForColumn
 columnNameWithSortsWithParen
     : LP_ columnNameWithSort (COMMA columnNameWithSort)* RP_ 
     ;
-    
+
 columnNameWithSort
     : columnName (ASC | DESC)?
     ;
@@ -76,18 +76,18 @@ columnIndex
     (CLUSTERED | NONCLUSTERED)?
     HASH withBucket  
     ;
-        
+
 columnNameGeneratedClause:
     columnNameGenerated
     DEFAULT simpleExpr (WITH VALUES)? COMMA  
     columnNameGenerated
     ;
-    
+
 columnNameGenerated
     : columnName typeName GENERATED ALWAYS AS ROW (START | END)?   
     HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
     ;
- 
+
 alterDrop
     : DROP 
     (
@@ -97,12 +97,12 @@ alterDrop
         | PERIOD FOR SYSTEM_TIME
     )
     ;
-    
+
 alterTableDropConstraint
     : CONSTRAINT? (IF EXISTS)?  
     dropConstraintName (COMMA dropConstraintName)*
     ;
-    
+
 dropConstraintName
     : constraintName dropConstraintWithClause?
     ;
@@ -117,33 +117,33 @@ dropConstraintOption
           | ONLINE EQ_ ( ON | OFF )
           | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING)
     )
-    ;  
- 
+    ;
+
 dropColumn
     : COLUMN (IF EXISTS)? columnNames
-    ; 
+    ;
 
 alterDropIndex:
     INDEX (IF EXISTS)?  
     indexName (COMMA indexName)*
     ;
-    
+
 alterCheckConstraint 
     : WITH? (CHECK | NOCHECK) CONSTRAINT   
     (ALL | (constraintName (COMMA constraintName)*))  
     ;
-    
+
 alterTrigger: 
     (ENABLE| DISABLE) TRIGGER   
     (ALL | (triggerName ( COMMA triggerName)*))  
     ;
-    
+
 alterSwitch
     : SWITCH ( PARTITION expr )? TO tableName   
     (PARTITION expr)?  
     (WITH LP_ lowPriorityLockWait RP_ )?  
     ;
-    
+
 alterSet    
     : SET   
     LP_  
@@ -152,32 +152,30 @@ alterSet
         | setSystemVersionClause
     ) 
     RP_ 
-    ; 
+    ;
 
 setFileStreamClause
     : FILESTREAM_ON EQ_ ( schemaName | fileGroup | STRING )
     ;
-    
+
 setSystemVersionClause
-    : SYSTEM_VERSIONING EQ_   
+    : SYSTEM_VERSIONING EQ_
     (   
-        OFF   
+        OFF
        | alterSetOnClause
-    ) 
+    )
     ;
-    
+
 alterSetOnClause
-    : ON   
+    : ON
     (
-      LP_ 
+      LP_
         (HISTORY_TABLE EQ_ tableName)?  
         (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
         (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?  
-      RP_  
+      RP_
     )?
     ;
-      
-    
 
 tableIndex
     : indexWithName 
@@ -188,14 +186,14 @@ tableIndex
     ;
 
 indexWithName
-	: INDEX indexName
-	;
+    : INDEX indexName
+    ;
 
 indexNonClusterClause
     : NONCLUSTERED
     (hashWithBucket | (columnNameWithSortsWithParen indexOnClause?)) 
     ;
-    
+
 indexOnClause
     : ON groupName
     | DEFAULT

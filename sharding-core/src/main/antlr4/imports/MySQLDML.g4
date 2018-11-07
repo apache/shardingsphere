@@ -1,11 +1,12 @@
 grammar MySQLDML;
+
 import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DMLBase, DataType, Symbol;
 
 caseExpress:
     caseCond
     |caseComp
     ;
-    
+
 caseComp:
     CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
@@ -17,7 +18,7 @@ caseWhenComp:
 caseCond:
     CASE whenResult+ elseResult? END
     ;
-    
+
 whenResult:
     WHEN booleanPrimary THEN caseResult
     ;
@@ -33,16 +34,15 @@ caseResult:
 selectExpr:
     (bitExpr| caseExpress) AS? alias?
     ;
-    
-//delete 
+ 
 deleteClause:
     DELETE deleteSpec (fromMulti| fromSingle) 
     ;
-    
+
 fromSingle: 
     FROM ID partitionClause?
-    ; 
-     
+    ;
+
 fromMulti:
     (ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences)
     |FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
@@ -53,17 +53,16 @@ deleteSpec:
     |QUICK?
     |IGNORE?
     ;
-    
-// define insert rule
+
 insert:
     insertClause INTO? ID partitionClause? 
     (setClause | columnClause) onDuplicateClause?
     ;
-    
+
 insertClause:
     INSERT insertSpec?
     ;
-    
+
 insertSpec:
     LOW_PRIORITY
     | DELAYED 
@@ -73,15 +72,15 @@ insertSpec:
 columnClause: 
     idListWithEmpty? (valueClause | select)
     ;
-    
+
 valueClause: 
     (VALUES | VALUE) valueListWithParen (COMMA valueListWithParen)*
     ;
-    
+
 setClause: 
     SET assignmentList
     ;
-    
+
 onDuplicateClause: 
     ON DUPLICATE KEY UPDATE assignmentList
     ;
@@ -94,15 +93,14 @@ itemListWithEmpty:
 assignmentList: 
     assignment (COMMA assignment)*
     ;
-    
+
 assignment:
     columnName EQ_ value;
-    
-//override update rule
+
 updateClause: 
     UPDATE updateSpec tableReferences
     ;
-    
+
 updateSpec: 
     LOW_PRIORITY? IGNORE?
     ;

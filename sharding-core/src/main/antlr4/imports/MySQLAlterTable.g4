@@ -1,4 +1,5 @@
 grammar MySQLAlterTable;
+
 import MySQLKeyword, Keyword, MySQLTableBase, MySQLBase, BaseRule, DataType, Symbol;
 
 alterTable
@@ -56,7 +57,7 @@ singleColumn
 
 firstOrAfterColumn
     : FIRST
-	| AFTER columnName
+    | AFTER columnName
     ;
 
 multiColumn
@@ -66,15 +67,15 @@ multiColumn
 addConstraint
     : ADD constraintDefinition
     ;
-    
+
 addIndex
     : ADD indexDefinition
     ;
- 
+
 addColumn
     : ADD COLUMN? (singleColumn | multiColumn)
-    ;   
-    
+    ;
+
 changeColumn
     : changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;

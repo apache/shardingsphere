@@ -1,6 +1,6 @@
 grammar OracleTableBase;
 
-import OracleKeyword,Keyword,Symbol,OracleBase,BaseRule,DataType;
+import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 columnDefinition
     : columnName dataType SORT?
@@ -30,7 +30,7 @@ identityOptions
     | ORDER
     | NOORDER
     ;
-    
+
 virtualColumnDefinition
     : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ 
     VIRTUAL? inlineConstraint*
@@ -39,7 +39,7 @@ virtualColumnDefinition
 inlineConstraint
     : (CONSTRAINT constraintName)?
     ( 
-    	  NOT? NULL
+          NOT? NULL
         | UNIQUE
         | primaryKey
         | referencesClause
@@ -47,12 +47,12 @@ inlineConstraint
     )
     constraintState?
     ;
-    
+
 referencesClause
     : REFERENCES tableName columnList?
     (ON DELETE (CASCADE | SET NULL))?
     ;
-    
+
 constraintState:
     (
         notDeferrable
@@ -68,7 +68,7 @@ constraintState:
 notDeferrable:
     NOT? DEFERRABLE
     ;
-    
+
 initiallyClause:
     INITIALLY ( IMMEDIATE | DEFERRED )
     ;
@@ -76,18 +76,18 @@ initiallyClause:
 exceptionsClause:
     EXCEPTIONS INTO  
     ;
-        
+
 usingIndexClause
     : USING INDEX
     (  indexName
     | (LP_ createIndex RP_) 
     )?
     ;
-    
+
 createIndex
     : matchNone
     ;
-    
+
 inlineRefConstraint
     : SCOPE IS tableName
     | WITH ROWID
@@ -104,7 +104,7 @@ outOfLineConstraint
     ) 
     constraintState?
     ;
-    
+
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS  tableName
     | REF LP_ lobItem RP_ WITH ROWID
@@ -115,7 +115,7 @@ outOfLineRefConstraint
     : (USING STRING)?
     (IDENTIFIED BY STRING)?
     STRING? (NO? SALT)?
-    ;   
+    ;
 
 objectProperties
     : objectProperty (COMMA objectProperty)*
@@ -134,7 +134,7 @@ columnProperties
 columnProperty
     : objectTypeColProperties
     ;
-    
+
 objectTypeColProperties
     : COLUMN columnName substitutableColumnClause
     ;

@@ -1,6 +1,6 @@
 grammar MySQLDQL;
-import MySQLKeyword,Keyword,Symbol,DataType, BaseRule, DQLBase;
 
+import MySQLKeyword, Keyword, Symbol, DataType, BaseRule, DQLBase;
 
 selectSpec
     : (ALL | DISTINCT | DISTINCTROW)? 
@@ -17,11 +17,11 @@ caseExpress
     : caseCond
     | caseComp
     ;
-    
+
 caseComp
     : CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
-    
+
 caseWhenComp
     : WHEN simpleExpr THEN caseResult
     ;
@@ -29,7 +29,7 @@ caseWhenComp
 caseCond
     : CASE whenResult+ elseResult? END
     ;
-    
+
 whenResult
     : WHEN booleanPrimary THEN caseResult
     ;
@@ -47,7 +47,6 @@ idListWithEmpty
     | idList
     ;
 
-//https://dev.mysql.com/doc/refman/8.0/en/join.html
 tableReferences
     : tableReference(COMMA  tableReference)*
     ;
@@ -57,7 +56,7 @@ tableReference
     | tableFactor joinTable+
     | tableFactor
      ;
-     
+
 tableFactor
     : tableName (PARTITION  idList)? (AS? alias)? indexHintList? 
     | subquery AS? alias
@@ -71,12 +70,12 @@ joinTable
     | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
     | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
     ;
-    
+
 joinCondition
     : ON expr
     | USING idList
     ;
-    
+
 indexHintList
     : indexHint(COMMA  indexHint)*
     ;
@@ -85,7 +84,7 @@ indexHint
     : USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
     | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
     ;
-    
+
 selectExpr
     : bitExpr AS? alias?
     ;

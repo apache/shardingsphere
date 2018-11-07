@@ -10,7 +10,7 @@ dataType
     : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
     | typeName (LP_ STRING (COMMA STRING)* RP_ characterSet? collateClause?)
     ;
- 
+
  typeName
     : DOUBLE PRECISION
     | ID
@@ -131,7 +131,6 @@ partitionOptions
     (LP_ partitionDefinitions RP_)?
     ;
 
-//hash(YEAR(col)) YEAR is keyword which does not match expr
 linearPartition
     : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_ NUMBER)? columnNamesWithParen)
     ;

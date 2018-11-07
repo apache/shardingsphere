@@ -21,7 +21,7 @@ createDefinition
     | tableConstraint
     | LIKE tableName likeOption*
     ;
-	
+
 likeOption
     : (INCLUDING | EXCLUDING)
     (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
