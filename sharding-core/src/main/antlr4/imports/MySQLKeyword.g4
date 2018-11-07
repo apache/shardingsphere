@@ -218,6 +218,10 @@ EVENT
     : E V E N T
     ;
 
+EXCEPT
+    : E X C E P T
+    ;
+
 EXCHANGE
     : E X C H A N G E
     ;

@@ -249,3 +249,14 @@ setPassword
 setDefaultRole
     : SET DEFAULT ROLE (NONE | ALL | roles) TO users
     ;
+
+//set-role.html
+setRole
+    : SET ROLE (
+        DEFAULT
+        | NONE
+        | ALL
+        | ALL EXCEPT roles
+        | roles
+    )
+    ;
