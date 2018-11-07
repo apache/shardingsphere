@@ -2,6 +2,10 @@ lexer grammar MySQLKeyword;
 
 import Symbol;
    
+ACCOUNT
+    : A C C O U N T
+    ;
+
 ACTION
     : A C T I O N
     ;
@@ -72,6 +76,10 @@ CHARSET
 
 CHECKSUM
     : C H E C K S U M
+    ;
+
+CIPHER
+    : C I P H E R
     ;
 
 CLIENT
@@ -222,6 +230,10 @@ EXECUTE
     : E X E C U T E
     ;
 
+EXPIRE
+    : E X P I R E
+    ;
+
 FILE
     : F I L E
     ;
@@ -282,6 +294,14 @@ HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
     ;
 
+HISTORY
+    : H I S T O R Y
+    ;
+
+IDENTIFIED
+    : I D E N T I F I E D
+    ;
+
 IGNORE
     : I G N O R E
     ;
@@ -306,8 +326,16 @@ INSERT_METHOD
     : I N S E R T UL_ M E T H O D
     ;
 
+INTERVAL
+    : I N T E R V A L
+    ;
+
 INTO
     : I N T O
+    ;
+
+ISSUER
+    : I S S U E R
     ;
 
 JOIN
@@ -366,8 +394,24 @@ MAXVALUE
     : M A X V A L U E
     ;
 
+MAX_CONNECTIONS_PER_HOUR
+    : M A X UL_ C O N N E C T I O N S UL_ P E R UL_ H O U R
+    ;
+
+MAX_QUERIES_PER_HOUR
+    : M A X UL_ Q U E R I E S UL_ P E R UL_ H O U R
+    ;
+
 MAX_ROWS
     : M A X UL_ R O W S
+    ;
+
+MAX_UPDATES_PER_HOUR
+    : M A X UL_ U P D A T E S UL_ P E R UL_ H O U R
+    ;
+
+MAX_USER_CONNECTIONS
+    : M A X UL_ U S E R UL_ C O N N E C T I O N S
     ;
 
 MEMORY
@@ -384,6 +428,10 @@ MODIFY
 
 NATURAL
     : N A T U R A L
+    ;
+
+NEVER
+    : N E V E R
     ;
 
 NONE
@@ -412,6 +460,10 @@ OPTIMIZE
 
 OPTION
     : O P T I O N
+    ;
+
+OPTIONAL
+    : O P T I O N A L
     ;
 
 OUTER
@@ -526,8 +578,16 @@ REPLICATION_SLAVE_ADMIN
     : R E P L I C A T I O N UL_ S L A V E UL_ A D M I N
     ;
 
+REQUIRE
+    : R E Q U I R E
+    ;
+
 RESTRICT
     : R E S T R I C T
+    ;
+
+REUSE
+    : R E U S E
     ;
 
 REVOKE
@@ -536,6 +596,10 @@ REVOKE
 
 RIGHT
     : R I G H T
+    ;
+
+ROLE
+    : R O L E
     ;
 
 ROLE_ADMIN
@@ -622,6 +686,10 @@ SQL_SMALL_RESULT
     : S Q L UL_ S M A L L UL_ R E S U L T
     ;
 
+SSL
+    : S S L
+    ;
+
 STATS_AUTO_RECALC
     : S T A T S UL_ A U T O UL_ R E C A L C
     ;
@@ -644,6 +712,10 @@ STORED
 
 STRAIGHT_JOIN
     : S T R A I G H T UL_ J O I N
+    ;
+
+SUBJECT
+    : S U B J E C T
     ;
 
 SUBPARTITION
@@ -688,6 +760,10 @@ TRIGGER
 
 UNCOMMITTED
     : U N C O M M I T T E D
+    ;
+
+UNLOCK
+    : U N L O C K
     ;
 
 UNSIGNED

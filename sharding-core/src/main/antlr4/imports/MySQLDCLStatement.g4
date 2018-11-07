@@ -84,6 +84,10 @@ role
     | STRING AT_ STRING
     ;
 
+roles
+    : role (COMMA role)*
+    ;
+
 userOrRole
     : user
     | role
@@ -131,4 +135,56 @@ revokeProxy
 revokeRoles
     : REVOKE roleNames
     FROM userOrRoles
+    ;
+
+//create-user.html
+createUser
+    : CREATE USER (IF NOT EXISTS)?
+    user authOptions
+    DEFAULT ROLE roles
+    (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
+    (WITH resourceOption (COMMA resourceOption)*)?
+    (passwordOption | lockOption)*
+    ;
+
+authOption
+    : IDENTIFIED BY STRING
+    | IDENTIFIED WITH authPlugin
+    | IDENTIFIED WITH authPlugin BY STRING
+    | IDENTIFIED WITH authPlugin AS STRING
+    ;
+
+authOptions
+    : authOption (COMMA authOption)*
+    ;
+
+authPlugin
+    : ID
+    ;
+
+tlsOption
+    : SSL
+    | X509
+    | CIPHER STRING
+    | ISSUER STRING
+    | SUBJECT STRING
+    ;
+
+resourceOption
+    : MAX_QUERIES_PER_HOUR NUMBER
+    MAX_UPDATES_PER_HOUR NUMBER
+    MAX_CONNECTIONS_PER_HOUR NUMBER
+    MAX_USER_CONNECTIONS NUMBER
+    ;
+
+passwordOption
+    : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER DAY)?
+    | PASSWORD HISTORY (DEFAULT | NUMBER)
+    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER DAY)
+    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)?
+    ;
+
+lockOption
+    : ACCOUNT LOCK
+    | ACCOUNT UNLOCK
     ;

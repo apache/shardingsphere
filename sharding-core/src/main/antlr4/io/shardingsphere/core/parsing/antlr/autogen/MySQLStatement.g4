@@ -29,5 +29,6 @@ execute
     | revokeAllPriveleges
     | revokeProxy
     | revokeRoles
+    | createUser
     ;
  
