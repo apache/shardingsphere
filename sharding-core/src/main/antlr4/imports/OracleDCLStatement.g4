@@ -100,6 +100,21 @@ revokeRolesFromPrograms
     : (roleNames | ALL) FROM programUnits
     ;
     
+createUser
+    : CREATE USER userName IDENTIFIED 
+    (BY STRING | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+    ( 
+        DEFAULT TABLESPACE ID
+       | TEMPORARY TABLESPACE ID
+       | (QUOTA (sizeClause | UNLIMITED) ON ID)
+       | PROFILE ID
+       | PASSWORD EXPIRE
+       | ACCOUNT (LOCK | UNLOCK)
+       | ENABLE EDITIONS
+       | CONTAINER EQ_ (CURRENT | ALL)
+    )*
+    ;
+        
 sizeClause
     : NUMBER ID?
     ;
