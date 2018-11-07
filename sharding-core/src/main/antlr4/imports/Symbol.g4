@@ -10,7 +10,7 @@ BIT_AND: '&';
 SIGNED_LEFT_SHIFT: '<<';
 SIGNED_RIGHT_SHIFT: '>>';
 BIT_EXCLUSIVE_OR: '^';
-MOD_SYM: '%';
+MOD_: '%';
 COLON:':';
 
 PLUS: '+' ;

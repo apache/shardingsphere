@@ -168,7 +168,7 @@ bitExpr
     | bitExpr ASTERISK bitExpr
     | bitExpr SLASH bitExpr
     | bitExpr MOD bitExpr
-    | bitExpr MOD_SYM bitExpr
+    | bitExpr MOD_ bitExpr
     | bitExpr BIT_EXCLUSIVE_OR bitExpr
     //| bitExpr '+' interval_expr
     //| bitExpr '-' interval_expr
