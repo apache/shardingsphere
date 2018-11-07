@@ -32,10 +32,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class SQLServerAlterTableExtractor extends AlterTableExtractor {
     
     public SQLServerAlterTableExtractor() {
-        addHandler(new AddColumnExtractHandler());
-        addHandler(new ModifyColumnExtractHandler()); 
-        addHandler(new SQLServerAddIndexExtractHandler()); 
-        addHandler(new SQLServerDropIndexExtractHandler());
-        addHandler(new SQLServerAddPrimaryKeyExtractHandler());
+        addExtractHandler(new AddColumnExtractHandler());
+        addExtractHandler(new ModifyColumnExtractHandler()); 
+        addExtractHandler(new SQLServerAddIndexExtractHandler()); 
+        addExtractHandler(new SQLServerDropIndexExtractHandler());
+        addExtractHandler(new SQLServerAddPrimaryKeyExtractHandler());
     }
 }

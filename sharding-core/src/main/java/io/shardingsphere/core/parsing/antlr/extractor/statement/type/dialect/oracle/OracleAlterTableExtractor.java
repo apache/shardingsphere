@@ -33,10 +33,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class OracleAlterTableExtractor extends AlterTableExtractor {
     
     public OracleAlterTableExtractor() {
-        addHandler(new AddColumnExtractHandler());
-        addHandler(new OracleModifyColumnExtractHandler());
-        addHandler(new RenameColumnExtractHandler());
-        addHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT_CLAUSE));
-        addHandler(new OracleDropPrimaryKeyExtractHandler());
+        addExtractHandler(new AddColumnExtractHandler());
+        addExtractHandler(new OracleModifyColumnExtractHandler());
+        addExtractHandler(new RenameColumnExtractHandler());
+        addExtractHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT_CLAUSE));
+        addExtractHandler(new OracleDropPrimaryKeyExtractHandler());
     }
 }

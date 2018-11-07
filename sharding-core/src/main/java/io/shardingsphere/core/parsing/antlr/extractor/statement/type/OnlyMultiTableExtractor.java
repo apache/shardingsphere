@@ -27,6 +27,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNam
 public final class OnlyMultiTableExtractor extends DDLStatementExtractor {
     
     public OnlyMultiTableExtractor() {
-        addHandler(new TableNamesExtractHandler());
+        addExtractHandler(new TableNamesExtractHandler());
     }
 }

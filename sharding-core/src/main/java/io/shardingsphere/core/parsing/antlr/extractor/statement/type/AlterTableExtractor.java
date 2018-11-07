@@ -39,9 +39,9 @@ import java.util.List;
 public abstract class AlterTableExtractor extends DDLStatementExtractor {
     
     public AlterTableExtractor() {
-        addHandler(new TableNamesExtractHandler());
-        addHandler(new RenameTableExtractHandler());
-        addHandler(new DropColumnExtractHandler());
+        addExtractHandler(new TableNamesExtractHandler());
+        addExtractHandler(new RenameTableExtractHandler());
+        addExtractHandler(new DropColumnExtractHandler());
     }
     
     protected void postExtract(final SQLStatement statement) {
