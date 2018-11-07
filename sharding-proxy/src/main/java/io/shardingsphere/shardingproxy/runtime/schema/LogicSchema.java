@@ -18,15 +18,10 @@
 package io.shardingsphere.shardingproxy.runtime.schema;
 
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.Getter;
 
@@ -58,12 +53,7 @@ public abstract class LogicSchema {
         metaData = getShardingMetaData();
     }
     
-    private ShardingMetaData getShardingMetaData(final ShardingRule shardingRule) {
-        return new ShardingMetaData(getDataSourceURLs(dataSources), shardingRule, DatabaseType.MySQL,
-                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(backendDataSource), GlobalRegistry.getInstance().getMaxConnectionsSizePerQuery());
-    }
-    
-    private Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+    protected final Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getUrl());
