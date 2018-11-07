@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.ExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.StatementExtractor;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -53,7 +53,7 @@ public final class AntlrParsingEngine {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
         ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
-        StatementExtractor extractor = ExtractorRegistry.getExtractor(dbType, SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName()));
+        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(dbType, SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName()));
         if (null == extractor) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
         }

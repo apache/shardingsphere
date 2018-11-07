@@ -18,10 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.AddPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.DropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.RenameIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.phrase.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.dialect.mysql.MySQLAddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.dialect.mysql.MySQLAddIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.dialect.mysql.MySQLChangeColumnExtractor;

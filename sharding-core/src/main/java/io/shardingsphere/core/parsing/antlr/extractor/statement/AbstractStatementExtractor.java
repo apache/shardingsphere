@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.PhraseExtractor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -30,7 +31,7 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public abstract class AbstractStatementExtractor implements StatementExtractor {
+public abstract class AbstractStatementExtractor implements SQLStatementExtractor {
     
     private List<PhraseExtractor> extractors = new LinkedList<>();
     

@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.util;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.phrase.RuleName;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;

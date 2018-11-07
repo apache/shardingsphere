@@ -17,12 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.registry;
 
+import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.CreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.IndexWithTableStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlyMultiTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.OnlySingleTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.StatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.sqlserver.SQLServerAlterTableExtractor;
 
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class SQLServerExtractorRegistry implements DatabaseExtractorRegistry {
     
-    private static final Map<SQLStatementType, StatementExtractor> EXTRACTORS = new HashMap<>();
+    private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
     
     static {
         registerDDL();
@@ -63,7 +63,7 @@ public final class SQLServerExtractorRegistry implements DatabaseExtractorRegist
     }
     
     @Override
-    public StatementExtractor getExtractor(final SQLStatementType type) {
+    public SQLStatementExtractor getExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }

@@ -15,11 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.registry;
+package io.shardingsphere.core.parsing.antlr.extractor;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.StatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.DatabaseExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.MySQLExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.OracleExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.PostgreSQLExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLServerExtractorRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -27,13 +30,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Extractor registry.
+ * SQL statement extractor factory.
  * 
  * @author duhongjun
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExtractorRegistry {
+public final class SQLStatementExtractorFactory {
     
     private static final Map<DatabaseType, DatabaseExtractorRegistry> EXTRACTOR_REGISTRY = new HashMap<>(5, 1);
     
@@ -46,13 +49,13 @@ public final class ExtractorRegistry {
     }
     
     /**
-     * Get statement extractor.
+     * Get SQL statement extractor.
      * 
      * @param databaseType database type
      * @param sqlStatementType SQL statement type
      * @return statement extractor
      */
-    public static StatementExtractor getExtractor(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
+    public static SQLStatementExtractor getInstance(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
         return EXTRACTOR_REGISTRY.get(databaseType).getExtractor(sqlStatementType);
     }
 }

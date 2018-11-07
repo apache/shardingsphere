@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.phrase;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;

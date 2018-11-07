@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.AddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.AddPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.RenameColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.phrase.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.dialect.oracle.OracleDropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.phrase.dialect.oracle.OracleModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.AlterTableExtractor;

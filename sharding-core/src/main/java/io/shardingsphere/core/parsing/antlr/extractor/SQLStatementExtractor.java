@@ -15,24 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement;
+package io.shardingsphere.core.parsing.antlr.extractor;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Statement extractor interface.
+ * SQL statement extractor interface.
  * 
  * @author duhongjun
  */
-public interface StatementExtractor {
+public interface SQLStatementExtractor {
     
     /** 
-     * Visit AST and generate statement.
+     * Extract SQL statement from SQL AST.
      * 
-     * @param rootNode root node of ast
-     * @param shardingTableMetaData table meta data
+     * @param rootNode root node of AST
+     * @param shardingTableMetaData sharding table meta data
      * @return SQL statement
      */
     SQLStatement extract(ParserRuleContext rootNode, ShardingTableMetaData shardingTableMetaData);
