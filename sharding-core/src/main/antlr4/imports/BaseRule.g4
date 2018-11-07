@@ -61,9 +61,13 @@ primaryKey
 matchNone
     : 'Default does not match anything'
     ;
+
+ids
+    : ID (COMMA  ID)*
+    ;
     
 idList
-    : LP_ ID (COMMA  ID)* RP_
+    : LP_ ids RP_
     ;
 
 rangeClause
