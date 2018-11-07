@@ -13,7 +13,7 @@ columnDefinitionOption
     : FILESTREAM  
     | COLLATE collationName
     | SPARSE  
-    | MASKED WITH LEFT_PAREN  FUNCTION EQ_OR_ASSIGN STRING RIGHT_PAREN
+    | MASKED WITH LEFT_PAREN  FUNCTION EQ_ STRING RIGHT_PAREN
     | (CONSTRAINT constraintName)? DEFAULT expr
     | IDENTITY (LEFT_PAREN  NUMBER COMMA NUMBER RIGHT_PAREN )?
     | NOT FOR REPLICATION
@@ -22,9 +22,9 @@ columnDefinitionOption
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
        LEFT_PAREN  
-         COLUMN_ENCRYPTION_KEY EQ_OR_ASSIGN keyName COMMA  
-         ENCRYPTION_TYPE EQ_OR_ASSIGN ( DETERMINISTIC | RANDOMIZED ) COMMA   
-         ALGORITHM EQ_OR_ASSIGN STRING 
+         COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA  
+         ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED ) COMMA   
+         ALGORITHM EQ_ STRING 
        RIGHT_PAREN 
     | columnConstraint (COMMA columnConstraint)*
     | columnIndex
@@ -78,12 +78,12 @@ hashWithBucket
     ;
     
 withBucket
-    : WITH LEFT_PAREN BUCKET_COUNT EQ_OR_ASSIGN NUMBER RIGHT_PAREN
+    : WITH LEFT_PAREN BUCKET_COUNT EQ_ NUMBER RIGHT_PAREN
     ;
     
 primaryKeyWithClause
     : WITH 
-    ((FILLFACTOR EQ_OR_ASSIGN NUMBER)    
+    ((FILLFACTOR EQ_ NUMBER)    
      | (LEFT_PAREN  indexOption (COMMA indexOption)* RIGHT_PAREN) 
     )
     ;

@@ -100,19 +100,19 @@ columnNameWithSort
     ;
 
 indexOption
-    : FILLFACTOR EQ_OR_ASSIGN NUMBER
+    : FILLFACTOR EQ_ NUMBER
     | eqOnOffOption
     | ((COMPRESSION_DELAY | MAX_DURATION) eqTime)
-    | MAXDOP EQ_OR_ASSIGN NUMBER
+    | MAXDOP EQ_ NUMBER
     | compressionOption onPartitionClause?
     ;
     
 compressionOption
-    : DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
+    : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
     ;
     
 eqTime
-    : EQ_OR_ASSIGN NUMBER (MINUTES)?
+    : EQ_ NUMBER (MINUTES)?
     ;
     
 eqOnOffOption
@@ -134,7 +134,7 @@ eqOnOffOption
     ;
  
 eqOnOff
-    : EQ_OR_ASSIGN ( ON | OFF )
+    : EQ_ ( ON | OFF )
     ;
 
 onPartitionClause
@@ -155,8 +155,8 @@ numberRange
     ;
 
 lowPriorityLockWait
-    : WAIT_AT_LOW_PRIORITY LEFT_PAREN MAX_DURATION EQ_OR_ASSIGN NUMBER ( MINUTES )? COMMA
-    ABORT_AFTER_WAIT EQ_OR_ASSIGN ( NONE | SELF | BLOCKERS ) RIGHT_PAREN
+    : WAIT_AT_LOW_PRIORITY LEFT_PAREN MAX_DURATION EQ_ NUMBER ( MINUTES )? COMMA
+    ABORT_AFTER_WAIT EQ_ ( NONE | SELF | BLOCKERS ) RIGHT_PAREN
     ;
 
 onLowPriorLockWait

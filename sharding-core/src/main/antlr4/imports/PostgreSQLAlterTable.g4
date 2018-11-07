@@ -94,7 +94,7 @@ attributeOptions
     ;
 
 attributeOption
-    : ID EQ_OR_ASSIGN simpleExpr
+    : ID EQ_ simpleExpr
     ;
      
 alterTableAddConstraint       
@@ -111,7 +111,7 @@ renameConstraint
     ;
 
 storageParameterWithValue
-    : storageParameter EQ_OR_ASSIGN simpleExpr
+    : storageParameter EQ_ simpleExpr
     ;
 
 storageParameter

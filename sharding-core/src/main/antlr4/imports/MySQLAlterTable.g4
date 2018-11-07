@@ -15,7 +15,7 @@ alterSpecification
     | addColumn
     | addIndex
     | addConstraint
-    | ALGORITHM EQ_OR_ASSIGN? (DEFAULT | INPLACE|COPY)
+    | ALGORITHM EQ_? (DEFAULT | INPLACE|COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
     | DEFAULT? characterSet collateClause?
@@ -27,7 +27,7 @@ alterSpecification
     | dropPrimaryKey
     | DROP FOREIGN KEY fkSymbol
     | FORCE
-    | LOCK EQ_OR_ASSIGN? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
     | ORDER BY columnName (COMMA columnName)*
     | renameIndex

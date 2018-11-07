@@ -180,7 +180,7 @@ orderByExpr
      
 operator
     : SAFE_EQ
-    | EQ_OR_ASSIGN
+    | EQ_
     | NEQ
     | NEQ_SYM
     | GT

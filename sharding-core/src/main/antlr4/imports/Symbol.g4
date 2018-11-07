@@ -21,7 +21,7 @@ DOT: '.';
 
 SAFE_EQ: '<=>';
 EQ: '==';
-EQ_OR_ASSIGN: '=';
+EQ_: '=';
 NEQ: '!=';
 NEQ_: '<>';
 GT: '>';

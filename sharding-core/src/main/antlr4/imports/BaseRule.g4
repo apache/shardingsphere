@@ -139,7 +139,7 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_OR_ASSIGN 
+    : EQ_ 
     | GTE 
     | GT 
     | LTE 

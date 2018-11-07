@@ -96,7 +96,7 @@ assignmentList:
     ;
     
 assignment:
-    columnName EQ_OR_ASSIGN value;
+    columnName EQ_ value;
     
 //override update rule
 updateClause: 

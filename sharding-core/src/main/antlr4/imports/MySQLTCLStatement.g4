@@ -69,7 +69,7 @@ setVariable
     ;
 
 assignment
-    : variable EQ_OR_ASSIGN expr
+    : variable EQ_ expr
     ;
 
 variable
