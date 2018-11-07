@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.datasource;
+package io.shardingsphere.orchestration.internal.state.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
