@@ -29,12 +29,14 @@ import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFac
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
+import org.h2.tools.RunScript;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import javax.transaction.Transaction;
+import java.io.StringReader;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,21 +44,38 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     private AtomikosTransactionManager atomikosTransactionManager = (AtomikosTransactionManager) XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
+    private Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
+    
+    @Before
+    @SneakyThrows
+    public void setup() {
+        createTable();
+    }
+    
+    @SneakyThrows
+    private void createTable() {
+        RunScript.execute(xaDataSourceMap.get("ds1").getConnection(),
+            new StringReader("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))"));
+        RunScript.execute(xaDataSourceMap.get("ds2").getConnection(),
+            new StringReader("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))"));
+    }
+    
     @Test
     @SneakyThrows
     public void assertAtomikosDataSourceBeanRecovery() {
-        Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         try (Connection connection = xaDataSourceMap.get("ds1").getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
-            statement.execute("INSERT INTO t_order VALUES(1000, 10, 'init');");
+            RunScript.execute(connection, new StringReader("INSERT INTO t_order VALUES(1000, 10, 'init')"));
+        }
+        try (Connection connection = xaDataSourceMap.get("ds2").getConnection()) {
+            RunScript.execute(connection, new StringReader("INSERT INTO t_order VALUES(1000, 10, 'init')"));
         }
         UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
         Transaction transaction = transactionManager.getTransaction();
         CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
         CoordinatorImp coordinator = (CoordinatorImp) compositeTransaction.getCompositeCoordinator();
         coordinator.prepare();
+        coordinator.commit(false);
         
         ReflectiveUtil.methodInvoke(transactionManager, "shutdownTransactionService");
         transactionManager.close();
