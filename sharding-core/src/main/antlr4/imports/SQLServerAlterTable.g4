@@ -46,8 +46,8 @@ addColumn
     ;
 
 periodClause
-    : PERIOD FOR SYSTEM_TIME LEFT_PAREN columnName   
-    COMMA columnName RIGHT_PAREN
+    : PERIOD FOR SYSTEM_TIME LP_ columnName   
+    COMMA columnName RP_
     ;
     
 alterColumnAddOption
@@ -64,7 +64,7 @@ constraintForColumn
     ;
 
 columnNameWithSortsWithParen
-    : LEFT_PAREN columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
+    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RP_ 
     ;
     
 columnNameWithSort
@@ -108,14 +108,14 @@ dropConstraintName
     ;
 
 dropConstraintWithClause
-    : WITH  LEFT_PAREN dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
+    : WITH  LP_ dropConstraintOption (COMMA dropConstraintOption)* RP_   
     ;
 
 dropConstraintOption   
     : (   
-          MAXDOP EQ_OR_ASSIGN NUMBER
-          | ONLINE EQ_OR_ASSIGN ( ON | OFF )
-          | MOVE TO (schemaName LEFT_PAREN columnName RIGHT_PAREN | fileGroup | STRING)
+          MAXDOP EQ_ NUMBER
+          | ONLINE EQ_ ( ON | OFF )
+          | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING)
     )
     ;  
  
@@ -141,25 +141,25 @@ alterTrigger:
 alterSwitch
     : SWITCH ( PARTITION expr )? TO tableName   
     (PARTITION expr)?  
-    (WITH LEFT_PAREN lowPriorityLockWait RIGHT_PAREN )?  
+    (WITH LP_ lowPriorityLockWait RP_ )?  
     ;
     
 alterSet    
     : SET   
-    LEFT_PAREN  
+    LP_  
     (
         setFileStreamClause
         | setSystemVersionClause
     ) 
-    RIGHT_PAREN 
+    RP_ 
     ; 
 
 setFileStreamClause
-    : FILESTREAM_ON EQ_OR_ASSIGN ( schemaName | fileGroup | STRING )
+    : FILESTREAM_ON EQ_ ( schemaName | fileGroup | STRING )
     ;
     
 setSystemVersionClause
-    : SYSTEM_VERSIONING EQ_OR_ASSIGN   
+    : SYSTEM_VERSIONING EQ_   
     (   
         OFF   
        | alterSetOnClause
@@ -169,11 +169,11 @@ setSystemVersionClause
 alterSetOnClause
     : ON   
     (
-      LEFT_PAREN 
-        (HISTORY_TABLE EQ_OR_ASSIGN tableName)?  
-        (COMMA? DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ))? 
-        (COMMA? HISTORY_RETENTION_PERIOD EQ_OR_ASSIGN (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?  
-      RIGHT_PAREN  
+      LP_ 
+        (HISTORY_TABLE EQ_ tableName)?  
+        (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
+        (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?  
+      RP_  
     )?
     ;
       
@@ -203,14 +203,14 @@ indexOnClause
 
 indexClusterClause
     : CLUSTERED COLUMNSTORE 
-    (WITH COMPRESSION_DELAY EQ_OR_ASSIGN NUMBER MINUTES?)?
+    (WITH COMPRESSION_DELAY EQ_ NUMBER MINUTES?)?
     indexOnClause?
     ;
 
 tableOption
-    : SET LEFT_PAREN LOCK_ESCALATION EQ_OR_ASSIGN (AUTO | TABLE | DISABLE) RIGHT_PAREN   
-    | MEMORY_OPTIMIZED EQ_OR_ASSIGN ON  
-    | DURABILITY EQ_OR_ASSIGN (SCHEMA_ONLY | SCHEMA_AND_DATA) 
-    | SYSTEM_VERSIONING EQ_OR_ASSIGN ON (LEFT_PAREN  HISTORY_TABLE EQ_OR_ASSIGN tableName  
-        (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN (ON | OFF))? RIGHT_PAREN )?  
+    : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_   
+    | MEMORY_OPTIMIZED EQ_ ON  
+    | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
+    | SYSTEM_VERSIONING EQ_ ON (LP_  HISTORY_TABLE EQ_ tableName  
+        (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?  
     ;

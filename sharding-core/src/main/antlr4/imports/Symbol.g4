@@ -1,8 +1,8 @@
 lexer grammar Symbol;
     
-AND_SYM: '&&';
-OR_SYM: '||';
-NOT_SYM: '!';
+AND_: '&&';
+OR_: '||';
+NOT_: '!';
 
 UNARY_BIT_COMPLEMENT: '~';
 BIT_INCLUSIVE_OR: '|';
@@ -10,7 +10,7 @@ BIT_AND: '&';
 SIGNED_LEFT_SHIFT: '<<';
 SIGNED_RIGHT_SHIFT: '>>';
 BIT_EXCLUSIVE_OR: '^';
-MOD_SYM: '%';
+MOD_: '%';
 COLON:':';
 
 PLUS: '+' ;
@@ -21,25 +21,25 @@ DOT: '.';
 
 SAFE_EQ: '<=>';
 EQ: '==';
-EQ_OR_ASSIGN: '=';
+EQ_: '=';
 NEQ: '!=';
-NEQ_SYM: '<>';
+NEQ_: '<>';
 GT: '>';
 GTE: '>=';
 LT: '<' ;
 LTE: '<=' ;
 POUND_: '#';
 
-LEFT_PAREN: '(';
-RIGHT_PAREN: ')';
-LEFT_BRACE: '{';
-RIGHT_BRACE: '}';
-LEFT_BRACKET:'[';
-RIGHT_BRACKET:']';
+LP_: '(';
+RP_: ')';
+LBE_: '{';
+RBE_: '}';
+LBT_:'[';
+RBT_:']';
 COMMA: ',';
-DOUBLE_QUOTA: '"';
-SINGLE_QUOTA: '\'';
-BACK_QUOTA: '`';
+DQ_: '"';
+SQ_: '\'';
+BQ_: '`';
 UL_: '_';
 QUESTION: '?' ;
 AT_: '@';

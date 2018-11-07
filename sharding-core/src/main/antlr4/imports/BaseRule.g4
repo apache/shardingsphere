@@ -12,8 +12,7 @@ ID:
 
 schemaName: ID;
 tableName: ID;
-routineName: ID;
-columnName: ID;
+columnName: ID; 
 tablespaceName: ID;
 collationName: STRING | ID;
 indexName: ID;
@@ -102,6 +101,10 @@ rowNames
 
 roleNames
     : roleName (COMMA roleName)*
+    ;
+
+userNames
+    : userName (COMMA userName)*
     ;
     
 bitExprs:

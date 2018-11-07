@@ -13,19 +13,19 @@ columnDefinitionOption
     : FILESTREAM  
     | COLLATE collationName
     | SPARSE  
-    | MASKED WITH LEFT_PAREN  FUNCTION EQ_OR_ASSIGN STRING RIGHT_PAREN
+    | MASKED WITH LP_  FUNCTION EQ_ STRING RP_
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LEFT_PAREN  NUMBER COMMA NUMBER RIGHT_PAREN )?
+    | IDENTITY (LP_  NUMBER COMMA NUMBER RP_ )?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
-       LEFT_PAREN  
-         COLUMN_ENCRYPTION_KEY EQ_OR_ASSIGN keyName COMMA  
-         ENCRYPTION_TYPE EQ_OR_ASSIGN ( DETERMINISTIC | RANDOMIZED ) COMMA   
-         ALGORITHM EQ_OR_ASSIGN STRING 
-       RIGHT_PAREN 
+       LP_  
+         COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA  
+         ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED ) COMMA   
+         ALGORITHM EQ_ STRING 
+       RP_ 
     | columnConstraint (COMMA columnConstraint)*
     | columnIndex
     ;    
@@ -52,7 +52,7 @@ diskTablePrimaryKeyConstraintOption
 
 columnForeignKeyConstraint
     : (FOREIGN KEY)?  
-    REFERENCES tableName LEFT_PAREN  columnName RIGHT_PAREN   
+    REFERENCES tableName LP_  columnName RP_   
     foreignKeyOnAction*
     ;
 
@@ -78,13 +78,13 @@ hashWithBucket
     ;
     
 withBucket
-    : WITH LEFT_PAREN BUCKET_COUNT EQ_OR_ASSIGN NUMBER RIGHT_PAREN
+    : WITH LP_ BUCKET_COUNT EQ_ NUMBER RP_
     ;
     
 primaryKeyWithClause
     : WITH 
-    ((FILLFACTOR EQ_OR_ASSIGN NUMBER)    
-     | (LEFT_PAREN  indexOption (COMMA indexOption)* RIGHT_PAREN) 
+    ((FILLFACTOR EQ_ NUMBER)    
+     | (LP_  indexOption (COMMA indexOption)* RP_) 
     )
     ;
 
@@ -95,7 +95,7 @@ primaryKeyOnClause
     ;
  
  onSchemaColumn
- 	: ON schemaName LEFT_PAREN  columnName RIGHT_PAREN
+ 	: ON schemaName LP_  columnName RP_
  	;
  	
  onFileGroup
@@ -107,12 +107,12 @@ onString
  	; 
 
 checkConstraint:
-    CHECK(NOT FOR REPLICATION)? LEFT_PAREN  expr RIGHT_PAREN  
+    CHECK(NOT FOR REPLICATION)? LP_  expr RP_  
     ;
     
 columnIndex
     : INDEX indexName ( CLUSTERED | NONCLUSTERED )?  
-    ( WITH LEFT_PAREN  indexOption (COMMA indexOption)*  RIGHT_PAREN )?  
+    ( WITH LP_  indexOption (COMMA indexOption)*  RP_ )?  
     indexOnClause?   
     ( FILESTREAM_ON ( fileGroup | schemaName | STRING ) )?  
     ;

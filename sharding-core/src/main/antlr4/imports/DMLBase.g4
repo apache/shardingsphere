@@ -68,7 +68,7 @@ assignmentList
     ;
     
 assignment
-    : columnName EQ_OR_ASSIGN value
+    : columnName EQ_ value
     ;
 
 insert:

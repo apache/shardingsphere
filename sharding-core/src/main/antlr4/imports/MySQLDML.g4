@@ -87,7 +87,7 @@ onDuplicateClause:
     ;
 
 itemListWithEmpty:
-    (LEFT_PAREN RIGHT_PAREN)
+    (LP_ RP_)
     |idList
     ;
 
@@ -96,7 +96,7 @@ assignmentList:
     ;
     
 assignment:
-    columnName EQ_OR_ASSIGN value;
+    columnName EQ_ value;
     
 //override update rule
 updateClause: 

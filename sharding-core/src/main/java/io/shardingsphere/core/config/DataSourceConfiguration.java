@@ -155,7 +155,9 @@ public final class DataSourceConfiguration {
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
-                each.set(result, properties.get(each.getName()));
+                if (null != properties.get(each.getName())) {
+                    each.set(result, properties.get(each.getName()));
+                }
             } catch (final ReflectiveOperationException ignored) {
             }
         }
