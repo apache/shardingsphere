@@ -98,7 +98,15 @@ indexNames
 rowNames
     : rowName (COMMA rowName)*
     ;
-    
+
+roleNames
+    : roleName (COMMA roleName)*
+    ;
+
+userNames
+    : userName (COMMA userName)*
+    ;   
+        
 bitExprs:
     bitExpr (COMMA bitExpr)*
     ;
