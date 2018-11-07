@@ -234,3 +234,8 @@ renameUser
 createRole
     : CREATE ROLE (IF NOT EXISTS)? roles
     ;
+
+//drop-role.html
+dropRole
+    : DROP ROLE (IF EXISTS)? roles
+    ;

@@ -36,5 +36,6 @@ execute
     | dropUser
     | renameUser
     | createRole
+    | dropRole
     ;
  
