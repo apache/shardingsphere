@@ -55,13 +55,13 @@ final class XATransactionDataSourceWrapper {
     DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
         switch (dataSourceParameter.getProxyDatasourceType()) {
             case TOMCAT_DBCP2:
-                return createBasicManagedDataSource(xaDataSource, dataSourceParameter);
+                return createBasicManagedDataSource(xaDataSource, dataSourceName, dataSourceParameter);
             default:
                 return createAtomikosDatasourceBean(xaDataSource, dataSourceName, dataSourceParameter);
         }
     }
     
-    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final DataSourceParameter parameter) throws PropertyException {
+    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
         BasicManagedDataSource result = new BasicManagedDataSource();
         result.setTransactionManager(transactionManager);
         result.setMaxTotal(parameter.getMaximumPoolSize());
@@ -72,6 +72,7 @@ final class XATransactionDataSourceWrapper {
         Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         result.setXaDataSourceInstance(xaDataSource);
+        registerRecoveryResource(dataSourceName, xaDataSource);
         return result;
     }
     
