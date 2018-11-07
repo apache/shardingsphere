@@ -10,34 +10,117 @@ ID:
     | [a-zA-Z_$0-9]+ DOT ASTERISK
     ;
 
-schemaName: ID;
-tableName: ID;
-columnName: ID;
-tablespaceName: ID;
-collationName: STRING | ID;
-indexName: ID;
-alias: ID;
-cteName:ID;
-parserName: ID;
-extensionName: ID;
-rowName: ID;
-opclass: ID;
+schemaName
+    : ID
+    ;
 
-fileGroup: ID;
-groupName: ID;
-constraintName: ID;
-keyName: ID;
-typeName: ID;
-xmlSchemaCollection:ID;
-columnSetName: ID;
-directoryName: ID;
-triggerName: ID;
+tableName
+    : ID
+    ;
 
-roleName: ID;
-partitionName: ID;
-rewriteRuleName: ID;
-ownerName: ID;
-userName: ID;
+columnName
+    : ID
+    ;
+
+tablespaceName
+    : ID
+    ;
+
+collationName
+    : STRING
+    | ID
+    ;
+
+indexName
+    : ID
+    ;
+
+alias
+    : ID
+    ;
+
+cteName
+    : ID
+    ;
+
+parserName
+    : ID
+    ;
+
+extensionName
+    : ID
+    ;
+
+rowName
+    : ID
+    ;
+
+opclass
+    : ID
+    ;
+
+
+fileGroup
+    : ID
+    ;
+
+groupName
+    : ID
+    ;
+
+constraintName
+    : ID
+    ;
+
+keyName
+    : ID
+    ;
+
+typeName
+    : ID
+    ;
+
+xmlSchemaCollection
+    : ID
+    ;
+
+columnSetName
+    : ID
+    ;
+
+directoryName
+    : ID
+    ;
+
+triggerName
+    : ID
+    ;
+
+routineName
+    : ID
+    ;
+
+
+roleName
+    : ID
+    ;
+
+partitionName
+    : ID
+    ;
+
+rewriteRuleName
+    : ID
+    ;
+
+ownerName
+    : ID
+    ;
+
+userName
+    : ID
+    ;
+
 
 ifExists
     : IF EXISTS;
