@@ -17,11 +17,9 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import lombok.Getter;
-
-import java.util.Collection;
 
 /**
  * Broadcast table rule configuration.
@@ -37,10 +35,10 @@ public final class BroadcastTableRule {
     
     private final KeyGenerator keyGenerator;
     
-    public BroadcastTableRule(final TableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames) {
-        logicTable = tableRuleConfig.getLogicTable().toLowerCase();
-        generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
-        keyGenerator = tableRuleConfig.getKeyGenerator();
+    public BroadcastTableRule(final BroadcastTableRuleConfiguration broadcastTableRuleConfig) {
+        logicTable = broadcastTableRuleConfig.getLogicTable().toLowerCase();
+        generateKeyColumn = broadcastTableRuleConfig.getKeyGeneratorColumnName();
+        keyGenerator = broadcastTableRuleConfig.getKeyGenerator();
     }
 
 }

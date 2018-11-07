@@ -29,6 +29,7 @@ import java.util.LinkedList;
  * Sharding rule configuration.
  * 
  * @author zhangliang
+ * @author maxiaoguang
  */
 @Getter
 @Setter
