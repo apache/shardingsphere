@@ -8,7 +8,7 @@ chapter = true
 The major sharding processes of all the three Sharding-Sphere products are identical. 
 The core is consist of SQL parsing => query optimization => SQL route => SQL rewrite => SQL execution => result merger.
 
-![Sharding Architecture Diagram](http://ovfotjrsi.bkt.clouddn.com/sharding/architecture.png)
+![Sharding Architecture Diagram](http://shardingsphere.jd.com/document/current/img/sharding/architecture.png)
 
 ## SQL Parsing
 

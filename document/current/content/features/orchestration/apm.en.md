@@ -40,34 +40,34 @@ Using ` Sharding-Proxy ` to access two databases of `192.168.0.1:3306` and `192.
 
 ### Topology diagram
 
-![The topology diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_topology.png)
+![The topology diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_topology.png)
 
 User accesses the Sharding-Proxy 18 times, each database is accessed twice each time. This is because one access involves two splitting tables in each database, four tables in total.
 
 ### Tracking diagram
 
-![The tracking diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace.png)
+![The tracking diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_trace.png)
 
 You can see SQL parsing and execution in this figure.
 
 `/Sharding-Sphere/parseSQL/`: Represents the parsing performance of this SQL.
 
-![The parsing node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_parse.png)
+![The parsing node](http://shardingsphere.jd.com/document/current/img/apm/5x_parse.png)
 
 `/Sharding-Sphere/executeSQL/`: Represents the performance of the actual SQL.
 
-![The actual access node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL.png)
+![The actual access node](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL.png)
 
 ### Exception diagram
 
-![Exception tracking diagram](http://ovfotjrsi.bkt.clouddn.com/apm/5x_trace_err.png)
+![Exception tracking diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_trace_err.png)
 
 You can see Exceptions in this figure.
 
 `/Sharding-Sphere/executeSQL/` : Represents the Exceptions of the actual SQL.
 
-![Exception node](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Tags_err.png)
+![Exception node](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Tags_err.png)
 
 `/Sharding-Sphere/executeSQL/` : Represents the Exception logs of the actual SQL.
 
-![Exception log](http://ovfotjrsi.bkt.clouddn.com/apm/5x_executeSQL_Logs_err.png)
+![Exception log](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Logs_err.png)
