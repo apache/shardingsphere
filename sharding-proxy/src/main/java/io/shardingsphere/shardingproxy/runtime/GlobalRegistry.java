@@ -129,15 +129,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Get max connections size per query.
-     *
-     * @return max connections size per query
-     */
-    public int getMaxConnectionsSizePerQuery() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-    }
-    
-    /**
      * Get transaction type.
      *
      * @return transaction type
