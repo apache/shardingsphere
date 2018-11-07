@@ -1,6 +1,6 @@
-grammar PostgreAlterTable;
+grammar PostgreSQLAlterTable;
 
-import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
+import PostgreSQLKeyword, DataType, Keyword, PostgreSQLBase, BaseRule, Symbol;
 
 alterTable
     : alterTableNameWithAsterisk (alterTableActions | renameColumn | renameConstraint)

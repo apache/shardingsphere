@@ -1,6 +1,6 @@
-grammar PostgreTruncateTable;
+grammar PostgreSQLTruncateTable;
 
-import PostgreKeyword, Keyword, PostgreBase, BaseRule, Symbol;
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule, Symbol;
 
 truncateTable
     : TRUNCATE TABLE? ONLY? tableNameParts

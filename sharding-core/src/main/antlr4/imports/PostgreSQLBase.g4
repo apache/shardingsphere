@@ -1,6 +1,6 @@
-grammar PostgreBase;
+grammar PostgreSQLBase;
 
-import PostgreKeyword, DataType, Keyword, Symbol, BaseRule;
+import PostgreSQLKeyword, DataType, Keyword, Symbol, BaseRule;
 
 columnDefinition
 	: columnName dataType collateClause? columnConstraint*
@@ -182,7 +182,7 @@ operator
     : SAFE_EQ
     | EQ_
     | NEQ
-    | NEQ_SYM
+    | NEQ_
     | GT
     | GTE
     | LT

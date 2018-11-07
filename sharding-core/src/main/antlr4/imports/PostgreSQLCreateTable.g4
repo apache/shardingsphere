@@ -1,6 +1,6 @@
-grammar PostgreCreateTable;
+grammar PostgreSQLCreateTable;
 
-import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
+import PostgreSQLKeyword, DataType, Keyword, PostgreSQLBase, BaseRule, Symbol;
 
 createTable
     : createTableHeader
