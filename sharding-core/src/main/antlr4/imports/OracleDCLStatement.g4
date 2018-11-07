@@ -74,6 +74,10 @@ programUnit
     : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
     ;
 
+revokeSystemPrivileges
+    : systemObjects FROM
+    ;
+
 revokeObjectPrivileges
     : objectPrivilege (COMMA objectPrivilege)* onObjectClause
     FROM grantees
