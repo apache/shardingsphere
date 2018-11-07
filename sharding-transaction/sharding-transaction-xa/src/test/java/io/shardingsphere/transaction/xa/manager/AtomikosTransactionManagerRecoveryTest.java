@@ -64,18 +64,20 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        mockAtomikosOnlyExecutePreparePhase();
+        atomikosTransactionManager.destroy();
+        atomikosTransactionManager = new AtomikosTransactionManager();
+        xaDataSourceMap = createXADataSourceMap();
+        Connection connection = xaDataSourceMap.get("ds1").getConnection();
+    }
+    
+    @SneakyThrows
+    private void mockAtomikosOnlyExecutePreparePhase() {
         UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
         Transaction transaction = transactionManager.getTransaction();
         CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
         CoordinatorImp coordinator = (CoordinatorImp) compositeTransaction.getCompositeCoordinator();
         coordinator.prepare();
-        coordinator.commit(false);
-        
-        ReflectiveUtil.methodInvoke(transactionManager, "shutdownTransactionService");
-        transactionManager.close();
-        atomikosTransactionManager = new AtomikosTransactionManager();
-        xaDataSourceMap = createXADataSourceMap();
-        Connection connection = xaDataSourceMap.get("ds1").getConnection();
     }
     
     @SneakyThrows
