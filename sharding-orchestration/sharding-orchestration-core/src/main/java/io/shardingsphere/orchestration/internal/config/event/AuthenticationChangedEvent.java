@@ -15,21 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.config;
+package io.shardingsphere.orchestration.internal.config.event;
 
+import io.shardingsphere.core.rule.Authentication;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Properties;
-
 /**
- * Properties changed event.
+ * Authentication changed event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertiesChangedEvent {
+public final class AuthenticationChangedEvent {
     
-    private final Properties props;
+    private final Authentication authentication;
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.config;
+package io.shardingsphere.orchestration.internal.config.event;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import lombok.Getter;

@@ -15,23 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.event.config;
+package io.shardingsphere.orchestration.internal.config.event;
 
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Sharding rule changed event.
+ * Master slave rule changed event.
  *
  * @author zhangliang
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingRuleChangedEvent {
+public final class MasterSlaveRuleChangedEvent {
     
     private final String shardingSchemaName;
     
-    private final ShardingRuleConfiguration shardingRuleConfiguration;
+    private final MasterSlaveRuleConfiguration masterSlaveRuleConfig;
 }
