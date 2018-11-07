@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -27,28 +27,21 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Extract add column phrase.
+ * Modify column extract handler.
  * 
  * @author duhongjun
  */
-public class AddColumnExtractor extends ColumnDefinitionExtractor {
+public class ModifyColumnExtractHandler implements ASTExtractHandler {
     
     @Override
     public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
-            visitAddColumn(each, (AlterTableStatement) statement);
-        }
-    }
-    
-    private void visitAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnContext, RuleName.COLUMN_DEFINITION)) {
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+            // it`s not column definition, but can call this method
             Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
             if (column.isPresent()) {
-                if (null != alterStatement.getExistColumn(column.get().getName())) {
-                    return;
-                }
-                alterStatement.getAddColumns().add(column.get());
-                postVisitColumnDefinition(addColumnContext, alterStatement, column.get().getName());
+                alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
+                postVisitColumnDefinition(each, statement, column.get().getName());
             }
         }
     }

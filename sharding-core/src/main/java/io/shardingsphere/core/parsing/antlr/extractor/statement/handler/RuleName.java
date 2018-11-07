@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import lombok.RequiredArgsConstructor;
 

@@ -15,37 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Extract modify column phrase.
+ * Column definition extract handler.
  * 
  * @author duhongjun
  */
-public class ModifyColumnExtractor implements PhraseExtractor {
+public class ColumnDefinitionExtractHandler implements ASTExtractHandler {
     
     @Override
-    public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
-            // it`s not column definition, but can call this method
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+        CreateTableStatement createStatement = (CreateTableStatement) statement;
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-            if (column.isPresent()) {
-                alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
-                postVisitColumnDefinition(each, statement, column.get().getName());
+            if (!column.isPresent()) {
+                continue;
+            }
+            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
+            createStatement.getColumnTypes().add(column.get().getType());
+            if (column.get().isPrimaryKey()) {
+                createStatement.getPrimaryKeyColumns().add(column.get().getName());
             }
         }
-    }
-    
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
     }
 }

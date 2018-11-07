@@ -15,36 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
-import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract column definition phrase.
+ * Create table primary key extract handler.
  * 
  * @author duhongjun
  */
-public class ColumnDefinitionExtractor implements PhraseExtractor {
+public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-            if (!column.isPresent()) {
-                continue;
-            }
-            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
-            createStatement.getColumnTypes().add(column.get().getType());
-            if (column.get().isPrimaryKey()) {
-                createStatement.getPrimaryKeyColumns().add(column.get().getName());
+        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
+        if (!primaryKeyContext.isPresent()) {
+            return;
+        }
+        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildNode(primaryKeyContext.get().getParent().getParent(), RuleName.COLUMN_LIST);
+        if (!columnListContext.isPresent()) {
+            return;
+        }
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListContext.get(), RuleName.COLUMN_NAME)) {
+            if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
+                createStatement.getPrimaryKeyColumns().add(each.getText());
             }
         }
     }

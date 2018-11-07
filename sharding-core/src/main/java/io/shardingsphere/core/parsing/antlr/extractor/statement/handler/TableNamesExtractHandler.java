@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -23,11 +23,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Extract multiple tableName phrase.
+ * Multiple table names extract handler.
  * 
  * @author duhongjun
  */
-public final class TableNamesExtractor extends TableNameExtractor {
+public final class TableNamesExtractHandler extends TableNameExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {

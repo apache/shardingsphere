@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.IndexNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.TableNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
 
 /**
  * Statement with table and index extractor.
@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.TableName
 public final class IndexWithTableStatementExtractor extends DDLStatementExtractor {
     
     public IndexWithTableStatementExtractor() {
-        addPhraseExtractor(new TableNameExtractor());
-        addPhraseExtractor(new IndexNameExtractor());
+        addHandler(new TableNameExtractHandler());
+        addHandler(new IndexNameExtractHandler());
     }
 }

@@ -15,32 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.oracle;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.PhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract oracle drop primary key phrase.
+ * Rename table extract handler.
  * 
  * @author duhongjun
  */
-public final class OracleDropPrimaryKeyExtractor implements PhraseExtractor {
+public final class RenameTableExtractHandler implements ASTExtractHandler {
     
     @Override
-    public void extract(final ParserRuleContext rootNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildNode(rootNode, RuleName.DROP_CONSTRAINT_CLAUSE);
-        if (dropConstraintContext.isPresent()) {
-            Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(dropConstraintContext.get(), RuleName.PRIMARY_KEY);
-            if (primaryKeyContext.isPresent()) {
-                alterStatement.setDropPrimaryKey(true);
-            }
+        Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
+        if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
+            alterStatement.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
         }
     }
 }

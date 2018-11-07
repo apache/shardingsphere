@@ -15,17 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract phrase interface.
+ * AST extract handler.
  * 
  * @author duhongjun
  */
-public interface PhraseExtractor {
+public interface ASTExtractHandler {
    
     /**
      * Extract AST.

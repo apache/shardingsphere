@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -28,11 +28,11 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Extract rename column phrase.
+ * Rename column extract handler.
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractor implements PhraseExtractor {
+public final class RenameColumnExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {

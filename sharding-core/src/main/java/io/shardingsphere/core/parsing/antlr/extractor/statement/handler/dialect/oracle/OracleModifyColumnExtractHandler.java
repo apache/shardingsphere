@@ -15,43 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract add primary key phrase.
+ * Modify column extract handler for Oracle.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
-public final class AddPrimaryKeyExtractor implements PhraseExtractor {
-    
-    private final RuleName ruleName;
+public final class OracleModifyColumnExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> modifyColumnContext = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
-        if (!modifyColumnContext.isPresent()) {
-            return;
-        }
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(modifyColumnContext.get(), RuleName.PRIMARY_KEY);
-        if (!primaryKeyContext.isPresent()) {
-            return;
-        }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext.get(), RuleName.COLUMN_NAME)) {
-            String columnName = each.getText();
-            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
-            if (null != updateColumn) {
-                updateColumn.setPrimaryKey(true);
-                alterStatement.getUpdateColumns().put(columnName, updateColumn);
+        for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+            for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext, RuleName.MODIFY_COL_PROPERTIES)) {
+                // it`s not column definition, but can call this method
+                Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
+                if (column.isPresent()) {
+                    alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
+                }
             }
         }
     }
