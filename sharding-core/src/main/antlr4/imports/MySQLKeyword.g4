@@ -446,6 +446,10 @@ OFFLINE
     : O F F L I N E
     ;
 
+OLD
+    : O L D
+    ;
+
 ONLINE
     : O N L I N E
     ;
@@ -584,6 +588,10 @@ REQUIRE
 
 RESTRICT
     : R E S T R I C T
+    ;
+
+RETAIN
+    : R E T A I N
     ;
 
 REUSE

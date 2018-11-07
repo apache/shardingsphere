@@ -148,10 +148,11 @@ createUser
     ;
 
 authOption
-    : IDENTIFIED BY STRING
+    : IDENTIFIED BY STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     | IDENTIFIED WITH authPlugin
-    | IDENTIFIED WITH authPlugin BY STRING
+    | IDENTIFIED WITH authPlugin BY STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     | IDENTIFIED WITH authPlugin AS STRING
+    | DISCARD OLD PASSWORD
     ;
 
 authOptions
@@ -187,4 +188,30 @@ passwordOption
 lockOption
     : ACCOUNT LOCK
     | ACCOUNT UNLOCK
+    ;
+
+//alter-user.html
+alterUser
+    : ALTER USER (IF EXISTS)?
+    user authOptions
+    (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
+    (WITH resourceOption (COMMA resourceOption)*)?
+    (passwordOption | lockOption)*
+    ;
+
+//alter-user.html
+alterCurrentUser
+    : ALTER USER (IF EXISTS)? USER() userFuncAuthOption
+    ;
+
+userFuncAuthOption
+    : IDENTIFIED BY STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    | DISCARD OLD PASSWORD
+    ;
+
+//alter-user.html
+alterUserRole
+    : ALTER USER (IF EXISTS)?
+    user DEFAULT ROLE
+    (NONE | ALL | roles)
     ;

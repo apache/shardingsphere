@@ -30,5 +30,8 @@ execute
     | revokeProxy
     | revokeRoles
     | createUser
+    | alterUser
+    | alterCurrentUser
+    | alterUserRole
     ;
  
