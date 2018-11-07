@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
-import io.shardingsphere.orchestration.internal.state.StateNode;
+import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
