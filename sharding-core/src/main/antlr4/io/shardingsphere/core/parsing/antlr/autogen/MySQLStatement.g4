@@ -2,7 +2,7 @@ grammar MySQLStatement;
 
 import MySQLKeyword, Keyword, MySQLBase, MySQLDQL, MySQLDML, DQLBase, DMLBase, MySQLCreateIndex
        , MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable
-       , MySQLTCLStatement
+       , MySQLTCLStatement, MySQLDCLStatement
        ;
 
 execute
@@ -22,5 +22,23 @@ execute
     | savepoint
     | beginWork
     | setVariable
+    | grantPriveleges
+    | grantProxy
+    | grantRoles
+    | revokePriveleges
+    | revokeAllPriveleges
+    | revokeProxy
+    | revokeRoles
+    | createUser
+    | alterUser
+    | alterCurrentUser
+    | alterUserRole
+    | dropUser
+    | renameUser
+    | createRole
+    | dropRole
+    | setPassword
+    | setDefaultRole
+    | setRole
     ;
  
