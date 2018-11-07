@@ -8,7 +8,7 @@ columnDefinition
 
 dataType
     : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
-    | typeName (LP_ STRING (COMMA STRING)* RIGHT_PAREN characterSet? collateClause?)
+    | typeName (LP_ STRING (COMMA STRING)* RP_ characterSet? collateClause?)
     ;
  
  typeName
@@ -128,7 +128,7 @@ partitionOptions
     : PARTITION BY (linearPartition | rangeOrListPartition)
     (PARTITIONS NUMBER)?
     (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER)? )?
-    (LP_ partitionDefinitions RIGHT_PAREN)?
+    (LP_ partitionDefinitions RP_)?
     ;
 
 //hash(YEAR(col)) YEAR is keyword which does not match expr
@@ -137,7 +137,7 @@ linearPartition
     ;
 
 yearFunctionExpr
-    : LP_ YEAR expr RIGHT_PAREN
+    : LP_ YEAR expr RP_
     ;
 
 rangeOrListPartition
@@ -152,7 +152,7 @@ partitionDefinition
     : PARTITION partitionName
     (VALUES (lessThanPartition | IN valueListWithParen))?
     partitionDefinitionOption*
-    (LP_ subpartitionDefinition (COMMA subpartitionDefinition)* RIGHT_PAREN)?
+    (LP_ subpartitionDefinition (COMMA subpartitionDefinition)* RP_)?
     ;
 
 partitionDefinitionOption
@@ -166,7 +166,7 @@ partitionDefinitionOption
     ;
 
 lessThanPartition
-    : LESS THAN (LP_ (expr | valueList) RIGHT_PAREN | MAXVALUE)
+    : LESS THAN (LP_ (expr | valueList) RP_ | MAXVALUE)
     ;
 
 subpartitionDefinition

@@ -13,7 +13,7 @@ createIndex
 tableIndexClause
     : tableName alias?
     LP_ indexExprSort
-    (COMMA indexExprSort)* RIGHT_PAREN 
+    (COMMA indexExprSort)* RP_ 
     ;
 
 indexExprSort
@@ -26,7 +26,7 @@ indexExpr
     ;
     
 tablespaceClauseWithParen
-    : LP_ tablespaceClause RIGHT_PAREN
+    : LP_ tablespaceClause RP_
     ;
     
 tablespaceClause
@@ -41,7 +41,7 @@ bitmapJoinIndexClause
     : tableName
     LP_ 
     columnSortClause( COMMA columnSortClause)*
-    RIGHT_PAREN 
+    RP_ 
     FROM tableAndAlias (COMMA tableAndAlias)*
     WHERE expr
     ;

@@ -31,7 +31,7 @@ LTE: '<=' ;
 POUND_: '#';
 
 LP_: '(';
-RIGHT_PAREN: ')';
+RP_: ')';
 LEFT_BRACE: '{';
 RIGHT_BRACE: '}';
 LEFT_BRACKET:'[';

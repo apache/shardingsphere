@@ -47,7 +47,7 @@ addColumn
 
 periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName   
-    COMMA columnName RIGHT_PAREN
+    COMMA columnName RP_
     ;
     
 alterColumnAddOption
@@ -64,7 +64,7 @@ constraintForColumn
     ;
 
 columnNameWithSortsWithParen
-    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RIGHT_PAREN 
+    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RP_ 
     ;
     
 columnNameWithSort
@@ -108,14 +108,14 @@ dropConstraintName
     ;
 
 dropConstraintWithClause
-    : WITH  LP_ dropConstraintOption (COMMA dropConstraintOption)* RIGHT_PAREN   
+    : WITH  LP_ dropConstraintOption (COMMA dropConstraintOption)* RP_   
     ;
 
 dropConstraintOption   
     : (   
           MAXDOP EQ_ NUMBER
           | ONLINE EQ_ ( ON | OFF )
-          | MOVE TO (schemaName LP_ columnName RIGHT_PAREN | fileGroup | STRING)
+          | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING)
     )
     ;  
  
@@ -141,7 +141,7 @@ alterTrigger:
 alterSwitch
     : SWITCH ( PARTITION expr )? TO tableName   
     (PARTITION expr)?  
-    (WITH LP_ lowPriorityLockWait RIGHT_PAREN )?  
+    (WITH LP_ lowPriorityLockWait RP_ )?  
     ;
     
 alterSet    
@@ -151,7 +151,7 @@ alterSet
         setFileStreamClause
         | setSystemVersionClause
     ) 
-    RIGHT_PAREN 
+    RP_ 
     ; 
 
 setFileStreamClause
@@ -173,7 +173,7 @@ alterSetOnClause
         (HISTORY_TABLE EQ_ tableName)?  
         (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
         (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?  
-      RIGHT_PAREN  
+      RP_  
     )?
     ;
       
@@ -208,9 +208,9 @@ indexClusterClause
     ;
 
 tableOption
-    : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RIGHT_PAREN   
+    : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_   
     | MEMORY_OPTIMIZED EQ_ ON  
     | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
     | SYSTEM_VERSIONING EQ_ ON (LP_  HISTORY_TABLE EQ_ tableName  
-        (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RIGHT_PAREN )?  
+        (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?  
     ;

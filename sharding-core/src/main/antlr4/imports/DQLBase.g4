@@ -70,7 +70,7 @@ selectExprs
     ;
  
 subquery
-    : LP_ unionSelect RIGHT_PAREN
+    : LP_ unionSelect RP_
     ;
        
 alias

@@ -13,9 +13,9 @@ columnDefinitionOption
     : FILESTREAM  
     | COLLATE collationName
     | SPARSE  
-    | MASKED WITH LP_  FUNCTION EQ_ STRING RIGHT_PAREN
+    | MASKED WITH LP_  FUNCTION EQ_ STRING RP_
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LP_  NUMBER COMMA NUMBER RIGHT_PAREN )?
+    | IDENTITY (LP_  NUMBER COMMA NUMBER RP_ )?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
@@ -25,7 +25,7 @@ columnDefinitionOption
          COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA  
          ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED ) COMMA   
          ALGORITHM EQ_ STRING 
-       RIGHT_PAREN 
+       RP_ 
     | columnConstraint (COMMA columnConstraint)*
     | columnIndex
     ;    
@@ -52,7 +52,7 @@ diskTablePrimaryKeyConstraintOption
 
 columnForeignKeyConstraint
     : (FOREIGN KEY)?  
-    REFERENCES tableName LP_  columnName RIGHT_PAREN   
+    REFERENCES tableName LP_  columnName RP_   
     foreignKeyOnAction*
     ;
 
@@ -78,13 +78,13 @@ hashWithBucket
     ;
     
 withBucket
-    : WITH LP_ BUCKET_COUNT EQ_ NUMBER RIGHT_PAREN
+    : WITH LP_ BUCKET_COUNT EQ_ NUMBER RP_
     ;
     
 primaryKeyWithClause
     : WITH 
     ((FILLFACTOR EQ_ NUMBER)    
-     | (LP_  indexOption (COMMA indexOption)* RIGHT_PAREN) 
+     | (LP_  indexOption (COMMA indexOption)* RP_) 
     )
     ;
 
@@ -95,7 +95,7 @@ primaryKeyOnClause
     ;
  
  onSchemaColumn
- 	: ON schemaName LP_  columnName RIGHT_PAREN
+ 	: ON schemaName LP_  columnName RP_
  	;
  	
  onFileGroup
@@ -107,12 +107,12 @@ onString
  	; 
 
 checkConstraint:
-    CHECK(NOT FOR REPLICATION)? LP_  expr RIGHT_PAREN  
+    CHECK(NOT FOR REPLICATION)? LP_  expr RP_  
     ;
     
 columnIndex
     : INDEX indexName ( CLUSTERED | NONCLUSTERED )?  
-    ( WITH LP_  indexOption (COMMA indexOption)*  RIGHT_PAREN )?  
+    ( WITH LP_  indexOption (COMMA indexOption)*  RP_ )?  
     indexOnClause?   
     ( FILESTREAM_ON ( fileGroup | schemaName | STRING ) )?  
     ;

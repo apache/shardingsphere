@@ -34,7 +34,7 @@ indexTypeName
     ;
     
 simpleExprsWithParen
-    : LP_ simpleExprs RIGHT_PAREN 
+    : LP_ simpleExprs RP_ 
     ;
     
 simpleExprs
@@ -51,7 +51,7 @@ lobItems
     ;
 
 lobItemList
-    : LP_ lobItems RIGHT_PAREN
+    : LP_ lobItems RP_
     ;
 
 dataType
@@ -68,15 +68,15 @@ typeName
 	;
 	
 specialDatatype
-    : typeName (LP_ NUMBER ID  RIGHT_PAREN)
-    | NATIONAL typeName (VARYING)? LP_ NUMBER RIGHT_PAREN 
-    | typeName LP_? columnName  RIGHT_PAREN?
+    : typeName (LP_ NUMBER ID  RP_)
+    | NATIONAL typeName (VARYING)? LP_ NUMBER RP_ 
+    | typeName LP_? columnName  RP_?
     ;
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)?
     | TO MONTH
-    | TO SECOND (LP_ NUMBER RIGHT_PAREN)?
+    | TO SECOND (LP_ NUMBER RP_)?
     ;
 
 columnSortClause
@@ -97,7 +97,7 @@ columnSortClause
     ;
 
 treatFunction
-    : TREAT LP_ expr AS REF? typeName RIGHT_PAREN
+    : TREAT LP_ expr AS REF? typeName RP_
     ;
 
 caseExpr
@@ -134,15 +134,15 @@ exprRecursive
     ;
 
 intervalExpression
-    : LP_ expr MINUS expr RIGHT_PAREN 
+    : LP_ expr MINUS expr RP_ 
     (
-         DAY ( LP_ NUMBER RIGHT_PAREN )? TO SECOND ( LP_ NUMBER RIGHT_PAREN )?
-       | YEAR ( LP_ NUMBER RIGHT_PAREN )? TO MONTH
+         DAY ( LP_ NUMBER RP_ )? TO SECOND ( LP_ NUMBER RP_ )?
+       | YEAR ( LP_ NUMBER RP_ )? TO MONTH
     )
     ;
 
 objectAccessExpression
-    : ( LP_ simpleExpr RIGHT_PAREN |treatFunction)
+    : ( LP_ simpleExpr RP_ |treatFunction)
     DOT
     ( 
         attributeName (DOT attributeName )* (DOT functionCall)?

@@ -38,7 +38,7 @@ addColumn
 columnOrVirtualDefinitions
     : LP_ columnOrVirtualDefinition
         (COMMA columnOrVirtualDefinition)* 
-      RIGHT_PAREN
+      RP_
     | columnOrVirtualDefinition
     ;
     
@@ -50,7 +50,7 @@ columnOrVirtualDefinition:
 modifyColumn
     : MODIFY 
     ( 
-        LP_? modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN?
+        LP_? modifyColProperties (COMMA modifyColProperties)* RP_?
        | modifyColSubstitutable
     )
     ;
@@ -78,7 +78,7 @@ dropColumn
 	
 columnOrColumnList
     : COLUMN columnName
-    | LP_ columnName ( COMMA columnName )* RIGHT_PAREN
+    | LP_ columnName ( COMMA columnName )* RP_
     ;
 
 cascadeOrInvalidate

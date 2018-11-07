@@ -87,7 +87,7 @@ onDuplicateClause:
     ;
 
 itemListWithEmpty:
-    (LP_ RIGHT_PAREN)
+    (LP_ RP_)
     |idList
     ;
 

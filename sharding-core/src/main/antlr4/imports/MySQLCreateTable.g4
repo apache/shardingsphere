@@ -19,7 +19,7 @@ createTableBasic
     ;
 
 createDefinitionsWithParen
-    : LP_ createDefinitions RIGHT_PAREN
+    : LP_ createDefinitions RP_
     ;
 
 createDefinitions
@@ -47,7 +47,7 @@ createTableSelect
     
 createTableLike
     : likeTable
-    | LP_ likeTable RIGHT_PAREN
+    | LP_ likeTable RP_
     ;    
 
 likeTable

@@ -53,10 +53,10 @@ columnConstraintOption
     : NOT? NULL
     | checkOption
     | DEFAULT defaultExpr
-    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RIGHT_PAREN)?
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
     | UNIQUE indexParameters
     | primaryKey indexParameters
-    | REFERENCES tableName (LP_ columnName RIGHT_PAREN)?
+    | REFERENCES tableName (LP_ columnName RP_)?
      (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
     ;
 
@@ -145,18 +145,18 @@ privateExprOfDb:
      ;
      
  aggregateExpression
-     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RIGHT_PAREN)
+     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_)
      asteriskWithParen
-     (LP_ exprs RIGHT_PAREN  WITHIN GROUP LP_ orderByClause RIGHT_PAREN)
+     (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_)
      filterClause?
      ;
      
  filterClause
-     : FILTER LP_ WHERE booleanPrimary RIGHT_PAREN
+     : FILTER LP_ WHERE booleanPrimary RP_
      ;
      
  asteriskWithParen
-     : LP_ ASTERISK RIGHT_PAREN
+     : LP_ ASTERISK RP_
      ;
  
  windowFunction
@@ -165,7 +165,7 @@ privateExprOfDb:
      ; 
  
  windowFunctionWithClause
-     : OVER (ID | LP_ windowDefinition RIGHT_PAREN )
+     : OVER (ID | LP_ windowDefinition RP_ )
      ;    
  
  windowDefinition
@@ -210,7 +210,7 @@ frameEnd
     ;
 
 castExpr
-    : CAST LP_ expr AS dataType RIGHT_PAREN
+    : CAST LP_ expr AS dataType RP_
     | expr COLON COLON dataType
     ;
 
@@ -233,5 +233,5 @@ arrayConstructor
     ;
 
 extractFromFunction
-    : EXTRACT LP_ ID FROM ID RIGHT_PAREN
+    : EXTRACT LP_ ID FROM ID RP_
     ;

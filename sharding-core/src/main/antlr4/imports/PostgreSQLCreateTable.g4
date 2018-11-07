@@ -13,7 +13,7 @@ createTableHeader
     ;
 
 createDefinitions
-    : LP_ (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
+    : LP_ (createDefinition (COMMA createDefinition)*)? RP_
     ;
 
 createDefinition
@@ -28,5 +28,5 @@ likeOption
     ;
 
 inheritClause
-    : INHERITS LP_ tableName (COMMA tableName)* RIGHT_PAREN
+    : INHERITS LP_ tableName (COMMA tableName)* RP_
     ;
