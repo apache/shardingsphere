@@ -24,7 +24,7 @@ import lombok.Setter;
 /**
  * Broadcast table rule configuration.
  * 
- * @author zhangliang
+ * @author maxiaoguang
  */
 @Getter
 @Setter
