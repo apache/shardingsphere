@@ -215,7 +215,7 @@ liter
     | TRUE 
     | FALSE
     | NULL
-    | LEFT_BRACE ID STRING RIGHT_BRACE
+    | LBE_ ID STRING RIGHT_BRACE
     | HEX_DIGIT
     | ID? STRING  collateClause?
     | (DATE | TIME |TIMESTAMP) STRING

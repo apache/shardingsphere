@@ -32,7 +32,7 @@ POUND_: '#';
 
 LP_: '(';
 RP_: ')';
-LEFT_BRACE: '{';
+LBE_: '{';
 RIGHT_BRACE: '}';
 LEFT_BRACKET:'[';
 RIGHT_BRACKET:']';
