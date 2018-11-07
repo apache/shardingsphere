@@ -35,10 +35,10 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VisitorRegistry {
     
-    private static final Map<DatabaseType, DatabaseVisitorRegistry> VISITORS_REGISTRY = new HashMap<>();
+    private static final Map<DatabaseType, DatabaseVisitorRegistry> VISITORS_REGISTRY = new HashMap<>(5, 1);
     
     static {
-        VISITORS_REGISTRY.put(DatabaseType.H2, new H2VisitorRegistry());
+        VISITORS_REGISTRY.put(DatabaseType.H2, new MySQLVisitorRegistry());
         VISITORS_REGISTRY.put(DatabaseType.MySQL, new MySQLVisitorRegistry());
         VISITORS_REGISTRY.put(DatabaseType.PostgreSQL, new PostgreSQLVisitorRegistry());
         VISITORS_REGISTRY.put(DatabaseType.SQLServer, new SQLServerVisitorRegistry());
