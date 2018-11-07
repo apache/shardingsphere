@@ -184,16 +184,6 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Is use NIO.
-     *
-     * @return use or not
-     */
-    // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
-    public boolean isUseNIO() {
-        return false;
-    }
-    
-    /**
      * Check schema exists.
      *
      * @param schema schema
