@@ -78,24 +78,6 @@ public final class ShardingContext implements AutoCloseable {
         }
     }
     
-    /**
-     * Is show sql or not.
-     *
-     * @return show or not
-     */
-    public boolean isShowSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
-    
-    /**
-     * Get max connections size per query.
-     *
-     * @return max connections size per query
-     */
-    public int getMaxConnectionsSizePerQuery() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-    }
-    
     @Override
     public void close() {
         executeEngine.close();
