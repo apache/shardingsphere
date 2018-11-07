@@ -310,6 +310,10 @@ RESOURCE
     : R E S O U R C E
     ;
 
+REVOKE
+    : R E V O K E
+    ;
+
 ROWID
     : R O W I D
     ;
