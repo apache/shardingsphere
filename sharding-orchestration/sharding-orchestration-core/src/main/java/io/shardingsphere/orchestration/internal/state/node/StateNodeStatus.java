@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state;
+package io.shardingsphere.orchestration.internal.state.node;
 
 /**
  * State node status.
