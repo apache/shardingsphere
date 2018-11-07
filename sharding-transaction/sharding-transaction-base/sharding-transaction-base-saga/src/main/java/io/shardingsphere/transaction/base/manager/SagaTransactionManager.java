@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.base.manager;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.base.manager.servicecomb.SagaExecutionComponentHolder;
