@@ -61,3 +61,7 @@ alterUserResetConfig
 dropUser
     : DROP USER (IF EXISTS)? roleNames
     ;
+
+createRole
+    : CREATE ROLE roleName (WITH? roleOptions)?
+    ;
