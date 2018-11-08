@@ -34,15 +34,16 @@ import static org.mockito.Mockito.when;
 
 public final class XATransactionManagerSPILoaderTest {
     
+    private XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
+    
     @Test
     public void assertGerInstanceWithSPI() {
-        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
+        assertThat(spiLoader.getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
     }
     
     @Test(expected = ShardingException.class)
     @SuppressWarnings("unchecked")
     public void assertServiceLoaderFailed() {
-        XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
         Collection xaTransactionManagers = mock(Collection.class);
         doThrow(ShardingException.class).when(xaTransactionManagers).size();
         ReflectiveUtil.setProperty(spiLoader, "xaTransactionManagers", xaTransactionManagers);
@@ -58,7 +59,6 @@ public final class XATransactionManagerSPILoaderTest {
         when(xaTransactionManagers.iterator()).thenReturn(iterator);
         XATransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
         when(iterator.next()).thenReturn(atomikosTransactionManager);
-        XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
         ReflectiveUtil.setProperty(spiLoader, "xaTransactionManagers", xaTransactionManagers);
         XATransactionManager actual = (XATransactionManager) ReflectiveUtil.methodInvoke(spiLoader, "load");
         assertThat(actual, is(atomikosTransactionManager));
@@ -69,7 +69,6 @@ public final class XATransactionManagerSPILoaderTest {
     public void assertXaTransactionManagerIsEmpty() {
         Collection xaTransactionManagers = mock(Collection.class);
         when(xaTransactionManagers.isEmpty()).thenReturn(true);
-        XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
         ReflectiveUtil.setProperty(spiLoader, "xaTransactionManagers", xaTransactionManagers);
         XATransactionManager actual = (XATransactionManager) ReflectiveUtil.methodInvoke(spiLoader, "load");
         assertThat(actual, instanceOf(AtomikosTransactionManager.class));
