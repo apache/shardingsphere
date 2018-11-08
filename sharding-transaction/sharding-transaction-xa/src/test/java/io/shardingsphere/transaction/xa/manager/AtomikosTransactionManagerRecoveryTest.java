@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.imp.CoordinatorImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jdbc.AtomikosSQLException;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
@@ -69,10 +70,17 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
+        assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
+    }
+    
+    @Test(expected = AtomikosSQLException.class)
+    public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        xaDataSourceMap = createXADataSourceMap();
         assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
     }
     
