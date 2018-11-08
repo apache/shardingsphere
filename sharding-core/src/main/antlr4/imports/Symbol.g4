@@ -12,6 +12,7 @@ SIGNED_RIGHT_SHIFT: '>>';
 BIT_EXCLUSIVE_OR: '^';
 MOD_: '%';
 COLON:':';
+COLONCOLON:'::';
 
 PLUS: '+' ;
 MINUS: '-' ;
