@@ -128,10 +128,6 @@ dataTypeLength
     : LP_ (NUMBER (COMMA NUMBER)?)? RP_
     ;
 
-nullNotnull
-    : NULL | NOT NULL
-    ;
-
 primaryKey
     : PRIMARY? KEY
     ;

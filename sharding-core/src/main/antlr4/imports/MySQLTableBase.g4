@@ -12,8 +12,7 @@ dataType
     ;
 
  typeName
-    : DOUBLE PRECISION
-    | ID
+    : DOUBLE PRECISION | ID
     ;
 
 dataTypeOption
@@ -26,10 +25,7 @@ dataTypeOption
     ;
 
 dataTypeGeneratedOption
-    : nullNotnull
-    | UNIQUE KEY?
-    | primaryKey
-    | COMMENT STRING
+    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING
     ;
 
 defaultValue
