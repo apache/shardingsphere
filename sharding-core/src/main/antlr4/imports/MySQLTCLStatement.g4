@@ -3,19 +3,15 @@ grammar MySQLTCLStatement;
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 setTransaction
-    : SET (GLOBAL | SESSION) TRANSACTION
-    setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
+    : SET (GLOBAL | SESSION) TRANSACTION setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
     ;
 
 setTransactionCharacteristic
-    : ISOLATION LEVEL level
-    | accessMode
+    : ISOLATION LEVEL level| accessMode
     ;
 
 level
-    : REPEATABLE READ
-    | READ (COMMITTED | UNCOMMITTED)
-    | SERIALIZABLE
+    : REPEATABLE READ | READ (COMMITTED | UNCOMMITTED) | SERIALIZABLE
     ;
 
 accessMode
@@ -27,8 +23,7 @@ commit
     ;
 
 beginWork
-    : BEGIN WORK?
-    | startTransaction
+    : BEGIN WORK? | startTransaction
     ;
 
 startTransaction
@@ -36,15 +31,14 @@ startTransaction
     ;
 
 startTransactionCharacteristic
-    : WITH CONSISTENT SNAPSHOT
-    | READ (WRITE | ONLY)
+    : WITH CONSISTENT SNAPSHOT | READ (WRITE | ONLY)
     ;
 
 rollback
     : ROLLBACK WORK? 
     (
         (AND NO? CHAIN)? (NO? RELEASE)? 
-       |TO SAVEPOINT? ID
+       | TO SAVEPOINT? ID
     )
     ;
 
