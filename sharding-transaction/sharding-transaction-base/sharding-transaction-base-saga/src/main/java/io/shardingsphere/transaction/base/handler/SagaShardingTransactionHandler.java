@@ -19,6 +19,8 @@ package io.shardingsphere.transaction.base.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
+import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
@@ -28,8 +30,9 @@ import io.shardingsphere.transaction.base.manager.servicecomb.SagaDefinitionBuil
 import io.shardingsphere.transaction.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
+import io.shardingsphere.transaction.revert.EmptyRevertEngine;
 import io.shardingsphere.transaction.revert.RevertEngine;
-import io.shardingsphere.transaction.revert.RevertEngineHolder;
+import io.shardingsphere.transaction.revert.RevertEngineImpl;
 import io.shardingsphere.transaction.revert.RevertResult;
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,15 +79,17 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
         }
         switch (transactionEvent.getOperationType()) {
             case COMMIT:
+                if (Status.STATUS_ACTIVE != transactionManager.getStatus()) {
+                    throw new ShardingException("No transaction begin in current thread connection");
+                }
                 try {
+                    revertEngineMap.remove(transactionManager.getTransactionId());
                     transactionEvent.setSagaJson(sagaDefinitionBuilderMap.remove(transactionManager.getTransactionId()).build());
                     super.doInTransaction(transactionEvent);
                 } catch (JsonProcessingException e) {
                     // shouldn't really happen, but is declared as possibility so:
                     log.error("saga transaction", transactionManager.getTransactionId(), "commit failed, caused by json build exception: ", e);
                     return;
-                } finally {
-                    revertEngineMap.remove(transactionManager.getTransactionId());
                 }
                 break;
             case ROLLBACK:
@@ -93,14 +98,20 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
                 super.doInTransaction(transactionEvent);
                 break;
             case BEGIN:
-                if (transactionManager.getStatus() == Status.STATUS_NO_TRANSACTION) {
+                if (Status.STATUS_NO_TRANSACTION == transactionManager.getStatus()) {
                     super.doInTransaction(transactionEvent);
-                    sagaDefinitionBuilderMap.put(transactionManager.getTransactionId(), new SagaDefinitionBuilder());
-                    revertEngineMap.put(transactionManager.getTransactionId(), RevertEngineHolder.getInstance().getRevertEngine());
+                    SagaConfiguration config = transactionEvent.getSagaConfiguration();
+                    sagaDefinitionBuilderMap.put(transactionManager.getTransactionId(),
+                            new SagaDefinitionBuilder(config.getRecoveryPolicy().getName(), config.getTransactionMaxRetries(), config.getCompensationMaxRetries(), config.getTransactionRetryDelay()));
+                    revertEngineMap.put(transactionManager.getTransactionId(), createRevertEngine(transactionEvent));
                 }
                 break;
             default:
         }
+    }
+    
+    private RevertEngine createRevertEngine(final SagaTransactionEvent transactionEvent) {
+        return SagaRecoveryPolicy.FORWARD == transactionEvent.getSagaConfiguration().getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(transactionEvent.getDataSourceMap());
     }
     
     /**
