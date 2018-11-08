@@ -19,9 +19,7 @@ commit
     ;
 
 rollback
-    : ROLLBACK workOrTransaction?
-    | ROLLBACK PREPARED ID
-    | ROLLBACK workOrTransaction? TO SAVEPOINT? ID
+    : ROLLBACK (workOrTransaction? | PREPARED ID | workOrTransaction? TO SAVEPOINT? ID)
     ;
 
 savepoint
@@ -37,6 +35,5 @@ startTransaction
     ;
 
 workOrTransaction
-    : WORK 
-    | TRANSACTION
+    : WORK | TRANSACTION
     ;
