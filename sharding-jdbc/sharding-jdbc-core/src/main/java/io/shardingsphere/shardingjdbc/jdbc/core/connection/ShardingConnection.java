@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
@@ -55,6 +56,12 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
         super(transactionType);
+        this.dataSourceMap = dataSourceMap;
+        this.shardingContext = shardingContext;
+    }
+    
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType, final SagaConfiguration sagaConfiguration) {
+        super(transactionType, sagaConfiguration);
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
     }
