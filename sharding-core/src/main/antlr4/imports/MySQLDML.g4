@@ -2,105 +2,99 @@ grammar MySQLDML;
 
 import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DMLBase, DataType, Symbol;
 
-caseExpress:
-    caseCond
-    |caseComp
+caseExpress
+    : caseCond |caseComp
     ;
 
-caseComp:
-    CASE simpleExpr caseWhenComp+ elseResult? END  
+caseComp
+    : CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
     
-caseWhenComp:
-    WHEN simpleExpr THEN caseResult
+caseWhenComp
+    : WHEN simpleExpr THEN caseResult
     ;
 
-caseCond:
-    CASE whenResult+ elseResult? END
+caseCond
+    : CASE whenResult+ elseResult? END
     ;
 
-whenResult:
-    WHEN booleanPrimary THEN caseResult
+whenResult
+    : WHEN booleanPrimary THEN caseResult
     ;
 
-elseResult:
-    ELSE caseResult
+elseResult
+    : ELSE caseResult
     ;
 
-caseResult:
-    expr
+caseResult
+    : expr
     ;
 
-selectExpr:
-    (bitExpr| caseExpress) AS? alias?
+selectExpr
+    : (bitExpr| caseExpress) AS? alias?
     ;
  
-deleteClause:
-    DELETE deleteSpec (fromMulti| fromSingle) 
+deleteClause
+    : DELETE deleteSpec (fromMulti| fromSingle) 
     ;
 
-fromSingle: 
-    FROM ID partitionClause?
+fromSingle
+    : FROM ID partitionClause?
     ;
 
-fromMulti:
-    (ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences)
-    |FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
+fromMulti
+    : ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences
+    | FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
     ;
 
-deleteSpec: 
-    LOW_PRIORITY?
-    |QUICK?
-    |IGNORE?
+deleteSpec
+    : LOW_PRIORITY? | QUICK? | IGNORE?
     ;
 
-insert:
-    insertClause INTO? ID partitionClause? 
-    (setClause | columnClause) onDuplicateClause?
+insert
+    : insertClause INTO? ID partitionClause? (setClause | columnClause) onDuplicateClause?
     ;
 
-insertClause:
-    INSERT insertSpec?
+insertClause
+    : INSERT insertSpec?
     ;
 
-insertSpec:
-    LOW_PRIORITY
-    | DELAYED 
-    | HIGH_PRIORITY IGNORE
+insertSpec
+    : LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE
     ;
 
-columnClause: 
-    idListWithEmpty? (valueClause | select)
+columnClause
+    : idListWithEmpty? (valueClause | select)
     ;
 
-valueClause: 
-    (VALUES | VALUE) valueListWithParen (COMMA valueListWithParen)*
+valueClause 
+    : (VALUES | VALUE) valueListWithParen (COMMA valueListWithParen)*
     ;
 
-setClause: 
-    SET assignmentList
+setClause
+    : SET assignmentList
     ;
 
 onDuplicateClause: 
     ON DUPLICATE KEY UPDATE assignmentList
     ;
 
-itemListWithEmpty:
-    (LP_ RP_)
-    |idList
+itemListWithEmpty
+    : LP_ RP_ | idList
     ;
 
-assignmentList: 
-    assignment (COMMA assignment)*
+assignmentList
+    : assignment (COMMA assignment)*
     ;
 
-assignment:
-    columnName EQ_ value;
-
-updateClause: 
-    UPDATE updateSpec tableReferences
+assignment
+    : columnName EQ_ value
     ;
 
-updateSpec: 
-    LOW_PRIORITY? IGNORE?
+updateClause 
+    : UPDATE updateSpec tableReferences
+    ;
+
+updateSpec
+    : LOW_PRIORITY? IGNORE?
     ;
