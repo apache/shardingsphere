@@ -23,7 +23,7 @@ permission
 
 grantDW
     : GRANT permission (COMMA permission)*
-    (ON (classType COLONCOLON)? ID)?   
+    (ON (classType COLON COLON)? ID)?   
     TO ids (WITH GRANT OPTION)?
     ;
 
