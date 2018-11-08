@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.pos
 
 import java.util.HashMap;
 import java.util.Map;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql.PostgreSQLDropIndexExtractor;
 
 /**
  * SQL statement extractor registry for PostgreSQL.
@@ -52,7 +53,7 @@ public final class PostgreSQLStatementExtractorRegistry implements SQLStatementE
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlyMultiTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new PostgreSQLAlterIndexExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new PostgreSQLDropIndexExtractor());
     }
     
     private static void registerTCL() {
