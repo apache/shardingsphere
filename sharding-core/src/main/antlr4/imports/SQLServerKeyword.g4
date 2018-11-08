@@ -82,10 +82,6 @@ CONVERT
     : C O N V E R T
     ;
 
-CURRENT
-    : C U R R E N T
-    ;
-
 DATABASE
     : D A T A B A S E
     ;
@@ -100,10 +96,6 @@ DATA_COMPRESSION
 
 DATA_CONSISTENCY_CHECK
     : D A T A UL_ C O N S I S T E N C Y UL_ C H E C K
-    ;
-
-DAY
-    : D A Y
     ;
 
 DAYS
@@ -500,10 +492,6 @@ UNCOMMITTED
 
 UPDATE
     : U P D A T E
-    ;
-
-USER
-    : U S E R
     ;
 
 VALUES
