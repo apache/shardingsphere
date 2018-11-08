@@ -31,8 +31,8 @@ public final class TestRegistryCenter implements RegistryCenter {
     public void init(final RegistryCenterConfiguration config) {
     }
     
-    
-    public String get(String key) {
-        return
+    @Override
+    public String get(final String key) {
+        return "";
     }
 }
