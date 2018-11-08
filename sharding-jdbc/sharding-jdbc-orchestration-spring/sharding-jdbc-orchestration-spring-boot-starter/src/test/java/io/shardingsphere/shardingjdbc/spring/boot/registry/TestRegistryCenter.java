@@ -70,4 +70,8 @@ public final class TestRegistryCenter implements RegistryCenter {
     @Override
     public void watch(final String key, final EventListener eventListener) {
     }
+    
+    @Override
+    public void close() {
+    }
 }
