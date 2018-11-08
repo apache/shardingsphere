@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.base.manager.servicecomb;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class ShardingTransportFactoryTest {
     @Test
     public void assertGerInstanceWithSPI() {
         assertThat(ShardingTransportFactorySPILoader.getInstance().getTransportFactory(), instanceOf(ShardingTransportFactory.class));
-        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().cacheTransport(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        ShardingTransportFactorySPILoader.getInstance().getTransportFactory().cacheTransport(new SagaTransactionEvent(TransactionOperationType.BEGIN, new SagaConfiguration()));
         assertThat(ShardingTransportFactorySPILoader.getInstance().getTransportFactory().getTransport(), instanceOf(EmptySQLTransport.class));
         ShardingTransportFactorySPILoader.getInstance().getTransportFactory().remove();
     }

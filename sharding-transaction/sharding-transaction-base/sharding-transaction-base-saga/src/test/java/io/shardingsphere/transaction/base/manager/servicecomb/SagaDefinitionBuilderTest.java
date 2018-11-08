@@ -73,7 +73,7 @@ public class SagaDefinitionBuilderTest {
     
     @Before
     public void setUp() {
-        builder = new SagaDefinitionBuilder();
+        builder = new SagaDefinitionBuilder("ForwardRecovery", 5, 5, 5000);
     }
     
     @Test
