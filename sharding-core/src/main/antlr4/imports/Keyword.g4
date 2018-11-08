@@ -254,6 +254,10 @@ ENABLE
     : E N A B L E
     ;
 
+FOR
+    : F O R
+    ;
+
 FOREIGN
     : F O R E I G N
     ;

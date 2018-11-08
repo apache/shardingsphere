@@ -20,6 +20,8 @@ execute
     | beginWork
     | grant
     | grantRole
+    | revoke
+    | revokeRole
     | createUser
     | alterUser
     | renameUser

@@ -426,6 +426,10 @@ RESTRICT
     : R E S T R I C T
     ;
 
+REVOKE
+    : R E V O K E
+    ;
+
 ROUTINE
     : R O U T I N E
     ;

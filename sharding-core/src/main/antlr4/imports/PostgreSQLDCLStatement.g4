@@ -59,6 +59,37 @@ grantRole
     : GRANT roleNames TO roleNames (WITH ADMIN OPTION)?
     ;
 
+revoke
+    : REVOKE (GRANT OPTION FOR)?
+    privType columnList? (COMMA privType columnList?)*
+    ON (
+        TABLE? tableNames
+        | ALL TABLES IN SCHEMA schemaNames
+        | SEQUENCE sequenceNames
+        | ALL SEQUENCES IN SCHEMA schemaNames
+        | DATABASE databaseNames
+        | DOMAIN domainNames
+        | FOREIGN DATA WRAPPER ID (COMMA ID)*
+        | FOREIGN SERVER ID (COMMA ID)*
+        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? ID? dataType (COMMA argMode? ID? dataType)*)? RP_)?
+            (COMMA (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? ID? dataType (COMMA argMode? ID? dataType)*)? RP_)?)*
+        | ALL (FUNCTION | PROCEDURE | ROUTINE) IN SCHEMA schemaNames
+        | LANGUAGE  ID (COMMA ID)*
+        | LARGE OBJECT ID (COMMA ID)*
+        | SCHEMA schemaNames
+        | TABLESPACE tablespaceNames
+        | TYPE typeNames
+    )
+    FROM roleSpecifications
+    (CASCADE | RESTRICT)
+    ;
+
+revokeRole
+    : REVOKE (ADMIN OPTION FOR)?
+    roleNames FROM roleNames
+    (CASCADE | RESTRICT)
+    ;
+
 createUser
     : CREATE USER roleName (WITH? roleOptions)?
     ;
