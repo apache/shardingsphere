@@ -21,8 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -87,20 +85,5 @@ public final class ExtractorUtils {
             result.setFirstColumn(columnName);
         }
         return Optional.of(result);
-    }
-    
-    /**
-     * Extract index node.
-     *
-     * @param indexNameContext index name context
-     * @param tableName  table name
-     * @return index token
-     */
-    public static IndexToken extractIndex(final ParserRuleContext indexNameContext, final String tableName) {
-        return new IndexToken(indexNameContext.getStop().getStartIndex(), getIndexName(indexNameContext.getText()), tableName);
-    }
-    
-    private static String getIndexName(final String text) {
-        return text.contains(Symbol.DOT.getLiterals()) ? text.substring(text.lastIndexOf(Symbol.DOT.getLiterals()) + Symbol.DOT.getLiterals().length()) : text;
     }
 }

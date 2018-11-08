@@ -229,11 +229,5 @@ setDefaultRole
     ;
 
 setRole
-    : SET ROLE (
-        DEFAULT
-        | NONE
-        | ALL
-        | ALL EXCEPT roles
-        | roles
-    )
+    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roles | roles)
     ;

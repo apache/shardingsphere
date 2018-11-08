@@ -19,8 +19,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -47,7 +48,7 @@ public final class RenameIndexExtractHandler implements ASTExtractHandler {
         }
         ParserRuleContext oldIndexContext = (ParserRuleContext) oldIndexNode;
         ParserRuleContext newIndexContext = (ParserRuleContext) newIndexNode;
-        statement.getSQLTokens().add(ExtractorUtils.extractIndex(oldIndexContext, statement.getTables().getSingleTableName()));
-        statement.getSQLTokens().add(ExtractorUtils.extractIndex(newIndexContext, statement.getTables().getSingleTableName()));
+        statement.getSQLTokens().add(new IndexToken(oldIndexContext.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(oldIndexContext.getText()), statement.getTables().getSingleTableName()));
+        statement.getSQLTokens().add(new IndexToken(newIndexContext.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(newIndexContext.getText()), statement.getTables().getSingleTableName()));
     }
 }

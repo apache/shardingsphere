@@ -35,16 +35,16 @@ public class ColumnDefinitionExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        CreateTableStatement createStatement = (CreateTableStatement) statement;
+        CreateTableStatement createTableStatement = (CreateTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
             if (!column.isPresent()) {
                 continue;
             }
-            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
-            createStatement.getColumnTypes().add(column.get().getType());
+            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
+            createTableStatement.getColumnTypes().add(column.get().getType());
             if (column.get().isPrimaryKey()) {
-                createStatement.getPrimaryKeyColumns().add(column.get().getName());
+                createTableStatement.getPrimaryKeyColumns().add(column.get().getName());
             }
         }
     }
