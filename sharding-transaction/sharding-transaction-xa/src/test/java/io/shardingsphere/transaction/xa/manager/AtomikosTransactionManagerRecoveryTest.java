@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AtomikosTransactionManagerRecoveryTest {
     
-    private AtomikosTransactionManager atomikosTransactionManager = (AtomikosTransactionManager) XATransactionManagerSPILoader.getInstance().getTransactionManager();
+    private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
     
     private Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
     
@@ -57,13 +57,14 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @After
     public void teardown() {
+        atomikosTransactionManager.destroy();
         closeDataSource();
     }
     
     @SneakyThrows
     private void createTable() {
-        executeSQL("ds1", "CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
-        executeSQL("ds2", "CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
+        executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
+        executeSQL("ds2", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
     }
     
     @Test
@@ -80,6 +81,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        atomikosTransactionManager.rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         xaDataSourceMap = createXADataSourceMap();
         assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
     }
