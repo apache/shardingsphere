@@ -47,6 +47,10 @@ import static org.junit.Assert.assertTrue;
 
 public class AtomikosTransactionManagerRecoveryTest {
     
+    private static final String INSERT_INTO_T_ORDER = "INSERT INTO t_order VALUES(1000, 10, 'init')";
+    
+    private static final String SELECT_COUNT_T_ORDER = "SELECT count(1) from t_order";
+    
     private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
     
     private Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
@@ -71,42 +75,42 @@ public class AtomikosTransactionManagerRecoveryTest {
     @Test
     public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
+        executeSQL("ds1", INSERT_INTO_T_ORDER);
+        assertEquals(1L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
-        assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(0L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
     }
     
     @Test(expected = AtomikosSQLException.class)
     public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds1", INSERT_INTO_T_ORDER);
         atomikosTransactionManager.rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         xaDataSourceMap = createXADataSourceMap();
-        assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(0L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertCurrentThreadCannotDoEnlistInDoubtState() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds1", INSERT_INTO_T_ORDER);
+        executeSQL("ds2", INSERT_INTO_T_ORDER);
         mockAtomikosOnlyExecutePreparePhase();
-        executeSQL("ds1", "SELECT count(1) from t_order");
+        executeSQL("ds1", SELECT_COUNT_T_ORDER);
     }
     
     @Test
     @SneakyThrows
     public void assertDoEnlistInAnotherThreadWhenInDoubtState() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds1", INSERT_INTO_T_ORDER);
         mockAtomikosOnlyExecutePreparePhase();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-                assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
+                assertEquals(0L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
             }
         });
         thread.start();
@@ -116,24 +120,24 @@ public class AtomikosTransactionManagerRecoveryTest {
     @Test
     public void assertDoPrepareCommitSucceed() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
-        assertEquals(1L, executeSQL("ds2", "SELECT count(1) from t_order"));
+        executeSQL("ds1", INSERT_INTO_T_ORDER);
+        executeSQL("ds2", INSERT_INTO_T_ORDER);
+        assertEquals(1L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
+        assertEquals(1L, executeSQL("ds2", SELECT_COUNT_T_ORDER));
         atomikosTransactionManager.commit(new XATransactionEvent(TransactionOperationType.COMMIT));
         atomikosTransactionManager.destroy();
         closeDataSource();
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
-        assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
-        assertEquals(1L, executeSQL("ds2", "SELECT count(1) from t_order"));
+        assertEquals(1L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
+        assertEquals(1L, executeSQL("ds2", SELECT_COUNT_T_ORDER));
     }
     
     @Test
     @SneakyThrows
     public void assertPrepareAlsoLockedResource() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds1", INSERT_INTO_T_ORDER);
         mockAtomikosOnlyExecutePreparePhase();
     
         final Thread thread = new Thread(new Runnable() {
@@ -141,7 +145,7 @@ public class AtomikosTransactionManagerRecoveryTest {
             public void run() {
                 try {
                     atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-                    executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+                    executeSQL("ds1", INSERT_INTO_T_ORDER);
                     // CHECKSTYLE:OFF
                 } catch (Exception ex) {
                     // CHECKSTYLE:ON
