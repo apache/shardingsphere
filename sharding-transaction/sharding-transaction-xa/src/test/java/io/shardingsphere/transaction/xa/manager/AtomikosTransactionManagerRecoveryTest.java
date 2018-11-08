@@ -40,6 +40,9 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class AtomikosTransactionManagerRecoveryTest {
     
     private AtomikosTransactionManager atomikosTransactionManager = (AtomikosTransactionManager) XATransactionManagerSPILoader.getInstance().getTransactionManager();
@@ -60,12 +63,14 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @Test
     @SneakyThrows
-    public void assertAtomikosDataSourceBeanRecovery() {
+    public void assertOnlyExecutePrepareThenShutdown() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        assertTrue(executeSQL("ds1", "SELECT count(1) from t_order"));
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
+        assertFalse(executeSQL("ds1", "SELECT count(1) from t_order"));
         closeDataSource();
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
@@ -88,9 +93,9 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @SneakyThrows
-    private void executeSQL(final String dsName, final String sql) {
+    private boolean executeSQL(final String dsName, final String sql) {
         try (Connection connection = xaDataSourceMap.get(dsName).getConnection()) {
-            RunScript.execute(connection, new StringReader(sql));
+            return RunScript.execute(connection, new StringReader(sql)).next();
         }
     }
     
