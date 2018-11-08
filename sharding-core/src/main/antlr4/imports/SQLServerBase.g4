@@ -3,25 +3,16 @@ grammar SQLServerBase;
 import SQLServerKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
-    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT)* DOT*
-    (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
-    |[a-zA-Z0-9_$]+ DOT ASTERISK
+    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT)* DOT* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
+    | [a-zA-Z0-9_$]+ DOT ASTERISK
     ;
 
 dataType
-    : typeName   
-    (
-          dataTypeLength
-        | LP_ MAX RP_
-        | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_
-    )?   
+    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_)?   
     ;
 
 privateExprOfDb
-    : windowedFunction
-    | atTimeZoneExpr
-    | castExpr
-    | convertExpr
+    : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
 atTimeZoneExpr
@@ -29,11 +20,11 @@ atTimeZoneExpr
     ;
 
 castExpr
-    : CAST LP_ expr AS dataType (LP_  NUMBER RP_ )? RP_  
+    : CAST LP_ expr AS dataType (LP_  NUMBER RP_)? RP_  
     ;
 
 convertExpr
-    : CONVERT ( dataType (LP_  NUMBER RP_ )? COMMA expr (COMMA NUMBER)?)
+    : CONVERT ( dataType (LP_  NUMBER RP_)? COMMA expr (COMMA NUMBER)?)
     ;
 
 windowedFunction
@@ -41,12 +32,7 @@ windowedFunction
      ;
 
 overClause
-    : OVER 
-    LP_     
-          partitionByClause?
-          orderByClause?  
-          rowRangeClause? 
-    RP_ 
+    : OVER LP_ partitionByClause? orderByClause? rowRangeClause? RP_ 
     ;
 
 partitionByClause
@@ -66,8 +52,7 @@ rowRangeClause
     ;
 
 windowFrameExtent
-    : windowFramePreceding
-    | windowFrameBetween 
+    : windowFramePreceding | windowFrameBetween 
     ;
 
 windowFrameBetween
@@ -75,20 +60,15 @@ windowFrameBetween
     ;
 
 windowFrameBound  
-    : windowFramePreceding 
-    | windowFrameFollowing 
+    : windowFramePreceding | windowFrameFollowing 
     ;
 
 windowFramePreceding  
-    : (UNBOUNDED PRECEDING)  
-    | NUMBER PRECEDING  
-    | CURRENT ROW  
+    : UNBOUNDED PRECEDING | NUMBER PRECEDING | CURRENT ROW  
     ;
 
 windowFrameFollowing
-    : UNBOUNDED FOLLOWING  
-    | NUMBER FOLLOWING  
-    | CURRENT ROW  
+    : UNBOUNDED FOLLOWING | NUMBER FOLLOWING | CURRENT ROW  
     ;
 
 columnList
@@ -96,13 +76,13 @@ columnList
     ;
 
 columnNameWithSort
-    : columnName ( ASC | DESC )?
+    : columnName (ASC | DESC)?
     ;
 
 indexOption
     : FILLFACTOR EQ_ NUMBER
     | eqOnOffOption
-    | ((COMPRESSION_DELAY | MAX_DURATION) eqTime)
+    | (COMPRESSION_DELAY | MAX_DURATION) eqTime
     | MAXDOP EQ_ NUMBER
     | compressionOption onPartitionClause?
     ;
@@ -116,25 +96,25 @@ eqTime
     ;
 
 eqOnOffOption
-    : (
-       PAD_INDEX
-      | SORT_IN_TEMPDB
-      | IGNORE_DUP_KEY
-      | STATISTICS_NORECOMPUTE
-      | STATISTICS_INCREMENTAL
-      | DROP_EXISTING
-      | ONLINE
-      | RESUMABLE
-      | ALLOW_ROW_LOCKS
-      | ALLOW_PAGE_LOCKS
-      | COMPRESSION_DELAY
-      | SORT_IN_TEMPDB
-    )
-    eqOnOff 
+    : eqKey eqOnOff 
     ;
-
+eqKey
+    :  PAD_INDEX
+    | SORT_IN_TEMPDB
+    | IGNORE_DUP_KEY
+    | STATISTICS_NORECOMPUTE
+    | STATISTICS_INCREMENTAL
+    | DROP_EXISTING
+    | ONLINE
+    | RESUMABLE
+    | ALLOW_ROW_LOCKS
+    | ALLOW_PAGE_LOCKS
+    | COMPRESSION_DELAY
+    | SORT_IN_TEMPDB
+    ;
+    
 eqOnOff
-    : EQ_ ( ON | OFF )
+    : EQ_ (ON | OFF)
     ;
 
 onPartitionClause
@@ -146,8 +126,7 @@ partitionExpressions
     ;
 
 partitionExpression
-    : NUMBER 
-    | numberRange
+    : NUMBER | numberRange
     ;
 
 numberRange   

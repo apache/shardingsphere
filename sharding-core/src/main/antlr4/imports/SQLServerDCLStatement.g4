@@ -3,8 +3,7 @@ grammar SQLServerDCLStatement;
 import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
 grant
-    : grantGeneral
-    | grantDW
+    : grantGeneral | grantDW
     ;
     
 grantGeneral
@@ -22,16 +21,10 @@ permission
     ;
 
 grantDW
-    : GRANT permission (COMMA permission)*
-    (ON (classType COLON COLON)? ID)?   
+    : GRANT permission (COMMA permission)* (ON (classType COLON COLON)? ID)?   
     TO ids (WITH GRANT OPTION)?
     ;
 
 classType
-    : LOGIN  
-    | DATABASE  
-    | OBJECT  
-    | ROLE  
-    | SCHEMA  
-    | USER  
+    : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER  
     ;
