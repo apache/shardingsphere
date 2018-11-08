@@ -22,6 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -51,6 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author chenqingyang
  * @author panjuan
+ * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -63,6 +65,8 @@ public final class GlobalRegistry {
     private ShardingProperties shardingProperties;
     
     private Authentication authentication;
+    
+    private SagaConfiguration sagaConfiguration;
     
     private boolean isCircuitBreak;
     
@@ -90,10 +94,12 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
+     * @param sagaConfiguration saga configuration
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
-        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication,
+                     final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) {
+        init(schemaDataSources, schemaRules, authentication, configMap, props, sagaConfiguration, false);
     }
     
     /**
@@ -104,15 +110,17 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
+     * @param sagaConfiguration saga configuration
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, 
-                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules,
+                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration, final boolean isUsingRegistry) {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
+        this.sagaConfiguration = sagaConfiguration;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
     }
     

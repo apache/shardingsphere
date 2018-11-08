@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy;
 
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
@@ -49,6 +50,7 @@ import java.util.Properties;
  * @author zhangliang
  * @author wangkai
  * @author panjuan
+ * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
@@ -87,7 +89,7 @@ public final class Bootstrap {
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final Authentication authentication,
                                                    final Map<String, Object> configMap, final Properties prop, final int port) throws InterruptedException {
-        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop);
+        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop, new SagaConfiguration());
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -97,7 +99,8 @@ public final class Bootstrap {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(orchestrationFacade), getSchemaRules(orchestrationFacade),
-                    orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(), orchestrationFacade.getConfigService().loadProperties(), true);
+                    orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(),
+                    orchestrationFacade.getConfigService().loadProperties(), new SagaConfiguration(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
