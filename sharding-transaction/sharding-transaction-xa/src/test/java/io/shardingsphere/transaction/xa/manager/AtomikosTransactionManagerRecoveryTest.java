@@ -29,19 +29,19 @@ import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFac
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
-import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import javax.transaction.Transaction;
-import java.io.StringReader;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class AtomikosTransactionManagerRecoveryTest {
     
@@ -67,10 +67,10 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        assertTrue(executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(1, executeSQL("ds1", "SELECT count(1) from t_order"));
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
-        assertFalse(executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertNotEquals(1, executeSQL("ds1", "SELECT count(1) from t_order"));
         closeDataSource();
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
@@ -93,9 +93,20 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @SneakyThrows
-    private boolean executeSQL(final String dsName, final String sql) {
+    private int executeSQL(final String dsName, final String sql) {
+        int result = 0;
         try (Connection connection = xaDataSourceMap.get(dsName).getConnection()) {
-            return RunScript.execute(connection, new StringReader(sql)).next();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = null;
+            if (statement.execute(sql)) {
+                resultSet = statement.getResultSet();
+            }
+            if (null != resultSet) {
+                while (resultSet.next()) {
+                    result = resultSet.getInt(1);
+                }
+            }
+            return result;
         }
     }
     
