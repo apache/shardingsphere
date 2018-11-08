@@ -16,6 +16,12 @@ permission
     : ID *?
     ;
 
+grantDW
+    : GRANT permission (COMMA permission)*
+    (ON (classType COLONCOLON)? ID)?   
+    TO ids (WITH GRANT OPTION)?
+    ;
+
 classType
     : LOGIN  
     | DATABASE  
