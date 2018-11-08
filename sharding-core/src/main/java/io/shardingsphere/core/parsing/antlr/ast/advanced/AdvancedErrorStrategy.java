@@ -38,7 +38,7 @@ import org.antlr.v4.runtime.misc.IntervalSet;
 @RequiredArgsConstructor
 public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
     
-    private final int id;
+    private final int identifierTokenIndex;
     
     @Override
     public void sync(final Parser recognizer) throws RecognitionException {
@@ -62,8 +62,8 @@ public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
                 }
                 return;
             }
-            if (nextTokens.contains(id)) {
-                ((CommonToken) token).setType(id);
+            if (nextTokens.contains(identifierTokenIndex)) {
+                ((CommonToken) token).setType(identifierTokenIndex);
             }
             super.sync(recognizer);
         } catch (InputMismatchException ex) {
@@ -80,10 +80,10 @@ public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
             throw cause;
         }
         int previousType = commonToken.getType();
-        if (previousType > id) {
+        if (previousType > identifierTokenIndex) {
             return;
         }
-        commonToken.setType(id);
+        commonToken.setType(identifierTokenIndex);
         try {
             super.sync(recognizer);
         } catch (InputMismatchException ex) {

@@ -1,4 +1,5 @@
 grammar MySQLCreateIndex;
+
 import MySQLKeyword, Keyword, MySQLBase, BaseRule, Symbol;
 
 createIndex:

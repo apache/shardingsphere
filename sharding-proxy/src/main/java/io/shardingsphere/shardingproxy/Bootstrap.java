@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy;
 
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -133,7 +134,7 @@ public final class Bootstrap {
     }
     
     private static void initOpenTracing() {
-        if (GlobalRegistry.getInstance().isOpenTracingEnable()) {
+        if (GlobalRegistry.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
         }
     }

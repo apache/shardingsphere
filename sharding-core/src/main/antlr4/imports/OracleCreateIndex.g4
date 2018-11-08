@@ -9,39 +9,39 @@ createIndex
      | bitmapJoinIndexClause
     )
     ;
-    
+
 tableIndexClause
     : tableName alias?
-    LEFT_PAREN indexExprSort
-    (COMMA indexExprSort)* RIGHT_PAREN 
+    LP_ indexExprSort
+    (COMMA indexExprSort)* RP_ 
     ;
 
 indexExprSort
     : indexExpr (ASC | DESC)?
     ;
-    
+
 indexExpr
     : columnName 
     | expr 
     ;
-    
+
 tablespaceClauseWithParen
-    : LEFT_PAREN tablespaceClause RIGHT_PAREN
+    : LP_ tablespaceClause RP_
     ;
-    
+
 tablespaceClause
     : TABLESPACE tablespaceName
     ;
-    
+
 domainIndexClause
     : indexTypeName
     ;
 
 bitmapJoinIndexClause
     : tableName
-    LEFT_PAREN 
+    LP_ 
     columnSortClause( COMMA columnSortClause)*
-    RIGHT_PAREN 
+    RP_ 
     FROM tableAndAlias (COMMA tableAndAlias)*
     WHERE expr
     ;

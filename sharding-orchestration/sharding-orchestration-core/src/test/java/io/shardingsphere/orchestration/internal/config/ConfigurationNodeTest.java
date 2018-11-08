@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.config;
 
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

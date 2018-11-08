@@ -1,4 +1,4 @@
-lexer grammar PostgreKeyword;
+lexer grammar PostgreSQLKeyword;
 
 import Symbol;
    

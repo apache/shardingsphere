@@ -1,7 +1,7 @@
 lexer grammar Keyword;
 
 import Symbol;
-    
+
 ALL
     : A L L
     ;
@@ -23,8 +23,7 @@ ASC
     ;
 
 BETWEEN
-    : B E T W E E N
-    ;
+    : B E T W E E N;
 
 BINARY
     : B I N A R Y

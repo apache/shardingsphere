@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.wrapper;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rewrite.MasterSlaveSQLRewriteEngine;
@@ -59,15 +60,15 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         String rewriteSQL = new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData()).rewrite();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.isShowSQL()).route(rewriteSQL)) {
+        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.<List<Object>>emptyList())));
         }
         return result;
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(), databaseType, GLOBAL_REGISTRY.isShowSQL(), logicSchema.getMetaData().getDataSource());
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(),
+                databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), logicSchema.getMetaData().getDataSource());
         return routingEngine.route(sql);
     }
     

@@ -64,7 +64,7 @@ public class SpringBootShardingTest {
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        assertTrue(shardingContext.isShowSQL());
+        assertTrue(shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));

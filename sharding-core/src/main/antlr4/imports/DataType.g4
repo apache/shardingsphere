@@ -1,10 +1,10 @@
 lexer grammar DataType;
 
-import Keyword,Symbol;
+import Keyword, Symbol;
 
 STRING
-    : DOUBLE_QUOTA ('\\"'|.)*? DOUBLE_QUOTA
-    | SINGLE_QUOTA (SINGLE_QUOTA |.)*? SINGLE_QUOTA
+    : DQ_ ('\\"'|.)*? DQ_
+    | SQ_ (SQ_ |.)*? SQ_
     ;
 
 NUMBER
@@ -14,25 +14,25 @@ NUMBER
 INT_ 
     : [0-9]+
     ;
-          
+
 EXP 
     : E [+\-]? INT_
     ;
-    
+
 fragment HEX  
     : [0-9a-fA-F] 
     ;
-    
+
 HEX_DIGIT
     : '0x' HEX+
-    | 'X' SINGLE_QUOTA HEX+ SINGLE_QUOTA
+    | 'X' SQ_ HEX+ SQ_
     ;
 
 BIT_NUM
     : '0b' ('0'|'1')+
-    | B SINGLE_QUOTA ('0'|'1')+ SINGLE_QUOTA
+    | B SQ_ ('0'|'1')+ SQ_
     ;
-    
+
 WS  
     : [ \t\r\n] + ->skip
     ;
