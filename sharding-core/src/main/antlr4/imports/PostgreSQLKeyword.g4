@@ -1,7 +1,7 @@
 lexer grammar PostgreSQLKeyword;
 
 import Symbol;
-   
+
 ACTION
     : A C T I O N
     ;
@@ -62,10 +62,6 @@ CONSTRAINTS
     : C O N S T R A I N T S
     ;
 
-CURRENT
-    : C U R R E N T
-    ;
-
 CURRENT_TIMESTAMP
     : C U R R E N T UL_ T I M E S T A M P
     ;
@@ -80,10 +76,6 @@ CYCLE
 
 DATA
     : D A T A
-    ;
-
-DAY
-    : D A Y
     ;
 
 DEFAULTS
@@ -402,10 +394,6 @@ UPDATE
     : U P D A T E
     ;
 
-USER
-    : U S E R
-    ;
-
 USING
     : U S I N G
     ;
@@ -437,3 +425,5 @@ WRITE
 ZONE
     : Z O N E
     ;
+
+

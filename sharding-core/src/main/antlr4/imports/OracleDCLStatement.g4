@@ -19,9 +19,7 @@ systemObjects
     ;
 
 systemObject
-    : ALL PRIVILEGES
-    | roleName
-    | ID *?
+    : ALL PRIVILEGES | roleName | ID *?
     ;
 
 grantees
@@ -29,9 +27,7 @@ grantees
     ;
 
 grantee
-    : userName 
-    | roleName 
-    | PUBLIC 
+    : userName  | roleName | PUBLIC 
     ;
 
 granteeIdentifiedBy
@@ -48,8 +44,7 @@ grantObjectPrivilege
     ;
 
 objectPrivilege
-    : ID *?
-    | ALL PRIVILEGES?
+    : ID *? | ALL PRIVILEGES?
     ;
 
 onObjectClause
@@ -86,9 +81,7 @@ revokeSystemPrivileges
     ;
 
 revokeObjectPrivileges
-    : objectPrivilege (COMMA objectPrivilege)* onObjectClause
-    FROM grantees
-    (CASCADE CONSTRAINTS | FORCE)?
+    : objectPrivilege (COMMA objectPrivilege)* onObjectClause FROM grantees (CASCADE CONSTRAINTS | FORCE)?
     ;
 
 revokeRolesFromPrograms
@@ -100,13 +93,13 @@ createUser
     (BY STRING | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
     ( 
         DEFAULT TABLESPACE ID
-       | TEMPORARY TABLESPACE ID
-       | (QUOTA (sizeClause | UNLIMITED) ON ID)
-       | PROFILE ID
-       | PASSWORD EXPIRE
-       | ACCOUNT (LOCK | UNLOCK)
-       | ENABLE EDITIONS
-       | CONTAINER EQ_ (CURRENT | ALL)
+        | TEMPORARY TABLESPACE ID
+        | (QUOTA (sizeClause | UNLIMITED) ON ID)
+        | PROFILE ID
+        | PASSWORD EXPIRE
+        | ACCOUNT (LOCK | UNLOCK)
+        | ENABLE EDITIONS
+        | CONTAINER EQ_ (CURRENT | ALL)
     )*
     ;
 
@@ -117,28 +110,28 @@ sizeClause
 alterUser
     : ALTER USER
     ( 
-      userName
-      ( 
-        IDENTIFIED (BY STRING (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
-        | DEFAULT TABLESPACE ID
-        | TEMPORARY TABLESPACE ID
-        | (QUOTA (sizeClause | UNLIMITED) ON ID)
-        | PROFILE ID
-        | PASSWORD EXPIRE
-        | ACCOUNT (LOCK | UNLOCK)
-        | ENABLE EDITIONS (FOR ids)? FORCE?
-        | CONTAINER EQ_ (CURRENT | ALL)
-        | DEFAULT ROLE (roleNames| ALL (EXCEPT roleNames)?| NONE)
-        | ID
-     ) *
-     | userNames proxyClause
+        userName
+        ( 
+            IDENTIFIED (BY STRING (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+            | DEFAULT TABLESPACE ID
+            | TEMPORARY TABLESPACE ID
+            | QUOTA (sizeClause | UNLIMITED) ON ID
+            | PROFILE ID
+            | PASSWORD EXPIRE
+            | ACCOUNT (LOCK | UNLOCK)
+            | ENABLE EDITIONS (FOR ids)? FORCE?
+            | CONTAINER EQ_ (CURRENT | ALL)
+            | DEFAULT ROLE (roleNames| ALL (EXCEPT roleNames)?| NONE)
+            | ID
+        )*
+        | userNames proxyClause
     ) 
     ;
 
 containerDataClause
     : (
-        SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
-       |(ADD |REMOVE) CONTAINER_DATA EQ_ idList
+          SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
+          | (ADD |REMOVE) CONTAINER_DATA EQ_ idList
     )
     (FOR schemaName? ID)?
     ;
@@ -148,12 +141,7 @@ proxyClause
     ;
 
 dbUserProxyClauses
-    : (WITH 
-        (
-           ROLE  (ALL EXCEPT)? roleNames 
-           | NO ROLES
-        )
-    )?
+    : (WITH (ROLE  (ALL EXCEPT)? roleNames | NO ROLES))?
     (AUTHENTICATION REQUIRED )?
     ;
 
@@ -167,16 +155,13 @@ createRole
         NOT IDENTIFIED
         | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
     )? 
-    ( CONTAINER EQ_ ( CURRENT | ALL ) )? 
+    (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
 
 alterRole
     : ALTER ROLE roleName
-    ( 
-          NOT IDENTIFIED
-        | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
-    )
-    (CONTAINER EQ_ ( CURRENT | ALL ))? 
+    (NOT IDENTIFIED | IDENTIFIED (BY STRING | USING schemaName? ID | EXTERNALLY | GLOBALLY))
+    (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
 
 dropRole

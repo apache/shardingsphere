@@ -798,10 +798,6 @@ USE
     : U S E
     ;
 
-USER
-    : U S E R
-    ;
-
 USING
     : U S I N G
     ;

@@ -58,16 +58,8 @@ CONTAINER_DATA
     : C O N T A I N E R UL_ D A T A
     ;
 
-CURRENT
-    : C U R R E N T
-    ;
-
 CYCLE
     : C Y C L E
-    ;
-
-DAY
-    : D A Y
     ;
 
 DBTIMEZONE
@@ -480,10 +472,6 @@ UNUSED
 
 USE
     : U S E
-    ;
-
-USER
-    : U S E R
     ;
 
 USERS

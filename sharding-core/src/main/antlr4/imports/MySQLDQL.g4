@@ -14,8 +14,7 @@ selectSpec
     ;
 
 caseExpress
-    : caseCond
-    | caseComp
+    : caseCond | caseComp
     ;
 
 caseComp
@@ -43,8 +42,7 @@ caseResult
     ;
 
 idListWithEmpty
-    : LP_ RP_
-    | idList
+    : LP_ RP_ | idList
     ;
 
 tableReferences
@@ -52,15 +50,11 @@ tableReferences
     ;
 
 tableReference
-    : (tableFactor joinTable)+
-    | tableFactor joinTable+
-    | tableFactor
-     ;
+    : (tableFactor joinTable)+ | tableFactor joinTable+ | tableFactor
+    ;
 
 tableFactor
-    : tableName (PARTITION  idList)? (AS? alias)? indexHintList? 
-    | subquery AS? alias
-    | LP_ tableReferences RP_
+    : tableName (PARTITION  idList)? (AS? alias)? indexHintList?  | subquery AS? alias | LP_ tableReferences RP_
     ;
 
 joinTable
@@ -72,8 +66,7 @@ joinTable
     ;
 
 joinCondition
-    : ON expr
-    | USING idList
+    : ON expr | USING idList
     ;
 
 indexHintList

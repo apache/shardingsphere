@@ -37,17 +37,13 @@ addColumn
     : (WITH (CHECK | NOCHECK))?
     ADD   
     (
-       (alterColumnAddOption (COMMA alterColumnAddOption)*) 
-      |(
-          (columnNameGeneratedClause COMMA periodClause)
-        |(periodClause COMMA columnNameGeneratedClause)
-        )
+        alterColumnAddOption (COMMA alterColumnAddOption)*
+        | (columnNameGeneratedClause COMMA periodClause| periodClause COMMA columnNameGeneratedClause)
     )  
     ;
 
 periodClause
-    : PERIOD FOR SYSTEM_TIME LP_ columnName   
-    COMMA columnName RP_
+    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA columnName RP_
     ;
 
 alterColumnAddOption
@@ -72,15 +68,11 @@ columnNameWithSort
     ;
 
 columnIndex 
-    : indexWithName
-    (CLUSTERED | NONCLUSTERED)?
-    HASH withBucket  
+    : indexWithName (CLUSTERED | NONCLUSTERED)? HASH withBucket  
     ;
 
 columnNameGeneratedClause:
-    columnNameGenerated
-    DEFAULT simpleExpr (WITH VALUES)? COMMA  
-    columnNameGenerated
+    columnNameGenerated DEFAULT simpleExpr (WITH VALUES)? COMMA columnNameGenerated
     ;
 
 columnNameGenerated
@@ -91,7 +83,7 @@ columnNameGenerated
 alterDrop
     : DROP 
     (
-        | alterTableDropConstraint
+        alterTableDropConstraint
         | dropColumn
         | alterDropIndex
         | PERIOD FOR SYSTEM_TIME
@@ -99,8 +91,7 @@ alterDrop
     ;
 
 alterTableDropConstraint
-    : CONSTRAINT? (IF EXISTS)?  
-    dropConstraintName (COMMA dropConstraintName)*
+    : CONSTRAINT? (IF EXISTS)? dropConstraintName (COMMA dropConstraintName)*
     ;
 
 dropConstraintName
@@ -123,35 +114,24 @@ dropColumn
     : COLUMN (IF EXISTS)? columnNames
     ;
 
-alterDropIndex:
-    INDEX (IF EXISTS)?  
-    indexName (COMMA indexName)*
+alterDropIndex
+    : INDEX (IF EXISTS)? indexName (COMMA indexName)*
     ;
 
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT   
-    (ALL | (constraintName (COMMA constraintName)*))  
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (constraintName (COMMA constraintName)*))  
     ;
 
-alterTrigger: 
-    (ENABLE| DISABLE) TRIGGER   
-    (ALL | (triggerName ( COMMA triggerName)*))  
+alterTrigger 
+    : (ENABLE| DISABLE) TRIGGER (ALL | (triggerName ( COMMA triggerName)*))  
     ;
 
 alterSwitch
-    : SWITCH ( PARTITION expr )? TO tableName   
-    (PARTITION expr)?  
-    (WITH LP_ lowPriorityLockWait RP_ )?  
+    : SWITCH ( PARTITION expr )? TO tableName (PARTITION expr)? (WITH LP_ lowPriorityLockWait RP_ )?  
     ;
 
 alterSet    
-    : SET   
-    LP_  
-    (
-        setFileStreamClause
-        | setSystemVersionClause
-    ) 
-    RP_ 
+    : SET LP_ (setFileStreamClause | setSystemVersionClause) RP_ 
     ;
 
 setFileStreamClause
@@ -159,30 +139,21 @@ setFileStreamClause
     ;
 
 setSystemVersionClause
-    : SYSTEM_VERSIONING EQ_
-    (   
-        OFF
-       | alterSetOnClause
-    )
+    : SYSTEM_VERSIONING EQ_ (OFF| alterSetOnClause)
     ;
 
 alterSetOnClause
     : ON
     (
-      LP_
-        (HISTORY_TABLE EQ_ tableName)?  
+        LP_ (HISTORY_TABLE EQ_ tableName)?  
         (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
         (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?  
-      RP_
+        RP_
     )?
     ;
 
 tableIndex
-    : indexWithName 
-    (
-        indexNonClusterClause
-        | indexClusterClause
-    )
+    : indexWithName (indexNonClusterClause | indexClusterClause)
     ;
 
 indexWithName
@@ -195,14 +166,11 @@ indexNonClusterClause
     ;
 
 indexOnClause
-    : ON groupName
-    | DEFAULT
+    : ON groupName | DEFAULT
     ;
 
 indexClusterClause
-    : CLUSTERED COLUMNSTORE 
-    (WITH COMPRESSION_DELAY EQ_ NUMBER MINUTES?)?
-    indexOnClause?
+    : CLUSTERED COLUMNSTORE (WITH COMPRESSION_DELAY EQ_ NUMBER MINUTES?)? indexOnClause?
     ;
 
 tableOption

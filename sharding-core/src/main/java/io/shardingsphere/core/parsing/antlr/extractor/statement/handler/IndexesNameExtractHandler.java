@@ -34,7 +34,7 @@ public final class IndexesNameExtractHandler implements ASTExtractHandler {
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        String tableName = ddlStatement.getTables().isEmpty() ? null : ddlStatement.getTables().getSingleTableName();
+        String tableName = ddlStatement.getTables().isEmpty() ? "" : ddlStatement.getTables().getSingleTableName();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
             statement.getSQLTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), tableName));
         }

@@ -2,8 +2,20 @@ lexer grammar Keyword;
 
 import Symbol;
 
+ADD
+    : A D D
+    ;
+
 ALL
     : A L L
+    ;
+
+ALTER
+    : A L T E R
+    ;
+
+ALWAYS
+    : A L W A Y S
     ;
 
 AND
@@ -23,7 +35,8 @@ ASC
     ;
 
 BETWEEN
-    : B E T W E E N;
+    : B E T W E E N
+    ;
 
 BINARY
     : B I N A R Y
@@ -39,166 +52,6 @@ BIT_NUM
 
 BY
     : B Y
-    ;
-
-DATE
-    : D A T E
-    ;
-
-DESC
-    : D E S C
-    ;
-
-ESCAPE
-    : E S C A P E
-    ;
-
-EXISTS
-    : E X I S T S
-    ;
-
-FALSE
-    : F A L S E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-GROUP
-    : G R O U P
-    ;
-
-HAVING
-    : H A V I N G
-    ;
-
-IF
-    : I F
-    ;
-
-IN
-    : I N
-    ;
-
-IS
-    : I S
-    ;
-
-KEY
-    : K E Y
-    ;
-
-LIKE
-    : L I K E
-    ;
-
-LIMIT
-    : L I M I T
-    ;
-
-MOD
-    : M O D
-    ;
-
-NOT
-    : N O T
-    ;
-
-NULL
-    : N U L L
-    ;
-
-OFFSET
-    : O F F S E T
-    ;
-
-OR
-    : O R
-    ;
-
-ORDER
-    : O R D E R
-    ;
-
-PARTITION
-    : P A R T I T I O N
-    ;
-
-PRIMARY
-    : P R I M A R Y
-    ;
-
-RECURSIVE
-    : R E C U R S I V E
-    ;
-
-REGEXP
-    : R E G E X P
-    ;
-
-ROLLUP
-    : R O L L U P
-    ;
-
-ROW
-    : R O W
-    ;
-
-SELECT
-    : S E L E C T
-    ;
-
-SET
-    : S E T
-    ;
-
-SOUNDS
-    : S O U N D S
-    ;
-
-TIME
-    : T I M E
-    ;
-
-TIMESTAMP
-    : T I M E S T A M P
-    ;
-
-TRUE
-    : T R U E
-    ;
-
-UNION
-    : U N I O N
-    ;
-
-UNKNOWN
-    : U N K N O W N
-    ;
-
-WHERE
-    : W H E R E
-    ;
-
-WITH
-    : W I T H
-    ;
-
-XOR
-    : X O R
-    ;
-
-ADD
-    : A D D
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-ALWAYS
-    : A L W A Y S
     ;
 
 CASCADE
@@ -229,12 +82,20 @@ CREATE
     : C R E A T E
     ;
 
+DATE
+    : D A T E
+    ;
+
 DEFAULT
     : D E F A U L T
     ;
 
 DELETE
     : D E L E T E
+    ;
+
+DESC
+    : D E S C
     ;
 
 DISABLE
@@ -249,48 +110,156 @@ ENABLE
     : E N A B L E
     ;
 
+ESCAPE
+    : E S C A P E
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
 FOREIGN
     : F O R E I G N
+    ;
+
+FROM
+    : F R O M
     ;
 
 GENERATED
     : G E N E R A T E D
     ;
 
+GROUP
+    : G R O U P
+    ;
+
+HAVING
+    : H A V I N G
+    ;
+
+IF
+    : I F
+    ;
+
+IN
+    : I N
+    ;
+
 INDEX
     : I N D E X
+    ;
+
+IS
+    : I S
     ;
 
 ISOLATION
     : I S O L A T I O N
     ;
 
+KEY
+    : K E Y
+    ;
+
 LEVEL
     : L E V E L
+    ;
+
+LIKE
+    : L I K E
+    ;
+
+LIMIT
+    : L I M I T
+    ;
+
+MOD
+    : M O D
     ;
 
 NO
     : N O
     ;
 
+NOT
+    : N O T
+    ;
+
+NULL
+    : N U L L
+    ;
+
+OFFSET
+    : O F F S E T
+    ;
+
 ON
     : O N
+    ;
+
+OR
+    : O R
+    ;
+
+ORDER
+    : O R D E R
+    ;
+
+PARTITION
+    : P A R T I T I O N
+    ;
+
+PRIMARY
+    : P R I M A R Y
     ;
 
 READ
     : R E A D
     ;
 
+RECURSIVE
+    : R E C U R S I V E
+    ;
+
 REFERENCES
     : R E F E R E N C E S
+    ;
+
+REGEXP
+    : R E G E X P
     ;
 
 ROLLBACK
     : R O L L B A C K
     ;
 
+ROLLUP
+    : R O L L U P
+    ;
+
+ROW
+    : R O W
+    ;
+
+SELECT
+    : S E L E C T
+    ;
+
 SERIALIZABLE
     : S E R I A L I Z A B L E
+    ;
+
+SET
+    : S E T
+    ;
+
+SOUNDS
+    : S O U N D S
     ;
 
 START
@@ -301,6 +270,14 @@ TABLE
     : T A B L E
     ;
 
+TIME
+    : T I M E
+    ;
+
+TIMESTAMP
+    : T I M E S T A M P
+    ;
+
 TO
     : T O
     ;
@@ -309,18 +286,54 @@ TRANSACTION
     : T R A N S A C T I O N
     ;
 
+TRUE
+    : T R U E
+    ;
+
 TRUNCATE
     : T R U N C A T E
+    ;
+
+UNION
+    : U N I O N
     ;
 
 UNIQUE
     : U N I Q U E
     ;
 
+UNKNOWN
+    : U N K N O W N
+    ;
+
+WHERE
+    : W H E R E
+    ;
+
+WITH
+    : W I T H
+    ;
+
 WORK
     : W O R K
     ;
 
+XOR
+    : X O R
+    ;
+
 YEAR
     : Y E A R
+    ;
+
+CURRENT
+    : C U R R E N T
+    ;
+
+DAY
+    : D A Y
+    ;
+
+USER
+    : U S E R
     ;
