@@ -20,6 +20,9 @@ package io.shardingsphere.shardingjdbc.spring.boot.registry;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Test registry center.
  *
@@ -39,6 +42,16 @@ public final class TestRegistryCenter implements RegistryCenter {
     @Override
     public String getDirectly(final String key) {
         return "";
+    }
+    
+    @Override
+    public boolean isExisted(final String key) {
+        return true;
+    }
+    
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        return Collections.emptyList();
     }
     
 }
