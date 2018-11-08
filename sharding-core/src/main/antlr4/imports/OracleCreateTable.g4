@@ -7,9 +7,7 @@ createTable
     ;
 
 relationalTable
-    : (LP_ relationalProperties RP_)?
-    (ON COMMIT (DELETE | PRESERVE) ROWS)?
-    tableProperties
+    : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)? tableProperties
     ;
 
 relationalProperties
@@ -17,13 +15,9 @@ relationalProperties
     ;
 
 relationalProperty
-    : columnDefinition
-    | virtualColumnDefinition
-    | outOfLineConstraint
-    | outOfLineRefConstraint
+    : columnDefinition | virtualColumnDefinition | outOfLineConstraint | outOfLineRefConstraint
     ;
 
 tableProperties
-    : columnProperties?
-    (AS unionSelect)?
+    : columnProperties? (AS unionSelect)?
     ;
