@@ -47,6 +47,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -186,6 +188,42 @@ public final class ShardingDataSourceTest {
         assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
         assertThat(shardingConnection.getShardingTransactionHandler() == null, is(true));
+    }
+    
+    @Test
+    public void assertGetBaseConnection() throws SQLException {
+        DataSource dataSource = mockDataSource("MySQL");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds", dataSource);
+        TransactionTypeHolder.set(TransactionType.BASE);
+        ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
+        ShardingConnection shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.BASE));
+        assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedBaseShardingTransactionHandler.class));
+        assertNotNull(shardingConnection.getSagaConfiguration());
+    }
+    
+    @Test
+    public void assertGetBaseConnectionThenGetLocalConnection() throws SQLException {
+        DataSource dataSource = mockDataSource("MySQL");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds", dataSource);
+        TransactionTypeHolder.set(TransactionType.BASE);
+        ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
+        ShardingConnection shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.BASE));
+        assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedBaseShardingTransactionHandler.class));
+        assertNotNull(shardingConnection.getSagaConfiguration());
+        
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
+        assertNull(shardingConnection.getShardingTransactionHandler());
+        assertNull(shardingConnection.getSagaConfiguration());
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

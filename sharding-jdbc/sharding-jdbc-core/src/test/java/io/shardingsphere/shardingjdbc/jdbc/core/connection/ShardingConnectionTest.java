@@ -19,6 +19,7 @@ package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -129,7 +130,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertBaseTransactionOperation() throws SQLException {
-        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE, new SagaConfiguration());
         connection.setAutoCommit(false);
         assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
         connection.commit();
