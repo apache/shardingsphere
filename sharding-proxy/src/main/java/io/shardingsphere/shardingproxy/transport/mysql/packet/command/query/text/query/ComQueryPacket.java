@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -30,7 +31,6 @@ import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
-import io.shardingsphere.shardingproxy.revert.ProxyRevertEngine;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -43,7 +43,6 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -114,12 +113,9 @@ public final class ComQueryPacket implements QueryCommandPacket {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType.get()));
         }
         if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(operationType.get(), currentSchema));
-            if (TransactionOperationType.BEGIN == operationType.get()) {
-                RevertEngineHolder.getInstance().setRevertEngine(new ProxyRevertEngine(GlobalRegistry.getInstance().getLogicSchema(currentSchema).getBackendDataSource().getDataSources()));
-            } else {
-                RevertEngineHolder.getInstance().remove();
-            }
+            SagaConfiguration config = GlobalRegistry.getInstance().getSagaConfiguration();
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(operationType.get(), currentSchema,
+                    GlobalRegistry.getInstance().getLogicSchema(currentSchema).getBackendDataSource().getDataSources(), config));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
