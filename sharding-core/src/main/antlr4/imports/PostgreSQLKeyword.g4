@@ -6,6 +6,10 @@ ACTION
     : A C T I O N
     ;
 
+ADMIN
+    : A D M I N
+    ;
+
 ARRAY
     : A R R A Y
     ;
@@ -24,6 +28,10 @@ BRIN
 
 BTREE
     : B T R E E
+    ;
+
+BYPASSRLS
+    : B Y P A S S R L S
     ;
 
 CACHE
@@ -58,8 +66,20 @@ CONCURRENTLY
     : C O N C U R R E N T L Y
     ;
 
+CONNECTION
+    : C O N N E C T I O N
+    ;
+
 CONSTRAINTS
     : C O N S T R A I N T S
+    ;
+
+CREATEDB
+    : C R E A T E D B
+    ;
+
+CREATEROLE
+    : C R E A T E R O L E
     ;
 
 CURRENT_TIMESTAMP
@@ -100,6 +120,10 @@ DISTINCT
 
 DOUBLE
     : D O U B L E
+    ;
+
+ENCRYPTED
+    : E N C R Y P T E D
     ;
 
 EXCLUDING
@@ -166,6 +190,10 @@ IDENTITY
     : I D E N T I T Y
     ;
 
+IF
+    : I F
+    ;
+
 IMMEDIATE
     : I M M E D I A T E
     ;
@@ -206,6 +234,10 @@ LOGGED
     : L O G G E D
     ;
 
+LOGIN
+    : L O G I N
+    ;
+
 MAIN
     : M A I N
     ;
@@ -228,6 +260,34 @@ MINVALUE
 
 MONTH
     : M O N T H
+    ;
+
+NOBYPASSRLS
+    : N O B Y P A S S R L S
+    ;
+
+NOCREATEDB
+    : N O C R E A T E D B
+    ;
+
+NOCREATEROLE
+    : N O C R E A T E R O L E
+    ;
+
+NOINHERIT
+    : N O I N H E R I T
+    ;
+
+NOLOGIN
+    : N O L O G I N
+    ;
+
+NOREPLICATION
+    : N O R E P L I C A T I O N
+    ;
+
+NOSUPERUSER
+    : N O S U P E R U S E R
     ;
 
 NOTHING
@@ -266,6 +326,10 @@ PARTIAL
     : P A R T I A L
     ;
 
+PASSWORD
+    : P A S S W O R D
+    ;
+
 PLAIN
     : P L A I N
     ;
@@ -296,6 +360,10 @@ REPEATABLE
 
 REPLICA
     : R E P L I C A
+    ;
+
+REPLICATION
+    : R E P L I C A T I O N
     ;
 
 RESET
@@ -358,6 +426,14 @@ STORAGE
     : S T O R A G E
     ;
 
+SUPERUSER
+    : S U P E R U S E R
+    ;
+
+SYSID
+    : S Y S I D
+    ;
+
 TABLESPACE
     : T A B L E S P A C E
     ;
@@ -388,6 +464,10 @@ UNCOMMITTED
 
 UNLOGGED
     : U N L O G G E D
+    ;
+
+UNTIL
+    : U N T I L
     ;
 
 UPDATE
@@ -425,5 +505,6 @@ WRITE
 ZONE
     : Z O N E
     ;
+
 
 

@@ -2,7 +2,7 @@ grammar PostgreSQLStatement;
 
 import PostgreSQLKeyword, Keyword, PostgreSQLBase, PostgreSQLCreateIndex, PostgreSQLAlterIndex
        , PostgreSQLDropIndex, PostgreSQLCreateTable, PostgreSQLAlterTable, PostgreSQLDropTable, PostgreSQLTruncateTable
-       , PostgreSQLTCLStatement
+       , PostgreSQLTCLStatement, PostgreSQLDCLStatement
        ;
 
 execute
@@ -18,4 +18,5 @@ execute
     | rollback
     | savepoint
     | beginWork
+    | createUser
     ;
