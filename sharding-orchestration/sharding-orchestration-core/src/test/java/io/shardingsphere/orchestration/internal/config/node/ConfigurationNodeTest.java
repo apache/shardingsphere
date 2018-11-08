@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config;
+package io.shardingsphere.orchestration.internal.config.node;
 
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
