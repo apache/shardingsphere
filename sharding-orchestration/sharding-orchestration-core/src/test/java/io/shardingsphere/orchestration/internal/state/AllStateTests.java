@@ -17,23 +17,14 @@
 
 package io.shardingsphere.orchestration.internal.state;
 
-import io.shardingsphere.orchestration.internal.state.node.StateNode;
-import org.junit.Test;
+import io.shardingsphere.orchestration.internal.state.node.StateNodeTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class StateNodeTest {
-    
-    private StateNode stateNode = new StateNode("test");
-    
-    @Test
-    public void assertGetDataSourcesNodeFullPath() {
-        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/test/state/datasources"));
-    }
-    
-    @Test
-    public void assertGetInstancesNodeFullPath() {
-        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        StateNodeTest.class
+})
+public final class AllStateTests {
 }
