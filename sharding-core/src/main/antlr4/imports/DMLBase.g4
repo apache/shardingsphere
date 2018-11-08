@@ -14,10 +14,6 @@ whereClause
     : WHERE expr
     ;
 
-groupByClause
-    : GROUP BY groupByItem (COMMA groupByItem)* (WITH ROLLUP)? havingClause?
-    ;
-
 havingClause
     : HAVING  expr
     ;
