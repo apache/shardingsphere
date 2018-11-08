@@ -8,7 +8,7 @@
 # 
 ######################################################################################################
 #
-#schemaName: master_slave_db_1
+#schemaName: master_slave_db
 #
 #dataSources:
 #  master_ds:
