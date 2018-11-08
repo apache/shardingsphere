@@ -58,4 +58,8 @@ public final class TestRegistryCenter implements RegistryCenter {
     public void persist(final String key, final String value) {
     }
     
+    @Override
+    public void update(final String key, final String value) {
+    }
+    
 }
