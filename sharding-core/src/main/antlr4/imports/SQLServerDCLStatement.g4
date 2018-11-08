@@ -16,3 +16,12 @@ permission
     : ID *?
     ;
 
+classType
+    : LOGIN  
+    | DATABASE  
+    | OBJECT  
+    | ROLE  
+    | SCHEMA  
+    | USER  
+    ;
+
