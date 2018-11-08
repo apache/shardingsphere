@@ -189,11 +189,6 @@ public class AtomikosTransactionManagerRecoveryTest {
         }
     }
     
-    @Test
-    public void assertBasicManagedDataSourceRecovery() {
-    
-    }
-    
     private Map<String, DataSource> createXADataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("ds1", createXADataSource("ds1"));

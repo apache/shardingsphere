@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.manager;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,11 +47,6 @@ public final class XATransactionManagerSPILoaderTest {
     @Before
     public void setup() {
         ReflectiveUtil.setProperty(spiLoader, "xaTransactionManagers", xaTransactionManagers);
-    }
-    
-    @AfterClass
-    public static void teardown() {
-        XATransactionManagerSPILoader.getInstance().getTransactionManager().destroy();
     }
     
     @Test
