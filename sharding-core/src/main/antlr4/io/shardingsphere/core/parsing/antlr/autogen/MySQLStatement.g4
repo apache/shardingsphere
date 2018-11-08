@@ -24,11 +24,11 @@ execute
     | setVariable
     | grant
     | grantProxy
-    | grantRoles
+    | grantRole
     | revoke
     | revokeAll
     | revokeProxy
-    | revokeRoles
+    | revokeRole
     | createUser
     | alterUser
     | alterCurrentUser

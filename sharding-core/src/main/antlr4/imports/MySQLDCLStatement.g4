@@ -91,7 +91,7 @@ grantProxy
     : GRANT PROXY ON userOrRole TO userOrRoles (WITH GRANT OPTION)?
     ;
 
-grantRoles
+grantRole
     : GRANT roleNames TO userOrRoles (WITH ADMIN OPTION)?
     ;
 
@@ -111,7 +111,7 @@ revokeProxy
     FROM userOrRoles
     ;
 
-revokeRoles
+revokeRole
     : REVOKE roleNames
     FROM userOrRoles
     ;
