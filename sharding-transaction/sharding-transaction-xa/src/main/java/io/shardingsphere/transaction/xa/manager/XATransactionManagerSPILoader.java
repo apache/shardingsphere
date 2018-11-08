@@ -29,6 +29,7 @@ import java.util.Collection;
  * XA transaction manager SPI loader.
  *
  * @author zhangliang
+ * @author zhaojun
  */
 @Getter
 @Slf4j
