@@ -77,7 +77,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
             }
         }
         if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.BASE);
+            return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.BASE, getSagaConfiguration());
         }
         return new ShardingConnection(getDataSourceMap(), shardingContext);
     }
