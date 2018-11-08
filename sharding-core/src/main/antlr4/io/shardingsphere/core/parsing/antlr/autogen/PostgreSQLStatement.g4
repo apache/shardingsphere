@@ -19,4 +19,8 @@ execute
     | savepoint
     | beginWork
     | createUser
+    | alterUser
+    | renameUser
+    | alterUserSetConfig
+    | alterUserResetConfig
     ;

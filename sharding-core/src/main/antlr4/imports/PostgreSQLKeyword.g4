@@ -98,6 +98,10 @@ DATA
     : D A T A
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
 DEFAULTS
     : D E F A U L T S
     ;
@@ -505,6 +509,3 @@ WRITE
 ZONE
     : Z O N E
     ;
-
-
-

@@ -11,6 +11,10 @@ schemaName
     : ID
     ;
 
+databaseName
+    : ID
+    ;
+
 tableName
     : ID
     ;

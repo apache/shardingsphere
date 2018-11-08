@@ -3,10 +3,10 @@ grammar PostgreSQLDCLStatement;
 import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 createUser
-    : CREATE USER userName (WITH? createUserOption)?
+    : CREATE USER roleName (WITH? roleOptions)?
     ;
 
-createUserOption
+roleOption
     : SUPERUSER
     | NOSUPERUSER
     | CREATEDB
@@ -32,6 +32,28 @@ createUserOption
     | SYSID STRING
     ;
 
-createUserOptions
-    : createUserOption (COMMA createUserOption)*
+roleOptions
+    : roleOption (COMMA roleOption)*
+    ;
+
+alterUser
+    : ALTER USER roleSpecification WITH roleOptions
+    ;
+
+roleSpecification
+    : roleName
+    | CURRENT_USER
+    | SESSION_USER
+    ;
+
+renameUser
+    : ALTER USER roleName RENAME TO roleName
+    ;
+
+alterUserSetConfig
+    : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)? SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    ;
+
+alterUserResetConfig
+    : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)? RESET (STRING | ALL)
     ;
