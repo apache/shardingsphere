@@ -118,12 +118,6 @@ userName
     : ID
     ;
 
-ifExists
-    : IF EXISTS;
-
-ifNotExists
-    : IF NOT EXISTS;
-
 dataTypeLength
     : LP_ (NUMBER (COMMA NUMBER)?)? RP_
     ;

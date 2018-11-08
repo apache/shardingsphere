@@ -3,8 +3,7 @@ grammar MySQLCreateTable;
 import MySQLKeyword, Keyword, MySQLDQL, MySQLTableBase, DQLBase, MySQLBase, BaseRule, DataType, Symbol;
 
 createTable
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName
-    createTableOptions
+    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
     ;
 
 createTableOptions
