@@ -17,16 +17,21 @@
 
 package io.shardingsphere.core.constant;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        DatabaseTypeTest.class,
-        ShardingPropertiesConstantTest.class,
-        ShardingPropertiesTest.class,
-        SagaRecoveryPolicyTest.class
-    })
-public final class AllConstantsTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class SagaRecoveryPolicyTest {
+    
+    @Test
+    public void assertFindSuccess() {
+        assertThat(SagaRecoveryPolicy.find("ForwardRecovery"), is(SagaRecoveryPolicy.FORWARD));
+        assertThat(SagaRecoveryPolicy.find("BackwardRecovery"), is(SagaRecoveryPolicy.BACKWARD));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertFindFailure() {
+        SagaRecoveryPolicy.find("unknown");
+    }
 }
