@@ -21,8 +21,9 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -38,7 +39,8 @@ public final class SQLServerDropIndexExtractHandler implements ASTExtractHandler
         if (indexDefOptionNode.isPresent()) {
             Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);
             if (indexNameNode.isPresent()) {
-                statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
+                statement.getSQLTokens().add(
+                        new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), statement.getTables().getSingleTableName()));
             }
         }
     }

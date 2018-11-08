@@ -38,9 +38,6 @@ public class TableNameExtractHandler implements ASTExtractHandler {
         Optional<ParserRuleContext> tableNameContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (tableNameContext.isPresent()) {
             String tableText = tableNameContext.get().getText();
-            if (null == tableText) {
-                return;
-            }
             int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
             statement.getSQLTokens().add(new TableToken(tableNameContext.get().getStart().getStartIndex(), dotPosition, tableText));
             String tableName = 0 == dotPosition ? tableText : tableText.substring(dotPosition + Symbol.DOT.getLiterals().length());
