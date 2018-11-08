@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.ServiceLoader;
 
 /**
  * SQL transport factory SPI loader.
