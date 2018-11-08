@@ -54,6 +54,10 @@ COLLATE
     : C O L L A T E
     ;
 
+COLONCOLON
+    : C O L O N C O L O N
+    ;
+
 COLUMNSTORE
     : C O L U M N S T O R E
     ;
@@ -84,6 +88,10 @@ CONVERT
 
 CURRENT
     : C U R R E N T
+    ;
+
+DATABASE
+    : D A T A B A S E
     ;
 
 DATABASE_DEAULT
@@ -128,6 +136,10 @@ DROP_EXISTING
 
 DURABILITY
     : D U R A B I L I T Y
+    ;
+
+DW
+    : D W
     ;
 
 ENCRYPTED
@@ -194,6 +206,10 @@ FUNCTION
     : F U N C T I O N
     ;
 
+GRANT
+    : G R A N T
+    ;
+
 HASH
     : H A S H
     ;
@@ -234,8 +250,16 @@ LEFT
     : L E F T
     ;
 
+LEFT_BRACKET
+    : L E F T UL_ B R A C K E T
+    ;
+
 LOCK_ESCALATION
     : L O C K UL_ E S C A L A T I O N
+    ;
+
+LOGIN
+    : L O G I N
     ;
 
 MARK
@@ -294,12 +318,20 @@ NONE
     : N O N E
     ;
 
+OBJECT
+    : O B J E C T
+    ;
+
 OFF
     : O F F
     ;
 
 ONLINE
     : O N L I N E
+    ;
+
+OPTION
+    : O P T I O N
     ;
 
 OUTBOUND
@@ -338,6 +370,10 @@ PRECEDING
     : P R E C E D I N G
     ;
 
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
 RANDOMIZED
     : R A N D O M I Z E D
     ;
@@ -374,6 +410,14 @@ RIGHT
     : R I G H T
     ;
 
+RIGHT_BRACKET
+    : R I G H T UL_ B R A C K E T
+    ;
+
+ROLE
+    : R O L E
+    ;
+
 ROUND_ROBIN
     : R O U N D UL_ R O B I N
     ;
@@ -388,6 +432,10 @@ ROWS
 
 SAVE
     : S A V E
+    ;
+
+SCHEMA
+    : S C H E M A
     ;
 
 SCHEMA_AND_DATA
@@ -456,6 +504,10 @@ UNCOMMITTED
 
 UPDATE
     : U P D A T E
+    ;
+
+USER
+    : U S E R
     ;
 
 VALUES
