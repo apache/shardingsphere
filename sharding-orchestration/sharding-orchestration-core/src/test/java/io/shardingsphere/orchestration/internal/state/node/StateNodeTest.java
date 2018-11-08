@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state;
+package io.shardingsphere.orchestration.internal.state.node;
 
-import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
