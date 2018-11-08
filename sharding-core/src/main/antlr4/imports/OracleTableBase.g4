@@ -6,10 +6,7 @@ columnDefinition
     : columnName dataType SORT?
     (DEFAULT (ON NULL)? expr | identityClause)?
     (ENCRYPT encryptionSpec)?
-    ( 
-       inlineConstraint+ 
-      | inlineRefConstraint
-    )?
+    (inlineConstraint+ | inlineRefConstraint)?
     ;
 
 identityClause
@@ -32,37 +29,30 @@ identityOptions
     ;
 
 virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ 
-    VIRTUAL? inlineConstraint*
+    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
     ;
 
 inlineConstraint
     : (CONSTRAINT constraintName)?
-    ( 
-          NOT? NULL
-        | UNIQUE
-        | primaryKey
-        | referencesClause
-        | CHECK LP_ expr RP_
-    )
-    constraintState?
+    (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_)
+    constraintState*
     ;
 
 referencesClause
-    : REFERENCES tableName columnList?
-    (ON DELETE (CASCADE | SET NULL))?
+    : REFERENCES tableName columnList? (ON DELETE (CASCADE | SET NULL))?
     ;
 
-constraintState:
-    (
-        notDeferrable
-        | initiallyClause
-        | (RELY | NORELY)
-        | usingIndexClause
-        | (ENABLE | DISABLE)
-        | (VALIDATE | NOVALIDATE)
-        | exceptionsClause
-    )+
+constraintState
+    : notDeferrable 
+    | initiallyClause 
+    | RELY 
+    | NORELY 
+    | usingIndexClause 
+    | ENABLE 
+    | DISABLE 
+    | VALIDATE 
+    | NOVALIDATE 
+    | exceptionsClause
     ;
 
 notDeferrable:
@@ -91,7 +81,7 @@ createIndex
 inlineRefConstraint
     : SCOPE IS tableName
     | WITH ROWID
-    | (CONSTRAINT constraintName)? referencesClause constraintState?
+    | (CONSTRAINT constraintName)? referencesClause constraintState*
     ;
 
 outOfLineConstraint
@@ -102,13 +92,13 @@ outOfLineConstraint
         | FOREIGN KEY columnList referencesClause
         | CHECK LP_ expr RP_
     ) 
-    constraintState?
+    constraintState*
     ;
 
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS  tableName
     | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState?
+    | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
 
  encryptionSpec

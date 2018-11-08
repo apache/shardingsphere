@@ -87,7 +87,7 @@ addConstraintClause
     ;
 
 modifyConstraintClause
-    : MODIFY constraintOption constraintState CASCADE?
+    : MODIFY constraintOption constraintState+ CASCADE?
     ;
 
 constraintWithName
