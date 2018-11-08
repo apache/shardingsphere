@@ -29,6 +29,7 @@ import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFac
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,9 +50,13 @@ public class AtomikosTransactionManagerRecoveryTest {
     private Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
     
     @Before
-    @SneakyThrows
     public void setup() {
         createTable();
+    }
+    
+    @After
+    public void teardown() {
+        closeDataSource();
     }
     
     @SneakyThrows
@@ -61,7 +66,6 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test
-    @SneakyThrows
     public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
@@ -70,8 +74,15 @@ public class AtomikosTransactionManagerRecoveryTest {
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
         assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
-        closeDataSource();
-        
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertCurrentThreadCannotDoEnlistInDoubtState() {
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        mockAtomikosOnlyExecutePreparePhase();
+        executeSQL("ds1", "SELECT count(1) from t_order");
     }
     
     @Test
