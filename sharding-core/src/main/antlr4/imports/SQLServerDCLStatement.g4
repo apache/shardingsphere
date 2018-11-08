@@ -2,9 +2,11 @@ grammar SQLServerDCLStatement;
 
 import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
+permissionOnColumns
+    : permission columnList?
+    ;
 
-
-permissions
+permission
     : ID *?
     ;
 
