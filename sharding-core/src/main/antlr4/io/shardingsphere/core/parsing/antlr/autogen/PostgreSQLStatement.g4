@@ -23,4 +23,5 @@ execute
     | renameUser
     | alterUserSetConfig
     | alterUserResetConfig
+    | dropUser
     ;

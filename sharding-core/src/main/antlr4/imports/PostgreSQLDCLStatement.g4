@@ -57,3 +57,7 @@ alterUserSetConfig
 alterUserResetConfig
     : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)? RESET (STRING | ALL)
     ;
+
+dropUser
+    : DROP USER (IF EXISTS)? roleNames
+    ;
