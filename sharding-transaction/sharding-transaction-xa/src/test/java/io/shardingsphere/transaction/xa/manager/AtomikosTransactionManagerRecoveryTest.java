@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AtomikosTransactionManagerRecoveryTest {
     
@@ -126,6 +127,31 @@ public class AtomikosTransactionManagerRecoveryTest {
         xaDataSourceMap = createXADataSourceMap();
         assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
         assertEquals(1L, executeSQL("ds2", "SELECT count(1) from t_order"));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertPrepareAlsoLockedResource() {
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        mockAtomikosOnlyExecutePreparePhase();
+    
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+                    executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+                    // CHECKSTYLE:OFF
+                } catch (Exception ex) {
+                    // CHECKSTYLE:ON
+                    assertTrue(ex.getMessage().contains("Timeout trying to lock table ; SQL statement:"));
+                    throw ex;
+                }
+            }
+        });
+        thread.start();
+        thread.join();
     }
     
     private void closeDataSource() {
