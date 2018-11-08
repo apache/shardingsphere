@@ -2,7 +2,7 @@ grammar MySQLDCLStatement;
 
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
-grantPriveleges
+grant
     : GRANT privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     TO userOrRoles
@@ -95,13 +95,13 @@ grantRoles
     : GRANT roleNames TO userOrRoles (WITH ADMIN OPTION)?
     ;
 
-revokePriveleges
+revoke
     : REVOKE privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     FROM userOrRoles
     ;
 
-revokeAllPriveleges
+revokeAll
     : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
     FROM userOrRoles
     ;

@@ -22,11 +22,11 @@ execute
     | savepoint
     | beginWork
     | setVariable
-    | grantPriveleges
+    | grant
     | grantProxy
     | grantRoles
-    | revokePriveleges
-    | revokeAllPriveleges
+    | revoke
+    | revokeAll
     | revokeProxy
     | revokeRoles
     | createUser
