@@ -19,9 +19,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -42,6 +43,6 @@ public final class IndexNameExtractHandler implements ASTExtractHandler {
         if (!ddlStatement.getTables().isEmpty()) {
             tableName = ddlStatement.getTables().getSingleTableName();
         }
-        statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameContext.get(), tableName));
+        statement.getSQLTokens().add(new IndexToken(indexNameContext.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameContext.get().getText()), tableName));
     }
 }

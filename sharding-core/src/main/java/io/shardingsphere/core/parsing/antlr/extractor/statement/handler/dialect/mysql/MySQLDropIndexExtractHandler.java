@@ -20,8 +20,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -44,7 +45,7 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
                 continue;
             }
             ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
-            statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameNode, statement.getTables().getSingleTableName()));
+            statement.getSQLTokens().add(new IndexToken(indexNameNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.getText()), statement.getTables().getSingleTableName()));
         }
     }
 }

@@ -11,91 +11,61 @@ createTableHeader
     ;
 
 createTableBody
-    : (AS FILETABLE)?  
-    LP_ 
-        createTableDefinition (COMMA createTableDefinition)*
-        (COMMA periodClause)?  
-    RP_  
-    (ON 
-    	(schemaName LP_  columnName RP_   
-           | fileGroup   
-           | STRING 
-        ) 
-    )?   
-    (TEXTIMAGE_ON (fileGroup | STRING) )?   
-     ((FILESTREAM_ON (schemaName) 
-       | fileGroup   
-         STRING) 
-     )?  
-    (WITH LP_  tableOption (COMMA tableOption)*  RP_)?  
+    : (AS FILETABLE)?
+    LP_ createTableDefinition (COMMA createTableDefinition)* (COMMA periodClause)? RP_
+    (ON (schemaName LP_ columnName RP_ | fileGroup | STRING))?
+    (TEXTIMAGE_ON (fileGroup | STRING))?
+    ((FILESTREAM_ON (schemaName) | fileGroup STRING))?
+    (WITH LP_ tableOption (COMMA tableOption)*  RP_)?
     ;
 
 createTableDefinition
-    : columnDefinition  
-    | computedColumnDefinition    
-    | columnSetDefinition   
-    | tableConstraint   
-    | tableIndex
+    : columnDefinition | computedColumnDefinition | columnSetDefinition | tableConstraint | tableIndex
     ;
 
 periodClause
-    : PERIOD FOR SYSTEM_TIME LP_  columnName   
-    COMMA columnName RP_
+    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA columnName RP_
     ;
 
 tableIndex
-    : INDEX indexName 
+    : INDEX indexName
     (
-          (CLUSTERED | NONCLUSTERED )? columnList 
-         | CLUSTERED COLUMNSTORE 
-         | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
-         |CLUSTERED COLUMNSTORE (WITH LP_  COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RP_)?
-    ) 
+        (CLUSTERED | NONCLUSTERED )? columnList
+        | CLUSTERED COLUMNSTORE
+        | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
+        | CLUSTERED COLUMNSTORE (WITH LP_  COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RP_)?
+    )
     (WHERE expr)?
-    (WITH LP_ indexOption ( COMMA indexOption)* RP_)?   
-    indexOnClause?   
-    (FILESTREAM_ON ( groupName | schemaName | STRING ))?  
+    (WITH LP_ indexOption ( COMMA indexOption)* RP_)? indexOnClause?
+    (FILESTREAM_ON (groupName | schemaName | STRING))?
     ;
 
-tableOption  
-    : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE ) (ON PARTITIONS LP_  partitionExpressions RP_ )?
+tableOption
+    : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
     | FILETABLE_DIRECTORY EQ_ directoryName 
-    | FILETABLE_COLLATE_FILENAME EQ_ ( collationName | DATABASE_DEAULT )
+    | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
     | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ constraintName
-    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME  EQ_ constraintName  
-    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME  EQ_ constraintName 
-    |SYSTEM_VERSIONING EQ_ ON (LP_  HISTORY_TABLE EQ_ tableName   
-         (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_)?
-    | REMOTE_DATA_ARCHIVE EQ_   
-        (
-           ON (LP_  tableStretchOptions (COMMA tableStretchOptions)* RP_ )?
-         | OFF LP_  MIGRATION_STATE EQ_ PAUSED RP_ 
-        )
-    |tableOptOption
-    |distributionOption
-    |dataWareHouseTableOption     
+    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
+    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
+    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
+    | REMOTE_DATA_ARCHIVE EQ_ (ON (LP_ tableStretchOptions (COMMA tableStretchOptions)* RP_)? | OFF LP_  MIGRATION_STATE EQ_ PAUSED RP_)
+    | tableOptOption
+    | distributionOption
+    | dataWareHouseTableOption     
     ;
 
-tableOptOption 
+tableOptOption
     : (MEMORY_OPTIMIZED EQ_ ON)   
     | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
-    | (SYSTEM_VERSIONING EQ_ ON ( LP_  HISTORY_TABLE EQ_ tableName  
-        (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)   
+    | (SYSTEM_VERSIONING EQ_ ON ( LP_  HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)   
     ;
 
-distributionOption     
-    : DISTRIBUTION EQ_ 
-    (
-          HASH LP_ columnName RP_
-        | ROUND_ROBIN 
-        | REPLICATE
-     ) 
+distributionOption
+    : DISTRIBUTION EQ_ (HASH LP_ columnName RP_ | ROUND_ROBIN | REPLICATE) 
     ;
 
 dataWareHouseTableOption
-    : (CLUSTERED COLUMNSTORE INDEX)
-    | HEAP   
-    | dataWareHousePartitionOption
+    : (CLUSTERED COLUMNSTORE INDEX) | HEAP | dataWareHousePartitionOption
     ;
 
 dataWareHousePartitionOption

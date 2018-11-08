@@ -118,7 +118,6 @@ userName
     : ID
     ;
 
-
 ifExists
     : IF EXISTS;
 
@@ -130,8 +129,7 @@ dataTypeLength
     ;
 
 nullNotnull
-    : NULL
-    | NOT NULL
+    : NULL | NOT NULL
     ;
 
 primaryKey
@@ -151,8 +149,7 @@ idList
     ;
 
 rangeClause
-    : NUMBER (COMMA  NUMBER)*
-    | NUMBER OFFSET NUMBER
+    : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
     ;
 
 tableNamesWithParen
@@ -203,7 +200,6 @@ exprsWithParen
     : LP_ exprs RP_
     ;
 
-//https://dev.mysql.com/doc/refman/8.0/en/expressions.html
 expr
     : expr OR expr
     | expr OR_ expr
