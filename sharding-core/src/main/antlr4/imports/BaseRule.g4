@@ -3,8 +3,7 @@ grammar BaseRule;
 import DataType, Keyword, Symbol;
 
 ID: 
-    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)?
-    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     | [a-zA-Z_$0-9]+ DOT ASTERISK
     ;
 
@@ -96,7 +95,6 @@ triggerName
 routineName
     : ID
     ;
-
 
 roleName
     : ID
@@ -196,7 +194,6 @@ expr
     | expr XOR expr
     | expr AND expr
     | expr AND_ expr
-
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
@@ -260,7 +257,6 @@ simpleExpr
     | simpleExpr collateClause
     //| param_marker
     //| variable
-
     | simpleExpr AND_ simpleExpr
     | PLUS simpleExpr
     | MINUS simpleExpr
@@ -271,7 +267,6 @@ simpleExpr
     | ROW LP_ simpleExpr( COMMA  simpleExpr)* RP_
     | subquery
     | EXISTS subquery
-
     // | (identifier expr)
     //| match_expr
     //| case_expr
@@ -280,7 +275,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LP_( bitExprs?) RP_
+    : ID LP_ bitExprs? RP_
     ;
 
 privateExprOfDb
@@ -313,5 +308,5 @@ orderByClause
     ;
 
 groupByItem
-    : (columnName | NUMBER |expr)  (ASC|DESC)?
+    : (columnName | NUMBER |expr) (ASC|DESC)?
     ;
