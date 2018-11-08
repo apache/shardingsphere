@@ -3,20 +3,20 @@ grammar PostgreSQLBase;
 import PostgreSQLKeyword, DataType, Keyword, Symbol, BaseRule;
 
 columnDefinition
-	: columnName dataType collateClause? columnConstraint*
-	;
-	
+    : columnName dataType collateClause? columnConstraint*
+    ;
+    
 dataType
     : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)*
     | ID
     ;
 
 typeName
-	: DOUBLE PRECISION
+    : DOUBLE PRECISION
     | CHARACTER VARYING?
-	| BIT VARYING?
-	| ID
-	;
+    | BIT VARYING?
+    | ID
+    ;
 
 intervalFields
     : intervalField (TO intervalField)?
@@ -34,7 +34,7 @@ intervalField
 collateClause
     : COLLATE collationName
     ;
-    
+
 usingIndexType:
     USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
     ;
@@ -137,47 +137,47 @@ privateExprOfDb:
      |(TIMESTAMP (WITH TIME ZONE)? STRING)
      |extractFromFunction
      ;
- 
- pgExpr
+
+pgExpr
      : castExpr
      | collateExpr
      | expr
      ;
-     
- aggregateExpression
+
+aggregateExpression
      : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_)
      asteriskWithParen
      (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_)
      filterClause?
      ;
-     
- filterClause
+
+filterClause
      : FILTER LP_ WHERE booleanPrimary RP_
      ;
-     
- asteriskWithParen
+
+asteriskWithParen
      : LP_ ASTERISK RP_
      ;
- 
- windowFunction
+
+windowFunction
      : ID (exprsWithParen | asteriskWithParen) 
      filterClause? windowFunctionWithClause
-     ; 
- 
- windowFunctionWithClause
+     ;
+
+windowFunctionWithClause
      : OVER (ID | LP_ windowDefinition RP_ )
-     ;    
- 
- windowDefinition
+     ;
+
+windowDefinition
      : ID? (PARTITION BY exprs)?
      (orderByExpr (COMMA orderByExpr)*)?
      frameClause?
      ;
-     
+
 orderByExpr
      : ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
      ;
-     
+
 operator
     : SAFE_EQ
     | EQ_
@@ -191,12 +191,12 @@ operator
     | OR_
     | NOT_
     ;
-    
- frameClause
+
+frameClause
     : (RANGE | ROWS) frameStart
     | (RANGE | ROWS ) BETWEEN frameStart AND frameEnd
     ;
-    
+
 frameStart
     : UNBOUNDED PRECEDING
     | NUMBER PRECEDING
@@ -217,7 +217,7 @@ castExpr
 castExprWithColon
     : COLON COLON dataType(LBT_ RBT_)*
     ;
-    
+
 collateExpr
     : expr COLLATE expr
     ;
@@ -226,7 +226,7 @@ arrayConstructorWithCast
     : arrayConstructor castExprWithColon?
     | ARRAY LBT_ RBT_ castExprWithColon  
     ;
-    
+
 arrayConstructor
     : ARRAY LBT_ exprs RBT_
     | ARRAY LBT_ arrayConstructor (COMMA arrayConstructor)* RBT_

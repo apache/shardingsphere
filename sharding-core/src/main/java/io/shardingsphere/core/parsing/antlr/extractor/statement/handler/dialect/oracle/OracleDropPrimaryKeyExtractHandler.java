@@ -15,28 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Extract drop column phrase.
+ * Drop primary key extract handler for Oracle.
  * 
  * @author duhongjun
  */
-public final class DropColumnExtractor implements PhraseExtractor {
+public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler {
     
     @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public void extract(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
-            for (ParseTree columnNode : ASTUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
-                alterStatement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
+        Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildNode(rootNode, RuleName.DROP_CONSTRAINT_CLAUSE);
+        if (dropConstraintContext.isPresent()) {
+            Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(dropConstraintContext.get(), RuleName.PRIMARY_KEY);
+            if (primaryKeyContext.isPresent()) {
+                alterStatement.setDropPrimaryKey(true);
             }
         }
     }

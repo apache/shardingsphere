@@ -15,36 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.PhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RuleName;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Extract MySQL drop index phrase.
+ * Index name extract handler.
  * 
  * @author duhongjun
  */
-public final class MySQLDropIndexExtractor implements PhraseExtractor {
+public final class IndexNameExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF)) {
-            int childCnt = each.getChildCount();
-            if (0 == childCnt) {
-                continue;
-            }
-            ParseTree lastChild = each.getChild(childCnt - 1);
-            if (!(lastChild instanceof ParserRuleContext)) {
-                continue;
-            }
-            ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
-            statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameNode, statement.getTables().getSingleTableName()));
+        DDLStatement ddlStatement = (DDLStatement) statement;
+        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
+        if (!indexNameContext.isPresent()) {
+            return;
         }
+        String tableName = "";
+        if (!ddlStatement.getTables().isEmpty()) {
+            tableName = ddlStatement.getTables().getSingleTableName();
+        }
+        statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameContext.get(), tableName));
     }
 }

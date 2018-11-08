@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.PhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -29,11 +29,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract MySQL change column phrase.
+ * Change column extract handler for MySQL.
  * 
  * @author duhongjun
  */
-public final class MySQLChangeColumnExtractor implements PhraseExtractor {
+public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {

@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.AddColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.sqlserver.SQLServerAddIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.sqlserver.SQLServerAddPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.sqlserver.SQLServerDropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerAddIndexExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerAddPrimaryKeyExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerDropIndexExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 
 /**
@@ -32,10 +32,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class SQLServerAlterTableExtractor extends AlterTableExtractor {
     
     public SQLServerAlterTableExtractor() {
-        addPhraseExtractor(new AddColumnExtractor());
-        addPhraseExtractor(new ModifyColumnExtractor()); 
-        addPhraseExtractor(new SQLServerAddIndexExtractor()); 
-        addPhraseExtractor(new SQLServerDropIndexExtractor());
-        addPhraseExtractor(new SQLServerAddPrimaryKeyExtractor());
+        addExtractHandler(new AddColumnExtractHandler());
+        addExtractHandler(new ModifyColumnExtractHandler()); 
+        addExtractHandler(new SQLServerAddIndexExtractHandler()); 
+        addExtractHandler(new SQLServerDropIndexExtractHandler());
+        addExtractHandler(new SQLServerAddPrimaryKeyExtractHandler());
     }
 }

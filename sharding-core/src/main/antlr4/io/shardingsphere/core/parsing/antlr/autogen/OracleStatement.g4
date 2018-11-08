@@ -18,5 +18,11 @@ execute
     | rollback
     | savepoint
     | grant
+    | revoke
+    | createUser
+    | alterUser
+    | dropUser
+    | createRole
+    | alterRole
+    | dropRole
     ;
- 

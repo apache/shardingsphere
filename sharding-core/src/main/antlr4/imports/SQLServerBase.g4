@@ -1,13 +1,13 @@
 grammar SQLServerBase;
 
-import SQLServerKeyword,Keyword,Symbol,BaseRule,DataType;
+import SQLServerKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
     : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT)* DOT*
     (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
     |[a-zA-Z0-9_$]+ DOT ASTERISK
     ;
-    
+
 dataType
     : typeName   
     (
@@ -16,7 +16,7 @@ dataType
         | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_
     )?   
     ;
-    
+
 privateExprOfDb
     : windowedFunction
     | atTimeZoneExpr
@@ -27,20 +27,20 @@ privateExprOfDb
 atTimeZoneExpr
     : ID (WITH TIME ZONE)? STRING
     ;
-    
+
 castExpr
     : CAST LP_ expr AS dataType (LP_  NUMBER RP_ )? RP_  
     ;
-    
+
 convertExpr
     : CONVERT ( dataType (LP_  NUMBER RP_ )? COMMA expr (COMMA NUMBER)?)
     ;
-    
+
 windowedFunction
      : functionCall overClause
      ;
-     
- overClause
+
+overClause
     : OVER 
     LP_     
           partitionByClause?
@@ -48,42 +48,42 @@ windowedFunction
           rowRangeClause? 
     RP_ 
     ;
-    
+
 partitionByClause
     : PARTITION BY expr (COMMA expr)*  
     ;
-    
+
 orderByClause   
    : ORDER BY orderByExpr (COMMA orderByExpr)*
    ;
-  
+
 orderByExpr
     : expr (COLLATE collationName)? (ASC | DESC)? 
     ;
-    
+
 rowRangeClause 
     : (ROWS | RANGE) windowFrameExtent
     ;
- 
- windowFrameExtent
+
+windowFrameExtent
     : windowFramePreceding
     | windowFrameBetween 
-    ; 
-    
+    ;
+
 windowFrameBetween
     : BETWEEN windowFrameBound AND windowFrameBound  
     ;
-    
+
 windowFrameBound  
     : windowFramePreceding 
     | windowFrameFollowing 
     ;
-    
+
 windowFramePreceding  
     : (UNBOUNDED PRECEDING)  
     | NUMBER PRECEDING  
     | CURRENT ROW  
-    ; 
+    ;
 
 windowFrameFollowing
     : UNBOUNDED FOLLOWING  
@@ -94,7 +94,7 @@ windowFrameFollowing
 columnList
     : LP_ columnNameWithSort (COMMA columnNameWithSort)* RP_ 
     ;
-    
+
 columnNameWithSort
     : columnName ( ASC | DESC )?
     ;
@@ -106,15 +106,15 @@ indexOption
     | MAXDOP EQ_ NUMBER
     | compressionOption onPartitionClause?
     ;
-    
+
 compressionOption
     : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
     ;
-    
+
 eqTime
     : EQ_ NUMBER (MINUTES)?
     ;
-    
+
 eqOnOffOption
     : (
        PAD_INDEX
@@ -132,7 +132,7 @@ eqOnOffOption
     )
     eqOnOff 
     ;
- 
+
 eqOnOff
     : EQ_ ( ON | OFF )
     ;
@@ -149,7 +149,7 @@ partitionExpression
     : NUMBER 
     | numberRange
     ;
-    
+
 numberRange   
     : NUMBER TO NUMBER  
     ;

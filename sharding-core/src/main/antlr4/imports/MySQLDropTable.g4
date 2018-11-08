@@ -1,4 +1,5 @@
 grammar MySQLDropTable;
+
 import MySQLKeyword, Keyword, BaseRule;
 
 dropTable

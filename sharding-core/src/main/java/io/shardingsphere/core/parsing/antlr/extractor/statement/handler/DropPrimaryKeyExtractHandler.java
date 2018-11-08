@@ -15,36 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.oracle;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.PhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract oracle modify column phrase.
+ * Drop primary key extract handler.
  * 
  * @author duhongjun
  */
-public final class OracleModifyColumnExtractor implements PhraseExtractor {
+public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
-            for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext, RuleName.MODIFY_COL_PROPERTIES)) {
-                // it`s not column definition, but can call this method
-                Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-                if (column.isPresent()) {
-                    alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
-                }
-            }
+        Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
+        if (dropPrimaryKeyNode.isPresent()) {
+            alterStatement.setDropPrimaryKey(true);
         }
     }
 }

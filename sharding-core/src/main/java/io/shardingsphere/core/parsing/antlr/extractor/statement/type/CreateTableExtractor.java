@@ -20,10 +20,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.CreatePrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.IndexesNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ColumnDefinitionExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.CreatePrimaryKeyExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
@@ -32,17 +32,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create table statement extractor.
+ * Create table extractor.
  * 
  * @author duhongjun
  */
 public final class CreateTableExtractor extends DDLStatementExtractor {
     
     public CreateTableExtractor() {
-        addPhraseExtractor(new TableNamesExtractor());
-        addPhraseExtractor(new ColumnDefinitionExtractor());
-        addPhraseExtractor(new IndexesNameExtractor());
-        addPhraseExtractor(new CreatePrimaryKeyExtractor());
+        addExtractHandler(new TableNamesExtractHandler());
+        addExtractHandler(new ColumnDefinitionExtractHandler());
+        addExtractHandler(new IndexesNameExtractHandler());
+        addExtractHandler(new CreatePrimaryKeyExtractHandler());
     }
     
     @Override

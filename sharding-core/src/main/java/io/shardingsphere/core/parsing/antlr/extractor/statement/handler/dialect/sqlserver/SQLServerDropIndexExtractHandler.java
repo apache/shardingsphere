@@ -15,27 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.PhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract MySQL add index phrase.
+ * Drop index extract handler for SQLServer.
  * 
  * @author duhongjun
  */
-public final class MySQLAddIndexExtractor implements PhraseExtractor {
+public final class SQLServerDropIndexExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX)) {
-            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(each, RuleName.INDEX_NAME);
+        Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ALTER_DROP_INDEX);
+        if (indexDefOptionNode.isPresent()) {
+            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);
             if (indexNameNode.isPresent()) {
                 statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameNode.get(), statement.getTables().getSingleTableName()));
             }

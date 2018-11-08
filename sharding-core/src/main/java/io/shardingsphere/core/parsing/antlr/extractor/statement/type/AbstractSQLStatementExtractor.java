@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.PhraseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -33,12 +33,12 @@ import java.util.LinkedList;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private Collection<PhraseExtractor> extractors = new LinkedList<>();
+    private final Collection<ASTExtractHandler> extractHandlers = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement(shardingTableMetaData);
-        for (PhraseExtractor each : extractors) {
+        for (ASTExtractHandler each : extractHandlers) {
             each.extract(rootNode, result);
         }
         postExtract(result);
@@ -50,12 +50,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     protected void postExtract(final SQLStatement statement) {
     }
     
-    /**
-     * Add phrase extractor.
-     * 
-     * @param phraseExtractor phrase extractor for filling statement
-     */
-    public final void addPhraseExtractor(final PhraseExtractor phraseExtractor) {
-        extractors.add(phraseExtractor);
+    protected final void addExtractHandler(final ASTExtractHandler handler) {
+        extractHandlers.add(handler);
     }
 }

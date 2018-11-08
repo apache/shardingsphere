@@ -1,43 +1,123 @@
-//rule in this file does not allow override
-
 grammar BaseRule;
 
-import DataType,Keyword,Symbol;
+import DataType, Keyword, Symbol;
 
 ID: 
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)?
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    |[a-zA-Z_$0-9]+ DOT ASTERISK
+    | [a-zA-Z_$0-9]+ DOT ASTERISK
     ;
 
-schemaName: ID;
-tableName: ID;
-columnName: ID; 
-tablespaceName: ID;
-collationName: STRING | ID;
-indexName: ID;
-alias: ID;
-cteName:ID;
-parserName: ID;
-extensionName: ID;
-rowName: ID;
-opclass: ID;
+schemaName
+    : ID
+    ;
 
-fileGroup: ID;
-groupName: ID;
-constraintName: ID;
-keyName: ID;
-typeName: ID;
-xmlSchemaCollection:ID;
-columnSetName: ID;
-directoryName: ID;
-triggerName: ID;
+tableName
+    : ID
+    ;
 
-roleName: ID;
-partitionName: ID;
-rewriteRuleName: ID;
-ownerName: ID;
-userName: ID;
+columnName
+    : ID
+    ;
+
+tablespaceName
+    : ID
+    ;
+
+collationName
+    : STRING
+    | ID
+    ;
+
+indexName
+    : ID
+    ;
+
+alias
+    : ID
+    ;
+
+cteName
+    : ID
+    ;
+
+parserName
+    : ID
+    ;
+
+extensionName
+    : ID
+    ;
+
+rowName
+    : ID
+    ;
+
+opclass
+    : ID
+    ;
+
+fileGroup
+    : ID
+    ;
+
+groupName
+    : ID
+    ;
+
+constraintName
+    : ID
+    ;
+
+keyName
+    : ID
+    ;
+
+typeName
+    : ID
+    ;
+
+xmlSchemaCollection
+    : ID
+    ;
+
+columnSetName
+    : ID
+    ;
+
+directoryName
+    : ID
+    ;
+
+triggerName
+    : ID
+    ;
+
+routineName
+    : ID
+    ;
+
+
+roleName
+    : ID
+    ;
+
+partitionName
+    : ID
+    ;
+
+rewriteRuleName
+    : ID
+    ;
+
+ownerName
+    : ID
+    ;
+
+userName
+    : ID
+    ;
+
 
 ifExists
     : IF EXISTS;
@@ -55,19 +135,23 @@ nullNotnull
     ;
 
 primaryKey
-	: PRIMARY? KEY
-	;
+    : PRIMARY? KEY
+    ;
 
 matchNone
     : 'Default does not match anything'
     ;
-    
+
+ids
+    : ID (COMMA  ID)*
+    ;
+
 idList
-    : LP_ ID (COMMA  ID)* RP_
+    : LP_ ids RP_
     ;
 
 rangeClause
-    : NUMBER (COMMA  NUMBER)* 
+    : NUMBER (COMMA  NUMBER)*
     | NUMBER OFFSET NUMBER
     ;
 
@@ -86,7 +170,7 @@ columnNamesWithParen
 columnNames
     : columnName (COMMA columnName)*
     ;
-    
+
 columnList
     : LP_ columnNames RP_
     ;
@@ -98,7 +182,15 @@ indexNames
 rowNames
     : rowName (COMMA rowName)*
     ;
-    
+
+roleNames
+    : roleName (COMMA roleName)*
+    ;
+
+userNames
+    : userName (COMMA userName)*
+    ;
+
 bitExprs:
     bitExpr (COMMA bitExpr)*
     ;
@@ -106,7 +198,7 @@ bitExprs:
 exprs
     : expr (COMMA expr)*
     ;
- 
+
 exprsWithParen
     : LP_ exprs RP_
     ;
@@ -118,7 +210,7 @@ expr
     | expr XOR expr
     | expr AND expr
     | expr AND_ expr
-   
+
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
@@ -129,7 +221,7 @@ expr
 exprRecursive
     : matchNone
     ;
-    
+
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
     | booleanPrimary SAFE_EQ predicate
@@ -139,12 +231,12 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_ 
-    | GTE 
-    | GT 
-    | LTE 
-    | LT 
-    | NEQ_ 
+    : EQ_
+    | GTE
+    | GT
+    | LTE
+    | LT
+    | NEQ_
     | NEQ
     ;
 
@@ -157,7 +249,7 @@ predicate
     | bitExpr NOT? REGEXP simpleExpr
     | bitExpr
     ;
-  
+
 bitExpr
     : bitExpr BIT_INCLUSIVE_OR bitExpr
     | bitExpr BIT_AND bitExpr
@@ -174,7 +266,7 @@ bitExpr
     //| bitExpr '-' interval_expr
     | simpleExpr
     ;
-    
+
 simpleExpr
     : functionCall
     | liter
@@ -182,7 +274,7 @@ simpleExpr
     | simpleExpr collateClause
     //| param_marker
     //| variable
-    
+
     | simpleExpr AND_ simpleExpr
     | PLUS simpleExpr
     | MINUS simpleExpr
@@ -203,16 +295,16 @@ simpleExpr
 
 functionCall
     : ID LP_( bitExprs?) RP_
-    ;    
- 
+    ;
+
 privateExprOfDb
     : matchNone
     ;
-     
+
 liter
     : QUESTION
     | NUMBER
-    | TRUE 
+    | TRUE
     | FALSE
     | NULL
     | LBE_ ID STRING RBE_
@@ -220,7 +312,7 @@ liter
     | ID? STRING  collateClause?
     | (DATE | TIME |TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
-    ; 
+    ;
 
 subquery
     : matchNone
@@ -233,7 +325,7 @@ collateClause
 orderByClause
     : ORDER BY groupByItem (COMMA groupByItem)*
     ;
-    
+
 groupByItem
     : (columnName | NUMBER |expr)  (ASC|DESC)?
     ;

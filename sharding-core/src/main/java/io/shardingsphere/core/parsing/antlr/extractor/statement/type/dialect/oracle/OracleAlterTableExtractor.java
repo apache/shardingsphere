@@ -17,12 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.AddColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.AddPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RenameColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.oracle.OracleDropPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.dialect.oracle.OracleModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle.OracleDropPrimaryKeyExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle.OracleModifyColumnExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 
 /**
@@ -33,10 +33,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class OracleAlterTableExtractor extends AlterTableExtractor {
     
     public OracleAlterTableExtractor() {
-        addPhraseExtractor(new AddColumnExtractor());
-        addPhraseExtractor(new OracleModifyColumnExtractor());
-        addPhraseExtractor(new RenameColumnExtractor());
-        addPhraseExtractor(new AddPrimaryKeyExtractor(RuleName.ADD_CONSTRAINT_CLAUSE));
-        addPhraseExtractor(new OracleDropPrimaryKeyExtractor());
+        addExtractHandler(new AddColumnExtractHandler());
+        addExtractHandler(new OracleModifyColumnExtractHandler());
+        addExtractHandler(new RenameColumnExtractHandler());
+        addExtractHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT_CLAUSE));
+        addExtractHandler(new OracleDropPrimaryKeyExtractHandler());
     }
 }

@@ -30,7 +30,7 @@ opColumnClause
     | modifyColumn
     | dropColumnClause
     ;
-    
+
 addColumn
     : ADD columnOrVirtualDefinitions columnProperties?
     ;
@@ -41,12 +41,12 @@ columnOrVirtualDefinitions
       RP_
     | columnOrVirtualDefinition
     ;
-    
+
 columnOrVirtualDefinition:
     columnDefinition 
     | virtualColumnDefinition
     ;
-    
+
 modifyColumn
     : MODIFY 
     ( 
@@ -54,19 +54,19 @@ modifyColumn
        | modifyColSubstitutable
     )
     ;
-    
+
 modifyColProperties
     : columnName dataType?
     (DEFAULT expr)?
     (ENCRYPT encryptionSpec | DECRYPT)?
     inlineConstraint* 
     ;
-    
+
 modifyColSubstitutable
     : COLUMN columnName
     NOT? SUBSTITUTABLE AT ALL LEVELS FORCE?
     ;
-    
+
 dropColumnClause
     : SET UNUSED columnOrColumnList cascadeOrInvalidate*
     | dropColumn
@@ -74,8 +74,8 @@ dropColumnClause
 
 dropColumn
     : DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
-	;
-	
+    ;
+
 columnOrColumnList
     : COLUMN columnName
     | LP_ columnName ( COMMA columnName )* RP_
@@ -89,18 +89,18 @@ cascadeOrInvalidate
 checkpointNumber
     : CHECKPOINT NUMBER
     ;
-    
+
 renameColumn
     : RENAME COLUMN columnName TO columnName
     ;
-    
+
 constraintClauses
     : addConstraintClause
     | modifyConstraintClause
     | renameConstraintClause
     | dropConstraintClause+
     ;
-    
+
 addConstraintClause
     : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
@@ -111,22 +111,22 @@ modifyConstraintClause
 
 constraintWithName
     : CONSTRAINT constraintName
-    ;    
-    
+    ;
+
 constraintOption
     : constraintWithName
     | constraintPrimaryOrUnique
     ;
- 
+
 constraintPrimaryOrUnique
     : primaryKey
     | UNIQUE columnList
     ;
-        
+
 renameConstraintClause
     : RENAME constraintWithName TO constraintName
     ;
-   
+
 dropConstraintClause
     : DROP
     (

@@ -1,6 +1,6 @@
 grammar SQLServerCreateTable;
 
-import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
+import SQLServerKeyword, DataType, Keyword, SQLServerTableBase, SQLServerBase, BaseRule, Symbol;
 
 createTable
     : createTableHeader createTableBody
@@ -9,7 +9,7 @@ createTable
 createTableHeader
     : CREATE TABLE tableName
     ;
-    
+
 createTableBody
     : (AS FILETABLE)?  
     LP_ 
@@ -29,7 +29,7 @@ createTableBody
      )?  
     (WITH LP_  tableOption (COMMA tableOption)*  RP_)?  
     ;
-    
+
 createTableDefinition
     : columnDefinition  
     | computedColumnDefinition    
@@ -37,7 +37,7 @@ createTableDefinition
     | tableConstraint   
     | tableIndex
     ;
- 
+
 periodClause
     : PERIOD FOR SYSTEM_TIME LP_  columnName   
     COMMA columnName RP_
@@ -56,7 +56,7 @@ tableIndex
     indexOnClause?   
     (FILESTREAM_ON ( groupName | schemaName | STRING ))?  
     ;
-    
+
 tableOption  
     : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE ) (ON PARTITIONS LP_  partitionExpressions RP_ )?
     | FILETABLE_DIRECTORY EQ_ directoryName 
@@ -90,19 +90,19 @@ distributionOption
         | ROUND_ROBIN 
         | REPLICATE
      ) 
-    ; 
-    
+    ;
+
 dataWareHouseTableOption
     : (CLUSTERED COLUMNSTORE INDEX)
     | HEAP   
     | dataWareHousePartitionOption
     ;
- 
- dataWareHousePartitionOption
+
+dataWareHousePartitionOption
      : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)?  
         FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
-     ; 
-     
+     ;
+
 tableStretchOptions 
      : (FILTER_PREDICATE EQ_ ( NULL | functionCall ) COMMA )?  
      MIGRATION_STATE EQ_ ( OUTBOUND | INBOUND | PAUSED )  

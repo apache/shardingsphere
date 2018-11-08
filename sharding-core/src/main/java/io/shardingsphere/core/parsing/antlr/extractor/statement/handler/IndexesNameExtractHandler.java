@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
@@ -24,11 +24,11 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Extract multiple index name phrase.
+ * Multiple index name extract handler.
  * 
  * @author duhongjun
  */
-public final class IndexesNameExtractor implements PhraseExtractor {
+public final class IndexesNameExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {

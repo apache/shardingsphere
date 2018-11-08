@@ -8,45 +8,44 @@ execute
     | update
     | delete
     ;
-    
+
 fromClause 
     : FROM tableReferences
     ;
-    
+
 whereClause
     : WHERE expr
     ;
-    
+
 groupByClause
     : GROUP BY groupByItem (COMMA groupByItem)* 
     (WITH ROLLUP)? 
     havingClause?
     ;
-    
+
 havingClause
     : HAVING  expr
     ;
-    
+
 orderByClause
     : ORDER BY groupByItem (COMMA groupByItem)*
     ;
-    
+
 groupByItem:
     (columnName | NUMBER |expr)  (ASC|DESC)?
     ;
-    
+
 limitClause
     : LIMIT rangeClause
     ;
 
-//define delete rule template
 delete: 
     deleteClause 
     whereClause? 
     orderByClause? 
     limitClause?
     ;
-    
+
 partitionClause 
     : PARTITION idList
     ;
@@ -62,11 +61,11 @@ update:
 setClause 
     : SET assignmentList
     ;
-    
+
 assignmentList
     : assignment (COMMA assignment)*
     ;
-    
+
 assignment
     : columnName EQ_ value
     ;
@@ -76,7 +75,7 @@ insert:
 
 deleteClause:
     ;
-    
+
 updateClause:
     ;
 

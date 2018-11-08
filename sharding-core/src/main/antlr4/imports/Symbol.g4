@@ -42,7 +42,7 @@ SQ_: '\'';
 BQ_: '`';
 UL_: '_';
 QUESTION: '?' ;
-AT_:'@';
+AT_: '@';
 
 fragment A: [Aa];
 fragment B: [Bb];
