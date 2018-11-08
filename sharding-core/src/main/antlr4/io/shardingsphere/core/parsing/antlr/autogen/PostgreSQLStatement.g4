@@ -18,6 +18,8 @@ execute
     | rollback
     | savepoint
     | beginWork
+    | grant
+    | grantRole
     | createUser
     | alterUser
     | renameUser

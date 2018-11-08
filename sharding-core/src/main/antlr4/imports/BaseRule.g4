@@ -15,11 +15,19 @@ databaseName
     : ID
     ;
 
+domainName
+    : ID
+    ;
+
 tableName
     : ID
     ;
 
 columnName
+    : ID
+    ;
+
+sequenceName
     : ID
     ;
 
@@ -144,6 +152,18 @@ rangeClause
     : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
     ;
 
+schemaNames
+    : schemaName (COMMA schemaName)*
+    ;
+
+databaseNames
+    : databaseName (COMMA databaseName)*
+    ;
+
+domainNames
+    : domainName (COMMA domainName)*
+    ;
+
 tableNamesWithParen
     : LP_ tableNames RP_
     ;
@@ -164,8 +184,20 @@ columnList
     : LP_ columnNames RP_
     ;
 
+sequenceNames
+    : sequenceName (COMMA sequenceName)*
+    ;
+
+tablespaceNames
+    : tablespaceName (COMMA tablespaceName)*
+    ;
+
 indexNames
     : indexName (COMMA indexName)*
+    ;
+
+typeNames
+    : typeName (COMMA typeName)*
     ;
 
 rowNames

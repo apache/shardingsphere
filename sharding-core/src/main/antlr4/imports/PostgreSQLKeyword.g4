@@ -66,6 +66,10 @@ CONCURRENTLY
     : C O N C U R R E N T L Y
     ;
 
+CONNECT
+    : C O N N E C T
+    ;
+
 CONNECTION
     : C O N N E C T I O N
     ;
@@ -122,6 +126,10 @@ DISTINCT
     : D I S T I N C T
     ;
 
+DOMAIN
+    : D O M A I N
+    ;
+
 DOUBLE
     : D O U B L E
     ;
@@ -132,6 +140,10 @@ ENCRYPTED
 
 EXCLUDING
     : E X C L U D I N G
+    ;
+
+EXECUTE
+    : E X E C U T E
     ;
 
 EXTENDED
@@ -226,6 +238,22 @@ INITIALLY
     : I N I T I A L L Y
     ;
 
+INOUT
+    : I N O U T
+    ;
+
+INSERT
+    : I N S E R T
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+LARGE
+    : L A R G E
+    ;
+
 LAST
     : L A S T
     ;
@@ -302,6 +330,10 @@ NULLS
     : N U L L S
     ;
 
+OBJECT
+    : O B J E C T
+    ;
+
 OF
     : O F
     ;
@@ -312,6 +344,10 @@ OIDS
 
 ONLY
     : O N L Y
+    ;
+
+OUT
+    : O U T
     ;
 
 OVER
@@ -350,6 +386,14 @@ PREPARED
     : P R E P A R E D
     ;
 
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
+PUBLIC
+    : P U B L I C
+    ;
+
 RANGE
     : R A N G E
     ;
@@ -382,6 +426,10 @@ RESTRICT
     : R E S T R I C T
     ;
 
+ROUTINE
+    : R O U T I N E
+    ;
+
 ROWS
     : R O W S
     ;
@@ -394,12 +442,28 @@ SAVEPOINT
     : S A V E P O I N T
     ;
 
+SCHEMA
+    : S C H E M A
+    ;
+
 SECOND
     : S E C O N D
     ;
 
 SECURITY
     : S E C U R I T Y
+    ;
+
+SEQUENCE
+    : S E Q U E N C E
+    ;
+
+SEQUENCES
+    : S E Q U E N C E S
+    ;
+
+SERVER
+    : S E R V E R
     ;
 
 SESSION
@@ -436,6 +500,10 @@ SUPERUSER
 
 SYSID
     : S Y S I D
+    ;
+
+TABLES
+    : T A B L E S
     ;
 
 TABLESPACE
@@ -478,6 +546,10 @@ UPDATE
     : U P D A T E
     ;
 
+USAGE
+    : U S A G E
+    ;
+
 USING
     : U S I N G
     ;
@@ -490,6 +562,10 @@ VALIDATE
     : V A L I D A T E
     ;
 
+VARIADIC
+    : V A R I A D I C
+    ;
+
 VARYING
     : V A R Y I N G
     ;
@@ -500,6 +576,10 @@ WITHIN
 
 WITHOUT
     : W I T H O U T
+    ;
+
+WRAPPER
+    : W R A P P E R
     ;
 
 WRITE
