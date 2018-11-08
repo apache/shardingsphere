@@ -1,42 +1,122 @@
-//rule in this file does not allow override
-
 grammar BaseRule;
 
-import DataType,Keyword,Symbol;
+import DataType, Keyword, Symbol;
 
 ID: 
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA? DOT)?
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$]* BACK_QUOTA?)
-    |[a-zA-Z_$0-9]+ DOT ASTERISK
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)?
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+    | [a-zA-Z_$0-9]+ DOT ASTERISK
     ;
 
-schemaName: ID;
-tableName: ID;
-columnName: ID; 
-tablespaceName: ID;
-collationName: STRING | ID;
-indexName: ID;
-alias: ID;
-cteName:ID;
-parserName: ID;
-extensionName: ID;
-rowName: ID;
-opclass: ID;
+schemaName
+    : ID
+    ;
 
-fileGroup: ID;
-groupName: ID;
-constraintName: ID;
-keyName: ID;
-typeName: ID;
-xmlSchemaCollection:ID;
-columnSetName: ID;
-directoryName: ID;
-triggerName: ID;
+tableName
+    : ID
+    ;
 
-roleName: ID;
-partitionName: ID;
-rewriteRuleName: ID;
-ownerName: ID;
+columnName
+    : ID
+    ;
+
+tablespaceName
+    : ID
+    ;
+
+collationName
+    : STRING
+    | ID
+    ;
+
+indexName
+    : ID
+    ;
+
+alias
+    : ID
+    ;
+
+cteName
+    : ID
+    ;
+
+parserName
+    : ID
+    ;
+
+extensionName
+    : ID
+    ;
+
+rowName
+    : ID
+    ;
+
+opclass
+    : ID
+    ;
+
+fileGroup
+    : ID
+    ;
+
+groupName
+    : ID
+    ;
+
+constraintName
+    : ID
+    ;
+
+keyName
+    : ID
+    ;
+
+typeName
+    : ID
+    ;
+
+xmlSchemaCollection
+    : ID
+    ;
+
+columnSetName
+    : ID
+    ;
+
+directoryName
+    : ID
+    ;
+
+triggerName
+    : ID
+    ;
+
+routineName
+    : ID
+    ;
+
+
+roleName
+    : ID
+    ;
+
+partitionName
+    : ID
+    ;
+
+rewriteRuleName
+    : ID
+    ;
+
+ownerName
+    : ID
+    ;
+
+userName
+    : ID
+    ;
 
 ifExists
     : IF EXISTS;
@@ -45,33 +125,35 @@ ifNotExists
     : IF NOT EXISTS;
 
 dataTypeLength
-    : LEFT_PAREN (NUMBER (COMMA NUMBER)?)? RIGHT_PAREN
+    : LP_ (NUMBER (COMMA NUMBER)?)? RP_
     ;
 
 nullNotnull
-    : NULL
-    | NOT NULL
+    : NULL | NOT NULL
     ;
 
 primaryKey
-	: PRIMARY? KEY
-	;
+    : PRIMARY? KEY
+    ;
 
 matchNone
     : 'Default does not match anything'
     ;
-    
+
+ids
+    : ID (COMMA  ID)*
+    ;
+
 idList
-    : LEFT_PAREN ID (COMMA  ID)* RIGHT_PAREN
+    : LP_ ids RP_
     ;
 
 rangeClause
-    : NUMBER (COMMA  NUMBER)* 
-    | NUMBER OFFSET NUMBER
+    : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
     ;
 
 tableNamesWithParen
-    : LEFT_PAREN tableNames RIGHT_PAREN
+    : LP_ tableNames RP_
     ;
 
 tableNames
@@ -79,15 +161,15 @@ tableNames
     ;
 
 columnNamesWithParen
-    : LEFT_PAREN columnNames RIGHT_PAREN
+    : LP_ columnNames RP_
     ;
 
 columnNames
     : columnName (COMMA columnName)*
     ;
-    
+
 columnList
-    : LEFT_PAREN columnNames RIGHT_PAREN
+    : LP_ columnNames RP_
     ;
 
 indexNames
@@ -97,7 +179,15 @@ indexNames
 rowNames
     : rowName (COMMA rowName)*
     ;
-    
+
+roleNames
+    : roleName (COMMA roleName)*
+    ;
+
+userNames
+    : userName (COMMA userName)*
+    ;
+
 bitExprs:
     bitExpr (COMMA bitExpr)*
     ;
@@ -105,22 +195,21 @@ bitExprs:
 exprs
     : expr (COMMA expr)*
     ;
- 
+
 exprsWithParen
-    : LEFT_PAREN exprs RIGHT_PAREN
+    : LP_ exprs RP_
     ;
 
-//https://dev.mysql.com/doc/refman/8.0/en/expressions.html
 expr
     : expr OR expr
-    | expr OR_SYM  expr
+    | expr OR_ expr
     | expr XOR expr
     | expr AND expr
-    | expr AND_SYM expr
-   
-    | LEFT_PAREN expr RIGHT_PAREN
+    | expr AND_ expr
+
+    | LP_ expr RP_
     | NOT expr
-    | NOT_SYM expr
+    | NOT_ expr
     | booleanPrimary
     | exprRecursive
     ;
@@ -128,7 +217,7 @@ expr
 exprRecursive
     : matchNone
     ;
-    
+
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
     | booleanPrimary SAFE_EQ predicate
@@ -138,25 +227,25 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_OR_ASSIGN 
-    | GTE 
-    | GT 
-    | LTE 
-    | LT 
-    | NEQ_SYM 
+    : EQ_
+    | GTE
+    | GT
+    | LTE
+    | LT
+    | NEQ_
     | NEQ
     ;
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LEFT_PAREN simpleExpr ( COMMA  simpleExpr)* RIGHT_PAREN
+    | bitExpr NOT? IN LP_ simpleExpr ( COMMA  simpleExpr)* RP_
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
     | bitExpr NOT? REGEXP simpleExpr
     | bitExpr
     ;
-  
+
 bitExpr
     : bitExpr BIT_INCLUSIVE_OR bitExpr
     | bitExpr BIT_AND bitExpr
@@ -167,13 +256,13 @@ bitExpr
     | bitExpr ASTERISK bitExpr
     | bitExpr SLASH bitExpr
     | bitExpr MOD bitExpr
-    | bitExpr MOD_SYM bitExpr
+    | bitExpr MOD_ bitExpr
     | bitExpr BIT_EXCLUSIVE_OR bitExpr
     //| bitExpr '+' interval_expr
     //| bitExpr '-' interval_expr
     | simpleExpr
     ;
-    
+
 simpleExpr
     : functionCall
     | liter
@@ -181,15 +270,15 @@ simpleExpr
     | simpleExpr collateClause
     //| param_marker
     //| variable
-    
-    | simpleExpr AND_SYM simpleExpr
+
+    | simpleExpr AND_ simpleExpr
     | PLUS simpleExpr
     | MINUS simpleExpr
     | UNARY_BIT_COMPLEMENT simpleExpr
-    | NOT_SYM simpleExpr
+    | NOT_ simpleExpr
     | BINARY simpleExpr
-    | LEFT_PAREN expr RIGHT_PAREN
-    | ROW LEFT_PAREN simpleExpr( COMMA  simpleExpr)* RIGHT_PAREN
+    | LP_ expr RP_
+    | ROW LP_ simpleExpr( COMMA  simpleExpr)* RP_
     | subquery
     | EXISTS subquery
 
@@ -201,25 +290,25 @@ simpleExpr
     ;
 
 functionCall
-    : ID LEFT_PAREN( bitExprs?) RIGHT_PAREN
-    ;    
- 
+    : ID LP_( bitExprs?) RP_
+    ;
+
 privateExprOfDb
     : matchNone
     ;
-     
+
 liter
     : QUESTION
     | NUMBER
-    | TRUE 
+    | TRUE
     | FALSE
     | NULL
-    | LEFT_BRACE ID STRING RIGHT_BRACE
+    | LBE_ ID STRING RBE_
     | HEX_DIGIT
     | ID? STRING  collateClause?
     | (DATE | TIME |TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
-    ; 
+    ;
 
 subquery
     : matchNone
@@ -232,7 +321,7 @@ collateClause
 orderByClause
     : ORDER BY groupByItem (COMMA groupByItem)*
     ;
-    
+
 groupByItem
     : (columnName | NUMBER |expr)  (ASC|DESC)?
     ;

@@ -2,7 +2,7 @@ grammar OracleStatement;
 
 import OracleKeyword, Keyword, OracleBase, OracleCreateIndex, OracleAlterIndex
        , OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable
-       , OracleTCLStatement
+       , OracleTCLStatement, OracleDCLStatement
        ;
 
 execute
@@ -17,5 +17,12 @@ execute
     | commit
     | rollback
     | savepoint
+    | grant
+    | revoke
+    | createUser
+    | alterUser
+    | dropUser
+    | createRole
+    | alterRole
+    | dropRole
     ;
- 

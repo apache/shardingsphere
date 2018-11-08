@@ -30,43 +30,43 @@ opColumnClause
     | modifyColumn
     | dropColumnClause
     ;
-    
+
 addColumn
     : ADD columnOrVirtualDefinitions columnProperties?
     ;
 
 columnOrVirtualDefinitions
-    : LEFT_PAREN columnOrVirtualDefinition
+    : LP_ columnOrVirtualDefinition
         (COMMA columnOrVirtualDefinition)* 
-      RIGHT_PAREN
+      RP_
     | columnOrVirtualDefinition
     ;
-    
+
 columnOrVirtualDefinition:
     columnDefinition 
     | virtualColumnDefinition
     ;
-    
+
 modifyColumn
     : MODIFY 
     ( 
-        LEFT_PAREN? modifyColProperties (COMMA modifyColProperties)* RIGHT_PAREN?
+        LP_? modifyColProperties (COMMA modifyColProperties)* RP_?
        | modifyColSubstitutable
     )
     ;
-    
+
 modifyColProperties
     : columnName dataType?
     (DEFAULT expr)?
     (ENCRYPT encryptionSpec | DECRYPT)?
     inlineConstraint* 
     ;
-    
+
 modifyColSubstitutable
     : COLUMN columnName
     NOT? SUBSTITUTABLE AT ALL LEVELS FORCE?
     ;
-    
+
 dropColumnClause
     : SET UNUSED columnOrColumnList cascadeOrInvalidate*
     | dropColumn
@@ -74,11 +74,11 @@ dropColumnClause
 
 dropColumn
     : DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
-	;
-	
+    ;
+
 columnOrColumnList
     : COLUMN columnName
-    | LEFT_PAREN columnName ( COMMA columnName )* RIGHT_PAREN
+    | LP_ columnName ( COMMA columnName )* RP_
     ;
 
 cascadeOrInvalidate
@@ -89,18 +89,18 @@ cascadeOrInvalidate
 checkpointNumber
     : CHECKPOINT NUMBER
     ;
-    
+
 renameColumn
     : RENAME COLUMN columnName TO columnName
     ;
-    
+
 constraintClauses
     : addConstraintClause
     | modifyConstraintClause
     | renameConstraintClause
     | dropConstraintClause+
     ;
-    
+
 addConstraintClause
     : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
@@ -111,22 +111,22 @@ modifyConstraintClause
 
 constraintWithName
     : CONSTRAINT constraintName
-    ;    
-    
+    ;
+
 constraintOption
     : constraintWithName
     | constraintPrimaryOrUnique
     ;
- 
+
 constraintPrimaryOrUnique
     : primaryKey
     | UNIQUE columnList
     ;
-        
+
 renameConstraintClause
     : RENAME constraintWithName TO constraintName
     ;
-   
+
 dropConstraintClause
     : DROP
     (

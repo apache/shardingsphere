@@ -63,7 +63,7 @@ public class OrchestrationSpringBootMasterSlaveTest {
         Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
         MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
-        for (DataSource each : masterSlaveDataSource.getAllDataSources().values()) {
+        for (DataSource each : masterSlaveDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }

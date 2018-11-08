@@ -1,6 +1,6 @@
 grammar OracleTableBase;
 
-import OracleKeyword,Keyword,Symbol,OracleBase,BaseRule,DataType;
+import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 columnDefinition
     : columnName dataType SORT?
@@ -13,7 +13,7 @@ columnDefinition
     ;
 
 identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LEFT_PAREN? (identityOptions+)? RIGHT_PAREN?
+    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RP_?
     ;
 
 identityOptions
@@ -30,29 +30,29 @@ identityOptions
     | ORDER
     | NOORDER
     ;
-    
+
 virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LEFT_PAREN expr RIGHT_PAREN 
+    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ 
     VIRTUAL? inlineConstraint*
     ;
 
 inlineConstraint
     : (CONSTRAINT constraintName)?
     ( 
-    	  NOT? NULL
+          NOT? NULL
         | UNIQUE
         | primaryKey
         | referencesClause
-        | CHECK LEFT_PAREN expr RIGHT_PAREN
+        | CHECK LP_ expr RP_
     )
     constraintState?
     ;
-    
+
 referencesClause
     : REFERENCES tableName columnList?
     (ON DELETE (CASCADE | SET NULL))?
     ;
-    
+
 constraintState:
     (
         notDeferrable
@@ -68,7 +68,7 @@ constraintState:
 notDeferrable:
     NOT? DEFERRABLE
     ;
-    
+
 initiallyClause:
     INITIALLY ( IMMEDIATE | DEFERRED )
     ;
@@ -76,18 +76,18 @@ initiallyClause:
 exceptionsClause:
     EXCEPTIONS INTO  
     ;
-        
+
 usingIndexClause
     : USING INDEX
     (  indexName
-    | (LEFT_PAREN createIndex RIGHT_PAREN) 
+    | (LP_ createIndex RP_) 
     )?
     ;
-    
+
 createIndex
     : matchNone
     ;
-    
+
 inlineRefConstraint
     : SCOPE IS tableName
     | WITH ROWID
@@ -100,14 +100,14 @@ outOfLineConstraint
     	UNIQUE columnList
         | primaryKey columnList 
         | FOREIGN KEY columnList referencesClause
-        | CHECK LEFT_PAREN expr RIGHT_PAREN
+        | CHECK LP_ expr RP_
     ) 
     constraintState?
     ;
-    
+
 outOfLineRefConstraint
-    : SCOPE FOR LEFT_PAREN lobItem RIGHT_PAREN IS  tableName
-    | REF LEFT_PAREN lobItem RIGHT_PAREN WITH ROWID
+    : SCOPE FOR LP_ lobItem RP_ IS  tableName
+    | REF LP_ lobItem RP_ WITH ROWID
     | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState?
     ;
 
@@ -115,7 +115,7 @@ outOfLineRefConstraint
     : (USING STRING)?
     (IDENTIFIED BY STRING)?
     STRING? (NO? SALT)?
-    ;   
+    ;
 
 objectProperties
     : objectProperty (COMMA objectProperty)*
@@ -134,12 +134,12 @@ columnProperties
 columnProperty
     : objectTypeColProperties
     ;
-    
+
 objectTypeColProperties
     : COLUMN columnName substitutableColumnClause
     ;
 
 substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LEFT_PAREN ONLY? typeName RIGHT_PAREN
+    : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RP_
     | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;

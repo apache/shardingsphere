@@ -1,8 +1,8 @@
 grammar SQLServerCreateIndex;
 
-import SQLServerKeyword, DataType, Keyword, SQLServerBase,BaseRule,Symbol;
+import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
 createIndex
-    : CREATE ( UNIQUE )? ( CLUSTERED | NONCLUSTERED )? INDEX indexName   
+    : CREATE ( UNIQUE )? ( CLUSTERED | NONCLUSTERED )? INDEX indexName 
     ON tableName columnList  
     ;

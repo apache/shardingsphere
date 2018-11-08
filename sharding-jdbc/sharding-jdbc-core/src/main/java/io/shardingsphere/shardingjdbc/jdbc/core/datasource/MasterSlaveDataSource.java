@@ -20,15 +20,16 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -37,8 +38,10 @@ import java.util.Properties;
  *
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
+@Slf4j
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
@@ -65,32 +68,15 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
-    /**
-     * Get map of all actual data source name and all actual data sources.
-     *
-     * @return map of all actual data source name and all actual data sources
-     */
-    public Map<String, DataSource> getAllDataSources() {
-        Map<String, DataSource> result = new HashMap<>(masterSlaveRule.getSlaveDataSourceNames().size() + 1, 1);
-        result.put(masterSlaveRule.getMasterDataSourceName(), getDataSourceMap().get(masterSlaveRule.getMasterDataSourceName()));
-        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
-            result.put(each, getDataSourceMap().get(each));
-        }
-        return result;
-    }
-    
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this);
-    }
-    
-    /**
-     * Show SQL or not.
-     *
-     * @return show SQL or not
-     */
-    public boolean showSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        if (TransactionType.XA == TransactionTypeHolder.get()) {
+            if (null == getXaDataSourceMap() || getXaDataSourceMap().isEmpty()) {
+                log.warn("XA transaction resource have not load, using Local transaction instead!");
+            } else {
+                return new MasterSlaveConnection(this, getXaDataSourceMap(), TransactionType.XA);
+            }
+        }
+        return new MasterSlaveConnection(this, getDataSourceMap());
     }
 }
-
