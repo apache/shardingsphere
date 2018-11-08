@@ -35,4 +35,10 @@ public final class TestRegistryCenter implements RegistryCenter {
     public String get(final String key) {
         return "";
     }
+    
+    @Override
+    public String getDirectly(final String key) {
+        return "";
+    }
+    
 }
