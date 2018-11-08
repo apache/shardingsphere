@@ -62,4 +62,8 @@ public final class TestRegistryCenter implements RegistryCenter {
     public void update(final String key, final String value) {
     }
     
+    @Override
+    public void persistEphemeral(final String key, final String value) {
+    }
+    
 }
