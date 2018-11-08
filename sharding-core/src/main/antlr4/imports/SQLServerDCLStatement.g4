@@ -9,7 +9,7 @@ grant
     
 grantGeneral
     : GRANT (ALL PRIVILEGES? | permissionOnColumns ( COMMA permissionOnColumns)*)
-    (ON (ID COLONCOLON)? ID )? TO ids   
+    (ON (ID COLON COLON)? ID )? TO ids   
     (WITH GRANT OPTION)? (AS ID)? 
     ;
 

@@ -54,10 +54,6 @@ COLLATE
     : C O L L A T E
     ;
 
-COLONCOLON
-    : C O L O N C O L O N
-    ;
-
 COLUMNSTORE
     : C O L U M N S T O R E
     ;
