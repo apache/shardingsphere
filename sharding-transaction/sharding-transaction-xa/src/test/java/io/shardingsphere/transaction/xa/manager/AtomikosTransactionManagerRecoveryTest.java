@@ -86,6 +86,23 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test
+    @SneakyThrows
+    public void assertDoEnlistInAnotherThreadWhenInDoubtState() {
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        mockAtomikosOnlyExecutePreparePhase();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+                assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
+            }
+        });
+        thread.start();
+        thread.join();
+    }
+    
+    @Test
     public void assertDoPrepareCommitSucceed() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
