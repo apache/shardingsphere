@@ -25,4 +25,8 @@ execute
     | alterUserResetConfig
     | dropUser
     | createRole
+    | alterRole
+    | renameRole
+    | alterRoleSetConfig
+    | alterRoleResetConfig
     ;

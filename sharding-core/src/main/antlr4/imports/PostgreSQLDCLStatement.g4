@@ -65,3 +65,19 @@ dropUser
 createRole
     : CREATE ROLE roleName (WITH? roleOptions)?
     ;
+
+alterRole
+    : ALTER ROLE roleSpecification WITH roleOptions
+    ;
+
+renameRole
+    : ALTER ROLE roleName RENAME TO roleName
+    ;
+
+alterRoleSetConfig
+    : ALTER ROLE (roleSpecification | ALL) (IN DATABASE databaseName)? SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    ;
+
+alterRoleResetConfig
+    : ALTER ROLE (roleSpecification | ALL) (IN DATABASE databaseName)? RESET (STRING | ALL)
+    ;
