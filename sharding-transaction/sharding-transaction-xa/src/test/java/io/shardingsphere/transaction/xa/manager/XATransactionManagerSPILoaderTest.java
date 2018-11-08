@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.xa.manager;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -35,6 +36,11 @@ import static org.mockito.Mockito.when;
 public final class XATransactionManagerSPILoaderTest {
     
     private XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
+    
+    @AfterClass
+    public static void teardown() {
+        XATransactionManagerSPILoader.getInstance().getTransactionManager().destroy();
+    }
     
     @Test
     public void assertGerInstanceWithSPI() {
