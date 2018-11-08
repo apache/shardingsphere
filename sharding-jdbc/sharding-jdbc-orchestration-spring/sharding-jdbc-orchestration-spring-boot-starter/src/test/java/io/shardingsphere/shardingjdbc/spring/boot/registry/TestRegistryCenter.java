@@ -54,4 +54,8 @@ public final class TestRegistryCenter implements RegistryCenter {
         return Collections.emptyList();
     }
     
+    @Override
+    public void persist(final String key, final String value) {
+    }
+    
 }
