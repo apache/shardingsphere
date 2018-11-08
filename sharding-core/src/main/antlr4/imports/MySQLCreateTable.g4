@@ -7,15 +7,11 @@ createTable
     ;
 
 createTableOptions
-    : createTableBasic
-    | createTableSelect
-    | createTableLike
+    : createTableBasic | createTableSelect | createTableLike
     ;
 
 createTableBasic
-    : createDefinitionsWithParen
-    tableOptions?
-    partitionOptions?
+    : createDefinitionsWithParen tableOptions? partitionOptions?
     ;
 
 createDefinitionsWithParen
@@ -27,10 +23,7 @@ createDefinitions
     ;
 
 createDefinition
-    : columnDefinition
-    | constraintDefinition
-    | indexDefinition
-    | checkExpr
+    : columnDefinition | constraintDefinition | indexDefinition | checkExpr
     ;
 
 checkExpr
@@ -38,16 +31,11 @@ checkExpr
     ;
 
 createTableSelect
-    : createDefinitionsWithParen?
-    tableOptions?
-    partitionOptions?
-    (IGNORE | REPLACE)?
-    AS? unionSelect
+    : createDefinitionsWithParen? tableOptions? partitionOptions? (IGNORE | REPLACE)? AS? unionSelect
     ;
 
 createTableLike
-    : likeTable
-    | LP_ likeTable RP_
+    : likeTable | LP_ likeTable RP_
     ;
 
 likeTable
