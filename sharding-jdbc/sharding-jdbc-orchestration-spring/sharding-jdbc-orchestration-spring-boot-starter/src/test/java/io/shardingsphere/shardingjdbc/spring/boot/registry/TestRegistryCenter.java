@@ -19,6 +19,7 @@ package io.shardingsphere.shardingjdbc.spring.boot.registry;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,4 +67,7 @@ public final class TestRegistryCenter implements RegistryCenter {
     public void persistEphemeral(final String key, final String value) {
     }
     
+    @Override
+    public void watch(final String key, final EventListener eventListener) {
+    }
 }
