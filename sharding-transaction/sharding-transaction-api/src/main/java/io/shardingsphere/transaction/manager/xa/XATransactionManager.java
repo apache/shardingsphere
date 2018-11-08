@@ -29,6 +29,7 @@ import javax.transaction.TransactionManager;
  * XA transaction manager.
  *
  * @author zhangliang
+ * @author zhaojun
  */
 public interface XATransactionManager extends ShardingTransactionManager<XATransactionEvent> {
     
