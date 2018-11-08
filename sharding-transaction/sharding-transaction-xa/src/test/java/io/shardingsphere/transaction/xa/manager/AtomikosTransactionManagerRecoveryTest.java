@@ -30,6 +30,7 @@ import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFac
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public class AtomikosTransactionManagerRecoveryTest {
     
     private static final String INSERT_INTO_T_ORDER = "INSERT INTO t_order VALUES(1000, 10, 'init')";
@@ -88,13 +90,17 @@ public class AtomikosTransactionManagerRecoveryTest {
         assertEquals(0L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertCurrentThreadCannotDoEnlistInDoubtState() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", INSERT_INTO_T_ORDER);
         executeSQL("ds2", INSERT_INTO_T_ORDER);
         mockAtomikosOnlyExecutePreparePhase();
-        executeSQL("ds1", SELECT_COUNT_T_ORDER);
+        try {
+            executeSQL("ds1", SELECT_COUNT_T_ORDER);
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("no longer active but in state IN_DOUBT"));
+        }
     }
     
     @Test
@@ -130,14 +136,14 @@ public class AtomikosTransactionManagerRecoveryTest {
         assertEquals(1L, executeSQL("ds2", SELECT_COUNT_T_ORDER));
         atomikosTransactionManager.destroy();
     }
-    
+
     @Test
     @SneakyThrows
     public void assertPrepareAlsoLockedResource() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", INSERT_INTO_T_ORDER);
         mockAtomikosOnlyExecutePreparePhase();
-    
+
         final Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
