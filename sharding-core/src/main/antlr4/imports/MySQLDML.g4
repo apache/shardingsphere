@@ -3,7 +3,7 @@ grammar MySQLDML;
 import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DMLBase, DataType, Symbol;
 
 caseExpress
-    : caseCond |caseComp
+    : caseCond | caseComp
     ;
 
 caseComp
@@ -35,7 +35,7 @@ selectExpr
     ;
  
 deleteClause
-    : DELETE deleteSpec (fromMulti| fromSingle) 
+    : DELETE deleteSpec (fromMulti | fromSingle) 
     ;
 
 fromSingle
