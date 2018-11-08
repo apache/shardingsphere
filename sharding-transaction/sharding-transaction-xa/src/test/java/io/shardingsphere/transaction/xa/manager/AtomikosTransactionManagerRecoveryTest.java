@@ -57,19 +57,16 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @Before
     public void setup() {
-        createTable();
+        executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
+        executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
+        executeSQL("ds2", "DROP TABLE IF EXISTS t_order");
+        executeSQL("ds2", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
     }
     
     @After
     public void teardown() {
         atomikosTransactionManager.destroy();
         closeDataSource();
-    }
-    
-    @SneakyThrows
-    private void createTable() {
-        executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
-        executeSQL("ds2", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
     }
     
     @Test
@@ -131,6 +128,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         xaDataSourceMap = createXADataSourceMap();
         assertEquals(1L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
         assertEquals(1L, executeSQL("ds2", SELECT_COUNT_T_ORDER));
+        atomikosTransactionManager.destroy();
     }
     
     @Test
