@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class AtomikosTransactionManagerRecoveryTest {
     
@@ -63,18 +62,32 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @Test
     @SneakyThrows
-    public void assertOnlyExecutePrepareThenShutdown() {
+    public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
         executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
-        assertEquals(1, executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
-        assertNotEquals(1, executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(0L, executeSQL("ds1", "SELECT count(1) from t_order"));
+        closeDataSource();
+        
+    }
+    
+    @Test
+    public void assertDoPrepareCommitSucceed() {
+        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        executeSQL("ds1", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
+        assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(1L, executeSQL("ds2", "SELECT count(1) from t_order"));
+        atomikosTransactionManager.commit(new XATransactionEvent(TransactionOperationType.COMMIT));
+        atomikosTransactionManager.destroy();
         closeDataSource();
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
-        Connection connection = xaDataSourceMap.get("ds1").getConnection();
+        assertEquals(1L, executeSQL("ds1", "SELECT count(1) from t_order"));
+        assertEquals(1L, executeSQL("ds2", "SELECT count(1) from t_order"));
     }
     
     private void closeDataSource() {
@@ -93,8 +106,8 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @SneakyThrows
-    private int executeSQL(final String dsName, final String sql) {
-        int result = 0;
+    private Object executeSQL(final String dsName, final String sql) {
+        Object result = null;
         try (Connection connection = xaDataSourceMap.get(dsName).getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = null;
@@ -102,8 +115,8 @@ public class AtomikosTransactionManagerRecoveryTest {
                 resultSet = statement.getResultSet();
             }
             if (null != resultSet) {
-                while (resultSet.next()) {
-                    result = resultSet.getInt(1);
+                if (resultSet.next()) {
+                    result = resultSet.getObject(1);
                 }
             }
             return result;
