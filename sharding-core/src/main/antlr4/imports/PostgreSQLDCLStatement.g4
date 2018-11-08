@@ -81,3 +81,7 @@ alterRoleSetConfig
 alterRoleResetConfig
     : ALTER ROLE (roleSpecification | ALL) (IN DATABASE databaseName)? RESET (STRING | ALL)
     ;
+
+dropRole
+    : DROP ROLE (IF EXISTS)? roleNames
+    ;
