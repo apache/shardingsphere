@@ -2,6 +2,11 @@ grammar SQLServerDCLStatement;
 
 import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
 
+grant
+    : grantGeneral
+    | grantDW
+    ;
+    
 grantGeneral
     : GRANT (ALL PRIVILEGES? | permissionOnColumns ( COMMA permissionOnColumns)*)
     (ON (ID COLONCOLON)? ID )? TO ids   
@@ -30,4 +35,3 @@ classType
     | SCHEMA  
     | USER  
     ;
-
