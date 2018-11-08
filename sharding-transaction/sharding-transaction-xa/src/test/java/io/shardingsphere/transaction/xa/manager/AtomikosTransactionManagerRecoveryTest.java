@@ -66,9 +66,16 @@ public class AtomikosTransactionManagerRecoveryTest {
         executeSQL("ds2", "INSERT INTO t_order VALUES(1000, 10, 'init')");
         mockAtomikosOnlyExecutePreparePhase();
         atomikosTransactionManager.destroy();
+        closeDataSource();
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
         Connection connection = xaDataSourceMap.get("ds1").getConnection();
+    }
+    
+    private void closeDataSource() {
+        for (DataSource each : xaDataSourceMap.values()) {
+            ReflectiveUtil.methodInvoke(each, "close");
+        }
     }
     
     @SneakyThrows
