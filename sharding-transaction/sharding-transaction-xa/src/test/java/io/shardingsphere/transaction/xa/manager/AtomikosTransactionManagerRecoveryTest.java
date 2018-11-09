@@ -160,6 +160,14 @@ public class AtomikosTransactionManagerRecoveryTest {
         xaDataSourceMap = createXADataSourceMap();
         xaDataSourceMap.get("ds1").getConnection();
     }
+    
+    @Test
+    @SneakyThrows
+    public void assertSucceedInAfterXAResourceReleased() {
+        closeDataSource();
+        xaDataSourceMap = createXADataSourceMap();
+        xaDataSourceMap.get("ds1").getConnection();
+    }
 
     private void insertOrder(final String ds) {
         executeSQL(ds, INSERT_INTO_T_ORDER);
