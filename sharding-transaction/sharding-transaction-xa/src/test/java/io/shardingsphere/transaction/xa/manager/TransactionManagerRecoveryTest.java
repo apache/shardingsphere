@@ -45,16 +45,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
+@Getter
 public abstract class TransactionManagerRecoveryTest {
     
     private static final String INSERT_INTO_T_ORDER = "INSERT INTO t_order VALUES(1000, 10, 'init')";
     
     private static final String SELECT_COUNT_T_ORDER = "SELECT count(1) from t_order";
     
-    @Getter
     private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
     
-    @Getter
     private Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
     
     private XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
@@ -165,33 +164,13 @@ public abstract class TransactionManagerRecoveryTest {
         xaDataSourceMap.get("ds1").getConnection();
     }
     
-    @Test
-    @SneakyThrows
-    public void assertRecoveryAfterDatabaseShutdown() {
-        atomikosTransactionManager.begin(beginEvent);
-        insertOrder("ds1");
-        Session session = mockShutdownCurrentDatabase("ds1");
-        atomikosTransactionManager.commit(commitEvent);
-        session.begin();
-        // TODO we should find a way to start the same H2 database instance.
-        // TODO atomikos will get recovery info from it.
-        Thread.sleep(3000);
-    }
-    
-    @SneakyThrows
-    private Session mockShutdownCurrentDatabase(final String dsName) {
-        Session session = getH2Session(dsName);
-        session.getDatabase().shutdownImmediately();
-        return session;
-    }
-    
     protected abstract Session getH2Session(String dsName);
 
-    private void insertOrder(final String ds) {
+    final void insertOrder(final String ds) {
         executeSQL(ds, INSERT_INTO_T_ORDER);
     }
     
-    private void assertOrderCount(final String ds, final long expectedCount) {
+    final void assertOrderCount(final String ds, final long expectedCount) {
         assertEquals(expectedCount, executeSQL(ds, SELECT_COUNT_T_ORDER));
     }
     
