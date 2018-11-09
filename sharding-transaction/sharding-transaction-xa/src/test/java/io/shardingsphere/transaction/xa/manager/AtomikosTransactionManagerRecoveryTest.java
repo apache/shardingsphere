@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
+import com.atomikos.jdbc.AtomikosSQLException;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
@@ -29,6 +30,7 @@ import org.h2.jdbc.JdbcConnection;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 public final class AtomikosTransactionManagerRecoveryTest extends TransactionManagerRecoveryTest {
     
@@ -64,5 +66,12 @@ public final class AtomikosTransactionManagerRecoveryTest extends TransactionMan
         Session session = getH2Session(dsName);
         session.getDatabase().shutdownImmediately();
         return session;
+    }
+    
+    @Test(expected = AtomikosSQLException.class)
+    @SneakyThrows
+    public void assertFailedInXAResourceUnReleased() {
+        Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
+        xaDataSourceMap.get("ds1").getConnection();
     }
 }
