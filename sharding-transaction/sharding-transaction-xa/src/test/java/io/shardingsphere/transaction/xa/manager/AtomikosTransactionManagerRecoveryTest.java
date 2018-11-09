@@ -79,6 +79,16 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test
+    public void assertAtomikos2PC() {
+        atomikosTransactionManager.begin(beginEvent);
+        insertOrder("ds1");
+        insertOrder("ds2");
+        atomikosTransactionManager.commit(commitEvent);
+        assertOrderCount("ds1", 1L);
+        assertOrderCount("ds2", 1L);
+    }
+    
+    @Test
     public void assertShutdownRecoveryAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
@@ -92,7 +102,6 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertAccessFailedAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
-        insertOrder("ds2");
         coordinateOnlyExecutePrepare();
         try {
             assertOrderCount("ds1", 1L);
@@ -128,23 +137,6 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager.rollback(rollbackEvent);
         xaDataSourceMap = createXADataSourceMap();
         assertOrderCount("ds1", 0L);
-    }
-    
-    @Test
-    public void assertDoPrepareCommitSucceed() {
-        atomikosTransactionManager.begin(beginEvent);
-        insertOrder("ds1");
-        insertOrder("ds2");
-        assertOrderCount("ds1", 1L);
-        assertOrderCount("ds2", 1L);
-        atomikosTransactionManager.commit(commitEvent);
-        atomikosTransactionManager.destroy();
-        closeDataSource();
-        atomikosTransactionManager = new AtomikosTransactionManager();
-        xaDataSourceMap = createXADataSourceMap();
-        assertOrderCount("ds1", 1L);
-        assertOrderCount("ds2", 1L);
-        atomikosTransactionManager.destroy();
     }
 
     @Test
