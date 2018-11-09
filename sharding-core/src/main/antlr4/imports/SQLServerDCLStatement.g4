@@ -48,3 +48,6 @@ permissionWithClass
     : permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
     ;
 
+denyGeneral
+    : DENY permissionWithClass TO ids CASCADE? (AS ID)?
+    ;
