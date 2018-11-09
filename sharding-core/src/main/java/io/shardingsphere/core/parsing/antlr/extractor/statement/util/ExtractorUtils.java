@@ -40,16 +40,16 @@ public final class ExtractorUtils {
      * @return column position object
      */
     public static Optional<ColumnPosition> extractFirstOrAfterColumn(final ParserRuleContext ancestorNode, final String columnName) {
-        Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
-        if (!firstOrAfterColumnContext.isPresent()) {
+        Optional<ParserRuleContext> firstOrAfterColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
+        if (!firstOrAfterColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildNode(firstOrAfterColumnContext.get(), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(firstOrAfterColumnNode.get(), RuleName.COLUMN_NAME);
         ColumnPosition result = new ColumnPosition();
-        result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
-        if (columnNameContext.isPresent()) {
+        result.setStartIndex(firstOrAfterColumnNode.get().getStart().getStartIndex());
+        if (columnNameNode.isPresent()) {
             result.setColumnName(columnName);
-            result.setAfterColumn(columnNameContext.get().getText());
+            result.setAfterColumn(columnNameNode.get().getText());
         } else {
             result.setFirstColumn(columnName);
         }
