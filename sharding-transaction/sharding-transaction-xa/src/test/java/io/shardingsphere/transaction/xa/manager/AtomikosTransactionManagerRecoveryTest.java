@@ -104,18 +104,9 @@ public class AtomikosTransactionManagerRecoveryTest {
         }
     }
     
-    @Test(expected = AtomikosSQLException.class)
-    public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
-        atomikosTransactionManager.begin(beginEvent);
-        insertOrder("ds1");
-        atomikosTransactionManager.rollback(rollbackEvent);
-        xaDataSourceMap = createXADataSourceMap();
-        assertOrderCount("ds1", 0L);
-    }
-    
     @Test
     @SneakyThrows
-    public void assertDoEnlistInAnotherThreadWhenInDoubtState() {
+    public void assertAccessSucceedAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         coordinateOnlyExecutePrepare();
@@ -128,6 +119,15 @@ public class AtomikosTransactionManagerRecoveryTest {
         });
         thread.start();
         thread.join();
+    }
+    
+    @Test(expected = AtomikosSQLException.class)
+    public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
+        atomikosTransactionManager.begin(beginEvent);
+        insertOrder("ds1");
+        atomikosTransactionManager.rollback(rollbackEvent);
+        xaDataSourceMap = createXADataSourceMap();
+        assertOrderCount("ds1", 0L);
     }
     
     @Test
