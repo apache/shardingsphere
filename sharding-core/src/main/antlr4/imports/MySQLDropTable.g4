@@ -3,6 +3,5 @@ grammar MySQLDropTable;
 import MySQLKeyword, Keyword, BaseRule;
 
 dropTable
-    : DROP TEMPORARY? TABLE ifExists?
-    tableNames
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableNames
     ;

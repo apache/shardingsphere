@@ -5,20 +5,18 @@ import OracleKeyword, Keyword, OracleBase, DataType, Symbol;
 setTransaction
     : SET TRANSACTION
     ( 
-          ( 
-              READ (ONLY | WRITE)
-           | ISOLATION LEVEL ( SERIALIZABLE | READ COMMITTED )
-           | USE ROLLBACK SEGMENT ID
-         )(NAME STRING)?
-        | NAME STRING
-    ) 
+        READ (ONLY | WRITE)
+        | ISOLATION LEVEL (SERIALIZABLE | READ COMMITTED)
+        | USE ROLLBACK SEGMENT ID
+    )(NAME STRING)?
+    | NAME STRING
     ;
 
 commit
     : COMMIT WORK?
     ( 
-          (COMMENT STRING)?
-        | ( WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?)?
+        (COMMENT STRING)?
+        | (WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?)?
         | FORCE STRING (COMMA NUMBER)?
     )? 
     ;
@@ -26,7 +24,7 @@ commit
 rollback
     : ROLLBACK WORK?
     ( 
-          TO SAVEPOINT? ID
+        TO SAVEPOINT? ID
         | FORCE STRING
     )? 
     ;

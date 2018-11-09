@@ -3,8 +3,7 @@ grammar MySQLDCLStatement;
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 grantPriveleges
-    : GRANT
-    privType columnList? (COMMA privType columnList?)*
+    : GRANT privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     TO userOrRoles
     (WITH GRANT OPTION)?
@@ -52,9 +51,7 @@ privType
     ;
 
 objectType
-    : TABLE
-    | FUNCTION
-    | PROCEDURE
+    : TABLE | FUNCTION | PROCEDURE
     ;
 
 privLevel
@@ -67,9 +64,7 @@ privLevel
     ;
 
 user
-    : STRING AT_ STRING
-    | STRING
-    | ID
+    : STRING AT_ STRING | STRING | ID
     ;
 
 users
@@ -77,9 +72,7 @@ users
     ;
 
 role
-    : STRING AT_ STRING
-    | STRING
-    | ID
+    : STRING AT_ STRING | STRING | ID
     ;
 
 roles
@@ -87,8 +80,7 @@ roles
     ;
 
 userOrRole
-    : user
-    | role
+    : user | role
     ;
 
 userOrRoles
@@ -96,20 +88,15 @@ userOrRoles
     ;
 
 grantProxy
-    : GRANT PROXY ON userOrRole
-    TO userOrRoles
-    (WITH GRANT OPTION)?
+    : GRANT PROXY ON userOrRole TO userOrRoles (WITH GRANT OPTION)?
     ;
 
 grantRoles
-    : GRANT roleNames
-    TO userOrRoles
-    (WITH ADMIN OPTION)?
+    : GRANT roleNames TO userOrRoles (WITH ADMIN OPTION)?
     ;
 
 revokePriveleges
-    : REVOKE
-    privType columnList? (COMMA privType columnList?)*
+    : REVOKE privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     FROM userOrRoles
     ;
@@ -155,11 +142,7 @@ authPlugin
     ;
 
 tlsOption
-    : SSL
-    | X509
-    | CIPHER STRING
-    | ISSUER STRING
-    | SUBJECT STRING
+    : SSL | CIPHER STRING | ISSUER STRING | SUBJECT STRING | ID
     ;
 
 resourceOption
@@ -177,8 +160,7 @@ passwordOption
     ;
 
 lockOption
-    : ACCOUNT LOCK
-    | ACCOUNT UNLOCK
+    : ACCOUNT (LOCK | UNLOCK)
     ;
 
 alterUser

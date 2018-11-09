@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.util;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
@@ -41,23 +42,21 @@ public final class ExtractorUtils {
      */
     public static Optional<ColumnDefinition> extractColumnDefinition(final ParserRuleContext columnDefinitionNode) {
         Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
-        if (!columnNameNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
-        Optional<String> typeName = dataTypeContext.isPresent() ? Optional.of(dataTypeContext.get().getChild(0).getText()) : Optional.<String>absent();
-        Optional<Integer> dataTypeLength = dataTypeContext.isPresent() ? getDataTypeLength(dataTypeContext.get()) : Optional.<Integer>absent();
-        boolean primaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
-        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), typeName.orNull(), dataTypeLength.orNull(), primaryKey));
+        Preconditions.checkState(columnNameNode.isPresent());
+        Optional<ParserRuleContext> dataTypeNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
+        Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getText()) : Optional.<String>absent();
+        Optional<Integer> dataTypeLength = dataTypeNode.isPresent() ? getDataTypeLength(dataTypeNode.get()) : Optional.<Integer>absent();
+        boolean isPrimaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
+        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey));
     }
     
     private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
-        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildNode(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
-        if (!dataTypeLengthContext.isPresent() || dataTypeLengthContext.get().getChildCount() < 3) {
+        Optional<ParserRuleContext> dataTypeLengthNode = ASTUtils.findFirstChildNode(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
+        if (!dataTypeLengthNode.isPresent() || dataTypeLengthNode.get().getChildCount() < 3) {
             return Optional.absent();
         }
         try {
-            return Optional.of(Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText()));
+            return Optional.of(Integer.parseInt(dataTypeLengthNode.get().getChild(1).getText()));
         } catch (final NumberFormatException ignored) {
             return Optional.absent();
         }

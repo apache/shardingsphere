@@ -12,10 +12,7 @@ dataType
     ;
 
 typeName
-    : DOUBLE PRECISION
-    | CHARACTER VARYING?
-    | BIT VARYING?
-    | ID
+    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
     ;
 
 intervalFields
@@ -40,9 +37,7 @@ usingIndexType:
     ;
 
 columnConstraint
-    : constraintClause?
-    columnConstraintOption
-    constraintOptionalParam
+    : constraintClause? columnConstraintOption constraintOptionalParam
     ;
 
 constraintClause
@@ -61,12 +56,11 @@ columnConstraintOption
     ;
 
 checkOption
-    : CHECK expr (NO INHERIT )?
+    : CHECK expr (NO INHERIT)?
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP
-    | expr;
+    : CURRENT_TIMESTAMP | expr;
 
 sequenceOptions:
     sequenceOption+
@@ -89,11 +83,7 @@ indexParameters
     ;
 
 action
-    : NO ACTION
-    | RESTRICT
-    | CASCADE
-    | SET NULL
-    | SET DEFAULT
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
     ;
 
 constraintOptionalParam
@@ -101,9 +91,7 @@ constraintOptionalParam
     ;
 
 tableConstraint
-    : constraintClause?
-    tableConstraintOption
-    constraintOptionalParam
+    : constraintClause? tableConstraintOption constraintOptionalParam
     ;
 
 tableConstraintOption
@@ -114,16 +102,11 @@ tableConstraintOption
     ;
 
 foreignKeyOnAction
-    : ON UPDATE foreignKeyOn
-    | ON DELETE foreignKeyOn
+    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
     ;
 
 foreignKeyOn
-    : RESTRICT
-    | CASCADE
-    | SET NULL
-    | NO ACTION
-    | SET DEFAULT
+    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
 excludeElement
@@ -139,16 +122,12 @@ privateExprOfDb:
      ;
 
 pgExpr
-     : castExpr
-     | collateExpr
-     | expr
+     : castExpr | collateExpr | expr
      ;
 
 aggregateExpression
-     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_)
-     asteriskWithParen
-     (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_)
-     filterClause?
+     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_) asteriskWithParen
+     (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_) filterClause?
      ;
 
 filterClause

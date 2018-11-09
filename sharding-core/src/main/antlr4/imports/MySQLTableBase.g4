@@ -12,8 +12,7 @@ dataType
     ;
 
  typeName
-    : DOUBLE PRECISION
-    | ID
+    : DOUBLE PRECISION | ID
     ;
 
 dataTypeOption
@@ -26,10 +25,7 @@ dataTypeOption
     ;
 
 dataTypeGeneratedOption
-    : nullNotnull
-    | UNIQUE KEY?
-    | primaryKey
-    | COMMENT STRING
+    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING
     ;
 
 defaultValue
@@ -45,28 +41,19 @@ currentTimestampType
     ;
 
 referenceDefinition
-    : REFERENCES tableName keyPartsWithParen
-    (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?
-    referenceType*
+    : REFERENCES tableName keyPartsWithParen (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType*
     ;
 
 referenceType
-    : ON UPDATE referenceOption
-    | ON DELETE referenceOption
+    : ON (UPDATE  | DELETE) referenceOption
     ;
 
 referenceOption
-    : RESTRICT
-    | CASCADE
-    | SET NULL
-    | NO ACTION
-    | SET DEFAULT
+    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
 dataTypeGenerated
-    : (GENERATED ALWAYS)? AS expr
-    (VIRTUAL | STORED)?
-    dataTypeGeneratedOption*
+    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption*
     ;
 
 constraintDefinition
@@ -125,10 +112,8 @@ engineName
     ;
 
 partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition)
-    (PARTITIONS NUMBER)?
-    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER)? )?
-    (LP_ partitionDefinitions RP_)?
+    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER)?
+    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER)? )? (LP_ partitionDefinitions RP_)?
     ;
 
 linearPartition
@@ -155,7 +140,7 @@ partitionDefinition
     ;
 
 partitionDefinitionOption
-    : (STORAGE)? ENGINE EQ_? engineName
+    : STORAGE? ENGINE EQ_? engineName
     | COMMENT EQ_? STRING
     | DATA DIRECTORY EQ_? STRING
     | INDEX DIRECTORY EQ_? STRING
@@ -169,6 +154,5 @@ lessThanPartition
     ;
 
 subpartitionDefinition
-    : SUBPARTITION partitionName
-    partitionDefinitionOption*
+    : SUBPARTITION partitionName partitionDefinitionOption*
     ;

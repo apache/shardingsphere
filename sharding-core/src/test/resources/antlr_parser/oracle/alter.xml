@@ -280,19 +280,19 @@
 
     <parser-result sql-case-id="alter_index">
         <tokens>
-            <index-token begin-position="12" original-literals="idx_order_id" />
+            <index-token begin-position="12" original-literals="idx_order_id" table-name=""/>
         </tokens>
     </parser-result>
 
     <parser-result sql-case-id="alter_index_with_space">
         <tokens>
-            <index-token begin-position="24" original-literals="idx_order_id" />
+            <index-token begin-position="24" original-literals="idx_order_id" table-name=""/>
         </tokens>
     </parser-result>
 
     <parser-result sql-case-id="alter_index_with_quota">
         <tokens>
-            <index-token begin-position="12" original-literals="&quot;idx_order_id&quot;" />
+            <index-token begin-position="12" original-literals="&quot;idx_order_id&quot;" table-name=""/>
         </tokens>
     </parser-result>
 </parser-result-sets>

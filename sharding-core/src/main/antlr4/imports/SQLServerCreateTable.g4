@@ -65,15 +65,13 @@ distributionOption
     ;
 
 dataWareHouseTableOption
-    : (CLUSTERED COLUMNSTORE INDEX) | HEAP | dataWareHousePartitionOption
+    : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
     ;
 
 dataWareHousePartitionOption
-     : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)?  
-        FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
+     : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)? FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
      ;
 
 tableStretchOptions 
-     : (FILTER_PREDICATE EQ_ ( NULL | functionCall ) COMMA )?  
-     MIGRATION_STATE EQ_ ( OUTBOUND | INBOUND | PAUSED )  
+     : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)  
      ;

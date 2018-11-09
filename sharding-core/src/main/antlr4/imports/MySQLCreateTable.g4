@@ -3,20 +3,15 @@ grammar MySQLCreateTable;
 import MySQLKeyword, Keyword, MySQLDQL, MySQLTableBase, DQLBase, MySQLBase, BaseRule, DataType, Symbol;
 
 createTable
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName
-    createTableOptions
+    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
     ;
 
 createTableOptions
-    : createTableBasic
-    | createTableSelect
-    | createTableLike
+    : createTableBasic | createTableSelect | createTableLike
     ;
 
 createTableBasic
-    : createDefinitionsWithParen
-    tableOptions?
-    partitionOptions?
+    : createDefinitionsWithParen tableOptions? partitionOptions?
     ;
 
 createDefinitionsWithParen
@@ -28,10 +23,7 @@ createDefinitions
     ;
 
 createDefinition
-    : columnDefinition
-    | constraintDefinition
-    | indexDefinition
-    | checkExpr
+    : columnDefinition | constraintDefinition | indexDefinition | checkExpr
     ;
 
 checkExpr
@@ -39,16 +31,11 @@ checkExpr
     ;
 
 createTableSelect
-    : createDefinitionsWithParen?
-    tableOptions?
-    partitionOptions?
-    (IGNORE | REPLACE)?
-    AS? unionSelect
+    : createDefinitionsWithParen? tableOptions? partitionOptions? (IGNORE | REPLACE)? AS? unionSelect
     ;
 
 createTableLike
-    : likeTable
-    | LP_ likeTable RP_
+    : likeTable | LP_ likeTable RP_
     ;
 
 likeTable

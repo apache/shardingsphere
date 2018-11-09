@@ -49,19 +49,22 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private MasterSlaveRule masterSlaveRule;
     
+    private final ShardingMetaData metaData;
+    
     public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         masterSlaveRule = getMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
+        metaData = getShardingMetaData();
     }
     
     private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
     }
     
-    @Override
-    protected ShardingMetaData getShardingMetaData() {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet()), DatabaseType.MySQL, BackendExecutorContext.getInstance().getExecuteEngine(),
-                new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
+    private ShardingMetaData getShardingMetaData() {
+        return new ShardingMetaData(getDataSourceURLs(getDataSources()), new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet()), 
+                DatabaseType.MySQL, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
+                GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
     }
     
     /**
