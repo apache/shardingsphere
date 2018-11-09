@@ -169,19 +169,28 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertRecoveryAfterDatabaseShutdown() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         mockShutdownCurrentDatabase("ds1");
         atomikosTransactionManager.commit(commitEvent);
+        // TODO we should find a way to start the same H2 database instance.
+        // TODO atomikos will get recovery info from it.
     }
     
     @SneakyThrows
-    private void mockShutdownCurrentDatabase(final String dsName) {
+    private Session mockShutdownCurrentDatabase(final String dsName) {
+        Session session = getH2Session(dsName);
+        session.getDatabase().shutdownImmediately();
+        return session;
+    }
+    
+    @SneakyThrows
+    private Session getH2Session(final String dsName) {
         Object proxyConnection = ReflectiveUtil.getProperty(xaDataSourceMap.get(dsName).getConnection(), "h");
         JdbcConnection jdbcConnection = (JdbcConnection) ReflectiveUtil.getProperty(proxyConnection, "delegate");
-        Session session = (Session) jdbcConnection.getSession();
-        session.getDatabase().shutdownImmediately();
+        return (Session) jdbcConnection.getSession();
     }
 
     private void insertOrder(final String ds) {
