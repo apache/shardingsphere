@@ -18,6 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -72,6 +73,7 @@ public final class YamlShardingConfigurationTest {
         assertMasterSlaveRules(actual);
         assertConfigMap(actual);
         assertProps(actual);
+        assertSaga(actual);
     }
     
     private void assertDataSourceMap(final YamlShardingConfiguration actual) {
@@ -135,7 +137,7 @@ public final class YamlShardingConfigurationTest {
     
     private void assertMasterSlaveRuleForDs0(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(), 
+        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(),
                 CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN));
         assertConfigMap(actual);
@@ -143,7 +145,7 @@ public final class YamlShardingConfigurationTest {
     
     private void assertMasterSlaveRuleForDs1(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(), 
+        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(),
                 CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmClassName(), is("TestAlgorithmClass"));
         assertConfigMap(actual);
@@ -160,5 +162,16 @@ public final class YamlShardingConfigurationTest {
     private void assertProps(final YamlShardingConfiguration actual) {
         assertThat(actual.getProps().size(), is(1));
         assertThat(actual.getProps().get("sql.show"), is((Object) true));
+    }
+    
+    private void assertSaga(final YamlShardingConfiguration actual) {
+        assertNotNull(actual.getSaga().getAlias());
+        assertThat(actual.getSaga().getAlias().length() ,is(36));
+        assertThat(actual.getSaga().getExecutorSize(), is(10));
+        assertThat(actual.getSaga().getTransactionMaxRetries(), is(10));
+        assertThat(actual.getSaga().getTransactionRetryDelay(), is(1000));
+        assertThat(actual.getSaga().getCompensationMaxRetries(), is(5));
+        assertThat(actual.getSaga().getCompensationRetryDelay(), is(2000));
+        assertThat(actual.getSaga().getRecoveryPolicy(), is(SagaRecoveryPolicy.BACKWARD));
     }
 }
