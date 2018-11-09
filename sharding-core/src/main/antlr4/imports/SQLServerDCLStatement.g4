@@ -49,6 +49,15 @@ deny
     : DENY permissionWithClass TO ids CASCADE? (AS ID)?
     ;
 
+createUser2
+    : CREATE USER userName
+    (
+         windowsPrincipal (WITH  optionsList (COMMA optionsList)*)?
+         | userName WITH PASSWORD EQ_ STRING (COMMA  optionsList)*
+         | ID FROM EXTERNAL PROVIDER
+    )
+    ;
+
 createUser3
     : CREATE USER userName
     (
