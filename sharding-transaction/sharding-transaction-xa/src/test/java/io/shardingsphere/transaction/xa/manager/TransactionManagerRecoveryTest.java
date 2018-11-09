@@ -22,14 +22,10 @@ import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CoordinatorImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosSQLException;
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
-import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactory;
-import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.engine.Session;
@@ -50,12 +46,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-public class TransactionManagerRecoveryTest {
+public abstract class TransactionManagerRecoveryTest {
     
     private static final String INSERT_INTO_T_ORDER = "INSERT INTO t_order VALUES(1000, 10, 'init')";
     
     private static final String SELECT_COUNT_T_ORDER = "SELECT count(1) from t_order";
     
+    @Getter
     private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
     
     private Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
@@ -243,10 +240,7 @@ public class TransactionManagerRecoveryTest {
         return result;
     }
     
-    private DataSource createXADataSource(final String dsName) {
-        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, dsName);
-        return atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), dsName, DataSourceParameterFactory.build(dataSource));
-    }
+    protected abstract DataSource createXADataSource(String dsName);
     
     private final class LockResourceTask implements Runnable {
         
