@@ -49,10 +49,15 @@ deny
     : DENY permissionWithClass TO ids CASCADE? (AS ID)?
     ;
 
+createUser1
+    : CREATE USER userName
+    ((FOR | FROM) LOGIN ID)? (WITH limitedOptionsList ( COMMA limitedOptionsList)*)?
+    ;
+
 createUser2
     : CREATE USER userName
     (
-         windowsPrincipal (WITH  optionsList (COMMA optionsList)*)?
+         ID (WITH  optionsList (COMMA optionsList)*)?
          | userName WITH PASSWORD EQ_ STRING (COMMA  optionsList)*
          | ID FROM EXTERNAL PROVIDER
     )
