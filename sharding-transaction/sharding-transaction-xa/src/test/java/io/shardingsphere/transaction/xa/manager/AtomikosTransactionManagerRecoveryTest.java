@@ -61,13 +61,6 @@ public final class AtomikosTransactionManagerRecoveryTest extends TransactionMan
         Thread.sleep(3000);
     }
     
-    @SneakyThrows
-    private Session mockShutdownCurrentDatabase(final String dsName) {
-        Session session = getH2Session(dsName);
-        session.getDatabase().shutdownImmediately();
-        return session;
-    }
-    
     @Test(expected = AtomikosSQLException.class)
     @SneakyThrows
     public void assertFailedInXAResourceUnReleased() {

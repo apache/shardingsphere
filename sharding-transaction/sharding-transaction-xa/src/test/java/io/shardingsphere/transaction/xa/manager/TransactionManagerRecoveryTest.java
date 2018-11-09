@@ -63,6 +63,8 @@ public abstract class TransactionManagerRecoveryTest {
     
     @Before
     public void setup() {
+        mockShutdownCurrentDatabase("ds1");
+        mockShutdownCurrentDatabase("ds2");
         executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
         executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
         executeSQL("ds2", "DROP TABLE IF EXISTS t_order");
@@ -157,12 +159,19 @@ public abstract class TransactionManagerRecoveryTest {
     }
     
     protected abstract Session getH2Session(String dsName);
+    
+    @SneakyThrows
+    final Session mockShutdownCurrentDatabase(final String dsName) {
+        Session session = getH2Session(dsName);
+        session.getDatabase().shutdownImmediately();
+        return session;
+    }
 
     final void insertOrder(final String ds) {
         executeSQL(ds, INSERT_INTO_T_ORDER);
     }
     
-    final void assertOrderCount(final String ds, final long expectedCount) {
+    private void assertOrderCount(final String ds, final long expectedCount) {
         assertEquals(expectedCount, executeSQL(ds, SELECT_COUNT_T_ORDER));
     }
     
