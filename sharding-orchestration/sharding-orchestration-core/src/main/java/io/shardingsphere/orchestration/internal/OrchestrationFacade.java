@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -40,6 +41,7 @@ import java.util.Properties;
  * @author zhangliang
  * @author caohao
  * @author panjuan
+ * @author yangyi
  */
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
@@ -76,11 +78,13 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param authentication authentication
      * @param configMap config Map
      * @param props properties
+     * @param saga saga configuration
      */
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
-                     final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
+                     final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication,
+                     final Map<String, Object> configMap, final Properties props, final SagaConfiguration saga) {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, isOverwrite);
+            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, saga, isOverwrite);
         }
         instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
