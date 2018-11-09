@@ -105,8 +105,11 @@ public class AtomikosTransactionManagerRecoveryTest {
         mockAtomikosOnlyExecutePreparePhase();
         try {
             insertOrder("ds1");
+            // CHECKSTYLE:OFF
         } catch (Exception ex) {
+            // CHECKSTYLE:ON
             assertTrue(ex.getMessage().contains("no longer active but in state IN_DOUBT"));
+            throw ex;
         }
     }
     
