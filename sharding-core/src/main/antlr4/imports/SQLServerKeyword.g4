@@ -30,6 +30,10 @@ ASYMMETRIC
     : A S Y M M E T R I C
     ;
 
+AUTHORIZATION
+    : A U T H O R I Z A T I O N
+    ;
+
 AUTO
     : A U T O
     ;
@@ -94,6 +98,10 @@ CONVERT
     : C O N V E R T
     ;
 
+CREDENTIAL
+    : C R E D E N T I A L
+    ;
+
 DATABASE
     : D A T A B A S E
     ;
@@ -112,6 +120,10 @@ DATA_CONSISTENCY_CHECK
 
 DAYS
     : D A Y S
+    ;
+
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
     ;
 
 DELAYED_DURABILITY
@@ -294,6 +306,10 @@ MAX_DURATION
     : M A X UL_ D U R A T I O N
     ;
 
+MEMBER
+    : M E M B E R
+    ;
+
 MEMORY_OPTIMIZED
     : M E M O R Y UL_ O P T I M I Z E D
     ;
@@ -322,6 +338,10 @@ MUST_CHANGE
     : M U S T UL_ C H A N G E
     ;
 
+NAME
+    : N A M E
+    ;
+
 NOCHECK
     : N O C H E C K
     ;
@@ -340,6 +360,10 @@ OBJECT
 
 OFF
     : O F F
+    ;
+
+OLD_PASSWORD
+    : O L D UL_ P A S S W O R D
     ;
 
 ONLINE
@@ -530,6 +554,10 @@ UNCOMMITTED
     : U N C O M M I T T E D
     ;
 
+UNLOCK
+    : U N L O C K
+    ;
+
 UPDATE
     : U P D A T E
     ;
@@ -565,4 +593,3 @@ YEARS
 ZONE
     : Z O N E
     ;
-
