@@ -82,10 +82,10 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
-        assertCount("ds1", 1L);
+        assertOrderCount("ds1", 1L);
         mockAtomikosOnlyExecutePreparePhase();
         Configuration.shutdown(true);
-        assertCount("ds1", 0L);
+        assertOrderCount("ds1", 0L);
     }
     
     @Test(expected = AtomikosSQLException.class)
@@ -94,7 +94,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         insertOrder("ds1");
         atomikosTransactionManager.rollback(rollbackEvent);
         xaDataSourceMap = createXADataSourceMap();
-        assertCount("ds1", 0L);
+        assertOrderCount("ds1", 0L);
     }
     
     @Test
@@ -120,7 +120,7 @@ public class AtomikosTransactionManagerRecoveryTest {
             @Override
             public void run() {
                 atomikosTransactionManager.begin(beginEvent);
-                assertCount("ds1", 0L);
+                assertOrderCount("ds1", 0L);
             }
         });
         thread.start();
@@ -132,15 +132,15 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         insertOrder("ds2");
-        assertCount("ds1", 1L);
-        assertCount("ds2", 1L);
+        assertOrderCount("ds1", 1L);
+        assertOrderCount("ds2", 1L);
         atomikosTransactionManager.commit(commitEvent);
         atomikosTransactionManager.destroy();
         closeDataSource();
         atomikosTransactionManager = new AtomikosTransactionManager();
         xaDataSourceMap = createXADataSourceMap();
-        assertCount("ds1", 1L);
-        assertCount("ds2", 1L);
+        assertOrderCount("ds1", 1L);
+        assertOrderCount("ds2", 1L);
         atomikosTransactionManager.destroy();
     }
 
@@ -173,7 +173,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         executeSQL(ds, INSERT_INTO_T_ORDER);
     }
     
-    private void assertCount(final String ds, final long expectedCount) {
+    private void assertOrderCount(final String ds, final long expectedCount) {
         assertEquals(expectedCount, executeSQL(ds, SELECT_COUNT_T_ORDER));
     }
     
