@@ -102,7 +102,7 @@ dropUser
     ;
 
 createLogin
-    : CREATE LOGIN ID (WITH  loginOptionList  | FROM  sources)
+    : CREATE LOGIN (windowsPrincipal | ID) (WITH  loginOptionList  | FROM  sources)
     ;
 
 loginOptionList
@@ -113,7 +113,11 @@ sources
     : WINDOWS (WITH optionsLists)? | CERTIFICATE ID | ASYMMETRIC KEY ID
     ;
 
-setOption
+alterLogin
+    : ALTER LOGIN ID (ENABLE | DISABLE | WITH loginOption (COMMA loginOption)* | credentialOption)
+    ;
+
+loginOption
     :  PASSWORD EQ_ STRING HASHED? (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
@@ -124,7 +128,23 @@ passwordOption
     : MUST_CHANGE | UNLOCK
     ;
 
-credentialsOption
-    : ADD CREDENTIAL Id
+credentialOption
+    : ADD CREDENTIAL ID
     | DROP CREDENTIAL
     ;
+
+dropLogin
+    : DROP LOGIN ID
+    ;
+
+createRole
+    : CREATE ROLE roleName (AUTHORIZATION ID)
+    ;    
+
+ alterRole
+     : ALTER ROLE roleName ((ADD | DROP) MEMBER ID |  WITH NAME EQ_ ID  )
+     ;
+
+  dropRole
+      : DROP ROLE roleName
+      ;
