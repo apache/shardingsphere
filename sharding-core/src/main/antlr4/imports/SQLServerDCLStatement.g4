@@ -49,6 +49,15 @@ deny
     : DENY permissionWithClass TO ids CASCADE? (AS ID)?
     ;
 
+createUser4
+    : CREATE USER userName
+    (
+         WITHOUT LOGIN (WITH  limitedOptionsList  (COMMA limitedOptionsList)*)?
+        | (FOR | FROM ) CERTIFICATE ID
+        | (FOR | FROM) ASYMMETRIC KEY ID
+    )
+    ;
+
 optionsList
     : DEFAU_SCHEMA EQ_ schemaName
     | DEFAU_LANGUAGE EQ_ ( NONE | ID)
