@@ -19,4 +19,5 @@ execute
     | savepoint
     | beginWork
     | grant
+    | revoke
     ;

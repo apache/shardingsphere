@@ -29,6 +29,10 @@ classType
     : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER  
     ;
 
+revoke
+    : revokeGeneral | revokeDW
+    ;
+
 revokeGeneral
     : REVOKE (GRANT OPTION FOR)?
     ((ALL PRIVILEGES?)? | permissionOnColumns)
@@ -36,4 +40,10 @@ revokeGeneral
     (TO | FROM) ids
     (CASCADE)? ( AS ID)?
     ;
+
+revokeDW
+    : REVOKE permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
+    (FROM | TO)? ids CASCADE?
+    ;
+
 
