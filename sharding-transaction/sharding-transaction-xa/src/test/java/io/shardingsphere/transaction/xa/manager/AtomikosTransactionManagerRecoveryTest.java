@@ -173,10 +173,12 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertRecoveryAfterDatabaseShutdown() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
-        mockShutdownCurrentDatabase("ds1");
+        Session session = mockShutdownCurrentDatabase("ds1");
         atomikosTransactionManager.commit(commitEvent);
+        session.begin();
         // TODO we should find a way to start the same H2 database instance.
         // TODO atomikos will get recovery info from it.
+        Thread.sleep(5000);
     }
     
     @SneakyThrows
