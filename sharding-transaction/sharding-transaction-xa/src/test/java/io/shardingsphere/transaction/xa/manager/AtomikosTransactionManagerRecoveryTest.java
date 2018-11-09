@@ -75,11 +75,19 @@ public class AtomikosTransactionManagerRecoveryTest {
     @Test
     public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
         atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
-        executeSQL("ds1", INSERT_INTO_T_ORDER);
-        assertEquals(1L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
+        insertOrder("ds1");
+        assertCount("ds1", 1L);
         mockAtomikosOnlyExecutePreparePhase();
-        atomikosTransactionManager.destroy();
-        assertEquals(0L, executeSQL("ds1", SELECT_COUNT_T_ORDER));
+        Configuration.shutdown(true);
+        assertCount("ds1", 0L);
+    }
+    
+    private void insertOrder(final String ds) {
+        executeSQL(ds, INSERT_INTO_T_ORDER);
+    }
+    
+    private void assertCount(final String ds, final long expectedCount) {
+        assertEquals(expectedCount, executeSQL(ds, SELECT_COUNT_T_ORDER));
     }
     
     @Test(expected = AtomikosSQLException.class)
