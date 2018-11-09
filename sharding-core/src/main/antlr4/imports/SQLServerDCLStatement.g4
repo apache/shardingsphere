@@ -8,8 +8,7 @@ grant
     
 grantGeneral
     : GRANT (ALL PRIVILEGES? | permissionOnColumns ( COMMA permissionOnColumns)*)
-    (ON (ID COLON COLON)? ID)? TO ids
-    (WITH GRANT OPTION)? (AS ID)? 
+    (ON (ID COLON COLON)? ID)? TO ids (WITH GRANT OPTION)? (AS ID)?
     ;
 
 permissionOnColumns
@@ -34,10 +33,8 @@ revoke
     ;
 
 revokeGeneral
-    : REVOKE (GRANT OPTION FOR)?
-    ((ALL PRIVILEGES?)? | permissionOnColumns)
-    (ON (ID COLON COLON)? ID)?
-    (TO | FROM) ids (CASCADE)? (AS ID)?
+    : REVOKE (GRANT OPTION FOR)? ((ALL PRIVILEGES?)? | permissionOnColumns)
+    (ON (ID COLON COLON)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
     ;
 
 revokeDW
@@ -48,6 +45,10 @@ permissionWithClass
     : permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
     ;
 
-denyGeneral
+deny
     : DENY permissionWithClass TO ids CASCADE? (AS ID)?
+    ;
+
+limitedOptionsList
+    :  DEFAU_SCHEMA EQ_ schemaName | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
     ;
