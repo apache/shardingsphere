@@ -39,12 +39,12 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
         }
     }
     
-    private void extractAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnContext, RuleName.COLUMN_DEFINITION)) {
+    private void extractAddColumn(final ParserRuleContext addColumnNode, final AlterTableStatement alterStatement) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             ColumnDefinition column = ExtractorUtils.extractColumnDefinition(each);
             if (!alterStatement.findColumnDefinition(column.getName()).isPresent()) {
                 alterStatement.getAddColumns().add(column);
-                postVisitColumnDefinition(addColumnContext, alterStatement, column.getName());
+                postVisitColumnDefinition(addColumnNode, alterStatement, column.getName());
             }
         }
     }

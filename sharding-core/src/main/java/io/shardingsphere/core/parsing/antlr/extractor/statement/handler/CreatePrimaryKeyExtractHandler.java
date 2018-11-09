@@ -32,18 +32,18 @@ public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        CreateTableStatement createStatement = (CreateTableStatement) statement;
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
-        if (!primaryKeyContext.isPresent()) {
+        CreateTableStatement createTableStatement = (CreateTableStatement) statement;
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
+        if (!primaryKeyNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnListContext = ASTUtils.findFirstChildNode(primaryKeyContext.get().getParent().getParent(), RuleName.COLUMN_LIST);
-        if (!columnListContext.isPresent()) {
+        Optional<ParserRuleContext> columnListNode = ASTUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_LIST);
+        if (!columnListNode.isPresent()) {
             return;
         }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListContext.get(), RuleName.COLUMN_NAME)) {
-            if (!createStatement.getPrimaryKeyColumns().contains(each.getText())) {
-                createStatement.getPrimaryKeyColumns().add(each.getText());
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME)) {
+            if (!createTableStatement.getPrimaryKeyColumns().contains(each.getText())) {
+                createTableStatement.getPrimaryKeyColumns().add(each.getText());
             }
         }
     }

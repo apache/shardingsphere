@@ -37,22 +37,22 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
-        if (!changeColumnContext.isPresent()) {
+        Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
+        if (!changeColumnNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildNode(changeColumnContext.get(), RuleName.COLUMN_NAME);
-        if (!oldColumnContext.isPresent()) {
+        Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
+        if (!oldColumnNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildNode(changeColumnContext.get(), RuleName.COLUMN_DEFINITION);
-        if (!columnDefinitionContext.isPresent()) {
+        Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
+        if (!columnDefinitionNode.isPresent()) {
             return;
         }
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        ColumnDefinition columnDefinition = ExtractorUtils.extractColumnDefinition(columnDefinitionContext.get());
-        alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), columnDefinition);
-        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnContext.get(), columnDefinition.getName());
+        ColumnDefinition columnDefinition = ExtractorUtils.extractColumnDefinition(columnDefinitionNode.get());
+        alterStatement.getUpdateColumns().put(oldColumnNode.get().getText(), columnDefinition);
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.getName());
         if (columnPosition.isPresent()) {
             alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }

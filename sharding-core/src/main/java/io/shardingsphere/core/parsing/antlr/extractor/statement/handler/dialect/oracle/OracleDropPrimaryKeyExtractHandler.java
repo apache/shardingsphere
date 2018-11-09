@@ -35,10 +35,10 @@ public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandl
     @Override
     public void extract(final ParserRuleContext rootNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> dropConstraintContext = ASTUtils.findFirstChildNode(rootNode, RuleName.DROP_CONSTRAINT_CLAUSE);
-        if (dropConstraintContext.isPresent()) {
-            Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(dropConstraintContext.get(), RuleName.PRIMARY_KEY);
-            if (primaryKeyContext.isPresent()) {
+        Optional<ParserRuleContext> dropConstraintNode = ASTUtils.findFirstChildNode(rootNode, RuleName.DROP_CONSTRAINT_CLAUSE);
+        if (dropConstraintNode.isPresent()) {
+            Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY);
+            if (primaryKeyNode.isPresent()) {
                 alterStatement.setDropPrimaryKey(true);
             }
         }

@@ -36,8 +36,8 @@ public final class OracleModifyColumnExtractHandler implements ASTExtractHandler
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
-            for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext, RuleName.MODIFY_COL_PROPERTIES)) {
+        for (ParserRuleContext modifyColumnNode : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+            for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
                 ColumnDefinition column = ExtractorUtils.extractColumnDefinition(each);
                 alterStatement.getUpdateColumns().put(column.getName(), column);
