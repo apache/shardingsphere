@@ -22,6 +22,10 @@ import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactory;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import lombok.SneakyThrows;
+import org.h2.engine.Session;
+import org.h2.jdbc.JdbcConnection;
 
 import javax.sql.DataSource;
 
@@ -31,5 +35,13 @@ public final class AtomikosTransactionManagerRecoveryTest extends TransactionMan
     protected DataSource createXADataSource(final String dsName) {
         DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, dsName);
         return getAtomikosTransactionManager().wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), dsName, DataSourceParameterFactory.build(dataSource));
+    }
+    
+    @Override
+    @SneakyThrows
+    protected Session getH2Session(final String dsName) {
+        Object proxyConnection = ReflectiveUtil.getProperty(getXaDataSourceMap().get(dsName).getConnection(), "h");
+        JdbcConnection jdbcConnection = (JdbcConnection) ReflectiveUtil.getProperty(proxyConnection, "delegate");
+        return (Session) jdbcConnection.getSession();
     }
 }
