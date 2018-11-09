@@ -88,14 +88,14 @@ public class AtomikosTransactionManagerRecoveryTest {
         assertOrderCount("ds1", 0L);
     }
     
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void assertAccessFailedAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         insertOrder("ds2");
         coordinateOnlyExecutePrepare();
         try {
-            insertOrder("ds1");
+            assertOrderCount("ds1", 1L);
             // CHECKSTYLE:OFF
         } catch (Exception ex) {
             // CHECKSTYLE:ON
