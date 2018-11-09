@@ -22,10 +22,25 @@ import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactory;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import lombok.SneakyThrows;
+import org.apache.tomcat.dbcp.dbcp2.managed.ManagedConnection;
+import org.apache.tomcat.dbcp.dbcp2.managed.PoolableManagedConnection;
+import org.h2.engine.Session;
+import org.h2.jdbc.JdbcConnection;
 
 import javax.sql.DataSource;
 
 public final class DBCP2TransactionManagerRecoveryTest extends TransactionManagerRecoveryTest {
+    
+    @Override
+    @SneakyThrows
+    protected Session getH2Session(final String dsName) {
+        ManagedConnection managedConnection = (ManagedConnection) getXaDataSourceMap().get(dsName).getConnection();
+        PoolableManagedConnection poolableManagedConnection = (PoolableManagedConnection) ReflectiveUtil.getProperty(managedConnection, "connection");
+        JdbcConnection jdbcConnection = (JdbcConnection) ReflectiveUtil.getProperty(poolableManagedConnection, "connection");
+        return (Session) jdbcConnection.getSession();
+    }
     
     @Override
     protected DataSource createXADataSource(final String dsName) {
