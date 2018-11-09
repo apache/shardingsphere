@@ -37,13 +37,14 @@ revokeGeneral
     : REVOKE (GRANT OPTION FOR)?
     ((ALL PRIVILEGES?)? | permissionOnColumns)
     (ON (ID COLON COLON)? ID)?
-    (TO | FROM) ids
-    (CASCADE)? ( AS ID)?
+    (TO | FROM) ids (CASCADE)? (AS ID)?
     ;
 
 revokeDW
-    : REVOKE permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
-    (FROM | TO)? ids CASCADE?
+    : REVOKE permissionWithClass (FROM | TO)? ids CASCADE?
     ;
 
+permissionWithClass
+    : permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
+    ;
 
