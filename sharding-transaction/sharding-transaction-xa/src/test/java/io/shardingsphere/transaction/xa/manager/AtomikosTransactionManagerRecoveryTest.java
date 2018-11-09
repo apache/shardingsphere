@@ -165,6 +165,21 @@ public class AtomikosTransactionManagerRecoveryTest {
         xaDataSourceMap = createXADataSourceMap();
         xaDataSourceMap.get("ds1").getConnection();
     }
+    
+    @Test
+    public void assertRecoveryAfterDatabaseShutdown() {
+        atomikosTransactionManager.begin(beginEvent);
+        insertOrder("ds1");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
+            }
+        }).start();
+        assertOrderCount("ds1", 0L);
+        atomikosTransactionManager.commit(commitEvent);
+        
+    }
 
     private void insertOrder(final String ds) {
         executeSQL(ds, INSERT_INTO_T_ORDER);
