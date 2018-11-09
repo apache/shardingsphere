@@ -7,10 +7,13 @@ grant
     ;
     
 grantGeneral
-    : GRANT (ALL PRIVILEGES? | permissionOnColumns ( COMMA permissionOnColumns)*)
-    (ON (ID COLON COLON)? ID)? TO ids (WITH GRANT OPTION)? (AS ID)?
+    : GRANT generalPrisOn TO ids (WITH GRANT OPTION)? (AS ID)?
     ;
-
+    
+generalPrisOn
+    : (ALL PRIVILEGES? | permissionOnColumns (COMMA permissionOnColumns)*) (ON (ID COLON COLON)? ID)?
+    ;
+    
 permissionOnColumns
     : permission columnList?
     ;
@@ -46,51 +49,46 @@ permissionWithClass
     ;
 
 deny
-    : DENY permissionWithClass TO ids CASCADE? (AS ID)?
+    : DENY generalPrisOn TO ids CASCADE? (AS ID)?
     ;
 
 createUser
-    : createUser1 | createUser2 | createUser3 | createUser4
-    ;
-
-createUser1
-    : CREATE USER userName
-    ((FOR | FROM) LOGIN ID)? (WITH limitedOptionsList ( COMMA limitedOptionsList)*)?
-    ;
-
-createUser2
-    : CREATE USER userName
+    : CREATE USER 
     (
-         ID (WITH  optionsList (COMMA optionsList)*)?
-         | userName WITH PASSWORD EQ_ STRING (COMMA  optionsList)*
-         | ID FROM EXTERNAL PROVIDER
-    )
+        userName (createUserBody1 | createUserBody4) 
+        | createUserBody2 
+        | createUserBody3 
+    )?
     ;
 
-createUser3
-    : CREATE USER userName
-    (
-        ID (( FOR | FROM ) LOGIN ID)?
-        | userName ( FOR | FROM ) LOGIN ID
-    )
+createUserBody1
+    : ((FOR | FROM) LOGIN ID)? (WITH optionsLists)?
     ;
 
-createUser4
-    : CREATE USER userName
-    (
-         WITHOUT LOGIN (WITH  limitedOptionsList  (COMMA limitedOptionsList)*)?
-        | (FOR | FROM ) CERTIFICATE ID
-        | (FOR | FROM) ASYMMETRIC KEY ID
-    )
+createUserBody2
+    : windowsPrincipal (WITH optionsLists)?
+    | userName WITH PASSWORD EQ_ STRING (COMMA optionsList)*
+    | ID FROM EXTERNAL PROVIDER
+    ;
+    
+windowsPrincipal
+    : ID BACKSLASH ID
+    ;
+     
+createUserBody3
+    : windowsPrincipal ((FOR | FROM) LOGIN ID)?
+    | userName (FOR | FROM) LOGIN ID
     ;
 
+createUserBody4
+    : WITHOUT LOGIN (WITH optionsLists)?
+    | (FOR | FROM) (CERTIFICATE ID | ASYMMETRIC KEY ID)
+    ;
+    
+optionsLists
+    : optionsList (COMMA optionsList)*
+    ;
+    
 optionsList
-    : DEFAU_SCHEMA EQ_ schemaName
-    | DEFAU_LANGUAGE EQ_ ( NONE | ID)
-    | SID EQ_ ID
-    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)
-    ;
-
-limitedOptionsList
-    :  DEFAU_SCHEMA EQ_ schemaName | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
+    : ID EQ_ ID?
     ;
