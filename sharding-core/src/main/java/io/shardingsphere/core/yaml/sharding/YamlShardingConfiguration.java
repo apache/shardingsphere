@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +41,7 @@ import java.util.Properties;
  * Sharding configuration for yaml.
  *
  * @author caohao
+ * @author yangyi
  */
 @Getter
 @Setter
@@ -52,6 +54,8 @@ public class YamlShardingConfiguration {
     private Map<String, Object> configMap = new LinkedHashMap<>();
     
     private Properties props = new Properties();
+    
+    private SagaConfiguration saga = new SagaConfiguration();
     
     /**
      * Unmarshal yaml sharding configuration from yaml file.
