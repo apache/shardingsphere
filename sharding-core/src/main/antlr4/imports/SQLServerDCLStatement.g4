@@ -8,7 +8,7 @@ grant
     
 grantGeneral
     : GRANT (ALL PRIVILEGES? | permissionOnColumns ( COMMA permissionOnColumns)*)
-    (ON (ID COLON COLON)? ID )? TO ids   
+    (ON (ID COLON COLON)? ID)? TO ids
     (WITH GRANT OPTION)? (AS ID)? 
     ;
 
@@ -28,3 +28,12 @@ grantDW
 classType
     : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER  
     ;
+
+revokeGeneral
+    : REVOKE (GRANT OPTION FOR)?
+    ((ALL PRIVILEGES?)? | permissionOnColumns)
+    (ON (ID COLON COLON)? ID)?
+    (TO | FROM) ids
+    (CASCADE)? ( AS ID)?
+    ;
+

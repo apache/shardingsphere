@@ -394,6 +394,10 @@ RESUMABLE
     : R E S U M A B L E
     ;
 
+REVOKE
+    : R E V O K E
+    ;
+
 RIGHT
     : R I G H T
     ;
