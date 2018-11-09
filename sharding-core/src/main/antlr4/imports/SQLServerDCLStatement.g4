@@ -100,10 +100,12 @@ alterUser
 dropUser
     : DROP USER (IF EXISTS)? userName
     ;
-       
+
+loginOptionList
+    : PASSWORD EQ_ STRING HASHED? MUST_CHANGE? (COMMA optionsList)*
+    ;
+
 sources
-    : WINDOWS (WITH optionsList (COMMA optionsList)?)?  
-    | CERTIFICATE ID  
-    | ASYMMETRIC KEY ID
+    : WINDOWS (WITH optionsLists)? | CERTIFICATE ID | ASYMMETRIC KEY ID
     ;
     
