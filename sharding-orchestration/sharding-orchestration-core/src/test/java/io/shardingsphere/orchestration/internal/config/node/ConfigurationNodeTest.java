@@ -56,4 +56,9 @@ public final class ConfigurationNodeTest {
     public void assertGetPropsPath() {
         assertThat(configurationNode.getPropsPath(), is("/test/config/props"));
     }
+    
+    @Test
+    public void assertGetSagaPath() {
+        assertThat(configurationNode.getSagaPath(), is("/test/config/saga"));
+    }
 }
