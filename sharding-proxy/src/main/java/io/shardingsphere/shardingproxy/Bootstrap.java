@@ -70,7 +70,7 @@ public final class Bootstrap {
         new ProxyListenerRegister().register();
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(),
-                    shardingConfig.getServerConfiguration().getConfigMap(), shardingConfig.getServerConfiguration().getProps(), port);
+                    shardingConfig.getServerConfiguration().getConfigMap(), shardingConfig.getServerConfiguration().getProps(), shardingConfig.getServerConfiguration().getSaga(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
@@ -88,8 +88,8 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final Authentication authentication,
-                                                   final Map<String, Object> configMap, final Properties prop, final int port) throws InterruptedException {
-        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop, new SagaConfiguration());
+                                                   final Map<String, Object> configMap, final Properties prop, final SagaConfiguration saga, final int port) throws InterruptedException {
+        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop, saga == null ? new SagaConfiguration() : saga);
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -100,7 +100,7 @@ public final class Bootstrap {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(orchestrationFacade), getSchemaRules(orchestrationFacade),
                     orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(),
-                    orchestrationFacade.getConfigService().loadProperties(), new SagaConfiguration(), true);
+                    orchestrationFacade.getConfigService().loadProperties(), orchestrationFacade.getConfigService().loadSaga(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
@@ -132,7 +132,7 @@ public final class Bootstrap {
             orchestrationFacade.init();
         } else {
             orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getConfigMap(), serverConfig.getProps());
+                    getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getConfigMap(), serverConfig.getProps(), serverConfig.getSaga());
         }
     }
     
