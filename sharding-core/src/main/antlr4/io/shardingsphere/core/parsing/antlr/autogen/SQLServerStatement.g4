@@ -25,4 +25,9 @@ execute
     | alterUser
     | dropUser
     | createLogin
+    | alterLogin
+    | dropLogin
+    | createRole
+    | alterRole
+    | dropRole
     ;
