@@ -245,8 +245,7 @@ public final class ConfigurationService {
     
     private Collection<String> getSlaveDataSourceNamesFromShardingRule(final String schemaName) {
         Collection<String> result = new LinkedList<>();
-        ShardingRuleConfiguration shardingConfig = loadShardingRuleConfiguration(schemaName);
-        for (MasterSlaveRuleConfiguration each : shardingConfig.getMasterSlaveRuleConfigs()) {
+        for (MasterSlaveRuleConfiguration each : loadShardingRuleConfiguration(schemaName).getMasterSlaveRuleConfigs()) {
             result.addAll(each.getSlaveDataSourceNames());
         }
         return result;
