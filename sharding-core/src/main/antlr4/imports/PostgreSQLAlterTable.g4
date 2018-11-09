@@ -84,9 +84,7 @@ alterColumn
     ;
 
 alterColumnSetOption
-    : SET GENERATED (ALWAYS | BY DEFAULT)
-    | SET sequenceOption
-    | RESTART (WITH? NUMBER)?
+    : SET (GENERATED (ALWAYS | BY DEFAULT) | sequenceOption) | RESTART (WITH? NUMBER)?
     ;
 
 attributeOptions
@@ -98,8 +96,7 @@ attributeOption
     ;
 
 alterTableAddConstraint       
-    : ADD tableConstraint (NOT VALID)?
-    | ADD tableConstraintUsingIndex
+    : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
 
 renameColumn

@@ -41,8 +41,6 @@ public abstract class LogicSchema {
     
     private final Map<String, DataSourceParameter> dataSources;
     
-    private final ShardingMetaData metaData;
-    
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
@@ -50,7 +48,6 @@ public abstract class LogicSchema {
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = getShardingMetaData();
     }
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -61,7 +58,12 @@ public abstract class LogicSchema {
         return result;
     }
     
-    protected abstract ShardingMetaData getShardingMetaData();
+    /**
+     * Get sharding meta data.
+     * 
+     * @return sharding meta data.
+     */
+    public abstract ShardingMetaData getMetaData();
     
     /**
      * Renew data source configuration.

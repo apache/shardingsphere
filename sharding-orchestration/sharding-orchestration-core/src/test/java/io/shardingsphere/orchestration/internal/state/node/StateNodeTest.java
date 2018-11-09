@@ -15,18 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config;
+package io.shardingsphere.orchestration.internal.state.node;
 
-import io.shardingsphere.orchestration.internal.config.node.ConfigurationNodeTest;
-import io.shardingsphere.orchestration.internal.config.service.ConfigurationServiceTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        ConfigurationNodeTest.class,
-        ConfigurationServiceTest.class
-})
-public final class AllConfigTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class StateNodeTest {
+    
+    private StateNode stateNode = new StateNode("test");
+    
+    @Test
+    public void assertGetDataSourcesNodeFullPath() {
+        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/test/state/datasources"));
+    }
+    
+    @Test
+    public void assertGetInstancesNodeFullPath() {
+        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
+    }
 }

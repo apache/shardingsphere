@@ -3,9 +3,7 @@ grammar PostgreSQLAlterIndex;
 import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule;
 
 alterIndex
-    : alterIndexName renameIndex
-    | alterIndexDependsOnExtension
-    | alterIndexSetTableSpace
+    : alterIndexName renameIndex | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
 
 alterIndexName

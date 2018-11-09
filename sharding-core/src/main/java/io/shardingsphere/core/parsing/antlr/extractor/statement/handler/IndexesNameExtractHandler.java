@@ -18,9 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -33,9 +34,9 @@ public final class IndexesNameExtractHandler implements ASTExtractHandler {
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        String tableName = ddlStatement.getTables().isEmpty() ? null : ddlStatement.getTables().getSingleTableName();
+        String tableName = ddlStatement.getTables().isEmpty() ? "" : ddlStatement.getTables().getSingleTableName();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            statement.getSQLTokens().add(ExtractorUtils.extractIndex(each, tableName));
+            statement.getSQLTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), tableName));
         }
     }
 }

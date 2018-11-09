@@ -6,10 +6,10 @@ setTransaction
     : SET TRANSACTION ISOLATION LEVEL
     (
         READ (UNCOMMITTED | COMMITTED)
-      | REPEATABLE READ
-      | SNAPSHOT
-      | SERIALIZABLE
-      | ISOLATION LEVEL READ UNCOMMITTED
+        | REPEATABLE READ
+        | SNAPSHOT
+        | SERIALIZABLE
+        | ISOLATION LEVEL READ UNCOMMITTED
     )
     ;
 
@@ -25,7 +25,7 @@ rollback
     : ROLLBACK  
     (
         (TRAN | TRANSACTION) ID?
-       | WORK?
+        | WORK?
     )
     ;
 
@@ -34,5 +34,5 @@ savepoint
     ;
 
 beginWork
-    : BEGIN (TRAN | TRANSACTION) (ID ( WITH MARK STRING)?)?
+    : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
     ;

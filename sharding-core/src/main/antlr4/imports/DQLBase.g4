@@ -3,13 +3,11 @@ grammar DQLBase;
 import BaseRule, Keyword, Symbol, DataType;
 
 select 
-    : withClause
-    | unionSelect
+    : withClause | unionSelect
     ;
 
 withClause
-    : WITH RECURSIVE? cteClause (COMMA cteClause)*
-    unionSelect
+    : WITH RECURSIVE? cteClause (COMMA cteClause)* unionSelect
     ;
 
 cteClause
@@ -21,12 +19,7 @@ unionSelect
     ;
 
 selectExpression
-    : selectClause 
-    fromClause? 
-    whereClause? 
-    groupByClause? 
-    orderByClause? 
-    limitClause?
+    : selectClause fromClause? whereClause? groupByClause? orderByClause? limitClause?
     ;
 
 selectClause
@@ -46,9 +39,7 @@ whereClause
     ;
 
 groupByClause 
-    : GROUP BY groupByItem (COMMA groupByItem)* 
-    (WITH ROLLUP)? 
-    havingClause?
+    : GROUP BY groupByItem (COMMA groupByItem)* (WITH ROLLUP)? havingClause?
     ;
 
 havingClause
@@ -64,8 +55,7 @@ partitionClause
     ;
 
 selectExprs
-    : ASTERISK (COMMA selectExpr)* 
-    | selectExpr (COMMA ASTERISK)? (COMMA selectExpr)*
+    : ASTERISK (COMMA selectExpr)* | selectExpr (COMMA ASTERISK)? (COMMA selectExpr)*
     ;
 
 subquery

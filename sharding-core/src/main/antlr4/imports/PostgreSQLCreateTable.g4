@@ -3,9 +3,7 @@ grammar PostgreSQLCreateTable;
 import PostgreSQLKeyword, DataType, Keyword, PostgreSQLBase, BaseRule, Symbol;
 
 createTable
-    : createTableHeader
-    createDefinitions
-    inheritClause?
+    : createTableHeader createDefinitions inheritClause?
     ;
 
 createTableHeader
@@ -17,14 +15,11 @@ createDefinitions
     ;
 
 createDefinition
-    : columnDefinition
-    | tableConstraint
-    | LIKE tableName likeOption*
+    : columnDefinition | tableConstraint | LIKE tableName likeOption*
     ;
 
 likeOption
-    : (INCLUDING | EXCLUDING)
-    (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
     ;
 
 inheritClause

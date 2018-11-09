@@ -53,19 +53,22 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingRule shardingRule;
     
+    private final ShardingMetaData metaData;
+    
     public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         shardingRule = getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
+        metaData = getShardingMetaData();
     }
     
     private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSourceNames) : new ShardingRule(shardingRule, dataSourceNames);
     }
     
-    @Override
-    protected ShardingMetaData getShardingMetaData() {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL, BackendExecutorContext.getInstance().getExecuteEngine(),
-                new ProxyTableMetaDataConnectionManager(getBackendDataSource()), GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
+    private ShardingMetaData getShardingMetaData() {
+        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL, 
+                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
+                GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
     }
     
     /**

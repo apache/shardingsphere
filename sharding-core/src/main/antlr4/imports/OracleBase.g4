@@ -2,15 +2,13 @@ grammar OracleBase;
 
 import OracleKeyword, Keyword, Symbol, BaseRule, DataType;
 
-ID: 
-    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT)?
-    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
-    |[a-zA-Z_$#0-9]+ DOT ASTERISK
+ID
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
+    | [a-zA-Z_$#0-9]+ DOT ASTERISK
     ;
 
 oracleId
-   : ID
-   | (STRING DOT)* STRING
+   : ID | (STRING DOT)* STRING
    ;
 
 tableName
@@ -55,33 +53,23 @@ lobItemList
     ;
 
 dataType
-    : typeName dataTypeLength?
-    | specialDatatype
-    | typeName dataTypeLength? datetimeTypeSuffix
+    : typeName dataTypeLength? | specialDatatype | typeName dataTypeLength? datetimeTypeSuffix
     ;
 
 typeName
-    : DOUBLE PRECISION
-    | INTERVAL YEAR
-    | INTERVAL DAY
-    | ID
+    : DOUBLE PRECISION | INTERVAL YEAR | INTERVAL DAY | ID
     ;
 
 specialDatatype
-    : typeName (LP_ NUMBER ID  RP_)
-    | NATIONAL typeName (VARYING)? LP_ NUMBER RP_ 
-    | typeName LP_? columnName  RP_?
+    : typeName (LP_ NUMBER ID  RP_) | NATIONAL typeName VARYING? LP_ NUMBER RP_  | typeName LP_? columnName  RP_?
     ;
 
 datetimeTypeSuffix
-    : (WITH LOCAL? TIME ZONE)?
-    | TO MONTH
-    | TO SECOND (LP_ NUMBER RP_)?
+    : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER RP_)?
     ;
 
 columnSortClause
-    : tableAndAlias columnName
-    (ASC | DESC)?
+    : tableAndAlias columnName (ASC | DESC)?
     ;
 
 tableAndAlias
@@ -89,11 +77,7 @@ tableAndAlias
     ;
 
 privateExprOfDb
-    : treatFunction
-    | caseExpr
-    | intervalExpression
-    | objectAccessExpression
-    | constructorExpr
+    : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
     ;
 
 treatFunction
@@ -101,16 +85,11 @@ treatFunction
     ;
 
 caseExpr
-    : CASE ( simpleCaseExpr
-     | searchedCaseExpr
-     )
-     elseClause?
-     END
+    : CASE (simpleCaseExpr | searchedCaseExpr) elseClause? END
     ;
 
 simpleCaseExpr
-    : expr
-    searchedCaseExpr+
+    : expr searchedCaseExpr+
     ;
 
 searchedCaseExpr
@@ -122,11 +101,7 @@ elseClause
     ;
 
 dateTimeExpr
-    : expr AT 
-    (
-         LOCAL
-        | TIME ZONE (STRING | DBTIMEZONE | expr)
-    )
+    : expr AT (LOCAL | TIME ZONE (STRING | DBTIMEZONE | expr))
     ;
 
 exprRecursive
@@ -136,13 +111,13 @@ exprRecursive
 intervalExpression
     : LP_ expr MINUS expr RP_ 
     (
-         DAY ( LP_ NUMBER RP_ )? TO SECOND ( LP_ NUMBER RP_ )?
-       | YEAR ( LP_ NUMBER RP_ )? TO MONTH
+         DAY (LP_ NUMBER RP_)? TO SECOND (LP_ NUMBER RP_)?
+       | YEAR (LP_ NUMBER RP_)? TO MONTH
     )
     ;
 
 objectAccessExpression
-    : ( LP_ simpleExpr RP_ |treatFunction)
+    : (LP_ simpleExpr RP_ |treatFunction)
     DOT
     ( 
         attributeName (DOT attributeName )* (DOT functionCall)?
