@@ -113,6 +113,17 @@ sources
     : WINDOWS (WITH optionsLists)? | CERTIFICATE ID | ASYMMETRIC KEY ID
     ;
 
+setOption
+    :  PASSWORD EQ_ STRING HASHED? (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
+    | DEFAULT_DATABASE EQ_ databaseName
+    | optionsList
+    | NO CREDENTIAL
+    ;
+
+passwordOption
+    : MUST_CHANGE | UNLOCK
+    ;
+
 credentialsOption
     : ADD CREDENTIAL Id
     | DROP CREDENTIAL
