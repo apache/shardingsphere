@@ -21,7 +21,6 @@ import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CoordinatorImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jdbc.AtomikosSQLException;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
@@ -149,13 +148,6 @@ public abstract class TransactionManagerRecoveryTest {
         thread.join();
     }
     
-    @Test(expected = AtomikosSQLException.class)
-    @SneakyThrows
-    public void assertFailedInXAResourceUnReleased() {
-        xaDataSourceMap = createXADataSourceMap();
-        xaDataSourceMap.get("ds1").getConnection();
-    }
-    
     @Test
     @SneakyThrows
     public void assertSucceedInAfterXAResourceReleased() {
@@ -207,7 +199,7 @@ public abstract class TransactionManagerRecoveryTest {
         }
     }
     
-    private Map<String, DataSource> createXADataSourceMap() {
+    final Map<String, DataSource> createXADataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("ds1", createXADataSource("ds1"));
         result.put("ds2", createXADataSource("ds2"));
