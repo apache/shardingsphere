@@ -227,9 +227,9 @@ public final class ConfigurationService {
     }
     
     /**
-     * Get all master data source names.
+     * Get all slave data source names.
      *
-     * @return master data source names
+     * @return slave data source names
      */
     public Map<String, Collection<String>> getAllSlaveDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
