@@ -47,6 +47,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -373,5 +374,16 @@ public final class ConfigurationServiceTest {
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("masterslave_db"));
+    }
+    
+    @Test
+    public void assertGetAllSlaveDataSourceNames() {
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_db", "masterslave_db"));
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        Map<String, Collection<String>> actual = configurationService.getAllSlaveDataSourceNames();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.containsKey());
     }
 }
