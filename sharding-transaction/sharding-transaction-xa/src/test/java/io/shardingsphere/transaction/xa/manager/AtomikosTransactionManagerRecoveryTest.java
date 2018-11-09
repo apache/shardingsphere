@@ -88,17 +88,8 @@ public class AtomikosTransactionManagerRecoveryTest {
         assertOrderCount("ds1", 0L);
     }
     
-    @Test(expected = AtomikosSQLException.class)
-    public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
-        atomikosTransactionManager.begin(beginEvent);
-        insertOrder("ds1");
-        atomikosTransactionManager.rollback(rollbackEvent);
-        xaDataSourceMap = createXADataSourceMap();
-        assertOrderCount("ds1", 0L);
-    }
-    
     @Test
-    public void assertCurrentThreadCannotDoEnlistInDoubtState() {
+    public void assertThreadFailedAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         insertOrder("ds2");
@@ -111,6 +102,15 @@ public class AtomikosTransactionManagerRecoveryTest {
             assertTrue(ex.getMessage().contains("no longer active but in state IN_DOUBT"));
             throw ex;
         }
+    }
+    
+    @Test(expected = AtomikosSQLException.class)
+    public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
+        atomikosTransactionManager.begin(beginEvent);
+        insertOrder("ds1");
+        atomikosTransactionManager.rollback(rollbackEvent);
+        xaDataSourceMap = createXADataSourceMap();
+        assertOrderCount("ds1", 0L);
     }
     
     @Test
