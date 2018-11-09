@@ -154,6 +154,32 @@ public class AtomikosTransactionManagerRecoveryTest {
         thread.join();
     }
     
+    @Test
+    @SneakyThrows
+    public void assertLockedResourceAfterDDLExecuted() {
+        atomikosTransactionManager.begin(beginEvent);
+        insertOrder("ds1");
+        Thread thread = new Thread(new LockResourceTask());
+        thread.start();
+        thread.join();
+    }
+    
+    private class LockResourceTask implements Runnable {
+        
+        @Override
+        public void run() {
+            try {
+                atomikosTransactionManager.begin(beginEvent);
+                insertOrder("ds1");
+                // CHECKSTYLE:OFF
+            } catch (Exception ex) {
+                // CHECKSTYLE:ON
+                assertTrue(ex.getMessage().contains("Timeout trying to lock table ; SQL statement:"));
+                throw ex;
+            }
+        }
+    }
+    
     @Test(expected = AtomikosSQLException.class)
     @SneakyThrows
     public void assertFailedInXAResourceUnReleased() {
