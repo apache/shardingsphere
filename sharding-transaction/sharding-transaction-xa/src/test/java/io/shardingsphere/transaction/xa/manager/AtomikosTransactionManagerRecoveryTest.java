@@ -178,7 +178,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         session.begin();
         // TODO we should find a way to start the same H2 database instance.
         // TODO atomikos will get recovery info from it.
-        Thread.sleep(5000);
+        Thread.sleep(3000);
     }
     
     @SneakyThrows
