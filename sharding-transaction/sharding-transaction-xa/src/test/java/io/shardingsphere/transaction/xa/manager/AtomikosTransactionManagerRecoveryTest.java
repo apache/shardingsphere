@@ -83,7 +83,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         assertOrderCount("ds1", 1L);
-        mockAtomikosOnlyExecutePreparePhase();
+        coordinateOnlyExecutePrepare();
         Configuration.shutdown(true);
         assertOrderCount("ds1", 0L);
     }
@@ -93,7 +93,7 @@ public class AtomikosTransactionManagerRecoveryTest {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         insertOrder("ds2");
-        mockAtomikosOnlyExecutePreparePhase();
+        coordinateOnlyExecutePrepare();
         try {
             insertOrder("ds1");
             // CHECKSTYLE:OFF
@@ -118,7 +118,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertDoEnlistInAnotherThreadWhenInDoubtState() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
-        mockAtomikosOnlyExecutePreparePhase();
+        coordinateOnlyExecutePrepare();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -152,7 +152,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertPrepareAlsoLockedResource() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
-        mockAtomikosOnlyExecutePreparePhase();
+        coordinateOnlyExecutePrepare();
 
         final Thread thread = new Thread(new Runnable() {
             @Override
@@ -187,7 +187,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @SneakyThrows
-    private void mockAtomikosOnlyExecutePreparePhase() {
+    private void coordinateOnlyExecutePrepare() {
         UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
         Transaction transaction = transactionManager.getTransaction();
         CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
