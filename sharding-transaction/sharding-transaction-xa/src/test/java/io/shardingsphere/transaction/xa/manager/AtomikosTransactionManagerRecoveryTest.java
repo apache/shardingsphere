@@ -32,6 +32,8 @@ import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.engine.Session;
+import org.h2.jdbc.JdbcConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,15 +172,16 @@ public class AtomikosTransactionManagerRecoveryTest {
     public void assertRecoveryAfterDatabaseShutdown() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
-            }
-        }).start();
-        assertOrderCount("ds1", 0L);
+        mockShutdownCurrentDatabase("ds1");
         atomikosTransactionManager.commit(commitEvent);
-        
+    }
+    
+    @SneakyThrows
+    private void mockShutdownCurrentDatabase(final String dsName) {
+        Object proxyConnection = ReflectiveUtil.getProperty(xaDataSourceMap.get(dsName).getConnection(), "h");
+        JdbcConnection jdbcConnection = (JdbcConnection) ReflectiveUtil.getProperty(proxyConnection, "delegate");
+        Session session = (Session) jdbcConnection.getSession();
+        session.getDatabase().shutdownImmediately();
     }
 
     private void insertOrder(final String ds) {
