@@ -47,7 +47,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -384,6 +383,6 @@ public final class ConfigurationServiceTest {
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Map<String, Collection<String>> actual = configurationService.getAllSlaveDataSourceNames();
         assertThat(actual.size(), is(1));
-        assertThat(actual.containsKey());
+        assertTrue(actual.containsValue(Arrays.asList("slave_ds_0", "slave_ds_1")));
     }
 }
