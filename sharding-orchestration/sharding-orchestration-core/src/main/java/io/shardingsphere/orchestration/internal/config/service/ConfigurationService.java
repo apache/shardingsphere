@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
@@ -46,6 +47,7 @@ import java.util.Properties;
  * @author caohao
  * @author zhangliang
  * @author panjuan
+ * @author yangyi
  */
 public final class ConfigurationService {
     
@@ -67,15 +69,17 @@ public final class ConfigurationService {
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
+     * @param saga saga configuration
      * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final RuleConfiguration ruleConfig,
-                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
+                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration saga, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations, isOverwrite);
         persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
+        presistSaga(saga, isOverwrite);
     }
     
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -139,6 +143,16 @@ public final class ConfigurationService {
         if (isOverwrite || !hasProperties()) {
             regCenter.persist(configNode.getPropsPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(props));
         }
+    }
+    
+    private void presistSaga(final SagaConfiguration saga, final boolean isOverwrite) {
+        if (isOverwrite || !hasSaga()) {
+            regCenter.persist(configNode.getSagaPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(saga));
+        }
+    }
+    
+    private boolean hasSaga() {
+        return !Strings.isNullOrEmpty(regCenter.get(configNode.getSagaPath()));
     }
     
     private boolean hasProperties() {
@@ -218,6 +232,16 @@ public final class ConfigurationService {
     public Properties loadProperties() {
         String data = regCenter.getDirectly(configNode.getPropsPath());
         return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml().loadAs(data, Properties.class);
+    }
+    
+    /**
+     * Load saga configuration.
+     *
+     * @return saga configuration
+     */
+    public SagaConfiguration loadSaga() {
+        String data = regCenter.getDirectly(configNode.getSagaPath());
+        return Strings.isNullOrEmpty(data) ? new SagaConfiguration() : new Yaml().loadAs(data, SagaConfiguration.class);
     }
     
     /**
