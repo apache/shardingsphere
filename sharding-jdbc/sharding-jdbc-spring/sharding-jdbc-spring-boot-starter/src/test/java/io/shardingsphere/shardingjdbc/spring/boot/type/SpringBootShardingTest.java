@@ -71,6 +71,7 @@ public class SpringBootShardingTest {
         ShardingProperties shardingProperties = shardingContext.getShardingProperties();
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertThat(((ShardingDataSource) dataSource).getSagaConfiguration().getExecutorSize(), is(10));
     }
     
     @SuppressWarnings("unchecked")
