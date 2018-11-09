@@ -17,9 +17,8 @@
 
 package io.shardingsphere.transaction.xa.convert.extractor;
 
-import io.shardingsphere.core.config.DataSourceConfiguration;
-
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Extract datasource parameter from DBCP connection pool.
@@ -34,10 +33,10 @@ public final class DBCPDataSourceParameterExtractor extends DataSourceParameterE
     
     @Override
     protected void convertProperties() {
-        DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
-        dataSourceConfiguration.getProperties().put("maximumPoolSize", dataSourceConfiguration.getProperties().get("maxTotal"));
-        dataSourceConfiguration.getProperties().put("idleTimeout", dataSourceConfiguration.getProperties().get("maxIdle"));
-        dataSourceConfiguration.getProperties().put("connectionTimeout", dataSourceConfiguration.getProperties().get("maxWaitMillis"));
-        dataSourceConfiguration.getProperties().put("maxLifetime", dataSourceConfiguration.getProperties().get("maxConnLifetimeMillis"));
+        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
+        properties.put("maximumPoolSize", properties.get("maxTotal"));
+        properties.put("idleTimeout", properties.get("maxIdle"));
+        properties.put("connectionTimeout", properties.get("maxWaitMillis"));
+        properties.put("maxLifetime", properties.get("maxConnLifetimeMillis"));
     }
 }
