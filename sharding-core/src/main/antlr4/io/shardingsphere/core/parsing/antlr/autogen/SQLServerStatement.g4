@@ -24,4 +24,5 @@ execute
     | createUser
     | alterUser
     | dropUser
+    | createLogin
     ;

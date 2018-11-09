@@ -14,10 +14,6 @@ ALGORITHM
     : A L G O R I T H M
     ;
 
-ALLOW_ENCRYPTED_VALUE_MODIFICATIONS
-    : A L L O W UL_ E N C R Y P T E D UL_ V A L U E UL_ M O D I F I C A T I O N S
-    ;
-
 ALLOW_PAGE_LOCKS
     : A L L O W UL_ P A G E UL_ L O C K S
     ;
@@ -36,6 +32,10 @@ ASYMMETRIC
 
 AUTO
     : A U T O
+    ;
+
+BACKSLASH
+    : B A C K S L A S H
     ;
 
 BEGIN
@@ -112,14 +112,6 @@ DATA_CONSISTENCY_CHECK
 
 DAYS
     : D A Y S
-    ;
-
-DEFAU_LANGUAGE
-    : D E F A U UL_ L A N G U A G E
-    ;
-
-DEFAU_SCHEMA
-    : D E F A U UL_ S C H E M A
     ;
 
 DELAYED_DURABILITY
@@ -230,6 +222,10 @@ HASH
     : H A S H
     ;
 
+HASHED
+    : H A S H E D
+    ;
+
 HEAP
     : H E A P
     ;
@@ -320,6 +316,10 @@ MONTHS
 
 MOVE
     : M O V E
+    ;
+
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
     ;
 
 NOCHECK
@@ -478,10 +478,6 @@ SELF
     : S E L F
     ;
 
-SID
-    : S I D
-    ;
-
 SNAPSHOT
     : S N A P S H O T
     ;
@@ -554,6 +550,10 @@ WEEKS
     : W E E K S
     ;
 
+WINDOWS
+    : W I N D O W S
+    ;
+
 WITHOUT
     : W I T H O U T
     ;
@@ -565,3 +565,4 @@ YEARS
 ZONE
     : Z O N E
     ;
+

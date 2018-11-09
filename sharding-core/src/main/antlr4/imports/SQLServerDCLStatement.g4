@@ -101,6 +101,10 @@ dropUser
     : DROP USER (IF EXISTS)? userName
     ;
 
+createLogin
+    : CREATE LOGIN ID (WITH  loginOptionList  | FROM  sources)
+    ;
+
 loginOptionList
     : PASSWORD EQ_ STRING HASHED? MUST_CHANGE? (COMMA optionsList)*
     ;
@@ -108,4 +112,8 @@ loginOptionList
 sources
     : WINDOWS (WITH optionsLists)? | CERTIFICATE ID | ASYMMETRIC KEY ID
     ;
-    
+
+credentialsOption
+    : ADD CREDENTIAL Id
+    | DROP CREDENTIAL
+    ;
