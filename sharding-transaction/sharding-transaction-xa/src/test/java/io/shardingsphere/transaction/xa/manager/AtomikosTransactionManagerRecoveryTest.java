@@ -79,7 +79,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test
-    public void assertOnlyExecutePrepareThenRecoveryInShutdown() {
+    public void assertPreparedShutdownRecovery() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         assertOrderCount("ds1", 1L);
