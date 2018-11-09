@@ -32,6 +32,7 @@ import io.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBoo
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import io.shardingsphere.shardingjdbc.orchestration.spring.boot.transaction.SpringBootSagaConfigurationProperties;
 import io.shardingsphere.shardingjdbc.orchestration.spring.boot.util.PropertyUtil;
 import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ import java.util.Map;
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
         SpringBootConfigMapConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class, 
-        SpringBootOrchestrationConfigurationProperties.class})
+        SpringBootOrchestrationConfigurationProperties.class, SpringBootSagaConfigurationProperties.class})
 @RequiredArgsConstructor
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
@@ -73,6 +74,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private final SpringBootPropertiesConfigurationProperties propProperties;
     
     private final SpringBootOrchestrationConfigurationProperties orchestrationProperties;
+    
+    private final SpringBootSagaConfigurationProperties sagaConfigurationProperties;
     
     /**
      * Get data source bean.
@@ -119,7 +122,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
             return new OrchestrationShardingDataSource(orchestrationProperties.getOrchestrationConfiguration());
         }
         ShardingDataSource shardingDataSource = new ShardingDataSource(
-                dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()), configMapProperties.getConfigMap(), propProperties.getProps());
+                dataSourceMap, new ShardingRule(shardingProperties.getShardingRuleConfiguration(), dataSourceMap.keySet()),
+                configMapProperties.getConfigMap(), propProperties.getProps(), sagaConfigurationProperties.getSaga());
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationProperties.getOrchestrationConfiguration());
     }
     
