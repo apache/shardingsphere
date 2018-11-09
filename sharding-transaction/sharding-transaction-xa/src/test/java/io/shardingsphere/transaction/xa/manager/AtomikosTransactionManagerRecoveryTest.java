@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CoordinatorImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosSQLException;
@@ -67,7 +68,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @After
     public void teardown() {
-        atomikosTransactionManager.destroy();
+        Configuration.shutdown(true);
         closeDataSource();
     }
     
