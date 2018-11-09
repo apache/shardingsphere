@@ -50,7 +50,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-public class AtomikosTransactionManagerRecoveryTest {
+public class TransactionManagerRecoveryTest {
     
     private static final String INSERT_INTO_T_ORDER = "INSERT INTO t_order VALUES(1000, 10, 'init')";
     
