@@ -49,6 +49,13 @@ deny
     : DENY permissionWithClass TO ids CASCADE? (AS ID)?
     ;
 
+optionsList
+    : DEFAU_SCHEMA EQ_ schemaName
+    | DEFAU_LANGUAGE EQ_ ( NONE | ID)
+    | SID EQ_ ID
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)
+    ;
+
 limitedOptionsList
     :  DEFAU_SCHEMA EQ_ schemaName | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
     ;
