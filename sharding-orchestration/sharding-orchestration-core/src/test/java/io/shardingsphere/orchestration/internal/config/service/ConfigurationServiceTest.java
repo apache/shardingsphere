@@ -384,7 +384,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertGetAllSlaveDataSourceNames() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_db", "masterslave_db"));
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_ms_db", "masterslave_db"));
         when(regCenter.getDirectly("/test/config/schema/sharding_ms_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
