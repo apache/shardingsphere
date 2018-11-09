@@ -20,4 +20,6 @@ execute
     | beginWork
     | grant
     | revoke
+    | deny
+    | createUser
     ;
