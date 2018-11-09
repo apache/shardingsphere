@@ -77,10 +77,9 @@ public final class ConfigurationServiceTest {
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
     private static final String SHARDING_MASTER_SLAVE_RULE_YAML = "tables:\n" + "  t_order: \n" + "    actualDataNodes: db_ms_${0..1}.t_order_${0..1}\n" + "    databaseStrategy: \n"
-            + "      standard:\n" + "        shardingColumn: user_id\n" + "        preciseAlgorithmClassName: db_ms_${order_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
+            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: db_ms_${order_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
             + "        shardingColumn: order_id\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "    keyGeneratorColumnName: order_id\n"
-            + "    keyGeneratorClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.IncrementKeyGenerator\n" + "bindingTables:\n" + "  - t_order,t_order_item\n"
-            + "masterSlaveRules:\n" + "  db_ms_0:\n" + "    masterDataSourceName: db0_master\n" + "    slaveDataSourceNames:\n" + "      - db0_slave\n" + "  db_ms_1:\n"
+            + "bindingTables:\n" + "  - t_order,t_order_item\n" + "masterSlaveRules:\n" + "  db_ms_0:\n" + "    masterDataSourceName: db0_master\n" + "    slaveDataSourceNames:\n" + "      - db0_slave\n" + "  db_ms_1:\n"
             + "    masterDataSourceName: db1_master\n" + "    slaveDataSourceNames:\n" + "      - db1_slave";
     
     private static final String AUTHENTICATION_YAML = "password: root\n" + "username: root\n";
@@ -391,6 +390,6 @@ public final class ConfigurationServiceTest {
         Map<String, Collection<String>> actual = configurationService.getAllSlaveDataSourceNames();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsValue(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertTrue(actual.containsValue(Arrays.asList("db1_slave", "db0_slave")));
+        assertTrue(actual.containsValue(Arrays.asList("db0_slave", "db1_slave")));
     }
 }
