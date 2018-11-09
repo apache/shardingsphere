@@ -31,20 +31,20 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public class ColumnDefinitionExtractHandler implements ASTExtractHandler {
+public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createTableStatement = (CreateTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-            if (!column.isPresent()) {
+            Optional<ColumnDefinition> columnDefinition = ExtractorUtils.extractColumnDefinition(each);
+            if (!columnDefinition.isPresent()) {
                 continue;
             }
-            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
-            createTableStatement.getColumnTypes().add(column.get().getType());
-            if (column.get().isPrimaryKey()) {
-                createTableStatement.getPrimaryKeyColumns().add(column.get().getName());
+            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.get().getName()));
+            createTableStatement.getColumnTypes().add(columnDefinition.get().getType());
+            if (columnDefinition.get().isPrimaryKey()) {
+                createTableStatement.getPrimaryKeyColumns().add(columnDefinition.get().getName());
             }
         }
     }

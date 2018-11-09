@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.ddl;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
@@ -61,27 +62,26 @@ public class AlterTableStatement extends DDLStatement {
      * @return column definition
      */
     public ColumnDefinition getColumnDefinitionByName(final String columnName) {
-        ColumnDefinition result = getExistColumn(columnName);
-        return null == result ? getFromAddColumn(columnName) : result;
+        Optional<ColumnDefinition> result = findColumnDefinition(columnName);
+        return result.isPresent() ? result.get() : getFromAddColumn(columnName);
     }
     
     /**
-     * Get exist column definition.
+     * Find column definition.
      *
      * @param columnName column name
      * @return column definition
      */
-    public ColumnDefinition getExistColumn(final String columnName) {
-        TableMetaData tableMeta = tableMetaDataMap.get(this.getTables().getSingleTableName());
-        if (null == tableMeta) {
-            return null;
+    public Optional<ColumnDefinition> findColumnDefinition(final String columnName) {
+        if (!tableMetaDataMap.containsTable(getTables().getSingleTableName())) {
+            return Optional.absent();
         }
-        for (ColumnMetaData each : tableMeta.getColumnMetaData()) {
+        for (ColumnMetaData each : tableMetaDataMap.get(getTables().getSingleTableName()).getColumnMetaData()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
-                return new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey());
+                return Optional.of(new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey()));
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     /**

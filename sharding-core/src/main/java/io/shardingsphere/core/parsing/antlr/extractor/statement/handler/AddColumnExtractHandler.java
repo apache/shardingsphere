@@ -31,20 +31,20 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * 
  * @author duhongjun
  */
-public class AddColumnExtractHandler extends ColumnDefinitionExtractHandler {
+public class AddColumnExtractHandler implements ASTExtractHandler {
     
     @Override
     public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
-            visitAddColumn(each, (AlterTableStatement) statement);
+            extractAddColumn(each, (AlterTableStatement) statement);
         }
     }
     
-    private void visitAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
+    private void extractAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnContext, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
             if (column.isPresent()) {
-                if (null != alterStatement.getExistColumn(column.get().getName())) {
+                if (alterStatement.findColumnDefinition(column.get().getName()).isPresent()) {
                     return;
                 }
                 alterStatement.getAddColumns().add(column.get());
