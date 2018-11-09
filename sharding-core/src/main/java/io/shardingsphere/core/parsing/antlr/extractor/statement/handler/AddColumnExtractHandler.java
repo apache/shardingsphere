@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
@@ -42,13 +41,10 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
     
     private void extractAddColumn(final ParserRuleContext addColumnContext, final AlterTableStatement alterStatement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnContext, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-            if (column.isPresent()) {
-                if (alterStatement.findColumnDefinition(column.get().getName()).isPresent()) {
-                    return;
-                }
-                alterStatement.getAddColumns().add(column.get());
-                postVisitColumnDefinition(addColumnContext, alterStatement, column.get().getName());
+            ColumnDefinition column = ExtractorUtils.extractColumnDefinition(each);
+            if (!alterStatement.findColumnDefinition(column.getName()).isPresent()) {
+                alterStatement.getAddColumns().add(column);
+                postVisitColumnDefinition(addColumnContext, alterStatement, column.getName());
             }
         }
     }

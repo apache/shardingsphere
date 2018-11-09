@@ -40,14 +40,14 @@ public final class ExtractorUtils {
      * @param columnDefinitionNode column definition rule
      * @return column definition
      */
-    public static Optional<ColumnDefinition> extractColumnDefinition(final ParserRuleContext columnDefinitionNode) {
+    public static ColumnDefinition extractColumnDefinition(final ParserRuleContext columnDefinitionNode) {
         Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
         Preconditions.checkState(columnNameNode.isPresent());
         Optional<ParserRuleContext> dataTypeNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
         Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getText()) : Optional.<String>absent();
         Optional<Integer> dataTypeLength = dataTypeNode.isPresent() ? getDataTypeLength(dataTypeNode.get()) : Optional.<Integer>absent();
         boolean isPrimaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
-        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey));
+        return new ColumnDefinition(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey);
     }
     
     private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {

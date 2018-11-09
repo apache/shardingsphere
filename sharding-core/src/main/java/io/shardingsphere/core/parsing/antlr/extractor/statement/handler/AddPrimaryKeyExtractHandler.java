@@ -48,10 +48,10 @@ public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler {
         }
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext.get(), RuleName.COLUMN_NAME)) {
             String columnName = each.getText();
-            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
-            if (null != updateColumn) {
-                updateColumn.setPrimaryKey(true);
-                alterStatement.getUpdateColumns().put(columnName, updateColumn);
+            Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(columnName);
+            if (updateColumn.isPresent()) {
+                updateColumn.get().setPrimaryKey(true);
+                alterStatement.getUpdateColumns().put(columnName, updateColumn.get());
             }
         }
     }

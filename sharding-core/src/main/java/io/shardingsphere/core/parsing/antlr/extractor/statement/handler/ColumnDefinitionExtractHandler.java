@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -37,14 +36,11 @@ public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         CreateTableStatement createTableStatement = (CreateTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> columnDefinition = ExtractorUtils.extractColumnDefinition(each);
-            if (!columnDefinition.isPresent()) {
-                continue;
-            }
-            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.get().getName()));
-            createTableStatement.getColumnTypes().add(columnDefinition.get().getType());
-            if (columnDefinition.get().isPrimaryKey()) {
-                createTableStatement.getPrimaryKeyColumns().add(columnDefinition.get().getName());
+            ColumnDefinition columnDefinition = ExtractorUtils.extractColumnDefinition(each);
+            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
+            createTableStatement.getColumnTypes().add(columnDefinition.getType());
+            if (columnDefinition.isPrimaryKey()) {
+                createTableStatement.getPrimaryKeyColumns().add(columnDefinition.getName());
             }
         }
     }

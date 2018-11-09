@@ -61,9 +61,9 @@ public class AlterTableStatement extends DDLStatement {
      * @param columnName column name
      * @return column definition
      */
-    public ColumnDefinition getColumnDefinitionByName(final String columnName) {
+    public Optional<ColumnDefinition> getColumnDefinitionByName(final String columnName) {
         Optional<ColumnDefinition> result = findColumnDefinition(columnName);
-        return result.isPresent() ? result.get() : getFromAddColumn(columnName);
+        return result.isPresent() ? result : findColumnDefinitionFromCurrentAddClause(columnName);
     }
     
     /**
@@ -84,18 +84,12 @@ public class AlterTableStatement extends DDLStatement {
         return Optional.absent();
     }
     
-    /**
-     * Get column definition from current add clause.
-     *
-     * @param columnName column name
-     * @return column definition
-     */
-    private ColumnDefinition getFromAddColumn(final String columnName) {
+    private Optional<ColumnDefinition> findColumnDefinitionFromCurrentAddClause(final String columnName) {
         for (ColumnDefinition each : addColumns) {
             if (each.getName().equalsIgnoreCase(columnName)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.absent();
     }
 }

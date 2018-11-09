@@ -48,10 +48,10 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler {
         Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
         String oldName = columnNodesIterator.next().getText();
         String newName = columnNodesIterator.next().getText();
-        ColumnDefinition oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
-        if (null != oldDefinition) {
-            oldDefinition.setName(newName);
-            alterStatement.getUpdateColumns().put(oldName, oldDefinition);
+        Optional<ColumnDefinition> oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
+        if (oldDefinition.isPresent()) {
+            oldDefinition.get().setName(newName);
+            alterStatement.getUpdateColumns().put(oldName, oldDefinition.get());
         }
     }
 }

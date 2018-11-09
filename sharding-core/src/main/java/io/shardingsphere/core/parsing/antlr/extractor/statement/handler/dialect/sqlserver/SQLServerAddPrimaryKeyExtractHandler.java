@@ -51,13 +51,13 @@ public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHan
         }
         for (ParseTree each : ASTUtils.getAllDescendantNodes(tableConstraintContext.get(), RuleName.COLUMN_NAME)) {
             String columnName = each.getText();
-            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
-            if (null != updateColumn) {
-                updateColumn.setPrimaryKey(true);
+            Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(columnName);
+            if (updateColumn.isPresent()) {
+                updateColumn.get().setPrimaryKey(true);
+                alterStatement.getUpdateColumns().put(columnName, updateColumn.get());
             } else {
-                updateColumn = new ColumnDefinition(each.getText(), null, null, true);
+                alterStatement.getUpdateColumns().put(columnName, new ColumnDefinition(each.getText(), null, null, true));
             }
-            alterStatement.getUpdateColumns().put(columnName, updateColumn);
         }
     }
 }

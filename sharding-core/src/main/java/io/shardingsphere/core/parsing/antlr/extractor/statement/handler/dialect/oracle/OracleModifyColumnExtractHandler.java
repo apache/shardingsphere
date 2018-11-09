@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -40,10 +39,8 @@ public final class OracleModifyColumnExtractHandler implements ASTExtractHandler
         for (ParserRuleContext modifyColumnContext : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
             for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
-                Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-                if (column.isPresent()) {
-                    alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
-                }
+                ColumnDefinition column = ExtractorUtils.extractColumnDefinition(each);
+                alterStatement.getUpdateColumns().put(column.getName(), column);
             }
         }
     }

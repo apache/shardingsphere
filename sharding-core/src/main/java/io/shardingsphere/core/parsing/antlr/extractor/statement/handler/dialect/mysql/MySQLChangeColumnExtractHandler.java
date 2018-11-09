@@ -37,7 +37,6 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
         Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnContext.isPresent()) {
             return;
@@ -50,13 +49,12 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
         if (!columnDefinitionContext.isPresent()) {
             return;
         }
-        Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(columnDefinitionContext.get());
-        if (column.isPresent()) {
-            alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), column.get());
-            Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnContext.get(), column.get().getName());
-            if (columnPosition.isPresent()) {
-                alterStatement.getPositionChangedColumns().add(columnPosition.get());
-            }
+        MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
+        ColumnDefinition columnDefinition = ExtractorUtils.extractColumnDefinition(columnDefinitionContext.get());
+        alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), columnDefinition);
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnContext.get(), columnDefinition.getName());
+        if (columnPosition.isPresent()) {
+            alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }
     }
 }
