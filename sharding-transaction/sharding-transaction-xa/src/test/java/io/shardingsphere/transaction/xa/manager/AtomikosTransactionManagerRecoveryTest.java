@@ -26,6 +26,7 @@ import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
 import org.h2.engine.Session;
 import org.h2.jdbc.JdbcConnection;
+import org.junit.Test;
 
 import javax.sql.DataSource;
 
@@ -43,5 +44,25 @@ public final class AtomikosTransactionManagerRecoveryTest extends TransactionMan
         Object proxyConnection = ReflectiveUtil.getProperty(getXaDataSourceMap().get(dsName).getConnection(), "h");
         JdbcConnection jdbcConnection = (JdbcConnection) ReflectiveUtil.getProperty(proxyConnection, "delegate");
         return (Session) jdbcConnection.getSession();
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertRecoveryAfterDatabaseShutdown() {
+        getAtomikosTransactionManager().begin(getBeginEvent());
+        insertOrder("ds1");
+        Session session = mockShutdownCurrentDatabase("ds1");
+        getAtomikosTransactionManager().commit(getCommitEvent());
+        session.begin();
+        // TODO we should find a way to start the same H2 database instance.
+        // TODO atomikos will get recovery info from it.
+        Thread.sleep(3000);
+    }
+    
+    @SneakyThrows
+    private Session mockShutdownCurrentDatabase(final String dsName) {
+        Session session = getH2Session(dsName);
+        session.getDatabase().shutdownImmediately();
+        return session;
     }
 }
