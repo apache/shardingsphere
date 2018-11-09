@@ -234,7 +234,7 @@ public final class ConfigurationService {
      *
      * @return master data source names
      */
-    public Map<String, Collection<String>> getAllMasterDataSourceNames() {
+    public Map<String, Collection<String>> getAllSlaveDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String each : getAllShardingSchemaNames()) {
             if (isShardingRule(each)) {
@@ -249,6 +249,9 @@ public final class ConfigurationService {
     private Collection<String> getMasterDataSourceNamesFromShardingRule(final String schemaName) {
         Collection<String> result = new LinkedList<>();
         ShardingRuleConfiguration shardingConfig = loadShardingRuleConfiguration(schemaName);
+        if (shardingConfig.getMasterSlaveRuleConfigs().isEmpty()) {
+            shardingConfig.
+        }
         result.addAll(Collections2.transform(shardingConfig.getMasterSlaveRuleConfigs(), new Function<MasterSlaveRuleConfiguration, String>() {
 
             @Override
