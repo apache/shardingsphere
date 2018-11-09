@@ -14,6 +14,10 @@ ALGORITHM
     : A L G O R I T H M
     ;
 
+ALLOW_ENCRYPTED_VALUE_MODIFICATIONS
+    : A L L O W UL_ E N C R Y P T E D UL_ V A L U E UL_ M O D I F I C A T I O N S
+    ;
+
 ALLOW_PAGE_LOCKS
     : A L L O W UL_ P A G E UL_ L O C K S
     ;
@@ -24,6 +28,10 @@ ALLOW_ROW_LOCKS
 
 ALL_SPARSE_COLUMNS
     : A L L UL_ S P A R S E UL_ C O L U M N S
+    ;
+
+ASYMMETRIC
+    : A S Y M M E T R I C
     ;
 
 AUTO
@@ -44,6 +52,10 @@ BUCKET_COUNT
 
 CAST
     : C A S T
+    ;
+
+CERTIFICATE
+    : C E R T I F I C A T E
     ;
 
 CLUSTERED
@@ -102,8 +114,20 @@ DAYS
     : D A Y S
     ;
 
+DEFAU_LANGUAGE
+    : D E F A U UL_ L A N G U A G E
+    ;
+
+DEFAU_SCHEMA
+    : D E F A U UL_ S C H E M A
+    ;
+
 DELAYED_DURABILITY
     : D E L A Y E D UL_ D U R A B I L I T Y
+    ;
+
+DENY
+    : D E N Y
     ;
 
 DETERMINISTIC
@@ -140,6 +164,10 @@ ENCRYPTION_TYPE
 
 END
     : E N D
+    ;
+
+EXTERNAL
+    : E X T E R N A L
     ;
 
 FILESTREAM
@@ -342,6 +370,10 @@ PARTITIONS
     : P A R T I T I O N S
     ;
 
+PASSWORD
+    : P A S S W O R D
+    ;
+
 PAUSED
     : P A U S E D
     ;
@@ -360,6 +392,10 @@ PRECEDING
 
 PRIVILEGES
     : P R I V I L E G E S
+    ;
+
+PROVIDER
+    : P R O V I D E R
     ;
 
 RANDOMIZED
@@ -442,6 +478,10 @@ SELF
     : S E L F
     ;
 
+SID
+    : S I D
+    ;
+
 SNAPSHOT
     : S N A P S H O T
     ;
@@ -512,6 +552,10 @@ WEEK
 
 WEEKS
     : W E E K S
+    ;
+
+WITHOUT
+    : W I T H O U T
     ;
 
 YEARS
