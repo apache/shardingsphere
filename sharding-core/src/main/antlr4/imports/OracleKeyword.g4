@@ -1,13 +1,21 @@
 lexer grammar OracleKeyword;
 
 import Symbol;
-   
+
+ACCOUNT
+    : A C C O U N T
+    ;
+
 ADMIN
     : A D M I N
     ;
 
 AT
     : A T
+    ;
+
+AUTHENTICATION
+    : A U T H E N T I C A T I O N
     ;
 
 BATCH
@@ -34,6 +42,10 @@ COMMENT
     : C O M M E N T
     ;
 
+CONNECT
+    : C O N N E C T
+    ;
+
 CONSTRAINTS
     : C O N S T R A I N T S
     ;
@@ -42,16 +54,12 @@ CONTAINER
     : C O N T A I N E R
     ;
 
-CURRENT
-    : C U R R E N T
+CONTAINER_DATA
+    : C O N T A I N E R UL_ D A T A
     ;
 
 CYCLE
     : C Y C L E
-    ;
-
-DAY
-    : D A Y
     ;
 
 DBTIMEZONE
@@ -86,6 +94,10 @@ EDITION
     : E D I T I O N
     ;
 
+EDITIONS
+    : E D I T I O N S
+    ;
+
 ELEMENT
     : E L E M E N T
     ;
@@ -102,8 +114,24 @@ END
     : E N D
     ;
 
+ENTERPRISE
+    : E N T E R P R I S E
+    ;
+
+EXCEPT
+    : E X C E P T
+    ;
+
 EXCEPTIONS
     : E X C E P T I O N S
+    ;
+
+EXPIRE
+    : E X P I R E
+    ;
+
+EXTERNALLY
+    : E X T E R N A L L Y
     ;
 
 FOR
@@ -120,6 +148,10 @@ FUNCTION
 
 GLOBAL
     : G L O B A L
+    ;
+
+GLOBALLY
+    : G L O B A L L Y
     ;
 
 GRANT
@@ -178,6 +210,10 @@ LOCAL
     : L O C A L
     ;
 
+LOCK
+    : L O C K
+    ;
+
 MAXVALUE
     : M A X V A L U E
     ;
@@ -230,6 +266,10 @@ NOMINVALUE
     : N O M I N V A L U E
     ;
 
+NONE
+    : N O N E
+    ;
+
 NOORDER
     : N O O R D E R
     ;
@@ -262,6 +302,10 @@ PACKAGE
     : P A C K A G E
     ;
 
+PASSWORD
+    : P A S S W O R D
+    ;
+
 PRECISION
     : P R E C I S I O N
     ;
@@ -290,6 +334,10 @@ PUBLIC
     : P U B L I C
     ;
 
+QUOTA
+    : Q U O T A
+    ;
+
 REF
     : R E F
     ;
@@ -302,12 +350,36 @@ RELY
     : R E L Y
     ;
 
+REMOVE
+    : R E M O V E
+    ;
+
 RENAME
     : R E N A M E
     ;
 
+REPLACE
+    : R E P L A C E
+    ;
+
+REQUIRED
+    : R E Q U I R E D
+    ;
+
 RESOURCE
     : R E S O U R C E
+    ;
+
+REVOKE
+    : R E V O K E
+    ;
+
+ROLE
+    : R O L E
+    ;
+
+ROLES
+    : R O L E S
     ;
 
 ROWID
@@ -370,6 +442,10 @@ THEN
     : T H E N
     ;
 
+THROUGH
+    : T H R O U G H
+    ;
+
 TRANSLATION
     : T R A N S L A T I O N
     ;
@@ -382,6 +458,14 @@ TYPE
     : T Y P E
     ;
 
+UNLIMITED
+    : U N L I M I T E D
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
 UNUSED
     : U N U S E D
     ;
@@ -390,8 +474,8 @@ USE
     : U S E
     ;
 
-USER
-    : U S E R
+USERS
+    : U S E R S
     ;
 
 USING

@@ -23,7 +23,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         EmptyRevertEngineTest.class,
-        RevertEngineHolderTest.class
+        RevertEngineImplTest.class
 })
 public class AllRevertTest {
 }

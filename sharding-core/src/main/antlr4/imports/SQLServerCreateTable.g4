@@ -1,6 +1,6 @@
 grammar SQLServerCreateTable;
 
-import SQLServerKeyword, DataType, Keyword, SQLServerTableBase,SQLServerBase,BaseRule,Symbol;
+import SQLServerKeyword, DataType, Keyword, SQLServerTableBase, SQLServerBase, BaseRule, Symbol;
 
 createTable
     : createTableHeader createTableBody
@@ -9,101 +9,69 @@ createTable
 createTableHeader
     : CREATE TABLE tableName
     ;
-    
+
 createTableBody
-    : (AS FILETABLE)?  
-    LEFT_PAREN 
-        createTableDefinition (COMMA createTableDefinition)*
-        (COMMA periodClause)?  
-    RIGHT_PAREN  
-    (ON 
-    	(schemaName LEFT_PAREN  columnName RIGHT_PAREN   
-           | fileGroup   
-           | STRING 
-        ) 
-    )?   
-    (TEXTIMAGE_ON (fileGroup | STRING) )?   
-     ((FILESTREAM_ON (schemaName) 
-       | fileGroup   
-         STRING) 
-     )?  
-    (WITH LEFT_PAREN  tableOption (COMMA tableOption)*  RIGHT_PAREN)?  
+    : (AS FILETABLE)?
+    LP_ createTableDefinition (COMMA createTableDefinition)* (COMMA periodClause)? RP_
+    (ON (schemaName LP_ columnName RP_ | fileGroup | STRING))?
+    (TEXTIMAGE_ON (fileGroup | STRING))?
+    ((FILESTREAM_ON (schemaName) | fileGroup STRING))?
+    (WITH LP_ tableOption (COMMA tableOption)*  RP_)?
     ;
-    
+
 createTableDefinition
-    : columnDefinition  
-    | computedColumnDefinition    
-    | columnSetDefinition   
-    | tableConstraint   
-    | tableIndex
+    : columnDefinition | computedColumnDefinition | columnSetDefinition | tableConstraint | tableIndex
     ;
- 
+
 periodClause
-    : PERIOD FOR SYSTEM_TIME LEFT_PAREN  columnName   
-    COMMA columnName RIGHT_PAREN
+    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA columnName RP_
     ;
 
 tableIndex
-    : INDEX indexName 
+    : INDEX indexName
     (
-          (CLUSTERED | NONCLUSTERED )? columnList 
-         | CLUSTERED COLUMNSTORE 
-         | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
-         |CLUSTERED COLUMNSTORE (WITH LEFT_PAREN  COMPRESSION_DELAY EQ_OR_ASSIGN (NUMBER MINUTES?) RIGHT_PAREN)?
-    ) 
+        (CLUSTERED | NONCLUSTERED )? columnList
+        | CLUSTERED COLUMNSTORE
+        | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
+        | CLUSTERED COLUMNSTORE (WITH LP_  COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RP_)?
+    )
     (WHERE expr)?
-    (WITH LEFT_PAREN indexOption ( COMMA indexOption)* RIGHT_PAREN)?   
-    indexOnClause?   
-    (FILESTREAM_ON ( groupName | schemaName | STRING ))?  
-    ;
-    
-tableOption  
-    : DATA_COMPRESSION EQ_OR_ASSIGN ( NONE | ROW | PAGE ) (ON PARTITIONS LEFT_PAREN  partitionExpressions RIGHT_PAREN )?
-    | FILETABLE_DIRECTORY EQ_OR_ASSIGN directoryName 
-    | FILETABLE_COLLATE_FILENAME EQ_OR_ASSIGN ( collationName | DATABASE_DEAULT )
-    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_OR_ASSIGN constraintName
-    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME  EQ_OR_ASSIGN constraintName  
-    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME  EQ_OR_ASSIGN constraintName 
-    |SYSTEM_VERSIONING EQ_OR_ASSIGN ON (LEFT_PAREN  HISTORY_TABLE EQ_OR_ASSIGN tableName   
-         (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN)?
-    | REMOTE_DATA_ARCHIVE EQ_OR_ASSIGN   
-        (
-           ON (LEFT_PAREN  tableStretchOptions (COMMA tableStretchOptions)* RIGHT_PAREN )?
-         | OFF LEFT_PAREN  MIGRATION_STATE EQ_OR_ASSIGN PAUSED RIGHT_PAREN 
-        )
-    |tableOptOption
-    |distributionOption
-    |dataWareHouseTableOption     
+    (WITH LP_ indexOption ( COMMA indexOption)* RP_)? indexOnClause?
+    (FILESTREAM_ON (groupName | schemaName | STRING))?
     ;
 
-tableOptOption 
-    : (MEMORY_OPTIMIZED EQ_OR_ASSIGN ON)   
-    | (DURABILITY EQ_OR_ASSIGN (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
-    | (SYSTEM_VERSIONING EQ_OR_ASSIGN ON ( LEFT_PAREN  HISTORY_TABLE EQ_OR_ASSIGN tableName  
-        (COMMA DATA_CONSISTENCY_CHECK EQ_OR_ASSIGN ( ON | OFF ) )? RIGHT_PAREN )?)   
+tableOption
+    : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
+    | FILETABLE_DIRECTORY EQ_ directoryName 
+    | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
+    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ constraintName
+    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
+    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
+    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
+    | REMOTE_DATA_ARCHIVE EQ_ (ON (LP_ tableStretchOptions (COMMA tableStretchOptions)* RP_)? | OFF LP_  MIGRATION_STATE EQ_ PAUSED RP_)
+    | tableOptOption
+    | distributionOption
+    | dataWareHouseTableOption     
     ;
 
-distributionOption     
-    : DISTRIBUTION EQ_OR_ASSIGN 
-    (
-          HASH LEFT_PAREN columnName RIGHT_PAREN
-        | ROUND_ROBIN 
-        | REPLICATE
-     ) 
-    ; 
-    
+tableOptOption
+    : (MEMORY_OPTIMIZED EQ_ ON)   
+    | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
+    | (SYSTEM_VERSIONING EQ_ ON ( LP_  HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)   
+    ;
+
+distributionOption
+    : DISTRIBUTION EQ_ (HASH LP_ columnName RP_ | ROUND_ROBIN | REPLICATE) 
+    ;
+
 dataWareHouseTableOption
-    : (CLUSTERED COLUMNSTORE INDEX)
-    | HEAP   
-    | dataWareHousePartitionOption
+    : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
     ;
- 
- dataWareHousePartitionOption
-     : (PARTITION LEFT_PAREN columnName  RANGE (LEFT | RIGHT)?  
-        FOR VALUES LEFT_PAREN  simpleExpr (COMMA simpleExpr)* RIGHT_PAREN  RIGHT_PAREN)
-     ; 
-     
+
+dataWareHousePartitionOption
+     : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)? FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
+     ;
+
 tableStretchOptions 
-     : (FILTER_PREDICATE EQ_OR_ASSIGN ( NULL | functionCall ) COMMA )?  
-     MIGRATION_STATE EQ_OR_ASSIGN ( OUTBOUND | INBOUND | PAUSED )  
+     : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)  
      ;

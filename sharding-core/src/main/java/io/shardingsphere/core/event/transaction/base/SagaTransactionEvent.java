@@ -17,12 +17,15 @@
 
 package io.shardingsphere.core.event.transaction.base;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.Map;
 
 /**
  * Saga transaction event.
@@ -38,36 +41,48 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     
     private final String proxySchema;
     
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final SagaConfiguration sagaConfiguration;
+    
     private final SagaSQLExecutionEvent sagaSQLExecutionEvent;
     
     @Setter
     private String sagaJson;
     
-    public SagaTransactionEvent(final TransactionOperationType operationType) {
+    public SagaTransactionEvent(final TransactionOperationType operationType, final SagaConfiguration sagaConfiguration) {
         this.operationType = operationType;
+        this.sagaConfiguration = sagaConfiguration;
         this.connection = null;
         this.proxySchema = null;
+        this.dataSourceMap = null;
         this.sagaSQLExecutionEvent = null;
     }
     
-    public SagaTransactionEvent(final TransactionOperationType operationType, final Connection connection) {
+    public SagaTransactionEvent(final TransactionOperationType operationType, final Connection connection, final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
         this.operationType = operationType;
         this.connection = connection;
         this.proxySchema = null;
+        this.dataSourceMap = dataSourceMap;
+        this.sagaConfiguration = sagaConfiguration;
         sagaSQLExecutionEvent = null;
     }
     
-    public SagaTransactionEvent(final TransactionOperationType operationType, final String proxySchema) {
+    public SagaTransactionEvent(final TransactionOperationType operationType, final String proxySchema, final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
         this.operationType = operationType;
         this.connection = null;
         this.proxySchema = proxySchema;
-        this.sagaSQLExecutionEvent = null;
+        this.dataSourceMap = dataSourceMap;
+        this.sagaConfiguration = sagaConfiguration;
+        sagaSQLExecutionEvent = null;
     }
     
     public SagaTransactionEvent(final SagaSQLExecutionEvent event) {
         this.operationType = TransactionOperationType.BEGIN;
         this.connection = null;
         this.proxySchema = null;
+        this.dataSourceMap = null;
+        this.sagaConfiguration = null;
         this.sagaSQLExecutionEvent = event;
     }
 }

@@ -22,6 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -29,10 +30,9 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.orchestration.internal.event.config.AuthenticationChangedEvent;
-import io.shardingsphere.orchestration.internal.event.config.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.event.state.CircuitStateEventBusEvent;
-import io.shardingsphere.shardingproxy.runtime.nio.BackendNIOConfiguration;
+import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -52,6 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author chenqingyang
  * @author panjuan
+ * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -63,9 +64,9 @@ public final class GlobalRegistry {
     
     private ShardingProperties shardingProperties;
     
-    private BackendNIOConfiguration backendNIOConfig;
-    
     private Authentication authentication;
+    
+    private SagaConfiguration sagaConfiguration;
     
     private boolean isCircuitBreak;
     
@@ -93,10 +94,12 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
+     * @param sagaConfiguration saga configuration
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
-        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication,
+                     final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) {
+        init(schemaDataSources, schemaRules, authentication, configMap, props, sagaConfiguration, false);
     }
     
     /**
@@ -107,17 +110,18 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
+     * @param sagaConfiguration saga configuration
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, 
-                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
+    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules,
+                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration, final boolean isUsingRegistry) {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
+        this.sagaConfiguration = sagaConfiguration;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
-        initBackendNIOConfig();
     }
     
     private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
@@ -132,21 +136,6 @@ public final class GlobalRegistry {
                 : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
     }
     
-    private void initBackendNIOConfig() {
-        int databaseConnectionCount = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
-        int connectionTimeoutSeconds = shardingProperties.getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
-        backendNIOConfig = new BackendNIOConfiguration(databaseConnectionCount, connectionTimeoutSeconds);
-    }
-    
-    /**
-     * Get max connections size per query.
-     *
-     * @return max connections size per query
-     */
-    public int getMaxConnectionsSizePerQuery() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-    }
-    
     /**
      * Get transaction type.
      *
@@ -156,52 +145,6 @@ public final class GlobalRegistry {
     public TransactionType getTransactionType() {
         return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED)
                 ? TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE)) : TransactionType.LOCAL;
-    }
-    
-    /**
-     * Is open tracing enable.
-     *
-     * @return is or not
-     */
-    public boolean isOpenTracingEnable() {
-        return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED);
-    }
-    
-    /**
-     * Is show SQL.
-     *
-     * @return show or not
-     */
-    public boolean isShowSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-    }
-    
-    /**
-     * Get acceptor size.
-     *
-     * @return acceptor size
-     */
-    public int getAcceptorSize() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
-    }
-    
-    /**
-     * Get executor size.
-     *
-     * @return executor size
-     */
-    public int getExecutorSize() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
-    }
-    
-    /**
-     * Is use NIO.
-     *
-     * @return use or not
-     */
-    // TODO :jiaqi force off use NIO for backend, this feature is not complete yet
-    public boolean isUseNIO() {
-        return false;
     }
     
     /**

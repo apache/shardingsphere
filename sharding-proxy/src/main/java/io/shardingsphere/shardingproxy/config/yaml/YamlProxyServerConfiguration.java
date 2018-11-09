@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.config.yaml;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
@@ -31,6 +32,7 @@ import java.util.Properties;
  * 
  * @author chenqingyang
  * @author panjuan
+ * @author yangyi
  */
 @Getter
 @Setter
@@ -41,6 +43,8 @@ public final class YamlProxyServerConfiguration {
     private YamlOrchestrationConfiguration orchestration;
     
     private Properties props = new Properties();
+    
+    private SagaConfiguration saga;
     
     private Map<String, Object> configMap = new LinkedHashMap<>();
 }

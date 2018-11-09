@@ -18,7 +18,14 @@
 package io.shardingsphere.core.parsing.antlr.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
@@ -48,18 +55,36 @@ public final class SQLASTParserFactory {
     }
     
     private static Lexer newLexer(final DatabaseType databaseType, final String sql) {
-        try {
-            return SQLASTParserRegistry.getLexerClass(databaseType).getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingException(ex);
+        CharStream sqlCharStream = CharStreams.fromString(sql);
+        switch (databaseType) {
+            case H2:
+            case MySQL:
+                return new MySQLStatementLexer(sqlCharStream);
+            case PostgreSQL:
+                return new PostgreSQLStatementLexer(sqlCharStream);
+            case SQLServer:
+                return new SQLServerStatementLexer(sqlCharStream);
+            case Oracle:
+                return new OracleStatementLexer(sqlCharStream);
+            default:
+                throw new UnsupportedOperationException(String.format("Can not support database type [%s].", databaseType));
         }
     }
     
     private static SQLASTParser newParser(final DatabaseType databaseType, final Lexer lexer) {
-        try {
-            return SQLASTParserRegistry.getParserClass(databaseType).getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingException(ex);
+        TokenStream tokenStream = new CommonTokenStream(lexer);
+        switch (databaseType) {
+            case H2:
+            case MySQL:
+                return new MySQLStatementASTParser(tokenStream);
+            case PostgreSQL:
+                return new PostgreSQLStatementASTParser(tokenStream);
+            case SQLServer:
+                return new SQLServerStatementASTParser(tokenStream);
+            case Oracle:
+                return new OracleStatementASTParser(tokenStream);
+            default:
+                throw new UnsupportedOperationException(String.format("Can not support database type [%s].", databaseType));
         }
     }
 }

@@ -8,12 +8,11 @@ columnDefinition
 
 dataType
     : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
-    | typeName (LEFT_PAREN STRING (COMMA STRING)* RIGHT_PAREN characterSet? collateClause?)
+    | typeName (LP_ STRING (COMMA STRING)* RP_ characterSet? collateClause?)
     ;
- 
+
  typeName
-    : DOUBLE PRECISION
-    | ID
+    : DOUBLE PRECISION | ID
     ;
 
 dataTypeOption
@@ -26,10 +25,7 @@ dataTypeOption
     ;
 
 dataTypeGeneratedOption
-    : nullNotnull
-    | UNIQUE KEY?
-    | primaryKey
-    | COMMENT STRING
+    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING
     ;
 
 defaultValue
@@ -45,28 +41,19 @@ currentTimestampType
     ;
 
 referenceDefinition
-    : REFERENCES tableName keyPartsWithParen
-    (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?
-    referenceType*
+    : REFERENCES tableName keyPartsWithParen (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType*
     ;
 
 referenceType
-    : ON UPDATE referenceOption
-    | ON DELETE referenceOption
+    : ON (UPDATE  | DELETE) referenceOption
     ;
 
 referenceOption
-    : RESTRICT
-    | CASCADE
-    | SET NULL
-    | NO ACTION
-    | SET DEFAULT
+    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
 dataTypeGenerated
-    : (GENERATED ALWAYS)? AS expr
-    (VIRTUAL | STORED)?
-    dataTypeGeneratedOption*
+    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption*
     ;
 
 constraintDefinition
@@ -94,29 +81,29 @@ tableOptions
     ;
 
 tableOption
-    : AUTO_INCREMENT EQ_OR_ASSIGN? NUMBER
-    | AVG_ROW_LENGTH EQ_OR_ASSIGN? NUMBER
+    : AUTO_INCREMENT EQ_? NUMBER
+    | AVG_ROW_LENGTH EQ_? NUMBER
     | DEFAULT? (characterSet | collateClause)
-    | CHECKSUM EQ_OR_ASSIGN? NUMBER
-    | COMMENT EQ_OR_ASSIGN? STRING
-    | COMPRESSION EQ_OR_ASSIGN? STRING
-    | CONNECTION EQ_OR_ASSIGN? STRING
-    | (DATA | INDEX) DIRECTORY EQ_OR_ASSIGN? STRING
-    | DELAY_KEY_WRITE EQ_OR_ASSIGN? NUMBER
-    | ENCRYPTION EQ_OR_ASSIGN? STRING
-    | ENGINE EQ_OR_ASSIGN? engineName
-    | INSERT_METHOD EQ_OR_ASSIGN? (NO | FIRST | LAST)
-    | KEY_BLOCK_SIZE EQ_OR_ASSIGN? NUMBER
-    | MAX_ROWS EQ_OR_ASSIGN? NUMBER
-    | MIN_ROWS EQ_OR_ASSIGN? NUMBER
-    | PACK_KEYS EQ_OR_ASSIGN? (NUMBER | DEFAULT)
-    | PASSWORD EQ_OR_ASSIGN? STRING
-    | ROW_FORMAT EQ_OR_ASSIGN? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | STATS_AUTO_RECALC EQ_OR_ASSIGN? (DEFAULT | NUMBER)
-    | STATS_PERSISTENT EQ_OR_ASSIGN? (DEFAULT | NUMBER)
-    | STATS_SAMPLE_PAGES EQ_OR_ASSIGN? NUMBER
+    | CHECKSUM EQ_? NUMBER
+    | COMMENT EQ_? STRING
+    | COMPRESSION EQ_? STRING
+    | CONNECTION EQ_? STRING
+    | (DATA | INDEX) DIRECTORY EQ_? STRING
+    | DELAY_KEY_WRITE EQ_? NUMBER
+    | ENCRYPTION EQ_? STRING
+    | ENGINE EQ_? engineName
+    | INSERT_METHOD EQ_? (NO | FIRST | LAST)
+    | KEY_BLOCK_SIZE EQ_? NUMBER
+    | MAX_ROWS EQ_? NUMBER
+    | MIN_ROWS EQ_? NUMBER
+    | PACK_KEYS EQ_? (NUMBER | DEFAULT)
+    | PASSWORD EQ_? STRING
+    | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
+    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER)
+    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER)
+    | STATS_SAMPLE_PAGES EQ_? NUMBER
     | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_OR_ASSIGN? tableNamesWithParen
+    | UNION EQ_? tableNamesWithParen
     ;
 
 engineName
@@ -125,19 +112,16 @@ engineName
     ;
 
 partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition)
-    (PARTITIONS NUMBER)?
-    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER)? )?
-    (LEFT_PAREN partitionDefinitions RIGHT_PAREN)?
+    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER)?
+    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER)? )? (LP_ partitionDefinitions RP_)?
     ;
 
-//hash(YEAR(col)) YEAR is keyword which does not match expr
 linearPartition
-    : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_OR_ASSIGN NUMBER)? columnNamesWithParen)
+    : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_ NUMBER)? columnNamesWithParen)
     ;
 
 yearFunctionExpr
-    : LEFT_PAREN YEAR expr RIGHT_PAREN
+    : LP_ YEAR expr RP_
     ;
 
 rangeOrListPartition
@@ -152,24 +136,23 @@ partitionDefinition
     : PARTITION partitionName
     (VALUES (lessThanPartition | IN valueListWithParen))?
     partitionDefinitionOption*
-    (LEFT_PAREN subpartitionDefinition (COMMA subpartitionDefinition)* RIGHT_PAREN)?
+    (LP_ subpartitionDefinition (COMMA subpartitionDefinition)* RP_)?
     ;
 
 partitionDefinitionOption
-    : (STORAGE)? ENGINE EQ_OR_ASSIGN? engineName
-    | COMMENT EQ_OR_ASSIGN? STRING
-    | DATA DIRECTORY EQ_OR_ASSIGN? STRING
-    | INDEX DIRECTORY EQ_OR_ASSIGN? STRING
-    | MAX_ROWS EQ_OR_ASSIGN? NUMBER
-    | MIN_ROWS EQ_OR_ASSIGN? NUMBER
-    | TABLESPACE EQ_OR_ASSIGN? tablespaceName
+    : STORAGE? ENGINE EQ_? engineName
+    | COMMENT EQ_? STRING
+    | DATA DIRECTORY EQ_? STRING
+    | INDEX DIRECTORY EQ_? STRING
+    | MAX_ROWS EQ_? NUMBER
+    | MIN_ROWS EQ_? NUMBER
+    | TABLESPACE EQ_? tablespaceName
     ;
 
 lessThanPartition
-    : LESS THAN (LEFT_PAREN (expr | valueList) RIGHT_PAREN | MAXVALUE)
+    : LESS THAN (LP_ (expr | valueList) RP_ | MAXVALUE)
     ;
 
 subpartitionDefinition
-    : SUBPARTITION partitionName
-    partitionDefinitionOption*
+    : SUBPARTITION partitionName partitionDefinitionOption*
     ;

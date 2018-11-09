@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -31,13 +32,11 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import io.shardingsphere.shardingjdbc.revert.JDBCRevertEngine;
 import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.revert.RevertEngineHolder;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -83,13 +82,20 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler;
     
+    private final SagaConfiguration sagaConfiguration;
+    
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
+        this(transactionType, null);
+    }
+    
+    protected AbstractConnectionAdapter(final TransactionType transactionType, final SagaConfiguration sagaConfiguration) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
         shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
         if (transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
+        this.sagaConfiguration = sagaConfiguration;
     }
     
     /**
@@ -192,8 +198,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
         } else if (TransactionType.BASE == transactionType) {
-            RevertEngineHolder.getInstance().setRevertEngine(new JDBCRevertEngine(getDataSourceMap()));
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this, getDataSourceMap(), sagaConfiguration));
         }
     }
     
@@ -210,8 +215,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
-            RevertEngineHolder.getInstance().remove();
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT, sagaConfiguration));
         }
     }
     
@@ -228,8 +232,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == transactionType) {
-            RevertEngineHolder.getInstance().remove();
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK, sagaConfiguration));
         }
     }
     

@@ -18,11 +18,13 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
+import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,6 +42,7 @@ import java.util.logging.Logger;
  * @author zhangliang
  * @author panjuan
  * @author zhaojun
+ * @author yangyi
  */
 @Getter
 @Setter
@@ -57,12 +60,19 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
     
+    private final SagaConfiguration sagaConfiguration;
+    
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        this(dataSourceMap, new SagaConfiguration());
+    }
+    
+    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
         xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, databaseType);
+        this.sagaConfiguration = sagaConfiguration;
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -108,6 +118,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         if (null != xaDataSourceMap) {
             closeDataSource(xaDataSourceMap);
         }
+        SagaTransactionManager.getInstance().removeSagaExecutionComponent(sagaConfiguration);
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {

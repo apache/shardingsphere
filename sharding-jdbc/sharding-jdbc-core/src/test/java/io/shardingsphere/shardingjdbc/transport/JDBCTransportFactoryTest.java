@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.transport;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import org.apache.servicecomb.saga.transports.SQLTransport;
@@ -35,12 +36,14 @@ public class JDBCTransportFactoryTest {
     
     private final JDBCTransportFactory jdbcTransportFactory = new JDBCTransportFactory();
     
+    private final SagaConfiguration configuration = new SagaConfiguration();
+    
     @Test
     public void assertGetTransport() {
         SQLTransport jdbcSqlTransport = jdbcTransportFactory.getTransport();
         assertNull(jdbcSqlTransport);
         
-        jdbcTransportFactory.cacheTransport(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        jdbcTransportFactory.cacheTransport(new SagaTransactionEvent(TransactionOperationType.BEGIN, configuration));
         jdbcSqlTransport = jdbcTransportFactory.getTransport();
         assertThat(jdbcSqlTransport, instanceOf(JDBCSqlTransport.class));
         

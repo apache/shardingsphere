@@ -33,10 +33,13 @@ import org.antlr.v4.runtime.TokenStream;
  */
 public final class SQLServerStatementASTParser extends SQLServerStatementParser implements SQLASTParser {
     
+    private final AdvancedMatchHandler advancedMatchHandler;
+    
     public SQLServerStatementASTParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         _errHandler = new AdvancedErrorStrategy(ID);
+        advancedMatchHandler = new AdvancedMatchHandler(this, ID);
     }
     
     @Override
@@ -44,6 +47,6 @@ public final class SQLServerStatementASTParser extends SQLServerStatementParser 
         if (Token.EOF == tokenType) {
             matchedEOF = true;
         }
-        return AdvancedMatchHandler.getMatchedToken(this, tokenType, ID);
+        return advancedMatchHandler.getMatchedToken(tokenType);
     }
 }

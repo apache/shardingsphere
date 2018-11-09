@@ -17,6 +17,8 @@
 
 package io.shardingsphere.shardingproxy.transport.base;
 
+import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -24,8 +26,11 @@ import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -38,23 +43,25 @@ public class ProxyShardingTransportFactoryTest {
     
     private final ProxyShardingTransportFactory transportFactory = new ProxyShardingTransportFactory();
     
-    private final String schemaName = "test";
+    private final SagaConfiguration config = new SagaConfiguration();
     
     @Before
-    public void setUp() {
-        LogicSchema shardingSchema = mock(LogicSchema.class);
-        GlobalRegistry.getInstance().getLogicSchemas().put(schemaName, shardingSchema);
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        Map<String, LogicSchema> logicSchemas = Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, mock(LogicSchema.class));
+        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), logicSchemas);
     }
     
     @Test
     public void assertGetTransport() {
         SQLTransport jdbcSqlTransport = transportFactory.getTransport();
         assertNull(jdbcSqlTransport);
-    
-        transportFactory.cacheTransport(new SagaTransactionEvent(null, schemaName));
+        
+        transportFactory.cacheTransport(new SagaTransactionEvent(null, ShardingConstant.LOGIC_SCHEMA_NAME, null, config));
         jdbcSqlTransport = transportFactory.getTransport();
         assertThat(jdbcSqlTransport, instanceOf(ProxySQLTransport.class));
-    
+        
         transportFactory.remove();
         jdbcSqlTransport = transportFactory.getTransport();
         assertNull(jdbcSqlTransport);

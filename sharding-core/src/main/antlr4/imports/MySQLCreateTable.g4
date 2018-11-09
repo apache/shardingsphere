@@ -1,54 +1,42 @@
 grammar MySQLCreateTable;
+
 import MySQLKeyword, Keyword, MySQLDQL, MySQLTableBase, DQLBase, MySQLBase, BaseRule, DataType, Symbol;
 
 createTable
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName
-    createTableOptions
-    ; 
+    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
+    ;
 
 createTableOptions
-    : createTableBasic
-    | createTableSelect
-    | createTableLike
+    : createTableBasic | createTableSelect | createTableLike
     ;
-    
+
 createTableBasic
-    : createDefinitionsWithParen
-    tableOptions?
-    partitionOptions?
+    : createDefinitionsWithParen tableOptions? partitionOptions?
     ;
 
 createDefinitionsWithParen
-    : LEFT_PAREN createDefinitions RIGHT_PAREN
+    : LP_ createDefinitions RP_
     ;
 
 createDefinitions
     : createDefinition (COMMA createDefinition)*
     ;
-    
+
 createDefinition
-    : columnDefinition
-    | constraintDefinition
-    | indexDefinition
-    | checkExpr
+    : columnDefinition | constraintDefinition | indexDefinition | checkExpr
     ;
-    
+
 checkExpr
     : CHECK expr
     ;
-        
+
 createTableSelect
-    : createDefinitionsWithParen?
-    tableOptions?
-    partitionOptions?
-    (IGNORE | REPLACE)?
-    AS? unionSelect
+    : createDefinitionsWithParen? tableOptions? partitionOptions? (IGNORE | REPLACE)? AS? unionSelect
     ;
-    
+
 createTableLike
-    : likeTable
-    | LEFT_PAREN likeTable RIGHT_PAREN
-    ;    
+    : likeTable | LP_ likeTable RP_
+    ;
 
 likeTable
     : LIKE tableName

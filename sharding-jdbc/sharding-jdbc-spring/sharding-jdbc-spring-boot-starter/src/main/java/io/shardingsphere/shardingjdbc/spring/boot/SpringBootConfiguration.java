@@ -25,6 +25,7 @@ import io.shardingsphere.shardingjdbc.spring.boot.common.SpringBootConfigMapConf
 import io.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import io.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import io.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import io.shardingsphere.shardingjdbc.spring.boot.transaction.SpringBootSagaConfigurationProperties;
 import io.shardingsphere.shardingjdbc.spring.boot.util.PropertyUtil;
 import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,13 @@ import java.util.Map;
  * Spring boot sharding and master-slave configuration.
  *
  * @author caohao
+ * @author yangyi
  */
 @Configuration
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class, 
-        SpringBootConfigMapConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class
+        SpringBootConfigMapConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class,
+        SpringBootSagaConfigurationProperties.class
 })
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
@@ -60,6 +63,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootPropertiesConfigurationProperties propMapProperties;
     
+    private final SpringBootSagaConfigurationProperties sagaConfigurationProperties;
+    
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     /**
@@ -71,7 +76,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Bean
     public DataSource dataSource() throws SQLException {
         return null == masterSlaveProperties.getMasterDataSourceName() 
-                ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps())
+                ? ShardingDataSourceFactory.createDataSource(
+                        dataSourceMap, shardingProperties.getShardingRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps(), sagaConfigurationProperties.getSaga())
                 : MasterSlaveDataSourceFactory.createDataSource(
                         dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps());
     }

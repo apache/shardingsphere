@@ -1,18 +1,16 @@
 grammar OracleBase;
 
-import OracleKeyword,Keyword,Symbol,BaseRule,DataType;
+import OracleKeyword, Keyword, Symbol, BaseRule, DataType;
 
-ID: 
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA? DOT)?
-    (BACK_QUOTA?[a-zA-Z_$][a-zA-Z0-9_$#]* BACK_QUOTA?)
-    |[a-zA-Z_$#0-9]+ DOT ASTERISK
+ID
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
+    | [a-zA-Z_$#0-9]+ DOT ASTERISK
     ;
 
 oracleId
-   : ID
-   | (STRING DOT)* STRING
+   : ID | (STRING DOT)* STRING
    ;
-     
+
 tableName
     : oracleId
     ;
@@ -20,11 +18,11 @@ tableName
 columnName
     : oracleId
     ;
-    
+
 indexName
     : oracleId
     ;
-    
+
 attributeName
     : oracleId
     ;
@@ -32,11 +30,11 @@ attributeName
 indexTypeName
     : ID
     ;
-    
+
 simpleExprsWithParen
-    : LEFT_PAREN simpleExprs RIGHT_PAREN 
+    : LP_ simpleExprs RP_ 
     ;
-    
+
 simpleExprs
     : simpleExpr ( COMMA simpleExpr)* 
     ;
@@ -45,111 +43,88 @@ lobItem
     : attributeName
     | columnName
     ;
-    
+
 lobItems
     : lobItem (COMMA lobItem)*
     ;
 
 lobItemList
-    : LEFT_PAREN lobItems RIGHT_PAREN
+    : LP_ lobItems RP_
     ;
 
 dataType
-    : typeName dataTypeLength?
-    | specialDatatype
-    | typeName dataTypeLength? datetimeTypeSuffix
+    : typeName dataTypeLength? | specialDatatype | typeName dataTypeLength? datetimeTypeSuffix
     ;
-    
+
 typeName
-	: DOUBLE PRECISION
-	| INTERVAL YEAR
-	| INTERVAL DAY
-	| ID
-	;
-	
+    : DOUBLE PRECISION | INTERVAL YEAR | INTERVAL DAY | ID
+    ;
+
 specialDatatype
-    : typeName (LEFT_PAREN NUMBER ID  RIGHT_PAREN)
-    | NATIONAL typeName (VARYING)? LEFT_PAREN NUMBER RIGHT_PAREN 
-    | typeName LEFT_PAREN? columnName  RIGHT_PAREN?
+    : typeName (LP_ NUMBER ID  RP_) | NATIONAL typeName VARYING? LP_ NUMBER RP_  | typeName LP_? columnName  RP_?
     ;
 
 datetimeTypeSuffix
-    : (WITH LOCAL? TIME ZONE)?
-    | TO MONTH
-    | TO SECOND (LEFT_PAREN NUMBER RIGHT_PAREN)?
+    : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER RP_)?
     ;
 
 columnSortClause
-    : tableAndAlias columnName
-    (ASC | DESC)?
+    : tableAndAlias columnName (ASC | DESC)?
     ;
-  
- tableAndAlias
+
+tableAndAlias
     : tableName alias?
     ;
- 
- privateExprOfDb
-    : treatFunction
-    | caseExpr
-    | intervalExpression
-    | objectAccessExpression
-    | constructorExpr
+
+privateExprOfDb
+    : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
     ;
 
 treatFunction
-    : TREAT LEFT_PAREN expr AS REF? typeName RIGHT_PAREN
+    : TREAT LP_ expr AS REF? typeName RP_
     ;
 
 caseExpr
-    : CASE ( simpleCaseExpr
-     | searchedCaseExpr
-     )
-     elseClause?
-     END
+    : CASE (simpleCaseExpr | searchedCaseExpr) elseClause? END
     ;
-    
+
 simpleCaseExpr
-    : expr
-    searchedCaseExpr+
+    : expr searchedCaseExpr+
     ;
-    
+
 searchedCaseExpr
     : WHEN expr THEN simpleExpr
     ;
-    
+
 elseClause
     : ELSE expr
     ;
 
 dateTimeExpr
-    : expr AT 
-    (
-         LOCAL
-        | TIME ZONE (STRING | DBTIMEZONE | expr)      
-    )
+    : expr AT (LOCAL | TIME ZONE (STRING | DBTIMEZONE | expr))
     ;
-    
+
 exprRecursive
     : PRIOR expr
     ;
 
 intervalExpression
-    : LEFT_PAREN expr MINUS expr RIGHT_PAREN 
+    : LP_ expr MINUS expr RP_ 
     (
-         DAY ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO SECOND ( LEFT_PAREN NUMBER RIGHT_PAREN )?
-       | YEAR ( LEFT_PAREN NUMBER RIGHT_PAREN )? TO MONTH
+         DAY (LP_ NUMBER RP_)? TO SECOND (LP_ NUMBER RP_)?
+       | YEAR (LP_ NUMBER RP_)? TO MONTH
     )
     ;
 
 objectAccessExpression
-    : ( LEFT_PAREN simpleExpr RIGHT_PAREN |treatFunction)
+    : (LP_ simpleExpr RP_ |treatFunction)
     DOT
     ( 
         attributeName (DOT attributeName )* (DOT functionCall)?
         |functionCall
     )
     ;
-    
+
 constructorExpr
     : NEW typeName exprsWithParen
     ;

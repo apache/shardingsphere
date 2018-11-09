@@ -20,7 +20,7 @@
 #  acceptor.size: 16  # The default value is available processors count * 2.
 #  executor.size: 16  # Infinite by default.
 #  proxy.transaction.enabled: false
-#    # Be valid when proxy.transaction.enabled is true.
+#    # Be valid when 'proxy.transaction.enabled' is true.
 #    # LOCAL: Proxy will run with LOCAL transaction.
 #    # XA: Proxy will run with XA transaction.
 #    # BASE: Proxy will run with B.A.S.E transaction.
@@ -33,3 +33,12 @@
 #  sharding-key2: sharding-value2
 #  master-slave-key0: master-slave-value0
 #  master-slave-key1: master-slave-value1
+#
+## Be valid when 'proxy.transaction.enabled' is true and 'proxy.transaction.type' is BASE.
+#saga:
+#  executorSize: 5
+#  transactionMaxRetries: 5
+#  transactionRetryDelay: 5000
+#  compensationMaxRetries: 3
+#  compensationRetryDelay: 3000
+#  recoveryPolicy: FORWARD

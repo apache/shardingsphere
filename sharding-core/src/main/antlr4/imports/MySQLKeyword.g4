@@ -1,9 +1,17 @@
 lexer grammar MySQLKeyword;
 
 import Symbol;
-   
+
+ACCOUNT
+    : A C C O U N T
+    ;
+
 ACTION
     : A C T I O N
+    ;
+
+ADMIN
+    : A D M I N
     ;
 
 AFTER
@@ -18,6 +26,10 @@ ANALYZE
     : A N A L Y Z E
     ;
 
+AUDIT_ADMIN
+    : A U D I T UL_ A D M I N
+    ;
+
 AUTO_INCREMENT
     : A U T O UL_ I N C R E M E N T
     ;
@@ -28,6 +40,10 @@ AVG_ROW_LENGTH
 
 BEGIN
     : B E G I N
+    ;
+
+BINLOG_ADMIN
+    : B I N L O G UL_ A D M I N
     ;
 
 BTREE
@@ -60,6 +76,14 @@ CHARSET
 
 CHECKSUM
     : C H E C K S U M
+    ;
+
+CIPHER
+    : C I P H E R
+    ;
+
+CLIENT
+    : C L I E N T
     ;
 
 COALESCE
@@ -98,6 +122,10 @@ CONNECTION
     : C O N N E C T I O N
     ;
 
+CONNECTION_ADMIN
+    : C O N N E C T I O N UL_ A D M I N
+    ;
+
 CONSISTENT
     : C O N S I S T E N T
     ;
@@ -120,6 +148,10 @@ CURRENT_TIMESTAMP
 
 DATA
     : D A T A
+    ;
+
+DATABASES
+    : D A T A B A S E S
     ;
 
 DELAYED
@@ -170,6 +202,10 @@ ENCRYPTION
     : E N C R Y P T I O N
     ;
 
+ENCRYPTION_KEY_ADMIN
+    : E N C R Y P T I O N UL_ K E Y UL_ A D M I N
+    ;
+
 END
     : E N D
     ;
@@ -178,12 +214,40 @@ ENGINE
     : E N G I N E
     ;
 
+EVENT
+    : E V E N T
+    ;
+
+EXCEPT
+    : E X C E P T
+    ;
+
 EXCHANGE
     : E X C H A N G E
     ;
 
 EXCLUSIVE
     : E X C L U S I V E
+    ;
+
+EXECUTE
+    : E X E C U T E
+    ;
+
+EXPIRE
+    : E X P I R E
+    ;
+
+FILE
+    : F I L E
+    ;
+
+FIREWALL_ADMIN
+    : F I R E W A L L UL_ A D M I N
+    ;
+
+FIREWALL_USER
+    : F I R E W A L L UL_ U S E R
     ;
 
 FIRST
@@ -210,8 +274,20 @@ FULLTEXT
     : F U L L T E X T
     ;
 
+FUNCTION
+    : F U N C T I O N
+    ;
+
 GLOBAL
     : G L O B A L
+    ;
+
+GRANT
+    : G R A N T
+    ;
+
+GROUP_REPLICATION_ADMIN
+    : G R O U P UL_ R E P L I C A T I O N UL_ A D M I N
     ;
 
 HASH
@@ -220,6 +296,14 @@ HASH
 
 HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
+    ;
+
+HISTORY
+    : H I S T O R Y
+    ;
+
+IDENTIFIED
+    : I D E N T I F I E D
     ;
 
 IGNORE
@@ -246,8 +330,16 @@ INSERT_METHOD
     : I N S E R T UL_ M E T H O D
     ;
 
+INTERVAL
+    : I N T E R V A L
+    ;
+
 INTO
     : I N T O
+    ;
+
+ISSUER
+    : I S S U E R
     ;
 
 JOIN
@@ -306,8 +398,24 @@ MAXVALUE
     : M A X V A L U E
     ;
 
+MAX_CONNECTIONS_PER_HOUR
+    : M A X UL_ C O N N E C T I O N S UL_ P E R UL_ H O U R
+    ;
+
+MAX_QUERIES_PER_HOUR
+    : M A X UL_ Q U E R I E S UL_ P E R UL_ H O U R
+    ;
+
 MAX_ROWS
     : M A X UL_ R O W S
+    ;
+
+MAX_UPDATES_PER_HOUR
+    : M A X UL_ U P D A T E S UL_ P E R UL_ H O U R
+    ;
+
+MAX_USER_CONNECTIONS
+    : M A X UL_ U S E R UL_ C O N N E C T I O N S
     ;
 
 MEMORY
@@ -326,6 +434,10 @@ NATURAL
     : N A T U R A L
     ;
 
+NEVER
+    : N E V E R
+    ;
+
 NONE
     : N O N E
     ;
@@ -338,6 +450,10 @@ OFFLINE
     : O F F L I N E
     ;
 
+OLD
+    : O L D
+    ;
+
 ONLINE
     : O N L I N E
     ;
@@ -348,6 +464,14 @@ ONLY
 
 OPTIMIZE
     : O P T I M I Z E
+    ;
+
+OPTION
+    : O P T I O N
+    ;
+
+OPTIONAL
+    : O P T I O N A L
     ;
 
 OUTER
@@ -390,6 +514,22 @@ PRECISION
     : P R E C I S I O N
     ;
 
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
+PROCESS
+    : P R O C E S S
+    ;
+
+PROXY
+    : P R O X Y
+    ;
+
 QUICK
     : Q U I C K
     ;
@@ -408,6 +548,10 @@ REDUNDANT
 
 RELEASE
     : R E L E A S E
+    ;
+
+RELOAD
+    : R E L O A D
     ;
 
 REMOVE
@@ -434,12 +578,48 @@ REPLACE
     : R E P L A C E
     ;
 
+REPLICATION
+    : R E P L I C A T I O N
+    ;
+
+REPLICATION_SLAVE_ADMIN
+    : R E P L I C A T I O N UL_ S L A V E UL_ A D M I N
+    ;
+
+REQUIRE
+    : R E Q U I R E
+    ;
+
 RESTRICT
     : R E S T R I C T
     ;
 
+RETAIN
+    : R E T A I N
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+REVOKE
+    : R E V O K E
+    ;
+
 RIGHT
     : R I G H T
+    ;
+
+ROLE
+    : R O L E
+    ;
+
+ROLE_ADMIN
+    : R O L E UL_ A D M I N
+    ;
+
+ROUTINE
+    : R O U T I N E
     ;
 
 ROW_FORMAT
@@ -454,12 +634,28 @@ SESSION
     : S E S S I O N
     ;
 
+SET_USER_ID
+    : S E T UL_ U S E R UL_ I D
+    ;
+
 SHARED
     : S H A R E D
     ;
 
+SHOW
+    : S H O W
+    ;
+
+SHUTDOWN
+    : S H U T D O W N
+    ;
+
 SIMPLE
     : S I M P L E
+    ;
+
+SLAVE
+    : S L A V E
     ;
 
 SNAPSHOT
@@ -502,6 +698,10 @@ SQL_SMALL_RESULT
     : S Q L UL_ S M A L L UL_ R E S U L T
     ;
 
+SSL
+    : S S L
+    ;
+
 STATS_AUTO_RECALC
     : S T A T S UL_ A U T O UL_ R E C A L C
     ;
@@ -526,12 +726,28 @@ STRAIGHT_JOIN
     : S T R A I G H T UL_ J O I N
     ;
 
+SUBJECT
+    : S U B J E C T
+    ;
+
 SUBPARTITION
     : S U B P A R T I T I O N
     ;
 
 SUBPARTITIONS
     : S U B P A R T I T I O N S
+    ;
+
+SUPER
+    : S U P E R
+    ;
+
+SYSTEM_VARIABLES_ADMIN
+    : S Y S T E M UL_ V A R I A B L E S UL_ A D M I N
+    ;
+
+TABLES
+    : T A B L E S
     ;
 
 TABLESPACE
@@ -550,8 +766,16 @@ THEN
     : T H E N
     ;
 
+TRIGGER
+    : T R I G G E R
+    ;
+
 UNCOMMITTED
     : U N C O M M I T T E D
+    ;
+
+UNLOCK
+    : U N L O C K
     ;
 
 UNSIGNED
@@ -564,6 +788,10 @@ UPDATE
 
 UPGRADE
     : U P G R A D E
+    ;
+
+USAGE
+    : U S A G E
     ;
 
 USE
@@ -584,6 +812,14 @@ VALUE
 
 VALUES
     : V A L U E S
+    ;
+
+VERSION_TOKEN_ADMIN
+    : V E R S I O N UL_ T O K E N UL_ A D M I N
+    ;
+
+VIEW
+    : V I E W
     ;
 
 VIRTUAL

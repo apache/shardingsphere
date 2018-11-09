@@ -17,10 +17,12 @@
 
 package io.shardingsphere.transaction.base.handler;
 
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.transaction.base.manager.servicecomb.SagaDefinitionBuilder;
@@ -51,8 +53,13 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SagaShardingTransactionHandlerTest {
+    private final SagaConfiguration config = new SagaConfiguration();
     
     private final SagaShardingTransactionHandler handler = new SagaShardingTransactionHandler();
+    
+    private final List<Object> param = new ArrayList<>();
+    
+    private final List<List<Object>> params = new ArrayList<>();
     
     @Mock
     private BASETransactionManager<SagaTransactionEvent> sagaTransactionManager;
@@ -81,6 +88,8 @@ public class SagaShardingTransactionHandlerTest {
         transactionManager.set(handler, sagaTransactionManager);
         builderMap = (Map<String, SagaDefinitionBuilder>) sagaDefinitionBuilderMap.get(handler);
         revertEngines = (Map<String, RevertEngine>) revertEngineMap.get(handler);
+        param.add("test");
+        params.add(param);
     }
     
     @Test
@@ -91,26 +100,28 @@ public class SagaShardingTransactionHandlerTest {
     @Test
     public void assertListenBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.BEGIN);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.BEGIN, config);
         handler.doInTransaction(event);
         verify(sagaTransactionManager).begin(event);
         assertThat(builderMap.size(), is(1));
         assertThat(revertEngines.size(), is(1));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = ShardingException.class)
     public void assertListenCommitWithoutBegin() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
+        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, config);
         handler.doInTransaction(event);
     }
     
     @Test
     public void assertListenCommitWithBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        handler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN));
+        handler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, config));
         assertThat(builderMap.size(), is(1));
         assertThat(revertEngines.size(), is(1));
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT);
+        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.COMMIT, config);
         handler.doInTransaction(event);
         verify(sagaTransactionManager).commit(event);
         assertThat(builderMap.size(), is(0));
@@ -119,7 +130,7 @@ public class SagaShardingTransactionHandlerTest {
     
     @Test
     public void assertListenRollback() throws SQLException {
-        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.ROLLBACK);
+        SagaTransactionEvent event = new SagaTransactionEvent(TransactionOperationType.ROLLBACK, config);
         handler.doInTransaction(event);
         verify(sagaTransactionManager).rollback(event);
         assertThat(builderMap.size(), is(0));
@@ -128,14 +139,14 @@ public class SagaShardingTransactionHandlerTest {
     
     @Test
     public void assertListenSagaSQLExecutionEvent() throws NoSuchFieldException, IllegalAccessException {
-        builderMap.put(id, new SagaDefinitionBuilder());
+        builderMap.put(id, new SagaDefinitionBuilder(config.getRecoveryPolicy().getName(), config.getTransactionMaxRetries(), config.getCompensationMaxRetries(), config.getTransactionRetryDelay()));
         revertEngines.put(id, revertEngine);
-        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", new ArrayList<List<Object>>())), id);
+        SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", params)), id);
         event.setExecuteSuccess();
         handler.doInTransaction(new SagaTransactionEvent(event));
         assertThat(getRequestLength(), is(1));
         assertThat(getParentsLength(), is(0));
-        event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", new ArrayList<List<Object>>())), id);
+        event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", params)), id);
         handler.doInTransaction(new SagaTransactionEvent(event));
         assertThat(getParentsLength(), is(1));
     }

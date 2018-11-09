@@ -21,6 +21,7 @@ import com.google.common.base.CharMatcher;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -30,7 +31,7 @@ import lombok.AllArgsConstructor;
  * @author gaohongtao
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SQLUtil {
+public final class SQLUtil {
     
     /**
      * Get exactly value for SQL expression.
@@ -70,5 +71,15 @@ public class SQLUtil {
         } catch (final IllegalArgumentException ex) {
             return value;
         }
+    }
+    
+    /**
+     * Get name without schema.
+     * 
+     * @param value SQL expression
+     * @return name without schema
+     */
+    public static String getNameWithoutSchema(final String value) {
+        return value.contains(Symbol.DOT.getLiterals()) ? value.substring(value.lastIndexOf(Symbol.DOT.getLiterals()) + Symbol.DOT.getLiterals().length()) : value;
     }
 }

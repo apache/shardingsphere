@@ -17,6 +17,8 @@
 
 package io.shardingsphere.shardingproxy.config;
 
+import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
@@ -28,9 +30,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public final class ShardingConfigurationLoaderTest {
     
@@ -41,6 +41,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getRuleConfigurationMap().size(), is(2));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
         assertMasterSlaveRuleConfiguration(actual.getRuleConfigurationMap().get("master_slave_db"));
+        assertSagaConfiguration(actual.getServerConfiguration().getSaga());
     }
     
     private void assertOrchestrationConfiguration(final YamlOrchestrationConfiguration actual) {
@@ -96,5 +97,16 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getIdleTimeout(), is(60000L));
         assertThat(actual.getMaxLifetime(), is(1800000L));
         assertThat(actual.getMaximumPoolSize(), is(50));
+    }
+    
+    private void assertSagaConfiguration(final SagaConfiguration actual) {
+        assertNotNull(actual.getAlias());
+        assertThat(actual.getAlias().length() ,is(36));
+        assertThat(actual.getExecutorSize(), is(10));
+        assertThat(actual.getTransactionMaxRetries(), is(10));
+        assertThat(actual.getTransactionRetryDelay(), is(1000));
+        assertThat(actual.getCompensationMaxRetries(), is(5));
+        assertThat(actual.getCompensationRetryDelay(), is(2000));
+        assertThat(actual.getRecoveryPolicy(), is(SagaRecoveryPolicy.BACKWARD));
     }
 }

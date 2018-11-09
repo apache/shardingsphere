@@ -1,9 +1,9 @@
 grammar MySQLDQL;
-import MySQLKeyword,Keyword,Symbol,DataType, BaseRule, DQLBase;
 
+import MySQLKeyword, Keyword, Symbol, DataType, BaseRule, DQLBase;
 
-selectSpec: 
-    (ALL | DISTINCT | DISTINCTROW)? 
+selectSpec
+    : (ALL | DISTINCT | DISTINCTROW)? 
     HIGH_PRIORITY? 
     STRAIGHT_JOIN?
     SQL_SMALL_RESULT?
@@ -13,82 +13,71 @@ selectSpec:
     SQL_CALC_FOUND_ROWS?
     ;
 
-caseExpress:
-    caseCond
-    |caseComp
-    ;
-    
-caseComp:
-    CASE simpleExpr caseWhenComp+ elseResult? END  
-    ;
-    
-caseWhenComp:
-    WHEN simpleExpr THEN caseResult
+caseExpress
+    : caseCond | caseComp
     ;
 
-caseCond:
-    CASE whenResult+ elseResult? END
-    ;
-    
-whenResult:
-    WHEN booleanPrimary THEN caseResult
+caseComp
+    : CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
 
-elseResult:
-    ELSE caseResult
+caseWhenComp
+    : WHEN simpleExpr THEN caseResult
     ;
 
-caseResult:
-    expr
+caseCond
+    : CASE whenResult+ elseResult? END
     ;
 
-
-
-idListWithEmpty:
-    (LEFT_PAREN RIGHT_PAREN)
-    |idList
+whenResult
+    : WHEN booleanPrimary THEN caseResult
     ;
 
-//https://dev.mysql.com/doc/refman/8.0/en/join.html
-tableReferences:
-    tableReference(COMMA  tableReference)*
+elseResult
+    : ELSE caseResult
     ;
 
-tableReference:
-    (tableFactor joinTable)+
-      | tableFactor joinTable+
-      | tableFactor
-     ;
-     
-tableFactor:
-    tableName (PARTITION  idList)?
-        (AS? alias)? indexHintList? 
-      | subquery AS? alias
-      | LEFT_PAREN tableReferences RIGHT_PAREN
+caseResult
+    : expr
     ;
 
-joinTable:
-    (INNER | CROSS)? JOIN tableFactor joinCondition?
-      | STRAIGHT_JOIN tableFactor
-      | STRAIGHT_JOIN tableFactor joinCondition
-      | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
-      | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
-    ;
-    
-joinCondition:
-    ON expr
-      | USING idList
-    ;
-    
-indexHintList:
-    indexHint(COMMA  indexHint)*
+idListWithEmpty
+    : LP_ RP_ | idList
     ;
 
-indexHint:
-    USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-      | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-     ;
-    
-selectExpr:
-    bitExpr AS? alias?
+tableReferences
+    : tableReference(COMMA  tableReference)*
+    ;
+
+tableReference
+    : (tableFactor joinTable)+ | tableFactor joinTable+ | tableFactor
+    ;
+
+tableFactor
+    : tableName (PARTITION  idList)? (AS? alias)? indexHintList?  | subquery AS? alias | LP_ tableReferences RP_
+    ;
+
+joinTable
+    : (INNER | CROSS)? JOIN tableFactor joinCondition?
+    | STRAIGHT_JOIN tableFactor
+    | STRAIGHT_JOIN tableFactor joinCondition
+    | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
+    | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
+    ;
+
+joinCondition
+    : ON expr | USING idList
+    ;
+
+indexHintList
+    : indexHint(COMMA  indexHint)*
+    ;
+
+indexHint
+    : USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    ;
+
+selectExpr
+    : bitExpr AS? alias?
     ;

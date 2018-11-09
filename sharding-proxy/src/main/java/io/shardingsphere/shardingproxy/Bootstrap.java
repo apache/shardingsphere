@@ -18,7 +18,9 @@
 package io.shardingsphere.shardingproxy;
 
 import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -48,6 +50,7 @@ import java.util.Properties;
  * @author zhangliang
  * @author wangkai
  * @author panjuan
+ * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
@@ -67,7 +70,7 @@ public final class Bootstrap {
         new ProxyListenerRegister().register();
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(),
-                    shardingConfig.getServerConfiguration().getConfigMap(), shardingConfig.getServerConfiguration().getProps(), port);
+                    shardingConfig.getServerConfiguration().getConfigMap(), shardingConfig.getServerConfiguration().getProps(), shardingConfig.getServerConfiguration().getSaga(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
@@ -85,8 +88,8 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final Authentication authentication,
-                                                   final Map<String, Object> configMap, final Properties prop, final int port) throws InterruptedException {
-        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop);
+                                                   final Map<String, Object> configMap, final Properties prop, final SagaConfiguration saga, final int port) throws InterruptedException {
+        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop, saga == null ? new SagaConfiguration() : saga);
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -96,7 +99,8 @@ public final class Bootstrap {
         try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(orchestrationFacade), getSchemaRules(orchestrationFacade),
-                    orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(), orchestrationFacade.getConfigService().loadProperties(), true);
+                    orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(),
+                    orchestrationFacade.getConfigService().loadProperties(), orchestrationFacade.getConfigService().loadSaga(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }
@@ -128,12 +132,12 @@ public final class Bootstrap {
             orchestrationFacade.init();
         } else {
             orchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getConfigMap(), serverConfig.getProps());
+                    getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getConfigMap(), serverConfig.getProps(), serverConfig.getSaga());
         }
     }
     
     private static void initOpenTracing() {
-        if (GlobalRegistry.getInstance().isOpenTracingEnable()) {
+        if (GlobalRegistry.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
         }
     }

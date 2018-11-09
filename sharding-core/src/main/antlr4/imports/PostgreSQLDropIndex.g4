@@ -1,6 +1,6 @@
-grammar PostgreDropIndex;
+grammar PostgreSQLDropIndex;
 
-import PostgreKeyword, Keyword, PostgreBase, BaseRule;
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule;
 
 dropIndex
     : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames

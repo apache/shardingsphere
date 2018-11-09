@@ -1,6 +1,6 @@
-grammar PostgreDropTable;
+grammar PostgreSQLDropTable;
 
-import PostgreKeyword, Keyword,PostgreBase, BaseRule;
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule;
 
 dropTable
     : DROP TABLE (IF EXISTS)? tableNames

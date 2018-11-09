@@ -36,11 +36,7 @@ public final class SagaDefinitionBuilder {
     
     private static final String TYPE = "sql";
     
-    private static final String POLICY = "ForwardRecovery";
-    
-    private static final int DEFAULT_RETIRES = 5;
-    
-    private static final int DEFAULT_FAIL_RETRY_DELAY = 5000;
+    private final String recoveryPolicy;
     
     private final int transactionRetires;
     
@@ -53,10 +49,6 @@ public final class SagaDefinitionBuilder {
     private String[] parents = new String[]{};
     
     private ConcurrentLinkedQueue<Object> newRequestIds = new ConcurrentLinkedQueue<>();
-    
-    public SagaDefinitionBuilder() {
-        this(DEFAULT_RETIRES, DEFAULT_RETIRES, DEFAULT_FAIL_RETRY_DELAY);
-    }
     
     /**
      * Add child request node to definition graph.
@@ -93,7 +85,7 @@ public final class SagaDefinitionBuilder {
     public String build() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = objectMapper.writeValueAsString(requests);
-        return "{\"policy\":\"" + POLICY + "\",\"requests\":" + jsonRequest + "}";
+        return "{\"policy\":\"" + recoveryPolicy + "\",\"requests\":" + jsonRequest + "}";
     }
     
     @RequiredArgsConstructor

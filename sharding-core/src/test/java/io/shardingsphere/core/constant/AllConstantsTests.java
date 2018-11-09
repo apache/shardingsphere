@@ -25,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         DatabaseTypeTest.class,
         ShardingPropertiesConstantTest.class,
-        ShardingPropertiesTest.class
+        ShardingPropertiesTest.class,
+        SagaRecoveryPolicyTest.class
     })
 public final class AllConstantsTests {
 }
