@@ -17,9 +17,8 @@
 
 package io.shardingsphere.transaction.xa.convert.extractor;
 
-import io.shardingsphere.core.config.DataSourceConfiguration;
-
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Hikari datasource parameter extractor.
@@ -34,7 +33,7 @@ public final class HikariDataSourceParameterExtractor extends DataSourceParamete
     
     @Override
     protected void convertProperties() {
-        DataSourceConfiguration dataSourceConfiguration = getDataSourceConfiguration();
-        dataSourceConfiguration.getProperties().put("url", dataSourceConfiguration.getProperties().get("jdbcUrl"));
+        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
+        properties.put("url", properties.get("jdbcUrl"));
     }
 }
