@@ -23,4 +23,5 @@ execute
     | deny
     | createUser
     | alterUser
+    | dropUser
     ;

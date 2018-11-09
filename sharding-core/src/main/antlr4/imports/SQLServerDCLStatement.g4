@@ -96,3 +96,7 @@ optionsList
 alterUser
     : ALTER USER userName optionsLists
     ;
+
+dropUser
+    : DROP USER (IF EXISTS)? userName
+    ;
