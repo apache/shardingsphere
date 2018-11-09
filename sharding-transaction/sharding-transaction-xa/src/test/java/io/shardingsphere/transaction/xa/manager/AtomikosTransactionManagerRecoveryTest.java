@@ -155,12 +155,10 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test(expected = AtomikosSQLException.class)
-    public void assertCannotRegistryResourceAgainWhenDataSourceIsNotClose() {
-        atomikosTransactionManager.begin(beginEvent);
-        insertOrder("ds1");
-        atomikosTransactionManager.rollback(rollbackEvent);
+    @SneakyThrows
+    public void assertFailedInXAResourceUnReleased() {
         xaDataSourceMap = createXADataSourceMap();
-        assertOrderCount("ds1", 0L);
+        xaDataSourceMap.get("ds1").getConnection();
     }
 
     private void insertOrder(final String ds) {
