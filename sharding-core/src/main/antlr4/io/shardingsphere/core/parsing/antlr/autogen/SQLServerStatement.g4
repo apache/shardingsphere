@@ -22,4 +22,5 @@ execute
     | revoke
     | deny
     | createUser
+    | alterUser
     ;

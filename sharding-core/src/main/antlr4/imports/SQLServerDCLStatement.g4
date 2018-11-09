@@ -92,3 +92,7 @@ optionsLists
 optionsList
     : ID EQ_ ID?
     ;
+
+alterUser
+    : ALTER USER userName optionsLists
+    ;
