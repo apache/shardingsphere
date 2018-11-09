@@ -100,3 +100,10 @@ alterUser
 dropUser
     : DROP USER (IF EXISTS)? userName
     ;
+       
+sources
+    : WINDOWS (WITH optionsList (COMMA optionsList)?)?  
+    | CERTIFICATE ID  
+    | ASYMMETRIC KEY ID
+    ;
+    
