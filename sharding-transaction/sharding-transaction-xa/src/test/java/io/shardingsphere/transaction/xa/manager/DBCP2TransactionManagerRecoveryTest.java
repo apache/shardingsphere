@@ -28,8 +28,10 @@ import org.apache.tomcat.dbcp.dbcp2.managed.ManagedConnection;
 import org.apache.tomcat.dbcp.dbcp2.managed.PoolableManagedConnection;
 import org.h2.engine.Session;
 import org.h2.jdbc.JdbcConnection;
+import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 public final class DBCP2TransactionManagerRecoveryTest extends TransactionManagerRecoveryTest {
     
@@ -46,5 +48,13 @@ public final class DBCP2TransactionManagerRecoveryTest extends TransactionManage
     protected DataSource createXADataSource(final String dsName) {
         DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.H2, dsName);
         return getAtomikosTransactionManager().wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), dsName, DataSourceParameterFactory.build(dataSource));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertFailedInXAResourceUnReleased() {
+        // TODO result is different from AtomikosDataSourceBean
+        Map<String, DataSource> xaDataSourceMap = createXADataSourceMap();
+        xaDataSourceMap.get("ds1").getConnection();
     }
 }
