@@ -132,52 +132,23 @@ public class AtomikosTransactionManagerRecoveryTest {
     
     @Test
     @SneakyThrows
-    public void assertLockedResourceAfterPrepared() {
+    public void assertLockResourceAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         coordinateOnlyExecutePrepare();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    atomikosTransactionManager.begin(beginEvent);
-                    insertOrder("ds1");
-                    // CHECKSTYLE:OFF
-                } catch (Exception ex) {
-                    // CHECKSTYLE:ON
-                    assertTrue(ex.getMessage().contains("Timeout trying to lock table ; SQL statement:"));
-                    throw ex;
-                }
-            }
-        });
+        Thread thread = new Thread(new LockResourceTask());
         thread.start();
         thread.join();
     }
     
     @Test
     @SneakyThrows
-    public void assertLockedResourceAfterDDLExecuted() {
+    public void assertLockResourceAfterStartTransaction() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         Thread thread = new Thread(new LockResourceTask());
         thread.start();
         thread.join();
-    }
-    
-    private class LockResourceTask implements Runnable {
-        
-        @Override
-        public void run() {
-            try {
-                atomikosTransactionManager.begin(beginEvent);
-                insertOrder("ds1");
-                // CHECKSTYLE:OFF
-            } catch (Exception ex) {
-                // CHECKSTYLE:ON
-                assertTrue(ex.getMessage().contains("Timeout trying to lock table ; SQL statement:"));
-                throw ex;
-            }
-        }
     }
     
     @Test(expected = AtomikosSQLException.class)
@@ -246,5 +217,21 @@ public class AtomikosTransactionManagerRecoveryTest {
     private DataSource createXADataSource(final String dsName) {
         DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.H2, dsName);
         return atomikosTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), dsName, DataSourceParameterFactory.build(dataSource));
+    }
+    
+    private final class LockResourceTask implements Runnable {
+        
+        @Override
+        public void run() {
+            try {
+                atomikosTransactionManager.begin(beginEvent);
+                insertOrder("ds1");
+                // CHECKSTYLE:OFF
+            } catch (Exception ex) {
+                // CHECKSTYLE:ON
+                assertTrue(ex.getMessage().contains("Timeout trying to lock table ; SQL statement:"));
+                throw ex;
+            }
+        }
     }
 }
