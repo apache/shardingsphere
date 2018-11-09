@@ -49,6 +49,14 @@ deny
     : DENY permissionWithClass TO ids CASCADE? (AS ID)?
     ;
 
+createUser3
+    : CREATE USER userName
+    (
+        ID (( FOR | FROM ) LOGIN ID)?
+        | userName ( FOR | FROM ) LOGIN ID
+    )
+    ;
+
 createUser4
     : CREATE USER userName
     (
