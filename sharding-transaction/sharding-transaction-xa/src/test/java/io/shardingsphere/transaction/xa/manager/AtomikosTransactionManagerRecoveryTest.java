@@ -89,7 +89,7 @@ public class AtomikosTransactionManagerRecoveryTest {
     }
     
     @Test
-    public void assertThreadFailedAfterPrepared() {
+    public void assertAccessFailedAfterPrepared() {
         atomikosTransactionManager.begin(beginEvent);
         insertOrder("ds1");
         insertOrder("ds2");
