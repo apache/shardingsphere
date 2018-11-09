@@ -252,7 +252,6 @@ public final class ConfigurationService {
     }
     
     private Collection<String> getSlaveDataSourceNamesFromMasterSlaveRule(final String schemaName) {
-        MasterSlaveRuleConfiguration masterSlaveConfig = loadMasterSlaveRuleConfiguration(schemaName);
-        return masterSlaveConfig.getSlaveDataSourceNames();
+        return loadMasterSlaveRuleConfiguration(schemaName).getSlaveDataSourceNames();
     }
 }
