@@ -18,9 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.util;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,34 +31,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExtractorUtils {
-    
-    /**
-     * Extract column definition.
-     *
-     * @param columnDefinitionNode column definition rule
-     * @return column definition
-     */
-    public static ColumnDefinition extractColumnDefinition(final ParserRuleContext columnDefinitionNode) {
-        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
-        Preconditions.checkState(columnNameNode.isPresent());
-        Optional<ParserRuleContext> dataTypeNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
-        Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getText()) : Optional.<String>absent();
-        Optional<Integer> dataTypeLength = dataTypeNode.isPresent() ? getDataTypeLength(dataTypeNode.get()) : Optional.<Integer>absent();
-        boolean isPrimaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
-        return new ColumnDefinition(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey);
-    }
-    
-    private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
-        Optional<ParserRuleContext> dataTypeLengthNode = ASTUtils.findFirstChildNode(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
-        if (!dataTypeLengthNode.isPresent() || dataTypeLengthNode.get().getChildCount() < 3) {
-            return Optional.absent();
-        }
-        try {
-            return Optional.of(Integer.parseInt(dataTypeLengthNode.get().getChild(1).getText()));
-        } catch (final NumberFormatException ignored) {
-            return Optional.absent();
-        }
-    }
     
     /**
      * Extract column position.
