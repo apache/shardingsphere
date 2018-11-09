@@ -17,6 +17,8 @@
 
 package io.shardingsphere.transaction.xa.convert.extractor;
 
+import io.shardingsphere.core.constant.transaction.ProxyPoolType;
+
 import javax.sql.DataSource;
 import java.util.Map;
 
@@ -38,5 +40,6 @@ public final class DBCPDataSourceParameterExtractor extends DataSourceParameterE
         properties.put("idleTimeout", properties.get("maxIdle"));
         properties.put("connectionTimeout", properties.get("maxWaitMillis"));
         properties.put("maxLifetime", properties.get("maxConnLifetimeMillis"));
+        properties.put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
 }
