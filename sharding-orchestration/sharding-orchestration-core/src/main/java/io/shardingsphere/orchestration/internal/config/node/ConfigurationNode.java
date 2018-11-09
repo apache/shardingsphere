@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @author caohao
  * @author panjuan
+ * @author yangyi
  */
 @RequiredArgsConstructor
 public final class ConfigurationNode {
@@ -42,6 +43,8 @@ public final class ConfigurationNode {
     private static final String CONFIG_MAP_NODE = "configmap";
     
     private static final String PROPS_NODE = "props";
+    
+    private static final String SAGA_NODE = "saga";
     
     private final String name;
     
@@ -99,6 +102,15 @@ public final class ConfigurationNode {
      */
     public String getPropsPath() {
         return getFullPath(PROPS_NODE);
+    }
+    
+    /**
+     * Get saga path.
+     *
+     * @return saga path
+     */
+    public String getSagaPath() {
+        return getFullPath(SAGA_NODE);
     }
     
     private String getFullPath(final String schemaName, final String node) {
