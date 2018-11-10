@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -39,6 +40,7 @@ import java.util.Map.Entry;
  *
  * @author caohao
  * @author panjuan
+ * @author maxiaoguang
  */
 @NoArgsConstructor
 @Getter
@@ -48,6 +50,8 @@ public class YamlShardingRuleConfiguration {
     private String defaultDataSourceName;
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
+    
+    private Map<String, YamlBroadcastTableRuleConfiguration> broadcastTables = new LinkedHashMap<>();
     
     private List<String> bindingTables = new ArrayList<>();
     
@@ -63,6 +67,9 @@ public class YamlShardingRuleConfiguration {
         defaultDataSourceName = shardingRuleConfiguration.getDefaultDataSourceName();
         for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
             tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
+        }
+        for (BroadcastTableRuleConfiguration each : shardingRuleConfiguration.getBroadcastTableRuleConfigs()) {
+            broadcastTables.put(each.getLogicTable(), new YamlBroadcastTableRuleConfiguration(each));
         }
         bindingTables.addAll(shardingRuleConfiguration.getBindingTableGroups());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
@@ -85,6 +92,11 @@ public class YamlShardingRuleConfiguration {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTableRuleConfigs().add(tableRuleConfig.build());
+        }
+        for (Entry<String, YamlBroadcastTableRuleConfiguration> entry : broadcastTables.entrySet()) {
+            YamlBroadcastTableRuleConfiguration broadcastTableRuleConfig = entry.getValue();
+            broadcastTableRuleConfig.setLogicTable(entry.getKey());
+            result.getBroadcastTableRuleConfigs().add(broadcastTableRuleConfig.build());
         }
         result.getBindingTableGroups().addAll(bindingTables);
         if (null != defaultDatabaseStrategy) {
