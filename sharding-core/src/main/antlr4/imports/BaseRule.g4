@@ -109,7 +109,7 @@ routineName
     ;
 
 roleName
-    : ID
+    : STRING | ID
     ;
 
 partitionName
@@ -125,7 +125,7 @@ ownerName
     ;
 
 userName
-    : ID
+    : STRING | ID
     ;
 
 dataTypeLength

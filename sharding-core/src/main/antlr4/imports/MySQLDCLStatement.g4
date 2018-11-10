@@ -68,8 +68,12 @@ privLevel
     | schemaName DOT routineName
     ;
 
+host
+    : STRING | ID | MOD_
+    ;
+
 user
-    : STRING AT_ STRING | STRING | ID
+    : userName (AT_ host)?
     ;
 
 users
@@ -77,7 +81,7 @@ users
     ;
 
 role
-    : STRING AT_ STRING | STRING | ID
+    : roleName (AT_ host)?
     ;
 
 roles
