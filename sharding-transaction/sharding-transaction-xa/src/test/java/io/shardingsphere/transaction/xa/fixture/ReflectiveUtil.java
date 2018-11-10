@@ -102,7 +102,7 @@ public final class ReflectiveUtil {
             }
             method = getMethod(target, methodName, parameterTypes);
         } else {
-            method = getMethod(target, methodName, null);
+            method = getMethod(target, methodName);
         }
         Preconditions.checkNotNull(method);
         method.setAccessible(true);
@@ -113,20 +113,9 @@ public final class ReflectiveUtil {
         }
     }
     
-    /**
-     * Invoke target method without argument.
-     *
-     * @param target target object
-     * @param methodName method name
-     * @return Object result
-     */
-    public static Object methodInvoke(final Object target, final String methodName) {
-        return methodInvoke(target, methodName, null);
-    }
-    
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private static Method getMethod(final Object target, final String methodName, final Class<?>[] parameterTypes) {
+    private static Method getMethod(final Object target, final String methodName, final Class<?>... parameterTypes) {
         Class clazz = target.getClass();
         while (null != clazz) {
             try {
