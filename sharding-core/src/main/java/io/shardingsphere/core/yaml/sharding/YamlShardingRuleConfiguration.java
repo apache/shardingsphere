@@ -94,7 +94,7 @@ public class YamlShardingRuleConfiguration {
             result.getTableRuleConfigs().add(tableRuleConfig.build());
         }
         for (Entry<String, YamlBroadcastTableRuleConfiguration> entry : broadcastTables.entrySet()) {
-            YamlBroadcastTableRuleConfiguration broadcastTableRuleConfig = entry.getValue();
+            YamlBroadcastTableRuleConfiguration broadcastTableRuleConfig = null == entry.getValue() ? new YamlBroadcastTableRuleConfiguration() : entry.getValue();
             broadcastTableRuleConfig.setLogicTable(entry.getKey());
             result.getBroadcastTableRuleConfigs().add(broadcastTableRuleConfig.build());
         }
