@@ -63,8 +63,6 @@ public abstract class TransactionManagerRecoveryTest {
     
     @Before
     public void setup() {
-        mockShutdownCurrentDatabase("ds1");
-        mockShutdownCurrentDatabase("ds2");
         executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
         executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
         executeSQL("ds2", "DROP TABLE IF EXISTS t_order");
