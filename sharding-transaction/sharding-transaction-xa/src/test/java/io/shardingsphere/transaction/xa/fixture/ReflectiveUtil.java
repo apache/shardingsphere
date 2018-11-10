@@ -94,16 +94,7 @@ public final class ReflectiveUtil {
      */
     @SneakyThrows
     public static Object methodInvoke(final Object target, final String methodName, final Object... args) {
-        Method method;
-        if (null != args) {
-            Class<?>[] parameterTypes = new Class[args.length];
-            for (int i = 0; i < args.length; i++) {
-                Array.set(parameterTypes, i, args[i].getClass());
-            }
-            method = getMethod(target, methodName, parameterTypes);
-        } else {
-            method = getMethod(target, methodName);
-        }
+        Method method = getMethod(target, methodName, getParameterTypes(args));
         Preconditions.checkNotNull(method);
         method.setAccessible(true);
         try {
@@ -111,6 +102,17 @@ public final class ReflectiveUtil {
         } catch (InvocationTargetException ex) {
             throw ex.getTargetException();
         }
+    }
+    
+    private static Class<?>[] getParameterTypes(final Object[] args) {
+        if (null == args) {
+            return null;
+        }
+        Class<?>[] result = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            Array.set(result, i, args[i].getClass());
+        }
+        return result;
     }
     
     @SneakyThrows
