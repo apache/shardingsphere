@@ -1,9 +1,9 @@
 grammar MySQLAlterTable;
+
 import MySQLKeyword, Keyword, MySQLTableBase, MySQLBase, BaseRule, DataType, Symbol;
 
 alterTable
-    : ALTER TABLE tableName
-    alterSpecifications?
+    : ALTER TABLE tableName alterSpecifications?
     ;
 
 alterSpecifications
@@ -15,7 +15,7 @@ alterSpecification
     | addColumn
     | addIndex
     | addConstraint
-    | ALGORITHM EQ_OR_ASSIGN? (DEFAULT | INPLACE|COPY)
+    | ALGORITHM EQ_? (DEFAULT | INPLACE|COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
     | DEFAULT? characterSet collateClause?
@@ -27,7 +27,7 @@ alterSpecification
     | dropPrimaryKey
     | DROP FOREIGN KEY fkSymbol
     | FORCE
-    | LOCK EQ_OR_ASSIGN? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
     | ORDER BY columnName (COMMA columnName)*
     | renameIndex
@@ -55,26 +55,25 @@ singleColumn
     ;
 
 firstOrAfterColumn
-    : FIRST
-	| AFTER columnName
+    : FIRST | AFTER columnName
     ;
 
 multiColumn
-    : LEFT_PAREN columnDefinition (COMMA columnDefinition)* RIGHT_PAREN
+    : LP_ columnDefinition (COMMA columnDefinition)* RP_
     ;
 
 addConstraint
     : ADD constraintDefinition
     ;
-    
+
 addIndex
     : ADD indexDefinition
     ;
- 
+
 addColumn
     : ADD COLUMN? (singleColumn | multiColumn)
-    ;   
-    
+    ;
+
 changeColumn
     : changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;

@@ -31,6 +31,7 @@ import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -70,8 +71,8 @@ public final class BackendNettyClient {
     
     public BackendNettyClient(final LogicSchema logicSchema) {
         this.logicSchema = logicSchema;
-        maxConnections = GLOBAL_REGISTRY.getBackendNIOConfig().getMaxConnections();
-        connectionTimeoutSeconds = GLOBAL_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
+        maxConnections = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        connectionTimeoutSeconds = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
     }
     
     /**

@@ -4,44 +4,37 @@ import OracleKeyword, Keyword, DataType, OracleBase, BaseRule, Symbol;
 
 createIndex
     : CREATE ( UNIQUE | BITMAP)? INDEX  indexName
-    ON 
-    ( tableIndexClause
-     | bitmapJoinIndexClause
-    )
+    ON (tableIndexClause | bitmapJoinIndexClause)
     ;
-    
+
 tableIndexClause
     : tableName alias?
-    LEFT_PAREN indexExprSort
-    (COMMA indexExprSort)* RIGHT_PAREN 
+    LP_ indexExprSort
+    (COMMA indexExprSort)* RP_ 
     ;
 
 indexExprSort
     : indexExpr (ASC | DESC)?
     ;
-    
+
 indexExpr
-    : columnName 
-    | expr 
+    : columnName | expr 
     ;
-    
+
 tablespaceClauseWithParen
-    : LEFT_PAREN tablespaceClause RIGHT_PAREN
+    : LP_ tablespaceClause RP_
     ;
-    
+
 tablespaceClause
     : TABLESPACE tablespaceName
     ;
-    
+
 domainIndexClause
     : indexTypeName
     ;
 
 bitmapJoinIndexClause
-    : tableName
-    LEFT_PAREN 
-    columnSortClause( COMMA columnSortClause)*
-    RIGHT_PAREN 
+    : tableName LP_  columnSortClause( COMMA columnSortClause)* RP_ 
     FROM tableAndAlias (COMMA tableAndAlias)*
     WHERE expr
     ;

@@ -1,11 +1,9 @@
-grammar PostgreCreateTable;
+grammar PostgreSQLCreateTable;
 
-import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
+import PostgreSQLKeyword, DataType, Keyword, PostgreSQLBase, BaseRule, Symbol;
 
 createTable
-    : createTableHeader
-    createDefinitions
-    inheritClause?
+    : createTableHeader createDefinitions inheritClause?
     ;
 
 createTableHeader
@@ -13,20 +11,17 @@ createTableHeader
     ;
 
 createDefinitions
-    : LEFT_PAREN (createDefinition (COMMA createDefinition)*)? RIGHT_PAREN
+    : LP_ (createDefinition (COMMA createDefinition)*)? RP_
     ;
 
 createDefinition
-    : columnDefinition
-    | tableConstraint
-    | LIKE tableName likeOption*
+    : columnDefinition | tableConstraint | LIKE tableName likeOption*
     ;
-	
+
 likeOption
-    : (INCLUDING | EXCLUDING)
-    (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
     ;
 
 inheritClause
-    : INHERITS LEFT_PAREN tableName (COMMA tableName)* RIGHT_PAREN
+    : INHERITS LP_ tableName (COMMA tableName)* RP_
     ;

@@ -1,108 +1,100 @@
 grammar MySQLDML;
+
 import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DMLBase, DataType, Symbol;
 
-caseExpress:
-    caseCond
-    |caseComp
-    ;
-    
-caseComp:
-    CASE simpleExpr caseWhenComp+ elseResult? END  
-    ;
-    
-caseWhenComp:
-    WHEN simpleExpr THEN caseResult
+caseExpress
+    : caseCond | caseComp
     ;
 
-caseCond:
-    CASE whenResult+ elseResult? END
+caseComp
+    : CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
     
-whenResult:
-    WHEN booleanPrimary THEN caseResult
+caseWhenComp
+    : WHEN simpleExpr THEN caseResult
     ;
 
-elseResult:
-    ELSE caseResult
+caseCond
+    : CASE whenResult+ elseResult? END
     ;
 
-caseResult:
-    expr
+whenResult
+    : WHEN booleanPrimary THEN caseResult
     ;
 
-selectExpr:
-    (bitExpr| caseExpress) AS? alias?
-    ;
-    
-//delete 
-deleteClause:
-    DELETE deleteSpec (fromMulti| fromSingle) 
-    ;
-    
-fromSingle: 
-    FROM ID partitionClause?
-    ; 
-     
-fromMulti:
-    (ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences)
-    |FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
+elseResult
+    : ELSE caseResult
     ;
 
-deleteSpec: 
-    LOW_PRIORITY?
-    |QUICK?
-    |IGNORE?
-    ;
-    
-// define insert rule
-insert:
-    insertClause INTO? ID partitionClause? 
-    (setClause | columnClause) onDuplicateClause?
-    ;
-    
-insertClause:
-    INSERT insertSpec?
-    ;
-    
-insertSpec:
-    LOW_PRIORITY
-    | DELAYED 
-    | HIGH_PRIORITY IGNORE
+caseResult
+    : expr
     ;
 
-columnClause: 
-    idListWithEmpty? (valueClause | select)
+selectExpr
+    : (bitExpr| caseExpress) AS? alias?
     ;
-    
-valueClause: 
-    (VALUES | VALUE) valueListWithParen (COMMA valueListWithParen)*
+ 
+deleteClause
+    : DELETE deleteSpec (fromMulti | fromSingle) 
     ;
-    
-setClause: 
-    SET assignmentList
+
+fromSingle
+    : FROM ID partitionClause?
     ;
-    
+
+fromMulti
+    : ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences
+    | FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
+    ;
+
+deleteSpec
+    : LOW_PRIORITY? | QUICK? | IGNORE?
+    ;
+
+insert
+    : insertClause INTO? ID partitionClause? (setClause | columnClause) onDuplicateClause?
+    ;
+
+insertClause
+    : INSERT insertSpec?
+    ;
+
+insertSpec
+    : LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE
+    ;
+
+columnClause
+    : idListWithEmpty? (valueClause | select)
+    ;
+
+valueClause 
+    : (VALUES | VALUE) valueListWithParen (COMMA valueListWithParen)*
+    ;
+
+setClause
+    : SET assignmentList
+    ;
+
 onDuplicateClause: 
     ON DUPLICATE KEY UPDATE assignmentList
     ;
 
-itemListWithEmpty:
-    (LEFT_PAREN RIGHT_PAREN)
-    |idList
+itemListWithEmpty
+    : LP_ RP_ | idList
     ;
 
-assignmentList: 
-    assignment (COMMA assignment)*
+assignmentList
+    : assignment (COMMA assignment)*
     ;
-    
-assignment:
-    columnName EQ_OR_ASSIGN value;
-    
-//override update rule
-updateClause: 
-    UPDATE updateSpec tableReferences
+
+assignment
+    : columnName EQ_ value
     ;
-    
-updateSpec: 
-    LOW_PRIORITY? IGNORE?
+
+updateClause 
+    : UPDATE updateSpec tableReferences
+    ;
+
+updateSpec
+    : LOW_PRIORITY? IGNORE?
     ;

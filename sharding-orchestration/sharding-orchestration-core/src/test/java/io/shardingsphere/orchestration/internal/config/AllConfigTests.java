@@ -17,6 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNodeTest;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationServiceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

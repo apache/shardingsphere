@@ -1,22 +1,19 @@
-grammar PostgreBase;
+grammar PostgreSQLBase;
 
-import PostgreKeyword, DataType, Keyword, Symbol, BaseRule;
+import PostgreSQLKeyword, DataType, Keyword, Symbol, BaseRule;
 
 columnDefinition
-	: columnName dataType collateClause? columnConstraint*
-	;
-	
+    : columnName dataType collateClause? columnConstraint*
+    ;
+    
 dataType
-    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LEFT_BRACKET RIGHT_BRACKET)*
+    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)*
     | ID
     ;
 
 typeName
-	: DOUBLE PRECISION
-    | CHARACTER VARYING?
-	| BIT VARYING?
-	| ID
-	;
+    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
+    ;
 
 intervalFields
     : intervalField (TO intervalField)?
@@ -34,15 +31,13 @@ intervalField
 collateClause
     : COLLATE collationName
     ;
-    
+
 usingIndexType:
     USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
     ;
 
 columnConstraint
-    : constraintClause?
-    columnConstraintOption
-    constraintOptionalParam
+    : constraintClause? columnConstraintOption constraintOptionalParam
     ;
 
 constraintClause
@@ -53,20 +48,19 @@ columnConstraintOption
     : NOT? NULL
     | checkOption
     | DEFAULT defaultExpr
-    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LEFT_PAREN sequenceOptions RIGHT_PAREN)?
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
     | UNIQUE indexParameters
     | primaryKey indexParameters
-    | REFERENCES tableName (LEFT_PAREN columnName RIGHT_PAREN)?
+    | REFERENCES tableName (LP_ columnName RP_)?
      (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
     ;
 
 checkOption
-    : CHECK expr (NO INHERIT )?
+    : CHECK expr (NO INHERIT)?
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP
-    | expr;
+    : CURRENT_TIMESTAMP | expr;
 
 sequenceOptions:
     sequenceOption+
@@ -89,11 +83,7 @@ indexParameters
     ;
 
 action
-    : NO ACTION
-    | RESTRICT
-    | CASCADE
-    | SET NULL
-    | SET DEFAULT
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
     ;
 
 constraintOptionalParam
@@ -101,9 +91,7 @@ constraintOptionalParam
     ;
 
 tableConstraint
-    : constraintClause?
-    tableConstraintOption
-    constraintOptionalParam
+    : constraintClause? tableConstraintOption constraintOptionalParam
     ;
 
 tableConstraintOption
@@ -114,16 +102,11 @@ tableConstraintOption
     ;
 
 foreignKeyOnAction
-    : ON UPDATE foreignKeyOn
-    | ON DELETE foreignKeyOn
+    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
     ;
 
 foreignKeyOn
-    : RESTRICT
-    | CASCADE
-    | SET NULL
-    | NO ACTION
-    | SET DEFAULT
+    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
 excludeElement
@@ -137,66 +120,62 @@ privateExprOfDb:
      |(TIMESTAMP (WITH TIME ZONE)? STRING)
      |extractFromFunction
      ;
- 
- pgExpr
-     : castExpr
-     | collateExpr
-     | expr
+
+pgExpr
+     : castExpr | collateExpr | expr
      ;
-     
- aggregateExpression
-     : ID (LEFT_PAREN (ALL | DISTINCT)? exprs  orderByClause? RIGHT_PAREN)
-     asteriskWithParen
-     (LEFT_PAREN exprs RIGHT_PAREN  WITHIN GROUP LEFT_PAREN orderByClause RIGHT_PAREN)
-     filterClause?
+
+aggregateExpression
+     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_) asteriskWithParen
+     (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_) filterClause?
      ;
-     
- filterClause
-     : FILTER LEFT_PAREN WHERE booleanPrimary RIGHT_PAREN
+
+filterClause
+     : FILTER LP_ WHERE booleanPrimary RP_
      ;
-     
- asteriskWithParen
-     : LEFT_PAREN ASTERISK RIGHT_PAREN
+
+asteriskWithParen
+     : LP_ ASTERISK RP_
      ;
- 
- windowFunction
+
+windowFunction
      : ID (exprsWithParen | asteriskWithParen) 
      filterClause? windowFunctionWithClause
-     ; 
- 
- windowFunctionWithClause
-     : OVER (ID | LEFT_PAREN windowDefinition RIGHT_PAREN )
-     ;    
- 
- windowDefinition
+     ;
+
+windowFunctionWithClause
+     : OVER (ID | LP_ windowDefinition RP_ )
+     ;
+
+windowDefinition
      : ID? (PARTITION BY exprs)?
      (orderByExpr (COMMA orderByExpr)*)?
      frameClause?
      ;
-     
+
 orderByExpr
      : ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
      ;
-     
+
 operator
     : SAFE_EQ
-    | EQ_OR_ASSIGN
+    | EQ_
     | NEQ
-    | NEQ_SYM
+    | NEQ_
     | GT
     | GTE
     | LT
     | LTE
-    | AND_SYM
-    | OR_SYM
-    | NOT_SYM
+    | AND_
+    | OR_
+    | NOT_
     ;
-    
- frameClause
+
+frameClause
     : (RANGE | ROWS) frameStart
     | (RANGE | ROWS ) BETWEEN frameStart AND frameEnd
     ;
-    
+
 frameStart
     : UNBOUNDED PRECEDING
     | NUMBER PRECEDING
@@ -210,28 +189,28 @@ frameEnd
     ;
 
 castExpr
-    : CAST LEFT_PAREN expr AS dataType RIGHT_PAREN
+    : CAST LP_ expr AS dataType RP_
     | expr COLON COLON dataType
     ;
 
 castExprWithColon
-    : COLON COLON dataType(LEFT_BRACKET RIGHT_BRACKET)*
+    : COLON COLON dataType(LBT_ RBT_)*
     ;
-    
+
 collateExpr
     : expr COLLATE expr
     ;
 
 arrayConstructorWithCast
     : arrayConstructor castExprWithColon?
-    | ARRAY LEFT_BRACKET RIGHT_BRACKET castExprWithColon  
+    | ARRAY LBT_ RBT_ castExprWithColon  
     ;
-    
+
 arrayConstructor
-    : ARRAY LEFT_BRACKET exprs RIGHT_BRACKET
-    | ARRAY LEFT_BRACKET arrayConstructor (COMMA arrayConstructor)* RIGHT_BRACKET
+    : ARRAY LBT_ exprs RBT_
+    | ARRAY LBT_ arrayConstructor (COMMA arrayConstructor)* RBT_
     ;
 
 extractFromFunction
-    : EXTRACT LEFT_PAREN ID FROM ID RIGHT_PAREN
+    : EXTRACT LP_ ID FROM ID RP_
     ;

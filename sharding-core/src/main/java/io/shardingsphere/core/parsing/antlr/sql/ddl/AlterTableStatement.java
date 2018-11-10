@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.ddl;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
@@ -25,8 +26,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,11 +41,11 @@ import java.util.Map;
 @ToString(callSuper = true)
 public class AlterTableStatement extends DDLStatement {
     
-    private final List<String> dropColumns = new ArrayList<>();
+    private final List<ColumnDefinition> addColumns = new LinkedList<>();
+    
+    private final List<String> dropColumns = new LinkedList<>();
     
     private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
-    
-    private final List<ColumnDefinition> addColumns = new ArrayList<>();
     
     private boolean dropPrimaryKey;
     
@@ -60,45 +61,35 @@ public class AlterTableStatement extends DDLStatement {
      * @param columnName column name
      * @return column definition
      */
-    public ColumnDefinition getColumnDefinitionByName(final String columnName) {
-        ColumnDefinition columnDefinition = getExistColumn(columnName);
-        if (null == columnDefinition) {
-            columnDefinition = getFromAddColumn(columnName);
-        }
-        return columnDefinition;
+    public Optional<ColumnDefinition> getColumnDefinitionByName(final String columnName) {
+        Optional<ColumnDefinition> result = findColumnDefinition(columnName);
+        return result.isPresent() ? result : findColumnDefinitionFromCurrentAddClause(columnName);
     }
     
     /**
-     * Get exist column definition.
+     * Find column definition.
      *
      * @param columnName column name
      * @return column definition
      */
-    public ColumnDefinition getExistColumn(final String columnName) {
-        TableMetaData tableMeta = tableMetaDataMap.get(this.getTables().getSingleTableName());
-        if (null == tableMeta) {
-            return null;
+    public Optional<ColumnDefinition> findColumnDefinition(final String columnName) {
+        if (!tableMetaDataMap.containsTable(getTables().getSingleTableName())) {
+            return Optional.absent();
         }
-        for (ColumnMetaData each : tableMeta.getColumnMetaData()) {
+        for (ColumnMetaData each : tableMetaDataMap.get(getTables().getSingleTableName()).getColumnMetaData()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
-                return new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey());
+                return Optional.of(new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey()));
             }
         }
-        return null;
+        return Optional.absent();
     }
     
-    /**
-     * Get column definition from current add clause.
-     *
-     * @param columnName column name
-     * @return column definition
-     */
-    private ColumnDefinition getFromAddColumn(final String columnName) {
-        for (ColumnDefinition addColumn : addColumns) {
-            if (addColumn.getName().equalsIgnoreCase(columnName)) {
-                return addColumn;
+    private Optional<ColumnDefinition> findColumnDefinitionFromCurrentAddClause(final String columnName) {
+        for (ColumnDefinition each : addColumns) {
+            if (each.getName().equalsIgnoreCase(columnName)) {
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.absent();
     }
 }

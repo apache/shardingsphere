@@ -1,6 +1,6 @@
-grammar PostgreAlterTable;
+grammar PostgreSQLAlterTable;
 
-import PostgreKeyword, DataType, Keyword, PostgreBase, BaseRule, Symbol;
+import PostgreSQLKeyword, DataType, Keyword, PostgreSQLBase, BaseRule, Symbol;
 
 alterTable
     : alterTableNameWithAsterisk (alterTableActions | renameColumn | renameConstraint)
@@ -37,8 +37,8 @@ alterTableAction
     | SET (WITH | WITHOUT) OIDS
     | SET TABLESPACE tablespaceName
     | SET (LOGGED | UNLOGGED)
-    | SET LEFT_PAREN storageParameterWithValue (COMMA storageParameterWithValue)* RIGHT_PAREN
-    | RESET LEFT_PAREN storageParameter (COMMA storageParameter)* RIGHT_PAREN
+    | SET LP_ storageParameterWithValue (COMMA storageParameterWithValue)* RP_
+    | RESET LP_ storageParameter (COMMA storageParameter)* RP_
     | INHERIT tableName
     | NO INHERIT tableName
     | OF typeName
@@ -60,33 +60,31 @@ constraintOptionalParam
 addColumn
     : ADD COLUMN? (IF NOT EXISTS )? columnDefinition
     ;
-    
+
 dropColumn
     : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
     ;
-     
+
 modifyColumn
    : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
    | alterColumn SET DEFAULT expr
    | alterColumn DROP DEFAULT
    | alterColumn (SET | DROP) NOT NULL
-   | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LEFT_PAREN sequenceOptions RIGHT_PAREN)?
+   | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
    | alterColumn  alterColumnSetOption alterColumnSetOption*
    | alterColumn DROP IDENTITY (IF EXISTS)?
    | alterColumn SET STATISTICS NUMBER
-   | alterColumn SET LEFT_PAREN attributeOptions RIGHT_PAREN
-   | alterColumn RESET LEFT_PAREN attributeOptions RIGHT_PAREN
+   | alterColumn SET LP_ attributeOptions RP_
+   | alterColumn RESET LP_ attributeOptions RP_
    | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
-     
+ 
 alterColumn     
     : ALTER COLUMN? columnName
     ;
 
 alterColumnSetOption
-    : SET GENERATED (ALWAYS | BY DEFAULT)
-    | SET sequenceOption
-    | RESTART (WITH? NUMBER)?
+    : SET (GENERATED (ALWAYS | BY DEFAULT) | sequenceOption) | RESTART (WITH? NUMBER)?
     ;
 
 attributeOptions
@@ -94,14 +92,13 @@ attributeOptions
     ;
 
 attributeOption
-    : ID EQ_OR_ASSIGN simpleExpr
+    : ID EQ_ simpleExpr
     ;
-     
+
 alterTableAddConstraint       
-    : ADD tableConstraint (NOT VALID)?
-    | ADD tableConstraintUsingIndex
+    : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
-    
+
 renameColumn
     : RENAME COLUMN? columnName TO columnName
     ;
@@ -111,7 +108,7 @@ renameConstraint
     ;
 
 storageParameterWithValue
-    : storageParameter EQ_OR_ASSIGN simpleExpr
+    : storageParameter EQ_ simpleExpr
     ;
 
 storageParameter
