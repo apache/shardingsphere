@@ -32,6 +32,8 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
+
 public final class AtomikosTransactionManagerRecoveryTest extends TransactionManagerRecoveryTest {
     
     @Override
@@ -46,6 +48,21 @@ public final class AtomikosTransactionManagerRecoveryTest extends TransactionMan
         Object proxyConnection = ReflectiveUtil.getProperty(getXaDataSourceMap().get(dsName).getConnection(), "h");
         JdbcConnection jdbcConnection = (JdbcConnection) ReflectiveUtil.getProperty(proxyConnection, "delegate");
         return (Session) jdbcConnection.getSession();
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertAccessFailedAfterPrepared() {
+        getAtomikosTransactionManager().begin(getBeginEvent());
+        insertOrder("ds1");
+        coordinateOnlyExecutePrepare();
+        try {
+            assertOrderCount("ds1", 1L);
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            assertTrue(ex.getMessage().contains("no longer active but in state IN_DOUBT"));
+            throw ex;
+        }
     }
     
     @Test

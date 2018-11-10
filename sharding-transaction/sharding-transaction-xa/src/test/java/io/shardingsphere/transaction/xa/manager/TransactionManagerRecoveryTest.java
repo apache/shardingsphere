@@ -100,21 +100,6 @@ public abstract class TransactionManagerRecoveryTest {
         assertOrderCount("ds1", 0L);
     }
     
-//    @Test(expected = IllegalStateException.class)
-//    public void assertAccessFailedAfterPrepared() {
-//        atomikosTransactionManager.begin(beginEvent);
-//        insertOrder("ds1");
-//        coordinateOnlyExecutePrepare();
-//        try {
-//            assertOrderCount("ds1", 1L);
-//            // CHECKSTYLE:OFF
-//        } catch (Exception ex) {
-//            // CHECKSTYLE:ON
-//            assertTrue(ex.getMessage().contains("no longer active but in state IN_DOUBT"));
-//            throw ex;
-//        }
-//    }
-    
     @Test
     @SneakyThrows
     public void assertAccessSucceedAfterPrepared() {
@@ -174,7 +159,7 @@ public abstract class TransactionManagerRecoveryTest {
         executeSQL(ds, INSERT_INTO_T_ORDER);
     }
     
-    private void assertOrderCount(final String ds, final long expectedCount) {
+    final void assertOrderCount(final String ds, final long expectedCount) {
         assertEquals(expectedCount, executeSQL(ds, SELECT_COUNT_T_ORDER));
     }
     
@@ -185,7 +170,7 @@ public abstract class TransactionManagerRecoveryTest {
     }
     
     @SneakyThrows
-    private void coordinateOnlyExecutePrepare() {
+    final void coordinateOnlyExecutePrepare() {
         UserTransactionManager transactionManager = (UserTransactionManager) atomikosTransactionManager.getUnderlyingTransactionManager();
         Transaction transaction = transactionManager.getTransaction();
         CompositeTransaction compositeTransaction = (CompositeTransaction) ReflectiveUtil.getProperty(transaction, "compositeTransaction");
