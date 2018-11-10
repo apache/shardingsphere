@@ -152,6 +152,10 @@ public class ShardingRule {
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
+        Optional<BroadcastTableRule> broadcastTableRule = tryFindBroadcastTableRuleByLogicTable(logicTableName.toLowerCase());
+        if (broadcastTableRule.isPresent()) {
+            return new TableRule(shardingDataSourceNames.getDataSourceNames(), logicTableName);
+        }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
             return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
         }
@@ -233,6 +237,9 @@ public class ShardingRule {
     public boolean isAllInDefaultDataSource(final Collection<String> logicTables) {
         for (String each : logicTables) {
             if (tryFindTableRuleByLogicTable(each).isPresent()) {
+                return false;
+            }
+            if (tryFindBroadcastTableRuleByLogicTable(each).isPresent()) {
                 return false;
             }
         }

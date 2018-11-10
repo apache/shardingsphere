@@ -132,6 +132,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
             routingEngine = new IgnoreRoutingEngine();
+        } else if (shardingRule.isAllBroadcastTables(tableNames) && !(sqlStatement instanceof SelectStatement)) {
+            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof DDLStatement || (sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable())) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
         } else if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof ShowTablesStatement) {
