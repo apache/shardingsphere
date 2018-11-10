@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -93,7 +94,16 @@ public final class ReflectiveUtil {
      */
     @SneakyThrows
     public static Object methodInvoke(final Object target, final String methodName, final Object... args) {
-        Method method = getMethod(target, methodName);
+        Method method;
+        if (null != args) {
+            Class<?>[] parameterTypes = new Class[args.length];
+            for (int i = 0; i < args.length; i++) {
+                Array.set(parameterTypes, i, args[i].getClass());
+            }
+            method = getMethod(target, methodName, parameterTypes);
+        } else {
+            method = getMethod(target, methodName, null);
+        }
         Preconditions.checkNotNull(method);
         method.setAccessible(true);
         try {
@@ -111,16 +121,16 @@ public final class ReflectiveUtil {
      * @return Object result
      */
     public static Object methodInvoke(final Object target, final String methodName) {
-        return methodInvoke(target, methodName, new Object[]{});
+        return methodInvoke(target, methodName, null);
     }
     
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private static Method getMethod(final Object target, final String methodName, final Class<?>... parameterTypes) {
+    private static Method getMethod(final Object target, final String methodName, final Class<?>[] parameterTypes) {
         Class clazz = target.getClass();
         while (null != clazz) {
             try {
-                return clazz.getDeclaredMethod(methodName);
+                return clazz.getDeclaredMethod(methodName, parameterTypes);
             // CHECKSTYLE:OFF
             } catch (Exception ignored) {
             }
