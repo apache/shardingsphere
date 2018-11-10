@@ -31,7 +31,10 @@ import org.h2.jdbc.JdbcConnection;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 
 public final class DBCP2TransactionManagerRecoveryTest extends TransactionManagerRecoveryTest {
     
@@ -48,6 +51,21 @@ public final class DBCP2TransactionManagerRecoveryTest extends TransactionManage
     protected DataSource createXADataSource(final String dsName) {
         DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.H2, dsName);
         return getAtomikosTransactionManager().wrapDataSource(XADataSourceFactory.build(DatabaseType.H2), dsName, DataSourceParameterFactory.build(dataSource));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertAccessFailedAfterPrepared() {
+        getAtomikosTransactionManager().begin(getBeginEvent());
+        insertOrder("ds1");
+        coordinateOnlyExecutePrepare();
+        try {
+            assertOrderCount("ds1", 1L);
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            assertTrue(ex.getMessage().contains("Unable to register transaction context listener"));
+            throw ex;
+        }
     }
     
     @Test
