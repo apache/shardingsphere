@@ -212,7 +212,7 @@ dropRole
     ;
 
 setPassword
-    : SET PASSWORD (FOR user)? EQ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR user)? EQ_ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     ;
 
 setDefaultRole
