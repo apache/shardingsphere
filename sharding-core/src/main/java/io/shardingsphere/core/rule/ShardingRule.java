@@ -112,6 +112,21 @@ public class ShardingRule {
     }
     
     /**
+     * Try to find broadcast table rule though logic table name.
+     *
+     * @param logicTableName logic table name
+     * @return broadcast table rule
+     */
+    public Optional<TableRule> tryFindBroadcastTableRuleByLogicTable(final String logicTableName) {
+        for (TableRule each : tableRules) {
+            if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
      * Try to find table rule though actual table name.
      *
      * @param actualTableName actual table name
