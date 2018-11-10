@@ -121,7 +121,7 @@ public final class ReflectiveUtil {
     }
     
     private static Class<?>[] getParameterTypes(final Object[] args) {
-        if (null == args) {
+        if (null == args || 0 == args.length) {
             return null;
         }
         Class<?>[] result = new Class[args.length];

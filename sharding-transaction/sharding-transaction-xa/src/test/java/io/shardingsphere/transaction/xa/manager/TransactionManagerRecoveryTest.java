@@ -74,9 +74,7 @@ public abstract class TransactionManagerRecoveryTest {
     @After
     public void teardown() {
         Configuration.shutdown(true);
-        Session session = getH2Session("ds1");
-        Database database = session.getDatabase();
-        ReflectiveUtil.methodInvoke(database, "closeAllSessionsException", session);
+        releaseLockResource("ds1");
         closeDataSource();
     }
     
@@ -161,6 +159,12 @@ public abstract class TransactionManagerRecoveryTest {
     
     final void assertOrderCount(final String ds, final long expectedCount) {
         assertEquals(expectedCount, executeSQL(ds, SELECT_COUNT_T_ORDER));
+    }
+    
+    private void releaseLockResource(final String dsName) {
+        Session session = getH2Session(dsName);
+        Database database = session.getDatabase();
+        ReflectiveUtil.methodInvoke(database, "closeAllSessionsException", session);
     }
     
     private void closeDataSource() {
