@@ -146,7 +146,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (sqlStatement instanceof DALStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement) {
+        } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement || shardingRule.isAllBroadcastTables(tableNames) && sqlStatement instanceof SelectStatement) {
             routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (tableNames.isEmpty()) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
