@@ -117,8 +117,8 @@ public class ShardingRule {
      * @param logicTableName logic table name
      * @return broadcast table rule
      */
-    public Optional<TableRule> tryFindBroadcastTableRuleByLogicTable(final String logicTableName) {
-        for (TableRule each : tableRules) {
+    public Optional<BroadcastTableRule> tryFindBroadcastTableRuleByLogicTable(final String logicTableName) {
+        for (BroadcastTableRule each : broadcastTableRules) {
             if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
                 return Optional.of(each);
             }
