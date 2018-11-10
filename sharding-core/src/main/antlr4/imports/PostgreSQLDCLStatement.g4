@@ -4,24 +4,7 @@ import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule, DataType, Symbol;
 
 grant
     : GRANT privType columnList? (COMMA privType columnList?)*
-    ON (
-        TABLE? tableNames
-        | ALL TABLES IN SCHEMA schemaNames
-        | SEQUENCE sequenceNames
-        | ALL SEQUENCES IN SCHEMA schemaNames
-        | DATABASE databaseNames
-        | DOMAIN domainNames
-        | FOREIGN DATA WRAPPER ID (COMMA ID)*
-        | FOREIGN SERVER ID (COMMA ID)*
-        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? ID? dataType (COMMA argMode? ID? dataType)*)? RP_)?
-            (COMMA (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? ID? dataType (COMMA argMode? ID? dataType)*)? RP_)?)*
-        | ALL (FUNCTION | PROCEDURE | ROUTINE) IN SCHEMA schemaNames
-        | LANGUAGE  ID (COMMA ID)*
-        | LARGE OBJECT ID (COMMA ID)*
-        | SCHEMA schemaNames
-        | TABLESPACE tablespaceNames
-        | TYPE typeNames
-    )
+    privOnClause
     TO roleSpecifications
     (WITH GRANT OPTION)?
     ;
@@ -43,12 +26,61 @@ privType
     | USAGE
     ;
 
-roleSpecification
-    : GROUP? roleName | PUBLIC | CURRENT_USER | SESSION_USER
+privOnClause
+    : ON (
+        TABLE? tableNames
+        | ALL TABLES IN SCHEMA schemaNames
+        | SEQUENCE sequenceNames
+        | ALL SEQUENCES IN SCHEMA schemaNames
+        | DATABASE databaseNames
+        | DOMAIN domainNames
+        | FOREIGN DATA WRAPPER fdwNames
+        | FOREIGN SERVER serverNames
+        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?
+          (COMMA (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?)*
+        | ALL (FUNCTION | PROCEDURE | ROUTINE) IN SCHEMA schemaNames
+        | LANGUAGE langNames
+        | LARGE OBJECT loids
+        | SCHEMA schemaNames
+        | TABLESPACE tablespaceNames
+        | TYPE typeNames
+    )
+    ;
+
+fdwName
+    : ID
+    ;
+
+fdwNames
+    : fdwName (COMMA fdwName)*
     ;
 
 argMode
     : IN | OUT | INOUT | VARIADIC
+    ;
+
+argName
+    : ID
+    ;
+
+langName
+    : ID
+    ;
+
+langNames
+    : langName (COMMA langName)*
+    ;
+
+loid
+    : ID
+    ;
+
+loids
+    : loid (COMMA loid)*
+    ;
+
+roleSpecification
+    : GROUP? roleName | PUBLIC | CURRENT_USER | SESSION_USER
     ;
 
 roleSpecifications
@@ -62,24 +94,7 @@ grantRole
 revoke
     : REVOKE (GRANT OPTION FOR)?
     privType columnList? (COMMA privType columnList?)*
-    ON (
-        TABLE? tableNames
-        | ALL TABLES IN SCHEMA schemaNames
-        | SEQUENCE sequenceNames
-        | ALL SEQUENCES IN SCHEMA schemaNames
-        | DATABASE databaseNames
-        | DOMAIN domainNames
-        | FOREIGN DATA WRAPPER ID (COMMA ID)*
-        | FOREIGN SERVER ID (COMMA ID)*
-        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? ID? dataType (COMMA argMode? ID? dataType)*)? RP_)?
-            (COMMA (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? ID? dataType (COMMA argMode? ID? dataType)*)? RP_)?)*
-        | ALL (FUNCTION | PROCEDURE | ROUTINE) IN SCHEMA schemaNames
-        | LANGUAGE  ID (COMMA ID)*
-        | LARGE OBJECT ID (COMMA ID)*
-        | SCHEMA schemaNames
-        | TABLESPACE tablespaceNames
-        | TYPE typeNames
-    )
+    privOnClause
     FROM roleSpecifications
     (CASCADE | RESTRICT)
     ;

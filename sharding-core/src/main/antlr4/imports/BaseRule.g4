@@ -128,6 +128,10 @@ userName
     : STRING | ID
     ;
 
+serverName
+    : ID
+    ;
+
 dataTypeLength
     : LP_ (NUMBER (COMMA NUMBER)?)? RP_
     ;
@@ -210,6 +214,10 @@ roleNames
 
 userNames
     : userName (COMMA userName)*
+    ;
+
+serverNames
+    : serverName (COMMA serverName)*
     ;
 
 bitExprs:
