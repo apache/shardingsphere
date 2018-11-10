@@ -19,4 +19,15 @@ execute
     | savepoint
     | beginWork
     | grant
+    | revoke
+    | deny
+    | createUser
+    | alterUser
+    | dropUser
+    | createLogin
+    | alterLogin
+    | dropLogin
+    | createRole
+    | alterRole
+    | dropRole
     ;

@@ -132,6 +132,10 @@ serverName
     : ID
     ;
 
+databaseName
+    : ID
+    ;
+    
 dataTypeLength
     : LP_ (NUMBER (COMMA NUMBER)?)? RP_
     ;

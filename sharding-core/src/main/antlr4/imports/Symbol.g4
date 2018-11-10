@@ -17,6 +17,7 @@ PLUS: '+' ;
 MINUS: '-' ;
 ASTERISK: '*' ;
 SLASH: '/' ;
+BACKSLASH: '\\' ;
 DOT: '.';
 
 SAFE_EQ: '<=>';
