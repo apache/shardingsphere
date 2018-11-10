@@ -91,12 +91,12 @@ public final class ReflectiveUtil {
      * @return Object method return result
      */
     @SneakyThrows
-    public static Object methodInvoke(final Object target, final String methodName) {
-        Method method = getMethod(target, methodName);
+    public static Object methodInvoke(final Object target, final String methodName, final Object[] args, final Class<?>... parameterTypes) {
+        Method method = getMethod(target, methodName, parameterTypes);
         Preconditions.checkNotNull(method);
         method.setAccessible(true);
         try {
-            return method.invoke(target);
+            return method.invoke(target, args);
         } catch (InvocationTargetException ex) {
             throw ex.getTargetException();
         }
@@ -104,11 +104,11 @@ public final class ReflectiveUtil {
     
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private static Method getMethod(final Object target, final String methodName) {
+    private static Method getMethod(final Object target, final String methodName, final Class<?>... parameterTypes) {
         Class clazz = target.getClass();
         while (null != clazz) {
             try {
-                return clazz.getDeclaredMethod(methodName);
+                return clazz.getDeclaredMethod(methodName, parameterTypes);
             // CHECKSTYLE:OFF
             } catch (Exception ignored) {
             }
