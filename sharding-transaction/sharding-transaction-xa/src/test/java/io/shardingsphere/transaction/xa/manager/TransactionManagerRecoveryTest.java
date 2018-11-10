@@ -27,6 +27,7 @@ import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.engine.Database;
 import org.h2.engine.Session;
 import org.junit.After;
 import org.junit.Before;
@@ -63,6 +64,10 @@ public abstract class TransactionManagerRecoveryTest {
     
     @Before
     public void setup() {
+        Session session = getH2Session("ds1");
+        Database database = session.getDatabase();
+        ReflectiveUtil.methodInvoke(database, "closeAllSessionsException", session);
+        executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
         executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
         executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
         executeSQL("ds2", "DROP TABLE IF EXISTS t_order");
