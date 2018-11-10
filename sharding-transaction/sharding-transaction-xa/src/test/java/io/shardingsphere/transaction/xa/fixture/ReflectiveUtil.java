@@ -88,7 +88,8 @@ public final class ReflectiveUtil {
      *
      * @param target target object
      * @param methodName method name
-     * @return Object method return result
+     * @param args args
+     * @return Object result
      */
     @SneakyThrows
     public static Object methodInvoke(final Object target, final String methodName, final Object... args) {
@@ -102,6 +103,13 @@ public final class ReflectiveUtil {
         }
     }
     
+    /**
+     * Invoke target method without argument.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @return Object result
+     */
     public static Object methodInvoke(final Object target, final String methodName) {
         return methodInvoke(target, methodName, new Object[]{});
     }
