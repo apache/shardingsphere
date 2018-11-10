@@ -319,6 +319,11 @@ public class ShardingRule {
                 return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
             }
         }
+        for (BroadcastTableRule each : broadcastTableRules) {
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
+                return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
+            }
+        }
         return Optional.absent();
     }
     
@@ -330,13 +335,20 @@ public class ShardingRule {
      */
     public Number generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName);
-        if (!tableRule.isPresent()) {
-            throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
+        if (tableRule.isPresent()) {
+            if (null != tableRule.get().getKeyGenerator()) {
+                return tableRule.get().getKeyGenerator().generateKey();
+            }
+            return defaultKeyGenerator.generateKey();
         }
-        if (null != tableRule.get().getKeyGenerator()) {
-            return tableRule.get().getKeyGenerator().generateKey();
+        Optional<BroadcastTableRule> broadcastTableRule = tryFindBroadcastTableRuleByLogicTable(logicTableName);
+        if (broadcastTableRule.isPresent()) {
+            if (null != broadcastTableRule.get().getKeyGenerator()) {
+                return broadcastTableRule.get().getKeyGenerator().generateKey();
+            }
+            return defaultKeyGenerator.generateKey();
         }
-        return defaultKeyGenerator.generateKey();
+        throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
     }
     
     /**
