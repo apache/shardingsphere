@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatemen
 public final class PostgreSQLAlterIndexExtractor extends DDLStatementExtractor {
     
     public PostgreSQLAlterIndexExtractor() {
-        addHandler(new IndexesNameExtractHandler());
+        addExtractHandler(new IndexesNameExtractHandler());
     }
 }

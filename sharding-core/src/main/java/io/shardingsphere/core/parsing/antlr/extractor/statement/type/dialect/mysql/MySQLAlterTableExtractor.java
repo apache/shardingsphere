@@ -46,14 +46,14 @@ import java.util.List;
 public final class MySQLAlterTableExtractor extends AlterTableExtractor {
     
     public MySQLAlterTableExtractor() {
-        addHandler(new MySQLAddColumnExtractHandler());
-        addHandler(new MySQLAddIndexExtractHandler());
-        addHandler(new MySQLDropIndexExtractHandler());
-        addHandler(new RenameIndexExtractHandler());
-        addHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT));
-        addHandler(new DropPrimaryKeyExtractHandler());
-        addHandler(new MySQLChangeColumnExtractHandler());
-        addHandler(new MySQLModifyColumnExtractHandler());
+        addExtractHandler(new MySQLAddColumnExtractHandler());
+        addExtractHandler(new MySQLAddIndexExtractHandler());
+        addExtractHandler(new MySQLDropIndexExtractHandler());
+        addExtractHandler(new RenameIndexExtractHandler());
+        addExtractHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT));
+        addExtractHandler(new DropPrimaryKeyExtractHandler());
+        addExtractHandler(new MySQLChangeColumnExtractHandler());
+        addExtractHandler(new MySQLModifyColumnExtractHandler());
     }
     
     @Override

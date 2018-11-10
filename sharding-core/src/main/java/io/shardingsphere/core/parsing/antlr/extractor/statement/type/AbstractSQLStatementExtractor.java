@@ -33,12 +33,12 @@ import java.util.LinkedList;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private Collection<ASTExtractHandler> handlers = new LinkedList<>();
+    private final Collection<ASTExtractHandler> extractHandlers = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement(shardingTableMetaData);
-        for (ASTExtractHandler each : handlers) {
+        for (ASTExtractHandler each : extractHandlers) {
             each.extract(rootNode, result);
         }
         postExtract(result);
@@ -50,12 +50,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     protected void postExtract(final SQLStatement statement) {
     }
     
-    /**
-     * Add extractor handler.
-     * 
-     * @param handler extractor handler
-     */
-    public final void addHandler(final ASTExtractHandler handler) {
-        handlers.add(handler);
+    protected final void addExtractHandler(final ASTExtractHandler handler) {
+        extractHandlers.add(handler);
     }
 }

@@ -3,20 +3,21 @@ grammar PostgreSQLBase;
 import PostgreSQLKeyword, DataType, Keyword, Symbol, BaseRule;
 
 columnDefinition
-	: columnName dataType collateClause? columnConstraint*
-	;
-	
+    : columnName dataType collateClause? columnConstraint*
+    ;
+    
 dataType
     : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)*
     | ID
     ;
 
 typeName
-	: DOUBLE PRECISION
-    | CHARACTER VARYING?
-	| BIT VARYING?
-	| ID
-	;
+    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
+    ;
+
+typeNames
+    : typeName (COMMA typeName)*
+    ;
 
 intervalFields
     : intervalField (TO intervalField)?
@@ -34,15 +35,13 @@ intervalField
 collateClause
     : COLLATE collationName
     ;
-    
+
 usingIndexType:
     USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
     ;
 
 columnConstraint
-    : constraintClause?
-    columnConstraintOption
-    constraintOptionalParam
+    : constraintClause? columnConstraintOption constraintOptionalParam
     ;
 
 constraintClause
@@ -61,12 +60,11 @@ columnConstraintOption
     ;
 
 checkOption
-    : CHECK expr (NO INHERIT )?
+    : CHECK expr (NO INHERIT)?
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP
-    | expr;
+    : CURRENT_TIMESTAMP | expr;
 
 sequenceOptions:
     sequenceOption+
@@ -89,11 +87,7 @@ indexParameters
     ;
 
 action
-    : NO ACTION
-    | RESTRICT
-    | CASCADE
-    | SET NULL
-    | SET DEFAULT
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
     ;
 
 constraintOptionalParam
@@ -101,9 +95,7 @@ constraintOptionalParam
     ;
 
 tableConstraint
-    : constraintClause?
-    tableConstraintOption
-    constraintOptionalParam
+    : constraintClause? tableConstraintOption constraintOptionalParam
     ;
 
 tableConstraintOption
@@ -114,16 +106,11 @@ tableConstraintOption
     ;
 
 foreignKeyOnAction
-    : ON UPDATE foreignKeyOn
-    | ON DELETE foreignKeyOn
+    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
     ;
 
 foreignKeyOn
-    : RESTRICT
-    | CASCADE
-    | SET NULL
-    | NO ACTION
-    | SET DEFAULT
+    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
 excludeElement
@@ -137,47 +124,43 @@ privateExprOfDb:
      |(TIMESTAMP (WITH TIME ZONE)? STRING)
      |extractFromFunction
      ;
- 
- pgExpr
-     : castExpr
-     | collateExpr
-     | expr
+
+pgExpr
+     : castExpr | collateExpr | expr
      ;
-     
- aggregateExpression
-     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_)
-     asteriskWithParen
-     (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_)
-     filterClause?
+
+aggregateExpression
+     : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_) asteriskWithParen
+     (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_) filterClause?
      ;
-     
- filterClause
+
+filterClause
      : FILTER LP_ WHERE booleanPrimary RP_
      ;
-     
- asteriskWithParen
+
+asteriskWithParen
      : LP_ ASTERISK RP_
      ;
- 
- windowFunction
+
+windowFunction
      : ID (exprsWithParen | asteriskWithParen) 
      filterClause? windowFunctionWithClause
-     ; 
- 
- windowFunctionWithClause
+     ;
+
+windowFunctionWithClause
      : OVER (ID | LP_ windowDefinition RP_ )
-     ;    
- 
- windowDefinition
+     ;
+
+windowDefinition
      : ID? (PARTITION BY exprs)?
      (orderByExpr (COMMA orderByExpr)*)?
      frameClause?
      ;
-     
+
 orderByExpr
      : ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
      ;
-     
+
 operator
     : SAFE_EQ
     | EQ_
@@ -191,12 +174,12 @@ operator
     | OR_
     | NOT_
     ;
-    
- frameClause
+
+frameClause
     : (RANGE | ROWS) frameStart
     | (RANGE | ROWS ) BETWEEN frameStart AND frameEnd
     ;
-    
+
 frameStart
     : UNBOUNDED PRECEDING
     | NUMBER PRECEDING
@@ -217,7 +200,7 @@ castExpr
 castExprWithColon
     : COLON COLON dataType(LBT_ RBT_)*
     ;
-    
+
 collateExpr
     : expr COLLATE expr
     ;
@@ -226,7 +209,7 @@ arrayConstructorWithCast
     : arrayConstructor castExprWithColon?
     | ARRAY LBT_ RBT_ castExprWithColon  
     ;
-    
+
 arrayConstructor
     : ARRAY LBT_ exprs RBT_
     | ARRAY LBT_ arrayConstructor (COMMA arrayConstructor)* RBT_

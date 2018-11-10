@@ -1,71 +1,61 @@
 grammar OracleDCLStatement;
 
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
-/**
- * each statement has a url, 
- * each base url : https://docs.oracle.com/database/121/SQLRF/.
- * no begin statement in oracle
- */
-//statements_9014.htm#SQLRF01603
+
 grant
     : GRANT
     (
-    	(grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_ (CURRENT | ALL))?
+        (grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_ (CURRENT | ALL))?
         | grantRolesToPrograms
     )
     ;
-    
+
 grantSystemPrivileges
     : systemObjects TO (grantees | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
-    ; 
-    
+    ;
+
 systemObjects
     : systemObject(COMMA systemObject)*
     ;
-          
+
 systemObject
-    : ALL PRIVILEGES
-    | roleName
-    | ID *?
+    : ALL PRIVILEGES | roleName | ID *?
     ;
 
 grantees
     : grantee (COMMA grantee)*
     ;
-    
+
 grantee
-    : userName 
-    | roleName 
-    | PUBLIC 
+    : userName  | roleName | PUBLIC 
     ;
-    
+
 granteeIdentifiedBy
     : userNames IDENTIFIED BY STRING (COMMA STRING)*
     ;
-    
+
 grantObjectPrivilegeClause
     : grantObjectPrivilege (COMMA grantObjectPrivilege)* onObjectClause
     TO grantees (WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
     ;
-    
+
 grantObjectPrivilege
     : objectPrivilege columnList? 
     ;
 
 objectPrivilege
-    : ID *?
-    | ALL PRIVILEGES?
+    : ID *? | ALL PRIVILEGES?
     ;
-    
+
 onObjectClause
     : ON 
     (
-    	schemaName? ID 
+        schemaName? ID 
        | USER userName ( COMMA userName)*
        | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) schemaName? ID 
     )
     ;
-    
+
 grantRolesToPrograms
     : roleNames TO programUnits
     ;
@@ -73,7 +63,7 @@ grantRolesToPrograms
 programUnits
     : programUnit (COMMA programUnit)*
     ;
-    
+
 programUnit
     : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
     ;
@@ -91,59 +81,57 @@ revokeSystemPrivileges
     ;
 
 revokeObjectPrivileges
-    : objectPrivilege (COMMA objectPrivilege)* onObjectClause
-    FROM grantees
-    (CASCADE CONSTRAINTS | FORCE)?
+    : objectPrivilege (COMMA objectPrivilege)* onObjectClause FROM grantees (CASCADE CONSTRAINTS | FORCE)?
     ;
-    
+
 revokeRolesFromPrograms
     : (roleNames | ALL) FROM programUnits
     ;
-    
+
 createUser
     : CREATE USER userName IDENTIFIED 
     (BY STRING | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
     ( 
         DEFAULT TABLESPACE ID
-       | TEMPORARY TABLESPACE ID
-       | (QUOTA (sizeClause | UNLIMITED) ON ID)
-       | PROFILE ID
-       | PASSWORD EXPIRE
-       | ACCOUNT (LOCK | UNLOCK)
-       | ENABLE EDITIONS
-       | CONTAINER EQ_ (CURRENT | ALL)
-    )*
-    ;
-        
-sizeClause
-    : NUMBER ID?
-    ;
-    
-alterUser
-    : ALTER USER
-    ( 
-      userName
-      ( 
-        IDENTIFIED (BY STRING (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
-        | DEFAULT TABLESPACE ID
         | TEMPORARY TABLESPACE ID
         | (QUOTA (sizeClause | UNLIMITED) ON ID)
         | PROFILE ID
         | PASSWORD EXPIRE
         | ACCOUNT (LOCK | UNLOCK)
-        | ENABLE EDITIONS (FOR ids)? FORCE?
+        | ENABLE EDITIONS
         | CONTAINER EQ_ (CURRENT | ALL)
-        | DEFAULT ROLE (roleNames| ALL (EXCEPT roleNames)?| NONE)
-        | ID
-     ) *
-     | userNames proxyClause
+    )*
+    ;
+
+sizeClause
+    : NUMBER ID?
+    ;
+
+alterUser
+    : ALTER USER
+    ( 
+        userName
+        ( 
+            IDENTIFIED (BY STRING (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+            | DEFAULT TABLESPACE ID
+            | TEMPORARY TABLESPACE ID
+            | QUOTA (sizeClause | UNLIMITED) ON ID
+            | PROFILE ID
+            | PASSWORD EXPIRE
+            | ACCOUNT (LOCK | UNLOCK)
+            | ENABLE EDITIONS (FOR ids)? FORCE?
+            | CONTAINER EQ_ (CURRENT | ALL)
+            | DEFAULT ROLE (roleNames| ALL (EXCEPT roleNames)?| NONE)
+            | ID
+        )*
+        | userNames proxyClause
     ) 
     ;
-    
+
 containerDataClause
     : (
-        SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
-       |(ADD |REMOVE) CONTAINER_DATA EQ_ idList
+          SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
+          | (ADD |REMOVE) CONTAINER_DATA EQ_ idList
     )
     (FOR schemaName? ID)?
     ;
@@ -151,14 +139,9 @@ containerDataClause
 proxyClause
     : (GRANT | REVOKE) CONNECT THROUGH ( ENTERPRISE USERS | userName dbUserProxyClauses?)
     ;
-    
+
 dbUserProxyClauses
-    : (WITH 
-        (
-           ROLE  (ALL EXCEPT)? roleNames 
-           | NO ROLES
-        )
-    )?
+    : (WITH (ROLE  (ALL EXCEPT)? roleNames | NO ROLES))?
     (AUTHENTICATION REQUIRED )?
     ;
 
@@ -172,16 +155,13 @@ createRole
         NOT IDENTIFIED
         | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
     )? 
-    ( CONTAINER EQ_ ( CURRENT | ALL ) )? 
+    (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
 
 alterRole
     : ALTER ROLE roleName
-    ( 
-          NOT IDENTIFIED
-        | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
-    )
-    (CONTAINER EQ_ ( CURRENT | ALL ))? 
+    (NOT IDENTIFIED | IDENTIFIED (BY STRING | USING schemaName? ID | EXTERNALLY | GLOBALLY))
+    (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
 
 dropRole

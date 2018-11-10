@@ -19,9 +19,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -34,14 +35,10 @@ public final class IndexNameExtractHandler implements ASTExtractHandler {
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         DDLStatement ddlStatement = (DDLStatement) statement;
-        Optional<ParserRuleContext> indexNameContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
-        if (!indexNameContext.isPresent()) {
-            return;
+        Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
+        if (indexNameNode.isPresent()) {
+            String tableName = ddlStatement.getTables().isEmpty() ? "" : ddlStatement.getTables().getSingleTableName();
+            statement.getSQLTokens().add(new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), tableName));
         }
-        String tableName = "";
-        if (!ddlStatement.getTables().isEmpty()) {
-            tableName = ddlStatement.getTables().getSingleTableName();
-        }
-        statement.getSQLTokens().add(ExtractorUtils.extractIndex(indexNameContext.get(), tableName));
     }
 }

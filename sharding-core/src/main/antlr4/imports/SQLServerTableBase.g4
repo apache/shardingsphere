@@ -1,12 +1,9 @@
 grammar SQLServerTableBase;
 
-import SQLServerKeyword,Keyword,Symbol,SQLServerBase,BaseRule,DataType;
+import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
 
 columnDefinition
-    : columnName dataType
-    columnDefinitionOption*
-    (columnConstraint(COMMA columnConstraint)*)?
-    columnIndex?
+    : columnName dataType columnDefinitionOption* (columnConstraint(COMMA columnConstraint)*)? columnIndex?
     ;
 
 columnDefinitionOption
@@ -21,54 +18,36 @@ columnDefinitionOption
     | NOT? NULL
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
-       LP_  
-         COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA  
-         ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED ) COMMA   
-         ALGORITHM EQ_ STRING 
-       RP_ 
+      LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED )
+      COMMA  ALGORITHM EQ_ STRING RP_ 
     | columnConstraint (COMMA columnConstraint)*
     | columnIndex
-    ;    
-    
+    ;
 
 columnConstraint  
-    : (CONSTRAINT constraintName)?   
-    (     primaryKeyConstraint
-        | columnForeignKeyConstraint 
-        | checkConstraint
-    )
+    : (CONSTRAINT constraintName)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
     ;
 
 primaryKeyConstraint
-    : (primaryKey | UNIQUE) 
-    (diskTablePrimaryKeyConstraintOption | memoryTablePrimaryKeyConstraintOption)
+    : (primaryKey | UNIQUE) (diskTablePrimaryKeyConstraintOption | memoryTablePrimaryKeyConstraintOption)
     ;
 
 diskTablePrimaryKeyConstraintOption
-    : (CLUSTERED | NONCLUSTERED)? 
-    primaryKeyWithClause?
-    primaryKeyOnClause?
-    ;    
+    : (CLUSTERED | NONCLUSTERED)? primaryKeyWithClause? primaryKeyOnClause?
+    ;
 
 columnForeignKeyConstraint
-    : (FOREIGN KEY)?  
-    REFERENCES tableName LP_  columnName RP_   
-    foreignKeyOnAction*
+    : (FOREIGN KEY)? REFERENCES tableName LP_  columnName RP_ foreignKeyOnAction*
     ;
 
 foreignKeyOnAction
-    : ON DELETE foreignKeyOn
-    | ON UPDATE foreignKeyOn
-    | NOT FOR REPLICATION
-    ;       
-    
-foreignKeyOn
-    : NO ACTION 
-    | CASCADE 
-    | SET NULL 
-    | SET DEFAULT 
+    : ON (DELETE | UPDATE) foreignKeyOn | NOT FOR REPLICATION
     ;
-    
+
+foreignKeyOn
+    : NO ACTION  | CASCADE | SET (NULL | DEFAULT)
+    ;
+
 memoryTablePrimaryKeyConstraintOption
     : CLUSTERED withBucket?
     ;
@@ -76,101 +55,78 @@ memoryTablePrimaryKeyConstraintOption
 hashWithBucket
     : HASH columnList withBucket
     ;
-    
+
 withBucket
     : WITH LP_ BUCKET_COUNT EQ_ NUMBER RP_
     ;
-    
+
 primaryKeyWithClause
-    : WITH 
-    ((FILLFACTOR EQ_ NUMBER)    
-     | (LP_  indexOption (COMMA indexOption)* RP_) 
-    )
+    : WITH (FILLFACTOR EQ_ NUMBER | LP_  indexOption (COMMA indexOption)* RP_)
     ;
 
 primaryKeyOnClause
-    : onSchemaColumn 
-    | onFileGroup
-    | onString
+    : onSchemaColumn | onFileGroup | onString
     ;
- 
- onSchemaColumn
- 	: ON schemaName LP_  columnName RP_
- 	;
- 	
- onFileGroup
- 	: ON fileGroup
- 	;
+
+onSchemaColumn
+    : ON schemaName LP_  columnName RP_
+    ;
+
+onFileGroup
+    : ON fileGroup
+    ;
 
 onString
- 	: ON STRING
- 	; 
+    : ON STRING
+    ;
 
 checkConstraint:
     CHECK(NOT FOR REPLICATION)? LP_  expr RP_  
     ;
-    
+
 columnIndex
     : INDEX indexName ( CLUSTERED | NONCLUSTERED )?  
-    ( WITH LP_  indexOption (COMMA indexOption)*  RP_ )?  
+    (WITH LP_  indexOption (COMMA indexOption)*  RP_)?  
     indexOnClause?   
-    ( FILESTREAM_ON ( fileGroup | schemaName | STRING ) )?  
+    (FILESTREAM_ON (fileGroup | schemaName | STRING))?  
     ;
-    
+
 indexOnClause
-	: onSchemaColumn 
-    | onFileGroup
-    | onDefault
+    : onSchemaColumn | onFileGroup | onDefault
     ;
-    	
+
 onDefault
- 	: ON DEFAULT
- 	; 	
- 	
-tableConstraint 
-    : (CONSTRAINT constraintName)?   
-    (
-          tablePrimaryConstraint
-        | tableForeignKeyConstraint   
-        | checkConstraint 
-    )
+    : ON DEFAULT
     ;
-    
+
+tableConstraint 
+    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    ;
+
 tablePrimaryConstraint
-    : primaryKeyUnique   
-    (diskTablePrimaryConstraintOption | memoryTablePrimaryConstraintOption)
+    : primaryKeyUnique (diskTablePrimaryConstraintOption | memoryTablePrimaryConstraintOption)
     ;
 
 primaryKeyUnique
-    : primaryKey 
-    | UNIQUE
+    : primaryKey | UNIQUE
     ;
-    
+
 diskTablePrimaryConstraintOption    
-    : (CLUSTERED | NONCLUSTERED)?   
-    columnList
-    primaryKeyWithClause?
-    primaryKeyOnClause?
+    : (CLUSTERED | NONCLUSTERED)? columnList primaryKeyWithClause? primaryKeyOnClause?
     ;
 
 memoryTablePrimaryConstraintOption    
-    : NONCLUSTERED
-    (columnList 
-           | hashWithBucket)
+    : NONCLUSTERED (columnList | hashWithBucket)
     ;
- 
+
 tableForeignKeyConstraint
-    : (FOREIGN KEY)? columnList
-    REFERENCES tableName columnList  
-    foreignKeyOnAction*
+    : (FOREIGN KEY)? columnList REFERENCES tableName columnList foreignKeyOnAction*
     ;
-    
+
 computedColumnDefinition  
-    : columnName AS expr   
-    (PERSISTED( NOT NULL )?)?  
-    columnConstraint?   
+    : columnName AS expr (PERSISTED( NOT NULL)?)? columnConstraint?   
     ;
-    
+
 columnSetDefinition 
     : columnSetName ID COLUMN_SET FOR ALL_SPARSE_COLUMNS  
     ;

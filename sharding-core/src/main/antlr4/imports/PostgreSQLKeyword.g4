@@ -1,9 +1,13 @@
 lexer grammar PostgreSQLKeyword;
 
 import Symbol;
-   
+
 ACTION
     : A C T I O N
+    ;
+
+ADMIN
+    : A D M I N
     ;
 
 ARRAY
@@ -24,6 +28,10 @@ BRIN
 
 BTREE
     : B T R E E
+    ;
+
+BYPASSRLS
+    : B Y P A S S R L S
     ;
 
 CACHE
@@ -58,12 +66,24 @@ CONCURRENTLY
     : C O N C U R R E N T L Y
     ;
 
+CONNECT
+    : C O N N E C T
+    ;
+
+CONNECTION
+    : C O N N E C T I O N
+    ;
+
 CONSTRAINTS
     : C O N S T R A I N T S
     ;
 
-CURRENT
-    : C U R R E N T
+CREATEDB
+    : C R E A T E D B
+    ;
+
+CREATEROLE
+    : C R E A T E R O L E
     ;
 
 CURRENT_TIMESTAMP
@@ -82,8 +102,8 @@ DATA
     : D A T A
     ;
 
-DAY
-    : D A Y
+DATABASE
+    : D A T A B A S E
     ;
 
 DEFAULTS
@@ -106,12 +126,24 @@ DISTINCT
     : D I S T I N C T
     ;
 
+DOMAIN
+    : D O M A I N
+    ;
+
 DOUBLE
     : D O U B L E
     ;
 
+ENCRYPTED
+    : E N C R Y P T E D
+    ;
+
 EXCLUDING
     : E X C L U D I N G
+    ;
+
+EXECUTE
+    : E X E C U T E
     ;
 
 EXTENDED
@@ -174,6 +206,10 @@ IDENTITY
     : I D E N T I T Y
     ;
 
+IF
+    : I F
+    ;
+
 IMMEDIATE
     : I M M E D I A T E
     ;
@@ -202,6 +238,22 @@ INITIALLY
     : I N I T I A L L Y
     ;
 
+INOUT
+    : I N O U T
+    ;
+
+INSERT
+    : I N S E R T
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+LARGE
+    : L A R G E
+    ;
+
 LAST
     : L A S T
     ;
@@ -212,6 +264,10 @@ LOCAL
 
 LOGGED
     : L O G G E D
+    ;
+
+LOGIN
+    : L O G I N
     ;
 
 MAIN
@@ -238,12 +294,44 @@ MONTH
     : M O N T H
     ;
 
+NOBYPASSRLS
+    : N O B Y P A S S R L S
+    ;
+
+NOCREATEDB
+    : N O C R E A T E D B
+    ;
+
+NOCREATEROLE
+    : N O C R E A T E R O L E
+    ;
+
+NOINHERIT
+    : N O I N H E R I T
+    ;
+
+NOLOGIN
+    : N O L O G I N
+    ;
+
+NOREPLICATION
+    : N O R E P L I C A T I O N
+    ;
+
+NOSUPERUSER
+    : N O S U P E R U S E R
+    ;
+
 NOTHING
     : N O T H I N G
     ;
 
 NULLS
     : N U L L S
+    ;
+
+OBJECT
+    : O B J E C T
     ;
 
 OF
@@ -256,6 +344,10 @@ OIDS
 
 ONLY
     : O N L Y
+    ;
+
+OUT
+    : O U T
     ;
 
 OVER
@@ -274,6 +366,10 @@ PARTIAL
     : P A R T I A L
     ;
 
+PASSWORD
+    : P A S S W O R D
+    ;
+
 PLAIN
     : P L A I N
     ;
@@ -288,6 +384,14 @@ PRECISION
 
 PREPARED
     : P R E P A R E D
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
+PUBLIC
+    : P U B L I C
     ;
 
 RANGE
@@ -306,6 +410,10 @@ REPLICA
     : R E P L I C A
     ;
 
+REPLICATION
+    : R E P L I C A T I O N
+    ;
+
 RESET
     : R E S E T
     ;
@@ -316,6 +424,14 @@ RESTART
 
 RESTRICT
     : R E S T R I C T
+    ;
+
+REVOKE
+    : R E V O K E
+    ;
+
+ROUTINE
+    : R O U T I N E
     ;
 
 ROWS
@@ -330,12 +446,28 @@ SAVEPOINT
     : S A V E P O I N T
     ;
 
+SCHEMA
+    : S C H E M A
+    ;
+
 SECOND
     : S E C O N D
     ;
 
 SECURITY
     : S E C U R I T Y
+    ;
+
+SEQUENCE
+    : S E Q U E N C E
+    ;
+
+SEQUENCES
+    : S E Q U E N C E S
+    ;
+
+SERVER
+    : S E R V E R
     ;
 
 SESSION
@@ -364,6 +496,18 @@ STATISTICS
 
 STORAGE
     : S T O R A G E
+    ;
+
+SUPERUSER
+    : S U P E R U S E R
+    ;
+
+SYSID
+    : S Y S I D
+    ;
+
+TABLES
+    : T A B L E S
     ;
 
 TABLESPACE
@@ -398,12 +542,16 @@ UNLOGGED
     : U N L O G G E D
     ;
 
+UNTIL
+    : U N T I L
+    ;
+
 UPDATE
     : U P D A T E
     ;
 
-USER
-    : U S E R
+USAGE
+    : U S A G E
     ;
 
 USING
@@ -418,6 +566,10 @@ VALIDATE
     : V A L I D A T E
     ;
 
+VARIADIC
+    : V A R I A D I C
+    ;
+
 VARYING
     : V A R Y I N G
     ;
@@ -428,6 +580,10 @@ WITHIN
 
 WITHOUT
     : W I T H O U T
+    ;
+
+WRAPPER
+    : W R A P P E R
     ;
 
 WRITE

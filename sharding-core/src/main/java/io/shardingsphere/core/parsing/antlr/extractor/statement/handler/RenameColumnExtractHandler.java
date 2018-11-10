@@ -37,21 +37,21 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler {
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> modifyColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
-        if (!modifyColumnContext.isPresent()) {
+        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
+        if (!modifyColumnNode.isPresent()) {
             return;
         }
-        Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnContext.get(), RuleName.COLUMN_NAME);
+        Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
         if (2 != columnNodes.size()) {
             return;
         }
         Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
         String oldName = columnNodesIterator.next().getText();
         String newName = columnNodesIterator.next().getText();
-        ColumnDefinition oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
-        if (null != oldDefinition) {
-            oldDefinition.setName(newName);
-            alterStatement.getUpdateColumns().put(oldName, oldDefinition);
+        Optional<ColumnDefinition> oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
+        if (oldDefinition.isPresent()) {
+            oldDefinition.get().setName(newName);
+            alterStatement.getUpdateColumns().put(oldName, oldDefinition.get());
         }
     }
 }

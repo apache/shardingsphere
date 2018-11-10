@@ -3,13 +3,11 @@ grammar MySQLBase;
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 characterSet
-    : (CHARACTER | CHAR) SET EQ_? charsetName
-    | CHARSET EQ_? charsetName
+    : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
     ;
 
 charsetName
-    : ID
-    | BINARY
+    : ID | BINARY
     ;
 
 collateClause
@@ -41,10 +39,7 @@ indexAndKey
     ;
 
 indexOption
-    : KEY_BLOCK_SIZE EQ_? value
-    | indexType
-    | WITH PARSER parserName
-    | COMMENT STRING
+    : KEY_BLOCK_SIZE EQ_? value | indexType | WITH PARSER parserName | COMMENT STRING
     ;
 
 valueListWithParen
@@ -56,8 +51,5 @@ valueList
     ;
 
 value
-    : DEFAULT
-    | MAXVALUE
-    | expr
-    | exprsWithParen
+    : DEFAULT | MAXVALUE | expr | exprsWithParen
     ;

@@ -32,17 +32,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create table statement extractor.
+ * Create table extractor.
  * 
  * @author duhongjun
  */
 public final class CreateTableExtractor extends DDLStatementExtractor {
     
     public CreateTableExtractor() {
-        addHandler(new TableNamesExtractHandler());
-        addHandler(new ColumnDefinitionExtractHandler());
-        addHandler(new IndexesNameExtractHandler());
-        addHandler(new CreatePrimaryKeyExtractHandler());
+        addExtractHandler(new TableNamesExtractHandler());
+        addExtractHandler(new ColumnDefinitionExtractHandler());
+        addExtractHandler(new IndexesNameExtractHandler());
+        addExtractHandler(new CreatePrimaryKeyExtractHandler());
     }
     
     @Override

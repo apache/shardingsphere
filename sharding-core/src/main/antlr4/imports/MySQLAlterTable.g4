@@ -1,9 +1,9 @@
 grammar MySQLAlterTable;
+
 import MySQLKeyword, Keyword, MySQLTableBase, MySQLBase, BaseRule, DataType, Symbol;
 
 alterTable
-    : ALTER TABLE tableName
-    alterSpecifications?
+    : ALTER TABLE tableName alterSpecifications?
     ;
 
 alterSpecifications
@@ -55,8 +55,7 @@ singleColumn
     ;
 
 firstOrAfterColumn
-    : FIRST
-	| AFTER columnName
+    : FIRST | AFTER columnName
     ;
 
 multiColumn
@@ -66,15 +65,15 @@ multiColumn
 addConstraint
     : ADD constraintDefinition
     ;
-    
+
 addIndex
     : ADD indexDefinition
     ;
- 
+
 addColumn
     : ADD COLUMN? (singleColumn | multiColumn)
-    ;   
-    
+    ;
+
 changeColumn
     : changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;

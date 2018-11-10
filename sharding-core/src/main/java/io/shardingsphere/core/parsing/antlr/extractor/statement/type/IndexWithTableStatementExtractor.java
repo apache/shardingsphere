@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNam
 public final class IndexWithTableStatementExtractor extends DDLStatementExtractor {
     
     public IndexWithTableStatementExtractor() {
-        addHandler(new TableNameExtractHandler());
-        addHandler(new IndexNameExtractHandler());
+        addExtractHandler(new TableNameExtractHandler());
+        addExtractHandler(new IndexNameExtractHandler());
     }
 }

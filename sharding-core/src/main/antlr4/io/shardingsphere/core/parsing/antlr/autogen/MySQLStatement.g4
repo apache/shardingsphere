@@ -22,13 +22,13 @@ execute
     | savepoint
     | beginWork
     | setVariable
-    | grantPriveleges
+    | grant
     | grantProxy
-    | grantRoles
-    | revokePriveleges
-    | revokeAllPriveleges
+    | grantRole
+    | revoke
+    | revokeAll
     | revokeProxy
-    | revokeRoles
+    | revokeRole
     | createUser
     | alterUser
     | alterCurrentUser
@@ -41,4 +41,3 @@ execute
     | setDefaultRole
     | setRole
     ;
- 

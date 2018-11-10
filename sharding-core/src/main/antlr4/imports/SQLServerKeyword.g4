@@ -26,8 +26,20 @@ ALL_SPARSE_COLUMNS
     : A L L UL_ S P A R S E UL_ C O L U M N S
     ;
 
+ASYMMETRIC
+    : A S Y M M E T R I C
+    ;
+
+AUTHORIZATION
+    : A U T H O R I Z A T I O N
+    ;
+
 AUTO
     : A U T O
+    ;
+
+BACKSLASH
+    : B A C K S L A S H
     ;
 
 BEGIN
@@ -44,6 +56,10 @@ BUCKET_COUNT
 
 CAST
     : C A S T
+    ;
+
+CERTIFICATE
+    : C E R T I F I C A T E
     ;
 
 CLUSTERED
@@ -82,8 +98,12 @@ CONVERT
     : C O N V E R T
     ;
 
-CURRENT
-    : C U R R E N T
+CREDENTIAL
+    : C R E D E N T I A L
+    ;
+
+DATABASE
+    : D A T A B A S E
     ;
 
 DATABASE_DEAULT
@@ -98,16 +118,20 @@ DATA_CONSISTENCY_CHECK
     : D A T A UL_ C O N S I S T E N C Y UL_ C H E C K
     ;
 
-DAY
-    : D A Y
-    ;
-
 DAYS
     : D A Y S
     ;
 
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
+    ;
+
 DELAYED_DURABILITY
     : D E L A Y E D UL_ D U R A B I L I T Y
+    ;
+
+DENY
+    : D E N Y
     ;
 
 DETERMINISTIC
@@ -130,6 +154,10 @@ DURABILITY
     : D U R A B I L I T Y
     ;
 
+DW
+    : D W
+    ;
+
 ENCRYPTED
     : E N C R Y P T E D
     ;
@@ -140,6 +168,10 @@ ENCRYPTION_TYPE
 
 END
     : E N D
+    ;
+
+EXTERNAL
+    : E X T E R N A L
     ;
 
 FILESTREAM
@@ -194,8 +226,16 @@ FUNCTION
     : F U N C T I O N
     ;
 
+GRANT
+    : G R A N T
+    ;
+
 HASH
     : H A S H
+    ;
+
+HASHED
+    : H A S H E D
     ;
 
 HEAP
@@ -234,8 +274,16 @@ LEFT
     : L E F T
     ;
 
+LEFT_BRACKET
+    : L E F T UL_ B R A C K E T
+    ;
+
 LOCK_ESCALATION
     : L O C K UL_ E S C A L A T I O N
+    ;
+
+LOGIN
+    : L O G I N
     ;
 
 MARK
@@ -256,6 +304,10 @@ MAXDOP
 
 MAX_DURATION
     : M A X UL_ D U R A T I O N
+    ;
+
+MEMBER
+    : M E M B E R
     ;
 
 MEMORY_OPTIMIZED
@@ -282,6 +334,14 @@ MOVE
     : M O V E
     ;
 
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
+    ;
+
+NAME
+    : N A M E
+    ;
+
 NOCHECK
     : N O C H E C K
     ;
@@ -294,12 +354,24 @@ NONE
     : N O N E
     ;
 
+OBJECT
+    : O B J E C T
+    ;
+
 OFF
     : O F F
     ;
 
+OLD_PASSWORD
+    : O L D UL_ P A S S W O R D
+    ;
+
 ONLINE
     : O N L I N E
+    ;
+
+OPTION
+    : O P T I O N
     ;
 
 OUTBOUND
@@ -322,6 +394,10 @@ PARTITIONS
     : P A R T I T I O N S
     ;
 
+PASSWORD
+    : P A S S W O R D
+    ;
+
 PAUSED
     : P A U S E D
     ;
@@ -336,6 +412,14 @@ PERSISTED
 
 PRECEDING
     : P R E C E D I N G
+    ;
+
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
+PROVIDER
+    : P R O V I D E R
     ;
 
 RANDOMIZED
@@ -370,8 +454,20 @@ RESUMABLE
     : R E S U M A B L E
     ;
 
+REVOKE
+    : R E V O K E
+    ;
+
 RIGHT
     : R I G H T
+    ;
+
+RIGHT_BRACKET
+    : R I G H T UL_ B R A C K E T
+    ;
+
+ROLE
+    : R O L E
     ;
 
 ROUND_ROBIN
@@ -388,6 +484,10 @@ ROWS
 
 SAVE
     : S A V E
+    ;
+
+SCHEMA
+    : S C H E M A
     ;
 
 SCHEMA_AND_DATA
@@ -454,6 +554,10 @@ UNCOMMITTED
     : U N C O M M I T T E D
     ;
 
+UNLOCK
+    : U N L O C K
+    ;
+
 UPDATE
     : U P D A T E
     ;
@@ -472,6 +576,14 @@ WEEK
 
 WEEKS
     : W E E K S
+    ;
+
+WINDOWS
+    : W I N D O W S
+    ;
+
+WITHOUT
+    : W I T H O U T
     ;
 
 YEARS

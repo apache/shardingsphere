@@ -1,7 +1,7 @@
 lexer grammar Keyword;
 
 import Symbol;
-    
+
 ALL
     : A L L
     ;
@@ -72,10 +72,6 @@ GROUP
 
 HAVING
     : H A V I N G
-    ;
-
-IF
-    : I F
     ;
 
 IN
@@ -230,6 +226,14 @@ CREATE
     : C R E A T E
     ;
 
+CURRENT
+    : C U R R E N T
+    ;
+
+DAY
+    : D A Y
+    ;
+
 DEFAULT
     : D E F A U L T
     ;
@@ -250,12 +254,24 @@ ENABLE
     : E N A B L E
     ;
 
+FOR
+    : F O R
+    ;
+
 FOREIGN
     : F O R E I G N
     ;
 
+FUNCTION
+    : F U N C T I O N
+    ;
+
 GENERATED
     : G E N E R A T E D
+    ;
+
+GRANT
+    : G R A N T
     ;
 
 INDEX
@@ -278,12 +294,24 @@ ON
     : O N
     ;
 
+OPTION
+    : O P T I O N
+    ;
+
+PRIVILEGES
+    : P R I V I L E G E S
+    ;
+
 READ
     : R E A D
     ;
 
 REFERENCES
     : R E F E R E N C E S
+    ;
+
+ROLE
+    : R O L E
     ;
 
 ROLLBACK
@@ -316,6 +344,10 @@ TRUNCATE
 
 UNIQUE
     : U N I Q U E
+    ;
+
+USER
+    : U S E R
     ;
 
 WORK

@@ -60,11 +60,11 @@ constraintOptionalParam
 addColumn
     : ADD COLUMN? (IF NOT EXISTS )? columnDefinition
     ;
-    
+
 dropColumn
     : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
     ;
-     
+
 modifyColumn
    : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
    | alterColumn SET DEFAULT expr
@@ -78,15 +78,13 @@ modifyColumn
    | alterColumn RESET LP_ attributeOptions RP_
    | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
-     
+ 
 alterColumn     
     : ALTER COLUMN? columnName
     ;
 
 alterColumnSetOption
-    : SET GENERATED (ALWAYS | BY DEFAULT)
-    | SET sequenceOption
-    | RESTART (WITH? NUMBER)?
+    : SET (GENERATED (ALWAYS | BY DEFAULT) | sequenceOption) | RESTART (WITH? NUMBER)?
     ;
 
 attributeOptions
@@ -96,12 +94,11 @@ attributeOptions
 attributeOption
     : ID EQ_ simpleExpr
     ;
-     
+
 alterTableAddConstraint       
-    : ADD tableConstraint (NOT VALID)?
-    | ADD tableConstraintUsingIndex
+    : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
-    
+
 renameColumn
     : RENAME COLUMN? columnName TO columnName
     ;

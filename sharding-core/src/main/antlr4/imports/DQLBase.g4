@@ -1,35 +1,27 @@
 grammar DQLBase;
 
-import BaseRule,Keyword, Symbol,DataType;
+import BaseRule, Keyword, Symbol, DataType;
 
-//define delete rule template 
 select 
-    : withClause
-    | unionSelect
+    : withClause | unionSelect
     ;
 
 withClause
-    : WITH RECURSIVE? cteClause (COMMA cteClause)*
-    unionSelect
+    : WITH RECURSIVE? cteClause (COMMA cteClause)* unionSelect
     ;
 
 cteClause
     : cteName idList? AS subquery
     ;
-    
+
 unionSelect
     : selectExpression (UNION ALL? selectExpression)*
     ;
 
 selectExpression
-    : selectClause 
-    fromClause? 
-    whereClause? 
-    groupByClause? 
-    orderByClause? 
-    limitClause?
+    : selectClause fromClause? whereClause? groupByClause? orderByClause? limitClause?
     ;
-    
+
 selectClause
     : SELECT selectSpec selectExprs
     ;
@@ -45,42 +37,39 @@ fromClause
 whereClause
     : WHERE expr
     ;
-    
+
 groupByClause 
-    : GROUP BY groupByItem (COMMA groupByItem)* 
-    (WITH ROLLUP)? 
-    havingClause?
+    : GROUP BY groupByItem (COMMA groupByItem)* (WITH ROLLUP)? havingClause?
     ;
-    
+
 havingClause
     : HAVING  expr
     ;
-    
+
 limitClause:
     LIMIT rangeClause
     ;
-    
+
 partitionClause 
     : PARTITION idList
     ;
 
 selectExprs
-    : ASTERISK (COMMA selectExpr)* 
-    | selectExpr (COMMA ASTERISK)? (COMMA selectExpr)*
+    : ASTERISK (COMMA selectExpr)* | selectExpr (COMMA ASTERISK)? (COMMA selectExpr)*
     ;
- 
+
 subquery
     : LP_ unionSelect RP_
     ;
-       
+
 alias
     : ID 
     ;
-        
+
 selectExpr
     :
     ;
-    
+
 tableReferences
     : 
     ;

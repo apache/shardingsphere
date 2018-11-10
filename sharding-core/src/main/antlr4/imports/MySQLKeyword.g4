@@ -1,7 +1,7 @@
 lexer grammar MySQLKeyword;
 
 import Symbol;
-   
+
 ACCOUNT
     : A C C O U N T
     ;
@@ -304,6 +304,10 @@ HISTORY
 
 IDENTIFIED
     : I D E N T I F I E D
+    ;
+
+IF
+    : I F
     ;
 
 IGNORE
@@ -796,10 +800,6 @@ USAGE
 
 USE
     : U S E
-    ;
-
-USER
-    : U S E R
     ;
 
 USING

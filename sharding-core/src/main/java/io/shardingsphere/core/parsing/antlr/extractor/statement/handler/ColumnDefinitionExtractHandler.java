@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
@@ -31,21 +31,26 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public class ColumnDefinitionExtractHandler implements ASTExtractHandler {
+public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
+    
+    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        CreateTableStatement createStatement = (CreateTableStatement) statement;
+        CreateTableStatement createTableStatement = (CreateTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-            if (!column.isPresent()) {
-                continue;
+            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            if (columnDefinition.isPresent()) {
+                setColumnDefinition(createTableStatement, columnDefinition.get());
             }
-            createStatement.getColumnNames().add(SQLUtil.getExactlyValue(column.get().getName()));
-            createStatement.getColumnTypes().add(column.get().getType());
-            if (column.get().isPrimaryKey()) {
-                createStatement.getPrimaryKeyColumns().add(column.get().getName());
-            }
+        }
+    }
+    
+    private void setColumnDefinition(final CreateTableStatement createTableStatement, final ColumnDefinition columnDefinition) {
+        createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
+        createTableStatement.getColumnTypes().add(columnDefinition.getType());
+        if (columnDefinition.isPrimaryKey()) {
+            createTableStatement.getPrimaryKeyColumns().add(columnDefinition.getName());
         }
     }
 }

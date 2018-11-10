@@ -2,15 +2,8 @@ grammar MySQLDCLStatement;
 
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
-/**
- * each statement has a url, 
- * each base url : https://dev.mysql.com/doc/refman/8.0/en/.
- */
-
-//grant.html
-grantPriveleges
-    : GRANT
-    privType columnList? (COMMA privType columnList?)*
+grant
+    : GRANT privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     TO userOrRoles
     (WITH GRANT OPTION)?
@@ -19,7 +12,12 @@ grantPriveleges
 privType
     : ALL PRIVILEGES?
     | ALTER ROUTINE?
-    | CREATE (ROUTINE | TEMPORARY TABLES? | USER | VIEW)?
+    | CREATE
+    | CREATE ROUTINE
+    | CREATE TABLESPACE
+    | CREATE TEMPORARY TABLES
+    | CREATE USER
+    | CREATE VIEW
     | DELETE
     | DROP
     | EVENT
@@ -58,9 +56,7 @@ privType
     ;
 
 objectType
-    : TABLE
-    | FUNCTION
-    | PROCEDURE
+    : TABLE | FUNCTION | PROCEDURE
     ;
 
 privLevel
@@ -72,10 +68,12 @@ privLevel
     | schemaName DOT routineName
     ;
 
+host
+    : STRING | ID | MOD_
+    ;
+
 user
-    : STRING AT_ STRING
-    | STRING
-    | ID
+    : userName (AT_ host)?
     ;
 
 users
@@ -83,9 +81,7 @@ users
     ;
 
 role
-    : STRING AT_ STRING
-    | STRING
-    | ID
+    : roleName (AT_ host)?
     ;
 
 roles
@@ -93,55 +89,42 @@ roles
     ;
 
 userOrRole
-    : user
-    | role
+    : user | role
     ;
 
 userOrRoles
     : userOrRole (COMMA userOrRole)*
     ;
 
-//grant.html
 grantProxy
-    : GRANT PROXY ON userOrRole
-    TO userOrRoles
-    (WITH GRANT OPTION)?
+    : GRANT PROXY ON userOrRole TO userOrRoles (WITH GRANT OPTION)?
     ;
 
-//grant.html
-grantRoles
-    : GRANT roleNames
-    TO userOrRoles
-    (WITH ADMIN OPTION)?
+grantRole
+    : GRANT roleNames TO userOrRoles (WITH ADMIN OPTION)?
     ;
 
-//revoke.html
-revokePriveleges
-    : REVOKE
-    privType columnList? (COMMA privType columnList?)*
+revoke
+    : REVOKE privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     FROM userOrRoles
     ;
 
-//revoke.html
-revokeAllPriveleges
+revokeAll
     : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
     FROM userOrRoles
     ;
 
-//revoke.html
 revokeProxy
     : REVOKE PROXY ON userOrRole
     FROM userOrRoles
     ;
 
-//revoke.html
-revokeRoles
+revokeRole
     : REVOKE roleNames
     FROM userOrRoles
     ;
 
-//create-user.html
 createUser
     : CREATE USER (IF NOT EXISTS)?
     user authOptions?
@@ -168,11 +151,7 @@ authPlugin
     ;
 
 tlsOption
-    : SSL
-    | X509
-    | CIPHER STRING
-    | ISSUER STRING
-    | SUBJECT STRING
+    : SSL | CIPHER STRING | ISSUER STRING | SUBJECT STRING | ID
     ;
 
 resourceOption
@@ -190,11 +169,9 @@ passwordOption
     ;
 
 lockOption
-    : ACCOUNT LOCK
-    | ACCOUNT UNLOCK
+    : ACCOUNT (LOCK | UNLOCK)
     ;
 
-//alter-user.html
 alterUser
     : ALTER USER (IF EXISTS)?
     user authOptions
@@ -203,7 +180,6 @@ alterUser
     (passwordOption | lockOption)*
     ;
 
-//alter-user.html
 alterCurrentUser
     : ALTER USER (IF EXISTS)? USER() userFuncAuthOption
     ;
@@ -213,50 +189,36 @@ userFuncAuthOption
     | DISCARD OLD PASSWORD
     ;
 
-//alter-user.html
 alterUserRole
     : ALTER USER (IF EXISTS)?
     user DEFAULT ROLE
     (NONE | ALL | roles)
     ;
 
-//drop-user.html
 dropUser
     : DROP USER (IF EXISTS)? users
     ;
 
-//rename-user.html
 renameUser
     : RENAME USER user TO user (user TO user)*
     ;
 
-//create-role.html
 createRole
     : CREATE ROLE (IF NOT EXISTS)? roles
     ;
 
-//drop-role.html
 dropRole
     : DROP ROLE (IF EXISTS)? roles
     ;
 
-//set-password.html
 setPassword
-    : SET PASSWORD (FOR user)? EQ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR user)? EQ_ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     ;
 
-//set-default-role.html
 setDefaultRole
     : SET DEFAULT ROLE (NONE | ALL | roles) TO users
     ;
 
-//set-role.html
 setRole
-    : SET ROLE (
-        DEFAULT
-        | NONE
-        | ALL
-        | ALL EXCEPT roles
-        | roles
-    )
+    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roles | roles)
     ;
