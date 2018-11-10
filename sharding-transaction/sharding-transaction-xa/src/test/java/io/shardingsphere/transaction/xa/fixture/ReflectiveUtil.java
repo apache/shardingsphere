@@ -104,17 +104,6 @@ public final class ReflectiveUtil {
         }
     }
     
-    private static Class<?>[] getParameterTypes(final Object[] args) {
-        if (null == args) {
-            return null;
-        }
-        Class<?>[] result = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Array.set(result, i, args[i].getClass());
-        }
-        return result;
-    }
-    
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private static Method getMethod(final Object target, final String methodName, final Class<?>... parameterTypes) {
@@ -129,5 +118,16 @@ public final class ReflectiveUtil {
             clazz = clazz.getSuperclass();
         }
         return null;
+    }
+    
+    private static Class<?>[] getParameterTypes(final Object[] args) {
+        if (null == args) {
+            return null;
+        }
+        Class<?>[] result = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            Array.set(result, i, args[i].getClass());
+        }
+        return result;
     }
 }
