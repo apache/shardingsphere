@@ -22,32 +22,32 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
+import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class XATransactionDataSourceWrapperTest {
     
-    private TransactionManager transactionManager =
-        XATransactionManagerSPILoader.getInstance().getTransactionManager().getUnderlyingTransactionManager();
+    private XATransactionManager xaTransactionManager = new AtomikosTransactionManager();
     
     private final XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
     
     private final DataSourceParameter parameter = new DataSourceParameter();
     
-    private final XATransactionDataSourceWrapper xaDataSourceWrapper = new XATransactionDataSourceWrapper(transactionManager);
+    private final XATransactionDataSourceWrapper xaDataSourceWrapper = new XATransactionDataSourceWrapper(xaTransactionManager.getUnderlyingTransactionManager());
     
     @Before
     public void setup() {
@@ -55,6 +55,11 @@ public class XATransactionDataSourceWrapperTest {
         parameter.setPassword("root");
         parameter.setUrl("db:url");
         parameter.setMaximumPoolSize(10);
+    }
+    
+    @After
+    public void teardown() {
+        xaTransactionManager.destroy();
     }
     
     @Test

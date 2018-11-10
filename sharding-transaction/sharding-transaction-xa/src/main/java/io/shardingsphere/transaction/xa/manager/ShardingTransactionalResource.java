@@ -15,25 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.manager;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
+
+import javax.sql.XADataSource;
 
 /**
- * Hikari datasource parameter extractor.
+ * Sharding transactional recovery resource.
  *
  * @author zhaojun
  */
-public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+final class ShardingTransactionalResource extends JdbcTransactionalResource {
     
-    HikariDataSourceParameterExtractor(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
-    @Override
-    protected void convertProperties() {
-        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
-        properties.put("url", properties.get("jdbcUrl"));
+    /**
+     * Constructs a new instance with a given name and XADataSource.
+     *
+     * @param serverName The unique name.
+     * @param xaDataSource XA data source
+     */
+    ShardingTransactionalResource(final String serverName, final XADataSource xaDataSource) {
+        super(serverName, xaDataSource);
+        super.setAcceptAllXAResources(true);
     }
 }

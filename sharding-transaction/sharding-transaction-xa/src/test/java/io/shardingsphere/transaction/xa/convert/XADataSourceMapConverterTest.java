@@ -25,6 +25,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -48,16 +49,16 @@ public class XADataSourceMapConverterTest {
     public void assertGetMysqlXATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DBCP2, DatabaseType.MySQL), DatabaseType.MySQL);
         assertThat(xaDataSourceMap.size(), is(2));
-        assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
-        assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
+        assertThat(xaDataSourceMap.get("ds1"), instanceOf(BasicManagedDataSource.class));
+        assertThat(xaDataSourceMap.get("ds2"), instanceOf(BasicManagedDataSource.class));
     }
     
     @Test
     public void assertGetH2XATransactionalDataSourceSuccess() {
         Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DBCP2_TOMCAT, DatabaseType.H2), DatabaseType.H2);
         assertThat(xaDataSourceMap.size(), is(2));
-        assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
-        assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
+        assertThat(xaDataSourceMap.get("ds1"), instanceOf(BasicManagedDataSource.class));
+        assertThat(xaDataSourceMap.get("ds2"), instanceOf(BasicManagedDataSource.class));
     }
     
     @Test
@@ -87,8 +88,8 @@ public class XADataSourceMapConverterTest {
     
     private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", DataSourceUtils.build(poolType, databaseType));
-        result.put("ds2", DataSourceUtils.build(poolType, databaseType));
+        result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
+        result.put("ds2", DataSourceUtils.build(poolType, databaseType, "demo_ds_2"));
         return result;
     }
 }

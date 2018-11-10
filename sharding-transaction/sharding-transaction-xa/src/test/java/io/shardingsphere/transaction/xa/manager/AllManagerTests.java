@@ -23,6 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        DBCP2TransactionManagerRecoveryTest.class,
+        AtomikosTransactionManagerRecoveryTest.class,
         AtomikosTransactionManagerTest.class,
         XATransactionDataSourceWrapperTest.class,
         XATransactionManagerSPILoaderTest.class
