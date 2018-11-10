@@ -64,9 +64,6 @@ public abstract class TransactionManagerRecoveryTest {
     
     @Before
     public void setup() {
-        Session session = getH2Session("ds1");
-        Database database = session.getDatabase();
-        ReflectiveUtil.methodInvoke(database, "closeAllSessionsException", session);
         executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
         executeSQL("ds1", "DROP TABLE IF EXISTS t_order");
         executeSQL("ds1", "CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
@@ -77,6 +74,9 @@ public abstract class TransactionManagerRecoveryTest {
     @After
     public void teardown() {
         Configuration.shutdown(true);
+        Session session = getH2Session("ds1");
+        Database database = session.getDatabase();
+        ReflectiveUtil.methodInvoke(database, "closeAllSessionsException", session);
         closeDataSource();
     }
     
