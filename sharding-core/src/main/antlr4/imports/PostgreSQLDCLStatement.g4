@@ -106,7 +106,7 @@ revokeRole
     ;
 
 createUser
-    : CREATE USER roleName (WITH? roleOptions)?
+    : CREATE USER userName (WITH? roleOptions)?
     ;
 
 roleOption
@@ -144,15 +144,19 @@ alterUser
     ;
 
 renameUser
-    : ALTER USER roleName RENAME TO roleName
+    : ALTER USER userName RENAME TO userName
     ;
 
 alterUserSetConfig
-    : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)? SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterRoleConfigOp SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    ;
+
+alterRoleConfigOp
+    : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)?
     ;
 
 alterUserResetConfig
-    : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)? RESET (STRING | ALL)
+    : alterRoleConfigOp RESET (STRING | ALL)
     ;
 
 dropUser
@@ -172,11 +176,11 @@ renameRole
     ;
 
 alterRoleSetConfig
-    : ALTER ROLE (roleSpecification | ALL) (IN DATABASE databaseName)? SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterRoleConfigOp SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
     ;
 
 alterRoleResetConfig
-    : ALTER ROLE (roleSpecification | ALL) (IN DATABASE databaseName)? RESET (STRING | ALL)
+    : alterRoleConfigOp RESET (STRING | ALL)
     ;
 
 dropRole
