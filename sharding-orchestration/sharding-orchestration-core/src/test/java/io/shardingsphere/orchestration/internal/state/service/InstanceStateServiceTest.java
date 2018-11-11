@@ -23,6 +23,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 public class InstanceStateServiceTest {
@@ -40,7 +41,6 @@ public class InstanceStateServiceTest {
     @Test
     public void testPersistInstanceOnline() {
         instanceStateService.persistInstanceOnline();
-        verify(regCenter)
+        verify(regCenter).persistEphemeral(anyString(), "");
     }
 }
-    
