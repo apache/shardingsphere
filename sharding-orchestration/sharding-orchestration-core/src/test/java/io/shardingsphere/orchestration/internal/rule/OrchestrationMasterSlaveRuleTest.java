@@ -59,8 +59,9 @@ public class OrchestrationMasterSlaveRuleTest {
     
     @Test
     public void assertRenew() {
-        Collection<String> expected = Arrays.s();
-        getDisabledStateEventBusEvent();
+        Collection<String> expected = Collections.singleton("slave_db_1");
+        orchestrationMasterSlaveRule.renew(getDisabledStateEventBusEvent());
+        assertThat(orchestrationMasterSlaveRule.getSlaveDataSourceNames(), is(expected));
     }
     
     private DisabledStateEventBusEvent getDisabledStateEventBusEvent() {
