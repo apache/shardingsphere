@@ -17,8 +17,12 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class OrchestrationMasterSlaveRuleTest {
     
@@ -26,6 +30,15 @@ public class OrchestrationMasterSlaveRuleTest {
     @Before
     public void setUp() {
     
+    }
+    
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
+        result.setName("test_ms");
+        result.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
+        result.setMasterDataSourceName("master_db");
+        result.setSlaveDataSourceNames(Arrays.asList("slave_db_0", "slave_db_1"));
+        return result;
     }
     
     @Test
