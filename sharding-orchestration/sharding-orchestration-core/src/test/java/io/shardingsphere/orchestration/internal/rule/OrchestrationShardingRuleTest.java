@@ -57,12 +57,5 @@ public class OrchestrationShardingRuleTest {
         return result;
     }
     
-    private TableRuleConfiguration createTableRuleConfig() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order");
-        result.setActualDataNodes("ds_${0..1}.t_order_${0..2}");
-        return result;
-    }
-    
 }
     
