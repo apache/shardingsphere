@@ -19,11 +19,14 @@ package io.shardingsphere.orchestration.internal.rule;
 
 import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateEventBusEvent;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -56,5 +59,12 @@ public class OrchestrationMasterSlaveRuleTest {
     
     @Test
     public void assertRenew() {
+        Collection<String> expected = Arrays.s();
+        getDisabledStateEventBusEvent();
+    }
+    
+    private DisabledStateEventBusEvent getDisabledStateEventBusEvent() {
+        Collection<String> slaveNames = Collections.singletonList("slave_db_0");
+        return new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, slaveNames));
     }
 }
