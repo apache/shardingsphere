@@ -26,10 +26,12 @@ import java.util.Arrays;
 
 public class OrchestrationMasterSlaveRuleTest {
     
+    private OrchestrationMasterSlaveRule orchestrationMasterSlaveRule;
     
     @Before
     public void setUp() {
-    
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = getMasterSlaveRuleConfiguration();
+        orchestrationMasterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleConfig);
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
