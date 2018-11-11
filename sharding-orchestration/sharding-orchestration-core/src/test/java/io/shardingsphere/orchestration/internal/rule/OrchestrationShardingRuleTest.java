@@ -28,6 +28,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class OrchestrationShardingRuleTest {
     
     private OrchestrationShardingRule orchestrationShardingRule;
@@ -60,7 +64,8 @@ public class OrchestrationShardingRuleTest {
     
     @Test
     public void assertGetMasterSlaveRules() {
-        assertThat(orchestrationShardingRule.getMasterSlaveRules().size(), is(1))
+        assertThat(orchestrationShardingRule.getMasterSlaveRules().size(), is(1));
+        assertThat(orchestrationShardingRule.getMasterSlaveRules().iterator().next(), instanceOf(OrchestrationMasterSlaveRule.class));
     }
     
 }
