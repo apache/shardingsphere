@@ -67,6 +67,4 @@ public class OrchestrationShardingRuleTest {
         assertThat(orchestrationShardingRule.getMasterSlaveRules().size(), is(1));
         assertThat(orchestrationShardingRule.getMasterSlaveRules().iterator().next(), instanceOf(OrchestrationMasterSlaveRule.class));
     }
-    
 }
-    
