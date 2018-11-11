@@ -17,9 +17,16 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class OrchestrationMasterSlaveRuleTest {
+    
+    
+    @Before
+    public void setUp() {
+    
+    }
     
     @Test
     public void assertGetSlaveDataSourceNames() {
