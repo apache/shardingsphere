@@ -19,12 +19,14 @@ package io.shardingsphere.orchestration.internal.state.service;
 
 import io.shardingsphere.orchestration.internal.RegistryCenterLoader;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 
 public class InstanceStateServiceTest {
     
     private InstanceStateService instanceStateService;
     
+    @Before
     public void setUp() {
         instanceStateService = new InstanceStateService("test", RegistryCenterLoader.load(new RegistryCenterConfiguration()));
     }
