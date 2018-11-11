@@ -306,6 +306,10 @@ IDENTIFIED
     : I D E N T I F I E D
     ;
 
+IF
+    : I F
+    ;
+
 IGNORE
     : I G N O R E
     ;

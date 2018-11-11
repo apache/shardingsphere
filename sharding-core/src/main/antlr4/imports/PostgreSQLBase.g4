@@ -15,6 +15,10 @@ typeName
     : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
     ;
 
+typeNames
+    : typeName (COMMA typeName)*
+    ;
+
 intervalFields
     : intervalField (TO intervalField)?
     ;

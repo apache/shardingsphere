@@ -26,8 +26,20 @@ ALL_SPARSE_COLUMNS
     : A L L UL_ S P A R S E UL_ C O L U M N S
     ;
 
+ASYMMETRIC
+    : A S Y M M E T R I C
+    ;
+
+AUTHORIZATION
+    : A U T H O R I Z A T I O N
+    ;
+
 AUTO
     : A U T O
+    ;
+
+BACKSLASH
+    : B A C K S L A S H
     ;
 
 BEGIN
@@ -44,6 +56,10 @@ BUCKET_COUNT
 
 CAST
     : C A S T
+    ;
+
+CERTIFICATE
+    : C E R T I F I C A T E
     ;
 
 CLUSTERED
@@ -82,6 +98,10 @@ CONVERT
     : C O N V E R T
     ;
 
+CREDENTIAL
+    : C R E D E N T I A L
+    ;
+
 DATABASE
     : D A T A B A S E
     ;
@@ -102,8 +122,16 @@ DAYS
     : D A Y S
     ;
 
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
+    ;
+
 DELAYED_DURABILITY
     : D E L A Y E D UL_ D U R A B I L I T Y
+    ;
+
+DENY
+    : D E N Y
     ;
 
 DETERMINISTIC
@@ -140,6 +168,10 @@ ENCRYPTION_TYPE
 
 END
     : E N D
+    ;
+
+EXTERNAL
+    : E X T E R N A L
     ;
 
 FILESTREAM
@@ -202,6 +234,10 @@ HASH
     : H A S H
     ;
 
+HASHED
+    : H A S H E D
+    ;
+
 HEAP
     : H E A P
     ;
@@ -220,6 +256,10 @@ HISTORY_TABLE
 
 IDENTITY
     : I D E N T I T Y
+    ;
+
+IF
+    : I F
     ;
 
 IGNORE_DUP_KEY
@@ -270,6 +310,10 @@ MAX_DURATION
     : M A X UL_ D U R A T I O N
     ;
 
+MEMBER
+    : M E M B E R
+    ;
+
 MEMORY_OPTIMIZED
     : M E M O R Y UL_ O P T I M I Z E D
     ;
@@ -294,6 +338,14 @@ MOVE
     : M O V E
     ;
 
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
+    ;
+
+NAME
+    : N A M E
+    ;
+
 NOCHECK
     : N O C H E C K
     ;
@@ -312,6 +364,10 @@ OBJECT
 
 OFF
     : O F F
+    ;
+
+OLD_PASSWORD
+    : O L D UL_ P A S S W O R D
     ;
 
 ONLINE
@@ -342,6 +398,10 @@ PARTITIONS
     : P A R T I T I O N S
     ;
 
+PASSWORD
+    : P A S S W O R D
+    ;
+
 PAUSED
     : P A U S E D
     ;
@@ -360,6 +420,10 @@ PRECEDING
 
 PRIVILEGES
     : P R I V I L E G E S
+    ;
+
+PROVIDER
+    : P R O V I D E R
     ;
 
 RANDOMIZED
@@ -392,6 +456,10 @@ REPLICATION
 
 RESUMABLE
     : R E S U M A B L E
+    ;
+
+REVOKE
+    : R E V O K E
     ;
 
 RIGHT
@@ -490,6 +558,10 @@ UNCOMMITTED
     : U N C O M M I T T E D
     ;
 
+UNLOCK
+    : U N L O C K
+    ;
+
 UPDATE
     : U P D A T E
     ;
@@ -508,6 +580,14 @@ WEEK
 
 WEEKS
     : W E E K S
+    ;
+
+WINDOWS
+    : W I N D O W S
+    ;
+
+WITHOUT
+    : W I T H O U T
     ;
 
 YEARS
