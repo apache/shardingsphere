@@ -60,7 +60,7 @@ public class OrchestrationShardingRuleTest {
     
     @Test
     public void assertGetMasterSlaveRules() {
-    
+        assertThat(orchestrationShardingRule.getMasterSlaveRules().size(), is(1))
     }
     
 }
