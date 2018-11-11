@@ -27,4 +27,5 @@ public class OrchestrationMasterSlaveRuleTest {
     
     @Test
     public void assertRenew() {
+    }
 }
