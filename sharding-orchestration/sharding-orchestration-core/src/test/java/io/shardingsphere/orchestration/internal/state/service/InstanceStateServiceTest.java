@@ -17,30 +17,32 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
-import io.shardingsphere.orchestration.internal.RegistryCenterLoader;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class InstanceStateServiceTest {
     
+    @Mock
     private RegistryCenter regCenter;
     
     private InstanceStateService instanceStateService;
     
     @Before
     public void setUp() {
-        regCenter = RegistryCenterLoader.load(new RegistryCenterConfiguration());
         instanceStateService = new InstanceStateService("test", regCenter);
     }
     
     @Test
     public void testPersistInstanceOnline() {
         instanceStateService.persistInstanceOnline();
-        verify(regCenter).persistEphemeral(anyString(), "");
+        verify(regCenter).persistEphemeral(anyString(), anyString());
     }
 }
