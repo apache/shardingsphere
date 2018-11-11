@@ -258,6 +258,10 @@ IDENTITY
     : I D E N T I T Y
     ;
 
+IF
+    : I F
+    ;
+
 IGNORE_DUP_KEY
     : I G N O R E UL_ D U P UL_ K E Y
     ;
