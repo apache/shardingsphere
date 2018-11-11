@@ -31,7 +31,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-
 public class OrchestrationMasterSlaveRuleTest {
     
     private OrchestrationMasterSlaveRule orchestrationMasterSlaveRule;
