@@ -17,9 +17,15 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.junit.Before;
+
+import java.util.Arrays;
 
 public class OrchestrationShardingRuleTest {
     
@@ -27,12 +33,28 @@ public class OrchestrationShardingRuleTest {
     
     @Before
     public void setUp() {
-    
+        orchestrationShardingRule = new OrchestrationShardingRule(getShardingRuleConfiguration(), Arrays.asList("master_db", "slave_db_0", "slave_db_1"));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.set
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("t_order");
+        tableRuleConfig.setActualDataNodes("ds_ms.t_order_${0..1}");
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
+        result.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
+        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+        return result;
+    }
+    
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
+        result.setName("ds_ms");
+        result.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
+        result.setMasterDataSourceName("master_db");
+        result.setSlaveDataSourceNames(Arrays.asList("slave_db_0", "slave_db_1"));
+        return result;
     }
     
     private TableRuleConfiguration createTableRuleConfig() {
