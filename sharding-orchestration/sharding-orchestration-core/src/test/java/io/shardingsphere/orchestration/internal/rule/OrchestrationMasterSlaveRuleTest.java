@@ -37,8 +37,7 @@ public class OrchestrationMasterSlaveRuleTest {
     
     @Before
     public void setUp() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = getMasterSlaveRuleConfiguration();
-        orchestrationMasterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleConfig);
+        orchestrationMasterSlaveRule = new OrchestrationMasterSlaveRule(getMasterSlaveRuleConfiguration());
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
