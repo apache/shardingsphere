@@ -18,21 +18,29 @@
 package io.shardingsphere.orchestration.internal.state.service;
 
 import io.shardingsphere.orchestration.internal.RegistryCenterLoader;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.sun.javaws.JnlpxArgs.verify;
+
 public class InstanceStateServiceTest {
+    
+    private RegistryCenter regCenter;
     
     private InstanceStateService instanceStateService;
     
     @Before
     public void setUp() {
-        instanceStateService = new InstanceStateService("test", RegistryCenterLoader.load(new RegistryCenterConfiguration()));
+        regCenter = RegistryCenterLoader.load(new RegistryCenterConfiguration());
+        instanceStateService = new InstanceStateService("test", regCenter);
     }
     
     @Test
     public void testPersistInstanceOnline() {
+        instanceStateService.persistInstanceOnline();
+        verify().
     }
 }
     
