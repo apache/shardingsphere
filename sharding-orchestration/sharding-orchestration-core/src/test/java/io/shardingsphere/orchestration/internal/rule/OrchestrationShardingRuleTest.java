@@ -24,6 +24,7 @@ import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Arrays;
 
@@ -55,6 +56,11 @@ public class OrchestrationShardingRuleTest {
         result.setMasterDataSourceName("master_db");
         result.setSlaveDataSourceNames(Arrays.asList("slave_db_0", "slave_db_1"));
         return result;
+    }
+    
+    @Test
+    public void assertGetMasterSlaveRules() {
+    
     }
     
 }
