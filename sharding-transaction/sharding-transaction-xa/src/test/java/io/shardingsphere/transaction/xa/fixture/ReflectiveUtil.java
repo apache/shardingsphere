@@ -104,6 +104,15 @@ public final class ReflectiveUtil {
         }
     }
     
+    
+    /**
+     * Invoke target method when argument is nul.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @return Object result
+     */
     @SneakyThrows
     public static Object methodInvoke(final Object target, final String methodName, final Class<?>... parameterTypes) {
         Method method = getMethod(target, methodName, parameterTypes);
