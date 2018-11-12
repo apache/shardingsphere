@@ -5,5 +5,6 @@
     <sql-case id="grantRole" value="GRANT dw_manager TO sh"/>
     <sql-case id="grantRoleWithAdmin" value="GRANT dw_manager TO sh WITH ADMIN OPTION"/>
     <sql-case id="grantSystemPermissions" value="GRANT CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW, QUERY REWRITE, GLOBAL QUERY REWRITE TO dw_manager"/>
+    <sql-case id="grantSystemPermissionsWithAdmin" value="GRANT CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW, QUERY REWRITE, GLOBAL QUERY REWRITE TO dw_manager"/>
     
 </sql-cases>
