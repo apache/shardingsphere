@@ -118,21 +118,22 @@ public class DataSourceServiceTest {
         tableRuleConfig.setLogicTable("t_order");
         tableRuleConfig.setActualDataNodes("ds_ms_${0..1}.t_order_${0..1}");
         result.getTableRuleConfigs().add(tableRuleConfig);
-        result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
-        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "db_ms__${user_id % 2}"));
+        result.getMasterSlaveRuleConfigs().addAll(getMasterSlaveRuleConfigurations());
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "db_ms_${user_id % 2}"));
         result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
         return result;
     }
     
     private Collection<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
         Collection<MasterSlaveRuleConfiguration> result = new LinkedList<>();
-        MasterSlaveRuleConfiguration firstMsConfig = new MasterSlaveRuleConfiguration();
-        firstMsConfig.setName("ds_ms_0");
-        firstMsConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
-        firstMsConfig.setMasterDataSourceName("db_0");
-        firstMsConfig.setSlaveDataSourceNames(Collections.singletonList("db_0_slave"));
-        result.add(firstMsConfig);
-        
+        for (int each : Arrays.asList(0, 1)) {
+            MasterSlaveRuleConfiguration msConfig = new MasterSlaveRuleConfiguration();
+            msConfig.setName("ds_ms_" + String.valueOf(each));
+            msConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
+            msConfig.setMasterDataSourceName("db_" + String.valueOf(each));
+            msConfig.setSlaveDataSourceNames(Collections.singletonList("db_" + String.valueOf(each) + "_slave"));
+            result.add(msConfig);
+        }
         return result;
     }
     
