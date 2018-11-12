@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
@@ -26,6 +27,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,11 +35,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -130,6 +134,18 @@ public final class AtomikosTransactionManagerTest {
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setMaximumPoolSize(10);
         atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+    }
+    
+    @Test
+    public void assertWrapDataSourceForH2() {
+        XADataSource xaDataSource = new JdbcDataSource();
+        DataSourceParameter dataSourceParameter = new DataSourceParameter();
+        dataSourceParameter.setUsername("root");
+        dataSourceParameter.setPassword("root");
+        dataSourceParameter.setUrl("db:url");
+        dataSourceParameter.setMaximumPoolSize(10);
+        DataSource actual = atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        assertThat(actual, instanceOf(AtomikosDataSourceBean.class));
     }
     
     @Test(expected = ShardingException.class)
