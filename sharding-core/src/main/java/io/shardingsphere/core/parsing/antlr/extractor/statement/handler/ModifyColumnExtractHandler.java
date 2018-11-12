@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -33,17 +33,22 @@ import org.antlr.v4.runtime.tree.ParseTree;
  */
 public class ModifyColumnExtractHandler implements ASTExtractHandler {
     
+    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
+    
     @Override
     public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
             // it`s not column definition, but can call this method
-            Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(each);
-            if (column.isPresent()) {
-                alterStatement.getUpdateColumns().put(column.get().getName(), column.get());
-                postVisitColumnDefinition(each, statement, column.get().getName());
+            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            if (columnDefinition.isPresent()) {
+                setColumnDefinition(each, (AlterTableStatement) statement, columnDefinition.get());
             }
         }
+    }
+    
+    private void setColumnDefinition(final ParserRuleContext modifyColumnNode, final AlterTableStatement alterTableStatement, final ColumnDefinition columnDefinition) {
+        alterTableStatement.getUpdateColumns().put(columnDefinition.getName(), columnDefinition);
+        postVisitColumnDefinition(modifyColumnNode, alterTableStatement, columnDefinition.getName());
     }
     
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
