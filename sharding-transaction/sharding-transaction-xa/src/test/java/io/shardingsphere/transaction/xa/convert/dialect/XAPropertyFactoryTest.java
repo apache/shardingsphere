@@ -85,5 +85,12 @@ public class XAPropertyFactoryTest {
     
     @Test
     public void assertGetSQLServerXAProperties() {
+        dataSourceParameter.setUrl("jdbc:sqlserver://db.sqlserver:1433;DatabaseName=test_db");
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.SQLServer, dataSourceParameter);
+        assertThat(xaProperties.getProperty("user"), is("root"));
+        assertThat(xaProperties.getProperty("password"), is("root"));
+        assertThat(xaProperties.getProperty("serverName"), is("db.sqlserver"));
+        assertThat(xaProperties.getProperty("portNumber"), is("1433"));
+        assertThat(xaProperties.getProperty("databaseName"), is("test_db"));
     }
 }
