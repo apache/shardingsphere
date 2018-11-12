@@ -9,5 +9,5 @@
     <sql-case id="grantOnUser" value="GRANT INHERIT PRIVILEGES ON USER sh TO hr"/>
     <sql-case id="grantOnUserWithAdmin" value="GRANT INHERIT PRIVILEGES ON USER sh TO hr WITH ADMIN OPTION"/>
     <sql-case id="grantOnTable" value="GRANT SELECT, UPDATE ON emp_t TO PUBLIC"/>
-    
+    <sql-case id="grantOnTableWithColumn" value="GRANT UPDATE (employee_id, salary, commission_pct) ON emp_t TO oe"/>
 </sql-cases>
