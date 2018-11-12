@@ -86,9 +86,11 @@ public class DataSourceServiceTest {
     
     @Test
     public void assertGetAvailableDataSourceConfigurationsWithDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_db", "logic_db"));
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Arrays.asList("sharding_db.ds_0_slave", "ds_1_slave", "sharding_db.ds_0"));
         when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
         when(regCenter.get("/test/state/datasources/ds_0")).thenReturn("able");
