@@ -17,8 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -32,6 +33,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
  */
 public class AddColumnExtractHandler implements ASTExtractHandler {
     
+    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
+    
     @Override
     public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
@@ -39,13 +42,19 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
         }
     }
     
-    private void extractAddColumn(final ParserRuleContext addColumnNode, final AlterTableStatement alterStatement) {
+    private void extractAddColumn(final ParserRuleContext addColumnNode, final AlterTableStatement alterTableStatement) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
-            ColumnDefinition column = ExtractorUtils.extractColumnDefinition(each);
-            if (!alterStatement.findColumnDefinition(column.getName()).isPresent()) {
-                alterStatement.getAddColumns().add(column);
-                postVisitColumnDefinition(addColumnNode, alterStatement, column.getName());
+            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            if (columnDefinition.isPresent()) {
+                setColumnDefinition(addColumnNode, alterTableStatement, columnDefinition.get());
             }
+        }
+    }
+    
+    private void setColumnDefinition(final ParserRuleContext addColumnNode, final AlterTableStatement alterTableStatement, final ColumnDefinition columnDefinition) {
+        if (!alterTableStatement.findColumnDefinition(columnDefinition.getName()).isPresent()) {
+            alterTableStatement.getAddColumns().add(columnDefinition);
+            postVisitColumnDefinition(addColumnNode, alterTableStatement, columnDefinition.getName());
         }
     }
     

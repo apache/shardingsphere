@@ -2,7 +2,7 @@ grammar MySQLDCLStatement;
 
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
-grantPriveleges
+grant
     : GRANT privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     TO userOrRoles
@@ -12,7 +12,12 @@ grantPriveleges
 privType
     : ALL PRIVILEGES?
     | ALTER ROUTINE?
-    | CREATE (ROUTINE | TEMPORARY TABLES? | USER | VIEW)?
+    | CREATE
+    | CREATE ROUTINE
+    | CREATE TABLESPACE
+    | CREATE TEMPORARY TABLES
+    | CREATE USER
+    | CREATE VIEW
     | DELETE
     | DROP
     | EVENT
@@ -63,8 +68,12 @@ privLevel
     | schemaName DOT routineName
     ;
 
+host
+    : STRING | ID | MOD_
+    ;
+
 user
-    : STRING AT_ STRING | STRING | ID
+    : userName (AT_ host)?
     ;
 
 users
@@ -72,7 +81,7 @@ users
     ;
 
 role
-    : STRING AT_ STRING | STRING | ID
+    : roleName (AT_ host)?
     ;
 
 roles
@@ -91,17 +100,17 @@ grantProxy
     : GRANT PROXY ON userOrRole TO userOrRoles (WITH GRANT OPTION)?
     ;
 
-grantRoles
+grantRole
     : GRANT roleNames TO userOrRoles (WITH ADMIN OPTION)?
     ;
 
-revokePriveleges
+revoke
     : REVOKE privType columnList? (COMMA privType columnList?)*
     ON objectType? privLevel
     FROM userOrRoles
     ;
 
-revokeAllPriveleges
+revokeAll
     : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
     FROM userOrRoles
     ;
@@ -111,7 +120,7 @@ revokeProxy
     FROM userOrRoles
     ;
 
-revokeRoles
+revokeRole
     : REVOKE roleNames
     FROM userOrRoles
     ;
@@ -203,7 +212,7 @@ dropRole
     ;
 
 setPassword
-    : SET PASSWORD (FOR user)? EQ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR user)? EQ_ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
     ;
 
 setDefaultRole

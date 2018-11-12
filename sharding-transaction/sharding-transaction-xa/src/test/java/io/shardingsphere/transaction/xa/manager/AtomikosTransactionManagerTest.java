@@ -27,6 +27,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,7 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -56,10 +58,18 @@ public final class AtomikosTransactionManagerTest {
     
     private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
     
+    private TransactionManager underlyingTransactionManager = atomikosTransactionManager.getUnderlyingTransactionManager();
+    
     @Before
     @SneakyThrows
     public void setUp() {
         ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
+    }
+    
+    @After
+    public void teardown() {
+        ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", underlyingTransactionManager);
+        atomikosTransactionManager.destroy();
     }
     
     @Test(expected = ShardingException.class)

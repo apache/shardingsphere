@@ -19,7 +19,6 @@ package io.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,12 +28,10 @@ import java.util.ServiceLoader;
  * SPI service loader for new instance for every call.
  *
  * @author zhangliang
- * @param <T> type of class
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NewInstanceServiceLoader<T> {
-    
-    private final Collection<Class<T>> serviceClasses = new LinkedList<>();
+public final class NewInstanceServiceLoader {
     
     /**
      * Creates a new service class loader for the given service type.
@@ -44,24 +41,10 @@ public final class NewInstanceServiceLoader<T> {
      * @return new service class loader
      */
     @SuppressWarnings("unchecked")
-    public static <T> NewInstanceServiceLoader<T> load(final Class<T> service) {
-        NewInstanceServiceLoader result = new NewInstanceServiceLoader();
-        for (T each : ServiceLoader.load(service)) {
-            result.serviceClasses.add(each.getClass());
-        }
-        return result;
-    }
-    
-    /**
-     * New service instances.
-     * 
-     * @return service instances
-     */
-    @SneakyThrows
-    public Collection<T> newServiceInstances() {
+    public static <T> Collection<T> load(final Class<T> service) {
         Collection<T> result = new LinkedList<>();
-        for (Class<T> each : serviceClasses) {
-            result.add(each.newInstance());
+        for (T each : ServiceLoader.load(service)) {
+            result.add(each);
         }
         return result;
     }

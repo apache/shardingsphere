@@ -31,27 +31,29 @@ import static org.mockito.Mockito.mock;
 
 public class DataSourceParameterFactoryTest {
     
+    private final String databaseName = "demo_ds";
+    
     @Test
     public void assertBuildParameterFromHikari() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDruid() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
     }
     
     @Test
     public void assertBuildParameterFromDBCP2() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL));
+        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
     }
     

@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -34,6 +35,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  */
 public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler {
+    
+    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -50,9 +53,12 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
             return;
         }
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        ColumnDefinition columnDefinition = ExtractorUtils.extractColumnDefinition(columnDefinitionNode.get());
-        alterStatement.getUpdateColumns().put(oldColumnNode.get().getText(), columnDefinition);
-        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.getName());
+        Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
+        if (!columnDefinition.isPresent()) {
+            return;
+        }
+        alterStatement.getUpdateColumns().put(oldColumnNode.get().getText(), columnDefinition.get());
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {
             alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }
