@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class DataSourceServiceTest {
     
@@ -38,7 +39,9 @@ public class DataSourceServiceTest {
     }
     
     @Test
-    public void testPersistDataSourcesNode() {
+    public void assertPersistDataSourcesNode() {
+        dataSourceService.persistDataSourcesNode();
+        verify(regCenter).persist("/test/datasources", "");
     }
     
     @Test
