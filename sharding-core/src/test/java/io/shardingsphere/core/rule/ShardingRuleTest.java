@@ -18,6 +18,7 @@
 package io.shardingsphere.core.rule;
 
 import io.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
+import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
@@ -103,6 +104,16 @@ public final class ShardingRuleTest {
         ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
         assertTrue(actual.tryFindTableRuleByLogicTable("logic_Table").isPresent());
         assertFalse(actual.tryFindTableRuleByLogicTable("null").isPresent());
+    }
+    
+    @Test
+    public void assertFindBroadcastTableRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        BroadcastTableRuleConfiguration broadcastTableRuleConfiguration = createBoradcastTableRuleConfig();
+        shardingRuleConfig.getBroadcastTableRuleConfigs().add(broadcastTableRuleConfiguration);
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertTrue(actual.tryFindBroadcastTableRuleByLogicTable("broadcast_logic_Table").isPresent());
+        assertFalse(actual.tryFindBroadcastTableRuleByLogicTable("null").isPresent());
     }
     
     @Test
@@ -411,6 +422,19 @@ public final class ShardingRuleTest {
         return result;
     }
     
+    private BroadcastTableRuleConfiguration createBoradcastTableRuleConfig() {
+        BroadcastTableRuleConfiguration result = new BroadcastTableRuleConfiguration();
+        result.setLogicTable("BROADCAST_LOGIC_TABLE");
+        return result;
+    }
+    
+    private TableRuleConfiguration createSubTableRuleConfig() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("SUB_LOGIC_TABLE");
+        result.setActualDataNodes("ds${0..1}.sub_table_${0..2}");
+        return result;
+    }
+    
     private TableRuleConfiguration createTableRuleConfigWithLogicIndex() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("LOGIC_TABLE");
@@ -432,13 +456,6 @@ public final class ShardingRuleTest {
         result.setLogicTable("LOGIC_TABLE");
         result.setActualDataNodes("ds${0..1}.table_${0..2}");
         result.setTableShardingStrategyConfig(strategyConfig);
-        return result;
-    }
-    
-    private TableRuleConfiguration createSubTableRuleConfig() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("SUB_LOGIC_TABLE");
-        result.setActualDataNodes("ds${0..1}.sub_table_${0..2}");
         return result;
     }
     
