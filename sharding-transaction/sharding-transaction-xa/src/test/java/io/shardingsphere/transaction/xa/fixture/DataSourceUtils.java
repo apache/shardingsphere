@@ -40,26 +40,27 @@ public final class DataSourceUtils {
      *
      * @param poolType pool type
      * @param databaseType database type
+     * @param databaseName database name
      * @return data source
      */
-    public static DataSource build(final PoolType poolType, final DatabaseType databaseType) {
+    public static DataSource build(final PoolType poolType, final DatabaseType databaseType, final String databaseName) {
         switch (poolType) {
             case DBCP2:
-                return newBasicDataSource(databaseType);
+                return newBasicDataSource(databaseType, databaseName);
             case DBCP2_TOMCAT:
-                return newTomcatBasicDataSource(databaseType);
+                return newTomcatBasicDataSource(databaseType, databaseName);
             case HIKARI:
-                return newHikariDataSource(databaseType);
+                return newHikariDataSource(databaseType, databaseName);
             case DRUID:
-                return newDruidDataSource(databaseType);
+                return newDruidDataSource(databaseType, databaseName);
             default:
                 return Mockito.mock(DataSource.class);
         }
     }
     
-    private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource(final DatabaseType databaseType) {
+    private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
-        result.setUrl(getUrl(databaseType));
+        result.setUrl(getUrl(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
@@ -69,9 +70,9 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static BasicDataSource newTomcatBasicDataSource(final DatabaseType databaseType) {
+    private static BasicDataSource newTomcatBasicDataSource(final DatabaseType databaseType, final String databaseName) {
         BasicDataSource result = new BasicDataSource();
-        result.setUrl(getUrl(databaseType));
+        result.setUrl(getUrl(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
@@ -81,9 +82,9 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static DruidDataSource newDruidDataSource(final DatabaseType databaseType) {
+    private static DruidDataSource newDruidDataSource(final DatabaseType databaseType, final String databaseName) {
         DruidDataSource result = new DruidDataSource();
-        result.setUrl(getUrl(databaseType));
+        result.setUrl(getUrl(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxActive(10);
@@ -93,9 +94,9 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static HikariDataSource newHikariDataSource(final DatabaseType databaseType) {
+    private static HikariDataSource newHikariDataSource(final DatabaseType databaseType, final String databaseName) {
         HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(getUrl(databaseType));
+        result.setJdbcUrl(getUrl(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(10);
@@ -105,20 +106,20 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static String getUrl(final DatabaseType databaseType) {
+    private static String getUrl(final DatabaseType databaseType, final String databaseName) {
         switch (databaseType) {
             case PostgreSQL:
-                return "jdbc:postgresql://localhost:3306/demo_ds";
+                return String.format("jdbc:postgresql://localhost:3306/%s", databaseName);
             case MySQL:
-                return "jdbc:mysql://localhost:3306/demo_ds";
+                return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
             case SQLServer:
-                return "jdbc:sqlserver://localhost:1433;DatabaseName=demo_ds";
+                return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
             case H2:
-                return "jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
+                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
             case Oracle:
-                return "jdbc:oracle:thin:@//localhost:3306/demo_ds";
+                return String.format("jdbc:oracle:thin:@//localhost:3306/%s", databaseName);
             default:
-                return "jdbc:mysql://localhost:3306/demo_ds";
+                return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
         }
     }
 }

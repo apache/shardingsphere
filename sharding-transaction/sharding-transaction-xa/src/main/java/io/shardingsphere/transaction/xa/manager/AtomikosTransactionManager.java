@@ -61,6 +61,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public void destroy() {
+        underlyingTransactionManager.setForceShutdown(true);
         underlyingTransactionManager.close();
     }
     
