@@ -48,6 +48,8 @@ public class XAPropertyFactory {
                 return new H2XAProperty(dataSourceParameter).build();
             case SQLServer:
                 return new SQLServerXAProperty(dataSourceParameter).build();
+            case Oracle:
+                return new OracleXAProperty(dataSourceParameter).build();
             default:
                 return new Properties();
         }

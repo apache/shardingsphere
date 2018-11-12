@@ -93,4 +93,15 @@ public class XAPropertyFactoryTest {
         assertThat(xaProperties.getProperty("portNumber"), is("1433"));
         assertThat(xaProperties.getProperty("databaseName"), is("test_db"));
     }
+    
+    @Test
+    public void assertGetOracleXAProperties() {
+        dataSourceParameter.setUrl("jdbc:oracle:thin:@//db.oracle:9999/test_db");
+        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.Oracle, dataSourceParameter);
+        assertThat(xaProperties.getProperty("user"), is("root"));
+        assertThat(xaProperties.getProperty("password"), is("root"));
+        assertThat(xaProperties.getProperty("serverName"), is("db.oracle"));
+        assertThat(xaProperties.getProperty("portNumber"), is("9999"));
+        assertThat(xaProperties.getProperty("databaseName"), is("test_db"));
+    }
 }
