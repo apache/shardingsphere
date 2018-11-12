@@ -109,7 +109,15 @@ public class DataSourceServiceTest {
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
         ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
-        
+        assertThat(actual, is())
+    }
+    
+    private ShardingRuleConfiguration getShardingRuleConfigurationWithDisabledDataSources() {
+        ShardingRuleConfiguration result = getShardingRuleConfiguration();
+        for (MasterSlaveRuleConfiguration each : result.getMasterSlaveRuleConfigs()) {
+            each.getSlaveDataSourceNames().remove("db_0_slave");
+        }
+        return result;
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
