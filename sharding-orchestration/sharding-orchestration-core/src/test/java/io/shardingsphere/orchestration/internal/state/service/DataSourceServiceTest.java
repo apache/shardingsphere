@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +50,12 @@ public class DataSourceServiceTest {
                     + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1_slave\n" + "    username: root\n" + "    password: root\n";
     
+    private static final String SHARDING_MASTER_SLAVE_RULE_YAML = "tables:\n" + "  t_order: \n" + "    actualDataNodes: db_ms_${0..1}.t_order_${0..1}\n" + "    databaseStrategy: \n"
+            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: db_ms_${order_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
+            + "        shardingColumn: order_id\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "    keyGeneratorColumnName: order_id\n"
+            + "masterSlaveRules:\n" + "  db_ms_0:\n" + "    masterDataSourceName: db_0\n" + "    slaveDataSourceNames:\n"
+            + "      - db_0_slave\n" + "  db_ms_1:\n" + "    masterDataSourceName: db_1\n" + "    slaveDataSourceNames:\n" + "      - db_1_slave";
+    
     @Mock
     private RegistryCenter regCenter;
     
@@ -64,9 +74,13 @@ public class DataSourceServiceTest {
     
     @Test
     public void testGetAvailableDataSourceConfigurations() {
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn("tables");
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.<String>emptyList());
-        
+        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
+        when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
+        Map<String, DataSourceConfiguration> availableDataSourceConfigs = dataSourceService.getAvailableDataSourceConfigurations("sharding_db");
+        assertThat(availableDataSourceConfigs.size(), is(3));
     }
     
     @Test
