@@ -127,7 +127,7 @@ public class DataSourceServiceTest {
     }
     
     @Test
-    public void assertGetDisabledSlaveDataSourceNames() {
+    public void assertGetDisabledSlaveDataSourceNamesWithDisabledDataSources() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/datasource")).thenReturn(DATA_SOURCE_YAML);
