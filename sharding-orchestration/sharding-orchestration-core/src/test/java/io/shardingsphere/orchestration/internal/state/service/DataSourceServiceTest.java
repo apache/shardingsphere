@@ -73,7 +73,7 @@ public class DataSourceServiceTest {
     }
     
     @Test
-    public void testGetAvailableDataSourceConfigurations() {
+    public void assertGetAvailableDataSourceConfigurations() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
