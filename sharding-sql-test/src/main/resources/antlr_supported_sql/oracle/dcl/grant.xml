@@ -3,5 +3,5 @@
     <!-- -->
     <sql-case id="grantSystemPermission" value="GRANT CREATE SESSION TO hr"/>
     <sql-case id="grantRole" value="GRANT dw_manager TO sh"/>
-    
+    <sql-case id="grantRoleWithAdmin" value="GRANT dw_manager TO sh WITH ADMIN OPTION"/>
 </sql-cases>
