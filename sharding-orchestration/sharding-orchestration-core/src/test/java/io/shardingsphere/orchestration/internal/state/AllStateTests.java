@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.state;
 
 import io.shardingsphere.orchestration.internal.state.node.StateNodeTest;
+import io.shardingsphere.orchestration.internal.state.service.DataSourceServiceTest;
 import io.shardingsphere.orchestration.internal.state.service.InstanceStateServiceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,7 +27,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         StateNodeTest.class,
-        InstanceStateServiceTest.class
+        InstanceStateServiceTest.class,
+        DataSourceServiceTest.class
 })
 public final class AllStateTests {
 }
