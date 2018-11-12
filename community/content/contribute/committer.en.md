@@ -8,7 +8,7 @@ chapter = true
 
  - Make contributions consistently during the past 6 months
  - Understand the core technology of Sharding-Sphere deeply
- - Obey the Development Norm
+ - Obey the Code of Conduct
  - Submit high-quality content
  - Enable Google Two-factor authentication([2FA](/en/contribute/2fa/))
 

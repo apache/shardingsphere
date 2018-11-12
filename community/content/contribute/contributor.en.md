@@ -9,7 +9,7 @@ You can report a bug, submit a new function enhancement recommendation, or submi
 ## Submit an Issue
 
  - Before submitting an issue, please go through a comprehensive search to make sure the problem cannot be solved just by searching.
- - Check the [issue list](https://github.com/sharding-sphere/sharding-sphere/issues) to make sure the problem is not repeated.
+ - Check the [Issue List](https://github.com/sharding-sphere/sharding-sphere/issues) to make sure the problem is not repeated.
  - [Create](https://github.com/sharding-sphere/sharding-sphere/issues/new) a new issue.
  - Define the issue with a clear and descriptive title.
  - If what you submit is a bug, please try to provide the following information:
@@ -32,9 +32,9 @@ You can report a bug, submit a new function enhancement recommendation, or submi
 
  - Please choose the issue to be edited. If it is a new issue discovered or a new function enhancement to offer, please create an issue and set the right label for it.
  - After choosing the relevant issue, please reply with a deadline to indicate that you are working on it.
- - Find a mentor from the [developer list](/en/organization/) and he/she will give you feedback about the design and the implementation of function in time.
+ - Find a mentor from the [Developer List](/en/organization/) and he/she will give you feedback about the design and the implementation of function in time.
  - Fork a branch to your own repo to work.
- - Please obey the [Development Norm](/en/contribute/development-norm/) during the process of development and finish the check before submitting the pull request.
+ - Please obey the [Code of Conduct](/en/contribute/code_conduct/) during the process of development and finish the check before submitting the pull request.
  - Send a pull request to the dev branch rather than the master branch of sharding-sphere after it is finished.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of Sharding-Sphere!

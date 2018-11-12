@@ -1,5 +1,5 @@
 +++
-title = "Development Norm"
+title = "Code of Conduct" 
 weight = 4
 chapter = true
 +++
@@ -11,13 +11,13 @@ chapter = true
  - Highly reusable, no duplicated codes or configurations.
  - Delete codes out of use in time.
 
-## Code Submitting Norms
+## Contributor Covenant Submitting of Conduct
 
  - Make sure all the test cases are passed, Make sure `mvn clean install` can be compiled and tested successfully.
  - Make sure the test coverage rate is not lower than the dev branch.
  - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `sharding-sphere/src/resources/sharding_checks.xml`, please use checkstyle `8.8` to run the rules.
 
-## Coding Norm
+## Contributor Covenant Code of Conduct
 
  - Use linux line separators.
  - Keep indents (including blank lines) consistent with the previous one.
@@ -42,9 +42,9 @@ chapter = true
  - Include Javadoc, todo and fixme only in the comments.
  - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
 
-## Unit Test Norm
+## Contributor Covenant Unit Test of Conduct
 
- - Test codes and production codes should follow the same kind of coding norms.
+ - Test codes and production codes should follow the same kind of code of conduct.
  - Without particular reasons, test cases should be fully covered.
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to junit `Assert`, hamcrest `CoreMatchers` and `Mockito` can use static import.
