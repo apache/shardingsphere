@@ -151,9 +151,9 @@ public final class DataSourceService {
      */
     public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
         Map<String, Collection<String>> result = getDisabledDataSourceNames();
-        Map<String, Collection<String>> masterDataSourceNamesMap = configService.getAllMasterDataSourceNames();
+        Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
         for (String each : result.keySet()) {
-            result.get(each).removeAll(masterDataSourceNamesMap.get(each));
+            result.get(each).containsAll(slaveDataSourceNamesMap.get(each));
         }
         return result;
     }

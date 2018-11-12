@@ -29,6 +29,7 @@ import java.util.Collection;
  * XA transaction manager SPI loader.
  *
  * @author zhangliang
+ * @author zhaojun
  */
 @Getter
 @Slf4j
@@ -36,17 +37,24 @@ public final class XATransactionManagerSPILoader {
     
     private static final XATransactionManagerSPILoader INSTANCE = new XATransactionManagerSPILoader();
     
-    private final NewInstanceServiceLoader<XATransactionManager> serviceLoader = NewInstanceServiceLoader.load(XATransactionManager.class);
+    private final Collection<XATransactionManager> xaTransactionManagers = NewInstanceServiceLoader.load(XATransactionManager.class);
     
     private final XATransactionManager transactionManager;
     
     private XATransactionManagerSPILoader() {
         transactionManager = load();
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (null != transactionManager) {
+                    transactionManager.destroy();
+                }
+            }
+        }));
     }
     
     private XATransactionManager load() {
         try {
-            Collection<XATransactionManager> xaTransactionManagers = serviceLoader.newServiceInstances();
             if (xaTransactionManagers.size() > 1) {
                 log.warn("There are more than one transaction mangers existing, chosen first one by default.");
             }

@@ -15,25 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.orchestration.internal.config.event;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import io.shardingsphere.api.config.SagaConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Hikari datasource parameter extractor.
+ * Saga configuration changed event.
  *
- * @author zhaojun
+ * @author yangyi
  */
-public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+@RequiredArgsConstructor
+@Getter
+public class SagaChangedEvent {
     
-    HikariDataSourceParameterExtractor(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
-    @Override
-    protected void convertProperties() {
-        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
-        properties.put("url", properties.get("jdbcUrl"));
-    }
+    private final SagaConfiguration saga;
 }

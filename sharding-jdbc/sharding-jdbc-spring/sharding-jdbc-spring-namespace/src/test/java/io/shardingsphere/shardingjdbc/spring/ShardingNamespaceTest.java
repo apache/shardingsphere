@@ -20,11 +20,13 @@ package io.shardingsphere.shardingjdbc.spring;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.BindingTableRule;
@@ -248,6 +250,18 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertThat(orderItemRule.getActualDataNodes().size(), is(2));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_item")));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
+    }
+    
+    @Test
+    public void assertSagaDataSouece() {
+        ShardingDataSource shardingDataSource = applicationContext.getBean("sagaDataSource", ShardingDataSource.class);
+        SagaConfiguration sagaConfiguration = shardingDataSource.getSagaConfiguration();
+        assertThat(sagaConfiguration.getExecutorSize(), is(10));
+        assertThat(sagaConfiguration.getTransactionMaxRetries(), is(5));
+        assertThat(sagaConfiguration.getCompensationMaxRetries(), is(3));
+        assertThat(sagaConfiguration.getTransactionRetryDelay(), is(5000));
+        assertThat(sagaConfiguration.getCompensationRetryDelay(), is(3000));
+        assertThat(sagaConfiguration.getRecoveryPolicy(), is(SagaRecoveryPolicy.BACKWARD));
     }
     
     @SuppressWarnings("unchecked")

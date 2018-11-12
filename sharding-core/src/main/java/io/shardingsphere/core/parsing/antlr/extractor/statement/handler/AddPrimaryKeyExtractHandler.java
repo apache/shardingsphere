@@ -38,20 +38,20 @@ public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler {
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> modifyColumnContext = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
-        if (!modifyColumnContext.isPresent()) {
+        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
+        if (!modifyColumnNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(modifyColumnContext.get(), RuleName.PRIMARY_KEY);
-        if (!primaryKeyContext.isPresent()) {
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
+        if (!primaryKeyNode.isPresent()) {
             return;
         }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnContext.get(), RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME)) {
             String columnName = each.getText();
-            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
-            if (null != updateColumn) {
-                updateColumn.setPrimaryKey(true);
-                alterStatement.getUpdateColumns().put(columnName, updateColumn);
+            Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(columnName);
+            if (updateColumn.isPresent()) {
+                updateColumn.get().setPrimaryKey(true);
+                alterStatement.getUpdateColumns().put(columnName, updateColumn.get());
             }
         }
     }

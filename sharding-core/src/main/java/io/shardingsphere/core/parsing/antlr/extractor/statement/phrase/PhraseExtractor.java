@@ -15,25 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.phrase;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import com.google.common.base.Optional;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Hikari datasource parameter extractor.
- *
- * @author zhaojun
+ * Phrase extractor.
+ * 
+ * @author zhangliang
+ * @param <T> type of phrase
  */
-public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public interface PhraseExtractor<T> {
     
-    HikariDataSourceParameterExtractor(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
-    @Override
-    protected void convertProperties() {
-        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
-        properties.put("url", properties.get("jdbcUrl"));
-    }
+    /**
+     * Extract column definition.
+     *
+     * @param astNode AST node
+     * @return phrase
+     */
+    Optional<T> extract(ParserRuleContext astNode);
 }

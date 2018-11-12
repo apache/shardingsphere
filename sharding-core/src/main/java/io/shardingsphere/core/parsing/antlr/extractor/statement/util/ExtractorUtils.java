@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.util;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,36 +33,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class ExtractorUtils {
     
     /**
-     * Extract column definition.
-     *
-     * @param columnDefinitionNode column definition rule
-     * @return column definition
-     */
-    public static Optional<ColumnDefinition> extractColumnDefinition(final ParserRuleContext columnDefinitionNode) {
-        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
-        if (!columnNameNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<ParserRuleContext> dataTypeContext = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
-        Optional<String> typeName = dataTypeContext.isPresent() ? Optional.of(dataTypeContext.get().getChild(0).getText()) : Optional.<String>absent();
-        Optional<Integer> dataTypeLength = dataTypeContext.isPresent() ? getDataTypeLength(dataTypeContext.get()) : Optional.<Integer>absent();
-        boolean primaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
-        return Optional.of(new ColumnDefinition(columnNameNode.get().getText(), typeName.orNull(), dataTypeLength.orNull(), primaryKey));
-    }
-    
-    private static Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
-        Optional<ParserRuleContext> dataTypeLengthContext = ASTUtils.findFirstChildNode(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
-        if (!dataTypeLengthContext.isPresent() || dataTypeLengthContext.get().getChildCount() < 3) {
-            return Optional.absent();
-        }
-        try {
-            return Optional.of(Integer.parseInt(dataTypeLengthContext.get().getChild(1).getText()));
-        } catch (final NumberFormatException ignored) {
-            return Optional.absent();
-        }
-    }
-    
-    /**
      * Extract column position.
      *
      * @param ancestorNode ancestor node of AST
@@ -71,16 +40,16 @@ public final class ExtractorUtils {
      * @return column position object
      */
     public static Optional<ColumnPosition> extractFirstOrAfterColumn(final ParserRuleContext ancestorNode, final String columnName) {
-        Optional<ParserRuleContext> firstOrAfterColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
-        if (!firstOrAfterColumnContext.isPresent()) {
+        Optional<ParserRuleContext> firstOrAfterColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
+        if (!firstOrAfterColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnNameContext = ASTUtils.findFirstChildNode(firstOrAfterColumnContext.get(), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(firstOrAfterColumnNode.get(), RuleName.COLUMN_NAME);
         ColumnPosition result = new ColumnPosition();
-        result.setStartIndex(firstOrAfterColumnContext.get().getStart().getStartIndex());
-        if (columnNameContext.isPresent()) {
+        result.setStartIndex(firstOrAfterColumnNode.get().getStart().getStartIndex());
+        if (columnNameNode.isPresent()) {
             result.setColumnName(columnName);
-            result.setAfterColumn(columnNameContext.get().getText());
+            result.setAfterColumn(columnNameNode.get().getText());
         } else {
             result.setFirstColumn(columnName);
         }

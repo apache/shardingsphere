@@ -11,6 +11,7 @@
                 <xsd:element ref="sharding-rule" />
                 <xsd:element ref="config-map" minOccurs="0" />
                 <xsd:element ref="props" minOccurs="0" />
+                <xsd:element ref="saga" minOccurs="0" maxOccurs="1"/>
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
@@ -121,6 +122,16 @@
             <xsd:complexContent>
                 <xsd:extension base="beans:propsType" />
             </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="saga">
+        <xsd:complexType>
+            <xsd:attribute name="executor-size" type="xsd:positiveInteger"/>
+            <xsd:attribute name="transaction-max-retries" type="xsd:integer"/>
+            <xsd:attribute name="compensation-max-retries" type="xsd:positiveInteger"/>
+            <xsd:attribute name="transaction-retry-delay" type="xsd:positiveInteger"/>
+            <xsd:attribute name="compensation-retry-delay" type="xsd:positiveInteger"/>
+            <xsd:attribute name="recovery-policy" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

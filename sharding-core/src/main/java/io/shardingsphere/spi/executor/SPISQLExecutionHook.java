@@ -31,9 +31,7 @@ import java.util.Map;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private static final NewInstanceServiceLoader<SQLExecutionHook> SERVICE_LOADER = NewInstanceServiceLoader.load(SQLExecutionHook.class);
-    
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = SERVICE_LOADER.newServiceInstances();
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = NewInstanceServiceLoader.load(SQLExecutionHook.class);
     
     @Override
     public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {

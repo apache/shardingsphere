@@ -31,14 +31,11 @@ public final class WithNamespaceLogicIndexTest extends AbstractShardingBothDataB
     @Test
     public void assertIndex() throws SQLException {
         try (Connection connection = getShardingDataSource().getConnection()) {
-            String sql = "CREATE INDEX t_order_index ON t_order(user_id)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement("CREATE INDEX t_order_index ON t_order(user_id)");
             preparedStatement.execute();
-            sql = "DROP INDEX t_order_index";
-            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement("DROP INDEX t_order_index");
             preparedStatement.execute();
             preparedStatement.close();
         }
     }
-    
 }

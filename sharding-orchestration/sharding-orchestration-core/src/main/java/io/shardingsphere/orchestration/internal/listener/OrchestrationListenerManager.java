@@ -22,6 +22,7 @@ import io.shardingsphere.orchestration.internal.config.listener.ConfigMapOrchest
 import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
 import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
 import io.shardingsphere.orchestration.internal.config.listener.PropertiesOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.listener.SagaOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.listener.DataSourceStateOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.listener.InstanceStateOrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -34,6 +35,7 @@ import java.util.LinkedList;
  *
  * @author caohao
  * @author panjuan
+ * @author yangyi
  */
 public final class OrchestrationListenerManager {
     
@@ -51,6 +53,8 @@ public final class OrchestrationListenerManager {
     
     private final DataSourceStateOrchestrationListener dataSourceStateListenerManager;
     
+    private final SagaOrchestrationListener sagaOrchestrationListener;
+    
     public OrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         for (String each : shardingSchemaNames) {
             dataSourceListenerManagers.add(new DataSourceOrchestrationListener(name, regCenter, each));
@@ -61,6 +65,7 @@ public final class OrchestrationListenerManager {
         instanceStateListenerManager = new InstanceStateOrchestrationListener(name, regCenter);
         configMapListenerManager = new ConfigMapOrchestrationListener(name, regCenter);
         dataSourceStateListenerManager = new DataSourceStateOrchestrationListener(name, regCenter);
+        sagaOrchestrationListener = new SagaOrchestrationListener(name, regCenter);
     }
     
     /**
@@ -75,6 +80,7 @@ public final class OrchestrationListenerManager {
         instanceStateListenerManager.watch();
         dataSourceStateListenerManager.watch();
         configMapListenerManager.watch();
+        sagaOrchestrationListener.watch();
     }
     
     private void initDataSourceListenerManagers() {

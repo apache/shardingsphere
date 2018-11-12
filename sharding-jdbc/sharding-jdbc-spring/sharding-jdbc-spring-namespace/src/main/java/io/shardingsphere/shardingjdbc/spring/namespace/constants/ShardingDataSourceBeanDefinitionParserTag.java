@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
  * Sharding data source parser tag constants.
  * 
  * @author caohao
+ * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingDataSourceBeanDefinitionParserTag {
@@ -35,6 +36,8 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     public static final String CONFIG_MAP_TAG = "config-map";
     
     public static final String PROPS_TAG = "props";
+    
+    public static final String SAGA_TAG = "saga";
     
     public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
     
@@ -73,4 +76,16 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     public static final String DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE = "default-key-generator-ref";
     
     public static final String LOGIC_INDEX = "logic-index";
+    
+    public static final String EXECUTOR_SIZE_ATTRIBUTE = "executor-size";
+    
+    public static final String TRANSACTION_MAX_RETRIES_ATTRIBUTE = "transaction-max-retries";
+    
+    public static final String COMPENSATION_MAX_RETRIES_ATTRIBUTE = "compensation-max-retries";
+    
+    public static final String TRANSACTION_RETRY_DELAY_ATTRIBUTE = "transaction-retry-delay";
+    
+    public static final String COMPENSATION_RETRY_DELAY_ATTRIBUTE = "compensation-retry-delay";
+    
+    public static final String RECOVERY_POLICY_ATTRIBUTE = "recovery-policy";
 }
