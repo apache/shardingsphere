@@ -32,10 +32,12 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.config.event.SagaChangedEvent;
 import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -204,5 +206,16 @@ public final class GlobalRegistry {
     @Subscribe
     public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
         isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
+    }
+    
+    /**
+     * Renew Saga configuration.
+     *
+     * @param sagaChangedEvent saga configuration changed event
+     */
+    @Subscribe
+    public void renewSagaConfiguration(final SagaChangedEvent sagaChangedEvent) {
+        SagaTransactionManager.getInstance().removeSagaExecutionComponent(sagaConfiguration);
+        this.sagaConfiguration = sagaChangedEvent.getSaga();
     }
 }
