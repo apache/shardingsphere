@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.state.service;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +35,6 @@ public class DataSourceServiceTest {
     @Before
     public void setUp() {
         dataSourceService = new DataSourceService("test", regCenter);
-    }
-    
-    @After
-    public void tearDown() throws Exception {
     }
     
     @Test
