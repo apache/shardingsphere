@@ -39,6 +39,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -103,7 +104,7 @@ public class DataSourceServiceTest {
     }
     
     @Test
-    public void assertGetAvailableShardingRuleConfiguration() {
+    public void assertGetAvailableShardingRuleConfigurationWithDisabledDataSources() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
         when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
@@ -111,6 +112,20 @@ public class DataSourceServiceTest {
         when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
         ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
         assertFalse(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().contains("ds_0_slave"));
+    }
+    
+    @Test
+    public void assertGetAvailableShardingRuleConfigurationWithoutDisabledDataSources() {
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.<String>emptyList());
+        ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
+        assertTrue(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().contains("ds_0_slave"));
+    }
+    
+    @Test
+    public void assertGetDisabledSlaveDataSourceNames() {
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
