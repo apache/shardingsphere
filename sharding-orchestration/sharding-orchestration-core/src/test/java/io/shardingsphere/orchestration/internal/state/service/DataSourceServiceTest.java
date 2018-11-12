@@ -75,24 +75,11 @@ public class DataSourceServiceTest {
     @Test
     public void testGetAvailableDataSourceConfigurations() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn("tables");
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
         Map<String, DataSourceConfiguration> availableDataSourceConfigs = dataSourceService.getAvailableDataSourceConfigurations("sharding_db");
         assertThat(availableDataSourceConfigs.size(), is(3));
     }
-    
-    @Test
-    public void testGetAvailableShardingRuleConfiguration() {
-    }
-    
-    @Test
-    public void testGetAvailableMasterSlaveRuleConfiguration() {
-    }
-    
-    @Test
-    public void testGetDisabledSlaveDataSourceNames() {
-    }
 }
-    
