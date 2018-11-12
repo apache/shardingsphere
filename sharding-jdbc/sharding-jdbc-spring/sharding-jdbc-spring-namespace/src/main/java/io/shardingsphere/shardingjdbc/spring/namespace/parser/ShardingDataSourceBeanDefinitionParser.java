@@ -21,8 +21,10 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import io.shardingsphere.shardingjdbc.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import io.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
@@ -48,6 +50,7 @@ import java.util.Properties;
  * Sharding data source parser for spring namespace.
  * 
  * @author caohao
+ * @author yangyi
  */
 public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
@@ -58,6 +61,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         factory.addConstructorArgValue(parseShardingRuleConfig(element));
         factory.addConstructorArgValue(parseConfigMap(element, parserContext, factory.getBeanDefinition()));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
+        factory.addConstructorArgValue(parseSaga(element));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
@@ -213,5 +217,39 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
         Element propsElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
+    }
+    
+    private SagaConfiguration parseSaga(final Element element) {
+        Element sagaElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SAGA_TAG);
+        return sagaElement == null ? new SagaConfiguration() : parseSagaElement(sagaElement);
+    }
+    
+    private SagaConfiguration parseSagaElement(final Element sagaElement) {
+        SagaConfiguration result = new SagaConfiguration();
+        String executorSize = sagaElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.EXECUTOR_SIZE_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(executorSize)) {
+            result.setExecutorSize(Integer.parseInt(executorSize));
+        }
+        String transactionMaxRetries = sagaElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TRANSACTION_MAX_RETRIES_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(transactionMaxRetries)) {
+            result.setTransactionMaxRetries(Integer.parseInt(transactionMaxRetries));
+        }
+        String compensationMaxRetries = sagaElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.COMPENSATION_MAX_RETRIES_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(compensationMaxRetries)) {
+            result.setCompensationMaxRetries(Integer.parseInt(compensationMaxRetries));
+        }
+        String transactionRetryDelay = sagaElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TRANSACTION_RETRY_DELAY_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(transactionRetryDelay)) {
+            result.setTransactionRetryDelay(Integer.parseInt(transactionRetryDelay));
+        }
+        String compensationRetryDelay = sagaElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.COMPENSATION_RETRY_DELAY_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(compensationRetryDelay)) {
+            result.setCompensationRetryDelay(Integer.parseInt(compensationRetryDelay));
+        }
+        String recoveryPolicy = sagaElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.RECOVERY_POLICY_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(recoveryPolicy)) {
+            result.setRecoveryPolicy(SagaRecoveryPolicy.valueOf(recoveryPolicy));
+        }
+        return result;
     }
 }
