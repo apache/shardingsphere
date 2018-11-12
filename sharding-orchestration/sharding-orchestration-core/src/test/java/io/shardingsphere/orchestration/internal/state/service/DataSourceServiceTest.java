@@ -22,7 +22,6 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.junit.Before;
@@ -32,7 +31,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,7 +59,7 @@ public class DataSourceServiceTest {
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1_slave\n" + "    username: root\n" + "    password: root\n";
     
     private static final String SHARDING_MASTER_SLAVE_RULE_YAML = "tables:\n" + "  t_order: \n" + "    actualDataNodes: db_ms_${0..1}.t_order_${0..1}\n" + "    databaseStrategy: \n"
-            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: db_ms_${order_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
+            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: db_ms_${user_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
             + "        shardingColumn: order_id\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "    keyGeneratorColumnName: order_id\n"
             + "masterSlaveRules:\n" + "  db_ms_0:\n" + "    masterDataSourceName: db_0\n" + "    slaveDataSourceNames:\n"
             + "      - db_0_slave\n" + "  db_ms_1:\n" + "    masterDataSourceName: db_1\n" + "    slaveDataSourceNames:\n" + "      - db_1_slave";
@@ -115,20 +116,23 @@ public class DataSourceServiceTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
-        tableRuleConfig.setActualDataNodes("ds_ms.t_order_${0..1}");
+        tableRuleConfig.setActualDataNodes("ds_ms_${0..1}.t_order_${0..1}");
         result.getTableRuleConfigs().add(tableRuleConfig);
         result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
-        result.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "db_ms__${user_id % 2}"));
         result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
         return result;
     }
     
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
-        result.setName("ds_ms");
-        result.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
-        result.setMasterDataSourceName("master_db");
-        result.setSlaveDataSourceNames(Arrays.asList("slave_db_0", "slave_db_1"));
+    private Collection<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
+        Collection<MasterSlaveRuleConfiguration> result = new LinkedList<>();
+        MasterSlaveRuleConfiguration firstMsConfig = new MasterSlaveRuleConfiguration();
+        firstMsConfig.setName("ds_ms_0");
+        firstMsConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
+        firstMsConfig.setMasterDataSourceName("db_0");
+        firstMsConfig.setSlaveDataSourceNames(Collections.singletonList("db_0_slave"));
+        result.add(firstMsConfig);
+        
         return result;
     }
     
