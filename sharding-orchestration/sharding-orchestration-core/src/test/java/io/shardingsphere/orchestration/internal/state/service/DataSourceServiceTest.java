@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -109,8 +110,7 @@ public class DataSourceServiceTest {
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
         ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
-        assertThat(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames(),
-                is(getShardingRuleConfigurationWithDisabledDataSources().getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames()));
+        assertFalse(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().contains("ds_0_slave"));
     }
     
     
