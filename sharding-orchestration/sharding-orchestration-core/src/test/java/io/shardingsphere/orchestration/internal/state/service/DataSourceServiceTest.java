@@ -25,8 +25,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class DataSourceServiceTest {
+    
+    private static final String DATA_SOURCE_YAML =
+            "ds_0: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
+                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
+                    + "ds_1: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
+                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n";
     
     @Mock
     private RegistryCenter regCenter;
@@ -46,6 +56,7 @@ public class DataSourceServiceTest {
     
     @Test
     public void testGetAvailableDataSourceConfigurations() {
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
     }
     
     @Test
