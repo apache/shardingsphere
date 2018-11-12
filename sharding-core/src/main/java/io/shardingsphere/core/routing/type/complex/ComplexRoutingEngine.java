@@ -56,7 +56,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(each);
             if (tableRule.isPresent()) {
-                if (!shardingRule.findBroadcastTableRule(each).isPresent() && !bindingTableNames.contains(each)) {
+                if (!bindingTableNames.contains(each)) {
                     result.add(new StandardRoutingEngine(shardingRule, tableRule.get().getLogicTable(), shardingConditions).route());
                 }
                 Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each);
