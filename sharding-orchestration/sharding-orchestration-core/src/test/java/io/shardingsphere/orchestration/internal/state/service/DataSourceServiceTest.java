@@ -17,11 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
-import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
-import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.junit.Before;
@@ -31,9 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -149,34 +144,5 @@ public class DataSourceServiceTest {
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.<String>emptyList());
         MasterSlaveRuleConfiguration actual = dataSourceService.getAvailableMasterSlaveRuleConfiguration("masterslave_db");
         assertTrue(actual.getSlaveDataSourceNames().contains("ds_0_slave"));
-    }
-    
-    private ShardingRuleConfiguration getShardingRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("t_order");
-        tableRuleConfig.setActualDataNodes("ds_ms_${0..1}.t_order_${0..1}");
-        result.getTableRuleConfigs().add(tableRuleConfig);
-        result.getMasterSlaveRuleConfigs().addAll(getMasterSlaveRuleConfigurations());
-        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_ms_${user_id % 2}"));
-        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
-        return result;
-    }
-    
-    private Collection<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
-        Collection<MasterSlaveRuleConfiguration> result = new LinkedList<>();
-        for (int each : Arrays.asList(0, 1)) {
-            MasterSlaveRuleConfiguration msConfig = new MasterSlaveRuleConfiguration();
-            msConfig.setName("ds_ms_" + String.valueOf(each));
-            msConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
-            msConfig.setMasterDataSourceName("ds_" + String.valueOf(each));
-            msConfig.setSlaveDataSourceNames(Collections.singletonList("ds_" + String.valueOf(each) + "_slave"));
-            result.add(msConfig);
-        }
-        return result;
-    }
-    
-    @Test
-    public void assertGetAvailableMasterSlaveRuleConfiguration() {
     }
 }
