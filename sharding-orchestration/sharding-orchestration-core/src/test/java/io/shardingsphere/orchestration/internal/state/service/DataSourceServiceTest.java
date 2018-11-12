@@ -31,8 +31,11 @@ public class DataSourceServiceTest {
     @Mock
     private RegistryCenter regCenter;
     
+    private DataSourceService dataSourceService;
+    
     @Before
     public void setUp() {
+        dataSourceService = new DataSourceService("test", regCenter);
     }
     
     @After
