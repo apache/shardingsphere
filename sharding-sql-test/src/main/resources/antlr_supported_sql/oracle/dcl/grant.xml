@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases db-types="Oracle" namespace="oracle.dcl.grant">
     <!-- -->
-    <sql-case id="grantToSession" value="GRANT CREATE SESSION TO hr"/>
+    <sql-case id="grantSystemPermission" value="GRANT CREATE SESSION TO hr"/>
+    <sql-case id="grantRole" value="GRANT dw_manager TO sh"/>
+    
 </sql-cases>
