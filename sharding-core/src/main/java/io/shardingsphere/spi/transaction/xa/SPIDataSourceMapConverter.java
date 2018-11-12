@@ -33,8 +33,6 @@ import java.util.Map;
 @Slf4j
 public final class SPIDataSourceMapConverter implements DataSourceMapConverter {
     
-    private static final NewInstanceServiceLoader<DataSourceMapConverter> SERVICE_LOADER = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
-    
     private static DataSourceMapConverter dataSourceMapConverter;
     
     static {
@@ -42,7 +40,7 @@ public final class SPIDataSourceMapConverter implements DataSourceMapConverter {
     }
     
     private static void init() {
-        Collection<DataSourceMapConverter> converters = SERVICE_LOADER.newServiceInstances();
+        Collection<DataSourceMapConverter> converters = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
         if (converters.isEmpty()) {
             log.info("Could not find XA DataSourceConverter, XA transaction will not be effective");
             return;

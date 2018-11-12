@@ -25,7 +25,7 @@ import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Multiple index name extract handler.
+ * Multiple index names extract handler.
  * 
  * @author duhongjun
  */

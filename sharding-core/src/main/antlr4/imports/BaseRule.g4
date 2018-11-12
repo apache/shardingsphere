@@ -11,11 +11,23 @@ schemaName
     : ID
     ;
 
+databaseName
+    : ID
+    ;
+
+domainName
+    : ID
+    ;
+
 tableName
     : ID
     ;
 
 columnName
+    : ID
+    ;
+
+sequenceName
     : ID
     ;
 
@@ -97,7 +109,7 @@ routineName
     ;
 
 roleName
-    : ID
+    : STRING | ID
     ;
 
 partitionName
@@ -113,9 +125,17 @@ ownerName
     ;
 
 userName
+    : STRING | ID
+    ;
+
+serverName
     : ID
     ;
 
+databaseName
+    : ID
+    ;
+    
 dataTypeLength
     : LP_ (NUMBER (COMMA NUMBER)?)? RP_
     ;
@@ -140,6 +160,18 @@ rangeClause
     : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
     ;
 
+schemaNames
+    : schemaName (COMMA schemaName)*
+    ;
+
+databaseNames
+    : databaseName (COMMA databaseName)*
+    ;
+
+domainNames
+    : domainName (COMMA domainName)*
+    ;
+
 tableNamesWithParen
     : LP_ tableNames RP_
     ;
@@ -160,8 +192,20 @@ columnList
     : LP_ columnNames RP_
     ;
 
+sequenceNames
+    : sequenceName (COMMA sequenceName)*
+    ;
+
+tablespaceNames
+    : tablespaceName (COMMA tablespaceName)*
+    ;
+
 indexNames
     : indexName (COMMA indexName)*
+    ;
+
+typeNames
+    : typeName (COMMA typeName)*
     ;
 
 rowNames
@@ -174,6 +218,10 @@ roleNames
 
 userNames
     : userName (COMMA userName)*
+    ;
+
+serverNames
+    : serverName (COMMA serverName)*
     ;
 
 bitExprs:

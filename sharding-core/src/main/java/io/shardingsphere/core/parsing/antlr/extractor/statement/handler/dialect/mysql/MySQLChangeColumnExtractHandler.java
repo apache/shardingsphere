@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -35,28 +36,31 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler {
     
+    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
+    
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+        Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
+        if (!changeColumnNode.isPresent()) {
+            return;
+        }
+        Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
+        if (!oldColumnNode.isPresent()) {
+            return;
+        }
+        Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
+        if (!columnDefinitionNode.isPresent()) {
+            return;
+        }
         MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
-        Optional<ParserRuleContext> changeColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
-        if (!changeColumnContext.isPresent()) {
+        Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
+        if (!columnDefinition.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> oldColumnContext = ASTUtils.findFirstChildNode(changeColumnContext.get(), RuleName.COLUMN_NAME);
-        if (!oldColumnContext.isPresent()) {
-            return;
-        }
-        Optional<ParserRuleContext> columnDefinitionContext = ASTUtils.findFirstChildNode(changeColumnContext.get(), RuleName.COLUMN_DEFINITION);
-        if (!columnDefinitionContext.isPresent()) {
-            return;
-        }
-        Optional<ColumnDefinition> column = ExtractorUtils.extractColumnDefinition(columnDefinitionContext.get());
-        if (column.isPresent()) {
-            alterStatement.getUpdateColumns().put(oldColumnContext.get().getText(), column.get());
-            Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnContext.get(), column.get().getName());
-            if (columnPosition.isPresent()) {
-                alterStatement.getPositionChangedColumns().add(columnPosition.get());
-            }
+        alterStatement.getUpdateColumns().put(oldColumnNode.get().getText(), columnDefinition.get());
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
+        if (columnPosition.isPresent()) {
+            alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }
     }
 }

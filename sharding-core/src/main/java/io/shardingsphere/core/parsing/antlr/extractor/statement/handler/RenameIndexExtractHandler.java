@@ -46,9 +46,11 @@ public final class RenameIndexExtractHandler implements ASTExtractHandler {
         if (!(newIndexNode instanceof ParserRuleContext)) {
             return;
         }
-        ParserRuleContext oldIndexContext = (ParserRuleContext) oldIndexNode;
-        ParserRuleContext newIndexContext = (ParserRuleContext) newIndexNode;
-        statement.getSQLTokens().add(new IndexToken(oldIndexContext.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(oldIndexContext.getText()), statement.getTables().getSingleTableName()));
-        statement.getSQLTokens().add(new IndexToken(newIndexContext.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(newIndexContext.getText()), statement.getTables().getSingleTableName()));
+        statement.getSQLTokens().add(getIndexToken(statement, (ParserRuleContext) oldIndexNode));
+        statement.getSQLTokens().add(getIndexToken(statement, (ParserRuleContext) newIndexNode));
+    }
+    
+    private IndexToken getIndexToken(final SQLStatement statement, final ParserRuleContext indexNode) {
+        return new IndexToken(indexNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNode.getText()), statement.getTables().getSingleTableName());
     }
 }

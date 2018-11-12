@@ -37,27 +37,27 @@ public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHan
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> addColumnContext = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
-        if (!addColumnContext.isPresent()) {
+        Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
+        if (!addColumnNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> tableConstraintContext = ASTUtils.findFirstChildNode(addColumnContext.get(), RuleName.TABLE_CONSTRAINT);
-        if (!tableConstraintContext.isPresent()) {
+        Optional<ParserRuleContext> tableConstraintNode = ASTUtils.findFirstChildNode(addColumnNode.get(), RuleName.TABLE_CONSTRAINT);
+        if (!tableConstraintNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> primaryKeyContext = ASTUtils.findFirstChildNode(tableConstraintContext.get(), RuleName.PRIMARY_KEY);
-        if (!primaryKeyContext.isPresent()) {
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(tableConstraintNode.get(), RuleName.PRIMARY_KEY);
+        if (!primaryKeyNode.isPresent()) {
             return;
         }
-        for (ParseTree each : ASTUtils.getAllDescendantNodes(tableConstraintContext.get(), RuleName.COLUMN_NAME)) {
+        for (ParseTree each : ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME)) {
             String columnName = each.getText();
-            ColumnDefinition updateColumn = alterStatement.getColumnDefinitionByName(columnName);
-            if (null != updateColumn) {
-                updateColumn.setPrimaryKey(true);
+            Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(columnName);
+            if (updateColumn.isPresent()) {
+                updateColumn.get().setPrimaryKey(true);
+                alterStatement.getUpdateColumns().put(columnName, updateColumn.get());
             } else {
-                updateColumn = new ColumnDefinition(each.getText(), null, null, true);
+                alterStatement.getUpdateColumns().put(columnName, new ColumnDefinition(each.getText(), null, null, true));
             }
-            alterStatement.getUpdateColumns().put(columnName, updateColumn);
         }
     }
 }
