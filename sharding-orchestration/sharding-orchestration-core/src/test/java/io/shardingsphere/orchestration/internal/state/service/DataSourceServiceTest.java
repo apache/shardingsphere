@@ -17,6 +17,12 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.junit.Before;
@@ -25,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -95,6 +102,34 @@ public class DataSourceServiceTest {
     
     @Test
     public void assertGetAvailableShardingRuleConfiguration() {
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
+        when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
+        ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
+        
+    }
+    
+    private ShardingRuleConfiguration getShardingRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("t_order");
+        tableRuleConfig.setActualDataNodes("ds_ms.t_order_${0..1}");
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
+        result.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
+        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+        return result;
+    }
+    
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
+        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
+        result.setName("ds_ms");
+        result.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
+        result.setMasterDataSourceName("master_db");
+        result.setSlaveDataSourceNames(Arrays.asList("slave_db_0", "slave_db_1"));
+        return result;
     }
     
     @Test
