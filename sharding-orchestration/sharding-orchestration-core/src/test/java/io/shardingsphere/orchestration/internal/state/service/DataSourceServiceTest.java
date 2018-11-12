@@ -66,6 +66,8 @@ public class DataSourceServiceTest {
             + "masterSlaveRules:\n" + "  ds_ms_0:\n" + "    masterDataSourceName: ds_0\n" + "    slaveDataSourceNames:\n"
             + "      - ds_0_slave\n" + "  ds_ms_1:\n" + "    masterDataSourceName: ds_1\n" + "    slaveDataSourceNames:\n" + "      - ds_1_slave";
     
+    private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: ds_0\n" + "name: ds_ms\n" + "slaveDataSourceNames:\n" + "- ds_0_slave\n";
+    
     @Mock
     private RegistryCenter regCenter;
     
@@ -126,6 +128,11 @@ public class DataSourceServiceTest {
     
     @Test
     public void assertGetDisabledSlaveDataSourceNames() {
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
+        when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
+        when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
