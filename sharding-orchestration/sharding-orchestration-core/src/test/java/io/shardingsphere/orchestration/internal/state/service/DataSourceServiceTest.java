@@ -17,14 +17,22 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DataSourceServiceTest {
     
+    @Mock
+    private RegistryCenter regCenter;
+    
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
     
     @After
