@@ -92,4 +92,12 @@ public class DataSourceServiceTest {
         Map<String, DataSourceConfiguration> availableDataSourceConfigs = dataSourceService.getAvailableDataSourceConfigurations("sharding_db");
         assertThat(availableDataSourceConfigs.size(), is(4));
     }
+    
+    @Test
+    public void assertGetAvailableShardingRuleConfiguration() {
+    }
+    
+    @Test
+    public void assertGetAvailableMasterSlaveRuleConfiguration() {
+    }
 }
