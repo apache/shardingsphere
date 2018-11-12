@@ -53,10 +53,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties(), new SagaConfiguration());
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        this(dataSourceMap, shardingRule, configMap, props, new SagaConfiguration());
-    }
-    
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
                               final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) throws SQLException {
         super(dataSourceMap, sagaConfiguration);
