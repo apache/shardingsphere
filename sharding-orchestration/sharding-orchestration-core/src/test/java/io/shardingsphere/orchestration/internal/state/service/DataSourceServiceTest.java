@@ -137,6 +137,16 @@ public class DataSourceServiceTest {
         assertFalse(actual.getSlaveDataSourceNames().contains("ds_0_slave"));
     }
     
+    @Test
+    public void assertGetDisabledSlaveDataSourceNamesWithoutDisabledDataSources() {
+        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
+        when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/masterslave_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.<String>emptyList());
+        MasterSlaveRuleConfiguration actual = dataSourceService.getAvailableMasterSlaveRuleConfiguration("masterslave_db");
+        assertTrue(actual.getSlaveDataSourceNames().contains("ds_0_slave"));
+    }
+    
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
