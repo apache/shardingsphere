@@ -28,6 +28,7 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -113,9 +114,22 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             try {
-                each.getClass().getDeclaredMethod("close").invoke(each);
+                findMethod(each, "close").invoke(each);
             } catch (final ReflectiveOperationException ignored) {
             }
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Method findMethod(final Object target, final String methodName, final Class<?>... parameterTypes) throws NoSuchMethodException {
+        Class clazz = target.getClass();
+        while (null != clazz) {
+            try {
+                return clazz.getDeclaredMethod(methodName, parameterTypes);
+            } catch (NoSuchMethodException ignored) {
+            }
+            clazz = clazz.getSuperclass();
+        }
+        throw new NoSuchMethodException(String.format("Cannot find method '%s' in %s", methodName, target.getClass().getName()));
     }
 }
