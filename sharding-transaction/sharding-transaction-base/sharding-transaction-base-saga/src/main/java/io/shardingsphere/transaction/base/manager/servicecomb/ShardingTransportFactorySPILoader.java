@@ -36,8 +36,6 @@ public final class ShardingTransportFactorySPILoader {
     
     private static final ShardingTransportFactorySPILoader INSTANCE = new ShardingTransportFactorySPILoader();
     
-    private final NewInstanceServiceLoader<ShardingTransportFactory> serviceLoader = NewInstanceServiceLoader.load(ShardingTransportFactory.class);
-    
     @Getter
     private final ShardingTransportFactory transportFactory;
     
@@ -47,7 +45,7 @@ public final class ShardingTransportFactorySPILoader {
     
     private ShardingTransportFactory load() {
         try {
-            Collection<ShardingTransportFactory> transportFactorys = serviceLoader.newServiceInstances();
+            Collection<ShardingTransportFactory> transportFactorys = NewInstanceServiceLoader.load(ShardingTransportFactory.class);
             if (transportFactorys.isEmpty()) {
                 log.warn("There are no SQLTransport configured. BASE Saga Transaction cannot be used.");
                 return new ShardingTransportFactory() {
