@@ -113,15 +113,6 @@ public class DataSourceServiceTest {
         assertFalse(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().contains("ds_0_slave"));
     }
     
-    
-    private ShardingRuleConfiguration getShardingRuleConfigurationWithDisabledDataSources() {
-        ShardingRuleConfiguration result = getShardingRuleConfiguration();
-        for (MasterSlaveRuleConfiguration each : result.getMasterSlaveRuleConfigs()) {
-            each.getSlaveDataSourceNames().remove("ds_0_slave");
-        }
-        return result;
-    }
-    
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
@@ -141,9 +132,7 @@ public class DataSourceServiceTest {
             msConfig.setName("ds_ms_" + String.valueOf(each));
             msConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
             msConfig.setMasterDataSourceName("ds_" + String.valueOf(each));
-            Collection<String> slaveDataSourceNames = new LinkedList<>();
-            slaveDataSourceNames.add("ds_" + String.valueOf(each) + "_slave");
-            msConfig.setSlaveDataSourceNames(slaveDataSourceNames);
+            msConfig.setSlaveDataSourceNames(Collections.singletonList("ds_" + String.valueOf(each) + "_slave"));
             result.add(msConfig);
         }
         return result;
