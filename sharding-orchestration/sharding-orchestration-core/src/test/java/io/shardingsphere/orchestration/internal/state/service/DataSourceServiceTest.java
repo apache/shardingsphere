@@ -58,11 +58,11 @@ public class DataSourceServiceTest {
                     + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1_slave\n" + "    username: root\n" + "    password: root\n";
     
-    private static final String SHARDING_MASTER_SLAVE_RULE_YAML = "tables:\n" + "  t_order: \n" + "    actualDataNodes: db_ms_${0..1}.t_order_${0..1}\n" + "    databaseStrategy: \n"
-            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: db_ms_${user_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
+    private static final String SHARDING_MASTER_SLAVE_RULE_YAML = "tables:\n" + "  t_order: \n" + "    actualDataNodes: ds_ms_${0..1}.t_order_${0..1}\n" + "    databaseStrategy: \n"
+            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: ds_ms_${user_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
             + "        shardingColumn: order_id\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "    keyGeneratorColumnName: order_id\n"
-            + "masterSlaveRules:\n" + "  db_ms_0:\n" + "    masterDataSourceName: db_0\n" + "    slaveDataSourceNames:\n"
-            + "      - db_0_slave\n" + "  db_ms_1:\n" + "    masterDataSourceName: db_1\n" + "    slaveDataSourceNames:\n" + "      - db_1_slave";
+            + "masterSlaveRules:\n" + "  ds_ms_0:\n" + "    masterDataSourceName: ds_0\n" + "    slaveDataSourceNames:\n"
+            + "      - ds_0_slave\n" + "  ds_ms_1:\n" + "    masterDataSourceName: ds_1\n" + "    slaveDataSourceNames:\n" + "      - ds_1_slave";
     
     @Mock
     private RegistryCenter regCenter;
@@ -109,13 +109,15 @@ public class DataSourceServiceTest {
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
         ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
-        assertThat(actual, is())
+        assertThat(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames(),
+                is(getShardingRuleConfigurationWithDisabledDataSources().getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames()));
     }
+    
     
     private ShardingRuleConfiguration getShardingRuleConfigurationWithDisabledDataSources() {
         ShardingRuleConfiguration result = getShardingRuleConfiguration();
         for (MasterSlaveRuleConfiguration each : result.getMasterSlaveRuleConfigs()) {
-            each.getSlaveDataSourceNames().remove("db_0_slave");
+            each.getSlaveDataSourceNames().remove("ds_0_slave");
         }
         return result;
     }
@@ -127,7 +129,7 @@ public class DataSourceServiceTest {
         tableRuleConfig.setActualDataNodes("ds_ms_${0..1}.t_order_${0..1}");
         result.getTableRuleConfigs().add(tableRuleConfig);
         result.getMasterSlaveRuleConfigs().addAll(getMasterSlaveRuleConfigurations());
-        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "db_ms_${user_id % 2}"));
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_ms_${user_id % 2}"));
         result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
         return result;
     }
@@ -138,8 +140,10 @@ public class DataSourceServiceTest {
             MasterSlaveRuleConfiguration msConfig = new MasterSlaveRuleConfiguration();
             msConfig.setName("ds_ms_" + String.valueOf(each));
             msConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
-            msConfig.setMasterDataSourceName("db_" + String.valueOf(each));
-            msConfig.setSlaveDataSourceNames(Collections.singletonList("db_" + String.valueOf(each) + "_slave"));
+            msConfig.setMasterDataSourceName("ds_" + String.valueOf(each));
+            Collection<String> slaveDataSourceNames = new LinkedList<>();
+            slaveDataSourceNames.add("ds_" + String.valueOf(each) + "_slave");
+            msConfig.setSlaveDataSourceNames(slaveDataSourceNames);
             result.add(msConfig);
         }
         return result;
