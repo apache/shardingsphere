@@ -129,4 +129,13 @@
             <prop key="foo">bar</prop>
         </sharding:props>
     </sharding:data-source>
+
+    <sharding:data-source id="sagaDataSource">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order"/>
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+        <sharding:saga executor-size="10" recovery-policy="BACKWARD"/>
+    </sharding:data-source>
 </beans>
