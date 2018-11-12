@@ -7,5 +7,5 @@
     <sql-case id="grantSystemPermissions" value="GRANT CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW, QUERY REWRITE, GLOBAL QUERY REWRITE TO dw_manager"/>
     <sql-case id="grantSystemPermissionsWithAdmin" value="GRANT CREATE ANY MATERIALIZED VIEW, ALTER ANY MATERIALIZED VIEW, DROP ANY MATERIALIZED VIEW, QUERY REWRITE, GLOBAL QUERY REWRITE TO dw_manager"/>
     <sql-case id="grantOnUser" value="GRANT INHERIT PRIVILEGES ON USER sh TO hr"/>
-    
+    <sql-case id="grantOnUserWithAdmin" value="GRANT INHERIT PRIVILEGES ON USER sh TO hr WITH ADMIN OPTION"/>
 </sql-cases>
