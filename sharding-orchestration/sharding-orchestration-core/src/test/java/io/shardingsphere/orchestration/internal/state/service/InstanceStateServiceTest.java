@@ -41,7 +41,7 @@ public class InstanceStateServiceTest {
     }
     
     @Test
-    public void testPersistInstanceOnline() {
+    public void assertPersistInstanceOnline() {
         instanceStateService.persistInstanceOnline();
         verify(regCenter).persistEphemeral(anyString(), anyString());
     }
