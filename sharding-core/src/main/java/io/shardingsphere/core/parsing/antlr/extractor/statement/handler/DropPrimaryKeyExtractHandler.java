@@ -17,18 +17,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Drop primary key extract handler.
  * 
  * @author duhongjun
  */
-public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -37,5 +41,15 @@ public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler {
         if (dropPrimaryKeyNode.isPresent()) {
             alterStatement.setDropPrimaryKey(true);
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        DropPrimaryKeyExtractResult extractResult = new DropPrimaryKeyExtractResult();
+        Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
+        if (dropPrimaryKeyNode.isPresent()) {
+            extractResult.setDropPrimaryKey(true);
+        }
+        return extractResult;
     }
 }
