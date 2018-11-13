@@ -17,13 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.AddPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Add primary key extract handler.
@@ -31,7 +35,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler, ASTExtractHandler1 {
     
     private final RuleName ruleName;
     
@@ -54,5 +58,22 @@ public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler {
                 alterStatement.getUpdateColumns().put(columnName, updateColumn.get());
             }
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        AddPrimaryKeyExtractResult extractResult = new AddPrimaryKeyExtractResult();
+        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
+        if (!modifyColumnNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
+        if (!primaryKeyNode.isPresent()) {
+            return extractResult;
+        }
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME)) {
+            extractResult.getPrimaryKeyColumnNames().add(each.getText());
+        }
+        return extractResult;
     }
 }
