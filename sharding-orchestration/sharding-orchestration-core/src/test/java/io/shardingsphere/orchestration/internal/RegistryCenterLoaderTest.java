@@ -17,12 +17,18 @@
 
 package io.shardingsphere.orchestration.internal;
 
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.junit.Test;
 
 public class RegistryCenterLoaderTest {
     
+    private RegistryCenter regCenter;
+    
     @Test
-    public void testLoad() {
+    public void assertLoad() {
+        regCenter = RegistryCenterLoader.load(new RegistryCenterConfiguration());
+    
     }
 }
     
