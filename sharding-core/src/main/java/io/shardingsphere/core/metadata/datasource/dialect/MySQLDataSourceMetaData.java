@@ -53,7 +53,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
             throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
     }
-   
+    
     @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
         return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort();

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.orchestration.internal.rule;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -23,9 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AtomikosTransactionManagerTest.class,
-        XATransactionDataSourceWrapperTest.class,
-        XATransactionManagerSPILoaderTest.class
+        OrchestrationMasterSlaveRuleTest.class,
+        OrchestrationShardingRuleTest.class
 })
-public final class AllManagerTests {
+public final class AllRuleTests {
 }
