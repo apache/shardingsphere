@@ -21,7 +21,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +41,17 @@ public class AddColumnExtractResult implements ExtractResult {
     
     @Override
     public void inject(final SQLStatement statement) {
-
+        AlterTableStatement alterTableStatement = (AlterTableStatement)statement;
+        for(ColumnDefinition each : columnDefintions) {
+            if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
+                alterTableStatement.getAddColumns().add(each);
+                
+                if(null != each.getPosition()) {
+                    MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) statement;
+                    mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
+                }
+            }
+        }
     }
 
 }
