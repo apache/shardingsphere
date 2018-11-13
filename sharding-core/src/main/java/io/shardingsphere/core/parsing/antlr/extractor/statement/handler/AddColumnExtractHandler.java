@@ -17,21 +17,25 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.AddColumnExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Add column extract handler.
  * 
  * @author duhongjun
  */
-public class AddColumnExtractHandler implements ASTExtractHandler {
+public class AddColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
@@ -59,5 +63,24 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
     }
     
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        AddColumnExtractResult result = new AddColumnExtractResult();
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
+            extractAddColumn(each, result);
+        }
+        return result;
+    }
+    
+    
+    private void extractAddColumn(final ParserRuleContext addColumnNode, final AddColumnExtractResult result) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
+            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            if (columnDefinition.isPresent()) {
+                result.getColumnDefintions().add(columnDefinition.get());
+            }
+        }
     }
 }
