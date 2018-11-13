@@ -17,20 +17,25 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Drop primary key extract handler for Oracle.
  * 
  * @author duhongjun
  */
-public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext rootNode, final SQLStatement statement) {
@@ -42,5 +47,18 @@ public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandl
                 alterStatement.setDropPrimaryKey(true);
             }
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        DropPrimaryKeyExtractResult extractResult = new DropPrimaryKeyExtractResult();
+        Optional<ParserRuleContext> dropConstraintNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
+        if (dropConstraintNode.isPresent()) {
+            Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY);
+            if (primaryKeyNode.isPresent()) {
+                extractResult.setDropPrimaryKey(true);
+            }
+        }
+        return extractResult;
     }
 }
