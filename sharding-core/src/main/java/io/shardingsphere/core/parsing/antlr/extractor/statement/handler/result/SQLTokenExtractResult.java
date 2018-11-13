@@ -22,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.Getter;
 
@@ -32,12 +34,22 @@ import lombok.Getter;
  */
 @Getter
 public class SQLTokenExtractResult implements ExtractResult {
-    
     private List<SQLToken> sqlTokens = new LinkedList<>();
     
     @Override
     public void inject(SQLStatement statement) {
+        String tableName = "";
+        if(statement instanceof DDLStatement) {
+            DDLStatement ddlStatement = (DDLStatement) statement;
+            tableName = ddlStatement.getTables().isEmpty() ? "" : ddlStatement.getTables().getSingleTableName();
+        }
         for(SQLToken each : sqlTokens) {
+            if(each instanceof IndexToken) {
+                IndexToken indexToken = (IndexToken) each;
+                if(null == indexToken.getTableName()) {
+                    indexToken.setTableName(tableName);
+                }
+            }
             statement.getSQLTokens().add(each);
         }
     }
