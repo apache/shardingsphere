@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.ddl;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -27,19 +27,19 @@ import lombok.ToString;
  * 
  * @author duhongjun
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
 public final class ColumnDefinition {
     
-    private String name;
+    private final String name;
     
-    private String type;
+    private final String type;
     
-    private Integer length;
+    private final Integer length;
     
-    private boolean primaryKey;
+    private final boolean primaryKey;
     
     private ColumnPosition position;
 }
