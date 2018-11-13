@@ -17,18 +17,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.RenameTableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Rename table extract handler.
  * 
  * @author duhongjun
  */
-public final class RenameTableExtractHandler implements ASTExtractHandler {
+public final class RenameTableExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -37,5 +41,15 @@ public final class RenameTableExtractHandler implements ASTExtractHandler {
         if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
             alterStatement.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        RenameTableExtractResult extractResult = new RenameTableExtractResult();
+        Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
+        if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
+            extractResult.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
+        }
+        return null;
     }
 }
