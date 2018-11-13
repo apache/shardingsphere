@@ -18,6 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -32,7 +35,7 @@ import java.util.Iterator;
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractHandler implements ASTExtractHandler {
+public final class RenameColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -53,5 +56,21 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler {
             oldDefinition.get().setName(newName);
             alterStatement.getUpdateColumns().put(oldName, oldDefinition.get());
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
+        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
+        if (!modifyColumnNode.isPresent()) {
+            return extractResult;
+        }
+        Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
+        if (2 != columnNodes.size()) {
+            return extractResult;
+        }
+        Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
+        extractResult.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), columnNodesIterator.next().getText()));
+        return extractResult;
     }
 }
