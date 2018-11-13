@@ -23,7 +23,7 @@ import io.shardingsphere.orchestration.registry.TestRegistryCenter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 public class RegistryCenterLoaderTest {
     
