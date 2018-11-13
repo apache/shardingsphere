@@ -17,9 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
@@ -27,14 +33,13 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Change column extract handler for MySQL.
  * 
  * @author duhongjun
  */
-public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler {
+public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
@@ -62,5 +67,32 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
         if (columnPosition.isPresent()) {
             alterStatement.getPositionChangedColumns().add(columnPosition.get());
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
+        Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
+        if (!changeColumnNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
+        if (!oldColumnNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
+        if (!columnDefinitionNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
+        if (!columnDefinition.isPresent()) {
+            return extractResult;
+        }
+        extractResult.getColumnDefintions().add(columnDefinition.get());
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
+        if (columnPosition.isPresent()) {
+            columnDefinition.get().setPosition(columnPosition.get());
+        }
+        return extractResult;
     }
 }
