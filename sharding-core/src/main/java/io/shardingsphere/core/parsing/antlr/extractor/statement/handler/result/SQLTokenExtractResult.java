@@ -21,10 +21,16 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
 /**
@@ -49,6 +55,8 @@ public class SQLTokenExtractResult implements ExtractResult {
                 if(null == indexToken.getTableName()) {
                     indexToken.setTableName(tableName);
                 }
+            }else if(each instanceof TableToken) {
+                statement.getTables().add(new Table(( (TableToken) each).getTableName(), Optional.<String>absent()));
             }
             statement.getSQLTokens().add(each);
         }
