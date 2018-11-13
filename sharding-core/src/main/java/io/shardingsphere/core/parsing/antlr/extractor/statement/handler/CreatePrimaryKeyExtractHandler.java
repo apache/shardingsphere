@@ -17,18 +17,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Create table primary key extract handler.
  * 
  * @author duhongjun
  */
-public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -46,5 +50,23 @@ public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
                 createTableStatement.getPrimaryKeyColumns().add(each.getText());
             }
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
+        if (!primaryKeyNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ParserRuleContext> columnListNode = ASTUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_LIST);
+        if (!columnListNode.isPresent()) {
+            return extractResult;
+        }
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME)) {
+            extractResult.getPrimaryKeyColumnNames().add(each.getText());
+        }
+        
+        return extractResult;
     }
 }
