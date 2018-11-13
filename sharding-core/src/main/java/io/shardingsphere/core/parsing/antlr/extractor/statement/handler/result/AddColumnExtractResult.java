@@ -18,7 +18,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -35,10 +35,10 @@ import lombok.Setter;
 @Setter
 public class AddColumnExtractResult implements ExtractResult {
     
-    private List<ColumnDefinition> columnDefintions = new ArrayList<>();
+    private List<ColumnDefinition> columnDefintions = new LinkedList<>();
     
     @Override
-    public void inject(SQLStatement statement) {
+    public void inject(final SQLStatement statement) {
 
     }
 
