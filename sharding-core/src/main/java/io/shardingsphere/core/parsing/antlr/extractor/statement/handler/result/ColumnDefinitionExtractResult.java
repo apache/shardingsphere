@@ -25,6 +25,8 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,17 +43,33 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
     
     @Override
     public void inject(final SQLStatement statement) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement)statement;
+        if(statement instanceof AlterTableStatement) {
+            injectAlter((AlterTableStatement)statement);
+        }else if(statement instanceof CreateTableStatement) {
+            injectCreate((CreateTableStatement) statement);
+        }
+    }
+    
+    private void injectAlter(final AlterTableStatement alterTableStatement) {
         for(ColumnDefinition each : columnDefintions) {
             if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
                 alterTableStatement.getAddColumns().add(each);
                 
                 if(null != each.getPosition()) {
-                    MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) statement;
+                    MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
                     mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
                 }
             }
         }
     }
-
+    
+    private void injectCreate(final CreateTableStatement createTableStatement) {
+        for(ColumnDefinition each : columnDefintions) {
+            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(each.getName()));
+            createTableStatement.getColumnTypes().add(each.getType());
+            if (each.isPrimaryKey()) {
+                createTableStatement.getPrimaryKeyColumns().add(each.getName());
+            }
+        }
+    }
 }
