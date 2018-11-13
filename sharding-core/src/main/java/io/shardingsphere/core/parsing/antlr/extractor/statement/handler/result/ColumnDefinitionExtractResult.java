@@ -59,6 +59,8 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
                     MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
                     mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
                 }
+            }else {
+                alterTableStatement.getUpdateColumns().put(each.getName(), each);
             }
         }
     }

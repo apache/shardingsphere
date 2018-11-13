@@ -17,21 +17,25 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Modify column extract handler.
  * 
  * @author duhongjun
  */
-public class ModifyColumnExtractHandler implements ASTExtractHandler {
+public class ModifyColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
@@ -52,5 +56,22 @@ public class ModifyColumnExtractHandler implements ASTExtractHandler {
     }
     
     protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            if (columnDefinition.isPresent()) {
+                postExtractColumnDefinition(each, columnDefinition.get());
+                result.getColumnDefintions().add(columnDefinition.get());
+            }
+        }
+        return result;
+    }
+    
+    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinition columnDefinition) {
+        
     }
 }
