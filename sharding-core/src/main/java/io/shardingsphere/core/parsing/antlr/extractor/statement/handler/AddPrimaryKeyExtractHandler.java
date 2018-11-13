@@ -21,7 +21,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.AddPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
@@ -62,7 +62,7 @@ public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler, AST
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        AddPrimaryKeyExtractResult extractResult = new AddPrimaryKeyExtractResult();
+        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
         Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!modifyColumnNode.isPresent()) {
             return extractResult;

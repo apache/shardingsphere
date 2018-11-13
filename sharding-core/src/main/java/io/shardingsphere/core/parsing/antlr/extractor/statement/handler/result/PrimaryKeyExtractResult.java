@@ -36,7 +36,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AddPrimaryKeyExtractResult implements ExtractResult {
+public class PrimaryKeyExtractResult implements ExtractResult {
     
     private List<String> primaryKeyColumnNames = new LinkedList<>();
     
