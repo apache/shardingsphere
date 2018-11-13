@@ -49,4 +49,9 @@ public final class ColumnDefinition {
         this.length = length;
         this.primaryKey = primaryKey;
     }
+    
+    public ColumnDefinition(final String name, final String oldName) {
+        this.name = name;
+        this.oldName = oldName;
+    }
 }
