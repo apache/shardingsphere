@@ -17,22 +17,38 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
  * Multiple table names extract handler.
  * 
  * @author duhongjun
  */
-public final class TableNamesExtractHandler extends TableNameExtractHandler {
+public final class TableNamesExtractHandler extends TableNameExtractHandler implements ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
         for (ParseTree each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
             super.extract((ParserRuleContext) each, statement);
         }
+    }
+    
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
+            String tableText = each.getText();
+            int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
+            extractResult.getSqlTokens().add(new TableToken(each.getStart().getStartIndex(), dotPosition, tableText));
+        }
+        return extractResult;
     }
 }
