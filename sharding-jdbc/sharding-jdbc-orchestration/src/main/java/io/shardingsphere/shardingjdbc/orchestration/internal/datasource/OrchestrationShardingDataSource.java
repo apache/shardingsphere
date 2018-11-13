@@ -35,7 +35,6 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
-import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
 import lombok.SneakyThrows;
 
 import java.sql.Connection;
@@ -60,7 +59,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
                 new OrchestrationShardingRule(shardingRuleConfig, configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME).keySet()),
-                configService.loadConfigMap(), configService.loadProperties(), configService.loadSaga());
+                configService.loadConfigMap(), configService.loadProperties(), configService.loadSagaConfiguration());
         getOrchestrationFacade().init();
     }
     
@@ -138,6 +137,6 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public void renew(final SagaChangedEvent sagaChangedEvent) {
         dataSource.close();
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), dataSource.getShardingContext().getShardingRule(),
-                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps(), sagaChangedEvent.getSaga());
+                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps(), sagaChangedEvent.getSagaConfiguration());
     }
 }
