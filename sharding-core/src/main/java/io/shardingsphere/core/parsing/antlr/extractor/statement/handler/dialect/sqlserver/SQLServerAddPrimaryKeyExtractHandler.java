@@ -17,22 +17,27 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Primary key extract handler for SQLServer.
  * 
  * @author duhongjun
  */
-public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
     
     @Override
     public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
@@ -59,5 +64,26 @@ public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHan
                 alterStatement.getUpdateColumns().put(columnName, new ColumnDefinition(each.getText(), null, null, true));
             }
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
+        Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
+        if (!addColumnNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ParserRuleContext> tableConstraintNode = ASTUtils.findFirstChildNode(addColumnNode.get(), RuleName.TABLE_CONSTRAINT);
+        if (!tableConstraintNode.isPresent()) {
+            return extractResult;
+        }
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(tableConstraintNode.get(), RuleName.PRIMARY_KEY);
+        if (!primaryKeyNode.isPresent()) {
+            return extractResult;
+        }
+        for (ParseTree each : ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME)) {
+            extractResult.getPrimaryKeyColumnNames().add(each.getText());
+        }
+        return extractResult;
     }
 }

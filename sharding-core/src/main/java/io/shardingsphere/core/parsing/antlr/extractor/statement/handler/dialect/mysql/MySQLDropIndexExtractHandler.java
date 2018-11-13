@@ -68,7 +68,6 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler,AST
             ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
             extractResult.getSqlTokens().add(new IndexToken(indexNameNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.getText()), null));
          }
-        
         return extractResult;
     }
 }
