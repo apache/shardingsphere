@@ -21,6 +21,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
@@ -60,7 +62,16 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
                     mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
                 }
             }else {
-                alterTableStatement.getUpdateColumns().put(each.getName(), each);
+                String oldName = each.getOldName();
+                if(null != oldName) {
+                    Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
+                    if (oldDefinition.isPresent()) {
+                        oldDefinition.get().setName(each.getName());
+                        alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
+                    }
+                }else {
+                    alterTableStatement.getUpdateColumns().put(each.getName(), each);
+                }
             }
         }
     }
