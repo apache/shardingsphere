@@ -27,7 +27,6 @@ import lombok.ToString;
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -39,7 +38,14 @@ public final class ColumnDefinition {
     
     private final Integer length;
     
-    private final boolean primaryKey;
+    private boolean primaryKey;
     
     private ColumnPosition position;
+    
+    public ColumnDefinition(final String name, final String type, final Integer length, boolean primaryKey) {
+        this.name = name;
+        this.type = type;
+        this.length = length;
+        this.primaryKey = primaryKey;
+    }
 }
