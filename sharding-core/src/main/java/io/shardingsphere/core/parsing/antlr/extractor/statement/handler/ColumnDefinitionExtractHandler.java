@@ -18,6 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -31,7 +34,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
+public final class ColumnDefinitionExtractHandler implements ASTExtractHandler, ASTExtractHandler1 {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
@@ -52,5 +55,17 @@ public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
         if (columnDefinition.isPrimaryKey()) {
             createTableStatement.getPrimaryKeyColumns().add(columnDefinition.getName());
         }
+    }
+
+    @Override
+    public ExtractResult extract(ParserRuleContext ancestorNode) {
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
+            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            if (columnDefinition.isPresent()) {
+                extractResult.getColumnDefintions().add(columnDefinition.get());
+            }
+        }
+        return extractResult;
     }
 }
