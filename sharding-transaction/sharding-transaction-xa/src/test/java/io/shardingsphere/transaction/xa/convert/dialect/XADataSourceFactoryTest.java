@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.xa.convert.dialect;
 
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
-import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
@@ -35,12 +34,6 @@ public class XADataSourceFactoryTest {
     public void assertCreateH2XADataSource() {
         XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.H2);
         assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
-    }
-    
-    @Test
-    public void assertCreateMysqlXADataSource() {
-        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
-        assertThat(xaDataSource, instanceOf(MysqlXADataSource.class));
     }
     
     @Test

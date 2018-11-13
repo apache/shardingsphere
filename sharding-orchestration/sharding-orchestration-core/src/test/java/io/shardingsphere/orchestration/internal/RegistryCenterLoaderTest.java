@@ -17,20 +17,21 @@
 
 package io.shardingsphere.orchestration.internal;
 
-import io.shardingsphere.orchestration.internal.config.AllConfigTests;
-import io.shardingsphere.orchestration.internal.rule.AllRuleTests;
-import io.shardingsphere.orchestration.internal.state.AllStateTests;
-import io.shardingsphere.orchestration.internal.yaml.AllYamlTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.registry.SecondTestRegistryCenter;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllYamlTests.class,
-        AllConfigTests.class,
-        AllStateTests.class,
-        AllRuleTests.class
-})
-public final class AllInternalTests {
+import static org.junit.Assert.assertThat;
+
+public class RegistryCenterLoaderTest {
+    
+    private RegistryCenter regCenter;
+    
+    @Test
+    public void assertLoad() {
+        regCenter = RegistryCenterLoader.load(new RegistryCenterConfiguration());
+        assertThat(regCenter, CoreMatchers.<RegistryCenter>instanceOf(SecondTestRegistryCenter.class));
+    }
 }

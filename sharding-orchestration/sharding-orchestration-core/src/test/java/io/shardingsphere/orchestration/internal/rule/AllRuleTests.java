@@ -15,18 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration;
+package io.shardingsphere.orchestration.internal.rule;
 
-import io.shardingsphere.orchestration.internal.AllInternalTests;
-import io.shardingsphere.orchestration.internal.RegistryCenterLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllInternalTests.class,
-        RegistryCenterLoaderTest.class
+        OrchestrationMasterSlaveRuleTest.class,
+        OrchestrationShardingRuleTest.class
 })
-public final class AllTests {
+public final class AllRuleTests {
 }
