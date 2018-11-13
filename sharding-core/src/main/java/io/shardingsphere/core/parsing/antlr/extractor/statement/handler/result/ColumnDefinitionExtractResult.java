@@ -56,11 +56,6 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
         for(ColumnDefinition each : columnDefintions) {
             if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
                 alterTableStatement.getAddColumns().add(each);
-                
-                if(null != each.getPosition()) {
-                    MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
-                    mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
-                }
             }else {
                 String oldName = each.getOldName();
                 if(null != oldName) {
@@ -72,6 +67,10 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
                 }else {
                     alterTableStatement.getUpdateColumns().put(each.getName(), each);
                 }
+            }
+            if(null != each.getPosition()) {
+                MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
+                mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
             }
         }
     }
