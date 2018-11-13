@@ -88,8 +88,9 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final Authentication authentication,
-                                                   final Map<String, Object> configMap, final Properties prop, final SagaConfiguration saga, final int port) throws InterruptedException {
-        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop, saga == null ? new SagaConfiguration() : saga);
+                                                   final Map<String, Object> configMap, final Properties prop, final SagaConfiguration sagaConfiguration, final int port) throws InterruptedException {
+        GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop,
+                sagaConfiguration == null ? new SagaConfiguration() : sagaConfiguration);
         initOpenTracing();
         new ShardingProxy().start(port);
     }
@@ -100,7 +101,7 @@ public final class Bootstrap {
             initOrchestrationFacade(serverConfig, ruleConfigs, orchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(orchestrationFacade), getSchemaRules(orchestrationFacade),
                     orchestrationFacade.getConfigService().loadAuthentication(), orchestrationFacade.getConfigService().loadConfigMap(),
-                    orchestrationFacade.getConfigService().loadProperties(), orchestrationFacade.getConfigService().loadSaga(), true);
+                    orchestrationFacade.getConfigService().loadProperties(), orchestrationFacade.getConfigService().loadSagaConfiguration(), true);
             initOpenTracing();
             new ShardingProxy().start(port);
         }

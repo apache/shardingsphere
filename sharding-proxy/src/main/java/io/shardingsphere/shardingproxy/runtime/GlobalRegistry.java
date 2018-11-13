@@ -216,6 +216,6 @@ public final class GlobalRegistry {
     @Subscribe
     public void renewSagaConfiguration(final SagaChangedEvent sagaChangedEvent) {
         SagaTransactionManager.getInstance().removeSagaExecutionComponent(sagaConfiguration);
-        this.sagaConfiguration = sagaChangedEvent.getSaga();
+        this.sagaConfiguration = sagaChangedEvent.getSagaConfiguration();
     }
 }
