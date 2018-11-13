@@ -60,15 +60,15 @@ public class ModifyColumnExtractHandler implements ASTExtractHandler,ASTExtractH
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 postExtractColumnDefinition(each, columnDefinition.get());
-                result.getColumnDefintions().add(columnDefinition.get());
+                extractResult.getColumnDefintions().add(columnDefinition.get());
             }
         }
-        return result;
+        return extractResult;
     }
     
     protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinition columnDefinition) {
