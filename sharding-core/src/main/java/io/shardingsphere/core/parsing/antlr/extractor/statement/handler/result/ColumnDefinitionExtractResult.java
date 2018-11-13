@@ -35,7 +35,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AddColumnExtractResult implements ExtractResult {
+public class ColumnDefinitionExtractResult implements ExtractResult {
     
     private List<ColumnDefinition> columnDefintions = new LinkedList<>();
     

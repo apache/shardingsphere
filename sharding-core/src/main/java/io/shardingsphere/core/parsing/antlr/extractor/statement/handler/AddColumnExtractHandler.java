@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.AddColumnExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -67,7 +67,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler,ASTExtractHand
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        AddColumnExtractResult result = new AddColumnExtractResult();
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
             extractAddColumn(each, result);
         }
@@ -75,7 +75,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler,ASTExtractHand
     }
     
     
-    private void extractAddColumn(final ParserRuleContext addColumnNode, final AddColumnExtractResult result) {
+    private void extractAddColumn(final ParserRuleContext addColumnNode, final ColumnDefinitionExtractResult result) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
