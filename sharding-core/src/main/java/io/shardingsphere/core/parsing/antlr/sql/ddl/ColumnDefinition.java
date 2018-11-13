@@ -40,4 +40,6 @@ public final class ColumnDefinition {
     private Integer length;
     
     private boolean primaryKey;
+    
+    private ColumnPosition position;
 }
