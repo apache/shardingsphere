@@ -19,7 +19,11 @@ package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.registry.TestRegistryCenter;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RegistryCenterLoaderTest {
     
@@ -28,7 +32,6 @@ public class RegistryCenterLoaderTest {
     @Test
     public void assertLoad() {
         regCenter = RegistryCenterLoader.load(new RegistryCenterConfiguration());
-    
+        assertThat(regCenter, CoreMatchers.<RegistryCenter>instanceOf(TestRegistryCenter.class));
     }
 }
-    
