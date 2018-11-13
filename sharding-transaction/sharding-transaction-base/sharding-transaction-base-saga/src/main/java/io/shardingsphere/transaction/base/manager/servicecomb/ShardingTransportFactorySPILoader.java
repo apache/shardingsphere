@@ -71,7 +71,7 @@ public final class ShardingTransportFactorySPILoader {
             // CHECKSTYLE:OFF
         } catch (Exception ex) {
             // CHECKSTYLE:ON
-            throw new ShardingException("Can not initialize the xaTransaction manager failed with " + ex);
+            throw new ShardingException("Can not initialize the SQLTransport failed with " + ex);
         }
     }
     
