@@ -78,13 +78,14 @@ public final class OrchestrationFacade implements AutoCloseable {
      * @param authentication authentication
      * @param configMap config Map
      * @param props properties
-     * @param saga saga configuration
+     * @param sagaConfiguration saga configuration
      */
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
                      final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication,
-                     final Map<String, Object> configMap, final Properties props, final SagaConfiguration saga) {
+                     final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, saga, isOverwrite);
+            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()),
+                    schemaRuleMap.get(entry.getKey()), authentication, configMap, props, sagaConfiguration, isOverwrite);
         }
         instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();

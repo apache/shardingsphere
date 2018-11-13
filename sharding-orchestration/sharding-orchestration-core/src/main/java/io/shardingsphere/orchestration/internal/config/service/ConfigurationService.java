@@ -66,17 +66,18 @@ public final class ConfigurationService {
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
-     * @param saga saga configuration
+     * @param sagaConfiguration saga configuration
      * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final RuleConfiguration ruleConfig,
-                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration saga, final boolean isOverwrite) {
+                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration,
+                                     final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations, isOverwrite);
         persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
-        presistSaga(saga, isOverwrite);
+        presistSagaConfiguration(sagaConfiguration, isOverwrite);
     }
     
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -142,13 +143,13 @@ public final class ConfigurationService {
         }
     }
     
-    private void presistSaga(final SagaConfiguration saga, final boolean isOverwrite) {
-        if (isOverwrite || !hasSaga()) {
-            regCenter.persist(configNode.getSagaPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(saga));
+    private void presistSagaConfiguration(final SagaConfiguration sagaConfiguration, final boolean isOverwrite) {
+        if (isOverwrite || !hasSagaConfiguration()) {
+            regCenter.persist(configNode.getSagaPath(), new Yaml(new DefaultRepresenter()).dumpAsMap(sagaConfiguration));
         }
     }
     
-    private boolean hasSaga() {
+    private boolean hasSagaConfiguration() {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getSagaPath()));
     }
     
@@ -236,7 +237,7 @@ public final class ConfigurationService {
      *
      * @return saga configuration
      */
-    public SagaConfiguration loadSaga() {
+    public SagaConfiguration loadSagaConfiguration() {
         String data = regCenter.getDirectly(configNode.getSagaPath());
         return Strings.isNullOrEmpty(data) ? new SagaConfiguration() : new Yaml().loadAs(data, SagaConfiguration.class);
     }

@@ -30,5 +30,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class SagaChangedEvent {
     
-    private final SagaConfiguration saga;
+    private final SagaConfiguration sagaConfiguration;
 }

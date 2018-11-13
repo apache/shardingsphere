@@ -52,7 +52,7 @@ public final class SagaOrchestrationListener implements OrchestrationListener {
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new SagaChangedEvent(configService.loadSaga()));
+                    ShardingEventBusInstance.getInstance().post(new SagaChangedEvent(configService.loadSagaConfiguration()));
                 }
             }
         });
