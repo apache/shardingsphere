@@ -18,8 +18,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.google.common.base.Optional;
 
@@ -38,7 +38,7 @@ import lombok.Setter;
 @Setter
 public class PrimaryKeyExtractResult implements ExtractResult {
     
-    private List<String> primaryKeyColumnNames = new LinkedList<>();
+    private Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
     
     @Override
     public void inject(SQLStatement statement) {
