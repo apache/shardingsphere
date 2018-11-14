@@ -54,18 +54,18 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
     
     private void injectAlter(final AlterTableStatement alterTableStatement) {
         for(ColumnDefinition each : columnDefintions) {
-            if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
-                alterTableStatement.getAddColumns().add(each);
+            String oldName = each.getOldName();
+            if(null != oldName) {
+                Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
+                if (oldDefinition.isPresent()) {
+                    oldDefinition.get().setName(each.getName());
+                    alterTableStatement.getUpdateColumns().put(oldName, each);
+                }
             }else {
-                String oldName = each.getOldName();
-                if(null != oldName) {
-                    Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
-                    if (oldDefinition.isPresent()) {
-                        oldDefinition.get().setName(each.getName());
-                        alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
-                    }
-                }else {
+                if(!each.isAdd()) {
                     alterTableStatement.getUpdateColumns().put(each.getName(), each);
+                }else if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
+                    alterTableStatement.getAddColumns().add(each);
                 }
             }
             if(null != each.getPosition()) {
