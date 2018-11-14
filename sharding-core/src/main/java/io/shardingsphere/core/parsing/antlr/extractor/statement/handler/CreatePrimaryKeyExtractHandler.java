@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
@@ -54,19 +56,22 @@ public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler,A
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ParserRuleContext> columnListNode = ASTUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_LIST);
         if (!columnListNode.isPresent()) {
-            return extractResult;
+            return null;
         }
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME);
+        if(result.isEmpty()) {
+            return null;
+        }
+        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME)) {
             extractResult.getPrimaryKeyColumnNames().add(each.getText());
         }
-        
         return extractResult;
     }
 }
