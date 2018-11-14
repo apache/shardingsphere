@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
@@ -27,10 +29,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
 
 /**
@@ -53,8 +53,12 @@ public final class MySQLAddIndexExtractHandler implements ASTExtractHandler,ASTE
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX);
+        if(result.isEmpty()) {
+            return null;
+        }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX)) {
+        for (ParserRuleContext each : result) {
             Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(each, RuleName.INDEX_NAME);
             if (indexNameNode.isPresent()) {
                 extractResult.getSqlTokens().add(
