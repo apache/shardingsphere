@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InstanceStateServiceTest {
+public final class InstanceStateServiceTest {
     
     @Mock
     private RegistryCenter regCenter;
