@@ -18,9 +18,12 @@
 package io.shardingsphere.spi;
 
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,5 +36,16 @@ public class NewInstanceServiceLoaderTest {
         Collection<DataSourceMapConverter> collections = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
         assertThat(collections.size(), is(1));
         assertThat(collections.iterator().next(), instanceOf(DataSourceMapConverter.class));
+    }
+    
+    @Test
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public void assertRegisterService() {
+        NewInstanceServiceLoader.register(DataSourceMapConverter.class);
+        Field field = NewInstanceServiceLoader.class.getDeclaredField("SERVICE_MAP");
+        field.setAccessible(true);
+        Map<Class, Collection<Class<?>>> map = (Map<Class, Collection<Class<?>>>) field.get(null);
+        assertThat(map.get(DataSourceMapConverter.class).size(), is(1));
     }
 }
