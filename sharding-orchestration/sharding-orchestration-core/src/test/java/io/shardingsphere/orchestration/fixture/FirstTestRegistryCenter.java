@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.registry;
+package io.shardingsphere.orchestration.fixture;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
