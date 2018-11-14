@@ -29,15 +29,15 @@ import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Multiple index names extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class IndexesNameExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();

@@ -35,7 +35,7 @@ import io.shardingsphere.core.util.SQLUtil;
 public final class IndexNameExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
         if (!indexNameNode.isPresent()) {
             return null;
