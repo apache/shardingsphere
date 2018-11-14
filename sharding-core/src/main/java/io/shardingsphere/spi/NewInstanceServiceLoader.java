@@ -44,18 +44,22 @@ public final class NewInstanceServiceLoader {
      * @param <T> type of service
      * @return new service class loader
      */
-    @SuppressWarnings("unchecked")
     public static <T> Collection<T> load(final Class<T> service) {
         Collection<T> result = new LinkedList<>();
         for (T each : ServiceLoader.load(service)) {
-            Collection<Class<T>> serviceClasses = SERVICE_MAP.get(service);
-            if (null == serviceClasses) {
-                serviceClasses = new LinkedList<>();
-            }
-            serviceClasses.add((Class<T>) each.getClass());
-            SERVICE_MAP.put(service, serviceClasses);
+            registerServiceClass(service, each);
             result.add(each);
         }
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> void registerServiceClass(final Class<T> service, final T instance) {
+        Collection serviceClasses = SERVICE_MAP.get(service);
+        if (null == serviceClasses) {
+            serviceClasses = new LinkedList<>();
+        }
+        serviceClasses.add(instance.getClass());
+        SERVICE_MAP.put(service, serviceClasses);
     }
 }
