@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -68,20 +70,24 @@ public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHan
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
         Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ParserRuleContext> tableConstraintNode = ASTUtils.findFirstChildNode(addColumnNode.get(), RuleName.TABLE_CONSTRAINT);
         if (!tableConstraintNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(tableConstraintNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
-            return extractResult;
+            return null;
         }
-        for (ParseTree each : ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME)) {
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME);
+        if(result.isEmpty()) {
+            return null;
+        }
+        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
+        for (ParseTree each : result) {
             extractResult.getPrimaryKeyColumnNames().add(each.getText());
         }
         return extractResult;
