@@ -23,12 +23,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,30 +34,9 @@ import lombok.RequiredArgsConstructor;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler, ASTExtractHandler1 {
+public final class AddPrimaryKeyExtractHandler implements  ASTExtractHandler {
     
     private final RuleName ruleName;
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
-        if (!modifyColumnNode.isPresent()) {
-            return;
-        }
-        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
-        if (!primaryKeyNode.isPresent()) {
-            return;
-        }
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME)) {
-            String columnName = each.getText();
-            Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(columnName);
-            if (updateColumn.isPresent()) {
-                updateColumn.get().setPrimaryKey(true);
-                alterStatement.getUpdateColumns().put(columnName, updateColumn.get());
-            }
-        }
-    }
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
