@@ -24,11 +24,6 @@ import io.shardingsphere.orchestration.reg.listener.EventListener;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Test registry center.
- *
- * @author panjuan
- */
 public final class SecondTestRegistryCenter implements RegistryCenter {
     
     @Override
