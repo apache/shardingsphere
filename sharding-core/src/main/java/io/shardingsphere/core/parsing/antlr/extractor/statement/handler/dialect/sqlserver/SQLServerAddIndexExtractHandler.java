@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.google.common.base.Optional;
 
@@ -54,16 +53,17 @@ public final class SQLServerAddIndexExtractHandler implements ASTExtractHandler,
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!indexDefOptionNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);
-        if (indexNameNode.isPresent()) {
-            extractResult.getSqlTokens().add(
-                    new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
+        if (!indexNameNode.isPresent()) {
+            return null;
         }
+        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
+        extractResult.getSqlTokens().add(
+                new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
         return extractResult;
     }
 }
