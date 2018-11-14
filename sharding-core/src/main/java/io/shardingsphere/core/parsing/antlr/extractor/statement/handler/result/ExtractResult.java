@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -27,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  */
 public interface ExtractResult {
     
-    /**
+    /** SQL phrase extract result.
      * @param statement SQL statement
      */
     void inject(SQLStatement statement);

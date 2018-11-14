@@ -44,7 +44,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         List<ExtractResult> extractResults = new LinkedList<>();
         for (ASTExtractHandler each : extractHandlers) {
             ExtractResult extractResult = each.extract(rootNode);
-            if(null != extractResult) {
+            if (null != extractResult) {
                 extractResults.add(extractResult);
             }
         }
