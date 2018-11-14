@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -55,8 +57,12 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler,AST
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
+        if(result.isEmpty()) {
+            return null;
+        }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF)) {
+        for (ParserRuleContext each : result) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;
