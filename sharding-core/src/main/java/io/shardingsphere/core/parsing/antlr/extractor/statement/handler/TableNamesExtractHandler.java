@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -43,8 +45,12 @@ public final class TableNamesExtractHandler extends TableNameExtractHandler impl
     
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
+        if(result.isEmpty()) {
+            return null;
+        }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
+        for (ParserRuleContext each : result) {
             String tableText = each.getText();
             int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
             extractResult.getSqlTokens().add(new TableToken(each.getStart().getStartIndex(), dotPosition, tableText));
