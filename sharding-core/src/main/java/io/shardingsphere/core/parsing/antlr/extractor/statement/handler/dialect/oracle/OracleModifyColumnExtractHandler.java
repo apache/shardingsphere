@@ -24,38 +24,21 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
  * Modify column extract handler for Oracle.
  * 
  * @author duhongjun
  */
-public final class OracleModifyColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
+public final class OracleModifyColumnExtractHandler implements ASTExtractHandler {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext modifyColumnNode : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
-            for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
-                // it`s not column definition, but can call this method
-                Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
-                if (columnDefinition.isPresent()) {
-                    alterTableStatement.getUpdateColumns().put(columnDefinition.get().getName(), columnDefinition.get());
-                }
-            }
-        }
-    }
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
