@@ -45,7 +45,7 @@ public final class MySQLModifyColumnExtractHandler extends ModifyColumnExtractHa
     
     @Override
     protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinition columnDefinition) {
-        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn((ParserRuleContext) ancestorNode, null);
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn((ParserRuleContext) ancestorNode, columnDefinition.getName());
         if (columnPosition.isPresent()) {
             columnDefinition.setPosition(columnPosition.get());
         }
