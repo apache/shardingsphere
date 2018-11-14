@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -51,9 +50,9 @@ public class YamlShardingRuleConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    private Map<String, YamlBroadcastTableRuleConfiguration> broadcastTables = new LinkedHashMap<>();
+    private Collection<String> bindingTables = new ArrayList<>();
     
-    private List<String> bindingTables = new ArrayList<>();
+    private Collection<String> broadcastTables = new ArrayList<>();
     
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
@@ -68,10 +67,8 @@ public class YamlShardingRuleConfiguration {
         for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
             tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
         }
-        for (BroadcastTableRuleConfiguration each : shardingRuleConfiguration.getBroadcastTableRuleConfigs()) {
-            broadcastTables.put(each.getLogicTable(), new YamlBroadcastTableRuleConfiguration(each));
-        }
         bindingTables.addAll(shardingRuleConfiguration.getBindingTableGroups());
+        bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
         defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
@@ -93,12 +90,8 @@ public class YamlShardingRuleConfiguration {
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTableRuleConfigs().add(tableRuleConfig.build());
         }
-        for (Entry<String, YamlBroadcastTableRuleConfiguration> entry : broadcastTables.entrySet()) {
-            YamlBroadcastTableRuleConfiguration broadcastTableRuleConfig = null == entry.getValue() ? new YamlBroadcastTableRuleConfiguration() : entry.getValue();
-            broadcastTableRuleConfig.setLogicTable(entry.getKey());
-            result.getBroadcastTableRuleConfigs().add(broadcastTableRuleConfig.build());
-        }
         result.getBindingTableGroups().addAll(bindingTables);
+        result.getBroadcastTables().addAll(broadcastTables);
         if (null != defaultDatabaseStrategy) {
             result.setDefaultDatabaseShardingStrategyConfig(defaultDatabaseStrategy.build());
         }

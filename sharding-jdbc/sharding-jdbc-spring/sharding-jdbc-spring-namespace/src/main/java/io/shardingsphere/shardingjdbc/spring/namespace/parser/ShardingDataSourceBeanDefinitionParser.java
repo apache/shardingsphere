@@ -20,7 +20,6 @@ package io.shardingsphere.shardingjdbc.spring.namespace.parser;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -81,8 +80,8 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         parseDefaultTableShardingStrategy(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
         factory.addPropertyValue("masterSlaveRuleConfigs", parseMasterSlaveRulesConfig(shardingRuleElement));
-        factory.addPropertyValue("broadcastTableRuleConfigs", parseBroadcastTablesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
+        factory.addPropertyValue("broadcastTables", parseBroadcastTables(shardingRuleElement));
         parseKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
     }
@@ -194,33 +193,6 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseBroadcastTablesConfig(final Element element) {
-        Element broadcastTableRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULES_TAG);
-        if (null == broadcastTableRulesElement) {
-            return Collections.emptyList();
-        }
-        List<Element> broadcastTableRuleElements = DomUtils.getChildElementsByTagName(broadcastTableRulesElement, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULE_TAG);
-        List<BeanDefinition> result = new ManagedList<>(broadcastTableRuleElements.size());
-        for (Element each : broadcastTableRuleElements) {
-            result.add(parseBroadcastTableRuleConfig(each));
-        }
-        return result;
-    }
-    
-    private BeanDefinition parseBroadcastTableRuleConfig(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(BroadcastTableRuleConfiguration.class);
-        factory.addPropertyValue("logicTable", tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_TABLE_ATTRIBUTE));
-        String keyGeneratorColumnName = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN_NAME_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(keyGeneratorColumnName)) {
-            factory.addPropertyValue("keyGeneratorColumnName", keyGeneratorColumnName);
-        }
-        String keyGenerator = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(keyGenerator)) {
-            factory.addPropertyReference("keyGenerator", keyGenerator);
-        }
-        return factory.getBeanDefinition();
-    }
-    
     private List<String> parseBindingTablesConfig(final Element element) {
         Element bindingTableRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.BINDING_TABLE_RULES_TAG);
         if (null == bindingTableRulesElement) {
@@ -230,6 +202,19 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         List<String> result = new LinkedList<>();
         for (Element each : bindingTableRuleElements) {
             result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
+        }
+        return result;
+    }
+    
+    private List<String> parseBroadcastTables(final Element element) {
+        Element broadcastTableRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULES_TAG);
+        if (null == broadcastTableRulesElement) {
+            return Collections.emptyList();
+        }
+        List<Element> broadcastTableRuleElements = DomUtils.getChildElementsByTagName(broadcastTableRulesElement, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULE_TAG);
+        List<String> result = new LinkedList<>();
+        for (Element each : broadcastTableRuleElements) {
+            result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TABLES_ATTRIBUTE));
         }
         return result;
     }

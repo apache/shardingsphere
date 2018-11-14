@@ -20,7 +20,6 @@ package io.shardingsphere.core.rule;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -56,9 +55,9 @@ public class ShardingRule {
     
     private final Collection<TableRule> tableRules = new LinkedList<>();
     
-    private final Collection<BroadcastTableRule> broadcastTableRules = new LinkedList<>();
-    
     private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
+    
+    private final Collection<String> broadcastTables = new LinkedList<>();
     
     private final ShardingStrategy defaultDatabaseShardingStrategy;
     
@@ -76,9 +75,6 @@ public class ShardingRule {
         for (TableRuleConfiguration each : shardingRuleConfig.getTableRuleConfigs()) {
             tableRules.add(new TableRule(each, shardingDataSourceNames));
         }
-        for (BroadcastTableRuleConfiguration each : shardingRuleConfig.getBroadcastTableRuleConfigs()) {
-            broadcastTableRules.add(new BroadcastTableRule(each));
-        }
         for (String group : shardingRuleConfig.getBindingTableGroups()) {
             List<TableRule> tableRulesForBinding = new LinkedList<>();
             for (String logicTableNameForBindingTable : StringUtil.splitWithComma(group)) {
@@ -86,6 +82,7 @@ public class ShardingRule {
             }
             bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
         }
+        broadcastTables.addAll(shardingRuleConfig.getBroadcastTables());
         defaultDatabaseShardingStrategy = null == shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig()
                 ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = null == shardingRuleConfig.getDefaultTableShardingStrategyConfig()
@@ -104,21 +101,6 @@ public class ShardingRule {
      */
     public Optional<TableRule> tryFindTableRuleByLogicTable(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
-     * Try to find broadcast table rule though logic table name.
-     *
-     * @param logicTableName logic table name
-     * @return broadcast table rule
-     */
-    public Optional<BroadcastTableRule> tryFindBroadcastTableRuleByLogicTable(final String logicTableName) {
-        for (BroadcastTableRule each : broadcastTableRules) {
             if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
                 return Optional.of(each);
             }
@@ -152,8 +134,7 @@ public class ShardingRule {
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
-        Optional<BroadcastTableRule> broadcastTableRule = tryFindBroadcastTableRuleByLogicTable(logicTableName.toLowerCase());
-        if (broadcastTableRule.isPresent()) {
+        if (isBroadcastTable(logicTableName)) {
             return new TableRule(shardingDataSourceNames.getDataSourceNames(), logicTableName);
         }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
@@ -191,6 +172,16 @@ public class ShardingRule {
     }
     
     /**
+     * Adjust logic table is belong to broadcast tables.
+     *
+     * @param logicTable logic table name
+     * @return logic table is belong to broadcast tables or not
+     */
+    public boolean isBroadcastTable(final String logicTable) {
+        return broadcastTables.contains(logicTable);
+    }
+    
+    /**
      * Adjust logic tables is all belong to broadcast tables.
      *
      * @param logicTables names of logic tables
@@ -200,9 +191,8 @@ public class ShardingRule {
         if (logicTables.isEmpty()) {
             return false;
         }
-        for (String logicTable : logicTables) {
-            Optional<BroadcastTableRule> broadcastTableRule = findBroadcastTableRule(logicTable);
-            if (!broadcastTableRule.isPresent()) {
+        for (String each : logicTables) {
+            if (!isBroadcastTable(each)) {
                 return false;
             }
         }
@@ -239,26 +229,11 @@ public class ShardingRule {
             if (tryFindTableRuleByLogicTable(each).isPresent()) {
                 return false;
             }
-            if (tryFindBroadcastTableRuleByLogicTable(each).isPresent()) {
+            if (isBroadcastTable(each)) {
                 return false;
             }
         }
         return !logicTables.isEmpty();
-    }
-    
-    /**
-     * Get broadcast table rule via logic table name.
-     *
-     * @param logicTable logic table name
-     * @return broadcast table rule
-     */
-    public Optional<BroadcastTableRule> findBroadcastTableRule(final String logicTable) {
-        for (BroadcastTableRule each : broadcastTableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTable)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTables) {
@@ -319,11 +294,6 @@ public class ShardingRule {
                 return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
             }
         }
-        for (BroadcastTableRule each : broadcastTableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
-                return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
-            }
-        }
         return Optional.absent();
     }
     
@@ -335,20 +305,13 @@ public class ShardingRule {
      */
     public Number generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName);
-        if (tableRule.isPresent()) {
-            if (null != tableRule.get().getKeyGenerator()) {
-                return tableRule.get().getKeyGenerator().generateKey();
-            }
-            return defaultKeyGenerator.generateKey();
+        if (!tableRule.isPresent()) {
+            throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
-        Optional<BroadcastTableRule> broadcastTableRule = tryFindBroadcastTableRuleByLogicTable(logicTableName);
-        if (broadcastTableRule.isPresent()) {
-            if (null != broadcastTableRule.get().getKeyGenerator()) {
-                return broadcastTableRule.get().getKeyGenerator().generateKey();
-            }
-            return defaultKeyGenerator.generateKey();
+        if (null != tableRule.get().getKeyGenerator()) {
+            return tableRule.get().getKeyGenerator().generateKey();
         }
-        throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
+        return defaultKeyGenerator.generateKey();
     }
     
     /**

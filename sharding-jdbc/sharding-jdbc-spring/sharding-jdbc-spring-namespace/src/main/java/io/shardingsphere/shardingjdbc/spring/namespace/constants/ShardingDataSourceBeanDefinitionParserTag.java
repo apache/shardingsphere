@@ -48,10 +48,6 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String MASTER_SLAVE_RULE_TAG = "master-slave-rule";
     
-    public static final String BROADCAST_TABLE_RULES_TAG = "broadcast-table-rules";
-    
-    public static final String BROADCAST_TABLE_RULE_TAG = "broadcast-table-rule";
-    
     public static final String BINDING_TABLE_RULES_TAG = "binding-table-rules";
     
     public static final String BINDING_TABLE_RULE_TAG = "binding-table-rule";
@@ -59,6 +55,12 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     public static final String LOGIC_TABLE_ATTRIBUTE = "logic-table";
     
     public static final String LOGIC_TABLES_ATTRIBUTE = "logic-tables";
+    
+    public static final String BROADCAST_TABLE_RULES_TAG = "broadcast-table-rules";
+    
+    public static final String BROADCAST_TABLE_RULE_TAG = "broadcast-table-rule";
+    
+    public static final String TABLES_ATTRIBUTE = "tables";
     
     public static final String ACTUAL_DATA_NODES_ATTRIBUTE = "actual-data-nodes";
     

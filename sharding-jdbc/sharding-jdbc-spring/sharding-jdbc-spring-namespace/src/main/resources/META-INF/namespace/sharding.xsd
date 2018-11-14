@@ -20,8 +20,8 @@
             <xsd:sequence>
                 <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" />
-                <xsd:element ref="broadcast-table-rules" minOccurs="0" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
+                <xsd:element ref="broadcast-table-rules" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source-name" type="xsd:string" />
@@ -48,20 +48,6 @@
             <xsd:attribute name="logic-index" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="broadcast-table-rules">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="broadcast-table-rule" maxOccurs="unbounded" />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="broadcast-table-rule">
-        <xsd:complexType>
-            <xsd:attribute name="logic-table" type="xsd:string" use="required" />
-            <xsd:attribute name="generate-key-column-name" type="xsd:string" />
-            <xsd:attribute name="key-generator-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
     <xsd:element name="binding-table-rules">
         <xsd:complexType>
             <xsd:sequence>
@@ -72,6 +58,18 @@
     <xsd:element name="binding-table-rule">
         <xsd:complexType>
             <xsd:attribute name="logic-tables" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="broadcast-table-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="broadcast-table-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="broadcast-table-rule">
+        <xsd:complexType>
+            <xsd:attribute name="tables" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="standard-strategy">

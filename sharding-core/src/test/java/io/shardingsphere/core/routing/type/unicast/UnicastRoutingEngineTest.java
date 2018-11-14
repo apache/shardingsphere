@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.routing.type.unicast;
 
-import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
@@ -43,9 +42,7 @@ public final class UnicastRoutingEngineTest {
         tableRuleConfig.setLogicTable("t_order");
         tableRuleConfig.setActualDataNodes("ds${0..1}.t_order_${0..2}");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        BroadcastTableRuleConfiguration broadcastTableRuleConfig = new BroadcastTableRuleConfiguration();
-        broadcastTableRuleConfig.setLogicTable("t_config");
-        shardingRuleConfig.getBroadcastTableRuleConfigs().add(broadcastTableRuleConfig);
+        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
     }
     

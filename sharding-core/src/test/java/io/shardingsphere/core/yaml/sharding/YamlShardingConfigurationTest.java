@@ -117,7 +117,7 @@ public final class YamlShardingConfigurationTest {
     
     private void assertBindingTable(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getBindingTables().size(), is(1));
-        assertThat(actual.getShardingRule().getBindingTables().get(0), is("t_order, t_order_item"));
+        assertThat(actual.getShardingRule().getBindingTables().iterator().next(), is("t_order, t_order_item"));
     }
     
     private void assertShardingRuleDefault(final YamlShardingConfiguration actual) {

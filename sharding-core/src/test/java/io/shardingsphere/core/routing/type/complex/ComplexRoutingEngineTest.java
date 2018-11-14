@@ -19,7 +19,6 @@ package io.shardingsphere.core.routing.type.complex;
 
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.api.config.BroadcastTableRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
@@ -58,9 +57,7 @@ public final class ComplexRoutingEngineTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig2);
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
-        BroadcastTableRuleConfiguration broadcastTableRuleConfig = new BroadcastTableRuleConfiguration();
-        broadcastTableRuleConfig.setLogicTable("t_config");
-        shardingRuleConfig.getBroadcastTableRuleConfigs().add(broadcastTableRuleConfig);
+        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
     }
     

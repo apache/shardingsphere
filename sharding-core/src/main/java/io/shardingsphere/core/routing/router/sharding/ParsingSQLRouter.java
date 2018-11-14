@@ -50,7 +50,6 @@ import io.shardingsphere.core.routing.type.defaultdb.DefaultDatabaseRoutingEngin
 import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngine;
 import io.shardingsphere.core.routing.type.standard.StandardRoutingEngine;
 import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
-import io.shardingsphere.core.rule.BroadcastTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.core.util.SQLLogger;
@@ -178,10 +177,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         String logicTableName = insertStatement.getTables().getSingleTableName();
         Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
-            Optional<BroadcastTableRule> broadcastTableRule = shardingRule.tryFindBroadcastTableRuleByLogicTable(logicTableName);
-            if (!broadcastTableRule.isPresent()) {
-                return null;
-            }
+            return null;
         }
         Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
         if (generateKeyColumn.isPresent()) {
