@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,6 +43,14 @@ public class PrimaryKeyExtractResult implements ExtractResult {
     
     @Override
     public void inject(SQLStatement statement) {
+        if(statement instanceof AlterTableStatement) {
+            injectAlter(statement);
+        }else if(statement instanceof CreateTableStatement) {
+            injectCreate(statement);
+        }
+    }
+    
+    private void injectAlter(SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
             Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(each);
@@ -49,6 +58,13 @@ public class PrimaryKeyExtractResult implements ExtractResult {
                 updateColumn.get().setPrimaryKey(true);
                 alterStatement.getUpdateColumns().put(each, updateColumn.get());
             }
+        }
+    }
+    
+    private void injectCreate(SQLStatement statement) {
+        CreateTableStatement createStatement = (CreateTableStatement) statement;
+        for (String each : primaryKeyColumnNames) {
+            createStatement.getPrimaryKeyColumns().add(each);
         }
     }
 }
