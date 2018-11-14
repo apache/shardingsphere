@@ -60,15 +60,15 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler,ASTEx
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
         Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
         if (!modifyColumnNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
         if (2 != columnNodes.size()) {
-            return extractResult;
+            return null;
         }
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
         Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
         extractResult.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), columnNodesIterator.next().getText()));
         return extractResult;
