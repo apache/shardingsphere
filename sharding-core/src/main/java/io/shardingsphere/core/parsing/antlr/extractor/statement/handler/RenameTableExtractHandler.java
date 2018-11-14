@@ -32,16 +32,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  * 
  * @author duhongjun
  */
-public final class RenameTableExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
-        if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
-            alterStatement.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
-        }
-    }
+public final class RenameTableExtractHandler implements ASTExtractHandler {
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
