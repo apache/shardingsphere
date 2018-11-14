@@ -33,15 +33,15 @@ import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Add index extract handler for MySQL.
- * 
+ *
  * @author duhongjun
  */
 public final class MySQLAddIndexExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
