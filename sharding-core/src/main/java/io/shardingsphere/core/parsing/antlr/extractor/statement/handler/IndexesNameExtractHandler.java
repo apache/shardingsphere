@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
@@ -45,11 +47,14 @@ public final class IndexesNameExtractHandler implements ASTExtractHandler,ASTExt
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
+        if(result.isEmpty()) {
+            return null;
+        }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
+        for (ParserRuleContext each : result) {
             extractResult.getSqlTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), null));
         }
-        
         return extractResult;
     }
 }
