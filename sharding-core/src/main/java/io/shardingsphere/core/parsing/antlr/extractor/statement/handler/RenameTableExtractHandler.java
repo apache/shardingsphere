@@ -50,6 +50,6 @@ public final class RenameTableExtractHandler implements ASTExtractHandler,ASTExt
         if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
             extractResult.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
         }
-        return null;
+        return extractResult;
     }
 }
