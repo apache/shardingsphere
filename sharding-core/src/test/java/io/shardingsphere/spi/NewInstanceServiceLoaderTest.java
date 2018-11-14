@@ -17,6 +17,7 @@
 
 package io.shardingsphere.spi;
 
+import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -54,5 +55,12 @@ public class NewInstanceServiceLoaderTest {
         NewInstanceServiceLoader.register(DataSourceMapConverter.class);
         Collection<DataSourceMapConverter> instances = NewInstanceServiceLoader.newServiceInstances(DataSourceMapConverter.class);
         assertThat(instances.size(), is(1));
+    }
+    
+    @Test
+    public void assertNewServiceInstanceNotExist() {
+        NewInstanceServiceLoader.register(ParsingHook.class);
+        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
+        assertThat(collection.size(), is(0));
     }
 }
