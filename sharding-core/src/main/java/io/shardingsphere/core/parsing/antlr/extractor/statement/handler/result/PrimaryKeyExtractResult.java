@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import java.util.LinkedHashSet;
@@ -32,25 +31,29 @@ import lombok.Setter;
 
 /**
  * Add primary key result.
- * 
+ *
  * @author duhongjun
  */
 @Getter
 @Setter
 public class PrimaryKeyExtractResult implements ExtractResult {
-    
+
     private Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
-    
+
+    /**
+     * Inject primary key to SQLStatement.
+     * @param statement SQL statement
+     */
     @Override
-    public void inject(SQLStatement statement) {
-        if(statement instanceof AlterTableStatement) {
+    public void inject(final SQLStatement statement) {
+        if (statement instanceof AlterTableStatement) {
             injectAlter(statement);
-        }else if(statement instanceof CreateTableStatement) {
+        } else if (statement instanceof CreateTableStatement) {
             injectCreate(statement);
         }
     }
-    
-    private void injectAlter(SQLStatement statement) {
+
+    private void injectAlter(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
             Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(each);
@@ -60,8 +63,8 @@ public class PrimaryKeyExtractResult implements ExtractResult {
             }
         }
     }
-    
-    private void injectCreate(SQLStatement statement) {
+
+    private void injectCreate(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
             createStatement.getPrimaryKeyColumns().add(each);
