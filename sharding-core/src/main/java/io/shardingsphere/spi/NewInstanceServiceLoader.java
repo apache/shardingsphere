@@ -83,7 +83,7 @@ public final class NewInstanceServiceLoader {
      * @return service instances
      */
     @SuppressWarnings("unchecked")
-    public static <T> Collection newServiceInstances(final Class<T> service) {
+    public static <T> Collection<T> newServiceInstances(final Class<T> service) {
         Collection<T> result = new LinkedList<>();
         for (Class<?> each : SERVICE_MAP.get(service)) {
             try {
