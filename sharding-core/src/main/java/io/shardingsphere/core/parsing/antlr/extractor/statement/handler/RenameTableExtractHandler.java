@@ -45,11 +45,10 @@ public final class RenameTableExtractHandler implements ASTExtractHandler,ASTExt
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        RenameTableExtractResult extractResult = new RenameTableExtractResult();
         Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
-        if (renameTableNode.isPresent() && 0 < renameTableNode.get().getChildCount()) {
-            extractResult.setNewTableName(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
+        if (!renameTableNode.isPresent() || 0 == renameTableNode.get().getChildCount()) {
+            return null;
         }
-        return extractResult;
+        return new RenameTableExtractResult(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
     }
 }

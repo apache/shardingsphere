@@ -21,6 +21,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -28,10 +29,10 @@ import lombok.Setter;
  * 
  * @author duhongjun
  */
-@Setter
+@RequiredArgsConstructor
 @Getter
 public class RenameTableExtractResult implements ExtractResult {
-    private String newTableName;
+    private final String newTableName;
     
     @Override
     public void inject(SQLStatement statement) {
