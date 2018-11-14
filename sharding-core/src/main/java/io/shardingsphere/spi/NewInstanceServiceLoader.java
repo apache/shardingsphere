@@ -21,7 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
@@ -33,8 +35,10 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewInstanceServiceLoader {
     
+    private static final Map<Class, Collection> SERVICE_MAP = new HashMap<>();
+    
     /**
-     * Creates a new service class loader for the given service type.
+     * Load SPI service, hold the class in service map for new instance.
      * 
      * @param service service type
      * @param <T> type of service
@@ -44,6 +48,12 @@ public final class NewInstanceServiceLoader {
     public static <T> Collection<T> load(final Class<T> service) {
         Collection<T> result = new LinkedList<>();
         for (T each : ServiceLoader.load(service)) {
+            Collection<Class<T>> serviceClasses = SERVICE_MAP.get(service);
+            if (null == serviceClasses) {
+                serviceClasses = new LinkedList<>();
+            }
+            serviceClasses.add((Class<T>) each.getClass());
+            SERVICE_MAP.put(service, serviceClasses);
             result.add(each);
         }
         return result;
