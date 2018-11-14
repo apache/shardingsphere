@@ -32,17 +32,22 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 
 /**
  * Add column extract handler.
- * 
+ *
  * @author duhongjun
  */
 public class AddColumnExtractHandler implements ASTExtractHandler {
-    
+
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
 
+    /**
+     * Extract add column result.
+     * @param ancestorNode ancestor node of ast
+     * @return column definition
+     */
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
@@ -51,8 +56,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
         }
         return extractResult;
     }
-    
-    
+
     private void extractAddColumn(final ParserRuleContext addColumnNode, final ColumnDefinitionExtractResult result) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
@@ -63,8 +67,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
             }
         }
     }
-    
+
     protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinition columnDefinition) {
-        
     }
 }

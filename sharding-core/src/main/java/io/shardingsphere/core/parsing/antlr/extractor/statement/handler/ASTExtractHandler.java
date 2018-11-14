@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**

@@ -30,16 +30,16 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Add primary key extract handler.
- * 
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class AddPrimaryKeyExtractHandler implements  ASTExtractHandler {
-    
+public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler {
+
     private final RuleName ruleName;
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!modifyColumnNode.isPresent()) {
             return null;
@@ -49,7 +49,7 @@ public final class AddPrimaryKeyExtractHandler implements  ASTExtractHandler {
             return null;
         }
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
-        if(null == result) {
+        if (null == result) {
             return null;
         }
         PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
