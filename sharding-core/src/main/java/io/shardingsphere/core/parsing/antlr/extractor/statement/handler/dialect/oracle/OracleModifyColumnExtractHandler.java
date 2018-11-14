@@ -33,17 +33,17 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 
 /**
  * Modify column extract handler for Oracle.
- * 
+ *
  * @author duhongjun
  */
 public final class OracleModifyColumnExtractHandler implements ASTExtractHandler {
-    
+
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();

@@ -32,13 +32,13 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Primary key extract handler for SQLServer.
- * 
+ *
  * @author duhongjun
  */
 public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnNode.isPresent()) {
             return null;
@@ -52,7 +52,7 @@ public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHan
             return null;
         }
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
