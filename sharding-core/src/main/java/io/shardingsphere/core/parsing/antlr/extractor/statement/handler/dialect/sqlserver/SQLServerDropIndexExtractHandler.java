@@ -52,15 +52,17 @@ public final class SQLServerDropIndexExtractHandler implements ASTExtractHandler
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ALTER_DROP_INDEX);
-        if (indexDefOptionNode.isPresent()) {
-            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);
-            if (indexNameNode.isPresent()) {
-                extractResult.getSqlTokens().add(
-                        new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
-            }
+        if (!indexDefOptionNode.isPresent()) {
+            return null;
         }
+        Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(indexDefOptionNode.get(), RuleName.INDEX_NAME);
+        if (!indexNameNode.isPresent()) {
+            return null;
+        }
+        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
+        extractResult.getSqlTokens().add(
+                new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
         return extractResult;
     }
 }
