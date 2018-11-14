@@ -18,18 +18,15 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
