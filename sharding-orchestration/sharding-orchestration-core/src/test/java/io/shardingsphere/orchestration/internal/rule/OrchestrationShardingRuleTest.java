@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OrchestrationShardingRuleTest {
+public final class OrchestrationShardingRuleTest {
     
     private OrchestrationShardingRule orchestrationShardingRule;
     
