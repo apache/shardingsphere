@@ -18,8 +18,10 @@
 package io.shardingsphere.opentracing.hook;
 
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -27,6 +29,11 @@ import static org.junit.Assert.assertTrue;
 public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest {
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+    
+    @BeforeClass
+    public static void registerSPI() {
+        NewInstanceServiceLoader.register(RootInvokeHook.class);
+    }
     
     @Test
     public void assertRootInvoke() {

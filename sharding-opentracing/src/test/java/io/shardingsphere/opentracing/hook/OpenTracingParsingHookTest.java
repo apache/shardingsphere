@@ -38,7 +38,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     private final ParsingHook parsingHook = new SPIParsingHook();
     
     @BeforeClass
-    public static void beforeClass() {
+    public static void registerSPI() {
         NewInstanceServiceLoader.register(ParsingHook.class);
     }
     
