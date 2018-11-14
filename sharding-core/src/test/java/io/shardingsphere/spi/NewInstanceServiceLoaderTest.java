@@ -48,4 +48,11 @@ public class NewInstanceServiceLoaderTest {
         Map<Class, Collection<Class<?>>> map = (Map<Class, Collection<Class<?>>>) field.get(null);
         assertThat(map.get(DataSourceMapConverter.class).size(), is(1));
     }
+    
+    @Test
+    public void assertNewServiceInstance() {
+        NewInstanceServiceLoader.register(DataSourceMapConverter.class);
+        Collection<DataSourceMapConverter> instances = NewInstanceServiceLoader.newServiceInstances(DataSourceMapConverter.class);
+        assertThat(instances.size(), is(1));
+    }
 }
