@@ -17,12 +17,21 @@
 
 package io.shardingsphere.spi;
 
+import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import org.junit.Test;
+
+import java.util.Collection;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class NewInstanceServiceLoaderTest {
     
     @Test
     public void assertLoadService() {
-    
+        Collection<DataSourceMapConverter> collections = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
+        assertThat(collections.size(), is(1));
+        assertThat(collections.iterator().next(), instanceOf(DataSourceMapConverter.class));
     }
 }
