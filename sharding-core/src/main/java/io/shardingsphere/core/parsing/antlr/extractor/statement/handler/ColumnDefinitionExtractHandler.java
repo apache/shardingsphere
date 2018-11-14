@@ -17,6 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
@@ -24,41 +28,15 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.E
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
-import io.shardingsphere.core.util.SQLUtil;
-
-import java.util.Collection;
-
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Column definition extract handler.
  * 
  * @author duhongjun
  */
-public final class ColumnDefinitionExtractHandler implements ASTExtractHandler, ASTExtractHandler1 {
+public final class ColumnDefinitionExtractHandler implements  ASTExtractHandler {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        CreateTableStatement createTableStatement = (CreateTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
-            if (columnDefinition.isPresent()) {
-                setColumnDefinition(createTableStatement, columnDefinition.get());
-            }
-        }
-    }
-    
-    private void setColumnDefinition(final CreateTableStatement createTableStatement, final ColumnDefinition columnDefinition) {
-        createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
-        createTableStatement.getColumnTypes().add(columnDefinition.getType());
-        if (columnDefinition.isPrimaryKey()) {
-            createTableStatement.getPrimaryKeyColumns().add(columnDefinition.getName());
-        }
-    }
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
