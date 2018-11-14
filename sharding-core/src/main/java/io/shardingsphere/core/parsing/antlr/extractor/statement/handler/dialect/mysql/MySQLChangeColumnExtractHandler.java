@@ -88,6 +88,7 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler,
         if (!columnDefinition.isPresent()) {
             return extractResult;
         }
+        columnDefinition.get().setOldName(oldColumnNode.get().getText());
         extractResult.getColumnDefintions().add(columnDefinition.get());
         Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {

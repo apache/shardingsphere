@@ -72,7 +72,6 @@ public final class RenameIndexExtractHandler implements ASTExtractHandler,ASTExt
         if (!(newIndexNode instanceof ParserRuleContext)) {
             return extractResult;
         }
-        
         extractResult.getSqlTokens().add(getIndexToken((ParserRuleContext) oldIndexNode));
         extractResult.getSqlTokens().add(getIndexToken((ParserRuleContext) newIndexNode));
         return extractResult;
