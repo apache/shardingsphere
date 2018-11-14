@@ -26,7 +26,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -37,13 +36,13 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private final Collection<ASTExtractHandler1> extractHandlers = new LinkedList<>();
+    private final Collection<ASTExtractHandler> extractHandlers = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement(shardingTableMetaData);
         List<ExtractResult> extractResults = new LinkedList<>();
-        for (ASTExtractHandler1 each : extractHandlers) {
+        for (ASTExtractHandler each : extractHandlers) {
             ExtractResult extractResult = each.extract(rootNode);
             if(null != extractResult) {
                 extractResults.add(extractResult);
@@ -62,7 +61,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     protected void postExtract(final SQLStatement statement) {
     }
     
-    protected final void addExtractHandler(final ASTExtractHandler1 handler) {
+    protected final void addExtractHandler(final ASTExtractHandler handler) {
         extractHandlers.add(handler);
     }
 }
