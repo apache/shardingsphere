@@ -17,45 +17,23 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Rename index extract handler.
  * 
  * @author duhongjun
  */
-public final class RenameIndexExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
-        if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
-            return;
-        }
-        ParseTree oldIndexNode = renameIndexNode.get().getChild(2);
-        if (!(oldIndexNode instanceof ParserRuleContext)) {
-            return;
-        }
-        ParseTree newIndexNode = renameIndexNode.get().getChild(4);
-        if (!(newIndexNode instanceof ParserRuleContext)) {
-            return;
-        }
-        statement.getSQLTokens().add(getIndexToken(statement, (ParserRuleContext) oldIndexNode));
-        statement.getSQLTokens().add(getIndexToken(statement, (ParserRuleContext) newIndexNode));
-    }
-    
-    private IndexToken getIndexToken(final SQLStatement statement, final ParserRuleContext indexNode) {
-        return new IndexToken(indexNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNode.getText()), statement.getTables().getSingleTableName());
-    }
+public final class RenameIndexExtractHandler implements ASTExtractHandler {
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
