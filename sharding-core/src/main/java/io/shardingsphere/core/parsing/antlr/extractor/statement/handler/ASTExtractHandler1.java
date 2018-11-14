@@ -32,7 +32,6 @@ public interface ASTExtractHandler1 {
      * Extract AST.
      *  
      * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
      */
     ExtractResult extract(ParserRuleContext ancestorNode);
 }
