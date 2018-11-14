@@ -29,16 +29,22 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
  * Single table name extract handler.
- * 
+ *
  * @author duhongjun
  */
 public class TableNameExtractHandler implements ASTExtractHandler {
 
+    /**
+     * Extract AST.
+     *
+     * @param ancestorNode ancestor node of ast
+     * @return Extract Result
+     */
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> tableNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (!tableNameNode.isPresent()) {
-           return null;
+            return null;
         }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
         String tableText = tableNameNode.get().getText();

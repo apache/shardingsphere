@@ -29,15 +29,15 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
  * Multiple table names extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class TableNamesExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
