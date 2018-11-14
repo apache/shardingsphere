@@ -59,7 +59,11 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
                 Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
                 if (oldDefinition.isPresent()) {
                     oldDefinition.get().setName(each.getName());
-                    alterTableStatement.getUpdateColumns().put(oldName, each);
+                    if(null == each.getType()) {
+                        alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
+                    }else {
+                        alterTableStatement.getUpdateColumns().put(oldName, each);
+                    }
                 }
             }else {
                 if(!each.isAdd()) {
