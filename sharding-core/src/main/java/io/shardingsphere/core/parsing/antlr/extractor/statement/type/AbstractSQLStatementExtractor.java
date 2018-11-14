@@ -17,14 +17,18 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler1;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Abstract SQL statement extractor.
@@ -33,13 +37,21 @@ import java.util.LinkedList;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private final Collection<ASTExtractHandler> extractHandlers = new LinkedList<>();
+    private final Collection<ASTExtractHandler1> extractHandlers = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement(shardingTableMetaData);
-        for (ASTExtractHandler each : extractHandlers) {
-            each.extract(rootNode, result);
+        List<ExtractResult> extractResults = new LinkedList<>();
+        for (ASTExtractHandler1 each : extractHandlers) {
+            ExtractResult extractResult = each.extract(rootNode);
+            if(null != extractResult) {
+                extractResults.add(extractResult);
+            }
+        }
+        
+        for (ExtractResult each : extractResults) {
+            each.inject(result);
         }
         postExtract(result);
         return result;
@@ -50,7 +62,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     protected void postExtract(final SQLStatement statement) {
     }
     
-    protected final void addExtractHandler(final ASTExtractHandler handler) {
+    protected final void addExtractHandler(final ASTExtractHandler1 handler) {
         extractHandlers.add(handler);
     }
 }
