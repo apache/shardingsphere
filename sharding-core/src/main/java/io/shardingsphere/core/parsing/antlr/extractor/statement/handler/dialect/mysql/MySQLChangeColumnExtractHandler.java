@@ -71,24 +71,24 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler,
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
         Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
         if (!oldColumnNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionNode.isPresent()) {
-            return extractResult;
+            return null;
         }
         Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
         if (!columnDefinition.isPresent()) {
-            return extractResult;
+            return null;
         }
         columnDefinition.get().setOldName(oldColumnNode.get().getText());
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
         extractResult.getColumnDefintions().add(columnDefinition.get());
         Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {
