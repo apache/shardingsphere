@@ -17,46 +17,24 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Rename column extract handler.
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
-        if (!modifyColumnNode.isPresent()) {
-            return;
-        }
-        Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
-        if (2 != columnNodes.size()) {
-            return;
-        }
-        Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
-        String oldName = columnNodesIterator.next().getText();
-        String newName = columnNodesIterator.next().getText();
-        Optional<ColumnDefinition> oldDefinition = alterStatement.getColumnDefinitionByName(oldName);
-        if (oldDefinition.isPresent()) {
-            oldDefinition.get().setName(newName);
-            alterStatement.getUpdateColumns().put(oldName, oldDefinition.get());
-        }
-    }
+public final class RenameColumnExtractHandler implements ASTExtractHandler {
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
@@ -70,7 +48,8 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler,ASTEx
         }
         ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
         Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
-        extractResult.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), columnNodesIterator.next().getText()));
+        String oldName = columnNodesIterator.next().getText();
+        extractResult.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), oldName));
         return extractResult;
     }
 }
