@@ -17,6 +17,7 @@
 
 package io.shardingsphere.spi;
 
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +36,7 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewInstanceServiceLoader {
     
-    private static final Map<Class, Collection> SERVICE_MAP = new HashMap<>();
+    private static final Map<Class, Collection<Class<?>>> SERVICE_MAP = new HashMap<>();
     
     /**
      * Load SPI service, hold the class in service map for new instance.
@@ -55,11 +56,31 @@ public final class NewInstanceServiceLoader {
     
     @SuppressWarnings("unchecked")
     private static <T> void registerServiceClass(final Class<T> service, final T instance) {
-        Collection serviceClasses = SERVICE_MAP.get(service);
+        Collection<Class<?>> serviceClasses = SERVICE_MAP.get(service);
         if (null == serviceClasses) {
             serviceClasses = new LinkedList<>();
         }
         serviceClasses.add(instance.getClass());
         SERVICE_MAP.put(service, serviceClasses);
+    }
+    
+    /**
+     * New service instances.
+     *
+     * @param service service class
+     * @param <T> type of service
+     * @return service instances
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection newServiceInstances(final Class<T> service) {
+        Collection<T> result = new LinkedList<>();
+        for (Class<?> each : SERVICE_MAP.get(service)) {
+            try {
+                result.add((T) each.newInstance());
+            } catch (final ReflectiveOperationException ex) {
+                throw new ShardingException(ex);
+            }
+        }
+        return result;
     }
 }
