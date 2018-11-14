@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
@@ -34,8 +33,12 @@ public class DropPrimaryKeyExtractResult implements ExtractResult {
 
     private final boolean dropPrimaryKey;
     
+    /**
+     * Inject drop primary key to SQLStatement.
+     * @param statement SQL statement
+     */
     @Override
-    public void inject(SQLStatement statement) {
+    public void inject(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         alterStatement.setDropPrimaryKey(dropPrimaryKey);
     }

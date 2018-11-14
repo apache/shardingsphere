@@ -37,7 +37,7 @@ import io.shardingsphere.core.util.SQLUtil;
 public final class SQLServerDropIndexExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ALTER_DROP_INDEX);
         if (!indexDefOptionNode.isPresent()) {
             return null;

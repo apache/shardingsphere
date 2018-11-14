@@ -37,7 +37,7 @@ import io.shardingsphere.core.util.SQLUtil;
 public final class SQLServerAddIndexExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!indexDefOptionNode.isPresent()) {
             return null;
