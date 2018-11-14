@@ -28,44 +28,16 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.C
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
  * Add column extract handler.
  * 
  * @author duhongjun
  */
-public class AddColumnExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
+public class AddColumnExtractHandler implements ASTExtractHandler {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-    
-    @Override
-    public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
-            extractAddColumn(each, (AlterTableStatement) statement);
-        }
-    }
-    
-    private void extractAddColumn(final ParserRuleContext addColumnNode, final AlterTableStatement alterTableStatement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
-            if (columnDefinition.isPresent()) {
-                setColumnDefinition(addColumnNode, alterTableStatement, columnDefinition.get());
-            }
-        }
-    }
-    
-    private void setColumnDefinition(final ParserRuleContext addColumnNode, final AlterTableStatement alterTableStatement, final ColumnDefinition columnDefinition) {
-        if (!alterTableStatement.findColumnDefinition(columnDefinition.getName()).isPresent()) {
-            alterTableStatement.getAddColumns().add(columnDefinition);
-            postVisitColumnDefinition(addColumnNode, alterTableStatement, columnDefinition.getName());
-        }
-    }
-    
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
-    }
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
