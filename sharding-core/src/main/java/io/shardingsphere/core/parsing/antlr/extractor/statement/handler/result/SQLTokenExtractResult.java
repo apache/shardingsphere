@@ -15,48 +15,48 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * SQL Tokens extract handler.
- * 
+ *
  * @author duhongjun
  */
 @Getter
 public class SQLTokenExtractResult implements ExtractResult {
     private List<SQLToken> sqlTokens = new LinkedList<>();
-    
+
+    /**
+     * Inject SQL token to SQLStatement.
+     * @param statement SQL statement
+     */
     @Override
-    public void inject(SQLStatement statement) {
+    public void inject(final SQLStatement statement) {
         String tableName = "";
-        if(statement instanceof DDLStatement) {
+        if (statement instanceof DDLStatement) {
             DDLStatement ddlStatement = (DDLStatement) statement;
             tableName = ddlStatement.getTables().isEmpty() ? "" : ddlStatement.getTables().getSingleTableName();
         }
-        for(SQLToken each : sqlTokens) {
-            if(each instanceof IndexToken) {
+        for (SQLToken each : sqlTokens) {
+            if (each instanceof IndexToken) {
                 IndexToken indexToken = (IndexToken) each;
-                if(null == indexToken.getTableName()) {
+                if (null == indexToken.getTableName()) {
                     indexToken.setTableName(tableName);
                 }
-            }else if(each instanceof TableToken) {
-                statement.getTables().add(new Table(( (TableToken) each).getTableName(), Optional.<String>absent()));
+            } else if (each instanceof TableToken) {
+                statement.getTables().add(new Table(((TableToken) each).getTableName(), Optional.<String>absent()));
             }
             statement.getSQLTokens().add(each);
         }
