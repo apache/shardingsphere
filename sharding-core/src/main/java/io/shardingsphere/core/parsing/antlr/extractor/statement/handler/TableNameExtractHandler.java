@@ -17,36 +17,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.util.SQLUtil;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Single table name extract handler.
  * 
  * @author duhongjun
  */
-public class TableNameExtractHandler implements ASTExtractHandler,ASTExtractHandler1 {
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        Optional<ParserRuleContext> tableNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
-        if (tableNameNode.isPresent()) {
-            String tableText = tableNameNode.get().getText();
-            int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-            statement.getSQLTokens().add(new TableToken(tableNameNode.get().getStart().getStartIndex(), dotPosition, tableText));
-            statement.getTables().add(new Table(SQLUtil.getExactlyValue(SQLUtil.getNameWithoutSchema(tableText)), Optional.<String>absent()));
-        }
-    }
+public class TableNameExtractHandler implements ASTExtractHandler {
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
