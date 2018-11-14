@@ -32,15 +32,15 @@ import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Drop index extract for MySQL.
- * 
+ *
  * @author duhongjun
  */
 public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
-    
+
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
@@ -55,7 +55,7 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
             }
             ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
             extractResult.getSqlTokens().add(new IndexToken(indexNameNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.getText()), null));
-         }
+        }
         return extractResult;
     }
 }
