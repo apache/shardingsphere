@@ -43,6 +43,8 @@ public final class ColumnDefinition {
     
     private String oldName;
     
+    private boolean isAdd;
+    
     public ColumnDefinition(final String name, final String type, final Integer length, boolean primaryKey) {
         this.name = name;
         this.type = type;
