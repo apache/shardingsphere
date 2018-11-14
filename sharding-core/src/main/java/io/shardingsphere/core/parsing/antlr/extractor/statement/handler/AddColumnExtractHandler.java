@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -67,11 +69,15 @@ public class AddColumnExtractHandler implements ASTExtractHandler,ASTExtractHand
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
-            extractAddColumn(each, result);
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
+        if(result.isEmpty()) {
+            return null;
         }
-        return result;
+        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : result) {
+            extractAddColumn(each, extractResult);
+        }
+        return extractResult;
     }
     
     
