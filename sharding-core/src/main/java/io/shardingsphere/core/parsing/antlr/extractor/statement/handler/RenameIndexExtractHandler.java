@@ -59,19 +59,19 @@ public final class RenameIndexExtractHandler implements ASTExtractHandler,ASTExt
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
         Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
         if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
-            return extractResult;
+            return null;
         }
         ParseTree oldIndexNode = renameIndexNode.get().getChild(2);
         if (!(oldIndexNode instanceof ParserRuleContext)) {
-            return extractResult;
+            return null;
         }
         ParseTree newIndexNode = renameIndexNode.get().getChild(4);
         if (!(newIndexNode instanceof ParserRuleContext)) {
-            return extractResult;
+            return null;
         }
+        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
         extractResult.getSqlTokens().add(getIndexToken((ParserRuleContext) oldIndexNode));
         extractResult.getSqlTokens().add(getIndexToken((ParserRuleContext) newIndexNode));
         return extractResult;
