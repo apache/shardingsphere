@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import java.util.LinkedList;
@@ -34,53 +33,58 @@ import lombok.Setter;
 
 /**
  * Add column result.
- * 
+ *
  * @author duhongjun
  */
 @Getter
 @Setter
 public class ColumnDefinitionExtractResult implements ExtractResult {
-    
+
     private List<ColumnDefinition> columnDefintions = new LinkedList<>();
-    
+
+    /**
+     * Inject column definition to SQLStatement.
+     * @param statement SQL statement
+     */
     @Override
     public void inject(final SQLStatement statement) {
-        if(statement instanceof AlterTableStatement) {
-            injectAlter((AlterTableStatement)statement);
-        }else if(statement instanceof CreateTableStatement) {
+        if (statement instanceof AlterTableStatement) {
+            injectAlter((AlterTableStatement) statement);
+        } else if (statement instanceof CreateTableStatement) {
             injectCreate((CreateTableStatement) statement);
         }
     }
-    
+
     private void injectAlter(final AlterTableStatement alterTableStatement) {
-        for(ColumnDefinition each : columnDefintions) {
+        for (ColumnDefinition each : columnDefintions) {
             String oldName = each.getOldName();
-            if(null != oldName) {
+            if (null != oldName) {
                 Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
-                if (oldDefinition.isPresent()) {
-                    oldDefinition.get().setName(each.getName());
-                    if(null == each.getType()) {
-                        alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
-                    }else {
-                        alterTableStatement.getUpdateColumns().put(oldName, each);
-                    }
+                if (!oldDefinition.isPresent()) {
+                    return;
                 }
-            }else {
-                if(!each.isAdd()) {
+                oldDefinition.get().setName(each.getName());
+                if (null == each.getType()) {
+                    alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
+                } else {
+                    alterTableStatement.getUpdateColumns().put(oldName, each);
+                }
+            } else {
+                if (!each.isAdd()) {
                     alterTableStatement.getUpdateColumns().put(each.getName(), each);
-                }else if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
+                } else if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
                     alterTableStatement.getAddColumns().add(each);
                 }
             }
-            if(null != each.getPosition()) {
+            if (null != each.getPosition()) {
                 MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
                 mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
             }
         }
     }
-    
+
     private void injectCreate(final CreateTableStatement createTableStatement) {
-        for(ColumnDefinition each : columnDefintions) {
+        for (ColumnDefinition each : columnDefintions) {
             createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(each.getName()));
             createTableStatement.getColumnTypes().add(each.getType());
             if (each.isPrimaryKey()) {

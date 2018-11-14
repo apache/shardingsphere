@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import java.util.LinkedHashSet;
@@ -28,7 +27,7 @@ import lombok.Setter;
 
 /**
  * Drop column result.
- * 
+ *
  * @author duhongjun
  */
 @Getter
@@ -36,9 +35,13 @@ import lombok.Setter;
 public class DropColumnExtractResult implements ExtractResult {
 
     private Set<String> dropColumnNames = new LinkedHashSet<>();
-    
+
+    /**
+     * Inject drop column name to SQLStatement.
+     * @param statement SQL statement
+     */
     @Override
-    public void inject(SQLStatement statement) {
+    public void inject(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (String each : dropColumnNames) {
             alterStatement.getDropColumns().add(each);
