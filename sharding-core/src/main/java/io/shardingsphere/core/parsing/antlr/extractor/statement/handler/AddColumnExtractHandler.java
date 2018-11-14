@@ -79,6 +79,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler,ASTExtractHand
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
+                columnDefinition.get().setAdd(true);
                 postExtractColumnDefinition(addColumnNode, columnDefinition.get());
                 result.getColumnDefintions().add(columnDefinition.get());
             }
