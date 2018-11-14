@@ -45,11 +45,10 @@ public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler,AST
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
-        DropPrimaryKeyExtractResult extractResult = new DropPrimaryKeyExtractResult();
         Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
-        if (dropPrimaryKeyNode.isPresent()) {
-            extractResult.setDropPrimaryKey(true);
+        if (!dropPrimaryKeyNode.isPresent()) {
+            return null;
         }
-        return extractResult;
+        return new DropPrimaryKeyExtractResult(true);
     }
 }

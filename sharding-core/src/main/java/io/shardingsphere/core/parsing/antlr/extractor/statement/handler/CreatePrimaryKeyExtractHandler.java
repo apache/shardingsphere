@@ -69,7 +69,7 @@ public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler,A
             return null;
         }
         PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : result) {
             extractResult.getPrimaryKeyColumnNames().add(each.getText());
         }
         return extractResult;
