@@ -20,13 +20,11 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 import java.util.Collection;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
@@ -34,15 +32,8 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
  * 
  * @author duhongjun
  */
-public final class TableNamesExtractHandler extends TableNameExtractHandler implements ASTExtractHandler1 {
-    
-    @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParseTree each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            super.extract((ParserRuleContext) each, statement);
-        }
-    }
-    
+public final class TableNamesExtractHandler implements ASTExtractHandler {
+
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
