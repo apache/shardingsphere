@@ -29,13 +29,13 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Create table primary key extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return null;
@@ -45,7 +45,7 @@ public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
             return null;
         }
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
