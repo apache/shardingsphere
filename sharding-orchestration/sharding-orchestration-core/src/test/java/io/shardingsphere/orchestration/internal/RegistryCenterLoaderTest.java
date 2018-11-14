@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
 
-public class RegistryCenterLoaderTest {
+public final class RegistryCenterLoaderTest {
     
     private RegistryCenter regCenter;
     
