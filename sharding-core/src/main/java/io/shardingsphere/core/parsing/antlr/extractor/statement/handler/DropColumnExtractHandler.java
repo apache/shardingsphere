@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -46,8 +48,12 @@ public final class DropColumnExtractHandler implements ASTExtractHandler,ASTExtr
 
     @Override
     public ExtractResult extract(ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
+        if(result.isEmpty()) {
+            return null;
+        }
         DropColumnExtractResult extractResult = new DropColumnExtractResult();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
+        for (ParserRuleContext each : result) {
             for (ParseTree columnNode : ASTUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
                 extractResult.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
