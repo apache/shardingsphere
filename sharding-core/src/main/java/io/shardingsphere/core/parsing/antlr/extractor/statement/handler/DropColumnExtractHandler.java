@@ -29,15 +29,15 @@ import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Drop column extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class DropColumnExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         DropColumnExtractResult extractResult = new DropColumnExtractResult();

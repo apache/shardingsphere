@@ -27,13 +27,13 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Drop primary key extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler {
 
     @Override
-    public ExtractResult extract(ParserRuleContext ancestorNode) {
+    public ExtractResult extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
         if (!dropPrimaryKeyNode.isPresent()) {
             return null;
