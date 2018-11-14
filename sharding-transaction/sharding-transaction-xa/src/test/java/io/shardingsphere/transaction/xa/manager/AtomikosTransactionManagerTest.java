@@ -27,6 +27,7 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,8 +137,8 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertWrapDataSourceForMySQL() {
-        XADataSource xaDataSource = new MysqlXADataSource();
+    public void assertWrapDataSourceForH2() {
+        XADataSource xaDataSource = new JdbcDataSource();
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setUsername("root");
         dataSourceParameter.setPassword("root");

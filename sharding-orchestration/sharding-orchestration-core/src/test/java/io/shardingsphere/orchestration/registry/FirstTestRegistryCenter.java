@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author panjuan
  */
-public final class TestRegistryCenter implements RegistryCenter {
+public final class FirstTestRegistryCenter implements RegistryCenter {
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
