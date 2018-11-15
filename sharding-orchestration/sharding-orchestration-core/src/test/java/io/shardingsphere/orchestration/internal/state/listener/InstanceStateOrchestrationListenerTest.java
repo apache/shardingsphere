@@ -34,6 +34,7 @@ public final class InstanceStateOrchestrationListenerTest {
     
     @Before
     public void setUp() {
+        instanceStateOrchestrationListener = new InstanceStateOrchestrationListener("test", regCenter);
     }
     
     @Test
