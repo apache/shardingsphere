@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,8 +38,11 @@ public final class OrchestrationFacadeTest {
     private RegistryCenter regCenter;
     
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
+        Field field = orchestrationFacade.getClass().getDeclaredField("regCenter");
+        field.setAccessible(true);
+        field.set(orchestrationFacade, regCenter);
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
@@ -51,6 +55,7 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertInitWithoutParameters() {
+        orchestrationFacade.init();
     }
     
     @Test
