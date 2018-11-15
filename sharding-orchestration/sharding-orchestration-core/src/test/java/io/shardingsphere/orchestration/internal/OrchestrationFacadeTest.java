@@ -127,7 +127,7 @@ public final class OrchestrationFacadeTest {
     @Test
     public void assertInitWithParameters() {
         orchestrationFacade.init(Collections.singletonMap("sharding_db",
-                getDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), getProperties());
+                getDataSourceConfigurationMap()), createRuleConfigurationMap(), getAuthentication(), Collections.<String, Object>emptyMap(), getProperties());
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persistEphemeral(anyString(), anyString());
         verify(regCenter).persist("/test/state/datasources", "");
@@ -169,10 +169,10 @@ public final class OrchestrationFacadeTest {
         return result;
     }
     
-    private Authentication createAuthentication() {
+    private Authentication getAuthentication() {
         Authentication result = new Authentication();
         result.setUsername("root");
-        result.setPassword("root");
+        result.setPassword("");
         return result;
     }
     
