@@ -20,6 +20,7 @@ package io.shardingsphere.orchestration.internal;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,13 +46,13 @@ public final class OrchestrationFacadeTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
-        setRegistryForOrchestrationFacade();
+        setRegistry(orchestrationFacade);
     }
     
-    private void setRegistryForOrchestrationFacade() throws ReflectiveOperationException {
-        Field field = orchestrationFacade.getClass().getDeclaredField("regCenter");
+    private void setRegistry(final Object target) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
-        field.set(orchestrationFacade, regCenter);
+        field.set(target, regCenter);
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
@@ -64,6 +67,12 @@ public final class OrchestrationFacadeTest {
     public void assertInitWithoutParameters() {
         orchestrationFacade.init();
         verify(regCenter).persistEphemeral(anyString(), anyString());
+        verify(regCenter).persist("/test/state/datasources", "");
+        verify(regCenter).watch(eq("/test/config/authentication"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/configmap"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/sharding_db/datasource"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/props"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/sharding_db/rule"), any(EventListener.class));
     }
     
     @Test
