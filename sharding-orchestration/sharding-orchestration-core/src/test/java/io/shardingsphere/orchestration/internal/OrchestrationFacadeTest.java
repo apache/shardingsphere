@@ -150,6 +150,22 @@ public final class OrchestrationFacadeTest {
         });
     }
     
+    private Map<String, DataSource> getDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", getDataSource("ds_0"));
+        result.put("ds_1", getDataSource("ds_1"));
+        return result;
+    }
+    
+    private DataSource getDataSource(final String name) {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setUrl("jdbc:mysql://localhost:3306/" + name);
+        result.setUsername("root");
+        result.setPassword("");
+        return result;
+    }
+    
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         return Collections.singletonMap("sharding_db", getShardingRuleConfiguration());
     }
@@ -181,22 +197,6 @@ public final class OrchestrationFacadeTest {
     
     private Authentication getAuthentication() {
         Authentication result = new Authentication();
-        result.setUsername("root");
-        result.setPassword("");
-        return result;
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", getDataSource("ds_0"));
-        result.put("ds_1", getDataSource("ds_1"));
-        return result;
-    }
-    
-    private DataSource getDataSource(final String name) {
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("");
         return result;
