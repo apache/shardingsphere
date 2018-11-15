@@ -34,6 +34,7 @@ public final class PropertiesOrchestrationListenerTest {
     
     @Before
     public void setUp() {
+        propertiesOrchestrationListener = new PropertiesOrchestrationListener("test", regCenter);
     }
     
     @Test
