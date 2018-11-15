@@ -72,7 +72,9 @@ public final class OrchestrationFacadeTest {
         for (RuleOrchestrationListener each : ruleListenerManagers) {
             setRegistry(each);
         }
-        Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = (Collection<DataSourceOrchestrationListener>) listenerManager.getClass().getDeclaredField("dataSourceListenerManagers").get(listenerManager);
+        childField = listenerManager.getClass().getDeclaredField("dataSourceListenerManagers");
+        childField.setAccessible(true);
+        Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = (Collection<DataSourceOrchestrationListener>) childField.get(listenerManager);
         for (DataSourceOrchestrationListener each : dataSourceListenerManagers) {
             setRegistry(each);
         }
