@@ -70,10 +70,14 @@ public final class OrchestrationFacadeTest {
     public void setUp() throws ReflectiveOperationException {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
         setRegistry(orchestrationFacade);
+        setRegCenterForOrchestrationListenerManager();
         setRegistry(orchestrationFacade.getConfigService());
         setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService"), orchestrationFacade);
         setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService"), orchestrationFacade);
-        setRegCenterForOrchestrationListenerManager();
+    }
+    
+    private OrchestrationConfiguration getOrchestrationConfiguration() {
+        return new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true);
     }
     
     private void setRegCenterForOrchestrationListenerManager() throws ReflectiveOperationException {
@@ -120,10 +124,6 @@ public final class OrchestrationFacadeTest {
         field.set(target, regCenter);
     }
     
-    private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true);
-    }
-    
     @Test
     public void assertInitWithParameters() {
         orchestrationFacade.init(Collections.singletonMap("sharding_db",
@@ -138,6 +138,16 @@ public final class OrchestrationFacadeTest {
         verify(regCenter).watch(eq("/test/config/props"), any(EventListener.class));
         verify(regCenter).watch(eq("/test/config/schema/sharding_db/rule"), any(EventListener.class));
         verify(regCenter).watch(eq("/test/config/schema/masterslave_db/rule"), any(EventListener.class));
+    }
+    
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
+        return Maps.transformValues(getDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
@@ -174,16 +184,6 @@ public final class OrchestrationFacadeTest {
         result.setUsername("root");
         result.setPassword("");
         return result;
-    }
-    
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
-        return Maps.transformValues(getDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final DataSource input) {
-                return DataSourceConfiguration.getDataSourceConfiguration(input);
-            }
-        });
     }
     
     private Map<String, DataSource> getDataSourceMap() {
