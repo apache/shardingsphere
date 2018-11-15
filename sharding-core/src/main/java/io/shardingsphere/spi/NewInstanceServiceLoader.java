@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -46,7 +47,7 @@ public final class NewInstanceServiceLoader {
      * @return SPI service collection
      */
     public static <T> Collection<T> load(final Class<T> service) {
-        Collection<T> result = new LinkedList<>();
+        Collection<T> result = new LinkedHashSet<>();
         for (T each : ServiceLoader.load(service)) {
             result.add(each);
         }
@@ -69,7 +70,7 @@ public final class NewInstanceServiceLoader {
     private static <T> void registerServiceClass(final Class<T> service, final T instance) {
         Collection<Class<?>> serviceClasses = SERVICE_MAP.get(service);
         if (null == serviceClasses) {
-            serviceClasses = new LinkedList<>();
+            serviceClasses = new LinkedHashSet<>();
         }
         serviceClasses.add(instance.getClass());
         SERVICE_MAP.put(service, serviceClasses);
