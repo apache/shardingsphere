@@ -46,7 +46,7 @@ public final class ShardingRuleTest {
     public void assertShardingRuleWithBroadcastTableRule() {
         ShardingRule actual = createShardingRule();
         assertThat(actual.getBroadcastTables().size(), is(1));
-        assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
+        assertThat(actual.getBroadcastTables().iterator().next(), is("BROADCAST_LOGIC_TABLE"));
     }
     
     @Test
