@@ -20,14 +20,13 @@ package io.shardingsphere.orchestration.internal.config.listener;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RuleOrchestrationListenerTest {
+public final class RuleOrchestrationListenerTest {
     
     @Before
     public void setUp() {
     }
     
     @Test
-    public void testWatch() {
+    public void assertWatch() {
     }
 }
-    
