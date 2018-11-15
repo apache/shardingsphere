@@ -43,6 +43,13 @@ import static org.junit.Assert.assertTrue;
 public final class ShardingRuleTest {
     
     @Test
+    public void assertShardingRuleWithBroadcastTableRule() {
+        ShardingRule actual = createShardingRule();
+        assertThat(actual.getBroadcastTables().size(), is(1));
+        assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
+    }
+    
+    @Test
     public void assertShardingRuleWithoutStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
@@ -417,6 +424,7 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.getTableRuleConfigs().add(subTableRuleConfig);
         shardingRuleConfig.getBindingTableGroups().add(createTableRuleConfig().getLogicTable() + "," + createSubTableRuleConfig().getLogicTable());
+        shardingRuleConfig.getBroadcastTables().add("BROADCAST_LOGIC_TABLE");
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
