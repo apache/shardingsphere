@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
@@ -43,14 +45,13 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         SQLStatement result = createStatement(shardingTableMetaData);
         List<ExtractResult> extractResults = new LinkedList<>();
         for (ASTExtractHandler each : extractHandlers) {
-            ExtractResult extractResult = each.extract(rootNode);
-            if (null != extractResult) {
-                extractResults.add(extractResult);
+            Optional<ExtractResult> extractResult = each.extract(rootNode);
+            if (extractResult.isPresent()) {
+                extractResults.add(extractResult.get());
             }
         }
-        
         for (ExtractResult each : extractResults) {
-            each.inject(result);
+            each.fill(result);
         }
         postExtract(result);
         return result;
