@@ -37,25 +37,25 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
  * @author duhongjun
  */
 public final class OracleModifyColumnExtractHandler implements ASTExtractHandler {
-
+    
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
+        if (modifyColumnNodes.isEmpty()) {
+            return Optional.absent();
         }
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
-        for (ParserRuleContext modifyColumnNode : result) {
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext modifyColumnNode : modifyColumnNodes) {
             for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
                 Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
                 if (columnDefinition.isPresent()) {
-                    extractResult.getColumnDefintions().add(columnDefinition.get());
+                    result.getColumnDefintions().add(columnDefinition.get());
                 }
             }
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
