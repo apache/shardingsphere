@@ -17,12 +17,17 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class DataSourceOrchestrationListenerTest {
+public final class DataSourceOrchestrationListenerTest {
+    
+    @Before
+    public void setUp() {
+    
+    }
     
     @Test
-    public void testWatch() {
+    public void assertWatch() {
     }
 }
-    
