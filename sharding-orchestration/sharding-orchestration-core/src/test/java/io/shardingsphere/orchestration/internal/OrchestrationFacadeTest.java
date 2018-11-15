@@ -67,8 +67,12 @@ public final class OrchestrationFacadeTest {
         setRegistry(listenerManager.getClass().getDeclaredField("instanceStateListenerManager"), listenerManager);
         setRegistry(listenerManager.getClass().getDeclaredField("dataSourceStateListenerManager"), listenerManager);
         setRegistryForRuleListenerManagers(listenerManager);
-        final Field childField;
-        childField = listenerManager.getClass().getDeclaredField("dataSourceListenerManagers");
+        setRegistryForDataSourceListenerManagers(listenerManager);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void setRegistryForDataSourceListenerManagers(final OrchestrationListenerManager listenerManager) throws ReflectiveOperationException {
+        Field childField = listenerManager.getClass().getDeclaredField("dataSourceListenerManagers");
         childField.setAccessible(true);
         Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = (Collection<DataSourceOrchestrationListener>) childField.get(listenerManager);
         for (DataSourceOrchestrationListener each : dataSourceListenerManagers) {
@@ -76,7 +80,7 @@ public final class OrchestrationFacadeTest {
         }
     }
     
-    @SuppressWarnings("Unchecked")
+    @SuppressWarnings("unchecked")
     private void setRegistryForRuleListenerManagers(final OrchestrationListenerManager listenerManager) throws ReflectiveOperationException {
         Field childField = listenerManager.getClass().getDeclaredField("ruleListenerManagers");
         childField.setAccessible(true);
