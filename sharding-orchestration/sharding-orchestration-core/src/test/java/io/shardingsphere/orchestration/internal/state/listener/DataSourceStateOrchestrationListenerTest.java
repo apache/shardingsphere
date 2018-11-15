@@ -18,11 +18,16 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceStateOrchestrationListenerTest {
@@ -39,5 +44,7 @@ public final class DataSourceStateOrchestrationListenerTest {
     
     @Test
     public void assertWatch() {
+        dataSourceStateOrchestrationListener.watch();
+        verify(regCenter).watch(eq("/test/state/datasources"), any(EventListener.class));
     }
 }
