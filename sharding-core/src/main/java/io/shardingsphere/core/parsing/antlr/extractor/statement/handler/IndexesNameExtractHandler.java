@@ -21,6 +21,8 @@ import java.util.Collection;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -33,17 +35,17 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class IndexesNameExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
+        if (indexNameNodes.isEmpty()) {
+            return Optional.absent();
         }
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : result) {
-            extractResult.getSqlTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), null));
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        for (ParserRuleContext each : indexNameNodes) {
+            result.getSqlTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), null));
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
