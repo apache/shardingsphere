@@ -17,17 +17,16 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNodeTest;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationServiceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AuthenticationOrchestrationListenerTest.class,
-        ConfigMapOrchestrationListenerTest.class,
-        DataSourceOrchestrationListenerTest.class,
-        PropertiesOrchestrationListenerTest.class,
-        RuleOrchestrationListenerTest.class
+        ConfigurationNodeTest.class,
+        ConfigurationServiceTest.class
 })
 public final class AllListenerTests {
 }
