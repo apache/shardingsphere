@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.internal.config.listener;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AuthenticationOrchestrationListenerTest {
+public final class AuthenticationOrchestrationListenerTest {
     
     @Before
     public void setUp() {
@@ -30,4 +30,3 @@ public class AuthenticationOrchestrationListenerTest {
     public void assertWatch() {
     }
 }
-    
