@@ -17,10 +17,20 @@
 
 package io.shardingsphere.orchestration.internal;
 
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class OrchestrationFacadeTest {
+    
+    private OrchestrationFacade orchestrationFacade;
+    
+    @Mock
+    private RegistryCenter regCenter;
     
     @Before
     public void setUp() {
