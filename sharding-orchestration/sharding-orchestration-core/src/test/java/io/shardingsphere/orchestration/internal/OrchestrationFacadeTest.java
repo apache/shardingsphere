@@ -20,18 +20,18 @@ package io.shardingsphere.orchestration.internal;
 import org.junit.Before;
 import org.junit.Test;
 
-public class OrchestrationFacadeTest {
+public final class OrchestrationFacadeTest {
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
     
     @Test
-    public void testInit() {
+    public void assertInitWithParameters() {
     }
     
     @Test
-    public void testInit1() {
+    public void assertInitWithoutParameters() {
     }
     
     @Test
