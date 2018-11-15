@@ -17,6 +17,9 @@
 
 package io.shardingsphere.orchestration.internal;
 
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
 import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
@@ -108,6 +111,19 @@ public final class OrchestrationFacadeTest {
     @Test
     public void assertInitWithParameters() {
     }
+    
+    private ShardingRuleConfiguration getShardingRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("t_order");
+        tableRuleConfig.setActualDataNodes("ds_ms_${0..1}.t_order_${0..1}");
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getMasterSlaveRuleConfigs().addAll(getMasterSlaveRuleConfigurations());
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_ms_${user_id % 2}"));
+        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+        return result;
+    }
+    
     
     @Test
     public void assertInitWithoutParameters() {
