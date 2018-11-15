@@ -127,7 +127,7 @@ public final class OrchestrationFacadeTest {
     @Test
     public void assertInitWithParameters() {
         orchestrationFacade.init(Collections.singletonMap("sharding_db",
-                createDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties());
+                createDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), getProperties());
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persistEphemeral(anyString(), anyString());
         verify(regCenter).persist("/test/state/datasources", "");
@@ -198,11 +198,11 @@ public final class OrchestrationFacadeTest {
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
-        result.setPassword("root");
+        result.setPassword("");
         return result;
     }
     
-    private Properties createProperties() {
+    private Properties getProperties() {
         Properties result = new Properties();
         result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.FALSE);
         return result;
