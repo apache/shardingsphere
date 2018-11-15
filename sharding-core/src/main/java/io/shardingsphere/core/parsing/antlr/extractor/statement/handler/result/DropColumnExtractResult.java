@@ -33,15 +33,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DropColumnExtractResult implements ExtractResult {
-
+    
     private Set<String> dropColumnNames = new LinkedHashSet<>();
-
+    
     /**
      * Inject drop column name to SQLStatement.
+     * 
      * @param statement SQL statement
      */
     @Override
-    public void inject(final SQLStatement statement) {
+    public void fill(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (String each : dropColumnNames) {
             alterStatement.getDropColumns().add(each);
