@@ -30,17 +30,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class DropPrimaryKeyExtractResult implements ExtractResult {
-
+    
     private final boolean dropPrimaryKey;
     
     /**
      * Inject drop primary key to SQLStatement.
+     * 
      * @param statement SQL statement
      */
     @Override
-    public void inject(final SQLStatement statement) {
+    public void fill(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         alterStatement.setDropPrimaryKey(dropPrimaryKey);
     }
-
 }
