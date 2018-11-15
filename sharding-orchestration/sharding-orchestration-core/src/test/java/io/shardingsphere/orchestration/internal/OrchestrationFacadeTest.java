@@ -21,10 +21,12 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
 import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
@@ -32,6 +34,7 @@ import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerMa
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +46,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -119,9 +123,14 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertInitWithParameters() {
+        orchestrationFacade.init(createDataSourceConfigurationMap(), createShardingRuleConfiguration(), )
     }
     
-    private ShardingRuleConfiguration getShardingRuleConfiguration() {
+    private Map<String, RuleConfiguration> createRuleConfigurationMap() {
+        return Collections.singletonMap("sharding_db", getShardingRuleConfiguration());
+    }
+    
+    private RuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
@@ -146,6 +155,13 @@ public final class OrchestrationFacadeTest {
         return result;
     }
     
+    private Authentication createAuthentication() {
+        Authentication result = new Authentication();
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
+    }
+    
     private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
         return Maps.transformValues(createDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
             
@@ -158,6 +174,22 @@ public final class OrchestrationFacadeTest {
     
     private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
         return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", createDataSource("ds_0"));
+        result.put("ds_1", createDataSource("ds_1"));
+        return result;
+    }
+    
+    private DataSource createDataSource(final String name) {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setUrl("jdbc:mysql://localhost:3306/" + name);
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
     
     
