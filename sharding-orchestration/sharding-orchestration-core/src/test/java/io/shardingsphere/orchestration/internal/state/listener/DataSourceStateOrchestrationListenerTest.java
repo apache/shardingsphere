@@ -34,6 +34,7 @@ public final class DataSourceStateOrchestrationListenerTest {
     
     @Before
     public void setUp() {
+        dataSourceStateOrchestrationListener = new DataSourceStateOrchestrationListener("test", regCenter);
     }
     
     @Test
