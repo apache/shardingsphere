@@ -39,23 +39,24 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ColumnDefinitionExtractResult implements ExtractResult {
-
+    
     private List<ColumnDefinition> columnDefintions = new LinkedList<>();
-
+    
     /**
      * Inject column definition to SQLStatement.
+     * 
      * @param statement SQL statement
      */
     @Override
-    public void inject(final SQLStatement statement) {
+    public void fill(final SQLStatement statement) {
         if (statement instanceof AlterTableStatement) {
-            injectAlter((AlterTableStatement) statement);
+            fillAlter((AlterTableStatement) statement);
         } else if (statement instanceof CreateTableStatement) {
-            injectCreate((CreateTableStatement) statement);
+            fillCreate((CreateTableStatement) statement);
         }
     }
-
-    private void injectAlter(final AlterTableStatement alterTableStatement) {
+    
+    private void fillAlter(final AlterTableStatement alterTableStatement) {
         for (ColumnDefinition each : columnDefintions) {
             String oldName = each.getOldName();
             if (null != oldName) {
@@ -82,8 +83,8 @@ public class ColumnDefinitionExtractResult implements ExtractResult {
             }
         }
     }
-
-    private void injectCreate(final CreateTableStatement createTableStatement) {
+    
+    private void fillCreate(final CreateTableStatement createTableStatement) {
         for (ColumnDefinition each : columnDefintions) {
             createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(each.getName()));
             createTableStatement.getColumnTypes().add(each.getType());
