@@ -223,6 +223,8 @@ public final class OrchestrationFacadeTest {
     }
     
     @Test
-    public void testClose() {
+    public void testClose() throws Exception {
+        orchestrationFacade.close();
+        verify(regCenter).close();
     }
 }
