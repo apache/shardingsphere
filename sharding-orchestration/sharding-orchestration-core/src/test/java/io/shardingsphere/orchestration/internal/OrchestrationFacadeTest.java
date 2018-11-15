@@ -127,7 +127,7 @@ public final class OrchestrationFacadeTest {
     @Test
     public void assertInitWithParameters() {
         orchestrationFacade.init(Collections.singletonMap("sharding_db",
-                createDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), getProperties());
+                getDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), getProperties());
         verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
         verify(regCenter).persistEphemeral(anyString(), anyString());
         verify(regCenter).persist("/test/state/datasources", "");
@@ -176,8 +176,8 @@ public final class OrchestrationFacadeTest {
         return result;
     }
     
-    private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
-        return Maps.transformValues(createDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurationMap() {
+        return Maps.transformValues(getDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
             
             @Override
             public DataSourceConfiguration apply(final DataSource input) {
@@ -186,14 +186,14 @@ public final class OrchestrationFacadeTest {
         });
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> getDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", createDataSource("ds_0"));
-        result.put("ds_1", createDataSource("ds_1"));
+        result.put("ds_0", getDataSource("ds_0"));
+        result.put("ds_1", getDataSource("ds_1"));
         return result;
     }
     
-    private DataSource createDataSource(final String name) {
+    private DataSource getDataSource(final String name) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
