@@ -33,15 +33,15 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class IndexNameExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
         if (!indexNameNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        extractResult.getSqlTokens().add(new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
-        return extractResult;
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        result.getSqlTokens().add(new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
+        return Optional.<ExtractResult>of(result);
     }
 }
