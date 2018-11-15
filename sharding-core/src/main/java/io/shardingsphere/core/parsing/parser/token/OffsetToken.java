@@ -18,18 +18,19 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Offset token for limit.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class OffsetToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class OffsetToken extends SQLToken {
     
     private final int offset;
+    
+    public OffsetToken(final int beginPosition, final int offset) {
+        super(beginPosition);
+        this.offset = offset;
+    }
 }

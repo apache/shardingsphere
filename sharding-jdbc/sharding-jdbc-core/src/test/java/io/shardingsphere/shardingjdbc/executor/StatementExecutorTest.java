@@ -437,7 +437,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         setExecuteGroups(Collections.singletonList(statement), SQLType.DML);
         try {
             assertFalse(actual.execute());
-        } catch (final SQLException ignore) {
+        } catch (final SQLException ignored) {
         }
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
         verify(getEventCaller()).verifyEventExecutionType(ShardingEventType.EXECUTE_FAILURE);

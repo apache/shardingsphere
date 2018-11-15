@@ -18,12 +18,10 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -47,27 +45,23 @@ import java.util.Map.Entry;
 @Getter
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
-    private final RuleInstance ruleInstance;
+    @Getter
+    private final Map<String, DataSource> dataSources;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
-    public JDBCBackendDataSource(final RuleInstance ruleInstance) {
-        this.ruleInstance = ruleInstance;
-        dataSourceMap = createDataSourceMap();
+    public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
+        dataSources = createDataSourceMap(dataSourceParameters);
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
-        Map<String, DataSourceParameter> dataSourceParameters = ruleInstance.getDataSources();
-        // TODO getCircuitDataSourceMap if RuleInstance.getInstance().getCircuitBreakerDataSourceNames().isEmpty() is false
-        return getNormalDataSourceMap(transactionType, dataSourceParameters);
+    private Map<String, DataSource> createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
+        // TODO getCircuitDataSourceMap if getCircuitBreakerDataSourceNames() is not empty
+        return getNormalDataSourceMap(dataSourceParameters);
     }
     
-    private Map<String, DataSource> getNormalDataSourceMap(final TransactionType transactionType, final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size());
+    private Map<String, DataSource> getNormalDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
-                result.put(entry.getKey(), getBackendDataSourceFactory(transactionType).build(entry.getKey(), entry.getValue()));
+                result.put(entry.getKey(), getBackendDataSourceFactory().build(entry.getKey(), entry.getValue()));
             // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -77,8 +71,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return result;
     }
     
-    private JDBCBackendDataSourceFactory getBackendDataSourceFactory(final TransactionType transactionType) {
-        switch (transactionType) {
+    private JDBCBackendDataSourceFactory getBackendDataSourceFactory() {
+        switch (GlobalRegistry.getInstance().getTransactionType()) {
             case XA:
                 return new JDBCXABackendDataSourceFactory();
             default:
@@ -108,7 +102,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        DataSource dataSource = getDataSourceMap().get(dataSourceName);
+        DataSource dataSource = dataSources.get(dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(dataSource.getConnection());
         }
@@ -118,18 +112,6 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         synchronized (dataSource) {
             return createConnections(dataSource, connectionSize);
         }
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() {
-        return ruleInstance.getDisabledDataSourceNames().isEmpty() ? dataSourceMap : getAvailableDataSourceMap();
-    }
-    
-    private Map<String, DataSource> getAvailableDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (String each : ruleInstance.getDisabledDataSourceNames()) {
-            result.remove(each);
-        }
-        return result;
     }
     
     private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
@@ -146,7 +128,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private void closeOriginalDataSources() {
-        for (DataSource each : dataSourceMap.values()) {
+        for (DataSource each : dataSources.values()) {
             try {
                 Method method = each.getClass().getDeclaredMethod("close");
                 method.invoke(each);

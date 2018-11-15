@@ -18,14 +18,16 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
@@ -51,18 +53,22 @@ public final class ComStmtPreparePacket implements CommandPacket {
     @Getter
     private final int sequenceId;
     
+    private final String currentSchema;
+    
     private final String sql;
     
     private final SQLParsingEngine sqlParsingEngine;
     
-    private final FrontendHandler frontendHandler;
-    
-    public ComStmtPreparePacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
+    public ComStmtPreparePacket(final int sequenceId, final String currentSchema, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
-        this.frontendHandler = frontendHandler;
+        this.currentSchema = currentSchema;
         sql = payload.readStringEOF();
-        RuleInstance ruleInstance = GlobalRegistry.getInstance().getRuleInstance(frontendHandler.getCurrentSchema());
-        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, ruleInstance.getShardingRule(), ruleInstance.getMetaData().getTable());
+        LogicSchema logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+    }
+    
+    private ShardingRule getShardingRule(final LogicSchema logicSchema) {
+        return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
     @Override
@@ -80,7 +86,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
                 new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, frontendHandler.getCurrentSchema(),
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, currentSchema,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {

@@ -27,9 +27,9 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
-import io.shardingsphere.shardingproxy.config.RuleInstance;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -70,8 +70,7 @@ public final class ComStmtPreparePacketTest {
     
     @Before
     public void setUp() {
-        setRuleInstanceMap();
-        setFrontendHandlerSchema();
+        setShardingSchemaMap();
     }
     
     @Before
@@ -81,25 +80,21 @@ public final class ComStmtPreparePacketTest {
     }
     
     @SneakyThrows
-    private void setRuleInstanceMap() {
-        RuleInstance ruleInstance = mock(RuleInstance.class);
+    private void setShardingSchemaMap() {
+        ShardingSchema shardingSchema = mock(ShardingSchema.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
-        when(ruleInstance.getMetaData()).thenReturn(metaData);
-        Map<String, RuleInstance> ruleInstanceMap = new HashMap<>();
-        ruleInstanceMap.put(ShardingConstant.LOGIC_SCHEMA_NAME, ruleInstance);
-        Field field = GlobalRegistry.class.getDeclaredField("ruleInstanceMap");
+        when(shardingSchema.getMetaData()).thenReturn(metaData);
+        Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
+        shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
+        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), ruleInstanceMap);
-    }
-    
-    private void setFrontendHandlerSchema() {
-        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
-        ComStmtPreparePacket actual = new ComStmtPreparePacket(1, payload, frontendHandler);
+        ComStmtPreparePacket actual = new ComStmtPreparePacket(1, ShardingConstant.LOGIC_SCHEMA_NAME, payload);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeStringEOF("SELECT id FROM tbl WHERE id=?");
@@ -161,7 +156,7 @@ public final class ComStmtPreparePacketTest {
     @SneakyThrows
     private ComStmtPreparePacket getComStmtPreparePacketWithMockedSQLParsingEngine(final String sql, final SQLStatement sqlStatement) {
         when(payload.readStringEOF()).thenReturn(sql);
-        ComStmtPreparePacket result = new ComStmtPreparePacket(1, payload, frontendHandler);
+        ComStmtPreparePacket result = new ComStmtPreparePacket(1, ShardingConstant.LOGIC_SCHEMA_NAME, payload);
         SQLParsingEngine sqlParsingEngine = mock(SQLParsingEngine.class);
         when(sqlParsingEngine.parse(true)).thenReturn(sqlStatement);
         Field field = ComStmtPreparePacket.class.getDeclaredField("sqlParsingEngine");

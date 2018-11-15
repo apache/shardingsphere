@@ -263,7 +263,7 @@ public final class SelectStatement extends DQLStatement {
     
     private List<SQLToken> getLimitTokens(final SelectStatement selectStatement) {
         List<SQLToken> result = new LinkedList<>();
-        for (SQLToken each : selectStatement.getSqlTokens()) {
+        for (SQLToken each : selectStatement.getSQLTokens()) {
             if (each instanceof RowCountToken || each instanceof OffsetToken) {
                 result.add(each);
             }
@@ -274,16 +274,17 @@ public final class SelectStatement extends DQLStatement {
     private void resetLimitTokens(final SelectStatement selectStatement, final List<SQLToken> limitSQLTokens) {
         int count = 0;
         List<Integer> toBeRemovedIndexes = new LinkedList<>();
-        for (SQLToken each : selectStatement.getSqlTokens()) {
+        List<SQLToken> sqlTokens = selectStatement.getSQLTokens();
+        for (SQLToken each : sqlTokens) {
             if (each instanceof RowCountToken || each instanceof OffsetToken) {
                 toBeRemovedIndexes.add(count);
             }
             count++;
         }
         for (int each : toBeRemovedIndexes) {
-            selectStatement.getSqlTokens().remove(each);
+            sqlTokens.remove(each);
         }
-        selectStatement.getSqlTokens().addAll(limitSQLTokens);
+        sqlTokens.addAll(limitSQLTokens);
     }
     
     private void processItems(final SelectStatement subQueryStatement) {

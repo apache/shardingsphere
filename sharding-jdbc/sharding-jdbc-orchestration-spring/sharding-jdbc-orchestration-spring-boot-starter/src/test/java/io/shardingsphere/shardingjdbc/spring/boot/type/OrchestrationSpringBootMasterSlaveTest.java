@@ -53,6 +53,7 @@ public class OrchestrationSpringBootMasterSlaveTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        ConfigMapContext.getInstance().getConfigMap().clear();
     }
     
     @Test
@@ -62,7 +63,7 @@ public class OrchestrationSpringBootMasterSlaveTest {
         Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
         MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
-        for (DataSource each : masterSlaveDataSource.getAllDataSources().values()) {
+        for (DataSource each : masterSlaveDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }
@@ -70,6 +71,6 @@ public class OrchestrationSpringBootMasterSlaveTest {
         configMap.put("key1", "value1");
         configMap.put("key2", "value1");
         configMap.put("username", "root");
-        assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
 }

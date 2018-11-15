@@ -51,8 +51,8 @@ public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf byteBuf, int header);
     
     @Override
-    public final void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+    public final void channelInactive(final ChannelHandlerContext context) throws Exception {
         //TODO delete connection map
-        super.channelInactive(ctx);
+        super.channelInactive(context);
     }
 }

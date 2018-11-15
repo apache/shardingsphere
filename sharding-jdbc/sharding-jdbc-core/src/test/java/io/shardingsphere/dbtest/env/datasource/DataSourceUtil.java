@@ -78,7 +78,7 @@ public final class DataSourceUtil {
         result.setUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
-        result.setMaxTotal(50);
+        result.setMaxTotal(15);
         result.setValidationQuery("SELECT 1");
         if (DatabaseType.Oracle == databaseType) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName));
@@ -93,7 +93,7 @@ public final class DataSourceUtil {
         result.setJdbcUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
-        result.setMaximumPoolSize(50);
+        result.setMaximumPoolSize(15);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setConnectionTestQuery("SELECT 1");
         if (DatabaseType.Oracle == databaseType) {

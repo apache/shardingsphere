@@ -1,8 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-sphere</artifactId>
-    <version>3.0.0.M5-SNAPSHOT</version>
+    <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -28,6 +31,8 @@
         <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
         
+        <antlr4.version>4.7.1</antlr4.version>
+        
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
@@ -36,7 +41,7 @@
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.4</atomikos.version>
-
+        
         <curator.version>2.10.0</curator.version>
         <grpc.version>1.7.0</grpc.version>
         <protobuf.version>3.4.0</protobuf.version>
@@ -48,7 +53,7 @@
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
-        
+
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>2.7.21</mockito.version>
@@ -60,6 +65,7 @@
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <hikari-cp.version>2.4.11</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
+        <tomcat.commons-dbcp2.version>9.0.11</tomcat.commons-dbcp2.version>
         <commons-pool.version>1.6</commons-pool.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -87,7 +93,8 @@
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
-        
+        <servicecomb.saga.version>0.3.0-SNAPSHOT</servicecomb.saga.version>
+    
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
     
@@ -107,6 +114,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4</artifactId>
+                <version>${antlr4.version}</version>
             </dependency>
             
             <dependency>
@@ -151,6 +164,11 @@
                 <groupId>com.atomikos</groupId>
                 <artifactId>transactions-jdbc</artifactId>
                 <version>${atomikos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-dbcp</artifactId>
+                <version>${tomcat.commons-dbcp2.version}</version>
             </dependency>
             
             <dependency>
@@ -340,6 +358,17 @@
                 <artifactId>opentracing-mock</artifactId>
                 <version>${opentracing.version}</version>
                 <scope>test</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.servicecomb.saga</groupId>
+                <artifactId>saga-core</artifactId>
+                <version>${servicecomb.saga.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicecomb.saga</groupId>
+                <artifactId>saga-format</artifactId>
+                <version>${servicecomb.saga.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -601,11 +630,14 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>io/shardingsphere/**/*Test.class</exclude>
-                            <exclude>io/shardingsphere/**/Test*.class</exclude>
+                            <exclude>io/shardingsphere/core/parsing/antlr/autogen/*.class</exclude>
                             <exclude>authpb/*.class</exclude>
                             <exclude>mvccpb/*.class</exclude>
                             <exclude>etcdserverpb/*.class</exclude>
+                            <exclude>io/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
+                            <exclude>io/shardingsphere/orchestration/reg/etcd/*.class</exclude>
+                            <exclude>io/shardingsphere/**/*Test.class</exclude>
+                            <exclude>io/shardingsphere/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

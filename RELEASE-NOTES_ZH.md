@@ -1,3 +1,20 @@
+## 3.0.1
+
+### API调整
+
+1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) 调整数据库治理模块的注册中心存储结构
+
+### Bug Fixes
+
+#### Core
+
+1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
+
+#### Sharding-Proxy
+
+1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式时，使用`PreparedStatement`异常
+1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) 多逻辑数据源配置时，`SHOW CREATE TABLE tb_name`语句执行异常
+
 ## 3.0.0
 
 ### 里程碑
@@ -18,7 +35,7 @@
 1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) 支持XA事务
 1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) 支持登录认证
 1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) 支持注册中心进行治理
-1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) 主持多Schema
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) 支持多逻辑数据库
 
 ### 功能提升
 
@@ -50,7 +67,7 @@
 1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) 调整Hint API
 1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) 调整包结构
 1. [ISSUE #1305](https://github.com/sharding-sphere/sharding-sphere/issues/1305) 废弃并删除sharding-jdbc-transaction-parent模块
-
+1. [ISSUE #1382](https://github.com/sharding-sphere/sharding-sphere/issues/1328) 去除Orchestration模块中type的配置
 
 ### 缺陷修正
 

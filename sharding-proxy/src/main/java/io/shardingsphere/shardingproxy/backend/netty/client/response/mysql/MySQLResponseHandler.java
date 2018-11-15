@@ -23,8 +23,8 @@ import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.netty.client.response.ResponseHandler;
 import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -62,8 +62,8 @@ public final class MySQLResponseHandler extends ResponseHandler {
     private final Map<Integer, MySQLQueryResult> resultMap;
     
     public MySQLResponseHandler(final String dataSourceName, final String schema) {
-        dataSourceParameter = GLOBAL_REGISTRY.getRuleInstance(schema).getDataSources().get(dataSourceName);
-        dataSourceMetaData = GLOBAL_REGISTRY.getRuleInstance(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+        dataSourceParameter = GLOBAL_REGISTRY.getLogicSchema(schema).getDataSources().get(dataSourceName);
+        dataSourceMetaData = GLOBAL_REGISTRY.getLogicSchema(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
         resultMap = new HashMap<>();
     }
     

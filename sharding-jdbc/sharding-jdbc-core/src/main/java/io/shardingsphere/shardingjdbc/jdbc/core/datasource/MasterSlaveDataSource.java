@@ -20,18 +20,16 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,11 +38,11 @@ import java.util.Properties;
  *
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
-public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
-    
-    private final Map<String, DataSource> dataSourceMap;
+@Slf4j
+public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -52,76 +50,33 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
+        super(dataSourceMap);
         if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
-                                 final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
-        super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
+                                 final Map<String, Object> configMap, final Properties props) throws SQLException {
+        super(dataSourceMap);
         if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getMasterSlaveConfig().putAll(configMap);
+            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        this.dataSourceMap = dataSourceMap;
         this.masterSlaveRule = masterSlaveRule;
-        this.shardingProperties = props;
-    }
-    
-    private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
-        Collection<DataSource> result = new LinkedList<>();
-        result.add(dataSourceMap.get(masterDataSourceName));
-        for (String each : slaveDataSourceNames) {
-            result.add(dataSourceMap.get(each));
-        }
-        return result;
-    }
-    
-    /**
-     * Get map of all actual data source name and all actual data sources.
-     *
-     * @return map of all actual data source name and all actual data sources
-     */
-    public Map<String, DataSource> getAllDataSources() {
-        Map<String, DataSource> result = new HashMap<>(masterSlaveRule.getSlaveDataSourceNames().size() + 1, 1);
-        result.put(masterSlaveRule.getMasterDataSourceName(), getDataSourceMap().get(masterSlaveRule.getMasterDataSourceName()));
-        for (String each : masterSlaveRule.getSlaveDataSourceNames()) {
-            result.put(each, getDataSourceMap().get(each));
-        }
-        return result;
-    }
-    
-    private void closeOriginalDataSources() {
-        for (DataSource each : getDataSourceMap().values()) {
-            try {
-                Method closeMethod = each.getClass().getDeclaredMethod("close");
-                closeMethod.invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this);
-    }
-    
-    @Override
-    public final void close() {
-        closeOriginalDataSources();
-    }
-    
-    /**
-     * Show SQL or not.
-     *
-     * @return show SQL or not
-     */
-    public boolean showSQL() {
-        return shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        if (TransactionType.XA == TransactionTypeHolder.get()) {
+            if (null == getXaDataSourceMap() || getXaDataSourceMap().isEmpty()) {
+                log.warn("XA transaction resource have not load, using Local transaction instead!");
+            } else {
+                return new MasterSlaveConnection(this, getXaDataSourceMap(), TransactionType.XA);
+            }
+        }
+        return new MasterSlaveConnection(this, getDataSourceMap());
     }
 }
-

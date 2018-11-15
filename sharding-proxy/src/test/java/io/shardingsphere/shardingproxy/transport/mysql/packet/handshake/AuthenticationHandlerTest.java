@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
 import com.google.common.primitives.Bytes;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;

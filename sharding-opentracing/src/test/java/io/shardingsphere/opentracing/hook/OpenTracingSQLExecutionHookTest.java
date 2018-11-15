@@ -25,12 +25,14 @@ import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.spi.executor.SPISQLExecutionHook;
 import io.shardingsphere.spi.executor.SQLExecutionHook;
-import io.shardingsphere.opentracing.constant.ShardingTags;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -50,6 +52,11 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
     private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     
     private ActiveSpan activeSpan;
+    
+    @BeforeClass
+    public static void registerSPI() {
+        NewInstanceServiceLoader.register(SQLExecutionHook.class);
+    }
     
     @Before
     public void setUp() {
@@ -74,7 +81,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Collections.singletonList(Arrays.<Object>asList("1", 2))), dataSourceMetaData, true);
+        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Collections.singletonList(Arrays.<Object>asList("1", 2))), dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
@@ -95,7 +102,8 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Collections.singletonList(Arrays.<Object>asList("1", 2))), dataSourceMetaData, false);
+        sqlExecutionHook.start(
+                createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Collections.singletonList(Arrays.<Object>asList("1", 2))), dataSourceMetaData, false, ShardingExecuteDataMap.getDataMap());
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
@@ -116,7 +124,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("failure_ds", "SELECT * FROM failure_tbl;", Collections.<List<Object>>emptyList()), dataSourceMetaData, true);
+        sqlExecutionHook.start(createRouteUnit("failure_ds", "SELECT * FROM failure_tbl;", Collections.<List<Object>>emptyList()), dataSourceMetaData, true, null);
         sqlExecutionHook.finishFailure(new RuntimeException("SQL execution error"));
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));

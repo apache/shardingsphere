@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.metadata.table;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -32,7 +33,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ShardingTableMetaData {
     
+    @Getter
     private final Map<String, TableMetaData> tableMetaDataMap;
+    
+    /**
+     * Get table meta data by table name.
+     * @param logicTableName logicTableName logic table name
+     * @return table mata data
+     */
+    public TableMetaData get(final String logicTableName) {
+        return tableMetaDataMap.get(logicTableName);
+    }
     
     /**
      * Add table meta data.

@@ -17,19 +17,23 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import org.hamcrest.CoreMatchers;
+import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -40,6 +44,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -59,8 +65,9 @@ public final class MasterSlaveDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = new MasterSlaveDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave")), Collections.<String, Object>emptyMap(), new Properties());
+        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, 
+                new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+                Collections.<String, Object>emptyMap(), new Properties());
     }
     
     @Before
@@ -68,31 +75,8 @@ public final class MasterSlaveDataSourceTest {
     public void reset() {
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
+        TransactionTypeHolder.clear();
     }
-//    
-//    @Test
-//    public void assertGetDataSourceForDML() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DML).getDataSourceName(), is(masterDataSource));
-//    }
-//    
-//    @Test
-//    public void assertGetDataSourceForDQL() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(slaveDataSource));
-//    }
-//    
-//    @Test
-//    public void assertGetDataSourceForDMLAndDQL() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DML).getDataSourceName(), is(masterDataSource));
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(masterDataSource));
-//    }
-//    
-//    @Test
-//    public void assertGetDataSourceForHintToMasterOnly() {
-//        HintManager hintManager = HintManager.getInstance();
-//        hintManager.setMasterRouteOnly();
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(masterDataSource));
-//        hintManager.close();
-//    }
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
@@ -105,7 +89,8 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("slaveDataSource", slaveDataSource);
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource.getConnection()).thenReturn(slaveConnection);
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource"));
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(
+                "ds", "masterDataSource", Collections.singletonList("slaveDataSource"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
         try {
             ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap(), new Properties())).getDatabaseType();
         } finally {
@@ -130,9 +115,9 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("slaveDataSource1", slaveDataSource1);
         dataSourceMap.put("slaveDataSource2", slaveDataSource2);
         assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2")),
+                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
                 Collections.<String, Object>emptyMap(), new Properties())).getDatabaseType(),
-                CoreMatchers.is(DatabaseType.H2));
+                is(DatabaseType.H2));
         verify(masterConnection).close();
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();
@@ -151,11 +136,47 @@ public final class MasterSlaveDataSourceTest {
         assertThat(masterSlaveDataSource.getConnection(), instanceOf(MasterSlaveConnection.class));
     }
     
-//    @Test
-//    public void assertResetDMLFlag() {
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DML).getDataSourceName(), is(masterDataSource));
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(masterDataSource));
-//        MasterSlaveDataSource.resetDMLFlag();
-//        assertThat(masterSlaveDataSource.getDataSourceName(SQLType.DQL).getDataSourceName(), is(slaveDataSource));
-//    }
+    @Test
+    public void assertGetXAConnection() {
+        TransactionTypeHolder.set(TransactionType.XA);
+        MasterSlaveConnection connection = masterSlaveDataSource.getConnection();
+        assertNotNull(connection.getDataSourceMap());
+        assertThat(connection.getDataSourceMap().values().size(), is(2));
+        assertThat(connection.getTransactionType(), is(TransactionType.XA));
+    }
+    
+    @Test
+    public void assertGetXAConnectionButSPILoadedFailed() {
+        TransactionTypeHolder.set(TransactionType.XA);
+        setXaDataSourceMapEmpty();
+        MasterSlaveConnection connection = masterSlaveDataSource.getConnection();
+        assertNotNull(connection.getDataSourceMap());
+        assertThat(connection.getDataSourceMap().values().size(), is(2));
+        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
+        
+    }
+    
+    @SneakyThrows
+    private void setXaDataSourceMapEmpty() {
+        Field xaDataSourceMap = getField(masterSlaveDataSource, "xaDataSourceMap");
+        if (null != xaDataSourceMap) {
+            xaDataSourceMap.setAccessible(true);
+            xaDataSourceMap.set(masterSlaveDataSource, new HashMap<>());
+        }
+    }
+    
+    @SneakyThrows
+    private Field getField(final Object masterDataSource, final String fieldName) {
+        Class clazz = masterDataSource.getClass();
+        while (null != clazz) {
+            try {
+                return clazz.getDeclaredField(fieldName);
+              // CHECKSTYLE:OFF
+            } catch (Exception ex) {
+              // CHECKSTYLE:ON
+                clazz = clazz.getSuperclass();
+            }
+        }
+        return null;
+    }
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.netty.client;
 
-import io.shardingsphere.shardingproxy.config.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -64,7 +64,7 @@ public final class BackendNettyClientManager {
      */
     public void start() throws InterruptedException {
         for (String each : GLOBAL_REGISTRY.getSchemaNames()) {
-            BackendNettyClient backendNettyClient = new BackendNettyClient(GLOBAL_REGISTRY.getRuleInstance(each));
+            BackendNettyClient backendNettyClient = new BackendNettyClient(GLOBAL_REGISTRY.getLogicSchema(each));
             clientMap.put(each, backendNettyClient);
             backendNettyClient.start();
         }

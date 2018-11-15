@@ -40,7 +40,7 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     private boolean throwExceptionWhenClosing;
     
     public TestDataSource(final String name) throws SQLException {
-        super(Collections.singletonList(getDataSource()));
+        super(Collections.singletonMap("test", getDataSource()));
         this.name = name;
     }
     

@@ -25,11 +25,11 @@ import lombok.Setter;
 /**
  * Table rule configuration.
  * 
- * @author zhangiang
+ * @author zhangliang
  */
 @Getter
 @Setter
-public final class TableRuleConfiguration {
+public final class TableRuleConfiguration implements RuleConfiguration {
     
     private String logicTable;
     

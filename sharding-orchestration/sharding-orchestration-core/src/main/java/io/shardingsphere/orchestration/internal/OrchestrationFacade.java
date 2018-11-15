@@ -17,30 +17,19 @@
 
 package io.shardingsphere.orchestration.internal;
 
-import com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.core.yaml.YamlRuleConfiguration;
-import io.shardingsphere.core.yaml.other.YamlServerConfiguration;
+import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.internal.config.ConfigurationService;
-import io.shardingsphere.orchestration.internal.listener.ListenerFactory;
-import io.shardingsphere.orchestration.internal.state.datasource.DataSourceService;
-import io.shardingsphere.orchestration.internal.state.instance.InstanceStateService;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
+import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
+import io.shardingsphere.orchestration.internal.state.service.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdConfiguration;
-import io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter;
-import io.shardingsphere.orchestration.reg.newzk.NewZookeeperRegistryCenter;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperConfiguration;
-import io.shardingsphere.orchestration.reg.zookeeper.ZookeeperRegistryCenter;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -55,6 +44,8 @@ import java.util.Properties;
 @Slf4j
 public final class OrchestrationFacade implements AutoCloseable {
     
+    private final RegistryCenter regCenter;
+    
     private final boolean isOverwrite;
     
     @Getter
@@ -64,112 +55,45 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final DataSourceService dataSourceService;
     
-    private final ListenerFactory listenerManager;
+    @Getter
+    private final OrchestrationListenerManager listenerManager;
     
-    private final RegistryCenter regCenter;
-    
-    public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig) {
-        regCenter = createRegistryCenter(orchestrationConfig.getRegCenterConfig());
+    public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
+        regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
-        listenerManager = new ListenerFactory(orchestrationConfig.getName(), regCenter);
-    }
-    
-    private RegistryCenter createRegistryCenter(final RegistryCenterConfiguration regCenterConfig) {
-        Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        if (regCenterConfig instanceof ZookeeperConfiguration) {
-            return getZookeeperRegistryCenter((ZookeeperConfiguration) regCenterConfig);
-        }
-        if (regCenterConfig instanceof EtcdConfiguration) {
-            return new EtcdRegistryCenter((EtcdConfiguration) regCenterConfig);
-        }
-        throw new UnsupportedOperationException(regCenterConfig.getClass().getName());
-    }
-    
-    private RegistryCenter getZookeeperRegistryCenter(final ZookeeperConfiguration regCenterConfig) {
-        if (regCenterConfig.isUseNative()) {
-            return new NewZookeeperRegistryCenter(regCenterConfig);
-        } else {
-            return new ZookeeperRegistryCenter(regCenterConfig);
-        }
+        listenerManager = shardingSchemaNames.isEmpty() ? new OrchestrationListenerManager(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
+                : new OrchestrationListenerManager(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
     }
     
     /**
-     * Initialize for sharding orchestration.
+     * Initialize for orchestration.
      *
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig sharding rule configuration
-     * @param configMap config map
-     * @param props sharding properties
-     */
-    public void init(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, 
-                     final Map<String, Object> configMap, final Properties props) {
-        if (shardingRuleConfig.getMasterSlaveRuleConfigs().isEmpty()) {
-            reviseShardingRuleConfigurationForMasterSlave(dataSourceMap, shardingRuleConfig);
-        }
-        configService.persistShardingConfiguration(getActualDataSourceMapForMasterSlave(dataSourceMap), shardingRuleConfig, configMap, props, isOverwrite);
-        instanceStateService.persistShardingInstanceOnline();
-        dataSourceService.persistDataSourcesNode();
-        listenerManager.initShardingListeners();
-    }
-    
-    /**
-     * Initialize for master-slave orchestration.
-     * 
-     * @param dataSourceMap data source map
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap config map
+     * @param dataSourceConfigurationMap schema data source configuration map
+     * @param schemaRuleMap schema rule map
+     * @param authentication authentication
+     * @param configMap config Map
      * @param props properties
      */
-    public void init(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) {
-        configService.persistMasterSlaveConfiguration(dataSourceMap, masterSlaveRuleConfig, configMap, props, isOverwrite);
-        instanceStateService.persistMasterSlaveInstanceOnline();
+    public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
+                     final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
+            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, isOverwrite);
+        }
+        instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initMasterSlaveListeners();
+        listenerManager.initListeners();
     }
     
     /**
-     * Initialize for proxy orchestration.
-     *
-     * @param serverConfig server configuration
-     * @param schemaDataSourceMap schema data source map
-     * @param schemaRuleMap schema rule map
+     * Initialize for orchestration.
      */
-    public void init(final YamlServerConfiguration serverConfig, final Map<String, Map<String, DataSourceParameter>> schemaDataSourceMap, final Map<String, YamlRuleConfiguration> schemaRuleMap) {
-        configService.persistProxyConfiguration(serverConfig, schemaDataSourceMap, schemaRuleMap, isOverwrite);
-        instanceStateService.persistProxyInstanceOnline();
+    public void init() {
+        instanceStateService.persistInstanceOnline();
         dataSourceService.persistDataSourcesNode();
-        listenerManager.initProxyListeners();
-    }
-    
-    private void reviseShardingRuleConfigurationForMasterSlave(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getValue() instanceof MasterSlaveDataSource) {
-                MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                shardingRuleConfig.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration(masterSlaveDataSource));
-            }
-        }
-    }
-    
-    private Map<String, DataSource> getActualDataSourceMapForMasterSlave(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getValue() instanceof MasterSlaveDataSource) {
-                MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) entry.getValue();
-                result.putAll(masterSlaveDataSource.getAllDataSources());
-            } else {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration(final MasterSlaveDataSource masterSlaveDataSource) {
-        return new MasterSlaveRuleConfiguration(
-                masterSlaveDataSource.getMasterSlaveRule().getName(), masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName(), 
-                masterSlaveDataSource.getMasterSlaveRule().getSlaveDataSourceNames(), masterSlaveDataSource.getMasterSlaveRule().getLoadBalanceAlgorithm());
+        listenerManager.initListeners();
     }
     
     @Override
