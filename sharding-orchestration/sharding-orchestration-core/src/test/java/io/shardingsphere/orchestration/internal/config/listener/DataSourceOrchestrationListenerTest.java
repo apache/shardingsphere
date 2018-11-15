@@ -18,11 +18,16 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceOrchestrationListenerTest {
@@ -39,5 +44,7 @@ public final class DataSourceOrchestrationListenerTest {
     
     @Test
     public void assertWatch() {
+        dataSourceOrchestrationListener.watch();
+        verify(regCenter).watch(eq("/test/config/schema/sharding_db/datasource"), any(EventListener.class));
     }
 }
