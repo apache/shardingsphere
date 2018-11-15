@@ -34,6 +34,7 @@ public final class ConfigMapOrchestrationListenerTest {
     
     @Before
     public void setUp() {
+        configMapOrchestrationListener = new ConfigMapOrchestrationListener("test", regCenter);
     }
     
     @Test
