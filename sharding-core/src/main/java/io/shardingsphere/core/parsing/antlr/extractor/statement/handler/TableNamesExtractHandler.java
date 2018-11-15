@@ -21,6 +21,8 @@ import java.util.Collection;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -33,19 +35,19 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
  * @author duhongjun
  */
 public final class TableNamesExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
+        if (tableNameNodes.isEmpty()) {
+            return Optional.absent();
         }
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : result) {
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        for (ParserRuleContext each : tableNameNodes) {
             String tableText = each.getText();
             int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-            extractResult.getSqlTokens().add(new TableToken(each.getStart().getStartIndex(), dotPosition, tableText));
+            result.getSqlTokens().add(new TableToken(each.getStart().getStartIndex(), dotPosition, tableText));
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
