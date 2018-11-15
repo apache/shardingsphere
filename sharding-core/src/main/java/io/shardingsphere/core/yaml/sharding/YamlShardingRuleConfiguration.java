@@ -39,6 +39,7 @@ import java.util.Map.Entry;
  *
  * @author caohao
  * @author panjuan
+ * @author maxiaoguang
  */
 @NoArgsConstructor
 @Getter
@@ -49,7 +50,9 @@ public class YamlShardingRuleConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    private List<String> bindingTables = new ArrayList<>();
+    private Collection<String> bindingTables = new ArrayList<>();
+    
+    private Collection<String> broadcastTables = new ArrayList<>();
     
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
@@ -65,6 +68,7 @@ public class YamlShardingRuleConfiguration {
             tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
         }
         bindingTables.addAll(shardingRuleConfiguration.getBindingTableGroups());
+        bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
         defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
@@ -87,6 +91,7 @@ public class YamlShardingRuleConfiguration {
             result.getTableRuleConfigs().add(tableRuleConfig.build());
         }
         result.getBindingTableGroups().addAll(bindingTables);
+        result.getBroadcastTables().addAll(broadcastTables);
         if (null != defaultDatabaseStrategy) {
             result.setDefaultDatabaseShardingStrategyConfig(defaultDatabaseStrategy.build());
         }

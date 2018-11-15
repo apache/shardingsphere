@@ -74,6 +74,17 @@ public final class TableRule {
         logicIndex = null;
     }
     
+    public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
+        logicTable = logicTableName.toLowerCase();
+        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
+        actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
+        databaseShardingStrategy = null;
+        tableShardingStrategy = null;
+        generateKeyColumn = null;
+        keyGenerator = null;
+        logicIndex = null;
+    }
+    
     public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames) {
         Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();

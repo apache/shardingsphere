@@ -68,6 +68,7 @@ public final class YamlShardingConfigurationTest {
         assertTOrder(actual);
         assertTOrderItem(actual);
         assertBindingTable(actual);
+        assertBroadcastTable(actual);
         assertShardingRuleDefault(actual);
         assertMasterSlaveRules(actual);
         assertConfigMap(actual);
@@ -117,7 +118,12 @@ public final class YamlShardingConfigurationTest {
     
     private void assertBindingTable(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getBindingTables().size(), is(1));
-        assertThat(actual.getShardingRule().getBindingTables().get(0), is("t_order, t_order_item"));
+        assertThat(actual.getShardingRule().getBindingTables().iterator().next(), is("t_order, t_order_item"));
+    }
+    
+    private void assertBroadcastTable(final YamlShardingConfiguration actual) {
+        assertThat(actual.getShardingRule().getBroadcastTables().size(), is(1));
+        assertThat(actual.getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
     }
     
     private void assertShardingRuleDefault(final YamlShardingConfiguration actual) {
