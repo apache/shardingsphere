@@ -125,7 +125,8 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertInitWithParameters() {
-        orchestrationFacade.init(Collections.singletonMap("sharding_db", createDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties());
+        orchestrationFacade.init(Collections.singletonMap("sharding_db",
+                createDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties());
     }
     
     private Map<String, RuleConfiguration> createRuleConfigurationMap() {
@@ -195,7 +196,6 @@ public final class OrchestrationFacadeTest {
         result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.FALSE);
         return result;
     }
-    
     
     @Test
     public void assertInitWithoutParameters() {
