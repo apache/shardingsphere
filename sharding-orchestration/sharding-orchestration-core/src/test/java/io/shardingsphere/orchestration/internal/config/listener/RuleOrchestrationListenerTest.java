@@ -34,6 +34,7 @@ public final class RuleOrchestrationListenerTest {
     
     @Before
     public void setUp() {
+        ruleOrchestrationListener = new RuleOrchestrationListener("test", regCenter, "sharding_db");
     }
     
     @Test
