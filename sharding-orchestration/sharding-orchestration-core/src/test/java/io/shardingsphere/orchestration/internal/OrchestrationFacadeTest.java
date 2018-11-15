@@ -29,6 +29,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class OrchestrationFacadeTest {
     
@@ -60,6 +63,7 @@ public final class OrchestrationFacadeTest {
     @Test
     public void assertInitWithoutParameters() {
         orchestrationFacade.init();
+        verify(regCenter).persistEphemeral(anyString(), anyString());
     }
     
     @Test
