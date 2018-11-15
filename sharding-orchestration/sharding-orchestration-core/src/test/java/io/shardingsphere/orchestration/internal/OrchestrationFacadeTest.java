@@ -40,6 +40,10 @@ public final class OrchestrationFacadeTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
+        setRegistryForOrchestrationFacade();
+    }
+    
+    private void setRegistryForOrchestrationFacade() throws ReflectiveOperationException {
         Field field = orchestrationFacade.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
         field.set(orchestrationFacade, regCenter);
