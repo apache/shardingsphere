@@ -35,27 +35,26 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
  * @author duhongjun
  */
 public class ModifyColumnExtractHandler implements ASTExtractHandler {
-
+    
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
+        if (modifyColumnNodes.isEmpty()) {
+            return Optional.absent();
         }
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
-        for (ParserRuleContext each : result) {
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : modifyColumnNodes) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 postExtractColumnDefinition(each, columnDefinition.get());
-                extractResult.getColumnDefintions().add(columnDefinition.get());
+                result.getColumnDefintions().add(columnDefinition.get());
             }
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
-
+    
     protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinition columnDefinition) {
-
     }
 }
