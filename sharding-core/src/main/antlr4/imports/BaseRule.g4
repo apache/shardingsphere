@@ -6,133 +6,129 @@ ID:
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     | [a-zA-Z_$0-9]+ DOT ASTERISK
     ;
-
+    
 schemaName
     : ID
     ;
-
+    
 databaseName
     : ID
     ;
-
+    
 domainName
     : ID
     ;
-
+    
 tableName
     : ID
     ;
-
+    
 columnName
     : ID
     ;
-
+    
 sequenceName
     : ID
     ;
-
+    
 tablespaceName
     : ID
     ;
-
+    
 collationName
     : STRING
     | ID
     ;
-
+    
 indexName
     : ID
     ;
-
+    
 alias
     : ID
     ;
-
+    
 cteName
     : ID
     ;
-
+    
 parserName
     : ID
     ;
-
+    
 extensionName
     : ID
     ;
-
+    
 rowName
     : ID
     ;
-
+    
 opclass
     : ID
     ;
-
+    
 fileGroup
     : ID
     ;
-
+    
 groupName
     : ID
     ;
-
+    
 constraintName
     : ID
     ;
-
+    
 keyName
     : ID
     ;
-
+    
 typeName
     : ID
     ;
-
+    
 xmlSchemaCollection
     : ID
     ;
-
+    
 columnSetName
     : ID
     ;
-
+    
 directoryName
     : ID
     ;
-
+    
 triggerName
     : ID
     ;
-
+    
 routineName
     : ID
     ;
-
+    
 roleName
     : STRING | ID
     ;
-
+    
 partitionName
     : ID
     ;
-
+    
 rewriteRuleName
     : ID
     ;
-
+    
 ownerName
     : ID
     ;
-
+    
 userName
     : STRING | ID
     ;
-
+    
 serverName
-    : ID
-    ;
-
-databaseName
     : ID
     ;
     
@@ -321,15 +317,15 @@ simpleExpr
     // | interval_expr
     |privateExprOfDb
     ;
-
+    
 functionCall
     : ID LP_ bitExprs? RP_
     ;
-
+    
 privateExprOfDb
     : matchNone
     ;
-
+    
 liter
     : QUESTION
     | NUMBER
@@ -342,19 +338,19 @@ liter
     | (DATE | TIME |TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
     ;
-
+    
 subquery
     : matchNone
     ;
-
+    
 collateClause
     : matchNone
     ;
-
+    
 orderByClause
     : ORDER BY groupByItem (COMMA groupByItem)*
     ;
-
+    
 groupByItem
     : (columnName | NUMBER |expr) (ASC|DESC)?
     ;
