@@ -39,6 +39,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -127,6 +128,16 @@ public final class OrchestrationFacadeTest {
     public void assertInitWithParameters() {
         orchestrationFacade.init(Collections.singletonMap("sharding_db",
                 createDataSourceConfigurationMap()), createRuleConfigurationMap(), createAuthentication(), Collections.<String, Object>emptyMap(), createProperties());
+        verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.<String>any());
+        verify(regCenter).persistEphemeral(anyString(), anyString());
+        verify(regCenter).persist("/test/state/datasources", "");
+        verify(regCenter).watch(eq("/test/config/authentication"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/configmap"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/sharding_db/datasource"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/masterslave_db/datasource"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/props"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/sharding_db/rule"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/masterslave_db/rule"), any(EventListener.class));
     }
     
     private Map<String, RuleConfiguration> createRuleConfigurationMap() {
