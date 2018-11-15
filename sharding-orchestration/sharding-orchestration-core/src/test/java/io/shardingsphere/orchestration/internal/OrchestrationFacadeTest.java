@@ -80,15 +80,15 @@ public final class OrchestrationFacadeTest {
         }
     }
     
+    private void setRegistry(final Field field, final Object target) throws ReflectiveOperationException {
+        field.setAccessible(true);
+        setRegistry(field.get(target));
+    }
+    
     private void setRegistry(final Object target) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
         field.set(target, regCenter);
-    }
-    
-    private void setRegistry(final Field field, final Object target) throws ReflectiveOperationException {
-        field.setAccessible(true);
-        setRegistry(field.get(target));
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
