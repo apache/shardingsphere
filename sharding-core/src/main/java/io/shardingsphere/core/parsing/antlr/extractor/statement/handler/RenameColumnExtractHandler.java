@@ -35,21 +35,21 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
  * @author duhongjun
  */
 public final class RenameColumnExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
         if (!modifyColumnNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
         if (2 != columnNodes.size()) {
-            return null;
+            return Optional.absent();
         }
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
         Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
         String oldName = columnNodesIterator.next().getText();
-        extractResult.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), oldName));
-        return extractResult;
+        result.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), oldName));
+        return Optional.<ExtractResult>of(result);
     }
 }
