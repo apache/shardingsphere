@@ -33,25 +33,25 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  * @author duhongjun
  */
 public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> columnListNode = ASTUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_LIST);
         if (!columnListNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME);
-        if (result.isEmpty()) {
-            return null;
+        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME);
+        if (columnNameNodes.isEmpty()) {
+            return Optional.absent();
         }
-        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
-        for (ParserRuleContext each : result) {
-            extractResult.getPrimaryKeyColumnNames().add(each.getText());
+        PrimaryKeyExtractResult result = new PrimaryKeyExtractResult();
+        for (ParserRuleContext each : columnNameNodes) {
+            result.getPrimaryKeyColumnNames().add(each.getText());
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
