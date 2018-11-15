@@ -8,22 +8,40 @@
 # 
 ######################################################################################################
 
-#schemaName: sharding_db
+#schemaName: scalableaccount
 #
 #dataSources:
-#  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
+#  ds0:
+#    url: jdbc:mysql://mydb-scalableaccount-0101.db.jdfin.local:3306/scalable_account_01?serverTimezone=UTC&useSSL=false
+#    username: lable_account_01
+#    password: c5nf0YWfwf40
 #    autoCommit: true
 #    connectionTimeout: 30000
 #    idleTimeout: 60000
 #    maxLifetime: 1800000
 #    maximumPoolSize: 50
-#  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
+#  ds1:
+#    url: jdbc:mysql://mydb-scalableaccount-0201.db.jdfin.local:3306/scalable_account_02?serverTimezone=UTC&useSSL=false
+#    username: lable_account_02
+#    password: uzSu64zij33F
+#    autoCommit: true
+#    connectionTimeout: 30000
+#    idleTimeout: 60000
+#    maxLifetime: 1800000
+#    maximumPoolSize: 50
+#  ds2:
+#    url: jdbc:mysql://mydb-scalableaccount-0301.db.jdfin.local:3306/scalable_account_03?serverTimezone=UTC&useSSL=false
+#    username: lable_account_03
+#    password: sYu9vd99Ay9y
+#    autoCommit: true
+#    connectionTimeout: 30000
+#    idleTimeout: 60000
+#    maxLifetime: 1800000
+#    maximumPoolSize: 50
+#  ds3:
+#    url: jdbc:mysql://mydb-scalableaccount-0401.db.jdfin.local:3306/scalable_account_04?serverTimezone=UTC&useSSL=false
+#    username: lable_account_04
+#    password: l99DRrp1nd2f
 #    autoCommit: true
 #    connectionTimeout: 30000
 #    idleTimeout: 60000
@@ -32,26 +50,85 @@
 #
 #shardingRule:
 #  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
+#    user:
+#      actualDataNodes: ds0.user_$->{0..24},ds1.user_$->{25..49},ds2.user_$->{50..74},ds3.user_$->{75..99}
+#      databaseStrategy:
+#        standard:
+#          shardingColumn: pin
+#          preciseAlgorithmClassName: algorithm.ScalableDB100Algorithm
 #      tableStrategy:
-#        inline:
-#          shardingColumn: order_id
-#          algorithmExpression: t_order_${order_id % 2}
-#      keyGeneratorColumnName: order_id
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+#        standard:
+#          shardingColumn: pin
+#          preciseAlgorithmClassName: algorithm.ScalableTable100Algorithm
+#    setting:
+#      actualDataNodes: ds0.setting_$->{0..124},ds1.setting_$->{125..249},ds2.setting_$->{250..374},ds3.setting_$->{375..499}
+#      databaseStrategy:
+#        standard:
+#          shardingColumn: pin
+#          preciseAlgorithmClassName: algorithm.ScalableDB500Algorithm
 #      tableStrategy:
-#        inline:
-#          shardingColumn: order_id
-#          algorithmExpression: t_order_item_${order_id % 2}
-#      keyGeneratorColumnName: order_item_id
+#        standard:
+#          shardingColumn: pin
+#          preciseAlgorithmClassName: algorithm.ScalableTable500Algorithm
+#    summary:
+#      actualDataNodes: ds0.summary_$->{0..24},ds1.summary_$->{25..49},ds2.summary_$->{50..74},ds3.summary_$->{75..99}
+#      databaseStrategy:
+#        standard:
+#          shardingColumn: pin
+#          preciseAlgorithmClassName: algorithm.ScalableDB100Algorithm
+#      tableStrategy:
+#        standard:
+#          shardingColumn: pin
+#          preciseAlgorithmClassName: algorithm.ScalableTable100Algorithm
 #  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    inline:
-#      shardingColumn: user_id
-#      algorithmExpression: ds_${user_id % 2}
+#    - user,summary
 #  defaultTableStrategy:
 #    none:
 #  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+
+schemaName: sharding_db_bak
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 50
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    autoCommit: true
+    connectionTimeout: 30000
+    idleTimeout: 60000
+    maxLifetime: 1800000
+    maximumPoolSize: 50
+
+shardingRule:
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGeneratorColumnName: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+  bindingTables:
+    - t_order,t_order_item
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
