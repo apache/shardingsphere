@@ -20,6 +20,8 @@ package io.shardingsphere.shardingjdbc.spring.boot.type;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
+import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -52,6 +54,8 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("sharding")
 public class SpringBootShardingTest {
     
+    private ShardingContext shardingContext;
+    
     @Resource
     private DataSource dataSource;
     
@@ -77,43 +81,76 @@ public class SpringBootShardingTest {
     }
     
     @Test
-    public void assertWithShardingRule() {
+    public void assertWithShardingDataSourceNames() {
         ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, dataSource);
         ShardingRule shardingRule = shardingContext.getShardingRule();
         assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(3));
         assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds"));
         assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_0"));
         assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_1"));
+    }
+    
+    @Test
+    public void assertWithTableRules() {
+        ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, dataSource);
+        ShardingRule shardingRule = shardingContext.getShardingRule();
         assertThat(shardingRule.getTableRules().size(), is(2));
         TableRule tableRule1 = ((LinkedList<TableRule>) shardingRule.getTableRules()).get(0);
         assertThat(tableRule1.getLogicTable(), is("t_order"));
         assertThat(tableRule1.getActualDataNodes().size(), is(4));
-        assertThat(tableRule1.getActualDataNodes().get(0).getDataSourceName(), is("ds_0"));
-        assertThat(tableRule1.getActualDataNodes().get(0).getTableName(), is("t_order_0"));
-        assertThat(tableRule1.getActualDataNodes().get(1).getDataSourceName(), is("ds_0"));
-        assertThat(tableRule1.getActualDataNodes().get(1).getTableName(), is("t_order_1"));
-        assertThat(tableRule1.getActualDataNodes().get(2).getDataSourceName(), is("ds_1"));
-        assertThat(tableRule1.getActualDataNodes().get(2).getTableName(), is("t_order_0"));
-        assertThat(tableRule1.getActualDataNodes().get(3).getDataSourceName(), is("ds_1"));
-        assertThat(tableRule1.getActualDataNodes().get(3).getTableName(), is("t_order_1"));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_0")));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
+        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         assertThat(tableRule1.getGenerateKeyColumn(), is("order_id"));
         TableRule tableRule2 = ((LinkedList<TableRule>) shardingRule.getTableRules()).get(1);
         assertThat(tableRule2.getLogicTable(), is("t_order_item"));
         assertThat(tableRule2.getActualDataNodes().size(), is(4));
-        assertThat(tableRule2.getActualDataNodes().get(0).getDataSourceName(), is("ds_0"));
-        assertThat(tableRule2.getActualDataNodes().get(0).getTableName(), is("t_order_item_0"));
-        assertThat(tableRule2.getActualDataNodes().get(1).getDataSourceName(), is("ds_0"));
-        assertThat(tableRule2.getActualDataNodes().get(1).getTableName(), is("t_order_item_1"));
-        assertThat(tableRule2.getActualDataNodes().get(2).getDataSourceName(), is("ds_1"));
-        assertThat(tableRule2.getActualDataNodes().get(2).getTableName(), is("t_order_item_0"));
-        assertThat(tableRule2.getActualDataNodes().get(3).getDataSourceName(), is("ds_1"));
-        assertThat(tableRule2.getActualDataNodes().get(3).getTableName(), is("t_order_item_1"));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_0")));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
+        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         assertThat(tableRule2.getGenerateKeyColumn(), is("order_item_id"));
-        assertThat(shardingRule.getBindingTableRules().size(), is(0));
+    }
+    
+    @Test
+    public void assertWithBindingTableRules() {
+        ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, dataSource);
+        ShardingRule shardingRule = shardingContext.getShardingRule();
+        assertThat(shardingRule.getBindingTableRules().size(), is(2));
+        TableRule tableRule1 = ((LinkedList<TableRule>) shardingRule.getTableRules()).get(0);
+        assertThat(tableRule1.getLogicTable(), is("t_order"));
+        assertThat(tableRule1.getActualDataNodes().size(), is(4));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_0")));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
+        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
+        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(tableRule1.getGenerateKeyColumn(), is("order_id"));
+        TableRule tableRule2 = ((LinkedList<TableRule>) shardingRule.getTableRules()).get(1);
+        assertThat(tableRule2.getLogicTable(), is("t_order_item"));
+        assertThat(tableRule2.getActualDataNodes().size(), is(4));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_0")));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
+        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
+        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(tableRule2.getGenerateKeyColumn(), is("order_item_id"));
+    }
+    
+    @Test
+    public void assertWithBroadcastTables() {
+        ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, dataSource);
+        ShardingRule shardingRule = shardingContext.getShardingRule();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));
         assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
     }
-    
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
