@@ -66,8 +66,8 @@ public final class OrchestrationFacadeTest {
         setRegistry(listenerManager.getClass().getDeclaredField("configMapListenerManager"), listenerManager);
         setRegistry(listenerManager.getClass().getDeclaredField("instanceStateListenerManager"), listenerManager);
         setRegistry(listenerManager.getClass().getDeclaredField("dataSourceStateListenerManager"), listenerManager);
-        setRegistryForRuleListenerManagers(listenerManager);
         setRegistryForDataSourceListenerManagers(listenerManager);
+        setRegistryForRuleListenerManagers(listenerManager);
     }
     
     @SuppressWarnings("unchecked")
