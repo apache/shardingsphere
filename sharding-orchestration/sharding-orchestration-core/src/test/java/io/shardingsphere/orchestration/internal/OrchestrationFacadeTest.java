@@ -17,9 +17,14 @@
 
 package io.shardingsphere.orchestration.internal;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
 import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
@@ -33,9 +38,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -122,6 +131,33 @@ public final class OrchestrationFacadeTest {
         result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_ms_${user_id % 2}"));
         result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
         return result;
+    }
+    
+    private Collection<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
+        Collection<MasterSlaveRuleConfiguration> result = new LinkedList<>();
+        for (int each : Arrays.asList(0, 1)) {
+            MasterSlaveRuleConfiguration msConfig = new MasterSlaveRuleConfiguration();
+            msConfig.setName("ds_ms_" + String.valueOf(each));
+            msConfig.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
+            msConfig.setMasterDataSourceName("ds_" + String.valueOf(each));
+            msConfig.setSlaveDataSourceNames(Collections.singletonList("ds_" + String.valueOf(each) + "_slave"));
+            result.add(msConfig);
+        }
+        return result;
+    }
+    
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
+        return Maps.transformValues(createDataSourceMap(), new Function<DataSource, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final DataSource input) {
+                return DataSourceConfiguration.getDataSourceConfiguration(input);
+            }
+        });
+    }
+    
+    private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
+        return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
     }
     
     
