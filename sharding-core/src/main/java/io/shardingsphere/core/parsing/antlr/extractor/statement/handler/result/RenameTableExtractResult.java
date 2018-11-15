@@ -30,18 +30,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class RenameTableExtractResult implements ExtractResult {
+    
     private final String newTableName;
-
+    
     /**
      * Inject new table name to SQLStatement.
+     * 
      * @param statement SQL statement
      */
     @Override
-    public void inject(final SQLStatement statement) {
+    public void fill(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         if (null != newTableName) {
             alterStatement.setNewTableName(newTableName);
         }
     }
-
 }
