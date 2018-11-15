@@ -33,17 +33,17 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  * @author duhongjun
  */
 public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> dropConstraintNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
         if (!dropConstraintNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
-        return new DropPrimaryKeyExtractResult(true);
+        return Optional.<ExtractResult>of(new DropPrimaryKeyExtractResult(true));
     }
 }
