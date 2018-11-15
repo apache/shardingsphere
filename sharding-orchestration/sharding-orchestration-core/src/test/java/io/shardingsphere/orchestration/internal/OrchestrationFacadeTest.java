@@ -18,6 +18,8 @@
 package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
 import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
@@ -30,6 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,16 +52,28 @@ public final class OrchestrationFacadeTest {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
         setRegistry(orchestrationFacade);
         setRegistry(orchestrationFacade.getConfigService());
-        setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService"));
+        setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService"), orchestrationFacade);
         setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService"));
+        setRegCenterForOrchestrationListenerManager();
     }
     
     private void setRegCenterForOrchestrationListenerManager() throws ReflectiveOperationException {
         Field file = orchestrationFacade.getClass().getDeclaredField("listenerManager");
         file.setAccessible(true);
         OrchestrationListenerManager listenerManager = (OrchestrationListenerManager) file.get(orchestrationFacade);
-        
-        
+        setRegistry(listenerManager.getClass().getDeclaredField("propertiesListenerManager"));
+        setRegistry(listenerManager.getClass().getDeclaredField("authenticationListenerManager"));
+        setRegistry(listenerManager.getClass().getDeclaredField("configMapListenerManager"));
+        setRegistry(listenerManager.getClass().getDeclaredField("instanceStateListenerManager"));
+        setRegistry(listenerManager.getClass().getDeclaredField("dataSourceStateListenerManager"));
+        Collection<RuleOrchestrationListener> ruleListenerManagers = (Collection<RuleOrchestrationListener>) listenerManager.getClass().getDeclaredField("ruleListenerManagers").get(listenerManager);
+        for (RuleOrchestrationListener each : ruleListenerManagers) {
+            setRegistry(each);
+        }
+        Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = (Collection<DataSourceOrchestrationListener>) listenerManager.getClass().getDeclaredField("dataSourceListenerManagers").get(listenerManager);
+        for (DataSourceOrchestrationListener each : dataSourceListenerManagers) {
+            setRegistry(each);
+        }
     }
     
     private void setRegistry(final Object target) throws ReflectiveOperationException {
@@ -67,7 +82,7 @@ public final class OrchestrationFacadeTest {
         field.set(target, regCenter);
     }
     
-    private void setRegistry(final Field field) throws ReflectiveOperationException {
+    private void setRegistry(final Field field, final Object target) throws ReflectiveOperationException {
         field.setAccessible(true);
         setRegistry(field.get(orchestrationFacade));
     }
