@@ -34,25 +34,25 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class RenameIndexExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
         if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
-            return null;
+            return Optional.absent();
         }
         ParseTree oldIndexNode = renameIndexNode.get().getChild(2);
         if (!(oldIndexNode instanceof ParserRuleContext)) {
-            return null;
+            return Optional.absent();
         }
         ParseTree newIndexNode = renameIndexNode.get().getChild(4);
         if (!(newIndexNode instanceof ParserRuleContext)) {
-            return null;
+            return Optional.absent();
         }
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        extractResult.getSqlTokens().add(getIndexToken((ParserRuleContext) oldIndexNode));
-        extractResult.getSqlTokens().add(getIndexToken((ParserRuleContext) newIndexNode));
-        return extractResult;
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        result.getSqlTokens().add(getIndexToken((ParserRuleContext) oldIndexNode));
+        result.getSqlTokens().add(getIndexToken((ParserRuleContext) newIndexNode));
+        return Optional.<ExtractResult>of(result);
     }
     
     private IndexToken getIndexToken(final ParserRuleContext indexNode) {
