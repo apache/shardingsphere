@@ -17,11 +17,15 @@
 
 package io.shardingsphere.spi;
 
+import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
@@ -33,18 +37,64 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewInstanceServiceLoader {
     
+    private static final Map<Class, Collection<Class<?>>> SERVICE_MAP = new HashMap<>();
+    
     /**
-     * Creates a new service class loader for the given service type.
+     * Create service using service loader.
      * 
      * @param service service type
      * @param <T> type of service
-     * @return new service class loader
+     * @return SPI service collection
      */
-    @SuppressWarnings("unchecked")
     public static <T> Collection<T> load(final Class<T> service) {
-        Collection<T> result = new LinkedList<>();
+        Collection<T> result = new LinkedHashSet<>();
         for (T each : ServiceLoader.load(service)) {
             result.add(each);
+        }
+        return result;
+    }
+    
+    /**
+     * Register SPI service into map for new instance.
+     *
+     * @param service service type
+     * @param <T> type of service
+     */
+    public static <T> void register(final Class<T> service) {
+        for (T each : ServiceLoader.load(service)) {
+            registerServiceClass(service, each);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> void registerServiceClass(final Class<T> service, final T instance) {
+        Collection<Class<?>> serviceClasses = SERVICE_MAP.get(service);
+        if (null == serviceClasses) {
+            serviceClasses = new LinkedHashSet<>();
+        }
+        serviceClasses.add(instance.getClass());
+        SERVICE_MAP.put(service, serviceClasses);
+    }
+    
+    /**
+     * New service instances.
+     *
+     * @param service service class
+     * @param <T> type of service
+     * @return service instances
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> newServiceInstances(final Class<T> service) {
+        Collection<T> result = new LinkedList<>();
+        if (null == SERVICE_MAP.get(service)) {
+            return result;
+        }
+        for (Class<?> each : SERVICE_MAP.get(service)) {
+            try {
+                result.add((T) each.newInstance());
+            } catch (final ReflectiveOperationException ex) {
+                throw new ShardingException(ex);
+            }
         }
         return result;
     }
