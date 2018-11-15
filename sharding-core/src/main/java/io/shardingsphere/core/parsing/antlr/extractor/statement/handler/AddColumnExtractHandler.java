@@ -36,27 +36,28 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
  * @author duhongjun
  */
 public class AddColumnExtractHandler implements ASTExtractHandler {
-
+    
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-
-    /**
+    
+    /**‘
      * Extract add column result.
+     * 
      * @param ancestorNode ancestor node of ast
      * @return column definition
      */
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> addColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
+        if (addColumnNodes.isEmpty()) {
+            return Optional.absent();
         }
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
-        for (ParserRuleContext each : result) {
-            extractAddColumn(each, extractResult);
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : addColumnNodes) {
+            extractAddColumn(each, result);
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
-
+    
     private void extractAddColumn(final ParserRuleContext addColumnNode, final ColumnDefinitionExtractResult result) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
@@ -67,7 +68,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
             }
         }
     }
-
+    
     protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinition columnDefinition) {
     }
 }
