@@ -35,27 +35,27 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class AddPrimaryKeyExtractHandler implements ASTExtractHandler {
-
+    
     private final RuleName ruleName;
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!modifyColumnNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
-        if (null == result) {
-            return null;
+        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
+        if (null == columnNameNodes) {
+            return Optional.absent();
         }
-        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
-        for (ParserRuleContext each : result) {
-            extractResult.getPrimaryKeyColumnNames().add(each.getText());
+        PrimaryKeyExtractResult result = new PrimaryKeyExtractResult();
+        for (ParserRuleContext each : columnNameNodes) {
+            result.getPrimaryKeyColumnNames().add(each.getText());
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
