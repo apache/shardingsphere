@@ -36,29 +36,29 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  * @author duhongjun
  */
 public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> tableConstraintNode = ASTUtils.findFirstChildNode(addColumnNode.get(), RuleName.TABLE_CONSTRAINT);
         if (!tableConstraintNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(tableConstraintNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME);
-        if (result.isEmpty()) {
-            return null;
+        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME);
+        if (columnNameNodes.isEmpty()) {
+            return Optional.absent();
         }
-        PrimaryKeyExtractResult extractResult = new PrimaryKeyExtractResult();
-        for (ParseTree each : result) {
-            extractResult.getPrimaryKeyColumnNames().add(each.getText());
+        PrimaryKeyExtractResult result = new PrimaryKeyExtractResult();
+        for (ParseTree each : columnNameNodes) {
+            result.getPrimaryKeyColumnNames().add(each.getText());
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
