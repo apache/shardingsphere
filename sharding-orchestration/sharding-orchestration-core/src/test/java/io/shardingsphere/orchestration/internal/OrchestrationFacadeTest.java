@@ -17,12 +17,16 @@
 
 package io.shardingsphere.orchestration.internal;
 
+import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class OrchestrationFacadeTest {
@@ -34,6 +38,11 @@ public final class OrchestrationFacadeTest {
     
     @Before
     public void setUp() {
+        orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
+    }
+    
+    private OrchestrationConfiguration getOrchestrationConfiguration() {
+        return new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true);
     }
     
     @Test
