@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
@@ -52,6 +53,14 @@ public final class OrchestrationFacadeTest {
         setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService"));
     }
     
+    private void setRegCenterForOrchestrationListenerManager() throws ReflectiveOperationException {
+        Field file = orchestrationFacade.getClass().getDeclaredField("listenerManager");
+        file.setAccessible(true);
+        OrchestrationListenerManager listenerManager = (OrchestrationListenerManager) file.get(orchestrationFacade);
+        
+        
+    }
+    
     private void setRegistry(final Object target) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
@@ -79,8 +88,10 @@ public final class OrchestrationFacadeTest {
         verify(regCenter).watch(eq("/test/config/authentication"), any(EventListener.class));
         verify(regCenter).watch(eq("/test/config/configmap"), any(EventListener.class));
         verify(regCenter).watch(eq("/test/config/schema/sharding_db/datasource"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/masterslave_db/datasource"), any(EventListener.class));
         verify(regCenter).watch(eq("/test/config/props"), any(EventListener.class));
         verify(regCenter).watch(eq("/test/config/schema/sharding_db/rule"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/schema/masterslave_db/rule"), any(EventListener.class));
     }
     
     @Test
