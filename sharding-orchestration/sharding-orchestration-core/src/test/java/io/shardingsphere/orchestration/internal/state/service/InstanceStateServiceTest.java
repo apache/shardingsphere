@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
@@ -36,8 +38,11 @@ public final class InstanceStateServiceTest {
     private InstanceStateService instanceStateService;
     
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException {
         instanceStateService = new InstanceStateService("test", regCenter);
+        Field field = instanceStateService.getClass().getDeclaredField("regCenter");
+        field.setAccessible(true);
+        field.set(instanceStateService, regCenter);
     }
     
     @Test
