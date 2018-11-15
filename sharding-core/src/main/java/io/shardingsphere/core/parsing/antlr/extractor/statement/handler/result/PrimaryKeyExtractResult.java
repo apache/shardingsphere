@@ -37,22 +37,23 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PrimaryKeyExtractResult implements ExtractResult {
-
-    private Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
-
+    
+    Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
+    
     /**
      * Inject primary key to SQLStatement.
+     * 
      * @param statement SQL statement
      */
     @Override
-    public void inject(final SQLStatement statement) {
+    public void fill(final SQLStatement statement) {
         if (statement instanceof AlterTableStatement) {
             injectAlter(statement);
         } else if (statement instanceof CreateTableStatement) {
             injectCreate(statement);
         }
     }
-
+    
     private void injectAlter(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
@@ -63,7 +64,7 @@ public class PrimaryKeyExtractResult implements ExtractResult {
             }
         }
     }
-
+    
     private void injectCreate(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
