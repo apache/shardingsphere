@@ -22,6 +22,8 @@ import java.util.Collection;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -33,19 +35,19 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class DropColumnExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> dropColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
+        if (dropColumnNodes.isEmpty()) {
+            return Optional.absent();
         }
-        DropColumnExtractResult extractResult = new DropColumnExtractResult();
-        for (ParserRuleContext each : result) {
+        DropColumnExtractResult result = new DropColumnExtractResult();
+        for (ParserRuleContext each : dropColumnNodes) {
             for (ParseTree columnNode : ASTUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
-                extractResult.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
+                result.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
