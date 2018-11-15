@@ -53,7 +53,7 @@ public final class OrchestrationFacadeTest {
         setRegistry(orchestrationFacade);
         setRegistry(orchestrationFacade.getConfigService());
         setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService"), orchestrationFacade);
-        setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService"));
+        setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService"), orchestrationFacade);
         setRegCenterForOrchestrationListenerManager();
     }
     
@@ -61,11 +61,11 @@ public final class OrchestrationFacadeTest {
         Field file = orchestrationFacade.getClass().getDeclaredField("listenerManager");
         file.setAccessible(true);
         OrchestrationListenerManager listenerManager = (OrchestrationListenerManager) file.get(orchestrationFacade);
-        setRegistry(listenerManager.getClass().getDeclaredField("propertiesListenerManager"));
-        setRegistry(listenerManager.getClass().getDeclaredField("authenticationListenerManager"));
-        setRegistry(listenerManager.getClass().getDeclaredField("configMapListenerManager"));
-        setRegistry(listenerManager.getClass().getDeclaredField("instanceStateListenerManager"));
-        setRegistry(listenerManager.getClass().getDeclaredField("dataSourceStateListenerManager"));
+        setRegistry(listenerManager.getClass().getDeclaredField("propertiesListenerManager"), listenerManager);
+        setRegistry(listenerManager.getClass().getDeclaredField("authenticationListenerManager"), listenerManager);
+        setRegistry(listenerManager.getClass().getDeclaredField("configMapListenerManager"), listenerManager);
+        setRegistry(listenerManager.getClass().getDeclaredField("instanceStateListenerManager"), listenerManager);
+        setRegistry(listenerManager.getClass().getDeclaredField("dataSourceStateListenerManager"), listenerManager);
         Collection<RuleOrchestrationListener> ruleListenerManagers = (Collection<RuleOrchestrationListener>) listenerManager.getClass().getDeclaredField("ruleListenerManagers").get(listenerManager);
         for (RuleOrchestrationListener each : ruleListenerManagers) {
             setRegistry(each);
