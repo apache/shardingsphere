@@ -34,7 +34,7 @@ public final class DataSourceOrchestrationListenerTest {
     
     @Before
     public void setUp() {
-    
+        dataSourceOrchestrationListener = new DataSourceOrchestrationListener("test", regCenter, "sharding_db");
     }
     
     @Test
