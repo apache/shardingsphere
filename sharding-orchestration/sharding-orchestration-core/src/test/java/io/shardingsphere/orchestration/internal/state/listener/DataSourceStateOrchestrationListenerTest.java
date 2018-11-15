@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class DataSourceStateOrchestrationListenerTest {
+public final class DataSourceStateOrchestrationListenerTest {
     
     @Before
     public void setUp() {
@@ -31,4 +31,3 @@ public class DataSourceStateOrchestrationListenerTest {
     public void assertWatch() {
     }
 }
-    
