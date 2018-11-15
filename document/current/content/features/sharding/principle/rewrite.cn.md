@@ -261,4 +261,4 @@ SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
 
 改写引擎的整体结构划分如下图所示。
 
-![改写引擎结构](http://shardingsphere.jd.com/document/current/img/sharding/rewrite_architecture_v2.png)
+![改写引擎结构](http://shardingsphere.jd.com/document/current/img/sharding/rewrite_architecture_cn.png)
