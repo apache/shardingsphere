@@ -29,13 +29,13 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  */
 public final class RenameTableExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
         if (!renameTableNode.isPresent() || 0 == renameTableNode.get().getChildCount()) {
-            return null;
+            return Optional.absent();
         }
-        return new RenameTableExtractResult(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText());
+        return Optional.<ExtractResult>of(new RenameTableExtractResult(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText()));
     }
 }
