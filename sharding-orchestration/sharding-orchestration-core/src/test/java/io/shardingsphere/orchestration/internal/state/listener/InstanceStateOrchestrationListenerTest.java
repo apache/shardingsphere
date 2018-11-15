@@ -20,14 +20,13 @@ package io.shardingsphere.orchestration.internal.state.listener;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InstanceStateOrchestrationListenerTest {
+public final class InstanceStateOrchestrationListenerTest {
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
     
     @Test
-    public void testWatch() {
+    public void assertWatch() {
     }
 }
-    
