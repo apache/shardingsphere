@@ -27,7 +27,7 @@ public class AuthenticationOrchestrationListenerTest {
     }
     
     @Test
-    public void testWatch() {
+    public void assertWatch() {
     }
 }
     
