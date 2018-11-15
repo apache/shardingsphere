@@ -20,14 +20,16 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- *  Extract information from AST, inject information to SQL statement object.
+ *  Extract information from AST
  * 
  * @author duhongjun
  */
 public interface ExtractResult {
     
-    /** SQL phrase extract result.
+    /**
+     *  SQL phrase extract result.
+     * 
      * @param statement SQL statement
      */
-    void inject(SQLStatement statement);
+    void fill(SQLStatement statement);
 }
