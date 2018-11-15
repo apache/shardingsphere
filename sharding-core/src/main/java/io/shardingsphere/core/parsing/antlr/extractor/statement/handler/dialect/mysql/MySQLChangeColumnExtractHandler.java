@@ -41,30 +41,30 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
         if (!oldColumnNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionNode.isPresent()) {
-            return null;
+            return Optional.absent();
         }
         Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
         if (!columnDefinition.isPresent()) {
             return null;
         }
         columnDefinition.get().setOldName(oldColumnNode.get().getText());
-        ColumnDefinitionExtractResult extractResult = new ColumnDefinitionExtractResult();
-        extractResult.getColumnDefintions().add(columnDefinition.get());
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        result.getColumnDefintions().add(columnDefinition.get());
         Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {
             columnDefinition.get().setPosition(columnPosition.get());
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
