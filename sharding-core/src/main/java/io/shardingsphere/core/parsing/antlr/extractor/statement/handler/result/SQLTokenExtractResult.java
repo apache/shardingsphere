@@ -36,14 +36,16 @@ import java.util.List;
  */
 @Getter
 public class SQLTokenExtractResult implements ExtractResult {
+    
     private List<SQLToken> sqlTokens = new LinkedList<>();
-
+    
     /**
      * Inject SQL token to SQLStatement.
+     * 
      * @param statement SQL statement
      */
     @Override
-    public void inject(final SQLStatement statement) {
+    public void fill(final SQLStatement statement) {
         String tableName = "";
         if (statement instanceof DDLStatement) {
             DDLStatement ddlStatement = (DDLStatement) statement;
