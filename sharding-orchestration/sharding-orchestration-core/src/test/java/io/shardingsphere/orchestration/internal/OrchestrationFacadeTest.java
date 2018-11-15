@@ -47,12 +47,19 @@ public final class OrchestrationFacadeTest {
     public void setUp() throws ReflectiveOperationException {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
         setRegistry(orchestrationFacade);
+        setRegistry(orchestrationFacade.getConfigService());
+        setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService").get(orchestrationFacade));
+        setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService").get(orchestrationFacade));
     }
     
     private void setRegistry(final Object target) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
         field.set(target, regCenter);
+    }
+    
+    private void setRegistry(final Field field) throws ReflectiveOperationException {
+    
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
