@@ -48,8 +48,8 @@ public final class OrchestrationFacadeTest {
         orchestrationFacade = new OrchestrationFacade(getOrchestrationConfiguration(), Arrays.asList("sharding_db", "masterslave_db"));
         setRegistry(orchestrationFacade);
         setRegistry(orchestrationFacade.getConfigService());
-        setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService").get(orchestrationFacade));
-        setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService").get(orchestrationFacade));
+        setRegistry(orchestrationFacade.getClass().getDeclaredField("instanceStateService"));
+        setRegistry(orchestrationFacade.getClass().getDeclaredField("dataSourceService"));
     }
     
     private void setRegistry(final Object target) throws ReflectiveOperationException {
@@ -59,7 +59,8 @@ public final class OrchestrationFacadeTest {
     }
     
     private void setRegistry(final Field field) throws ReflectiveOperationException {
-    
+        field.setAccessible(true);
+        setRegistry(field.get(orchestrationFacade));
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
