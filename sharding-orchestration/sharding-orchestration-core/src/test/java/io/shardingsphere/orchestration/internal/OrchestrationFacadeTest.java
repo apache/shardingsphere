@@ -123,14 +123,14 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertInitWithParameters() {
-        orchestrationFacade.init(createDataSourceConfigurationMap(), createShardingRuleConfiguration(), )
+        orchestrationFacade.init(createDataSourceConfigurationMap(), createRuleConfigurationMap(), createAuthentication())
     }
     
     private Map<String, RuleConfiguration> createRuleConfigurationMap() {
         return Collections.singletonMap("sharding_db", getShardingRuleConfiguration());
     }
     
-    private RuleConfiguration createShardingRuleConfiguration() {
+    private RuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
@@ -170,10 +170,6 @@ public final class OrchestrationFacadeTest {
                 return DataSourceConfiguration.getDataSourceConfiguration(input);
             }
         });
-    }
-    
-    private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
