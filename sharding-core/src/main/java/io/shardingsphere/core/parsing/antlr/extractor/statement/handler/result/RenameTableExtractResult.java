@@ -15,26 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * DDL statement extractor.
- * 
+ * Rename table result.
+ *
  * @author duhongjun
  */
-public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
-
+@RequiredArgsConstructor
+@Getter
+public final class RenameTableExtractResult implements ExtractResult {
+    
+    private final String newTableName;
+    
     /**
-     * Create DDL Statement.
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL statement
+     * Inject new table name to SQLStatement.
+     * 
+     * @param statement SQL statement
      */
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
-        return new DDLStatement();
+    public void fill(final SQLStatement statement) {
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        if (null != newTableName) {
+            alterStatement.setNewTableName(newTableName);
+        }
     }
 }

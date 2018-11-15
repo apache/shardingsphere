@@ -15,26 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import lombok.Getter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
- * DDL statement extractor.
- * 
+ * Drop column result.
+ *
  * @author duhongjun
  */
-public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
-
+@Getter
+public final class DropColumnExtractResult implements ExtractResult {
+    
+    private final Set<String> dropColumnNames = new LinkedHashSet<>();
+    
     /**
-     * Create DDL Statement.
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL statement
+     * Inject drop column name to SQLStatement.
+     * 
+     * @param statement SQL statement
      */
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
-        return new DDLStatement();
+    public void fill(final SQLStatement statement) {
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        for (String each : dropColumnNames) {
+            alterStatement.getDropColumns().add(each);
+        }
     }
 }
