@@ -19,13 +19,13 @@ package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.registry.SecondTestRegistryCenter;
+import io.shardingsphere.orchestration.fixture.SecondTestRegistryCenter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
 
-public class RegistryCenterLoaderTest {
+public final class RegistryCenterLoaderTest {
     
     private RegistryCenter regCenter;
     
