@@ -22,6 +22,8 @@ import java.util.Collection;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
@@ -36,15 +38,15 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
-
+    
     @Override
-    public ExtractResult extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> result = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
-        if (result.isEmpty()) {
-            return null;
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> dropINdexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
+        if (dropINdexNodes.isEmpty()) {
+            return Optional.absent();
         }
-        SQLTokenExtractResult extractResult = new SQLTokenExtractResult();
-        for (ParserRuleContext each : result) {
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        for (ParserRuleContext each : dropINdexNodes) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;
@@ -54,8 +56,8 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
                 continue;
             }
             ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
-            extractResult.getSqlTokens().add(new IndexToken(indexNameNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.getText()), null));
+            result.getSqlTokens().add(new IndexToken(indexNameNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.getText()), null));
         }
-        return extractResult;
+        return Optional.<ExtractResult>of(result);
     }
 }
