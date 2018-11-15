@@ -20,6 +20,8 @@ package io.shardingsphere.shardingjdbc.spring.boot.type;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.rule.TableRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import lombok.SneakyThrows;
@@ -35,6 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -72,6 +75,45 @@ public class SpringBootShardingTest {
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
     }
+    
+    @Test
+    public void assertWithShardingRule() {
+        ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, dataSource);
+        ShardingRule shardingRule = shardingContext.getShardingRule();
+        assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(3));
+        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds"));
+        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_0"));
+        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_1"));
+        assertThat(shardingRule.getTableRules().size(), is(2));
+        TableRule tableRule1 = ((LinkedList<TableRule>) shardingRule.getTableRules()).get(0);
+        assertThat(tableRule1.getLogicTable(), is("t_order"));
+        assertThat(tableRule1.getActualDataNodes().size(), is(4));
+        assertThat(tableRule1.getActualDataNodes().get(0).getDataSourceName(), is("ds_0"));
+        assertThat(tableRule1.getActualDataNodes().get(0).getTableName(), is("t_order_0"));
+        assertThat(tableRule1.getActualDataNodes().get(1).getDataSourceName(), is("ds_0"));
+        assertThat(tableRule1.getActualDataNodes().get(1).getTableName(), is("t_order_1"));
+        assertThat(tableRule1.getActualDataNodes().get(2).getDataSourceName(), is("ds_1"));
+        assertThat(tableRule1.getActualDataNodes().get(2).getTableName(), is("t_order_0"));
+        assertThat(tableRule1.getActualDataNodes().get(3).getDataSourceName(), is("ds_1"));
+        assertThat(tableRule1.getActualDataNodes().get(3).getTableName(), is("t_order_1"));
+        assertThat(tableRule1.getGenerateKeyColumn(), is("order_id"));
+        TableRule tableRule2 = ((LinkedList<TableRule>) shardingRule.getTableRules()).get(1);
+        assertThat(tableRule2.getLogicTable(), is("t_order_item"));
+        assertThat(tableRule2.getActualDataNodes().size(), is(4));
+        assertThat(tableRule2.getActualDataNodes().get(0).getDataSourceName(), is("ds_0"));
+        assertThat(tableRule2.getActualDataNodes().get(0).getTableName(), is("t_order_item_0"));
+        assertThat(tableRule2.getActualDataNodes().get(1).getDataSourceName(), is("ds_0"));
+        assertThat(tableRule2.getActualDataNodes().get(1).getTableName(), is("t_order_item_1"));
+        assertThat(tableRule2.getActualDataNodes().get(2).getDataSourceName(), is("ds_1"));
+        assertThat(tableRule2.getActualDataNodes().get(2).getTableName(), is("t_order_item_0"));
+        assertThat(tableRule2.getActualDataNodes().get(3).getDataSourceName(), is("ds_1"));
+        assertThat(tableRule2.getActualDataNodes().get(3).getTableName(), is("t_order_item_1"));
+        assertThat(tableRule2.getGenerateKeyColumn(), is("order_item_id"));
+        assertThat(shardingRule.getBindingTableRules().size(), is(0));
+        assertThat(shardingRule.getBroadcastTables().size(), is(1));
+        assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
+    }
+    
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
