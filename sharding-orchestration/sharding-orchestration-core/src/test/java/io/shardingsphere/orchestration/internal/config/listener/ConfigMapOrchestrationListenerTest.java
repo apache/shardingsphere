@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.internal.config.listener;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ConfigMapOrchestrationListenerTest {
+public final class ConfigMapOrchestrationListenerTest {
     
     @Before
     public void setUp() {
@@ -30,4 +30,3 @@ public class ConfigMapOrchestrationListenerTest {
     public void assertWatch() {
     }
 }
-    
