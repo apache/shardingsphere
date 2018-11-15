@@ -17,16 +17,34 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
+@RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationOrchestrationListenerTest {
+    
+    private AuthenticationOrchestrationListener authOrchestrationListener;
+    
+    @Mock
+    private RegistryCenter regCenter;
     
     @Before
     public void setUp() {
+        authOrchestrationListener = new AuthenticationOrchestrationListener("test", regCenter);
     }
     
     @Test
     public void assertWatch() {
+        authOrchestrationListener.watch();
+        verify(regCenter).watch(eq("/test/config/authentication"), any(EventListener.class));
     }
 }
