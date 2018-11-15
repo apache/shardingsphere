@@ -26,6 +26,7 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
@@ -49,6 +50,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -123,7 +125,7 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertInitWithParameters() {
-        orchestrationFacade.init(createDataSourceConfigurationMap(), createRuleConfigurationMap(), createAuthentication())
+        orchestrationFacade.init(createDataSourceConfigurationMap(), createRuleConfigurationMap(), createAuthentication(), )
     }
     
     private Map<String, RuleConfiguration> createRuleConfigurationMap() {
@@ -185,6 +187,12 @@ public final class OrchestrationFacadeTest {
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.FALSE);
         return result;
     }
     
