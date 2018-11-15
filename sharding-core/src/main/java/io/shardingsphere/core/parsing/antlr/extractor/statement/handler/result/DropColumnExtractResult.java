@@ -17,13 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
-import lombok.Setter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Drop column result.
@@ -31,10 +30,9 @@ import lombok.Setter;
  * @author duhongjun
  */
 @Getter
-@Setter
-public class DropColumnExtractResult implements ExtractResult {
+public final class DropColumnExtractResult implements ExtractResult {
     
-    private Set<String> dropColumnNames = new LinkedHashSet<>();
+    private final Set<String> dropColumnNames = new LinkedHashSet<>();
     
     /**
      * Inject drop column name to SQLStatement.

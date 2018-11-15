@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class RenameTableExtractResult implements ExtractResult {
+public final class RenameTableExtractResult implements ExtractResult {
     
     private final String newTableName;
     

@@ -17,11 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
@@ -29,7 +25,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
-import lombok.Setter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Add column result.
@@ -37,10 +35,9 @@ import lombok.Setter;
  * @author duhongjun
  */
 @Getter
-@Setter
-public class ColumnDefinitionExtractResult implements ExtractResult {
+public final class ColumnDefinitionExtractResult implements ExtractResult {
     
-    private List<ColumnDefinition> columnDefintions = new LinkedList<>();
+    private final List<ColumnDefinition> columnDefintions = new LinkedList<>();
     
     /**
      * Inject column definition to SQLStatement.

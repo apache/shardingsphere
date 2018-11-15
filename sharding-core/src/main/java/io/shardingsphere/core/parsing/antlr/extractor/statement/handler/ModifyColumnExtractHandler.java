@@ -37,7 +37,13 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 public class ModifyColumnExtractHandler implements ASTExtractHandler {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-    
+
+    /**
+     * Extract AST.
+     *
+     * @param ancestorNode ancestor node of AST
+     * @return extract result
+     */
     @Override
     public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);

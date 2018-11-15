@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class DropPrimaryKeyExtractResult implements ExtractResult {
+public final class DropPrimaryKeyExtractResult implements ExtractResult {
     
     private final boolean dropPrimaryKey;
     

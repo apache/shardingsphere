@@ -27,7 +27,6 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Add primary key result.
@@ -35,10 +34,9 @@ import lombok.Setter;
  * @author duhongjun
  */
 @Getter
-@Setter
-public class PrimaryKeyExtractResult implements ExtractResult {
+public final class PrimaryKeyExtractResult implements ExtractResult {
     
-    Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
+    private final Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
     
     /**
      * Inject primary key to SQLStatement.
@@ -48,13 +46,13 @@ public class PrimaryKeyExtractResult implements ExtractResult {
     @Override
     public void fill(final SQLStatement statement) {
         if (statement instanceof AlterTableStatement) {
-            injectAlter(statement);
+            fillAlter(statement);
         } else if (statement instanceof CreateTableStatement) {
-            injectCreate(statement);
+            fillCreate(statement);
         }
     }
     
-    private void injectAlter(final SQLStatement statement) {
+    private void fillAlter(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
             Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(each);
@@ -65,7 +63,7 @@ public class PrimaryKeyExtractResult implements ExtractResult {
         }
     }
     
-    private void injectCreate(final SQLStatement statement) {
+    private void fillCreate(final SQLStatement statement) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         for (String each : primaryKeyColumnNames) {
             createStatement.getPrimaryKeyColumns().add(each);

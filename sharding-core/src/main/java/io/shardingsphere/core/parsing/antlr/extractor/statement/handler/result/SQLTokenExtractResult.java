@@ -35,9 +35,9 @@ import java.util.List;
  * @author duhongjun
  */
 @Getter
-public class SQLTokenExtractResult implements ExtractResult {
+public final class SQLTokenExtractResult implements ExtractResult {
     
-    private List<SQLToken> sqlTokens = new LinkedList<>();
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     /**
      * Inject SQL token to SQLStatement.

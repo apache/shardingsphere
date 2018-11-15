@@ -34,7 +34,7 @@ public interface ASTExtractHandler {
      * Extract AST.
      *  
      * @param ancestorNode ancestor node of AST
-     * @return xtract result
+     * @return extract result
      */
     Optional<ExtractResult> extract(ParserRuleContext ancestorNode);
 }

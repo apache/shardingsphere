@@ -35,7 +35,7 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
  *
  * @author duhongjun
  */
-public class AddColumnExtractHandler implements ASTExtractHandler {
+public final class AddColumnExtractHandler implements ASTExtractHandler {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
