@@ -17,6 +17,8 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -46,7 +48,7 @@ public final class BackendConnection implements AutoCloseable {
     @Setter
     private LogicSchema logicSchema;
     
-    private final Collection<Connection> cachedConnections = new CopyOnWriteArrayList<>();
+    private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
     
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
     
@@ -58,7 +60,7 @@ public final class BackendConnection implements AutoCloseable {
      * @return connection size
      */
     public int getConnectionSize() {
-        return cachedConnections.size();
+        return cachedConnections.values().size();
     }
     
     /**
@@ -72,7 +74,7 @@ public final class BackendConnection implements AutoCloseable {
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
-        cachedConnections.addAll(result);
+        cachedConnections.putAll(dataSourceName, result);
         return result;
     }
     
@@ -142,7 +144,7 @@ public final class BackendConnection implements AutoCloseable {
     
     private Collection<SQLException> closeConnections() {
         Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : cachedConnections) {
+        for (Connection each : cachedConnections.values()) {
             try {
                 each.close();
             } catch (SQLException ex) {
