@@ -19,14 +19,11 @@ package io.shardingsphere.core.hint;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import io.shardingsphere.api.HintManager;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Collection;
 
