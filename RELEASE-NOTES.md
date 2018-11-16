@@ -8,7 +8,8 @@
 
 #### Core
 
-1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
+1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) Support broadcast table
+2. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
 
 #### Sharding-Proxy
 

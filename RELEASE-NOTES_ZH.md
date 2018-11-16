@@ -8,7 +8,8 @@
 
 #### Core
 
-1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
+1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) 支持广播表
+2. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
 
 #### Sharding-Proxy
 
