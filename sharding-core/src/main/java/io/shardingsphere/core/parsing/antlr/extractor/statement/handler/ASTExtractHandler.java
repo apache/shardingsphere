@@ -17,8 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 
 /**
  * AST extract handler.
@@ -30,8 +33,8 @@ public interface ASTExtractHandler {
     /**
      * Extract AST.
      *  
-     * @param ancestorNode ancestor node of ast
-     * @param statement SQL statement
+     * @param ancestorNode ancestor node of AST
+     * @return extract result
      */
-    void extract(ParserRuleContext ancestorNode, SQLStatement statement);
+    Optional<ExtractResult> extract(ParserRuleContext ancestorNode);
 }

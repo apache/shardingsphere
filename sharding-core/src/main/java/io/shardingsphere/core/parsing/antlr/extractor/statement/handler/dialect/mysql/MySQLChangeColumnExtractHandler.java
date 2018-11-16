@@ -17,17 +17,19 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Change column extract handler for MySQL.
@@ -39,28 +41,30 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnNode.isPresent()) {
-            return;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
         if (!oldColumnNode.isPresent()) {
-            return;
+            return Optional.absent();
         }
         Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionNode.isPresent()) {
-            return;
+            return Optional.absent();
         }
-        MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
         Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
         if (!columnDefinition.isPresent()) {
-            return;
+            return null;
         }
-        alterStatement.getUpdateColumns().put(oldColumnNode.get().getText(), columnDefinition.get());
+        columnDefinition.get().setOldName(oldColumnNode.get().getText());
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        result.getColumnDefintions().add(columnDefinition.get());
         Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {
-            alterStatement.getPositionChangedColumns().add(columnPosition.get());
+            columnDefinition.get().setPosition(columnPosition.get());
         }
+        return Optional.<ExtractResult>of(result);
     }
 }

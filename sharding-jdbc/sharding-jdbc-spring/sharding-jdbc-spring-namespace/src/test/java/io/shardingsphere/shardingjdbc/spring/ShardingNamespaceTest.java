@@ -50,6 +50,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -210,6 +211,21 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         BindingTableRule userRule = bindingTableRules.next();
         assertThat(userRule.getBindingActualTable("dbtbl_0", "t_user", "t_user_detail"), is("t_user"));
         assertThat(userRule.getBindingActualTable("dbtbl_1", "t_user", "t_user_detail"), is("t_user"));
+    }
+    
+    @Test
+    public void assertBroadcastTableRuleDatasource() {
+        ShardingRule shardingRule = getShardingRule("broadcastTableRuleDatasource");
+        assertThat(shardingRule.getBroadcastTables().size(), is(1));
+        assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
+    }
+    
+    @Test
+    public void assertMultiBroadcastTableRulesDatasource() {
+        ShardingRule shardingRule = getShardingRule("multiBroadcastTableRulesDatasource");
+        assertThat(shardingRule.getBroadcastTables().size(), is(2));
+        assertThat(((LinkedList<String>) shardingRule.getBroadcastTables()).get(0), is("t_config1"));
+        assertThat(((LinkedList<String>) shardingRule.getBroadcastTables()).get(1), is("t_config2"));
     }
     
     @Test

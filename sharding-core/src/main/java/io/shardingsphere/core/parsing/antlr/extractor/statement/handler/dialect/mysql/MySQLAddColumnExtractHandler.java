@@ -17,14 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 
 /**
  * Add column extract handler for MySQL.
@@ -34,11 +35,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public final class MySQLAddColumnExtractHandler extends AddColumnExtractHandler {
     
     @Override
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
-        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn((ParserRuleContext) ancestorNode, columnName);
-        MySQLAlterTableStatement alterStatement = (MySQLAlterTableStatement) statement;
+    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinition columnDefinition) {
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn((ParserRuleContext) ancestorNode, columnDefinition.getName());
         if (columnPosition.isPresent()) {
-            alterStatement.getPositionChangedColumns().add(columnPosition.get());
+            columnDefinition.setPosition(columnPosition.get());
         }
     }
 }
