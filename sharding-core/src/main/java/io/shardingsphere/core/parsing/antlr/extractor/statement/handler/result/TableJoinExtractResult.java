@@ -33,10 +33,14 @@ import lombok.Getter;
 @Getter
 public class TableJoinExtractResult extends TableExtractResult {
     
-    private List<OrCondition> joinConditions = new LinkedList<>();
-    
-    public TableJoinExtractResult(String name, String alias, String schemaName, TableToken token, List<OrCondition> joinConditions) {
+    public TableJoinExtractResult(String name, String alias, String schemaName, TableToken token) {
         super(name, alias, schemaName, token);
-        this.joinConditions = joinConditions;
     }
+    
+    public TableJoinExtractResult(TableExtractResult parent) {
+        super(parent.getName(), parent.getAlias(), parent.getSchemaName(), parent.getToken());
+    }
+
+    private final List<OrCondition> joinConditions = new LinkedList<>();
+    
 }
