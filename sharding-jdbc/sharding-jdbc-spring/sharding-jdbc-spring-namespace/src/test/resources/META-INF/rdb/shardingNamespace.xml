@@ -113,6 +113,37 @@
             </sharding:binding-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
+
+    <sharding:data-source id="broadcastTableRuleDatasource">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+                <sharding:table-rule logic-table="t_order_item" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule tables="t_config" />
+            </sharding:broadcast-table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+
+    <sharding:data-source id="multiBroadcastTableRulesDatasource">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" />
+                <sharding:table-rule logic-table="t_order_item" />
+            </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule tables="t_config1" />
+                <sharding:broadcast-table-rule tables="t_config2" />
+            </sharding:broadcast-table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
     
     <sharding:data-source id="propsDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">

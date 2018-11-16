@@ -17,27 +17,37 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.util.SQLUtil;
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.util.SQLUtil;
+
 /**
  * Drop column extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class DropColumnExtractHandler implements ASTExtractHandler {
     
     @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> dropColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
+        if (dropColumnNodes.isEmpty()) {
+            return Optional.absent();
+        }
+        DropColumnExtractResult result = new DropColumnExtractResult();
+        for (ParserRuleContext each : dropColumnNodes) {
             for (ParseTree columnNode : ASTUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
-                alterStatement.getDropColumns().add(SQLUtil.getExactlyValue(columnNode.getText()));
+                result.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }
+        return Optional.<ExtractResult>of(result);
     }
 }

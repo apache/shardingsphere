@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.spring;
 import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceAlgorithmClassTest;
 import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceAlgorithmExpressionTest;
 import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceBindingTablesTest;
+import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceBroadcastTablesTest;
 import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceDefaultStrategyTest;
 import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceDifferentTablesTest;
 import io.shardingsphere.shardingjdbc.spring.cases.WithNamespaceForMasterSlaveWithDefaultStrategyTest;
@@ -36,6 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
         WithNamespaceAlgorithmExpressionTest.class, 
         WithNamespaceDefaultStrategyTest.class, 
         WithNamespaceBindingTablesTest.class, 
+        WithNamespaceBroadcastTablesTest.class,
         WithNamespaceDifferentTablesTest.class,
         WithNamespaceForMasterSlaveWithDefaultStrategyTest.class,
         WithNamespaceForMasterSlaveWithStrategyRefTest.class,

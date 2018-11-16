@@ -57,6 +57,8 @@ public class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
     
+    private final Collection<String> broadcastTables = new LinkedList<>();
+    
     private final ShardingStrategy defaultDatabaseShardingStrategy;
     
     private final ShardingStrategy defaultTableShardingStrategy;
@@ -80,6 +82,7 @@ public class ShardingRule {
             }
             bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
         }
+        broadcastTables.addAll(shardingRuleConfig.getBroadcastTables());
         defaultDatabaseShardingStrategy = null == shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig()
                 ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = null == shardingRuleConfig.getDefaultTableShardingStrategyConfig()
@@ -131,6 +134,9 @@ public class ShardingRule {
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
+        if (isBroadcastTable(logicTableName)) {
+            return new TableRule(shardingDataSourceNames.getDataSourceNames(), logicTableName);
+        }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
             return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
         }
@@ -166,6 +172,34 @@ public class ShardingRule {
     }
     
     /**
+     * Adjust logic table is belong to broadcast tables.
+     *
+     * @param logicTable logic table name
+     * @return logic table is belong to broadcast tables or not
+     */
+    public boolean isBroadcastTable(final String logicTable) {
+        return broadcastTables.contains(logicTable);
+    }
+    
+    /**
+     * Adjust logic tables is all belong to broadcast tables.
+     *
+     * @param logicTables names of logic tables
+     * @return logic tables is all belong to broadcast tables or not
+     */
+    public boolean isAllBroadcastTables(final Collection<String> logicTables) {
+        if (logicTables.isEmpty()) {
+            return false;
+        }
+        for (String each : logicTables) {
+            if (!isBroadcastTable(each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Adjust logic tables is all belong to binding tables.
      *
      * @param logicTables names of logic tables
@@ -193,6 +227,9 @@ public class ShardingRule {
     public boolean isAllInDefaultDataSource(final Collection<String> logicTables) {
         for (String each : logicTables) {
             if (tryFindTableRuleByLogicTable(each).isPresent()) {
+                return false;
+            }
+            if (isBroadcastTable(each)) {
                 return false;
             }
         }
