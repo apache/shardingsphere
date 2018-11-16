@@ -57,6 +57,7 @@ The list here will be shown in the registered order.
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
 * [DiDi global](https://www.didiglobal.com/)
+* [GuaZi](https://www.guazi.com/)
 
 ## SNS
 

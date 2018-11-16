@@ -57,6 +57,7 @@ chapter = true
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
 * [滴滴小桔车服](https://www.didiglobal.com/)
+* [瓜子二手车](https://www.guazi.com/)
 
 ## 社交平台
 
