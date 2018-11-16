@@ -4,12 +4,17 @@
 
 1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) Adjust persist structure for orchestration's registry center
 
-### Bug Fixes
+### New Features
 
 #### Core
 
 1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) Support broadcast table
-2. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
+
+### Bug Fixes
+
+#### Core
+
+1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
 
 #### Sharding-Proxy
 
