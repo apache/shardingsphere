@@ -1,2 +1,2 @@
-io.shardingsphere.orchestration.registry.FirstTestRegistryCenter
-io.shardingsphere.orchestration.registry.SecondTestRegistryCenter
+io.shardingsphere.orchestration.fixture.FirstTestRegistryCenter
+io.shardingsphere.orchestration.fixture.SecondTestRegistryCenter

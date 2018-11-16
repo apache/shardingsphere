@@ -81,6 +81,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfig(shardingRuleElement));
         factory.addPropertyValue("masterSlaveRuleConfigs", parseMasterSlaveRulesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfig(shardingRuleElement));
+        factory.addPropertyValue("broadcastTables", parseBroadcastTables(shardingRuleElement));
         parseKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
     }
@@ -199,8 +200,21 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         }
         List<Element> bindingTableRuleElements = DomUtils.getChildElementsByTagName(bindingTableRulesElement, ShardingDataSourceBeanDefinitionParserTag.BINDING_TABLE_RULE_TAG);
         List<String> result = new LinkedList<>();
-        for (Element bindingTableRuleElement : bindingTableRuleElements) {
-            result.add(bindingTableRuleElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
+        for (Element each : bindingTableRuleElements) {
+            result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
+        }
+        return result;
+    }
+    
+    private List<String> parseBroadcastTables(final Element element) {
+        Element broadcastTableRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULES_TAG);
+        if (null == broadcastTableRulesElement) {
+            return Collections.emptyList();
+        }
+        List<Element> broadcastTableRuleElements = DomUtils.getChildElementsByTagName(broadcastTableRulesElement, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULE_TAG);
+        List<String> result = new LinkedList<>();
+        for (Element each : broadcastTableRuleElements) {
+            result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TABLES_ATTRIBUTE));
         }
         return result;
     }

@@ -17,40 +17,50 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Modify column extract handler.
- * 
+ *
  * @author duhongjun
  */
 public class ModifyColumnExtractHandler implements ASTExtractHandler {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-    
+
+    /**
+     * Extract AST.
+     *
+     * @param ancestorNode ancestor node of AST
+     * @return extract result
+     */
     @Override
-    public final void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
-            // it`s not column definition, but can call this method
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
+        if (modifyColumnNodes.isEmpty()) {
+            return Optional.absent();
+        }
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : modifyColumnNodes) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
-                setColumnDefinition(each, (AlterTableStatement) statement, columnDefinition.get());
+                postExtractColumnDefinition(each, columnDefinition.get());
+                result.getColumnDefintions().add(columnDefinition.get());
             }
         }
+        return Optional.<ExtractResult>of(result);
     }
     
-    private void setColumnDefinition(final ParserRuleContext modifyColumnNode, final AlterTableStatement alterTableStatement, final ColumnDefinition columnDefinition) {
-        alterTableStatement.getUpdateColumns().put(columnDefinition.getName(), columnDefinition);
-        postVisitColumnDefinition(modifyColumnNode, alterTableStatement, columnDefinition.getName());
-    }
-    
-    protected void postVisitColumnDefinition(final ParseTree ancestorNode, final SQLStatement statement, final String columnName) {
+    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinition columnDefinition) {
     }
 }
