@@ -348,9 +348,9 @@ collateClause
     ;
     
 orderByClause
-    : ORDER BY groupByItem (COMMA groupByItem)*
+    : ORDER BY orderByItem (COMMA orderByItem)*
     ;
     
-groupByItem
+orderByItem
     : (columnName | NUMBER |expr) (ASC|DESC)?
     ;
