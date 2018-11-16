@@ -22,13 +22,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import lombok.Getter;
 
 /**
  * From clause extract result.
  * 
  * @author duhongjun
  */
-public class FromExtractResult implements ExtractResult {
+@Getter
+public class FromClauseExtractResult implements ExtractResult {
     
     private final List<TableExtractResult> tableResults = new LinkedList<>();
     
