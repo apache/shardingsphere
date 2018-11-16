@@ -47,16 +47,6 @@ public final class HintManagerHolder {
     
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
-    private static final Multimap<String, Comparable<?>> DATABASE_SHARDING_VALUES = HashMultimap.create();
-    
-    private static final Multimap<String, Comparable<?>> TABLE_SHARDING_VALUES = HashMultimap.create();
-    
-    @Setter
-    private static boolean databaseShardingOnly;
-    
-    @Setter
-    private static boolean isMasterRouteOnly;
-    
     /**
      * Set hint manager.
      *
@@ -68,52 +58,12 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Add sharding value for one certain sharding database.
-     *
-     * <p>The sharding operator is {@code =}</p>
-     * When you need to assign the values to one certain sharding database, use this method to add sharding value for this database.
-     *
-     * @param value sharding value
-     */
-    public static void setDatabaseShardingValue(final Comparable<?> value) {
-        DATABASE_SHARDING_VALUES.clear();
-        addDatabaseShardingValue(DB_TABLE_NAME, value);
-        databaseShardingOnly = true;
-    }
-    
-    /**
-     * Add sharding value for database.
-     *
-     * <p>The sharding operator is {@code =}</p>
-     *
-     * @param logicTable logic table name
-     * @param value sharding value
-     */
-    public static void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
-        DATABASE_SHARDING_VALUES.put(logicTable, value);
-        databaseShardingOnly = false;
-    }
-    
-    /**
-     * Add sharding value for table.
-     *
-     * <p>The sharding operator is {@code =}</p>
-     *
-     * @param logicTable logic table name
-     * @param value sharding value
-     */
-    public static void addTableShardingValue(final String logicTable, final Comparable<?> value) {
-        TABLE_SHARDING_VALUES.put(logicTable, value);
-        databaseShardingOnly = false;
-    }
-    
-    /**
      * Judge whether only database is sharding.
      *
      * @return database sharding or not
      */
     public static boolean isDatabaseShardingOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && databaseShardingOnly;
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
     }
     
     /**
@@ -122,7 +72,7 @@ public final class HintManagerHolder {
      * @return is force route to master database only or not
      */
     public static boolean isMasterRouteOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && isMasterRouteOnly;
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
     }
     
     /**
@@ -132,10 +82,10 @@ public final class HintManagerHolder {
      * @return database sharding value
      */
     public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
-        if (null == HINT_MANAGER_HOLDER.get() || !DATABASE_SHARDING_VALUES.containsKey(logicTable)) {
+        if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().containsKey(logicTable)) {
             return Optional.absent();
         }
-        return Optional.of(getShardingValue(logicTable, DATABASE_SHARDING_VALUES.get(logicTable)));
+        return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().get(logicTable)));
     }
     
     /**
@@ -145,10 +95,10 @@ public final class HintManagerHolder {
      * @return table sharding value
      */
     public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
-        if (null == HINT_MANAGER_HOLDER.get() || !TABLE_SHARDING_VALUES.containsKey(logicTable)) {
+        if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getTableShardingValues().containsKey(logicTable)) {
             return Optional.absent();
         }
-        return Optional.of(getShardingValue(logicTable, TABLE_SHARDING_VALUES.get(logicTable)));
+        return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getTableShardingValues().get(logicTable)));
     }
     
     @SuppressWarnings("unchecked")
@@ -171,9 +121,5 @@ public final class HintManagerHolder {
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();
-        DATABASE_SHARDING_VALUES.clear();
-        TABLE_SHARDING_VALUES.clear();
-        databaseShardingOnly = false;
-        isMasterRouteOnly = false;
     }
 }
