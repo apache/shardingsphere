@@ -17,26 +17,35 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Multiple index names extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class IndexesNameExtractHandler implements ASTExtractHandler {
     
     @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        DDLStatement ddlStatement = (DDLStatement) statement;
-        String tableName = ddlStatement.getTables().isEmpty() ? "" : ddlStatement.getTables().getSingleTableName();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            statement.getSQLTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), tableName));
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
+        if (indexNameNodes.isEmpty()) {
+            return Optional.absent();
         }
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        for (ParserRuleContext each : indexNameNodes) {
+            result.getSqlTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), null));
+        }
+        return Optional.<ExtractResult>of(result);
     }
 }

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataSourceServiceTest {
+public final class DataSourceServiceTest {
     
     private static final String DATA_SOURCE_YAML =
             "ds_0: !!io.shardingsphere.core.config.DataSourceConfiguration\n"

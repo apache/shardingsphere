@@ -15,26 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * DDL statement extractor.
+ * Drop primary key extract result.
  * 
  * @author duhongjun
  */
-public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
-
+@RequiredArgsConstructor
+@Getter
+public final class DropPrimaryKeyExtractResult implements ExtractResult {
+    
+    private final boolean dropPrimaryKey;
+    
     /**
-     * Create DDL Statement.
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL statement
+     * Inject drop primary key to SQLStatement.
+     * 
+     * @param statement SQL statement
      */
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
-        return new DDLStatement();
+    public void fill(final SQLStatement statement) {
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        alterStatement.setDropPrimaryKey(dropPrimaryKey);
     }
 }

@@ -17,18 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
-import io.shardingsphere.core.util.SQLUtil;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Column definition extract handler.
- * 
+ *
  * @author duhongjun
  */
 public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
@@ -36,21 +39,19 @@ public final class ColumnDefinitionExtractHandler implements ASTExtractHandler {
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        CreateTableStatement createTableStatement = (CreateTableStatement) statement;
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> columnDefinitionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION);
+        if (columnDefinitionNodes.isEmpty()) {
+            return Optional.absent();
+        }
+        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        for (ParserRuleContext each : columnDefinitionNodes) {
             Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
-                setColumnDefinition(createTableStatement, columnDefinition.get());
+                columnDefinition.get().setAdd(true);
+                result.getColumnDefintions().add(columnDefinition.get());
             }
         }
-    }
-    
-    private void setColumnDefinition(final CreateTableStatement createTableStatement, final ColumnDefinition columnDefinition) {
-        createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
-        createTableStatement.getColumnTypes().add(columnDefinition.getType());
-        if (columnDefinition.isPrimaryKey()) {
-            createTableStatement.getPrimaryKeyColumns().add(columnDefinition.getName());
-        }
+        return Optional.<ExtractResult>of(result);
     }
 }

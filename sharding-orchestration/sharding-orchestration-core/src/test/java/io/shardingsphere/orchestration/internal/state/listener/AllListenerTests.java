@@ -15,26 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
+package io.shardingsphere.orchestration.internal.state.listener;
 
-import org.antlr.v4.runtime.ParserRuleContext;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-
-/**
- * AST extract handler.
- * 
- * @author duhongjun
- */
-public interface ASTExtractHandler {
-   
-    /**
-     * Extract AST.
-     *  
-     * @param ancestorNode ancestor node of AST
-     * @return extract result
-     */
-    Optional<ExtractResult> extract(ParserRuleContext ancestorNode);
+@RunWith(Suite.class)
+@SuiteClasses({
+        DataSourceStateOrchestrationListenerTest.class,
+        InstanceStateOrchestrationListenerTest.class
+})
+public final class AllListenerTests {
 }

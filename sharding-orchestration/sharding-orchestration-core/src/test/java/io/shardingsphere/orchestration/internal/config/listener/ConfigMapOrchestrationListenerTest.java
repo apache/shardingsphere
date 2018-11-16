@@ -15,39 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.service;
+package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
-
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class InstanceStateServiceTest {
+public final class ConfigMapOrchestrationListenerTest {
+    
+    private ConfigMapOrchestrationListener configMapOrchestrationListener;
     
     @Mock
     private RegistryCenter regCenter;
     
-    private InstanceStateService instanceStateService;
-    
     @Before
-    public void setUp() throws ReflectiveOperationException {
-        instanceStateService = new InstanceStateService("test", regCenter);
-        Field field = instanceStateService.getClass().getDeclaredField("regCenter");
-        field.setAccessible(true);
-        field.set(instanceStateService, regCenter);
+    public void setUp() {
+        configMapOrchestrationListener = new ConfigMapOrchestrationListener("test", regCenter);
     }
     
     @Test
-    public void assertPersistInstanceOnline() {
-        instanceStateService.persistInstanceOnline();
-        verify(regCenter).persistEphemeral(anyString(), anyString());
+    public void assertWatch() {
+        configMapOrchestrationListener.watch();
+        verify(regCenter).watch(eq("/test/config/configmap"), any(EventListener.class));
     }
 }

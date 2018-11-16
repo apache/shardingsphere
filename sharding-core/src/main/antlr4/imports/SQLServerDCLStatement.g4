@@ -19,7 +19,7 @@ permissionOnColumns
     ;
 
 permission
-    : ID *?
+    : ID +?
     ;
 
 grantDW

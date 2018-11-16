@@ -15,26 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * AST extract handler.
+ *  Extract information from AST.
  * 
  * @author duhongjun
  */
-public interface ASTExtractHandler {
-   
+public interface ExtractResult {
+    
     /**
-     * Extract AST.
-     *  
-     * @param ancestorNode ancestor node of AST
-     * @return extract result
+     *  SQL phrase extract result.
+     * 
+     * @param statement SQL statement
      */
-    Optional<ExtractResult> extract(ParserRuleContext ancestorNode);
+    void fill(SQLStatement statement);
 }
