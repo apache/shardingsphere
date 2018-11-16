@@ -18,30 +18,25 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import java.util.LinkedList;
+import java.util.List;
+
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Table extract result.
+ * Table join extract result.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-public class TableExtractResult implements ExtractResult {
+public class TableJoinExtractResult extends TableExtractResult {
     
-    private final String name;
+    private List<OrCondition> joinConditions = new LinkedList<>();
     
-    private final String alias;
-    
-    private final String schemaName;
-    
-    private final TableToken token;
-    
-    @Override
-    public void fill(SQLStatement statement) {
-
+    public TableJoinExtractResult(String name, String alias, String schemaName, TableToken token, List<OrCondition> joinConditions) {
+        super(name, alias, schemaName, token);
+        this.joinConditions = joinConditions;
     }
 }
