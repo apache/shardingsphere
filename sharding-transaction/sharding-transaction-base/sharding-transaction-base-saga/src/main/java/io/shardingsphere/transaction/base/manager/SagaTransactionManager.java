@@ -112,7 +112,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
                 try {
                     coordinator.terminate();
                     // CHECKSTYLE:OFF
-                } catch (Exception ignore) {
+                } catch (Exception ignored) {
                     // CHECKSTYLE:ON
                 }
             }
