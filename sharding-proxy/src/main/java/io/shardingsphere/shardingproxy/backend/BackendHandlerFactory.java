@@ -96,8 +96,9 @@ public final class BackendHandlerFactory {
                                                            final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
         LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
         backendConnection.setLogicSchema(logicSchema);
-        return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO) ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
+        return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
+            ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
+            : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
     
     /**
@@ -115,7 +116,7 @@ public final class BackendHandlerFactory {
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
-            return new SchemaBroadcastBackendHandler(connectionId, sequenceId, sql, databaseType);
+            return new SchemaBroadcastBackendHandler(connectionId, sequenceId, sql, backendConnection, databaseType);
         }
         
         if (sqlStatement instanceof UseStatement || sqlStatement instanceof ShowDatabasesStatement) {
