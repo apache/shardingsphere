@@ -116,4 +116,4 @@ Sharding-Sphere通过在执行准备阶段的获取的连接模式，生成内�
 
 执行引擎的整体结构划分如下图所示。
 
-![执行引擎流程图](http://shardingsphere.jd.com/document/current/img/sharding/execute_architecture_v2.png)
+![执行引擎流程图](http://shardingsphere.jd.com/document/current/img/sharding/execute_architecture_cn.png)
