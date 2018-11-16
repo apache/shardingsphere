@@ -21,6 +21,7 @@
                 <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
+                <xsd:element ref="broadcast-table-rules" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source-name" type="xsd:string" />
@@ -57,6 +58,18 @@
     <xsd:element name="binding-table-rule">
         <xsd:complexType>
             <xsd:attribute name="logic-tables" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="broadcast-table-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="broadcast-table-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="broadcast-table-rule">
+        <xsd:complexType>
+            <xsd:attribute name="tables" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="standard-strategy">
