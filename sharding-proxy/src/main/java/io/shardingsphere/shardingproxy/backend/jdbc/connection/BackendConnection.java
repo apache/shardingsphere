@@ -25,6 +25,7 @@ import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -54,6 +55,8 @@ public final class BackendConnection implements AutoCloseable {
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    
+    private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
     /**
      * Get connection size.
@@ -232,5 +235,10 @@ public final class BackendConnection implements AutoCloseable {
             ex.setNextException(each);
         }
         throw ex;
+    }
+    
+    @SneakyThrows
+    private void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+        methodInvocations.add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
     }
 }
