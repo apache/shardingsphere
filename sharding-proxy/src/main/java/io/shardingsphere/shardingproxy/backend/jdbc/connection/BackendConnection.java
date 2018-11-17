@@ -139,6 +139,11 @@ public final class BackendConnection implements AutoCloseable {
         throwSQLExceptionIfNecessary(exceptions);
     }
     
+    /**
+     * set auto commit.
+     *
+     * @param autoCommit auto commit
+     */
     public void setAutoCommit(final boolean autoCommit) {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
     }
