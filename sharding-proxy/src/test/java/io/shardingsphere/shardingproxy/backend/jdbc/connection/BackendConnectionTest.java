@@ -17,5 +17,32 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import org.junit.Test;
+
 public class BackendConnectionTest {
+    
+    @Test
+    public void assertGetConnectionCacheIsEmpty() {
+    
+    }
+    
+    @Test
+    public void assertGetConnectionSizeLessThanCache() {
+    
+    }
+    
+    @Test
+    public void assertGetConnectionSizeGreaterThanCache() {
+    
+    }
+    
+    @Test
+    public void assertGetConnectionSizeIsOne() {
+    
+    }
+    
+    @Test
+    public void assertMultiThreadGetConnection() {
+    
+    }
 }
