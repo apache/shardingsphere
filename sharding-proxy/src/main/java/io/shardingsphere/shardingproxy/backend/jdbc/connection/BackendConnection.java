@@ -101,6 +101,14 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
+    private Collection<Connection> createConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
+        for (Connection each : result) {
+            replayMethodsInvocation(each);
+        }
+        return result;
+    }
+    
     /**
      * Add statement.
      *
