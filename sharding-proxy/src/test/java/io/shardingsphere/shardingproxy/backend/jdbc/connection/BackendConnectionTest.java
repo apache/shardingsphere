@@ -88,11 +88,6 @@ public class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionSizeIsOne() {
-    
-    }
-    
-    @Test
     public void assertMultiThreadGetConnection() {
     
     }
