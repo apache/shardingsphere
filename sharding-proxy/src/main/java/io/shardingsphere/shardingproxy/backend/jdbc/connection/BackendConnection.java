@@ -58,6 +58,8 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
+    private ConnectionStatus status = ConnectionStatus.INIT;
+    
     /**
      * Get connection size.
      * 
@@ -77,6 +79,7 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        status = ConnectionStatus.RUNNING;
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -153,6 +156,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param autoCommit auto commit
      */
     public void setAutoCommit(final boolean autoCommit) {
+        status = ConnectionStatus.TRANSACTION;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
     }
     
@@ -165,6 +169,7 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> exceptions = new LinkedList<>();
         exceptions.addAll(commitConnections());
         throwSQLExceptionIfNecessary(exceptions);
+        status = ConnectionStatus.TERMINATED;
     }
     
     /**
@@ -176,6 +181,7 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> exceptions = new LinkedList<>();
         exceptions.addAll(rollbackConnections());
         throwSQLExceptionIfNecessary(exceptions);
+        status = ConnectionStatus.TERMINATED;
     }
     
     private Collection<SQLException> closeResultSets() {
