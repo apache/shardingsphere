@@ -95,31 +95,26 @@ public class BackendConnectionTest {
         Thread thread1 = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
-                    assertThat(actualConnections.size(), is(12));
-                    assertThat(backendConnection.getConnectionSize(), is(12));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                assertOneThreadResult();
             }
         });
         Thread thread2 = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
-                    assertThat(actualConnections.size(), is(12));
-                    assertThat(backendConnection.getConnectionSize(), is(12));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                assertOneThreadResult();
             }
         });
         thread1.start();
         thread2.start();
         thread1.join();
         thread2.join();
+    }
+    
+    @SneakyThrows
+    private void assertOneThreadResult() {
+        List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+        assertThat(actualConnections.size(), is(12));
+        assertThat(backendConnection.getConnectionSize(), is(12));
     }
     
     private List<Connection> mockNewConnections(final int connectionSize) {
