@@ -99,7 +99,7 @@
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
             </sharding:binding-table-rules>
             <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule tables="t_config" />
+                <sharding:broadcast-table-rule table="t_config" />
             </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -114,8 +114,8 @@
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
             </sharding:binding-table-rules>
             <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule tables="t_config1" />
-                <sharding:broadcast-table-rule tables="t_config2" />
+                <sharding:broadcast-table-rule table="t_config1" />
+                <sharding:broadcast-table-rule table="t_config2" />
             </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
