@@ -23,7 +23,6 @@ import io.shardingsphere.core.hint.HintManagerHolder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -44,7 +43,6 @@ public final class HintManager implements AutoCloseable {
     @Getter
     private boolean databaseShardingOnly;
 
-    @Setter
     @Getter
     private boolean masterRouteOnly;
 
