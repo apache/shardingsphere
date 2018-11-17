@@ -136,6 +136,17 @@ public final class BackendConnection implements AutoCloseable {
         throwSQLExceptionIfNecessary(exceptions);
     }
     
+    /**
+     * Do commit.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void commit() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        exceptions.addAll(commitConnections());
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
     private Collection<SQLException> closeResultSets() {
         Collection<SQLException> result = new LinkedList<>();
         for (ResultSet each : cachedResultSets) {
@@ -167,6 +178,19 @@ public final class BackendConnection implements AutoCloseable {
         for (Connection each : cachedConnections.values()) {
             try {
                 each.close();
+            } catch (SQLException ex) {
+                result.add(ex);
+            }
+        }
+        cachedConnections.clear();
+        return result;
+    }
+    
+    private Collection<SQLException> commitConnections() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : cachedConnections.values()) {
+            try {
+                each.commit();
             } catch (SQLException ex) {
                 result.add(ex);
             }
