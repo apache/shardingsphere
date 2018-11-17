@@ -79,8 +79,12 @@ public class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionSizeGreaterThanCache() {
-    
+    public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
+        setCachedConnections("ds1", 10);
+        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
+        List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+        assertThat(actualConnections.size(), is(12));
+        assertThat(backendConnection.getConnectionSize(), is(12));
     }
     
     @Test
