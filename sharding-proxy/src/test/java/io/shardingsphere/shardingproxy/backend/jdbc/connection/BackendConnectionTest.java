@@ -17,6 +17,8 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -27,7 +29,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +63,7 @@ public class BackendConnectionTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetConnectionCacheIsEmpty() {
+    public void assertGetConnectionCacheIsEmpty() throws SQLException {
         when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
@@ -68,8 +71,11 @@ public class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionSizeLessThanCache() {
-    
+    public void assertGetConnectionSizeLessThanCache() throws SQLException {
+        setCachedConnections("ds1", 10);
+        List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
+        assertThat(actualConnections.size(), is(2));
+        assertThat(backendConnection.getConnectionSize(), is(10));
     }
     
     @Test
@@ -94,5 +100,14 @@ public class BackendConnectionTest {
             result.add(connection);
         }
         return result;
+    }
+    
+    @SneakyThrows
+    private void setCachedConnections(final String dsName, final int connectionSize) {
+        Multimap<String, Connection> cachedConnections = HashMultimap.create();
+        cachedConnections.putAll(dsName, mockNewConnections(connectionSize));
+        Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
+        field.setAccessible(true);
+        field.set(backendConnection, cachedConnections);
     }
 }
