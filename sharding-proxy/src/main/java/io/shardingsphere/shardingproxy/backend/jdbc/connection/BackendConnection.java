@@ -131,8 +131,6 @@ public final class BackendConnection implements AutoCloseable {
     @Override
     public void close() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        exceptions.addAll(closeResultSets());
-        exceptions.addAll(closeStatements());
         exceptions.addAll(closeConnections());
         MasterVisitedManager.clear();
         throwSQLExceptionIfNecessary(exceptions);
