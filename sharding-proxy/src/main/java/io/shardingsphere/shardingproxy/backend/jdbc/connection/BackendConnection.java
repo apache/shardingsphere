@@ -87,13 +87,13 @@ public final class BackendConnection implements AutoCloseable {
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
-            List<Connection> newConnections = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize - connections.size());
+            List<Connection> newConnections = createNewConnections(connectionMode, dataSourceName, connectionSize - connections.size());
             result.addAll(newConnections);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
-            result = new ArrayList<>(logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize));
+            result = createNewConnections(connectionMode, dataSourceName, connectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
             }
@@ -101,7 +101,7 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private Collection<Connection> createConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
         for (Connection each : result) {
             replayMethodsInvocation(each);
