@@ -147,6 +147,17 @@ public final class BackendConnection implements AutoCloseable {
         throwSQLExceptionIfNecessary(exceptions);
     }
     
+    /**
+     * Do rollback.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void rollback() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        exceptions.addAll(rollbackConnections());
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
     private Collection<SQLException> closeResultSets() {
         Collection<SQLException> result = new LinkedList<>();
         for (ResultSet each : cachedResultSets) {
@@ -191,6 +202,19 @@ public final class BackendConnection implements AutoCloseable {
         for (Connection each : cachedConnections.values()) {
             try {
                 each.commit();
+            } catch (SQLException ex) {
+                result.add(ex);
+            }
+        }
+        cachedConnections.clear();
+        return result;
+    }
+    
+    private Collection<SQLException> rollbackConnections() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : cachedConnections.values()) {
+            try {
+                each.rollback();
             } catch (SQLException ex) {
                 result.add(ex);
             }
