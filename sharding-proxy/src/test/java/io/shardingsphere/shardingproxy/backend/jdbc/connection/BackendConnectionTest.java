@@ -17,9 +17,42 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import lombok.SneakyThrows;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Connection;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class BackendConnectionTest {
+    
+    @Mock
+    private LogicSchema logicSchema;
+    
+    private BackendConnection backendConnection = new BackendConnection();
+    
+    @Before
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public void setup() {
+        List<Connection> newConnection = mock(List.class);
+        JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
+        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), anyInt())).thenReturn(newConnection);
+        when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
+    }
     
     @Test
     public void assertGetConnectionCacheIsEmpty() {
