@@ -14,6 +14,7 @@ weight = 1
          shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
          shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
          shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+         shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
@@ -70,6 +71,7 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
@@ -149,6 +151,7 @@ weight = 1
 | ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
 | tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | 分片规则列表                                                              |
 | bindingTableGroups (?)                    | Collection\<String\>                       | 绑定表规则列表                                                            |
+| broadcastTables (?)                       | Collection\<String\>                       | 绑定表规则列表                                                            |
 | defaultDataSourceName (?)                 | String                                     | 未配置分片规则的表将通过默认数据源定位                                       |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                              |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                              |

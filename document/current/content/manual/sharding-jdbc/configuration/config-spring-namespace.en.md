@@ -74,6 +74,12 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="t_order" />
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>
@@ -247,6 +253,12 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="t_order" />
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>
@@ -298,6 +310,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | data-source-names                 | Attribute | Data source bean list. Multiple data sources names separated with comma                                                               | 
 | table-rules                       | Tag       | Table rule configurations                                                                                                             |
 | binding-table-rules (?)           | Tag       | Binding table rule configurations                                                                                                     |
+| broadcast-table-rules (?)         | Tag       | Broadcast table rule configurations                                                                                                     |
 | default-data-source-name (?)      | Attribute | If table not configure at table rule, will route to defaultDataSourceName                                                             |
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                   |
@@ -332,6 +345,18 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | *Name*       | *Type*    | *Description*                                            |
 | ------------ | --------- | -------------------------------------------------------- |
 | logic-tables | Attribute | Name of logic table. Multiple names separated with comma |
+
+#### \<sharding:broadcast-table-rules />
+
+| *Name*                   | *Type* | *Description*                      |
+| ------------------------ | ------ | ---------------------------------- |
+| broadcast-table-rule (+) | Tag    | Broadcast table rule configuration |
+
+#### \<sharding:broadcast-table-rule />
+
+| *Name* | *Type*    | *Description* |
+| ------ | --------- | ------------- |
+| table  | Attribute | Name of table |
 
 #### \<sharding:standard-strategy />
 

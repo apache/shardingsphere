@@ -180,15 +180,16 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ms_ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator

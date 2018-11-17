@@ -49,9 +49,13 @@ shardingRule:
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}   
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
+  
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id

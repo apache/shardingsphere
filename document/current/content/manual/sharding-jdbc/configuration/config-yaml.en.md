@@ -36,15 +36,16 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
@@ -135,15 +136,16 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ms_ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
@@ -225,6 +227,10 @@ shardingRule:
   - <logic_table_name1, logic_table_name2, ...> 
   - <logic_table_name3, logic_table_name4, ...>
   - <logic_table_name_x, logic_table_name_y, ...>
+  bindingTables: #Broadcast table rule configurations
+  - table_name1
+  - table_name2
+  - table_name_x
   
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
