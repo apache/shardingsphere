@@ -147,6 +147,7 @@ public final class BackendConnection implements AutoCloseable {
                 result.add(ex);
             }
         }
+        cachedResultSets.clear();
         return result;
     }
     
@@ -159,6 +160,7 @@ public final class BackendConnection implements AutoCloseable {
                 result.add(ex);
             }
         }
+        cachedStatements.clear();
         return result;
     }
     
@@ -171,6 +173,7 @@ public final class BackendConnection implements AutoCloseable {
                 result.add(ex);
             }
         }
+        cachedConnections.clear();
         return result;
     }
     
