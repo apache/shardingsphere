@@ -250,4 +250,10 @@ public final class BackendConnection implements AutoCloseable {
     private void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
         methodInvocations.add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
     }
+    
+    private void replayMethodsInvocation(final Object target) {
+        for (MethodInvocation each : methodInvocations) {
+            each.invoke(target);
+        }
+    }
 }
