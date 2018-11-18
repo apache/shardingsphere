@@ -68,9 +68,12 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final TransactionType transactionType;
     
+    private final BackendConnection backendConnection;
+    
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
+        this.backendConnection = backendConnection;
         backendHandler = BackendHandlerFactory.createBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
         transactionType = GlobalRegistry.getInstance().getTransactionType();
         shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
@@ -85,6 +88,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         transactionType = GlobalRegistry.getInstance().getTransactionType();
         backendHandler = null;
         shardingTransactionHandler = null;
+        this.backendConnection = null;
     }
     
     @Override
