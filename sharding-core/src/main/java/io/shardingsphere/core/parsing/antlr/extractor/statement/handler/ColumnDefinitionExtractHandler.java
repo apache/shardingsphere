@@ -34,10 +34,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionExtractHandler implements ASTExtractHandler <Collection<ColumnDefinitionExtractResult>> {
-    
+public final class ColumnDefinitionExtractHandler implements ASTExtractHandler<Collection<ColumnDefinitionExtractResult>> {
+
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-    
+
     @Override
     public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> columnDefinitionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION);

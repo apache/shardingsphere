@@ -97,8 +97,7 @@ public enum RuleName {
     
     ORDERBYCLAUSE("OrderByClause"),
     
-    ORDERBYITEM("OrderByItem"),
-    ;
+    ORDERBYITEM("OrderByItem");
     
     private final String name;
     

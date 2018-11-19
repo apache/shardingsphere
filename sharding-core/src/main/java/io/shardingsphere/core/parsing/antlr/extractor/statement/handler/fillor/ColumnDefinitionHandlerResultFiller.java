@@ -29,7 +29,7 @@ import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Column definition handler result filler.
- * 
+ *
  * @author duhongjun
  */
 public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
@@ -38,8 +38,14 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
         super(ColumnDefinitionExtractResult.class);
     }
 
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     */
     @Override
-    protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         ColumnDefinitionExtractResult columnExtractResult = (ColumnDefinitionExtractResult) extractResult;
         if (statement instanceof AlterTableStatement) {
             fillAlter(columnExtractResult, (AlterTableStatement) statement);
@@ -49,7 +55,7 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
     }
 
     private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult,
-            final AlterTableStatement alterTableStatement) {
+                           final AlterTableStatement alterTableStatement) {
         String oldName = columnExtractResult.getOldName();
         if (null != oldName) {
             Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
@@ -63,7 +69,7 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
             }
             alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
         } else {
-            ColumnDefinition columnDefinition = new ColumnDefinition(columnExtractResult.getName(),columnExtractResult.getType(),columnExtractResult.getLength(),columnExtractResult.isPrimaryKey());
+            ColumnDefinition columnDefinition = new ColumnDefinition(columnExtractResult.getName(), columnExtractResult.getType(), columnExtractResult.getLength(), columnExtractResult.isPrimaryKey());
             if (!columnExtractResult.isAdd()) {
                 alterTableStatement.getUpdateColumns().put(columnExtractResult.getName(), columnDefinition);
             } else if (!alterTableStatement.findColumnDefinition(columnExtractResult.getName()).isPresent()) {
@@ -77,7 +83,7 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
     }
 
     private void fillCreate(final ColumnDefinitionExtractResult columnDefinition,
-            final CreateTableStatement createTableStatement) {
+                            final CreateTableStatement createTableStatement) {
         createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
         createTableStatement.getColumnTypes().add(columnDefinition.getType());
         if (columnDefinition.isPrimaryKey()) {

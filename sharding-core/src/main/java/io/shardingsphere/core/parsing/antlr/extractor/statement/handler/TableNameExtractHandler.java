@@ -33,7 +33,7 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public class TableNameExtractHandler implements ASTExtractHandler<Optional<TableExtractResult>> {
-    
+
     /**
      * Extract AST.
      *
@@ -46,24 +46,24 @@ public class TableNameExtractHandler implements ASTExtractHandler<Optional<Table
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
         }
-        
+
         String tableText = tableNameNode.get().getText();
         int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
         String tableName = tableText;
         Optional<String> schemaName;
-        if(0 < dotPosition) {
+        if (0 < dotPosition) {
             tableName = tableText.substring(dotPosition + 1);
             String schemaText = tableText.substring(0, dotPosition);
             dotPosition = schemaText.contains(Symbol.DOT.getLiterals()) ? schemaText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
             schemaName = Optional.of(tableText.substring(dotPosition + 1));
-        }else{
+        } else {
             schemaName = Optional.absent();
         }
         Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(tableNameNode.get(), RuleName.ALIAS);
         Optional<String> alias;
-        if(aliasNode.isPresent()) {
+        if (aliasNode.isPresent()) {
             alias = Optional.of(aliasNode.get().getText());
-        }else {
+        } else {
             alias = Optional.absent();
         }
         TableToken tableToken = new TableToken(tableNameNode.get().getStart().getStartIndex(), dotPosition, tableName);

@@ -34,9 +34,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  * @author duhongjun
  */
 public final class TableNamesExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
-    
+
     private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
-    
+
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
@@ -46,7 +46,7 @@ public final class TableNamesExtractHandler implements ASTExtractHandler<Collect
         Collection<TableExtractResult> result = new LinkedList<>();
         for (ParserRuleContext each : tableNameNodes) {
             Optional<TableExtractResult> tableExtractResult = tableNameExtractHandler.extract(each);
-            if(tableExtractResult.isPresent()) {
+            if (tableExtractResult.isPresent()) {
                 result.add(tableExtractResult.get());
             }
         }

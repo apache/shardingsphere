@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.registry;
 
 import java.util.Collection;
@@ -41,13 +40,13 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.T
 
 /**
  * Handler result fillor registry.
- * 
+ *
  * @author duhongjun
  */
-public final class HandlerResultFillorRegistry {
-    private static final Map<Class<?>,HandlerResultFiller> fillors = new HashMap<>();
-    
-    static{
+public final class HandlerResultFillerRegistry {
+    private static final Map<Class<?>, HandlerResultFiller> FILLERS = new HashMap<>();
+
+    static {
         registry(DropColumnExtractResult.class, new DropColumnHandlerResultFiller());
         registry(PrimaryKeyExtractResult.class, new PrimaryKeyHandlerResultFiller());
         registry(DropPrimaryKeyExtractResult.class, new DropPrimaryKeyHandlerResultFiller());
@@ -57,15 +56,27 @@ public final class HandlerResultFillorRegistry {
         registry(IndexExtractResult.class, new IndexHandlerResultFiller());
         registry(Collection.class, new CollectionHandlerResultFiller());
     }
-    
-    public static void registry(Class<?> clazz, HandlerResultFiller fillor) {
-        fillors.put(clazz, fillor);
+
+    /**
+     * Registry HandlerResultFiller.
+     *
+     * @param clazz class for HandlerResultFiller
+     * @param filler handler result filler
+     */
+    public static void registry(final Class<?> clazz, final HandlerResultFiller filler) {
+        FILLERS.put(clazz, filler);
     }
-    
-    public static HandlerResultFiller getFillor(Object object) {
-        if(object instanceof Collection) {
-            return fillors.get(Collection.class); 
+
+    /**
+     * Get HandlerResultFiller by object instance.
+     *
+     * @param object object instance
+     * @return HandlerResultFiller instance
+     */
+    public static HandlerResultFiller getFillor(final Object object) {
+        if (object instanceof Collection) {
+            return FILLERS.get(Collection.class);
         }
-        return fillors.get(object.getClass());
+        return FILLERS.get(object.getClass());
     }
 }

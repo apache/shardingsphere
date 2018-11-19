@@ -33,7 +33,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
 /**
  * Order by extract handler.
- * 
+ *
  * @author duhongjun
  */
 public class OrderByExtractHandler implements ASTExtractHandler<Collection<OrderByExtractResult>> {
@@ -44,8 +44,14 @@ public class OrderByExtractHandler implements ASTExtractHandler<Collection<Order
         ruleName = RuleName.ORDERBYCLAUSE;
     }
 
+    /**
+     * Extract AST.
+     *
+     * @param ancestorNode ancestor node of AST
+     * @return extract result
+     */
     @Override
-    public Collection<OrderByExtractResult> extract(ParserRuleContext ancestorNode) {
+    public Collection<OrderByExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!orderByParentNode.isPresent()) {
             return Collections.emptyList();

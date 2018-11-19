@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import java.util.Collection;
@@ -32,48 +31,54 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Extract table result.
- * 
+ *
  * @author duhongjun
  */
 public class FromClauseExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
-    
+
     private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
-    
+
+    /**
+     * Extract AST.
+     *
+     * @param ancestorNode ancestor node of AST
+     * @return extract result
+     */
     @Override
-    public Collection<TableExtractResult> extract(ParserRuleContext ancestorNode) {
+    public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> fromNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FROM_CLAUSE);
-        if(!fromNode.isPresent()) {
+        if (!fromNode.isPresent()) {
             return Collections.emptyList();
         }
         Collection<ParserRuleContext> tableReferenceNodes = ASTUtils.getAllDescendantNodes(fromNode.get(), RuleName.TABLE_REFERENCE);
-        if(tableReferenceNodes.isEmpty()) {
+        if (tableReferenceNodes.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<TableExtractResult> result = new LinkedList<>();
-        for(ParserRuleContext each : tableReferenceNodes){
+        for (ParserRuleContext each : tableReferenceNodes) {
             Optional<ParserRuleContext> joinTableNode = ASTUtils.findFirstChildNode(each, RuleName.JOIN_TABLE);
             Optional<ParserRuleContext> tableFactorNode = null;
-            if(joinTableNode.isPresent()) {
+            if (joinTableNode.isPresent()) {
                 tableFactorNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.TABLE_FACTOR);
-            }else {
+            } else {
                 tableFactorNode = ASTUtils.findFirstChildNode(each, RuleName.TABLE_FACTOR);
             }
             //TODO subquery
-            if(!tableFactorNode.isPresent()) {
+            if (!tableFactorNode.isPresent()) {
                 continue;
             }
             Optional<TableExtractResult> extractResult = tableNameExtractHandler.extract(tableFactorNode.get());
-            if(!extractResult.isPresent()) {
+            if (!extractResult.isPresent()) {
                 continue;
             }
-            if(!joinTableNode.isPresent()) {
+            if (!joinTableNode.isPresent()) {
                 result.add(extractResult.get());
                 continue;
             }
             Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.JOIN_CONDITION);
-            if(joinConditionNode.isPresent()) {
+            if (joinConditionNode.isPresent()) {
                 Optional<ParserRuleContext> exprNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.EXPR);
-                if(exprNode.isPresent()) {
+                if (exprNode.isPresent()) {
                     TableJoinExtractResult tableJoinResult = new TableJoinExtractResult(extractResult.get());
                     //TODO extract condition
                     result.add(tableJoinResult);

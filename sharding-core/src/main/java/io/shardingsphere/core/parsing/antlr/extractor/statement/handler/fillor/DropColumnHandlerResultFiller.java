@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
@@ -24,7 +23,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
  * Drop column handler result filler.
- * 
+ *
  * @author duhongjun
  */
 public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
@@ -33,9 +32,15 @@ public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
         super(DropColumnExtractResult.class);
     }
 
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     */
     @Override
-    protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
-        DropColumnExtractResult actualResult = (DropColumnExtractResult)extractResult;
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+        DropColumnExtractResult actualResult = (DropColumnExtractResult) extractResult;
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         alterStatement.getDropColumns().addAll(actualResult.getDropColumnNames());
     }

@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
@@ -24,23 +23,29 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 /**
  * Index handler result filler.
- * 
+ *
  * @author duhongjun
  */
 public class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
-    
+
     public IndexHandlerResultFiller() {
         super(IndexExtractResult.class);
     }
-    
+
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     */
     @Override
-    protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
-        IndexToken indexToken = ((IndexExtractResult)extractResult).getToken();
-        if(!statement.getTables().isEmpty() && null == indexToken.getTableName()) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+        IndexToken indexToken = ((IndexExtractResult) extractResult).getToken();
+        if (!statement.getTables().isEmpty() && null == indexToken.getTableName()) {
             indexToken.setTableName(statement.getTables().getSingleTableName());
-        }else {
+        } else {
             indexToken.setTableName("");
         }
-        statement.getSQLTokens().add(((IndexExtractResult)extractResult).getToken());
+        statement.getSQLTokens().add(((IndexExtractResult) extractResult).getToken());
     }
 }

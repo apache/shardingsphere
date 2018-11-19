@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import java.util.LinkedList;
@@ -29,20 +28,19 @@ import lombok.Getter;
 
 /**
  * Table join extract result.
- * 
+ *
  * @author duhongjun
  */
 @Getter
 public class TableJoinExtractResult extends TableExtractResult {
-    
-    public TableJoinExtractResult(String name, Optional<String> alias, Optional<String> schemaName, TableToken token) {
-        super(name, alias, schemaName, token);
-    }
-    
-    public TableJoinExtractResult(TableExtractResult parent) {
-        super(parent.getName(), parent.getAlias(), parent.getSchemaName(), parent.getToken());
-    }
 
     private final List<OrCondition> joinConditions = new LinkedList<>();
-    
+
+    public TableJoinExtractResult(final String name, final Optional<String> alias, final Optional<String> schemaName, final TableToken token) {
+        super(name, alias, schemaName, token);
+    }
+
+    public TableJoinExtractResult(final TableExtractResult parent) {
+        super(parent.getName(), parent.getAlias(), parent.getSchemaName(), parent.getToken());
+    }
 }

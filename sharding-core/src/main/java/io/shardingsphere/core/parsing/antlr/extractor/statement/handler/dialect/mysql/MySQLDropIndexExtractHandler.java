@@ -38,9 +38,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  * @author duhongjun
  */
 public final class MySQLDropIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
-    
+
     private final IndexNameExtractHandler indexNameExtractHandler = new IndexNameExtractHandler();
-    
+
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> dropINdexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
@@ -58,7 +58,7 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler<Col
                 continue;
             }
             Optional<IndexExtractResult> extractResult = indexNameExtractHandler.extract((ParserRuleContext) lastChild);
-            if(extractResult.isPresent()) {
+            if (extractResult.isPresent()) {
                 result.add(extractResult.get());
             }
         }

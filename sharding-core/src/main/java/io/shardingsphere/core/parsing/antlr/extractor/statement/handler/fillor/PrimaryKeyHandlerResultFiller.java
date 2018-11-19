@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
 
 /**
  * Primary keyHandler result filler.
- * 
+ *
  * @author duhongjun
  */
 public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
@@ -36,8 +36,14 @@ public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
         super(PrimaryKeyExtractResult.class);
     }
 
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     */
     @Override
-    protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         if (statement instanceof AlterTableStatement) {
             fillAlter((PrimaryKeyExtractResult) extractResult, (AlterTableStatement) statement);
         } else if (statement instanceof CreateTableStatement) {

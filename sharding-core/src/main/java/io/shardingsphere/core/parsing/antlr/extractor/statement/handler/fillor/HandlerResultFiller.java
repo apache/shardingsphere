@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -26,5 +25,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  * @author duhongjun
  */
 public interface HandlerResultFiller {
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     */
     void fill(Object extractResult, SQLStatement statement);
 }

@@ -15,7 +15,6 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
@@ -30,9 +29,15 @@ public class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
     public TableJoinHandlerResultFiller() {
         super(TableJoinExtractResult.class);
     }
-    
+
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     */
     @Override
-    protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         TableJoinExtractResult tableResult = (TableJoinExtractResult) extractResult;
         super.fillSQLStatement(tableResult, statement);
     }
