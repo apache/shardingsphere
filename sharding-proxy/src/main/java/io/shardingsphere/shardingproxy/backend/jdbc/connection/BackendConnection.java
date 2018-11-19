@@ -175,10 +175,12 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void commit() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        exceptions.addAll(commitConnections());
-        throwSQLExceptionIfNecessary(exceptions);
-        status = ConnectionStatus.TERMINATED;
+        if (ConnectionStatus.TRANSACTION == status) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            exceptions.addAll(commitConnections());
+            throwSQLExceptionIfNecessary(exceptions);
+            status = ConnectionStatus.TERMINATED;
+        }
     }
     
     /**
