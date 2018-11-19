@@ -4,7 +4,13 @@
 
 1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) 调整数据库治理模块的注册中心存储结构
 
-### Bug Fixes
+### 新功能
+
+#### Core
+
+1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) 支持广播表
+
+### 缺陷修正
 
 #### Core
 
