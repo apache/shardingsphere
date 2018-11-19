@@ -162,8 +162,10 @@ public final class BackendConnection implements AutoCloseable {
      * @param autoCommit auto commit
      */
     public void setAutoCommit(final boolean autoCommit) {
+        if (!autoCommit) {
+            status = ConnectionStatus.TRANSACTION;
+        }
         cachedConnections.clear();
-        status = ConnectionStatus.TRANSACTION;
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
     }
     
