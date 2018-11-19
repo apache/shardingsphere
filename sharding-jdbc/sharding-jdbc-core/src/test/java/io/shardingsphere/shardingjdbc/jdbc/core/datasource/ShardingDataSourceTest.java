@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public final class ShardingDataSourceTest {
     
     @After
-    public void teardown() {
+    public void tearDown() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
     }
     

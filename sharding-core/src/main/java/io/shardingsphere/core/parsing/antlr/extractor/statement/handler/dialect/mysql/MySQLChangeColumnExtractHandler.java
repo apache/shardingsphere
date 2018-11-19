@@ -17,10 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
@@ -30,6 +27,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Change column extract handler for MySQL.
@@ -60,7 +58,7 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
         }
         columnDefinition.get().setOldName(oldColumnNode.get().getText());
         ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
-        result.getColumnDefintions().add(columnDefinition.get());
+        result.getColumnDefinitions().add(columnDefinition.get());
         Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {
             columnDefinition.get().setPosition(columnPosition.get());

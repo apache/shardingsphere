@@ -89,7 +89,6 @@ public final class DataSourceUtils {
         result.setPassword("root");
         result.setMaxActive(10);
         result.setMaxWait(2000);
-        result.setMaxIdle(200);
         result.setMinEvictableIdleTimeMillis(100000);
         return result;
     }

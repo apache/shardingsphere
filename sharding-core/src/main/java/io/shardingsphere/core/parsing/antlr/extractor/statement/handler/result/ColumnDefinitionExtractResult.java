@@ -37,7 +37,7 @@ import java.util.List;
 @Getter
 public final class ColumnDefinitionExtractResult implements ExtractResult {
     
-    private final List<ColumnDefinition> columnDefintions = new LinkedList<>();
+    private final List<ColumnDefinition> columnDefinitions = new LinkedList<>();
     
     /**
      * Inject column definition to SQLStatement.
@@ -54,7 +54,7 @@ public final class ColumnDefinitionExtractResult implements ExtractResult {
     }
     
     private void fillAlter(final AlterTableStatement alterTableStatement) {
-        for (ColumnDefinition each : columnDefintions) {
+        for (ColumnDefinition each : columnDefinitions) {
             String oldName = each.getOldName();
             if (null != oldName) {
                 Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
@@ -82,7 +82,7 @@ public final class ColumnDefinitionExtractResult implements ExtractResult {
     }
     
     private void fillCreate(final CreateTableStatement createTableStatement) {
-        for (ColumnDefinition each : columnDefintions) {
+        for (ColumnDefinition each : columnDefinitions) {
             createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(each.getName()));
             createTableStatement.getColumnTypes().add(each.getType());
             if (each.isPrimaryKey()) {

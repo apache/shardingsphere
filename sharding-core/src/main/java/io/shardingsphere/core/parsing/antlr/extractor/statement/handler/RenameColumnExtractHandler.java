@@ -17,17 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Rename column extract handler.
@@ -49,7 +47,7 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler {
         ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
         Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
         String oldName = columnNodesIterator.next().getText();
-        result.getColumnDefintions().add(new ColumnDefinition(columnNodesIterator.next().getText(), oldName));
+        result.getColumnDefinitions().add(new ColumnDefinition(columnNodesIterator.next().getText(), oldName));
         return Optional.<ExtractResult>of(result);
     }
 }

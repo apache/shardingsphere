@@ -17,18 +17,16 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.Collection;
 
 /**
  * Add column extract handler.
@@ -64,7 +62,7 @@ public class AddColumnExtractHandler implements ASTExtractHandler {
             if (columnDefinition.isPresent()) {
                 columnDefinition.get().setAdd(true);
                 postExtractColumnDefinition(addColumnNode, columnDefinition.get());
-                result.getColumnDefintions().add(columnDefinition.get());
+                result.getColumnDefinitions().add(columnDefinition.get());
             }
         }
     }

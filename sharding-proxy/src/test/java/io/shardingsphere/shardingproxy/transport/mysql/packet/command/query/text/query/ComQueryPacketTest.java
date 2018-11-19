@@ -181,7 +181,7 @@ public final class ComQueryPacketTest {
     }
     
     @Test
-    public void assertExecuteRollbackWithXATransaction() throws SQLException {
+    public void assertExecuteRollbackWithXATransaction() {
         setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);

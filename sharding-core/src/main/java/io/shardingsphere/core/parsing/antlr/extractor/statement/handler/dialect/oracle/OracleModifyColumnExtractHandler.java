@@ -17,12 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle;
 
-import java.util.Collection;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
@@ -30,6 +25,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.E
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
 
 /**
  * Modify column extract handler for Oracle.
@@ -52,7 +50,7 @@ public final class OracleModifyColumnExtractHandler implements ASTExtractHandler
                 // it`s not column definition, but can call this method
                 Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
                 if (columnDefinition.isPresent()) {
-                    result.getColumnDefintions().add(columnDefinition.get());
+                    result.getColumnDefinitions().add(columnDefinition.get());
                 }
             }
         }
