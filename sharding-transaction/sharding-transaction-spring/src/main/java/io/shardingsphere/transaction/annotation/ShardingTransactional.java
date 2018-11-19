@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
+
 /**
  * Sharding transactional annotation.
  *
@@ -44,14 +46,14 @@ public @interface ShardingTransactional {
      *
      * @return Sharding transaction type
      */
-    String type() default "LOCAL";
+    TransactionType type() default TransactionType.LOCAL;
     
     /**
      * Sharding Sphere runtime environment, JDBC or PROXY.
      *
      * @return Sharding Sphere runtime environment
      */
-    String environment() default "JDBC";
+    ShardingEnvironment environment() default ShardingEnvironment.JDBC;
     
     /**
      * Alias value attribute of Spring Transactional.
@@ -152,7 +154,7 @@ public @interface ShardingTransactional {
     )
     String[] noRollbackForClassName() default {};
     
-    enum ShardingEnvironment {
+    public enum ShardingEnvironment {
         JDBC, PROXY
     }
 }

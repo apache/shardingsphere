@@ -54,9 +54,8 @@ public final class ShardingTransactionalAspect {
     public void setTransactionTypeBeforeTransaction(final JoinPoint joinPoint) {
         ShardingTransactional shardingTransactional = getAnnotation(joinPoint);
         
-        if (ShardingEnvironment.JDBC == ShardingEnvironment.valueOf(shardingTransactional.environment())) {
-            TransactionType type = TransactionType.valueOf(shardingTransactional.type());
-            TransactionTypeHolder.set(type);
+        if (ShardingEnvironment.JDBC == shardingTransactional.environment()) {
+            TransactionTypeHolder.set(shardingTransactional.type());
         }
         // TODO :yangyi send set transaction type command/SQL to sharding-proxy
     }

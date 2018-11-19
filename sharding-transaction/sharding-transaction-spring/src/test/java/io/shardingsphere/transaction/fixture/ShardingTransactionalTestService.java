@@ -20,11 +20,13 @@ package io.shardingsphere.transaction.fixture;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
+import io.shardingsphere.transaction.annotation.ShardingTransactional.ShardingEnvironment;
 
 @Service
 @Component
-@ShardingTransactional(type = "XA")
+@ShardingTransactional(type = TransactionType.XA)
 public class ShardingTransactionalTestService {
     
     @ShardingTransactional
@@ -32,12 +34,12 @@ public class ShardingTransactionalTestService {
     
     }
     
-    @ShardingTransactional(type = "XA")
+    @ShardingTransactional(type = TransactionType.XA)
     public void testChangeTransactionTypeToXA() {
     
     }
     
-    @ShardingTransactional(type = "BASE")
+    @ShardingTransactional(type = TransactionType.BASE)
     public void testChangeTransactionTypeToBASE() {
     
     }
@@ -46,7 +48,7 @@ public class ShardingTransactionalTestService {
     
     }
     
-    @ShardingTransactional(type = "BASE", environment = "PROXY")
+    @ShardingTransactional(type = TransactionType.BASE, environment = ShardingEnvironment.PROXY)
     public void testChangeTransactionTypeWithEnvironment() {
     
     }
