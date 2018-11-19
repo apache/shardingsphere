@@ -159,6 +159,14 @@ public class BackendConnectionTest {
         assertSame(TransactionType.LOCAL, backendConnection.getTransactionType());
     }
     
+    @Test
+    public void assertFailedSwitchLogicSchemaWhileBegin() throws SQLException {
+        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
+        transactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendConnection.setLogicSchema(mock(LogicSchema.class));
+        assertSame(logicSchema, backendConnection.getLogicSchema());
+    }
+    
     private void setMockResultSetAndStatement(final BackendConnection backendConnection) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         Statement statement = mock(Statement.class);
