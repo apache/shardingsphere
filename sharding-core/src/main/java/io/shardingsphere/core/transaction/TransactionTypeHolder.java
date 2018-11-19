@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.transaction;
+package io.shardingsphere.core.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 

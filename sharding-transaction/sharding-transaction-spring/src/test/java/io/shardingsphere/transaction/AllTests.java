@@ -15,22 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc;
+package io.shardingsphere.transaction;
 
-import io.shardingsphere.shardingjdbc.api.AllApiTests;
-import io.shardingsphere.shardingjdbc.executor.AllExecutorTests;
-import io.shardingsphere.shardingjdbc.jdbc.AllJDBCTests;
-import io.shardingsphere.shardingjdbc.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllApiTests.class, 
-        AllExecutorTests.class, 
-        AllJDBCTests.class,
-        AllUtilTests.class
-    })
-public final class AllUnitTests {
+    ShardingTransactionalSpringBootTest.class,
+    ShardingTransactionalSpringNamespaceTest.class
+})
+public class AllTests {
 }
