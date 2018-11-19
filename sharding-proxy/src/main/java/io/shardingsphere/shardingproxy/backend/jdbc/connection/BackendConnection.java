@@ -25,6 +25,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -42,6 +43,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhaojun
  * @author zhangliang
  */
+@Slf4j
 @Getter
 public final class BackendConnection implements AutoCloseable {
     
@@ -162,11 +164,16 @@ public final class BackendConnection implements AutoCloseable {
      * Cancel statement.
      */
     public void cancel() {
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (Statement each : cachedStatements) {
             try {
                 each.cancel();
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
             }
+        }
+        if (!exceptions.isEmpty()) {
+            log.warn("Failed cancel statement", exceptions);
         }
     }
     
