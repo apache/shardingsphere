@@ -17,18 +17,17 @@
 
 package io.shardingsphere.transaction.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Sharding transactional annotation.
@@ -154,7 +153,7 @@ public @interface ShardingTransactional {
     )
     String[] noRollbackForClassName() default {};
     
-    public enum ShardingEnvironment {
+    enum ShardingEnvironment {
         JDBC, PROXY
     }
 }

@@ -17,24 +17,23 @@
 
 package io.shardingsphere.transaction;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:shardingTransactionTest.xml")
 public class ShardingTransactionalSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
-    ShardingTransactionalTestService testService;
+    private ShardingTransactionalTestService testService;
     
     @Before
     public void setUp() {

@@ -17,8 +17,9 @@
 
 package io.shardingsphere.transaction.aspect;
 
-import java.lang.reflect.Method;
-
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.annotation.ShardingTransactional;
+import io.shardingsphere.transaction.annotation.ShardingTransactional.ShardingEnvironment;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -27,10 +28,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.annotation.ShardingTransactional;
-import io.shardingsphere.transaction.annotation.ShardingTransactional.ShardingEnvironment;
+import java.lang.reflect.Method;
 
 /**
  * Sharding transaction aspect.
@@ -53,7 +51,6 @@ public final class ShardingTransactionalAspect {
     @Before(value = "shardingTransactionalPointCut()")
     public void setTransactionTypeBeforeTransaction(final JoinPoint joinPoint) {
         ShardingTransactional shardingTransactional = getAnnotation(joinPoint);
-        
         if (ShardingEnvironment.JDBC == shardingTransactional.environment()) {
             TransactionTypeHolder.set(shardingTransactional.type());
         }
@@ -69,5 +66,4 @@ public final class ShardingTransactionalAspect {
         }
         return result;
     }
-    
 }

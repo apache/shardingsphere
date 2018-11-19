@@ -17,9 +17,9 @@
 
 package io.shardingsphere.transaction;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +30,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ShardingTransactionalSpringBootTest.class)
@@ -41,7 +40,7 @@ import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
 public class ShardingTransactionalSpringBootTest {
     
     @Autowired
-    ShardingTransactionalTestService testService;
+    private ShardingTransactionalTestService testService;
     
     @Before
     public void setUp() {
