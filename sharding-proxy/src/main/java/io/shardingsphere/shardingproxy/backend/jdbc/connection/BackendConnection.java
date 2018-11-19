@@ -188,9 +188,6 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void doInTransactional(final TransactionOperationType operationType) throws SQLException {
-        if (ConnectionStatus.TRANSACTION != status) {
-            return;
-        }
         ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
@@ -219,10 +216,12 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     private void commit() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        exceptions.addAll(commitConnections());
-        throwSQLExceptionIfNecessary(exceptions);
-        status = ConnectionStatus.TERMINATED;
+        if (ConnectionStatus.TRANSACTION == status) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            exceptions.addAll(commitConnections());
+            throwSQLExceptionIfNecessary(exceptions);
+            status = ConnectionStatus.TERMINATED;
+        }
     }
     
     /**
@@ -231,10 +230,12 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     private void rollback() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        exceptions.addAll(rollbackConnections());
-        throwSQLExceptionIfNecessary(exceptions);
-        status = ConnectionStatus.TERMINATED;
+        if (ConnectionStatus.TRANSACTION == status) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            exceptions.addAll(rollbackConnections());
+            throwSQLExceptionIfNecessary(exceptions);
+            status = ConnectionStatus.TERMINATED;
+        }
     }
     
     private Collection<SQLException> closeResultSets() {
