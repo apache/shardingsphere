@@ -7,6 +7,7 @@
     <sql-case id="revoke_all" value="REVOKE ALL PRIVILEGES ON *.* FROM user1" />
     <sql-case id="revoke_all_on_schema" value="REVOKE ALL PRIVILEGES ON ds_0.* FROM user1" />
     <sql-case id="revoke_all_on_table" value="REVOKE ALL PRIVILEGES ON ds_0.t_order FROM user1" />
+    <sql-case id="revoke_all_on_function" value="REVOKE ALL PRIVILEGES ON FUNCTION ds_0.function1 FROM user1" />
     <sql-case id="revoke_proxy" value="REVOKE PROXY ON user1 FROM user2" />
     <sql-case id="revoke_multi_proxy" value="REVOKE PROXY ON user1 FROM user2, user3" />
     <sql-case id="revoke_role_to_user" value="REVOKE role1 FROM user1" />

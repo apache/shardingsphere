@@ -7,6 +7,7 @@
     <sql-case id="grant_all" value="GRANT ALL PRIVILEGES ON *.* TO user1" />
     <sql-case id="grant_all_on_schema" value="GRANT ALL PRIVILEGES ON ds_0.* TO user1" />
     <sql-case id="grant_all_on_table" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" />
+    <sql-case id="grant_all_on_function" value="GRANT ALL PRIVILEGES ON FUNCTION ds_0.function1 TO user1" />
     <sql-case id="grant_all_with_password" value="GRANT ALL PRIVILEGES ON *.* TO user1 IDENTIFIED BY 'password'" />
     <sql-case id="grant_all_with_option" value="GRANT ALL PRIVILEGES ON *.* TO user1 MAX_USER_CONNECTIONS 1" />
     <sql-case id="grant_proxy" value="GRANT PROXY ON user1 TO user2" />
