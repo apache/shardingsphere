@@ -39,8 +39,4 @@ public class OrderByExtractResult implements ExtractResult {
     private final OrderDirection orderDirection;
     
     private final OrderDirection nullOrderDirection;
-    
-    @Override
-    public void fill(SQLStatement statement) {
-    }
 }

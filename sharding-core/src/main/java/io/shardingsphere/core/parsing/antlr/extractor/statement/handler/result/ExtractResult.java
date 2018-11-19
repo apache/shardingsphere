@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-
 /**
  *  Extract information from AST.
  * 
@@ -26,10 +24,4 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  */
 public interface ExtractResult {
     
-    /**
-     *  SQL phrase extract result.
-     * 
-     * @param statement SQL statement
-     */
-    void fill(SQLStatement statement);
 }

@@ -21,8 +21,6 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.Getter;
 
 /**
@@ -34,14 +32,4 @@ import lombok.Getter;
 public class SelectExprExtractResult implements ExtractResult {
     
     private final Map<String,String> selectExprs = new LinkedHashMap<>();
-    
-    @Override
-    public void fill(SQLStatement statement) {
-        if(statement instanceof SelectStatement) {
-            SelectStatement sqlStatement = (SelectStatement) statement;
-//            for(Map.Entry<String,String> entry : selectExprs.entrySet()) {
-//                sqlStatement.getItems().add(new SelectItem(entry.getKey(), entry.getValue()));
-//            }
-        }
-    }
 }
