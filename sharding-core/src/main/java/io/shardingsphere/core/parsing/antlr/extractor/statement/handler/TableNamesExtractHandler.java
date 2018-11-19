@@ -17,22 +17,37 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import java.util.Collection;
+
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
+
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
  * Multiple table names extract handler.
- * 
+ *
  * @author duhongjun
  */
-public final class TableNamesExtractHandler extends TableNameExtractHandler {
+public final class TableNamesExtractHandler implements ASTExtractHandler {
     
     @Override
-    public void extract(final ParserRuleContext ancestorNode, final SQLStatement statement) {
-        for (ParseTree each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            super.extract((ParserRuleContext) each, statement);
+    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
+        if (tableNameNodes.isEmpty()) {
+            return Optional.absent();
         }
+        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        for (ParserRuleContext each : tableNameNodes) {
+            String tableText = each.getText();
+            int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
+            result.getSqlTokens().add(new TableToken(each.getStart().getStartIndex(), dotPosition, tableText));
+        }
+        return Optional.<ExtractResult>of(result);
     }
 }
