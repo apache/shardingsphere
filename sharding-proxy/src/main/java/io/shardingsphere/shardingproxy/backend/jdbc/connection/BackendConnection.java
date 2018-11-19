@@ -52,9 +52,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhangliang
  */
 @NoArgsConstructor
+@Getter
 public final class BackendConnection implements AutoCloseable {
     
-    @Getter
     @Setter
     private LogicSchema logicSchema;
     
@@ -66,9 +66,9 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
+    @Setter
     private ConnectionStatus status = ConnectionStatus.INIT;
     
-    @Getter
     @Setter
     private TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
     
