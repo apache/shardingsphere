@@ -189,10 +189,12 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void rollback() throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        exceptions.addAll(rollbackConnections());
-        throwSQLExceptionIfNecessary(exceptions);
-        status = ConnectionStatus.TERMINATED;
+        if (ConnectionStatus.TRANSACTION == status) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            exceptions.addAll(rollbackConnections());
+            throwSQLExceptionIfNecessary(exceptions);
+            status = ConnectionStatus.TERMINATED;
+        }
     }
     
     private Collection<SQLException> closeResultSets() {
