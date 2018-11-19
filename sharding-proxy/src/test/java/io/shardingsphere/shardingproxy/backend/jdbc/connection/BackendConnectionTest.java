@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -40,6 +41,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -132,6 +134,7 @@ public class BackendConnectionTest {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setLogicSchema(logicSchema);
+            backendConnection.setTransactionType(TransactionType.XA);
             setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
@@ -146,6 +149,14 @@ public class BackendConnectionTest {
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());
         assertTrue(actual.getCachedStatements().isEmpty());
+    }
+    
+    @Test
+    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
+        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
+        transactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendConnection.setTransactionType(TransactionType.XA);
+        assertSame(TransactionType.LOCAL, backendConnection.getTransactionType());
     }
     
     private void setMockResultSetAndStatement(final BackendConnection backendConnection) throws SQLException {
