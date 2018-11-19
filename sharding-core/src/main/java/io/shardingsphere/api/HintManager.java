@@ -17,8 +17,11 @@
 
 package io.shardingsphere.api;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -31,6 +34,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
     
+    @Getter
+    private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
+
+    @Getter
+    private final Multimap<String, Comparable<?>> tableShardingValues = HashMultimap.create();
+    
+    @Getter
+    private boolean databaseShardingOnly;
+
+    @Getter
+    private boolean masterRouteOnly;
+
     /**
      * Get a new instance for {@code HintManager}.
      *
@@ -51,14 +66,16 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
-        HintManagerHolder.setDatabaseShardingValue(value);
+        databaseShardingValues.clear();
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
+        databaseShardingOnly = true;
     }
     
     /**
      * Set CRUD operation force route to master database only.
      */
     public void setMasterRouteOnly() {
-        HintManagerHolder.setMasterRouteOnly(true);
+        masterRouteOnly = true;
     }
     
     /**
@@ -70,7 +87,8 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
-        HintManagerHolder.addDatabaseShardingValue(logicTable, value);
+        databaseShardingValues.put(logicTable, value);
+        databaseShardingOnly = false;
     }
     
     /**
@@ -82,7 +100,8 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
-        HintManagerHolder.addTableShardingValue(logicTable, value);
+        tableShardingValues.put(logicTable, value);
+        databaseShardingOnly = false;
     }
     
     @Override
