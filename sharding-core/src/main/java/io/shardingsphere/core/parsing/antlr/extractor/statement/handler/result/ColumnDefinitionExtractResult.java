@@ -17,17 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
-import io.shardingsphere.core.util.SQLUtil;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import lombok.Getter;
-
-import java.util.LinkedList;
-import java.util.List;
+import lombok.Setter;
 
 /**
  * Add column result.
@@ -35,59 +27,32 @@ import java.util.List;
  * @author duhongjun
  */
 @Getter
+@Setter
 public final class ColumnDefinitionExtractResult implements ExtractResult {
-    
-    private final List<ColumnDefinition> columnDefintions = new LinkedList<>();
-    
-    /**
-     * Inject column definition to SQLStatement.
-     * 
-     * @param statement SQL statement
-     */
-    @Override
-    public void fill(final SQLStatement statement) {
-        if (statement instanceof AlterTableStatement) {
-            fillAlter((AlterTableStatement) statement);
-        } else if (statement instanceof CreateTableStatement) {
-            fillCreate((CreateTableStatement) statement);
-        }
+    private String name;
+
+    private String type;
+
+    private Integer length;
+
+    private boolean primaryKey;
+
+    private ColumnPosition position;
+
+    private String oldName;
+
+    private boolean isAdd;
+
+    public ColumnDefinitionExtractResult(final String name, final String type, final Integer length,
+            final boolean primaryKey) {
+        this.name = name;
+        this.type = type;
+        this.length = length;
+        this.primaryKey = primaryKey;
     }
-    
-    private void fillAlter(final AlterTableStatement alterTableStatement) {
-        for (ColumnDefinition each : columnDefintions) {
-            String oldName = each.getOldName();
-            if (null != oldName) {
-                Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
-                if (!oldDefinition.isPresent()) {
-                    return;
-                }
-                oldDefinition.get().setName(each.getName());
-                if (null == each.getType()) {
-                    alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
-                } else {
-                    alterTableStatement.getUpdateColumns().put(oldName, each);
-                }
-            } else {
-                if (!each.isAdd()) {
-                    alterTableStatement.getUpdateColumns().put(each.getName(), each);
-                } else if (!alterTableStatement.findColumnDefinition(each.getName()).isPresent()) {
-                    alterTableStatement.getAddColumns().add(each);
-                }
-            }
-            if (null != each.getPosition()) {
-                MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
-                mysqlAlterTable.getPositionChangedColumns().add(each.getPosition());
-            }
-        }
-    }
-    
-    private void fillCreate(final CreateTableStatement createTableStatement) {
-        for (ColumnDefinition each : columnDefintions) {
-            createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(each.getName()));
-            createTableStatement.getColumnTypes().add(each.getType());
-            if (each.isPrimaryKey()) {
-                createTableStatement.getPrimaryKeyColumns().add(each.getName());
-            }
-        }
+
+    public ColumnDefinitionExtractResult(final String name, final String oldName) {
+        this.name = name;
+        this.oldName = oldName;
     }
 }
