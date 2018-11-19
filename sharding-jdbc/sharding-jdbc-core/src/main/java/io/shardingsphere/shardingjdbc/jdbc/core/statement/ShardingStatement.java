@@ -251,8 +251,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private void sqlRoute(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
         routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(),
-            shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), 
-                shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), shardingContext.getMetaData().getDataSource()).route(sql);
+            shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), shardingContext.getMetaData().getDataSource()).route(sql);
     }
     
     // TODO refresh table meta data by SQL parse result

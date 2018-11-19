@@ -17,22 +17,20 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.Collection;
-import java.util.Iterator;
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 
 /**
  * Rename column extract handler.
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractHandler implements ASTExtractHandler {
+public final class RenameColumnExtractHandler implements ASTExtractHandler<Optional<ExtractResult>> {
     
     @Override
     public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -40,14 +38,6 @@ public final class RenameColumnExtractHandler implements ASTExtractHandler {
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Collection<ParserRuleContext> columnNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
-        if (2 != columnNodes.size()) {
-            return Optional.absent();
-        }
-        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
-        Iterator<ParserRuleContext> columnNodesIterator = columnNodes.iterator();
-        String oldName = columnNodesIterator.next().getText();
-        result.getColumnDefinitions().add(new ColumnDefinition(columnNodesIterator.next().getText(), oldName));
-        return Optional.<ExtractResult>of(result);
+        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename column");
     }
 }

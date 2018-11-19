@@ -22,22 +22,22 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * SQLServer Add index extract handler for SQLServer.
  * 
  * @author duhongjun
  */
-public final class SQLServerAddIndexExtractHandler implements ASTExtractHandler {
+public final class SQLServerAddIndexExtractHandler implements ASTExtractHandler<Optional<IndexExtractResult>> {
+    
+    private final IndexNameExtractHandler indexNameExtractHandler = new IndexNameExtractHandler();
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!indexDefOptionNode.isPresent()) {
             return Optional.absent();
@@ -46,9 +46,6 @@ public final class SQLServerAddIndexExtractHandler implements ASTExtractHandler 
         if (!indexNameNode.isPresent()) {
             return Optional.absent();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
-        result.getSqlTokens().add(
-                new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
-        return Optional.<ExtractResult>of(result);
+        return indexNameExtractHandler.extract(indexNameNode.get());
     }
 }

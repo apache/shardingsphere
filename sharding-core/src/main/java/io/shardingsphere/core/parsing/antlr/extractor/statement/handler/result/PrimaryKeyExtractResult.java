@@ -20,12 +20,6 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import lombok.Getter;
 
 /**
@@ -35,38 +29,6 @@ import lombok.Getter;
  */
 @Getter
 public final class PrimaryKeyExtractResult implements ExtractResult {
-    
+
     private final Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
-    
-    /**
-     * Inject primary key to SQLStatement.
-     * 
-     * @param statement SQL statement
-     */
-    @Override
-    public void fill(final SQLStatement statement) {
-        if (statement instanceof AlterTableStatement) {
-            fillAlter(statement);
-        } else if (statement instanceof CreateTableStatement) {
-            fillCreate(statement);
-        }
-    }
-    
-    private void fillAlter(final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        for (String each : primaryKeyColumnNames) {
-            Optional<ColumnDefinition> updateColumn = alterStatement.getColumnDefinitionByName(each);
-            if (updateColumn.isPresent()) {
-                updateColumn.get().setPrimaryKey(true);
-                alterStatement.getUpdateColumns().put(each, updateColumn.get());
-            }
-        }
-    }
-    
-    private void fillCreate(final SQLStatement statement) {
-        CreateTableStatement createStatement = (CreateTableStatement) statement;
-        for (String each : primaryKeyColumnNames) {
-            createStatement.getPrimaryKeyColumns().add(each);
-        }
-    }
 }

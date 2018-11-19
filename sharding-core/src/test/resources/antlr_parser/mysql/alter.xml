@@ -37,20 +37,6 @@
         </alter-table>
     </parser-result>
 
-    <parser-result sql-case-id="alter_table_rename">
-        <tables>
-            <table name="t_order" />
-            <table name="t_order_bak" />
-        </tables>
-        <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
-            <table-token begin-position="30" original-literals="t_order_bak" />
-        </tokens>
-        <alter-table new-table-name="t_order_bak">
-            <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id"/>
-        </alter-table>
-    </parser-result>
-    
     <parser-result sql-case-id="alter_table_add_column">
         <tables>
             <table name="t_order" />

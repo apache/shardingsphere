@@ -58,7 +58,7 @@ public class XATransactionDataSourceWrapperTest {
     }
     
     @After
-    public void tearDown() {
+    public void teardown() {
         xaTransactionManager.destroy();
     }
     

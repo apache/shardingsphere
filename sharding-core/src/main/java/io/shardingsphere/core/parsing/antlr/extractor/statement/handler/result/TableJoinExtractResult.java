@@ -17,32 +17,30 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Rename table result.
+ * Table join extract result.
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-public final class RenameTableExtractResult implements ExtractResult {
-    
-    private final String newTableName;
-    
-    /**
-     * Inject new table name to SQLStatement.
-     * 
-     * @param statement SQL statement
-     */
-    @Override
-    public void fill(final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        if (null != newTableName) {
-            alterStatement.setNewTableName(newTableName);
-        }
+public class TableJoinExtractResult extends TableExtractResult {
+
+    private final List<OrCondition> joinConditions = new LinkedList<>();
+
+    public TableJoinExtractResult(final String name, final Optional<String> alias, final Optional<String> schemaName, final TableToken token) {
+        super(name, alias, schemaName, token);
+    }
+
+    public TableJoinExtractResult(final TableExtractResult parent) {
+        super(parent.getName(), parent.getAlias(), parent.getSchemaName(), parent.getToken());
     }
 }

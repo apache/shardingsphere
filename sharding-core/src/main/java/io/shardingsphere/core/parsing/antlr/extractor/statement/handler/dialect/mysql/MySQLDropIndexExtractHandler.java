@@ -17,34 +17,38 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.util.SQLUtil;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.Collection;
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Drop index extract for MySQL.
  *
  * @author duhongjun
  */
-public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
-    
+public final class MySQLDropIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+
+    private final IndexNameExtractHandler indexNameExtractHandler = new IndexNameExtractHandler();
+
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> dropIndexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
-        if (dropIndexNodes.isEmpty()) {
-            return Optional.absent();
+    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> dropINdexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
+        if (dropINdexNodes.isEmpty()) {
+            return Collections.emptyList();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
-        for (ParserRuleContext each : dropIndexNodes) {
+        Collection<IndexExtractResult> result = new LinkedList<>();
+        for (ParserRuleContext each : dropINdexNodes) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
                 continue;
@@ -53,9 +57,11 @@ public final class MySQLDropIndexExtractHandler implements ASTExtractHandler {
             if (!(lastChild instanceof ParserRuleContext)) {
                 continue;
             }
-            ParserRuleContext indexNameNode = (ParserRuleContext) lastChild;
-            result.getSqlTokens().add(new IndexToken(indexNameNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.getText()), null));
+            Optional<IndexExtractResult> extractResult = indexNameExtractHandler.extract((ParserRuleContext) lastChild);
+            if (extractResult.isPresent()) {
+                result.add(extractResult.get());
+            }
         }
-        return Optional.<ExtractResult>of(result);
+        return result;
     }
 }

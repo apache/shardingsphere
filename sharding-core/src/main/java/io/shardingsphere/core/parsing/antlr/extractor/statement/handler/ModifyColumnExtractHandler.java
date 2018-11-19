@@ -17,22 +17,24 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.Collection;
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Modify column extract handler.
  *
  * @author duhongjun
  */
-public class ModifyColumnExtractHandler implements ASTExtractHandler {
+public class ModifyColumnExtractHandler implements ASTExtractHandler<Collection<ColumnDefinitionExtractResult>> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
 
@@ -43,22 +45,22 @@ public class ModifyColumnExtractHandler implements ASTExtractHandler {
      * @return extract result
      */
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
-        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
+        Collection<ColumnDefinitionExtractResult> result = new LinkedList<>();
         for (ParserRuleContext each : modifyColumnNodes) {
-            Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 postExtractColumnDefinition(each, columnDefinition.get());
-                result.getColumnDefinitions().add(columnDefinition.get());
+                result.add(columnDefinition.get());
             }
         }
-        return Optional.<ExtractResult>of(result);
+        return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinition columnDefinition) {
+    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
     }
 }

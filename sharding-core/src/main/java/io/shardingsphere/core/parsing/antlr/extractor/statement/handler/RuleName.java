@@ -77,7 +77,27 @@ public enum RuleName {
     
     ALTER_TABLE_ADD_CONSTRAINT("AlterTableAddConstraint"),
     
-    TABLE_CONSTRAINT("TableConstraint");
+    TABLE_CONSTRAINT("TableConstraint"),
+    
+    TABLE_REFERENCE("TableReference"),
+    
+    FROM_CLAUSE("FromClause"),
+    
+    TABLE_FACTOR("TableFactor"),
+    
+    JOIN_TABLE("JoinTable"),
+    
+    JOIN_CONDITION("JoinCondition"),
+    
+    ALIAS("Alias"),
+    
+    EXPR("Expr"),
+    
+    GROUPBYCLAUSE("GroupByClause"),
+    
+    ORDERBYCLAUSE("OrderByClause"),
+    
+    ORDERBYITEM("OrderByItem");
     
     private final String name;
     

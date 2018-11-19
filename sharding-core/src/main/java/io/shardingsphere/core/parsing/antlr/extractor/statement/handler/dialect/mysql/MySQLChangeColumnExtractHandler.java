@@ -17,29 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Change column extract handler for MySQL.
  * 
  * @author duhongjun
  */
-public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler {
+public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler<Optional<ColumnDefinitionExtractResult>> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnNode.isPresent()) {
             return Optional.absent();
@@ -52,17 +52,15 @@ public final class MySQLChangeColumnExtractHandler implements ASTExtractHandler 
         if (!columnDefinitionNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnDefinition> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
+        Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
         if (!columnDefinition.isPresent()) {
             return null;
         }
         columnDefinition.get().setOldName(oldColumnNode.get().getText());
-        ColumnDefinitionExtractResult result = new ColumnDefinitionExtractResult();
-        result.getColumnDefinitions().add(columnDefinition.get());
         Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(changeColumnNode.get(), columnDefinition.get().getName());
         if (columnPosition.isPresent()) {
             columnDefinition.get().setPosition(columnPosition.get());
         }
-        return Optional.<ExtractResult>of(result);
+        return columnDefinition;
     }
 }

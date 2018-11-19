@@ -68,6 +68,7 @@ public class DataSourceParameterFactoryTest {
         assertThat(parameter.getUsername(), is("root"));
         assertThat(parameter.getPassword(), is("root"));
         assertThat(parameter.getMaximumPoolSize(), is(10));
+        assertThat(parameter.getIdleTimeout(), is(200L));
         assertThat(parameter.getConnectionTimeout(), is(2000L));
         assertThat(parameter.getMaxLifetime(), is(100000L));
     }
