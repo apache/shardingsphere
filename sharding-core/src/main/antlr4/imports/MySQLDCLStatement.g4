@@ -61,8 +61,8 @@ objectType
 
 privLevel
     : ASTERISK
-    | ASTERISK DOT ASTERISK
-    | schemaName DOT ASTERISK
+    | ASTERISK DOT_ASTERISK
+    | schemaName DOT_ASTERISK
     | schemaName DOT tableName
     | tableName
     | schemaName DOT routineName
