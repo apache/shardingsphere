@@ -24,7 +24,7 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.backend.jdbc.connection.ProxyTransactionManager;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -60,20 +60,20 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    private final ProxyTransactionManager proxyTransactionManager;
+    private final BackendTransactionManager backendTransactionManager;
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
         backendHandler = BackendHandlerFactory.createBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
-        proxyTransactionManager = new ProxyTransactionManager(backendConnection);
+        backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         backendHandler = null;
-        this.proxyTransactionManager = null;
+        this.backendTransactionManager = null;
     }
     
     @Override
@@ -93,7 +93,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        proxyTransactionManager.doInTransaction(operationType.get());
+        backendTransactionManager.doInTransaction(operationType.get());
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
     }
     

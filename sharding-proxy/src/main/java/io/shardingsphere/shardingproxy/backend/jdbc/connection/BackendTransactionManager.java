@@ -38,7 +38,7 @@ import java.util.LinkedList;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class ProxyTransactionManager {
+public class BackendTransactionManager {
     
     private final BackendConnection connection;
     
