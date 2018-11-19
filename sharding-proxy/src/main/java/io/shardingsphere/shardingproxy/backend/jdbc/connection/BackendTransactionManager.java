@@ -55,20 +55,24 @@ public class BackendTransactionManager {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
         if (TransactionType.LOCAL == transactionType) {
-            switch (operationType) {
-                case BEGIN:
-                    setAutoCommit(false);
-                    break;
-                case COMMIT:
-                    commit();
-                    break;
-                case ROLLBACK:
-                    rollback();
-                    break;
-                default:
-            }
+            doLocalTransaction(operationType);
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
+        }
+    }
+    
+    private void doLocalTransaction(final TransactionOperationType operationType) throws SQLException {
+        switch (operationType) {
+            case BEGIN:
+                setAutoCommit(false);
+                break;
+            case COMMIT:
+                commit();
+                break;
+            case ROLLBACK:
+                rollback();
+                break;
+            default:
         }
     }
     
