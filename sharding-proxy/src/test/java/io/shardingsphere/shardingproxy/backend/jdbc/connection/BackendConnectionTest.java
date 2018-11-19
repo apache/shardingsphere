@@ -74,7 +74,7 @@ public class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionSizeLessThanCache() throws SQLException {
-        setCachedConnections("ds1", 10);
+        setCachedConnections(backendConnection, "ds1", 10);
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(10));
@@ -83,7 +83,7 @@ public class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
-        setCachedConnections("ds1", 10);
+        setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
         assertThat(actualConnections.size(), is(12));
@@ -94,7 +94,7 @@ public class BackendConnectionTest {
     @Test
     @SneakyThrows
     public void assertMultiThreadGetConnection() {
-        setCachedConnections("ds1", 10);
+        setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
         Thread thread1 = new Thread(new Runnable() {
             @Override
@@ -132,7 +132,7 @@ public class BackendConnectionTest {
     }
     
     @SneakyThrows
-    private void setCachedConnections(final String dsName, final int connectionSize) {
+    private void setCachedConnections(final BackendConnection backendConnection, final String dsName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(dsName, mockNewConnections(connectionSize));
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
