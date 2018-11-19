@@ -60,7 +60,7 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String BROADCAST_TABLE_RULE_TAG = "broadcast-table-rule";
     
-    public static final String TABLES_ATTRIBUTE = "tables";
+    public static final String TABLE_ATTRIBUTE = "table";
     
     public static final String ACTUAL_DATA_NODES_ATTRIBUTE = "actual-data-nodes";
     

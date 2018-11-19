@@ -69,7 +69,7 @@
     </xsd:element>
     <xsd:element name="broadcast-table-rule">
         <xsd:complexType>
-            <xsd:attribute name="tables" type="xsd:string" use="required" />
+            <xsd:attribute name="table" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="standard-strategy">
