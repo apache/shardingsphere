@@ -112,7 +112,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (TransactionType.LOCAL == transactionType) {
             switch (operationType.get()) {
                 case BEGIN:
-                    backendConnection.setAutoCommit(true);
+                    backendConnection.setAutoCommit(false);
                     break;
                 case COMMIT:
                     backendConnection.commit();
