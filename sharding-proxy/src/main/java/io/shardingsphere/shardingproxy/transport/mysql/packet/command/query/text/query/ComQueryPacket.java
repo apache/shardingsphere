@@ -18,12 +18,8 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
@@ -39,8 +35,6 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,10 +59,6 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    private final ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler;
-    
-    private final TransactionType transactionType;
-    
     private final BackendConnection backendConnection;
     
     public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
@@ -76,19 +66,12 @@ public final class ComQueryPacket implements QueryCommandPacket {
         sql = payload.readStringEOF();
         this.backendConnection = backendConnection;
         backendHandler = BackendHandlerFactory.createBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
-        transactionType = GlobalRegistry.getInstance().getTransactionType();
-        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
-        if (null != transactionType && transactionType != TransactionType.LOCAL) {
-            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
-        }
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
-        transactionType = GlobalRegistry.getInstance().getTransactionType();
         backendHandler = null;
-        shardingTransactionHandler = null;
         this.backendConnection = null;
     }
     
@@ -109,23 +92,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.LOCAL == transactionType) {
-            switch (operationType.get()) {
-                case BEGIN:
-                    backendConnection.setAutoCommit(false);
-                    break;
-                case COMMIT:
-                    backendConnection.commit();
-                    break;
-                case ROLLBACK:
-                    backendConnection.rollback();
-                    break;
-                default:
-            }
-        } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType.get()));
-        }
-        // TODO :zhaojun do not send TCL to backend, send when local transaction ready
+        backendConnection.doInTransactional(operationType.get());
         return Optional.of(new CommandResponsePackets(new OKPacket(1)));
     }
     
