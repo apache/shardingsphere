@@ -20,7 +20,9 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,6 +61,8 @@ public final class BackendConnection implements AutoCloseable {
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
     private ConnectionStatus status = ConnectionStatus.INIT;
+    
+    private final TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
     
     /**
      * Get connection size.
