@@ -42,6 +42,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -98,6 +99,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
     }
     
     @Override
+    @SneakyThrows
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
@@ -107,7 +109,20 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (!operationType.isPresent()) {
             return Optional.of(backendHandler.execute());
         }
-        if (TransactionType.XA == transactionType) {
+        if (TransactionType.LOCAL == transactionType) {
+            switch (operationType.get()) {
+                case BEGIN:
+                    backendConnection.setAutoCommit(true);
+                    break;
+                case COMMIT:
+                    backendConnection.commit();
+                    break;
+                case ROLLBACK:
+                    backendConnection.rollback();
+                    break;
+                default:
+            }
+        } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType.get()));
         }
         // TODO :zhaojun do not send TCL to backend, send when local transaction ready
