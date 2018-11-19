@@ -32,7 +32,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,15 +128,22 @@ public class BackendConnectionTest {
     @Test
     public void assertAutoCloseConnection() throws SQLException {
         BackendConnection actual;
+        ResultSet resultSet = mock(ResultSet.class);
+        Statement statement = mock(Statement.class);
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setLogicSchema(logicSchema);
             setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+            backendConnection.setStatus(ConnectionStatus.TERMINATED);
+            backendConnection.add(resultSet);
+            backendConnection.add(statement);
             actual = backendConnection;
         }
         assertThat(actual.getConnectionSize(), is(0));
         assertTrue(actual.getCachedConnections().isEmpty());
+        assertTrue(actual.getCachedResultSets().isEmpty());
+        assertTrue(actual.getCachedStatements().isEmpty());
     }
     
     @SneakyThrows
