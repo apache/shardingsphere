@@ -18,7 +18,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,14 +35,9 @@ public class TableExtractResult implements ExtractResult {
     
     private final String name;
     
-    private final String alias;
+    private final Optional<String> alias;
     
-    private final String schemaName;
+    private final Optional<String> schemaName;
     
     private final TableToken token;
-    
-    @Override
-    public void fill(SQLStatement statement) {
-
-    }
 }

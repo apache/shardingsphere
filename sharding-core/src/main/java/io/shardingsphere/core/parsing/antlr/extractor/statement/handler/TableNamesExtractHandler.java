@@ -18,36 +18,38 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
  * Multiple table names extract handler.
  *
  * @author duhongjun
  */
-public final class TableNamesExtractHandler implements ASTExtractHandler {
+public final class TableNamesExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
+    
+    private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
         if (tableNameNodes.isEmpty()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        Collection<TableExtractResult> result = new LinkedList<>();
         for (ParserRuleContext each : tableNameNodes) {
-            String tableText = each.getText();
-            int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-            result.getSqlTokens().add(new TableToken(each.getStart().getStartIndex(), dotPosition, tableText));
+            Optional<TableExtractResult> tableExtractResult = tableNameExtractHandler.extract(each);
+            if(tableExtractResult.isPresent()) {
+                result.add(tableExtractResult.get());
+            }
         }
-        return Optional.<ExtractResult>of(result);
+        return result;
     }
 }
