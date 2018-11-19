@@ -17,10 +17,124 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import com.google.common.base.Preconditions;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Proxy transaction manager.
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 public class ProxyTransactionManager {
+    
+    private final BackendConnection connection;
+    
+    /**
+     * Handle proxy transaction.
+     *
+     * @param operationType transaction operation type
+     * @throws SQLException SQL Exception
+     */
+    public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
+        TransactionType transactionType = connection.getTransactionType();
+        ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        if (null != transactionType && transactionType != TransactionType.LOCAL) {
+            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
+        }
+        if (TransactionType.LOCAL == transactionType) {
+            switch (operationType) {
+                case BEGIN:
+                    setAutoCommit(false);
+                    break;
+                case COMMIT:
+                    commit();
+                    break;
+                case ROLLBACK:
+                    rollback();
+                    break;
+                default:
+            }
+        } else if (TransactionType.XA == transactionType) {
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
+        }
+    }
+    
+    private void setAutoCommit(final boolean autoCommit) {
+        if (!autoCommit) {
+            connection.setStatus(ConnectionStatus.TRANSACTION);
+        }
+        connection.getCachedConnections().clear();
+        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+    }
+    
+    private void commit() throws SQLException {
+        if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            exceptions.addAll(commitConnections());
+            throwSQLExceptionIfNecessary(exceptions);
+            connection.setStatus(ConnectionStatus.TERMINATED);
+        }
+    }
+    
+    private void rollback() throws SQLException {
+        if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            exceptions.addAll(rollbackConnections());
+            throwSQLExceptionIfNecessary(exceptions);
+            connection.setStatus(ConnectionStatus.TERMINATED);
+        }
+    }
+    
+    private Collection<SQLException> commitConnections() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : connection.getCachedConnections().values()) {
+            try {
+                each.commit();
+            } catch (SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SQLException> rollbackConnections() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : connection.getCachedConnections().values()) {
+            try {
+                each.rollback();
+            } catch (SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
+    }
+    
+    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException();
+        for (SQLException each : exceptions) {
+            ex.setNextException(each);
+        }
+        throw ex;
+    }
+    
+    @SneakyThrows
+    private void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+        connection.getMethodInvocations().add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+    }
 }
