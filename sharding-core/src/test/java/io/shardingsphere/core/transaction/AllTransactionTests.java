@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.transaction;
+package io.shardingsphere.core.transaction;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
