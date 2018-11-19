@@ -17,13 +17,19 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -171,6 +177,35 @@ public final class BackendConnection implements AutoCloseable {
         }
         cachedConnections.clear();
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+    }
+    
+    /**
+     * Execute transaction by operation type.
+     *
+     * @param operationType operation type
+     * @throws SQLException SQL exception
+     */
+    public void doInTransactional(final TransactionOperationType operationType) throws SQLException {
+        ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        if (null != transactionType && transactionType != TransactionType.LOCAL) {
+            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
+        }
+        if (TransactionType.LOCAL == transactionType) {
+            switch (operationType) {
+                case BEGIN:
+                    setAutoCommit(false);
+                    break;
+                case COMMIT:
+                    commit();
+                    break;
+                case ROLLBACK:
+                    rollback();
+                    break;
+                default:
+            }
+        } else if (TransactionType.XA == transactionType) {
+            shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
+        }
     }
     
     /**
