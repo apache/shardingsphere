@@ -18,40 +18,32 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Add index extract handler for MySQL.
  *
  * @author duhongjun
  */
-public final class MySQLAddIndexExtractHandler implements ASTExtractHandler {
+public final class MySQLAddIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+    
+    private final IndexesNameExtractHandler indexNamesExtractHandler = new IndexesNameExtractHandler();
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> addIndexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX);
         if (addIndexNodes.isEmpty()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
-        for (ParserRuleContext each : addIndexNodes) {
-            Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(each, RuleName.INDEX_NAME);
-            if (indexNameNode.isPresent()) {
-                result.getSqlTokens().add(
-                        new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
-            }
-        }
-        return Optional.<ExtractResult>of(result);
+       
+        return indexNamesExtractHandler.extract(ancestorNode);
     }
 }

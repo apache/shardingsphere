@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.util.SQLUtil;
 
@@ -34,10 +33,10 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author duhongjun
  */
-public final class DropColumnExtractHandler implements ASTExtractHandler {
+public final class DropColumnExtractHandler implements ASTExtractHandler<Optional<DropColumnExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<DropColumnExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> dropColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
         if (dropColumnNodes.isEmpty()) {
             return Optional.absent();
@@ -48,6 +47,6 @@ public final class DropColumnExtractHandler implements ASTExtractHandler {
                 result.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }
-        return Optional.<ExtractResult>of(result);
+        return Optional.of(result);
     }
 }

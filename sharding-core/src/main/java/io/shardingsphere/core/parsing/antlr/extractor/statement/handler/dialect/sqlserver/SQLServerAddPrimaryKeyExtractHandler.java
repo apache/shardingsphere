@@ -26,7 +26,6 @@ import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
@@ -35,10 +34,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  *
  * @author duhongjun
  */
-public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler<Optional<PrimaryKeyExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<PrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnNode.isPresent()) {
             return Optional.absent();
@@ -59,6 +58,6 @@ public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHan
         for (ParseTree each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }
-        return Optional.<ExtractResult>of(result);
+        return Optional.of(result);
     }
 }

@@ -19,37 +19,37 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.FromClauseExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.lexer.token.Symbol;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 
 /**
  * Extract table result.
  * 
  * @author duhongjun
  */
-public class FromClauseExtractHandler implements ASTExtractHandler {
-
+public class FromClauseExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
+    
+    private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
+    
     @Override
-    public Optional<ExtractResult> extract(ParserRuleContext ancestorNode) {
+    public Collection<TableExtractResult> extract(ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> fromNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FROM_CLAUSE);
         if(!fromNode.isPresent()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
         Collection<ParserRuleContext> tableReferenceNodes = ASTUtils.getAllDescendantNodes(fromNode.get(), RuleName.TABLE_REFERENCE);
         if(tableReferenceNodes.isEmpty()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
-        FromClauseExtractResult result = new FromClauseExtractResult();
+        Collection<TableExtractResult> result = new LinkedList<>();
         for(ParserRuleContext each : tableReferenceNodes){
             Optional<ParserRuleContext> joinTableNode = ASTUtils.findFirstChildNode(each, RuleName.JOIN_TABLE);
             Optional<ParserRuleContext> tableFactorNode = null;
@@ -62,42 +62,26 @@ public class FromClauseExtractHandler implements ASTExtractHandler {
             if(!tableFactorNode.isPresent()) {
                 continue;
             }
-            TableExtractResult extractResult = fillExtractResult(tableFactorNode.get());
+            Optional<TableExtractResult> extractResult = tableNameExtractHandler.extract(tableFactorNode.get());
+            if(!extractResult.isPresent()) {
+                continue;
+            }
             if(!joinTableNode.isPresent()) {
-                result.getTableResults().add(extractResult);
+                result.add(extractResult.get());
                 continue;
             }
             Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.JOIN_CONDITION);
             if(joinConditionNode.isPresent()) {
                 Optional<ParserRuleContext> exprNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.EXPR);
                 if(exprNode.isPresent()) {
-                    TableJoinExtractResult tableJoinResult = new TableJoinExtractResult(extractResult);
+                    TableJoinExtractResult tableJoinResult = new TableJoinExtractResult(extractResult.get());
                     //TODO extract condition
-                    result.getTableResults().add(tableJoinResult);
+                    result.add(tableJoinResult);
                     continue;
                 }
             }
-            result.getTableResults().add(extractResult);
+            result.add(extractResult.get());
         }
-        return Optional.<ExtractResult>of(result);
-    }
-    
-    private TableExtractResult fillExtractResult(ParserRuleContext node) {
-        String tableText = node.getText();
-        int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-        String tableName = tableText;
-        String schemaName = "";
-        if(0 < dotPosition) {
-            tableName = tableText.substring(dotPosition + 1);
-            dotPosition = schemaName.contains(Symbol.DOT.getLiterals()) ? schemaName.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-            schemaName = tableText.substring(dotPosition + 1);
-        }
-        Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(node, RuleName.ALIAS);
-        String alias = "";
-        if(aliasNode.isPresent()) {
-            alias = aliasNode.get().getText();
-        }
-        TableToken tableToken = new TableToken(node.getStart().getStartIndex(), dotPosition, tableText);
-        return new TableExtractResult(tableName, alias, schemaName, tableToken);
+        return result;
     }
 }
