@@ -139,7 +139,7 @@ public class BackendConnectionTest {
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.setStatus(ConnectionStatus.TERMINATED);
-            setMockResultSetAndStatement(backendConnection);
+            mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         } catch (SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
@@ -149,6 +149,15 @@ public class BackendConnectionTest {
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());
         assertTrue(actual.getCachedStatements().isEmpty());
+    }
+    
+    private void mockResultSetAndStatement(final BackendConnection backendConnection) throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        Statement statement = mock(Statement.class);
+        doThrow(SQLException.class).when(resultSet).close();
+        doThrow(SQLException.class).when(statement).close();
+        backendConnection.add(resultSet);
+        backendConnection.add(statement);
     }
     
     @Test
@@ -167,12 +176,16 @@ public class BackendConnectionTest {
         assertSame(logicSchema, backendConnection.getLogicSchema());
     }
     
-    private void setMockResultSetAndStatement(final BackendConnection backendConnection) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
+    @Test
+    public void assertCancelStatement() throws SQLException {
+        mockStatementCancel(backendConnection);
+        backendConnection.cancel();
+        assertTrue(backendConnection.getCachedStatements().isEmpty());
+    }
+    
+    private void mockStatementCancel(final BackendConnection backendConnection) throws SQLException {
         Statement statement = mock(Statement.class);
-        doThrow(SQLException.class).when(resultSet).close();
-        doThrow(SQLException.class).when(statement).close();
-        backendConnection.add(resultSet);
+        doThrow(SQLException.class).when(statement).cancel();
         backendConnection.add(statement);
     }
     
