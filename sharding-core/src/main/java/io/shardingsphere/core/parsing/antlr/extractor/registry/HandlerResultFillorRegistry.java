@@ -22,15 +22,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.CollectionHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.ColumnDefinitionHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.DropColumnHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.DropPrimaryKeyHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.IndexHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.PrimaryKeyHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.TableHandlerResultFillor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.TableJoinHandlerResultFillor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.CollectionHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.ColumnDefinitionHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.DropColumnHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.DropPrimaryKeyHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.IndexHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.PrimaryKeyHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.TableHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.TableJoinHandlerResultFiller;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
@@ -45,24 +45,24 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.T
  * @author duhongjun
  */
 public final class HandlerResultFillorRegistry {
-    private static final Map<Class<?>,HandlerResultFillor> fillors = new HashMap<>();
+    private static final Map<Class<?>,HandlerResultFiller> fillors = new HashMap<>();
     
     static{
-        registry(DropColumnExtractResult.class, new DropColumnHandlerResultFillor());
-        registry(PrimaryKeyExtractResult.class, new PrimaryKeyHandlerResultFillor());
-        registry(DropPrimaryKeyExtractResult.class, new DropPrimaryKeyHandlerResultFillor());
-        registry(TableExtractResult.class, new TableHandlerResultFillor());
-        registry(ColumnDefinitionExtractResult.class, new ColumnDefinitionHandlerResultFillor());
-        registry(TableJoinExtractResult.class, new TableJoinHandlerResultFillor());
-        registry(IndexExtractResult.class, new IndexHandlerResultFillor());
-        registry(Collection.class, new CollectionHandlerResultFillor());
+        registry(DropColumnExtractResult.class, new DropColumnHandlerResultFiller());
+        registry(PrimaryKeyExtractResult.class, new PrimaryKeyHandlerResultFiller());
+        registry(DropPrimaryKeyExtractResult.class, new DropPrimaryKeyHandlerResultFiller());
+        registry(TableExtractResult.class, new TableHandlerResultFiller());
+        registry(ColumnDefinitionExtractResult.class, new ColumnDefinitionHandlerResultFiller());
+        registry(TableJoinExtractResult.class, new TableJoinHandlerResultFiller());
+        registry(IndexExtractResult.class, new IndexHandlerResultFiller());
+        registry(Collection.class, new CollectionHandlerResultFiller());
     }
     
-    public static void registry(Class<?> clazz, HandlerResultFillor fillor) {
+    public static void registry(Class<?> clazz, HandlerResultFiller fillor) {
         fillors.put(clazz, fillor);
     }
     
-    public static HandlerResultFillor getFillor(Object object) {
+    public static HandlerResultFiller getFillor(Object object) {
         if(object instanceof Collection) {
             return fillors.get(Collection.class); 
         }

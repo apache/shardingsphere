@@ -28,13 +28,13 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
 import io.shardingsphere.core.util.SQLUtil;
 
 /**
- * Column definition handler result fillor.
+ * Column definition handler result filler.
  * 
  * @author duhongjun
  */
-public class ColumnDefinitionHandlerResultFillor extends AbstractHandlerResultFillor {
+public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
 
-    public ColumnDefinitionHandlerResultFillor() {
+    public ColumnDefinitionHandlerResultFiller() {
         super(ColumnDefinitionExtractResult.class);
     }
 

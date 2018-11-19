@@ -23,13 +23,13 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Drop column result fillor.
+ * Drop column handler result filler.
  * 
  * @author duhongjun
  */
-public class DropColumnHandlerResultFillor extends AbstractHandlerResultFillor {
+public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
 
-    public DropColumnHandlerResultFillor() {
+    public DropColumnHandlerResultFiller() {
         super(DropColumnExtractResult.class);
     }
 

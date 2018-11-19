@@ -18,29 +18,33 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
+import java.util.Collection;
+
+import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 /**
- * xxx.
+ * Collection handler result filler.
  * 
  * @author duhongjun
  */
-public class IndexHandlerResultFillor extends AbstractHandlerResultFillor {
-    
-    public IndexHandlerResultFillor() {
-        super(IndexExtractResult.class);
+public class CollectionHandlerResultFiller extends AbstractHandlerResultFiller {
+
+    public CollectionHandlerResultFiller() {
+        super(Collection.class);
     }
-    
+
+    @SuppressWarnings("unchecked")
     @Override
     protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
-        IndexToken indexToken = ((IndexExtractResult)extractResult).getToken();
-        if(!statement.getTables().isEmpty() && null == indexToken.getTableName()) {
-            indexToken.setTableName(statement.getTables().getSingleTableName());
-        }else {
-            indexToken.setTableName("");
+        @SuppressWarnings("rawtypes")
+        Collection<? extends ExtractResult> collection = (Collection) extractResult;
+        for(ExtractResult each : collection) {
+            HandlerResultFiller fillor = HandlerResultFillorRegistry.getFillor(each);
+            if(null != fillor) {
+                fillor.fill(each, statement);
+            }
         }
-        statement.getSQLTokens().add(((IndexExtractResult)extractResult).getToken());
     }
 }

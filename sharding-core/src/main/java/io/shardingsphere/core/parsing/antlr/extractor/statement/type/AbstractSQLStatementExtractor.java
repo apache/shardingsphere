@@ -29,7 +29,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFillor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFiller;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
@@ -59,7 +59,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
             }
         }
         for (Object each : extractResults) {
-            HandlerResultFillor fillor = HandlerResultFillorRegistry.getFillor(each);
+            HandlerResultFiller fillor = HandlerResultFillorRegistry.getFillor(each);
             if(null != fillor) {
                 fillor.fill(each, result);
             }

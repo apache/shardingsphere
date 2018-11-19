@@ -18,33 +18,30 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
-import java.util.Collection;
-
-import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Collection handler result fillor.
+ * Table handler result filler.
  * 
  * @author duhongjun
  */
-public class CollectionHandlerResultFillor extends AbstractHandlerResultFillor {
-
-    public CollectionHandlerResultFillor() {
-        super(Collection.class);
+public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
+    
+    public TableHandlerResultFiller(Class<? extends ExtractResult> extractResultClass) {
+        super(TableExtractResult.class);
+    }
+    
+    public TableHandlerResultFiller() {
+        super(TableExtractResult.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
-        @SuppressWarnings("rawtypes")
-        Collection<? extends ExtractResult> collection = (Collection) extractResult;
-        for(ExtractResult each : collection) {
-            HandlerResultFillor fillor = HandlerResultFillorRegistry.getFillor(each);
-            if(null != fillor) {
-                fillor.fill(each, statement);
-            }
-        }
+        TableExtractResult tableResult = (TableExtractResult) extractResult;
+        statement.getTables().add(new Table(tableResult.getName(), tableResult.getAlias()));
+        statement.getSQLTokens().add(tableResult.getToken());
     }
 }

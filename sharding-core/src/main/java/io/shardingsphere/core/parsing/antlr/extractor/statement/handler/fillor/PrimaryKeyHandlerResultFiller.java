@@ -26,13 +26,13 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
 /**
- * Primary keyHandler result fillor.
+ * Primary keyHandler result filler.
  * 
  * @author duhongjun
  */
-public class PrimaryKeyHandlerResultFillor extends AbstractHandlerResultFillor {
+public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
 
-    public PrimaryKeyHandlerResultFillor() {
+    public PrimaryKeyHandlerResultFiller() {
         super(PrimaryKeyExtractResult.class);
     }
 

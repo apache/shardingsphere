@@ -18,30 +18,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Table ext.
+ * Join table extract result filler.
  * 
  * @author duhongjun
  */
-public class TableHandlerResultFillor extends AbstractHandlerResultFillor {
-    
-    public TableHandlerResultFillor(Class<? extends ExtractResult> extractResultClass) {
-        super(TableExtractResult.class);
+public class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
+    public TableJoinHandlerResultFiller() {
+        super(TableJoinExtractResult.class);
     }
     
-    public TableHandlerResultFillor() {
-        super(TableExtractResult.class);
-    }
-
     @Override
     protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
-        TableExtractResult tableResult = (TableExtractResult) extractResult;
-        statement.getTables().add(new Table(tableResult.getName(), tableResult.getAlias()));
-        statement.getSQLTokens().add(tableResult.getToken());
+        TableJoinExtractResult tableResult = (TableJoinExtractResult) extractResult;
+        super.fillSQLStatement(tableResult, statement);
     }
 }

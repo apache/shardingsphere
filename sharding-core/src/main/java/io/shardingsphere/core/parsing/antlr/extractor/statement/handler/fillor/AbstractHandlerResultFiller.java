@@ -22,12 +22,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
- * .
+ * Abstract handler result filler.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public abstract class AbstractHandlerResultFillor implements HandlerResultFillor {
+public abstract class AbstractHandlerResultFiller implements HandlerResultFiller {
     
     protected final Class<?> extractResultClass;
     

@@ -18,13 +18,25 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
 
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Handler result fillor.
+ * Drop primary key handler result filler.
  * 
  * @author duhongjun
  */
-public interface HandlerResultFillor {
-    void fill(Object extractResult, SQLStatement statement);
+public class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller{
+
+    public DropPrimaryKeyHandlerResultFiller() {
+        super(DropPrimaryKeyExtractResult.class);
+    }
+
+    @Override
+    protected void fillSQLStatement(Object extractResult, SQLStatement statement) {
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        alterStatement.setDropPrimaryKey(((DropPrimaryKeyExtractResult)extractResult).isDropPrimaryKey());
+    }
+    
 }
