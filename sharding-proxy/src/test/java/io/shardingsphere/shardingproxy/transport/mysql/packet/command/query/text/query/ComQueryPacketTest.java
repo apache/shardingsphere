@@ -26,6 +26,7 @@ import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -162,6 +163,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
         setTransactionType(TransactionType.LOCAL);
+        setConnectionStatus(ConnectionStatus.TRANSACTION);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -172,6 +174,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
+        setConnectionStatus(ConnectionStatus.TRANSACTION);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -183,12 +186,20 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
+        setConnectionStatus(ConnectionStatus.TRANSACTION);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
         assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+    }
+    
+    @SneakyThrows
+    private void setConnectionStatus(final ConnectionStatus status) {
+        Field field = backendConnection.getClass().getDeclaredField("status");
+        field.setAccessible(true);
+        field.set(backendConnection, status);
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {
