@@ -26,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -35,6 +37,7 @@ import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ShardingTransactionalSpringBootTest.class)
 @SpringBootApplication
+@ComponentScans({@ComponentScan("io.shardingsphere.transaction.aspect"), @ComponentScan("io.shardingsphere.transaction.fixture")})
 public class ShardingTransactionalSpringBootTest {
     
     @Autowired
