@@ -22,10 +22,8 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Connection;
@@ -44,7 +42,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhaojun
  * @author zhangliang
  */
-@NoArgsConstructor
 @Getter
 public final class BackendConnection implements AutoCloseable {
     
@@ -61,7 +58,11 @@ public final class BackendConnection implements AutoCloseable {
     @Setter
     private ConnectionStatus status = ConnectionStatus.INIT;
     
-    private TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
+    private TransactionType transactionType;
+    
+    public BackendConnection(final TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
     
     /**
      * Change transaction type of current channel.

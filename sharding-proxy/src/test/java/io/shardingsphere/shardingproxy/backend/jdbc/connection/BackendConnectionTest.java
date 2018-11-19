@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.SneakyThrows;
@@ -52,7 +53,7 @@ public class BackendConnectionTest {
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
-    private BackendConnection backendConnection = new BackendConnection();
+    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
     @SuppressWarnings("unchecked")
