@@ -96,7 +96,8 @@ public final class BackendHandlerFactory {
                                                            final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
         LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
         backendConnection.setLogicSchema(logicSchema);
-        return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO) ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
+        return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
+                ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
     

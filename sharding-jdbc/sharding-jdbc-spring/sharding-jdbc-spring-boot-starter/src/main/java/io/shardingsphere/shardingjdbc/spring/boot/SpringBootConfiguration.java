@@ -87,7 +87,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
         String dataSources = environment.getProperty(prefix + "names");
         for (String each : dataSources.split(",")) {
             try {
-                Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each, Map.class);
+                Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each.trim(), Map.class);
                 Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
                 dataSourceMap.put(each, dataSource);

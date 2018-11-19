@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
@@ -32,10 +31,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  *
  * @author duhongjun
  */
-public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler<Optional<PrimaryKeyExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<PrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
@@ -52,6 +51,6 @@ public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler {
         for (ParserRuleContext each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }
-        return Optional.<ExtractResult>of(result);
+        return Optional.of(result);
     }
 }

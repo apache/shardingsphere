@@ -214,7 +214,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         List<Element> broadcastTableRuleElements = DomUtils.getChildElementsByTagName(broadcastTableRulesElement, ShardingDataSourceBeanDefinitionParserTag.BROADCAST_TABLE_RULE_TAG);
         List<String> result = new LinkedList<>();
         for (Element each : broadcastTableRuleElements) {
-            result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TABLES_ATTRIBUTE));
+            result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TABLE_ATTRIBUTE));
         }
         return result;
     }

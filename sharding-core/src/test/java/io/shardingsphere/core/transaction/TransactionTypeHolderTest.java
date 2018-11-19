@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.transaction;
+package io.shardingsphere.core.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+
 import org.junit.Before;
 import org.junit.Test;
 

@@ -17,45 +17,49 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Rename index extract handler.
- * 
+ *
  * @author duhongjun
  */
-public final class RenameIndexExtractHandler implements ASTExtractHandler {
-    
+public final class RenameIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
         if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
         ParseTree oldIndexNode = renameIndexNode.get().getChild(2);
         if (!(oldIndexNode instanceof ParserRuleContext)) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
         ParseTree newIndexNode = renameIndexNode.get().getChild(4);
         if (!(newIndexNode instanceof ParserRuleContext)) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
-        result.getSqlTokens().add(getIndexToken((ParserRuleContext) oldIndexNode));
-        result.getSqlTokens().add(getIndexToken((ParserRuleContext) newIndexNode));
-        return Optional.<ExtractResult>of(result);
+        Collection<IndexExtractResult> result = new LinkedList<>();
+        result.add(getIndexToken((ParserRuleContext) newIndexNode));
+        result.add(getIndexToken((ParserRuleContext) oldIndexNode));
+        return result;
     }
-    
-    private IndexToken getIndexToken(final ParserRuleContext indexNode) {
-        return new IndexToken(indexNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNode.getText()), null);
+
+    private IndexExtractResult getIndexToken(final ParserRuleContext indexNode) {
+        String name = SQLUtil.getNameWithoutSchema(indexNode.getText());
+        return new IndexExtractResult(name, new IndexToken(indexNode.getStop().getStartIndex(), name, null));
     }
 }

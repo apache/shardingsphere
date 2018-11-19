@@ -15,13 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.transaction;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses(TransactionTypeHolderTest.class)
-public final class AllTransactionTests {
+/**
+ * Group by extract handler.
+ * 
+ * @author duhongjun
+ */
+public class GroupByExtractHandler extends OrderByExtractHandler {
+    public GroupByExtractHandler() {
+        ruleName = RuleName.GROUPBYCLAUSE;
+    }
 }
