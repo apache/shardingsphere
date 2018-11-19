@@ -15,24 +15,71 @@
  * </p>
  */
 
-
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.OrderByExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
 /**
- * xxx.
+ * Order by extract handler.
  * 
  * @author duhongjun
  */
-public class OrderByExtractHandler implements ASTExtractHandler {
+public class OrderByExtractHandler implements ASTExtractHandler<Collection<OrderByExtractResult>> {
+
+    protected RuleName ruleName;
+
+    public OrderByExtractHandler() {
+        ruleName = RuleName.ORDERBYCLAUSE;
+    }
 
     @Override
-    public Optional<ExtractResult> extract(ParserRuleContext ancestorNode) {
-        return null;
+    public Collection<OrderByExtractResult> extract(ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
+        if (!orderByParentNode.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<ParserRuleContext> orderByNodes = ASTUtils.getAllDescendantNodes(orderByParentNode.get(), RuleName.ORDERBYITEM);
+        if (orderByNodes.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Collection<OrderByExtractResult> result = new LinkedList<>();
+        for (ParserRuleContext each : orderByNodes) {
+            int count = each.getChildCount();
+            if (count == 0) {
+                continue;
+            }
+            String name = each.getChild(0).getText();
+            String ownerName = "";
+            int pos = name.lastIndexOf(".");
+            OrderDirection orderDirection = null;
+            if (0 >= pos) {
+                ownerName = name.substring(0, pos - 1);
+                name = name.substring(pos + 1);
+            }
+
+            if (1 < count) {
+                TerminalNode direction = (TerminalNode) each.getChild(1);
+                if (direction.getSymbol().getStopIndex() - direction.getSymbol().getStartIndex() == 3) {
+                    orderDirection = OrderDirection.DESC;
+                } else {
+                    orderDirection = OrderDirection.ASC;
+                }
+            }
+
+            result.add(new OrderByExtractResult(Optional.of(ownerName), Optional.of(name), orderDirection, null, new OrderByToken(orderByParentNode.get().getStop().getStopIndex())));
+        }
+        return result;
     }
 }
