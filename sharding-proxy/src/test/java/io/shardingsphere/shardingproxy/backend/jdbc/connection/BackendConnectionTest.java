@@ -68,6 +68,7 @@ public class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
     }
     
     @Test
@@ -76,6 +77,7 @@ public class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(10));
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
     }
     
     @Test
@@ -85,6 +87,7 @@ public class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
     }
     
     @Test
@@ -115,6 +118,7 @@ public class BackendConnectionTest {
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
     }
     
     private List<Connection> mockNewConnections(final int connectionSize) {
