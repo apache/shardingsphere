@@ -62,8 +62,18 @@ public final class BackendConnection implements AutoCloseable {
     @Setter
     private ConnectionStatus status = ConnectionStatus.INIT;
     
-    @Setter
     private TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
+    
+    /**
+     * Change transaction type of current channel.
+     *
+     * @param transactionType transaction type
+     */
+    public void setTransactionType(final TransactionType transactionType) {
+        if (ConnectionStatus.TRANSACTION != status) {
+            this.transactionType = transactionType;
+        }
+    }
     
     /**
      * Get connections of current thread datasource.
