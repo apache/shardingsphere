@@ -48,7 +48,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Getter
 public final class BackendConnection implements AutoCloseable {
     
-    @Setter
     private LogicSchema logicSchema;
     
     private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
@@ -72,6 +71,17 @@ public final class BackendConnection implements AutoCloseable {
     public void setTransactionType(final TransactionType transactionType) {
         if (ConnectionStatus.TRANSACTION != status) {
             this.transactionType = transactionType;
+        }
+    }
+    
+    /**
+     * Change logic schema of current channel.
+     *
+     * @param logicSchema logic schema
+     */
+    public void setLogicSchema(final LogicSchema logicSchema) {
+        if (ConnectionStatus.TRANSACTION != status) {
+            this.logicSchema = logicSchema;
         }
     }
     
