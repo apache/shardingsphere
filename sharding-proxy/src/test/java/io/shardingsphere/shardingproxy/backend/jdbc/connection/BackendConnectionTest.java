@@ -38,6 +38,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -122,13 +123,18 @@ public class BackendConnectionTest {
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
     }
     
-    private List<Connection> mockNewConnections(final int connectionSize) {
-        List<Connection> result = new ArrayList<>();
-        for (int i = 0; i < connectionSize; i++) {
-            Connection connection = mock(Connection.class);
-            result.add(connection);
+    @Test
+    public void assertAutoCloseConnection() throws SQLException {
+        BackendConnection actual;
+        try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
+            backendConnection.setLogicSchema(logicSchema);
+            setCachedConnections(backendConnection, "ds1", 10);
+            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
+            backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+            actual = backendConnection;
         }
-        return result;
+        assertThat(actual.getConnectionSize(), is(0));
+        assertTrue(actual.getCachedConnections().isEmpty());
     }
     
     @SneakyThrows
@@ -138,5 +144,14 @@ public class BackendConnectionTest {
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
         field.setAccessible(true);
         field.set(backendConnection, cachedConnections);
+    }
+    
+    private List<Connection> mockNewConnections(final int connectionSize) {
+        List<Connection> result = new ArrayList<>();
+        for (int i = 0; i < connectionSize; i++) {
+            Connection connection = mock(Connection.class);
+            result.add(connection);
+        }
+        return result;
     }
 }
