@@ -173,8 +173,9 @@ public final class BackendConnection implements AutoCloseable {
             }
         }
         if (!exceptions.isEmpty()) {
-            log.warn("Failed cancel statement", exceptions);
+            log.warn("Failed to cancel statement due to {}", exceptions);
         }
+        cachedStatements.clear();
     }
     
     @Override
