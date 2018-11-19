@@ -91,7 +91,13 @@ public enum RuleName {
     
     ALIAS("Alias"),
     
-    EXPR("Expr")
+    EXPR("Expr"),
+    
+    GROUPBYCLAUSE("GroupByClause"),
+    
+    ORDERBYCLAUSE("OrderByClause"),
+    
+    ORDERBYITEM("OrderByItem"),
     ;
     
     private final String name;
