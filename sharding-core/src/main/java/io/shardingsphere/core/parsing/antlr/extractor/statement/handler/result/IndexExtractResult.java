@@ -15,16 +15,22 @@
  * </p>
  */
 
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.convertor;
-
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Handler result fillor.
+ * Index extract result.
  * 
  * @author duhongjun
  */
-public interface HandlerResultFillor {
-    void fill(SQLStatement statement);
+@RequiredArgsConstructor
+@Getter
+public class IndexExtractResult implements ExtractResult {
+    private final String name;
+
+    private final IndexToken token;
+
 }
