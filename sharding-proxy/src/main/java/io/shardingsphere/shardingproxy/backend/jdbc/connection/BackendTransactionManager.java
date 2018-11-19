@@ -54,6 +54,10 @@ public class BackendTransactionManager {
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
+        if (TransactionOperationType.BEGIN == operationType && ConnectionStatus.TRANSACTION != connection.getStatus()) {
+            connection.setStatus(ConnectionStatus.TRANSACTION);
+            connection.getCachedConnections().clear();
+        }
         if (TransactionType.LOCAL == transactionType) {
             doLocalTransaction(operationType);
         } else if (TransactionType.XA == transactionType) {
@@ -64,7 +68,7 @@ public class BackendTransactionManager {
     private void doLocalTransaction(final TransactionOperationType operationType) throws SQLException {
         switch (operationType) {
             case BEGIN:
-                setAutoCommit(false);
+                setAutoCommit();
                 break;
             case COMMIT:
                 commit();
@@ -76,12 +80,8 @@ public class BackendTransactionManager {
         }
     }
     
-    private void setAutoCommit(final boolean autoCommit) {
-        if (!autoCommit) {
-            connection.setStatus(ConnectionStatus.TRANSACTION);
-        }
-        connection.getCachedConnections().clear();
-        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+    private void setAutoCommit() {
+        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
     }
     
     private void commit() throws SQLException {
