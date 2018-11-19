@@ -68,7 +68,9 @@ public final class BackendConnection implements AutoCloseable {
     
     private ConnectionStatus status = ConnectionStatus.INIT;
     
-    private final TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
+    @Getter
+    @Setter
+    private TransactionType transactionType = GlobalRegistry.getInstance().getTransactionType();
     
     /**
      * Get connection size.

@@ -70,14 +70,14 @@ public final class ComQueryPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    @Mock
-    private BackendConnection backendConnection;
+    private BackendConnection backendConnection = new BackendConnection();
     
     @Mock
     private FrontendHandler frontendHandler;
     
     @BeforeClass
     public static void init() {
+        setTransactionType(TransactionType.LOCAL);
         ShardingTransactionHandlerRegistry.load();
     }
     
@@ -108,13 +108,13 @@ public final class ComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setTransactionType(final TransactionType transactionType) {
+    private static void setTransactionType(final TransactionType transactionType) {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), getShardingProperties(transactionType));
     }
     
-    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
+    private static ShardingProperties getShardingProperties(final TransactionType transactionType) {
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
         return new ShardingProperties(props);
@@ -171,7 +171,7 @@ public final class ComQueryPacketTest {
     
     @Test
     public void assertExecuteTCLWithXATransaction() {
-        setTransactionType(TransactionType.XA);
+        backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -181,8 +181,8 @@ public final class ComQueryPacketTest {
     }
     
     @Test
-    public void assertExecuteRollbackWithXATransaction() throws SQLException {
-        setTransactionType(TransactionType.XA);
+    public void assertExecuteRollbackWithXATransaction() {
+        backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
