@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,15 +30,4 @@ import lombok.RequiredArgsConstructor;
 public final class DropPrimaryKeyExtractResult implements ExtractResult {
     
     private final boolean dropPrimaryKey;
-    
-    /**
-     * Inject drop primary key to SQLStatement.
-     * 
-     * @param statement SQL statement
-     */
-    @Override
-    public void fill(final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        alterStatement.setDropPrimaryKey(dropPrimaryKey);
-    }
 }

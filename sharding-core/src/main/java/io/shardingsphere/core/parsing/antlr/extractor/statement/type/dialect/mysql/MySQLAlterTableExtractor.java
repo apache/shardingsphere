@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.DropPrimaryKeyExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameIndexExtractHandler;
@@ -31,8 +30,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -57,22 +54,14 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
     }
     
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement result = new MySQLAlterTableStatement();
-        result.setTableMetaDataMap(shardingTableMetaData);
-        return result;
-    }
-    
-    @Override
     protected void adjustColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-        MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement) alterStatement;
-        if (mysqlAlter.getPositionChangedColumns().isEmpty()) {
+        if (alterStatement.getPositionChangedColumns().isEmpty()) {
             return;
         }
-        if (mysqlAlter.getPositionChangedColumns().size() > 1) {
-            Collections.sort(mysqlAlter.getPositionChangedColumns());
+        if (alterStatement.getPositionChangedColumns().size() > 1) {
+            Collections.sort(alterStatement.getPositionChangedColumns());
         }
-        for (ColumnPosition each : mysqlAlter.getPositionChangedColumns()) {
+        for (ColumnPosition each : alterStatement.getPositionChangedColumns()) {
             if (null != each.getFirstColumn()) {
                 adjustFirst(newColumnMeta, each.getFirstColumn());
             } else {

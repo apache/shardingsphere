@@ -17,18 +17,20 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.RenameTableExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 
 /**
  * Rename table extract handler.
  *
  * @author duhongjun
  */
-public final class RenameTableExtractHandler implements ASTExtractHandler {
+public final class RenameTableExtractHandler implements ASTExtractHandler<Optional<ExtractResult>> {
     
     @Override
     public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -36,6 +38,6 @@ public final class RenameTableExtractHandler implements ASTExtractHandler {
         if (!renameTableNode.isPresent() || 0 == renameTableNode.get().getChildCount()) {
             return Optional.absent();
         }
-        return Optional.<ExtractResult>of(new RenameTableExtractResult(renameTableNode.get().getChild(renameTableNode.get().getChildCount() - 1).getText()));
+        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename table");
     }
 }

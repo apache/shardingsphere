@@ -15,26 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL alter table statement.
+ * Order by extract result.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString(callSuper = true)
-public final class MySQLAlterTableStatement extends AlterTableStatement {
+public final class OrderByExtractResult implements ExtractResult {
     
-    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
+    private final Optional<String> owner;
+    
+    private final Optional<String> name;
+    
+    private final OrderDirection orderDirection;
+    
+    private final OrderDirection nullOrderDirection;
+    
+    private final OrderByToken orderByToken;
 }

@@ -24,7 +24,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
@@ -32,10 +31,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  *
  * @author duhongjun
  */
-public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler<Optional<DropPrimaryKeyExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<DropPrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> dropConstraintNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
         if (!dropConstraintNode.isPresent()) {
             return Optional.absent();
@@ -44,6 +43,6 @@ public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandl
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.<ExtractResult>of(new DropPrimaryKeyExtractResult(true));
+        return Optional.of(new DropPrimaryKeyExtractResult(true));
     }
 }

@@ -17,32 +17,26 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Rename table result.
- *
+ * Table extract result.
+ * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class RenameTableExtractResult implements ExtractResult {
+public class TableExtractResult implements ExtractResult {
     
-    private final String newTableName;
+    private final String name;
     
-    /**
-     * Inject new table name to SQLStatement.
-     * 
-     * @param statement SQL statement
-     */
-    @Override
-    public void fill(final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        if (null != newTableName) {
-            alterStatement.setNewTableName(newTableName);
-        }
-    }
+    private final Optional<String> alias;
+    
+    private final Optional<String> schemaName;
+    
+    private final TableToken token;
 }

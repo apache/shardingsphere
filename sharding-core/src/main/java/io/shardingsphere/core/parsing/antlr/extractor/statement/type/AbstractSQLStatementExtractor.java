@@ -17,41 +17,49 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFillerRegistry;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-
 /**
  * Abstract SQL statement extractor.
- * 
+ *
  * @author duhongjun
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private final Collection<ASTExtractHandler> extractHandlers = new LinkedList<>();
+    private final Collection<ASTExtractHandler<?>> extractHandlers = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement(shardingTableMetaData);
-        List<ExtractResult> extractResults = new LinkedList<>();
+        List<Object> extractResults = new LinkedList<>();
         for (ASTExtractHandler each : extractHandlers) {
-            Optional<ExtractResult> extractResult = each.extract(rootNode);
-            if (extractResult.isPresent()) {
-                extractResults.add(extractResult.get());
+            Object extractResult = each.extract(rootNode);
+            if (extractResult instanceof Optional) {
+                if (((Optional) extractResult).isPresent()) {
+                    extractResults.add(((Optional) extractResult).get());
+                }
+            } else if (extractResult instanceof Collection) {
+                if (!((Collection) extractResult).isEmpty()) {
+                    extractResults.add(extractResult);
+                }
             }
         }
-        for (ExtractResult each : extractResults) {
-            each.fill(result);
+        for (Object each : extractResults) {
+            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
+            if (null != filler) {
+                filler.fill(each, result);
+            }
         }
         postExtract(result);
         return result;
