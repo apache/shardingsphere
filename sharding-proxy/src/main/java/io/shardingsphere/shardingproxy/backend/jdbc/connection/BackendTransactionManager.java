@@ -91,8 +91,8 @@ public class BackendTransactionManager {
         if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(commitConnections());
-            throwSQLExceptionIfNecessary(exceptions);
             connection.setStatus(ConnectionStatus.TERMINATED);
+            throwSQLExceptionIfNecessary(exceptions);
         }
     }
     
@@ -100,8 +100,8 @@ public class BackendTransactionManager {
         if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(rollbackConnections());
-            throwSQLExceptionIfNecessary(exceptions);
             connection.setStatus(ConnectionStatus.TERMINATED);
+            throwSQLExceptionIfNecessary(exceptions);
         }
     }
     
