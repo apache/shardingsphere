@@ -23,9 +23,11 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,10 +59,13 @@ class MockConnectionUtil {
      * @param connectionSize connection size
      * @return list of connection
      */
-    static List<Connection> mockNewConnections(final int connectionSize) {
+    static List<Connection> mockNewConnections(final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>();
         for (int i = 0; i < connectionSize; i++) {
             Connection connection = mock(Connection.class);
+            doThrow(SQLException.class).when(connection).rollback();
+            doThrow(SQLException.class).when(connection).commit();
+            doThrow(SQLException.class).when(connection).close();
             result.add(connection);
         }
         return result;
