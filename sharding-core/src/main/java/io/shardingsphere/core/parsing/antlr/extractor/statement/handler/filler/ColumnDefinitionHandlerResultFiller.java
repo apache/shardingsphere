@@ -64,7 +64,7 @@ public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerRe
             ColumnDefinition columnDefinition = new ColumnDefinition(columnExtractResult.getName(), columnExtractResult.getType(), columnExtractResult.getLength(), columnExtractResult.isPrimaryKey());
             if (!columnExtractResult.isAdd()) {
                 alterTableStatement.getUpdateColumns().put(columnExtractResult.getName(), columnDefinition);
-            } else if (!alterTableStatement.findColumnDefinition(columnExtractResult.getName(), shardingTableMetaData).isPresent()) {
+            } else if (!alterTableStatement.findColumnDefinitionFromMetaData(columnExtractResult.getName(), shardingTableMetaData).isPresent()) {
                 alterTableStatement.getAddColumns().add(columnDefinition);
             }
         }

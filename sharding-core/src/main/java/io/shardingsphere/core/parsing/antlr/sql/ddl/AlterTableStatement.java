@@ -61,18 +61,18 @@ public class AlterTableStatement extends DDLStatement {
      * @return column definition
      */
     public Optional<ColumnDefinition> getColumnDefinitionByName(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
-        Optional<ColumnDefinition> result = findColumnDefinition(columnName, shardingTableMetaData);
+        Optional<ColumnDefinition> result = findColumnDefinitionFromMetaData(columnName, shardingTableMetaData);
         return result.isPresent() ? result : findColumnDefinitionFromCurrentAddClause(columnName);
     }
     
     /**
-     * Find column definition.
+     * Find column definition from meta data.
      *
      * @param columnName column name
      * @param shardingTableMetaData sharding table meta data
      * @return column definition
      */
-    public Optional<ColumnDefinition> findColumnDefinition(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+    public Optional<ColumnDefinition> findColumnDefinitionFromMetaData(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
         if (!shardingTableMetaData.containsTable(getTables().getSingleTableName())) {
             return Optional.absent();
         }
