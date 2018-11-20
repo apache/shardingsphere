@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author zhaojun
  */
-public class MockConnectionUtil {
+class MockConnectionUtil {
     
     /**
      * Mock set cached connections.
@@ -43,7 +43,7 @@ public class MockConnectionUtil {
      * @param connectionSize connection size
      */
     @SneakyThrows
-    public static void setCachedConnections(final BackendConnection backendConnection, final String dsName, final int connectionSize) {
+    static void setCachedConnections(final BackendConnection backendConnection, final String dsName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(dsName, mockNewConnections(connectionSize));
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
@@ -51,7 +51,13 @@ public class MockConnectionUtil {
         field.set(backendConnection, cachedConnections);
     }
     
-    private static List<Connection> mockNewConnections(final int connectionSize) {
+    /**
+     * Mock new connections.
+     *
+     * @param connectionSize connection size
+     * @return list of connection
+     */
+    static List<Connection> mockNewConnections(final int connectionSize) {
         List<Connection> result = new ArrayList<>();
         for (int i = 0; i < connectionSize; i++) {
             Connection connection = mock(Connection.class);
