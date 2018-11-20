@@ -110,10 +110,17 @@ tables:
       inline:
         algorithmExpression: t_order_item_$->{order_id % 2}
         shardingColumn: order_id
+bindingTables:
+  - t_order,t_order_item
+broadcastTables:
+  - t_config
+  
+defaultDataSourceName: ds_0
 defaultDatabaseStrategy:
   inline:
     algorithmExpression: ds_$->{user_id % 2}
-    shardingColumn: user_id      
+    shardingColumn: user_id
+    
 masterSlaveRules: {}
 ```
 

@@ -36,15 +36,16 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
@@ -131,15 +132,16 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds_0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ms_ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
@@ -221,7 +223,11 @@ shardingRule:
   - <logic_table_name1, logic_table_name2, ...> 
   - <logic_table_name3, logic_table_name4, ...>
   - <logic_table_name_x, logic_table_name_y, ...>
-  
+  bindingTables: #广播表规则列表
+  - table_name1
+  - table_name2
+  - table_name_x
+    
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: #默认数据库分片策略，同分库策略
   defaultTableStrategy: #默认表分片策略，同分库策略

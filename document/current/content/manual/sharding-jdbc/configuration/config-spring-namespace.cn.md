@@ -74,6 +74,12 @@ weight = 4
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="t_order" />
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>
@@ -247,6 +253,12 @@ weight = 4
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
             </sharding:table-rules>
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="t_order" />
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>
@@ -289,6 +301,7 @@ weight = 4
 | data-source-names                 | 属性  | 数据源Bean列表，多个Bean以逗号分隔                                                                         | 
 | table-rules                       | 标签  | 表分片规则配置对象                                                                                        |
 | binding-table-rules (?)           | 标签  | 绑定表规则列表                                                                                            |
+| broadcast-table-rules (?)         | 标签  | 广播表规则列表                                                                                            |
 | default-data-source-name (?)      | 属性  | 未配置分片规则的表将通过默认数据源定位                                                                       |
 | default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库                                    |
 | default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表                                       |
@@ -323,6 +336,18 @@ weight = 4
 | *名称*       | *类型* | *说明*                         |
 | ------------ | ----- | ----------------------------- |
 | logic-tables | 属性  | 绑定规则的逻辑表名，多表以逗号分隔 |
+
+#### \<sharding:broadcast-table-rules />
+
+| *名称*                    | *类型* | *说明*   |
+| ------------------------ | ----- | -------- |
+| broadcast-table-rule (+) | 标签  | 广播表规则 |
+
+#### \<sharding:broadcast-table-rule />
+
+| *名称* | *类型* | *说明          |
+| ------ | ----- | --------------- |
+| table | 属性   | 广播规则的表名 |
 
 #### \<sharding:standard-strategy />
 

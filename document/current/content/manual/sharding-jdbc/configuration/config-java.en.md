@@ -14,6 +14,7 @@ weight = 1
          shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
          shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
          shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+         shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
@@ -70,6 +71,7 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
@@ -145,6 +147,7 @@ weight = 1
 | ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------- |
 | tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                  |
 | bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                      |
+| broadcastTables (?)                       | Collection\<String\>                       | Binding table groups                                                                      |
 | defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                 |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                   |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                      |
