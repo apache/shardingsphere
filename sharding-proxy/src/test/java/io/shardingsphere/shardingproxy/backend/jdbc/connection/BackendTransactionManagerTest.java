@@ -64,8 +64,13 @@ public class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertXATransactionCommit() {
-    
+    public void assertXATransactionCommit() throws SQLException {
+        backendConnection.setTransactionType(TransactionType.XA);
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        assertTrue(backendConnection.getMethodInvocations().isEmpty());
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
