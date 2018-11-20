@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -67,8 +68,9 @@ public class BackendTransactionManagerTest {
         try {
             backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
         } catch (SQLException ex) {
-            // ignore
+            assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
@@ -90,8 +92,9 @@ public class BackendTransactionManagerTest {
         try {
             backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
         } catch (SQLException ex) {
-            // ignore
+            assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
