@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 

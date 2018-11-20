@@ -15,17 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.registry;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.CollectionHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.ColumnDefinitionHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.DropColumnHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.DropPrimaryKeyHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.IndexHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.PrimaryKeyHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.TableHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.TableJoinHandlerResultFiller;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
