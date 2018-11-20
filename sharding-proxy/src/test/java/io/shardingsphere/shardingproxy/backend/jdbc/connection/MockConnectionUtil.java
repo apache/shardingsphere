@@ -60,7 +60,7 @@ class MockConnectionUtil {
      * @param connectionSize connection size
      * @return list of connection
      */
-    static List<Connection> mockNewConnections(final int connectionSize) throws SQLException {
+    static List<Connection> mockNewConnections(final int connectionSize) {
         List<Connection> result = new ArrayList<>();
         for (int i = 0; i < connectionSize; i++) {
             result.add(mock(Connection.class));
@@ -68,16 +68,11 @@ class MockConnectionUtil {
         return result;
     }
     
-    static void mockThrowException(final Collection<Connection> connections) {
-        try {
-            for (Connection each : connections) {
-                doThrow(SQLException.class).when(each).commit();
-                doThrow(SQLException.class).when(each).rollback();
-                doThrow(SQLException.class).when(each).close();
-            }
-            
-        } catch (Exception ex) {
-            // ignore
+    static void mockThrowException(final Collection<Connection> connections) throws SQLException {
+        for (Connection each : connections) {
+            doThrow(SQLException.class).when(each).commit();
+            doThrow(SQLException.class).when(each).rollback();
+            doThrow(SQLException.class).when(each).close();
         }
     }
 }
