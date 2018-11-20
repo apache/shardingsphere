@@ -5,4 +5,5 @@
     
     <import resource="META-INF/shardingTransaction.xml"/>
     <bean id="testService" class="io.shardingsphere.transaction.fixture.ShardingTransactionalTestService"/>
+    <bean id="dataSource" class="io.shardingsphere.transaction.fixture.FixedDataSource"/>
 </beans>

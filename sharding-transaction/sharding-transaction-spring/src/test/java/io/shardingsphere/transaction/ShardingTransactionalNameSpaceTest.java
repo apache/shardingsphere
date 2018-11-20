@@ -25,13 +25,9 @@ import io.shardingsphere.transaction.fixture.FixedDataSource;
 import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -48,11 +44,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = ShardingTransactionalSpringBootTest.class)
-@SpringBootApplication
-@ComponentScans({@ComponentScan("io.shardingsphere.transaction.aspect"), @ComponentScan("io.shardingsphere.transaction.fixture")})
-public class ShardingTransactionalSpringBootTest {
+@ContextConfiguration(locations = "classpath:shardingTransactionTest.xml")
+public class ShardingTransactionalNameSpaceTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
     private ShardingTransactionalTestService testService;

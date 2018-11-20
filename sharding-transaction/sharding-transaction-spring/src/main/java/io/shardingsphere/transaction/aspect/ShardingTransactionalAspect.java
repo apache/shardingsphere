@@ -17,18 +17,24 @@
 
 package io.shardingsphere.transaction.aspect;
 
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
-import io.shardingsphere.transaction.annotation.ShardingTransactional.ShardingEnvironment;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
 
 /**
  * Sharding transaction aspect.
@@ -39,6 +45,21 @@ import java.lang.reflect.Method;
 @Component
 @Order(2147483646)
 public final class ShardingTransactionalAspect {
+    
+    private static final String SET_TRANSACTION_TYPE_SQL = "SET TRANSACTION_TYPE=%s";
+    
+    private DataSource dataSource;
+    
+    /**
+     * Inject dataSource of Sharding-Proxy.
+     * This dataSource required when Switch transaction type for Sharding-Proxy.
+     *
+     * @param dataSources Sharding-Proxy datasource.
+     */
+    @Autowired(required = false)
+    public void setDataSource(final DataSource[] dataSources) {
+        this.dataSource = dataSources[0];
+    }
     
     /**
      * ShardingTransationnal AOP pointcut.
@@ -51,10 +72,26 @@ public final class ShardingTransactionalAspect {
     @Before(value = "shardingTransactionalPointCut()")
     public void setTransactionTypeBeforeTransaction(final JoinPoint joinPoint) {
         ShardingTransactional shardingTransactional = getAnnotation(joinPoint);
-        if (ShardingEnvironment.JDBC == shardingTransactional.environment()) {
-            TransactionTypeHolder.set(shardingTransactional.type());
+        
+        switch (shardingTransactional.environment()) {
+            case JDBC:
+                TransactionTypeHolder.set(shardingTransactional.type());
+                break;
+            case PROXY:
+                if (null == dataSource) {
+                    throw new ShardingException(String.format("No DataSource be injected while executing transactional method %s.%s. Please make sure there are a data source bean in Spring",
+                        joinPoint.getTarget().getClass().getName(), joinPoint.getSignature().getName()));
+                }
+                try (Connection connection = dataSource.getConnection();
+                    Statement statement = connection.createStatement()) {
+                    statement.execute(String.format(SET_TRANSACTION_TYPE_SQL, shardingTransactional.type().name()));
+                } catch (SQLException e) {
+                    throw new ShardingException("Switch transaction type for sharding-proxy failed: ", e);
+                }
+                break;
+            default:
+            
         }
-        // TODO :yangyi send set transaction type command/SQL to sharding-proxy
     }
     
     private ShardingTransactional getAnnotation(final JoinPoint joinPoint) {
@@ -66,4 +103,5 @@ public final class ShardingTransactionalAspect {
         }
         return result;
     }
+    
 }
