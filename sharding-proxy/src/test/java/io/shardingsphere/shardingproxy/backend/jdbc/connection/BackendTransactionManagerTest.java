@@ -19,6 +19,8 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -35,6 +37,11 @@ public class BackendTransactionManagerTest {
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     private BackendTransactionManager backendTransactionManager = new BackendTransactionManager(backendConnection);
+    
+    @BeforeClass
+    public static void beforeClass() {
+        ShardingTransactionHandlerRegistry.load();
+    }
     
     @Test
     public void assertLocalTransactionCommit() throws SQLException {
