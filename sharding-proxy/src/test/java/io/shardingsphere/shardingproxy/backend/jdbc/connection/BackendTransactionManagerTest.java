@@ -52,7 +52,11 @@ public class BackendTransactionManagerTest {
         assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
         assertTrue(backendConnection.getCachedConnections().isEmpty());
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+        try {
+            backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+        } catch (SQLException ex) {
+            // ignore
+        }
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).commit();
         verify(iterator.next()).commit();
@@ -63,7 +67,11 @@ public class BackendTransactionManagerTest {
     public void assertLocalTransactionRollback() throws SQLException {
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+        try {
+            backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+        } catch (SQLException ex) {
+            // ignore
+        }
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).rollback();
         verify(iterator.next()).rollback();
