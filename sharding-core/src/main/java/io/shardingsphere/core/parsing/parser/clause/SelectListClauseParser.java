@@ -98,6 +98,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
     }
     
+    private boolean isDistinctSelectItem() {
+        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && !lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+    }
+    
+    
     private SelectItem parseStarSelectItem() {
         lexerEngine.nextToken();
         aliasExpressionParser.parseSelectItemAlias();
