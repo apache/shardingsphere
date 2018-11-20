@@ -17,13 +17,41 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class BackendTransactionManagerTest {
     
-    @Test
-    public void assertLocalTransactionCommit() {
+    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
+    private BackendTransactionManager backendTransactionManager = new BackendTransactionManager(backendConnection);
+    
+    @Test
+    public void assertLocalTransactionCommit() throws SQLException {
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getMethodInvocations().size(), is(1));
+        assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
+        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+    }
+    
+    private List<Connection> mockNewConnections(final int connectionSize) {
+        List<Connection> result = new ArrayList<>();
+        for (int i = 0; i < connectionSize; i++) {
+            Connection connection = mock(Connection.class);
+            result.add(connection);
+        }
+        return result;
     }
     
     @Test
