@@ -50,7 +50,7 @@ public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerRe
     private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
         String oldName = columnExtractResult.getOldName();
         if (null != oldName) {
-            Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName, shardingTableMetaData);
+            Optional<ColumnDefinition> oldDefinition = alterTableStatement.findColumnDefinition(oldName, shardingTableMetaData);
             if (!oldDefinition.isPresent()) {
                 return;
             }

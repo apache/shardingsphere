@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class AlterTableStatement extends DDLStatement {
+public final class AlterTableStatement extends DDLStatement {
     
     private final List<ColumnDefinition> addColumns = new LinkedList<>();
     
@@ -54,13 +54,13 @@ public class AlterTableStatement extends DDLStatement {
     private TableMetaData tableMetaData;
     
     /**
-     * Get column definition.
+     * Find column definition.
      *
      * @param columnName column name
      * @param shardingTableMetaData sharding table meta data
      * @return column definition
      */
-    public Optional<ColumnDefinition> getColumnDefinitionByName(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+    public Optional<ColumnDefinition> findColumnDefinition(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
         Optional<ColumnDefinition> result = findColumnDefinitionFromMetaData(columnName, shardingTableMetaData);
         return result.isPresent() ? result : findColumnDefinitionFromCurrentAddClause(columnName);
     }

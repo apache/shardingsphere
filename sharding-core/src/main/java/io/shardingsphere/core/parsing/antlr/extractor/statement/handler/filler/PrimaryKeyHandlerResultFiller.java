@@ -47,7 +47,7 @@ public final class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFi
     
     private void fillAlter(final PrimaryKeyExtractResult primaryKeyExtractResult, final AlterTableStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         for (String each : primaryKeyExtractResult.getPrimaryKeyColumnNames()) {
-            Optional<ColumnDefinition> updateColumn = statement.getColumnDefinitionByName(each, shardingTableMetaData);
+            Optional<ColumnDefinition> updateColumn = statement.findColumnDefinition(each, shardingTableMetaData);
             if (updateColumn.isPresent()) {
                 updateColumn.get().setPrimaryKey(true);
                 statement.getUpdateColumns().put(each, updateColumn.get());
