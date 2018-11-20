@@ -158,6 +158,7 @@ public class BackendConnectionTest {
             backendConnection.setTransactionType(TransactionType.XA);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
+            MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.setStatus(ConnectionStatus.TERMINATED);
             mockResultSetAndStatement(backendConnection);
