@@ -19,6 +19,7 @@ package io.shardingsphere.core.routing;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import io.shardingsphere.api.HintManager;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -37,16 +38,12 @@ import java.util.*;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class DatabaseTest {
     
     private Map<String, DataSource> dataSourceMap;
     
     private ShardingRule shardingRule;
-
-    public static final String SHARDING_PREFIX = "userdb";
-    public static final String SHARDING_TABLE = "user";
     
     @Before
     public void setRouteRuleContext() {
@@ -100,45 +97,46 @@ public class DatabaseTest {
     public void assertDatabaseSelectSQLPagination() {
         String originSql = "select user_id from tbl_pagination limit 0,5";
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, null).route(originSql);
-        SelectStatement stmt = (SelectStatement) actual.getSqlStatement(); 
-        assertTrue(stmt.getLimit().getOffsetValue() == 0);
-        assertTrue(stmt.getLimit().getRowCountValue() == 5);
+        SelectStatement stmt = (SelectStatement) actual.getSqlStatement();
+        assertThat(stmt.getLimit().getOffsetValue() , is(0));
+        assertThat(stmt.getLimit().getRowCountValue() ,is(5));
 
         originSql = "select user_id from tbl_pagination limit 5,5";
         actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, null).route(originSql);
         stmt = (SelectStatement) actual.getSqlStatement();
-        assertTrue(stmt.getLimit().getOffsetValue() == 5);
-        assertTrue(stmt.getLimit().getRowCountValue() == 5);
+        assertThat(stmt.getLimit().getOffsetValue() , is(5));
+        assertThat(stmt.getLimit().getRowCountValue() ,is(5));
     }
 
     @Test
     public void assertDatabasePrepareSelectSQLPagination() {
+        final String SHARDING_PREFIX = "userdb";
+        final String SHARDING_TABLE = "user";
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put(SHARDING_PREFIX + "1", null);
         dataSourceMap.put(SHARDING_PREFIX + "2", null);
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable(SHARDING_TABLE);
         tableRuleConfig.setActualDataNodes(SHARDING_PREFIX + "${1..2}." + SHARDING_TABLE);
-        // 配置分库策略
         tableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("city_id", SHARDING_PREFIX+"${city_id % 2 + 1}"));
-
-        // 配置路由规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        Properties properties = new Properties();
-        properties.setProperty("sql.show", "true");
+        ShardingRule rule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         
-        String originSql = "select city_id from user where city_id in (13,173) limit 0,10";
-        SQLRouteResult actual = new PreparedStatementRoutingEngine(originSql, shardingRule, null, DatabaseType.MySQL, false, null).route(null);
+        String originSql = "select city_id from user where city_id in (?,?) limit 5,10";
+        SQLRouteResult actual = new PreparedStatementRoutingEngine(originSql, rule, null, DatabaseType.MySQL, false, null).route(Lists.<Object>newArrayList(13,173));
         SelectStatement stmt = (SelectStatement) actual.getSqlStatement();
-        assertTrue(stmt.getLimit().getOffsetValue() == 0);
-        assertTrue(stmt.getLimit().getRowCountValue() == 10);
+        assertThat(stmt.getLimit().getOffsetValue() , is(5));
+        assertThat(stmt.getLimit().getRowCountValue() ,is(10));
+        assertThat(actual.getRouteUnits().size(), is(1));
 
-        originSql = "select city_id from user where city_id in (89,94) limit 0,10";
-        actual = new PreparedStatementRoutingEngine(originSql, shardingRule, null, DatabaseType.MySQL, false, null).route(null);
+        originSql = "select city_id from user where city_id in (?,?) limit 5,10";
+        actual = new PreparedStatementRoutingEngine(originSql, rule, null, DatabaseType.MySQL, false, null).route(Lists.<Object>newArrayList(89,84));
         stmt = (SelectStatement) actual.getSqlStatement();
-        assertTrue(stmt.getLimit().getOffsetValue() == 0);
-        assertTrue(stmt.getLimit().getRowCountValue() == 10);
+
+        assertThat(stmt.getLimit().getOffsetValue() , is(5));
+        assertThat(stmt.getLimit().getRowCountValue() ,is(10));
+        assertThat(actual.getRouteUnits().size(), is(2));
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
