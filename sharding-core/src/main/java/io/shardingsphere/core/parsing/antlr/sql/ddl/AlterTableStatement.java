@@ -23,6 +23,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedHashMap;
@@ -35,9 +36,12 @@ import java.util.Map;
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class AlterTableStatement extends DDLStatement {
+    
+    private final ShardingTableMetaData tableMetaDataMap;
     
     private final List<ColumnDefinition> addColumns = new LinkedList<>();
     
@@ -45,13 +49,11 @@ public class AlterTableStatement extends DDLStatement {
     
     private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
     
+    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
+    
     private boolean dropPrimaryKey;
     
     private String newTableName;
-    
-    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
-    
-    private ShardingTableMetaData tableMetaDataMap;
     
     private TableMetaData tableMetaData;
     

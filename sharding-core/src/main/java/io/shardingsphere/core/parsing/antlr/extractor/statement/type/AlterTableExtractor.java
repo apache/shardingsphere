@@ -38,7 +38,7 @@ import java.util.List;
  */
 public abstract class AlterTableExtractor extends DDLStatementExtractor {
     
-    public AlterTableExtractor() {
+    protected AlterTableExtractor() {
         addExtractHandler(new TableNamesExtractHandler());
         addExtractHandler(new RenameTableExtractHandler());
         addExtractHandler(new DropColumnExtractHandler());
@@ -46,9 +46,7 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
     
     @Override
     protected final SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement result = new AlterTableStatement();
-        result.setTableMetaDataMap(shardingTableMetaData);
-        return result;
+        return new AlterTableStatement(shardingTableMetaData);
     }
     
     @Override
