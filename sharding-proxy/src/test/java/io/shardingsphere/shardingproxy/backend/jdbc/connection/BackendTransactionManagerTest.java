@@ -91,6 +91,18 @@ public class BackendTransactionManagerTest {
     }
     
     @Test
+    public void assertLocalTransactionRollbackWithException() throws SQLException {
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
+        MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
+        try {
+            backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+        } catch (SQLException ex) {
+            // ignore
+        }
+    }
+    
+    @Test
     public void assertXATransactionCommit() throws SQLException {
         backendConnection.setTransactionType(TransactionType.XA);
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
