@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class MethodInvocation {
+class MethodInvocation {
     
     @Getter
     private final Method method;
@@ -43,7 +43,7 @@ public class MethodInvocation {
      * @param target target object
      */
     @SneakyThrows
-    public void invoke(final Object target) {
+    void invoke(final Object target) {
         method.invoke(target, arguments);
     }
 }
