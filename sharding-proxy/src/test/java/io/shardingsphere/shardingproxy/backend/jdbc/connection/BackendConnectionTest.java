@@ -29,10 +29,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -45,6 +48,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -92,6 +97,26 @@ public class BackendConnectionTest {
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
+    }
+    
+    @Test
+    public void assertGetConnectionWithMethodInvocation() throws SQLException {
+        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        setMethodInvocation();
+        List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
+        verify(backendConnection.getMethodInvocations().iterator().next(), times(2)).invoke(any());
+        assertThat(actualConnections.size(), is(2));
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
+    }
+    
+    @SneakyThrows
+    private void setMethodInvocation() {
+        MethodInvocation invocation = mock(MethodInvocation.class);
+        Collection<MethodInvocation> methodInvocations = new ArrayList<>();
+        methodInvocations.add(invocation);
+        Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
+        field.setAccessible(true);
+        field.set(backendConnection, methodInvocations);
     }
     
     @Test
