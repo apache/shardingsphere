@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.util.SQLUtil;
@@ -69,8 +68,7 @@ public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerRe
             }
         }
         if (null != columnExtractResult.getPosition()) {
-            MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
-            mysqlAlterTable.getPositionChangedColumns().add(columnExtractResult.getPosition());
+            alterTableStatement.getPositionChangedColumns().add(columnExtractResult.getPosition());
         }
     }
     

@@ -23,7 +23,6 @@ import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
@@ -38,6 +37,7 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
@@ -55,21 +55,13 @@ public final class AlterTableAssert {
     public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
         assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDropColumns()), is(expected.getDropColumns()));
         assertSame(assertMessage.getFullAssertMessage("Drop primary key assertion error: "), actual.isDropPrimaryKey(), expected.isDropPrimaryKey());
-        
         assertThat(assertMessage.getFullAssertMessage("Rename new table name assertion error: "), actual.getNewTableName(), is(expected.getNewTableName()));
-        assertAddColumns(actual, expected.getAddColumns()); 
-        
-        assertUpdateColumns(actual, expected.getUpdateColumns()); 
-        
+        assertAddColumns(actual, expected.getAddColumns());
+        assertUpdateColumns(actual, expected.getUpdateColumns());
         if (null != expected.getNewMeta()) {
             assertNewMeta(actual.getTableMetaData(), expected.getNewMeta());
         }
-        
-        if (actual instanceof MySQLAlterTableStatement) {
-            MySQLAlterTableStatement mysqlAlter = (MySQLAlterTableStatement) actual;
-            assertColumnPositions(mysqlAlter.getPositionChangedColumns(), expected.getPositionChangedColumns());
-        }
-            
+        assertColumnPositions(actual.getPositionChangedColumns(), expected.getPositionChangedColumns());
     }
     
     private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
@@ -105,9 +97,7 @@ public final class AlterTableAssert {
         if (null == expected) {
             return;
         }
-        
         assertThat(assertMessage.getFullAssertMessage("Alter column position size error: "), actual.size(), is(expected.size()));
-        
         int count = 0;
         for (ColumnPosition each : actual) {
             assertColumnPosition(each, expected.get(count));
@@ -123,7 +113,7 @@ public final class AlterTableAssert {
     }
     
     private void assertNewMeta(final TableMetaData actual, final ExpectedTableMetaData expected) {
-        assertFalse(assertMessage.getFullAssertMessage("Table new mata should exist: "), actual == null);
+        assertNotNull(assertMessage.getFullAssertMessage("Table new mata should exist: "), actual);
         List<String> columnNames = new ArrayList<>();
         List<String> columnTypes = new ArrayList<>();
         List<String> primaryColumns = new ArrayList<>();

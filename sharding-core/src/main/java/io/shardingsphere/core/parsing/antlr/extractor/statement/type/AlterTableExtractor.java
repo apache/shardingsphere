@@ -44,6 +44,14 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
         addExtractHandler(new DropColumnExtractHandler());
     }
     
+    @Override
+    protected final SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
+        AlterTableStatement result = new AlterTableStatement();
+        result.setTableMetaDataMap(shardingTableMetaData);
+        return result;
+    }
+    
+    @Override
     protected final void postExtract(final SQLStatement statement) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         TableMetaData oldTableMeta = alterStatement.getTableMetaDataMap().get(alterStatement.getTables().getSingleTableName());
@@ -100,12 +108,5 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
                 it.remove();
             }
         }
-    }
-    
-    @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement result = new AlterTableStatement();
-        result.setTableMetaDataMap(shardingTableMetaData);
-        return result;
     }
 }

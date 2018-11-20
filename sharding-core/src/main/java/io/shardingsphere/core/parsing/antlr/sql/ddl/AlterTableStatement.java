@@ -49,6 +49,8 @@ public class AlterTableStatement extends DDLStatement {
     
     private String newTableName;
     
+    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
+    
     private ShardingTableMetaData tableMetaDataMap;
     
     private TableMetaData tableMetaData;
