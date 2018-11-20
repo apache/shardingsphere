@@ -62,6 +62,9 @@ public class BackendTransactionManagerTest {
         verify(iterator.next()).commit();
         verify(iterator.next()).commit();
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
+        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
     }
     
     @Test
@@ -78,6 +81,9 @@ public class BackendTransactionManagerTest {
         verify(iterator.next()).rollback();
         verify(iterator.next()).rollback();
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
+        backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
     }
     
     @Test
@@ -88,6 +94,7 @@ public class BackendTransactionManagerTest {
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
         backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
     }
     
     @Test
