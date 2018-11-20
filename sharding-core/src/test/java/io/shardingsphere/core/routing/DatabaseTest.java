@@ -24,6 +24,7 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class DatabaseTest {
     
@@ -91,6 +93,21 @@ public class DatabaseTest {
             }
         });
         assertThat(originSql, is(actualSQLs.iterator().next()));
+    }
+
+    @Test
+    public void assertDatabaseSelectSQLPagination() {
+        String originSql = "select user_id from tbl_pagination limit 0,5";
+        SQLRouteResult actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, null).route(originSql);
+        SelectStatement stmt = (SelectStatement) actual.getSqlStatement(); 
+        assertTrue(stmt.getLimit().getOffsetValue() == 0);
+        assertTrue(stmt.getLimit().getRowCountValue() == 5);
+
+        originSql = "select user_id from tbl_pagination limit 5,5";
+        actual = new StatementRoutingEngine(shardingRule, null, DatabaseType.MySQL, false, null).route(originSql);
+        stmt = (SelectStatement) actual.getSqlStatement();
+        assertTrue(stmt.getLimit().getOffsetValue() == 5);
+        assertTrue(stmt.getLimit().getRowCountValue() == 5);
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
