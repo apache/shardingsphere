@@ -52,19 +52,11 @@ public class BackendTransactionManagerTest {
         assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
         assertTrue(backendConnection.getCachedConnections().isEmpty());
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
-        try {
-            backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
-        } catch (SQLException ex) {
-            // ignore
-        }
+        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).commit();
         verify(iterator.next()).commit();
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
     }
     
     @Test
