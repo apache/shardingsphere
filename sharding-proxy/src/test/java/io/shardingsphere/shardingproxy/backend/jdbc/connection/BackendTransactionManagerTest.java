@@ -81,7 +81,12 @@ public class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertXATransactionRollback() {
-    
+    public void assertXATransactionRollback() throws SQLException {
+        backendConnection.setTransactionType(TransactionType.XA);
+        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        assertTrue(backendConnection.getMethodInvocations().isEmpty());
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
     }
 }
