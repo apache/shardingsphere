@@ -17,8 +17,6 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -31,12 +29,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -72,7 +68,7 @@ public class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionCacheIsEmpty() throws SQLException {
-        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
+        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
@@ -81,7 +77,7 @@ public class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionSizeLessThanCache() throws SQLException {
-        setCachedConnections(backendConnection, "ds1", 10);
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(10));
@@ -90,8 +86,8 @@ public class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
-        setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
+        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
@@ -101,8 +97,8 @@ public class BackendConnectionTest {
     @Test
     @SneakyThrows
     public void assertMultiThreadGetConnection() {
-        setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
+        when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         Thread thread1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -135,8 +131,8 @@ public class BackendConnectionTest {
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setLogicSchema(logicSchema);
             backendConnection.setTransactionType(TransactionType.XA);
-            setCachedConnections(backendConnection, "ds1", 10);
-            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(mockNewConnections(2));
+            MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
+            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.setStatus(ConnectionStatus.TERMINATED);
             mockResultSetAndStatement(backendConnection);
@@ -187,23 +183,5 @@ public class BackendConnectionTest {
         Statement statement = mock(Statement.class);
         doThrow(SQLException.class).when(statement).cancel();
         backendConnection.add(statement);
-    }
-    
-    @SneakyThrows
-    private void setCachedConnections(final BackendConnection backendConnection, final String dsName, final int connectionSize) {
-        Multimap<String, Connection> cachedConnections = HashMultimap.create();
-        cachedConnections.putAll(dsName, mockNewConnections(connectionSize));
-        Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
-        field.setAccessible(true);
-        field.set(backendConnection, cachedConnections);
-    }
-    
-    private List<Connection> mockNewConnections(final int connectionSize) {
-        List<Connection> result = new ArrayList<>();
-        for (int i = 0; i < connectionSize; i++) {
-            Connection connection = mock(Connection.class);
-            result.add(connection);
-        }
-        return result;
     }
 }
