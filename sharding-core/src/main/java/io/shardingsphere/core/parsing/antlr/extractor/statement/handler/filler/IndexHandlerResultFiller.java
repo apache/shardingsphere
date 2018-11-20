@@ -26,18 +26,12 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
  *
  * @author duhongjun
  */
-public class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public IndexHandlerResultFiller() {
         super(IndexExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         IndexToken indexToken = ((IndexExtractResult) extractResult).getToken();

@@ -45,11 +45,5 @@ public abstract class AbstractHandlerResultFiller implements HandlerResultFiller
         return extractResultClass == extractResult.getClass() || extractResultClass.isAssignableFrom(extractResult.getClass());
     }
     
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
     protected abstract void fillSQLStatement(Object extractResult, SQLStatement statement);
 }

@@ -26,18 +26,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  *
  * @author duhongjun
  */
-public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public DropColumnHandlerResultFiller() {
         super(DropColumnExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         DropColumnExtractResult actualResult = (DropColumnExtractResult) extractResult;

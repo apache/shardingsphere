@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
@@ -31,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class OrderByExtractResult implements ExtractResult {
+public final class OrderByExtractResult implements ExtractResult {
     
     private final Optional<String> owner;
     

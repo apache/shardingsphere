@@ -35,11 +35,10 @@ import java.util.List;
  *
  * @author duhongjun
  */
-@SuppressWarnings("rawtypes")
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
-
+    
     private final Collection<ASTExtractHandler<?>> extractHandlers = new LinkedList<>();
-
+    
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement(shardingTableMetaData);
@@ -65,12 +64,12 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         postExtract(result);
         return result;
     }
-
+    
     protected abstract SQLStatement createStatement(ShardingTableMetaData shardingTableMetaData);
-
+    
     protected void postExtract(final SQLStatement statement) {
     }
-
+    
     protected final void addExtractHandler(final ASTExtractHandler handler) {
         extractHandlers.add(handler);
     }

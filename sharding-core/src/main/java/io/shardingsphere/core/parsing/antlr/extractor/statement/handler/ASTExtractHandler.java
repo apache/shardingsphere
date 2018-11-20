@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  */
 public interface ASTExtractHandler<T> {
-   
+    
     /**
      * Extract AST.
      *  

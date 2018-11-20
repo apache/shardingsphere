@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  * @author duhongjun
  */
 public interface HandlerResultFiller {
+    
     /**
      * Fill result to SQLStatement.
      *

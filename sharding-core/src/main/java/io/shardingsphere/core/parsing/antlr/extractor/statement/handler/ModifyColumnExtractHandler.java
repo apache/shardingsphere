@@ -17,17 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Modify column extract handler.
@@ -37,13 +35,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 public class ModifyColumnExtractHandler implements ASTExtractHandler<Collection<ColumnDefinitionExtractResult>> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
-
-    /**
-     * Extract AST.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @return extract result
-     */
+    
     @Override
     public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);

@@ -17,18 +17,16 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Add column extract handler.
@@ -39,12 +37,6 @@ public class AddColumnExtractHandler implements ASTExtractHandler<Collection<Col
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
-    /**‘
-     * Extract add column result.
-     * 
-     * @param ancestorNode ancestor node of ast
-     * @return column definition
-     */
     @Override
     public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> addColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);

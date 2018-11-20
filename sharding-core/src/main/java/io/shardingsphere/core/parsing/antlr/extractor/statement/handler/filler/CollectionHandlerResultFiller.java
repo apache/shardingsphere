@@ -28,22 +28,15 @@ import java.util.Collection;
  *
  * @author duhongjun
  */
-public class CollectionHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class CollectionHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public CollectionHandlerResultFiller() {
         super(Collection.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @SuppressWarnings("unchecked")
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        @SuppressWarnings("rawtypes")
         Collection<? extends ExtractResult> collection = (Collection) extractResult;
         for (ExtractResult each : collection) {
             HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);

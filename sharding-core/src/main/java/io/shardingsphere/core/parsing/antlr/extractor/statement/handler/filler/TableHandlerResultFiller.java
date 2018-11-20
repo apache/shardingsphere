@@ -28,21 +28,15 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  * @author duhongjun
  */
 public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
-
+    
     public TableHandlerResultFiller(final Class<? extends ExtractResult> extractResultClass) {
         super(TableExtractResult.class);
     }
-
+    
     public TableHandlerResultFiller() {
         super(TableExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         TableExtractResult tableResult = (TableExtractResult) extractResult;

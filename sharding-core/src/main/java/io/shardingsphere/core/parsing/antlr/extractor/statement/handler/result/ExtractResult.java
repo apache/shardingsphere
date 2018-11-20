@@ -23,5 +23,4 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
  * @author duhongjun
  */
 public interface ExtractResult {
-    
 }

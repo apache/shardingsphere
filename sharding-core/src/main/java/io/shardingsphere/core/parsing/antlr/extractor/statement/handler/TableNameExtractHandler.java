@@ -17,36 +17,27 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Single table name extract handler.
  *
  * @author duhongjun
  */
-public class TableNameExtractHandler implements ASTExtractHandler<Optional<TableExtractResult>> {
-
-    /**
-     * Extract AST.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @return Extract Result
-     */
+public final class TableNameExtractHandler implements ASTExtractHandler<Optional<TableExtractResult>> {
+    
     @Override
     public Optional<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> tableNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
         }
-
         String tableText = tableNameNode.get().getText();
         int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
         String tableName = tableText;

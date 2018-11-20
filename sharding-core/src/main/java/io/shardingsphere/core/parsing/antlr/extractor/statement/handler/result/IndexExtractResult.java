@@ -28,9 +28,9 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class IndexExtractResult implements ExtractResult {
+public final class IndexExtractResult implements ExtractResult {
+    
     private final String name;
-
+    
     private final IndexToken token;
-
 }

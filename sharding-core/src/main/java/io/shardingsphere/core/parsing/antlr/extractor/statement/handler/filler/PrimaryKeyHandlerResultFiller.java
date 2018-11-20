@@ -29,18 +29,12 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
  *
  * @author duhongjun
  */
-public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public PrimaryKeyHandlerResultFiller() {
         super(PrimaryKeyExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         if (statement instanceof AlterTableStatement) {
@@ -49,9 +43,9 @@ public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
             fillCreate((PrimaryKeyExtractResult) extractResult, (CreateTableStatement) statement);
         }
     }
-
-    private void fillAlter(final PrimaryKeyExtractResult result, final AlterTableStatement statement) {
-        for (String each : result.getPrimaryKeyColumnNames()) {
+    
+    private void fillAlter(final PrimaryKeyExtractResult primaryKeyExtractResult, final AlterTableStatement statement) {
+        for (String each : primaryKeyExtractResult.getPrimaryKeyColumnNames()) {
             Optional<ColumnDefinition> updateColumn = statement.getColumnDefinitionByName(each);
             if (updateColumn.isPresent()) {
                 updateColumn.get().setPrimaryKey(true);
@@ -59,11 +53,10 @@ public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
             }
         }
     }
-
-    private void fillCreate(final PrimaryKeyExtractResult result, final CreateTableStatement statement) {
-        for (String each : result.getPrimaryKeyColumnNames()) {
+    
+    private void fillCreate(final PrimaryKeyExtractResult primaryKeyExtractResult, final CreateTableStatement statement) {
+        for (String each : primaryKeyExtractResult.getPrimaryKeyColumnNames()) {
             statement.getPrimaryKeyColumns().add(each);
         }
     }
-
 }

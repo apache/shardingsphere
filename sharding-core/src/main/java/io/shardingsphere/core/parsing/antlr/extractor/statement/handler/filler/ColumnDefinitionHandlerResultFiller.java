@@ -31,18 +31,12 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author duhongjun
  */
-public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public ColumnDefinitionHandlerResultFiller() {
         super(ColumnDefinitionExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
         ColumnDefinitionExtractResult columnExtractResult = (ColumnDefinitionExtractResult) extractResult;
@@ -52,9 +46,8 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
             fillCreate(columnExtractResult, (CreateTableStatement) statement);
         }
     }
-
-    private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult,
-                           final AlterTableStatement alterTableStatement) {
+    
+    private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult, final AlterTableStatement alterTableStatement) {
         String oldName = columnExtractResult.getOldName();
         if (null != oldName) {
             Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
@@ -80,9 +73,8 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
             mysqlAlterTable.getPositionChangedColumns().add(columnExtractResult.getPosition());
         }
     }
-
-    private void fillCreate(final ColumnDefinitionExtractResult columnDefinition,
-                            final CreateTableStatement createTableStatement) {
+    
+    private void fillCreate(final ColumnDefinitionExtractResult columnDefinition, final CreateTableStatement createTableStatement) {
         createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
         createTableStatement.getColumnTypes().add(columnDefinition.getType());
         if (columnDefinition.isPrimaryKey()) {
