@@ -23,12 +23,12 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 public class BackendTransactionManagerTest {
     
@@ -38,20 +38,18 @@ public class BackendTransactionManagerTest {
     
     @Test
     public void assertLocalTransactionCommit() throws SQLException {
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
         assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
         assertThat(backendConnection.getMethodInvocations().size(), is(1));
         assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
+        assertTrue(backendConnection.getCachedConnections().isEmpty());
+        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
         backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
-    }
-    
-    private List<Connection> mockNewConnections(final int connectionSize) {
-        List<Connection> result = new ArrayList<>();
-        for (int i = 0; i < connectionSize; i++) {
-            Connection connection = mock(Connection.class);
-            result.add(connection);
-        }
-        return result;
+        Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
+        verify(iterator.next()).commit();
+        verify(iterator.next()).commit();
+        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
