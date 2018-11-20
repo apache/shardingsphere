@@ -51,59 +51,54 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
     
     @Override
     protected final void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        TableMetaData oldTableMeta = shardingTableMetaData.get(alterStatement.getTables().getSingleTableName());
-        if (null == oldTableMeta) {
+        AlterTableStatement alterTableStatement = (AlterTableStatement) statement;
+        TableMetaData oldTableMetaData = shardingTableMetaData.get(alterTableStatement.getTables().getSingleTableName());
+        if (null == oldTableMetaData) {
             return;
         }
-        List<ColumnMetaData> newColumnMeta = updateColumn(alterStatement, oldTableMeta);
-        addColumn(alterStatement, newColumnMeta);
-        adjustColumn(alterStatement, newColumnMeta);
-        dropColumn(alterStatement, newColumnMeta);
-        alterStatement.setTableMetaData(new TableMetaData(newColumnMeta));
+        List<ColumnMetaData> newColumnMetaData = getUpdatedColumnMetaDataList(alterTableStatement, oldTableMetaData);
+        fillColumnDefinition(alterTableStatement, newColumnMetaData);
+        adjustColumnDefinition(alterTableStatement, newColumnMetaData);
+        dropColumnDefinition(alterTableStatement, newColumnMetaData);
+        alterTableStatement.setTableMetaData(new TableMetaData(newColumnMetaData));
     }
     
-    protected void adjustColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-    }
-    
-    private List<ColumnMetaData> updateColumn(final AlterTableStatement alterStatement, final TableMetaData oldTableMeta) {
+    private List<ColumnMetaData> getUpdatedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : oldTableMeta.getColumnMetaData()) {
-            ColumnDefinition columnDefinition = alterStatement.getUpdateColumns().get(each.getColumnName());
+        for (ColumnMetaData each : oldTableMetaData.getColumnMetaData()) {
+            ColumnDefinition updatedColumnDefinition = alterTableStatement.getUpdateColumns().get(each.getColumnName());
             String columnName;
             String columnType;
-            boolean primaryKey = false;
-            if (null == columnDefinition) {
+            boolean primaryKey;
+            if (null == updatedColumnDefinition) {
                 columnName = each.getColumnName();
                 columnType = each.getColumnType();
-                primaryKey = each.isPrimaryKey();
+                primaryKey = !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey();
             } else {
-                columnName = columnDefinition.getName();
-                columnType = columnDefinition.getType();
-                if (columnDefinition.isPrimaryKey()) {
-                    primaryKey = columnDefinition.isPrimaryKey();
-                }
-            }
-            if (each.isPrimaryKey() && alterStatement.isDropPrimaryKey()) {
-                primaryKey = false;
+                columnName = updatedColumnDefinition.getName();
+                columnType = updatedColumnDefinition.getType();
+                primaryKey = !alterTableStatement.isDropPrimaryKey() && updatedColumnDefinition.isPrimaryKey();
             }
             result.add(new ColumnMetaData(columnName, columnType, primaryKey));
         }
         return result;
     }
     
-    private void addColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-        for (ColumnDefinition each : alterStatement.getAddColumns()) {
-            newColumnMeta.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
+    private void fillColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
+        for (ColumnDefinition each : alterTableStatement.getAddColumns()) {
+            newColumnMetaData.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
         }
     }
     
-    private void dropColumn(final AlterTableStatement alterStatement, final List<ColumnMetaData> newColumnMeta) {
-        Iterator<ColumnMetaData> it = newColumnMeta.iterator();
-        while (it.hasNext()) {
-            ColumnMetaData each = it.next();
-            if (alterStatement.getDropColumns().contains(each.getColumnName())) {
-                it.remove();
+    protected void adjustColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
+    }
+    
+    private void dropColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
+        Iterator<ColumnMetaData> iterator = newColumnMetaData.iterator();
+        while (iterator.hasNext()) {
+            ColumnMetaData each = iterator.next();
+            if (alterTableStatement.getDropColumns().contains(each.getColumnName())) {
+                iterator.remove();
             }
         }
     }
