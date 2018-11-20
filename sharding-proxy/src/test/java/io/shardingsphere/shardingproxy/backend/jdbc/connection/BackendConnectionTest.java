@@ -151,7 +151,7 @@ public class BackendConnectionTest {
     }
     
     @Test
-    public void assertAutoCloseConnection() {
+    public void assertAutoCloseConnectionWithException() {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setLogicSchema(logicSchema);
