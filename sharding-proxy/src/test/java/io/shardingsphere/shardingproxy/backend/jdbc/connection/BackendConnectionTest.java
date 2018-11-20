@@ -151,6 +151,25 @@ public class BackendConnectionTest {
     }
     
     @Test
+    public void assertAutoCloseConnection() throws SQLException {
+        BackendConnection actual;
+        try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
+            backendConnection.setLogicSchema(logicSchema);
+            backendConnection.setTransactionType(TransactionType.XA);
+            MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
+            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
+            backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+            backendConnection.setStatus(ConnectionStatus.TERMINATED);
+            mockResultSetAndStatement(backendConnection);
+            actual = backendConnection;
+        }
+        assertThat(actual.getConnectionSize(), is(0));
+        assertTrue(actual.getCachedConnections().isEmpty());
+        assertTrue(actual.getCachedResultSets().isEmpty());
+        assertTrue(actual.getCachedStatements().isEmpty());
+    }
+    
+    @Test
     public void assertAutoCloseConnectionWithException() {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
@@ -173,7 +192,14 @@ public class BackendConnectionTest {
         assertTrue(actual.getCachedStatements().isEmpty());
     }
     
-    private void mockResultSetAndStatement(final BackendConnection backendConnection) throws SQLException {
+    private void mockResultSetAndStatement(final BackendConnection backendConnection) {
+        ResultSet resultSet = mock(ResultSet.class);
+        Statement statement = mock(Statement.class);
+        backendConnection.add(resultSet);
+        backendConnection.add(statement);
+    }
+    
+    private void mockResultSetAndStatementWithException(final BackendConnection backendConnection) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         Statement statement = mock(Statement.class);
         doThrow(SQLException.class).when(resultSet).close();
