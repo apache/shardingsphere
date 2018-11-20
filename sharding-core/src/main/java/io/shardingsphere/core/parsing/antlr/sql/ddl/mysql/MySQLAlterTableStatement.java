@@ -21,7 +21,6 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class MySQLAlterTableStatement extends AlterTableStatement {
     
     private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
