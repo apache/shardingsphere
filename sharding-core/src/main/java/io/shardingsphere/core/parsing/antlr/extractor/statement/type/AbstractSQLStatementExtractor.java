@@ -41,7 +41,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = createStatement(shardingTableMetaData);
+        SQLStatement result = createStatement();
         List<Object> extractResults = new LinkedList<>();
         for (ASTExtractHandler each : extractHandlers) {
             Object extractResult = each.extract(rootNode);
@@ -58,16 +58,16 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         for (Object each : extractResults) {
             HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
             if (null != filler) {
-                filler.fill(each, result);
+                filler.fill(each, result, shardingTableMetaData);
             }
         }
-        postExtract(result);
+        postExtract(result, shardingTableMetaData);
         return result;
     }
     
-    protected abstract SQLStatement createStatement(ShardingTableMetaData shardingTableMetaData);
+    protected abstract SQLStatement createStatement();
     
-    protected void postExtract(final SQLStatement statement) {
+    protected void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
     }
     
     protected final void addExtractHandler(final ASTExtractHandler handler) {

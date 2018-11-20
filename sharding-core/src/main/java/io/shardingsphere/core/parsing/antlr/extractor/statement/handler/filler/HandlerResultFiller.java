@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
@@ -31,6 +32,7 @@ public interface HandlerResultFiller {
      *
      * @param extractResult extract result from AST
      * @param statement SQL statement
+     * @param shardingTableMetaData sharding table meta data
      */
-    void fill(Object extractResult, SQLStatement statement);
+    void fill(Object extractResult, SQLStatement statement, ShardingTableMetaData shardingTableMetaData);
 }

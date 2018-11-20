@@ -23,7 +23,6 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedHashMap;
@@ -36,12 +35,9 @@ import java.util.Map;
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public class AlterTableStatement extends DDLStatement {
-    
-    private final ShardingTableMetaData tableMetaDataMap;
     
     private final List<ColumnDefinition> addColumns = new LinkedList<>();
     
@@ -61,10 +57,11 @@ public class AlterTableStatement extends DDLStatement {
      * Get column definition.
      *
      * @param columnName column name
+     * @param shardingTableMetaData sharding table meta data
      * @return column definition
      */
-    public Optional<ColumnDefinition> getColumnDefinitionByName(final String columnName) {
-        Optional<ColumnDefinition> result = findColumnDefinition(columnName);
+    public Optional<ColumnDefinition> getColumnDefinitionByName(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+        Optional<ColumnDefinition> result = findColumnDefinition(columnName, shardingTableMetaData);
         return result.isPresent() ? result : findColumnDefinitionFromCurrentAddClause(columnName);
     }
     
@@ -72,13 +69,14 @@ public class AlterTableStatement extends DDLStatement {
      * Find column definition.
      *
      * @param columnName column name
+     * @param shardingTableMetaData sharding table meta data
      * @return column definition
      */
-    public Optional<ColumnDefinition> findColumnDefinition(final String columnName) {
-        if (!tableMetaDataMap.containsTable(getTables().getSingleTableName())) {
+    public Optional<ColumnDefinition> findColumnDefinition(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+        if (!shardingTableMetaData.containsTable(getTables().getSingleTableName())) {
             return Optional.absent();
         }
-        for (ColumnMetaData each : tableMetaDataMap.get(getTables().getSingleTableName()).getColumnMetaData()) {
+        for (ColumnMetaData each : shardingTableMetaData.get(getTables().getSingleTableName()).getColumnMetaData()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
                 return Optional.of(new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey()));
             }

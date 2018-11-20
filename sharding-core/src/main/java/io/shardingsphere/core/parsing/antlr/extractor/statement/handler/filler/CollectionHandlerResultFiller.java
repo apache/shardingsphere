@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -35,12 +36,12 @@ public final class CollectionHandlerResultFiller extends AbstractHandlerResultFi
     
     @SuppressWarnings("unchecked")
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         Collection<? extends ExtractResult> collection = (Collection) extractResult;
         for (ExtractResult each : collection) {
             HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
             if (null != filler) {
-                filler.fill(each, statement);
+                filler.fill(each, statement, shardingTableMetaData);
             }
         }
     }

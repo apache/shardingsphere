@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -36,17 +37,17 @@ public final class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFi
     }
     
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         if (statement instanceof AlterTableStatement) {
-            fillAlter((PrimaryKeyExtractResult) extractResult, (AlterTableStatement) statement);
+            fillAlter((PrimaryKeyExtractResult) extractResult, (AlterTableStatement) statement, shardingTableMetaData);
         } else if (statement instanceof CreateTableStatement) {
             fillCreate((PrimaryKeyExtractResult) extractResult, (CreateTableStatement) statement);
         }
     }
     
-    private void fillAlter(final PrimaryKeyExtractResult primaryKeyExtractResult, final AlterTableStatement statement) {
+    private void fillAlter(final PrimaryKeyExtractResult primaryKeyExtractResult, final AlterTableStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         for (String each : primaryKeyExtractResult.getPrimaryKeyColumnNames()) {
-            Optional<ColumnDefinition> updateColumn = statement.getColumnDefinitionByName(each);
+            Optional<ColumnDefinition> updateColumn = statement.getColumnDefinitionByName(each, shardingTableMetaData);
             if (updateColumn.isPresent()) {
                 updateColumn.get().setPrimaryKey(true);
                 statement.getUpdateColumns().put(each, updateColumn.get());

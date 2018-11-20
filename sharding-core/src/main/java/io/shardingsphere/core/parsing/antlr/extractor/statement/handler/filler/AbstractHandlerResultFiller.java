@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -31,11 +32,11 @@ public abstract class AbstractHandlerResultFiller implements HandlerResultFiller
     private final Class<?> extractResultClass;
     
     @Override
-    public final void fill(final Object extractResult, final SQLStatement statement) {
+    public final void fill(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         if (!compatClass(extractResult)) {
             return;
         }
-        fillSQLStatement(extractResult, statement);
+        fillSQLStatement(extractResult, statement, shardingTableMetaData);
     }
     
     private boolean compatClass(final Object extractResult) {
@@ -45,5 +46,5 @@ public abstract class AbstractHandlerResultFiller implements HandlerResultFiller
         return extractResultClass == extractResult.getClass() || extractResultClass.isAssignableFrom(extractResult.getClass());
     }
     
-    protected abstract void fillSQLStatement(Object extractResult, SQLStatement statement);
+    protected abstract void fillSQLStatement(Object extractResult, SQLStatement statement, ShardingTableMetaData shardingTableMetaData);
 }
