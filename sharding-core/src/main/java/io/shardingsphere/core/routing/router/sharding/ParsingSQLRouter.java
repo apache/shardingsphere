@@ -115,7 +115,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
-            processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
+            processLimit(parameters, (SelectStatement) sqlStatement);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
@@ -195,11 +195,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         sqlRouteResult.getGeneratedKey().getGeneratedKeys().addAll(generatedKeys);
     }
     
-    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {
-        if (isSingleRouting) {
-            selectStatement.setLimit(null);
-            return;
-        }
+    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
         selectStatement.getLimit().processParameters(parameters, isNeedFetchAll);
     }
