@@ -97,7 +97,6 @@ public final class MySQLShowParser extends AbstractShowParser {
             result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
             lexerEngine.nextToken();
         }
-        lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(DefaultKeyword.LIKE)) {
             parseLike(result);
         }
