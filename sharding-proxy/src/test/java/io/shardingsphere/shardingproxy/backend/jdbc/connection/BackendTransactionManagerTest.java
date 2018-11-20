@@ -17,5 +17,27 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import org.junit.Test;
+
 public class BackendTransactionManagerTest {
+    
+    @Test
+    public void assertLocalTransactionCommit() {
+    
+    }
+    
+    @Test
+    public void assertLocalTransactionRollback() {
+    
+    }
+    
+    @Test
+    public void assertXATransactionCommit() {
+    
+    }
+    
+    @Test
+    public void assertXATransactionRollback() {
+    
+    }
 }
