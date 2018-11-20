@@ -177,10 +177,10 @@ public class BackendConnectionTest {
             backendConnection.setTransactionType(TransactionType.XA);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
-            MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.setStatus(ConnectionStatus.TERMINATED);
-            mockResultSetAndStatementWithException(backendConnection);
+            mockResultSetAndStatement(backendConnection);
+            mockResultSetAndStatementException(backendConnection);
             actual = backendConnection;
         } catch (SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
@@ -199,13 +199,13 @@ public class BackendConnectionTest {
         backendConnection.add(statement);
     }
     
-    private void mockResultSetAndStatementWithException(final BackendConnection backendConnection) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        Statement statement = mock(Statement.class);
-        doThrow(SQLException.class).when(resultSet).close();
-        doThrow(SQLException.class).when(statement).close();
-        backendConnection.add(resultSet);
-        backendConnection.add(statement);
+    private void mockResultSetAndStatementException(final BackendConnection backendConnection) throws SQLException {
+        for (Statement each : backendConnection.getCachedStatements()) {
+            doThrow(SQLException.class).when(each).close();
+        }
+        for (ResultSet each : backendConnection.getCachedResultSets()) {
+            doThrow(SQLException.class).when(each).close();
+        }
     }
     
     @Test
