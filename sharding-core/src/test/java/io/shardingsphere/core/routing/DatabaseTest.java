@@ -21,7 +21,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import io.shardingsphere.api.HintManager;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -30,11 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -46,6 +44,9 @@ public class DatabaseTest {
     private Map<String, DataSource> dataSourceMap;
     
     private ShardingRule shardingRule;
+
+    public static final String SHARDING_PREFIX = "userdb";
+    public static final String SHARDING_TABLE = "user";
     
     @Before
     public void setRouteRuleContext() {
@@ -108,6 +109,36 @@ public class DatabaseTest {
         stmt = (SelectStatement) actual.getSqlStatement();
         assertTrue(stmt.getLimit().getOffsetValue() == 5);
         assertTrue(stmt.getLimit().getRowCountValue() == 5);
+    }
+
+    @Test
+    public void assertDatabasePrepareSelectSQLPagination() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put(SHARDING_PREFIX + "1", null);
+        dataSourceMap.put(SHARDING_PREFIX + "2", null);
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable(SHARDING_TABLE);
+        tableRuleConfig.setActualDataNodes(SHARDING_PREFIX + "${1..2}." + SHARDING_TABLE);
+        // 配置分库策略
+        tableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("city_id", SHARDING_PREFIX+"${city_id % 2 + 1}"));
+
+        // 配置路由规则
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        Properties properties = new Properties();
+        properties.setProperty("sql.show", "true");
+        
+        String originSql = "select city_id from user where city_id in (13,173) limit 0,10";
+        SQLRouteResult actual = new PreparedStatementRoutingEngine(originSql, shardingRule, null, DatabaseType.MySQL, false, null).route(null);
+        SelectStatement stmt = (SelectStatement) actual.getSqlStatement();
+        assertTrue(stmt.getLimit().getOffsetValue() == 0);
+        assertTrue(stmt.getLimit().getRowCountValue() == 10);
+
+        originSql = "select city_id from user where city_id in (89,94) limit 0,10";
+        actual = new PreparedStatementRoutingEngine(originSql, shardingRule, null, DatabaseType.MySQL, false, null).route(null);
+        stmt = (SelectStatement) actual.getSqlStatement();
+        assertTrue(stmt.getLimit().getOffsetValue() == 0);
+        assertTrue(stmt.getLimit().getRowCountValue() == 10);
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
