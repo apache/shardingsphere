@@ -15,21 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Drop primary key handler result filler.
+ * Table handler result filler.
  *
  * @author duhongjun
  */
-public class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
+public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
 
-    public DropPrimaryKeyHandlerResultFiller() {
-        super(DropPrimaryKeyExtractResult.class);
+    public TableHandlerResultFiller(final Class<? extends ExtractResult> extractResultClass) {
+        super(TableExtractResult.class);
+    }
+
+    public TableHandlerResultFiller() {
+        super(TableExtractResult.class);
     }
 
     /**
@@ -40,7 +45,8 @@ public class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResultFill
      */
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        alterStatement.setDropPrimaryKey(((DropPrimaryKeyExtractResult) extractResult).isDropPrimaryKey());
+        TableExtractResult tableResult = (TableExtractResult) extractResult;
+        statement.getTables().add(new Table(tableResult.getName(), tableResult.getAlias()));
+        statement.getSQLTokens().add(tableResult.getToken());
     }
 }

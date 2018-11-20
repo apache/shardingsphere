@@ -17,20 +17,18 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Abstract SQL statement extractor.
@@ -59,9 +57,9 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
             }
         }
         for (Object each : extractResults) {
-            HandlerResultFiller fillor = HandlerResultFillerRegistry.getFillor(each);
-            if (null != fillor) {
-                fillor.fill(each, result);
+            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
+            if (null != filler) {
+                filler.fill(each, result);
             }
         }
         postExtract(result);

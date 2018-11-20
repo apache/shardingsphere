@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Handler result fillor.
+ * Handler result filler.
  * 
  * @author duhongjun
  */

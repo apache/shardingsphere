@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
-
-import java.util.Collection;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+
+import java.util.Collection;
 
 /**
  * Collection handler result filler.
@@ -46,9 +46,9 @@ public class CollectionHandlerResultFiller extends AbstractHandlerResultFiller {
         @SuppressWarnings("rawtypes")
         Collection<? extends ExtractResult> collection = (Collection) extractResult;
         for (ExtractResult each : collection) {
-            HandlerResultFiller fillor = HandlerResultFillerRegistry.getFillor(each);
-            if (null != fillor) {
-                fillor.fill(each, statement);
+            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
+            if (null != filler) {
+                filler.fill(each, statement);
             }
         }
     }

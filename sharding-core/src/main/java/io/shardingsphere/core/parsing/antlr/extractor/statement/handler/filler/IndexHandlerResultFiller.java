@@ -15,21 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 /**
- * Drop column handler result filler.
+ * Index handler result filler.
  *
  * @author duhongjun
  */
-public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
+public class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
 
-    public DropColumnHandlerResultFiller() {
-        super(DropColumnExtractResult.class);
+    public IndexHandlerResultFiller() {
+        super(IndexExtractResult.class);
     }
 
     /**
@@ -40,8 +40,12 @@ public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
      */
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        DropColumnExtractResult actualResult = (DropColumnExtractResult) extractResult;
-        AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        alterStatement.getDropColumns().addAll(actualResult.getDropColumnNames());
+        IndexToken indexToken = ((IndexExtractResult) extractResult).getToken();
+        if (!statement.getTables().isEmpty() && null == indexToken.getTableName()) {
+            indexToken.setTableName(statement.getTables().getSingleTableName());
+        } else {
+            indexToken.setTableName("");
+        }
+        statement.getSQLTokens().add(((IndexExtractResult) extractResult).getToken());
     }
 }

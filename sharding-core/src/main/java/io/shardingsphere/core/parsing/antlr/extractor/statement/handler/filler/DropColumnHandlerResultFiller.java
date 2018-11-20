@@ -15,26 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Table handler result filler.
+ * Drop column handler result filler.
  *
  * @author duhongjun
  */
-public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
+public class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
 
-    public TableHandlerResultFiller(final Class<? extends ExtractResult> extractResultClass) {
-        super(TableExtractResult.class);
-    }
-
-    public TableHandlerResultFiller() {
-        super(TableExtractResult.class);
+    public DropColumnHandlerResultFiller() {
+        super(DropColumnExtractResult.class);
     }
 
     /**
@@ -45,8 +40,8 @@ public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
      */
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        TableExtractResult tableResult = (TableExtractResult) extractResult;
-        statement.getTables().add(new Table(tableResult.getName(), tableResult.getAlias()));
-        statement.getSQLTokens().add(tableResult.getToken());
+        DropColumnExtractResult actualResult = (DropColumnExtractResult) extractResult;
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        alterStatement.getDropColumns().addAll(actualResult.getDropColumnNames());
     }
 }

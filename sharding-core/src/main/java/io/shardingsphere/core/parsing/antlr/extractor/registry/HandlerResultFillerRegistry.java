@@ -17,19 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.registry;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.CollectionHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.ColumnDefinitionHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.DropColumnHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.DropPrimaryKeyHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.IndexHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.PrimaryKeyHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.TableHandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.TableJoinHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.CollectionHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.ColumnDefinitionHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.DropColumnHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.DropPrimaryKeyHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.IndexHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.PrimaryKeyHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.TableHandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.TableJoinHandlerResultFiller;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
@@ -38,14 +34,19 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.P
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Handler result fillor registry.
+ * Handler result filler registry.
  *
  * @author duhongjun
  */
 public final class HandlerResultFillerRegistry {
+    
     private static final Map<Class<?>, HandlerResultFiller> FILLERS = new HashMap<>();
-
+    
     static {
         registry(DropColumnExtractResult.class, new DropColumnHandlerResultFiller());
         registry(PrimaryKeyExtractResult.class, new PrimaryKeyHandlerResultFiller());
@@ -56,7 +57,7 @@ public final class HandlerResultFillerRegistry {
         registry(IndexExtractResult.class, new IndexHandlerResultFiller());
         registry(Collection.class, new CollectionHandlerResultFiller());
     }
-
+    
     /**
      * Registry HandlerResultFiller.
      *
@@ -66,14 +67,14 @@ public final class HandlerResultFillerRegistry {
     public static void registry(final Class<?> clazz, final HandlerResultFiller filler) {
         FILLERS.put(clazz, filler);
     }
-
+    
     /**
      * Get HandlerResultFiller by object instance.
      *
      * @param object object instance
      * @return HandlerResultFiller instance
      */
-    public static HandlerResultFiller getFillor(final Object object) {
+    public static HandlerResultFiller getFiller(final Object object) {
         if (object instanceof Collection) {
             return FILLERS.get(Collection.class);
         }

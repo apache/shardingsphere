@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,9 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public abstract class AbstractHandlerResultFiller implements HandlerResultFiller {
-
-    protected final Class<?> extractResultClass;
-
+    
+    private final Class<?> extractResultClass;
+    
     @Override
     public final void fill(final Object extractResult, final SQLStatement statement) {
         if (!compatClass(extractResult)) {
@@ -37,20 +37,14 @@ public abstract class AbstractHandlerResultFiller implements HandlerResultFiller
         }
         fillSQLStatement(extractResult, statement);
     }
-
+    
     private boolean compatClass(final Object extractResult) {
         if (null == extractResultClass) {
             return false;
         }
-        if (extractResultClass == extractResult.getClass()) {
-            return true;
-        }
-        if (extractResultClass.isAssignableFrom(extractResult.getClass())) {
-            return true;
-        }
-        return false;
+        return extractResultClass == extractResult.getClass() || extractResultClass.isAssignableFrom(extractResult.getClass());
     }
-
+    
     /**
      * Fill result to SQLStatement.
      *

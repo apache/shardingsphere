@@ -15,21 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 /**
- * Index handler result filler.
- *
+ * Join table extract result filler.
+ * 
  * @author duhongjun
  */
-public class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
-
-    public IndexHandlerResultFiller() {
-        super(IndexExtractResult.class);
+public class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
+    public TableJoinHandlerResultFiller() {
+        super(TableJoinExtractResult.class);
     }
 
     /**
@@ -40,12 +38,7 @@ public class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
      */
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        IndexToken indexToken = ((IndexExtractResult) extractResult).getToken();
-        if (!statement.getTables().isEmpty() && null == indexToken.getTableName()) {
-            indexToken.setTableName(statement.getTables().getSingleTableName());
-        } else {
-            indexToken.setTableName("");
-        }
-        statement.getSQLTokens().add(((IndexExtractResult) extractResult).getToken());
+        TableJoinExtractResult tableResult = (TableJoinExtractResult) extractResult;
+        super.fillSQLStatement(tableResult, statement);
     }
 }

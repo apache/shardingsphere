@@ -15,19 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Join table extract result filler.
- * 
+ * Drop primary key handler result filler.
+ *
  * @author duhongjun
  */
-public class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
-    public TableJoinHandlerResultFiller() {
-        super(TableJoinExtractResult.class);
+public class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
+
+    public DropPrimaryKeyHandlerResultFiller() {
+        super(DropPrimaryKeyExtractResult.class);
     }
 
     /**
@@ -38,7 +40,7 @@ public class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
      */
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        TableJoinExtractResult tableResult = (TableJoinExtractResult) extractResult;
-        super.fillSQLStatement(tableResult, statement);
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        alterStatement.setDropPrimaryKey(((DropPrimaryKeyExtractResult) extractResult).isDropPrimaryKey());
     }
 }
