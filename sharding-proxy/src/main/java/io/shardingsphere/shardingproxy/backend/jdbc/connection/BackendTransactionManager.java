@@ -62,6 +62,9 @@ public class BackendTransactionManager {
             doLocalTransaction(operationType);
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
+            if (TransactionOperationType.BEGIN != operationType) {
+                connection.setStatus(ConnectionStatus.TERMINATED);
+            }
         }
     }
     
