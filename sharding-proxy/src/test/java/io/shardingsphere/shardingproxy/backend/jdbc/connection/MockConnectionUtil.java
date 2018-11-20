@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.mockito.Mockito.doThrow;
@@ -62,12 +63,21 @@ class MockConnectionUtil {
     static List<Connection> mockNewConnections(final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>();
         for (int i = 0; i < connectionSize; i++) {
-            Connection connection = mock(Connection.class);
-            doThrow(SQLException.class).when(connection).rollback();
-            doThrow(SQLException.class).when(connection).commit();
-            doThrow(SQLException.class).when(connection).close();
-            result.add(connection);
+            result.add(mock(Connection.class));
         }
         return result;
+    }
+    
+    static void mockThrowException(final Collection<Connection> connections) {
+        try {
+            for (Connection each : connections) {
+                doThrow(SQLException.class).when(each).commit();
+                doThrow(SQLException.class).when(each).rollback();
+                doThrow(SQLException.class).when(each).close();
+            }
+            
+        } catch (Exception ex) {
+            // ignore
+        }
     }
 }
