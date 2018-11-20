@@ -180,7 +180,7 @@ public class BackendConnectionTest {
             MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.setStatus(ConnectionStatus.TERMINATED);
-            mockResultSetAndStatement(backendConnection);
+            mockResultSetAndStatementWithException(backendConnection);
             actual = backendConnection;
         } catch (SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
