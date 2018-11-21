@@ -17,10 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.core.util.SQLUtil;
+import io.shardingsphere.core.constant.AggregationType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,22 +31,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-@RequiredArgsConstructor
-public final class AggregationDistinctSelectItem implements DistinctSelectItem {
+public final class AggregationDistinctSelectItem extends DistinctSelectItem {
     
-    private final String distinctColumn;
-    
-    @Override
-    public String getExpression() {
-        return Strings.isNullOrEmpty(distinctColumn) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + distinctColumn);
-    }
-    
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
-    public String getColumnLabel() {
-        return alias.isPresent() ? alias.get() : getExpression();
-    }
+    private final AggregationType type;
 }
