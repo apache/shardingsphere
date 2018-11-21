@@ -138,7 +138,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
-    
+                appendDistinctPlaceholder(result, (AggregationDistinctToken) each, count);
             } else if (each instanceof RemoveToken) {
                 appendRest(result, count, ((RemoveToken) each).getEndPosition());
             }
