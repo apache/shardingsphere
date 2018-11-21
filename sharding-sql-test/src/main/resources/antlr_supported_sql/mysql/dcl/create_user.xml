@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases db-types="MySQL" namespace="mysql.dcl.createUser">
     <sql-case id="create_user" value="CREATE USER user1 DEFAULT ROLE role1" />
+    <sql-case id="create_users" value="CREATE USER user1, user2 DEFAULT ROLE role1" />
     <sql-case id="create_user_if_not_exists" value="CREATE USER IF NOT EXISTS user1 DEFAULT ROLE role1" />
     <sql-case id="create_localhost_user" value="CREATE USER 'user1'@'localhost' DEFAULT ROLE role1" />
     <sql-case id="create_user_with_roles" value="CREATE USER user1 DEFAULT ROLE role1, role2" />
