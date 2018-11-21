@@ -21,6 +21,7 @@
 
 1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) master-slave mode exception when using PreparedStatement
 1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) `SHOW CREATE TABLE tb_name` execution exception when configuring multiple logic schema
+1. [ISSUE #1475](https://github.com/sharding-sphere/sharding-sphere/issues/1475) `SHOW [FUll] TABLES FROM db_name LIKE 'tb_name'` failed to return the logic table
 
 ## 3.0.0
 
