@@ -27,6 +27,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatemen
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleAlterIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleDropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleDropTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +50,7 @@ public final class OracleStatementExtractorRegistry implements SQLStatementExtra
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new OracleAlterTableExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new SingleTableExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OracleDropTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new SingleTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new OracleAlterIndexExtractor());

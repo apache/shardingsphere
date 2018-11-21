@@ -21,11 +21,11 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.SingleTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver.SQLServerAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver.SQLServerDropTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +48,7 @@ public final class SQLServerStatementExtractorRegistry implements SQLStatementEx
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new SQLServerAlterTableExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new DropTableExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new SQLServerDropTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new SingleTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new IndexWithTableStatementExtractor());

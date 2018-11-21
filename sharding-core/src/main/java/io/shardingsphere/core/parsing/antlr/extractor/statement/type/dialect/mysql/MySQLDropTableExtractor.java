@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**
- * Drop table extractor.
+ * Drop table extractor for MySQL.
  * 
  * @author duhongjun
  */
-public abstract class DropTableExtractor extends DDLStatementExtractor {
+public final class MySQLDropTableExtractor extends DropTableExtractor {
+    
+    public MySQLDropTableExtractor() {
+        addExtractHandler(new TableNamesExtractHandler());
+    }
 }

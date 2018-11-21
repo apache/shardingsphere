@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**
- * Drop table extractor.
+ * Drop table extractor for SQL Server.
  * 
  * @author duhongjun
  */
-public abstract class DropTableExtractor extends DDLStatementExtractor {
+public final class SQLServerDropTableExtractor extends DropTableExtractor {
+    
+    public SQLServerDropTableExtractor() {
+        addExtractHandler(new TableNamesExtractHandler());
+    }
 }

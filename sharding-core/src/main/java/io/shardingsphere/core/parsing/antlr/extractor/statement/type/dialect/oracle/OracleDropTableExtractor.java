@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**
- * Drop table extractor.
+ * Drop table extractor for Oracle.
  * 
  * @author duhongjun
  */
-public abstract class DropTableExtractor extends DDLStatementExtractor {
+public final class OracleDropTableExtractor extends DropTableExtractor {
+    
+    public OracleDropTableExtractor() {
+        addExtractHandler(new TableNameExtractHandler());
+    }
 }
