@@ -165,7 +165,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     // TODO :panjuan does not use pattern to check
     private boolean isAggregationDistinctSelectItem(final String innerExpression) {
-        String pattern = "(\\s*DISTINCT\\s+.*)";
+        String pattern = "\\(\\s*DISTINCT\\s+.*\\)";
         return Pattern.matches(pattern, innerExpression.toUpperCase());
     }
     
