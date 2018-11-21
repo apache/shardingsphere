@@ -24,10 +24,7 @@ import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-
-import java.util.regex.Pattern;
 
 /**
  * Distinct select item.
@@ -37,7 +34,8 @@ import java.util.regex.Pattern;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class DistinctSelectItem implements SelectItem {
+@RequiredArgsConstructor
+public class DistinctSelectItem implements SelectItem {
     
     private final String distinctColumn;
     
