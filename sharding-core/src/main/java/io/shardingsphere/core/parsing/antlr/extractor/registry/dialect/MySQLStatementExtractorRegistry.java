@@ -20,8 +20,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLDropTableExtractor;
@@ -51,8 +52,8 @@ public final class MySQLStatementExtractorRegistry implements SQLStatementExtrac
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new MySQLAlterTableExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_TABLE, new MySQLDropTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new MySQLTruncateTableExtractor());
-        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new CreateIndexExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new DropIndexExtractor());
     }
     
     private static void registerTCL() {

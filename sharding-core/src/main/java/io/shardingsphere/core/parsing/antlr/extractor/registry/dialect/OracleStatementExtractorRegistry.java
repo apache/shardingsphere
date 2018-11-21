@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleAlterIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleAlterTableExtractor;
@@ -52,7 +52,7 @@ public final class OracleStatementExtractorRegistry implements SQLStatementExtra
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new OracleAlterTableExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OracleDropTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OracleTruncateTableExtractor());
-        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new CreateIndexExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new OracleAlterIndexExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new OracleDropIndexExtractor());
     }

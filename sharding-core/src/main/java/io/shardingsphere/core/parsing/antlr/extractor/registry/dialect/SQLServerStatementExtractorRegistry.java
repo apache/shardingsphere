@@ -20,8 +20,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver.SQLServerAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver.SQLServerDropTableExtractor;
@@ -50,9 +52,9 @@ public final class SQLServerStatementExtractorRegistry implements SQLStatementEx
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new SQLServerAlterTableExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_TABLE, new SQLServerDropTableExtractor());
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new SQLServerTruncateTableExtractor());
-        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new CreateIndexExtractor());
+        EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new AlterIndexExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new DropIndexExtractor());
     }
     
     private static void registerTCL() {

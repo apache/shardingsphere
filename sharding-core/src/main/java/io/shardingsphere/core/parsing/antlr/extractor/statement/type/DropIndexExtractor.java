@@ -21,13 +21,13 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNam
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
 
 /**
- * Statement with table and index extractor.
+ * Drop index extractor.
  * 
  * @author duhongjun
  */
-public final class IndexWithTableStatementExtractor extends DDLStatementExtractor {
+public final class DropIndexExtractor extends DDLStatementExtractor {
     
-    public IndexWithTableStatementExtractor() {
+    public DropIndexExtractor() {
         addExtractHandler(new TableNameExtractHandler());
         addExtractHandler(new IndexNameExtractHandler());
     }
