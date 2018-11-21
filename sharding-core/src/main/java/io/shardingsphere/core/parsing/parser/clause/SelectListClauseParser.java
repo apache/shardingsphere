@@ -78,6 +78,12 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private SelectItem parseSelectItem(final SelectStatement selectStatement) {
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
         SelectItem result;
+        result = getSelectItem(selectStatement);
+        return result;
+    }
+    
+    private SelectItem getSelectItem(final SelectStatement selectStatement) {
+        final SelectItem result;
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isDistinctSelectItem()) {
