@@ -40,6 +40,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -232,8 +233,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count) {
-        String columnnName = distinctToken.getColumnName().toLowerCase();
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
+        sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), ""));
         int beginPosition = indexToken.getBeginPosition() + indexToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);
     }
