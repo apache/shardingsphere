@@ -231,12 +231,8 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, insertColumnToken.getBeginPosition());
     }
     
-    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
-        String indexName = indexToken.getIndexName().toLowerCase();
-        String logicTableName = indexToken.getTableName().toLowerCase();
-        if (Strings.isNullOrEmpty(logicTableName)) {
-            logicTableName = shardingRule.getLogicTableName(indexName);
-        }
+    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count) {
+        String columnnName = distinctToken.getColumnName().toLowerCase();
         sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
         int beginPosition = indexToken.getBeginPosition() + indexToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);
